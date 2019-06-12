@@ -60,9 +60,17 @@ def audit_randomseed():
     )        
 
 # state of all the jurisdictions, round #, and contest status
-@app.route('/admin/status')
+@app.route('/admin/status', methods=["GET"])
 def audit_status():
-    pass
+    election = get_election()
+    jurisdictions = db.session.query(Jurisdiction).filter_by(election_id = election.id).all()
+    return jsonify(
+        jurisdictions = [{
+            'name' : j.name,
+            'manifest_uploaded_at': j.manifest_uploaded_at,
+            'manifest_errors': j.manifest_errors
+        } for j in jurisdictions]
+    )
 
 @app.route('/jurisdiction/<jurisdiction_id>/manifest')
 def jurisdiction_manifest(jurisdiction_id):
