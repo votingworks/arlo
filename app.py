@@ -1,7 +1,15 @@
 import os
 from flask import Flask, send_from_directory
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, static_folder='arlo-client/build/')
+
+# database config
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./arlo.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+from models import *
 
 # Serve React App
 @app.route('/', defaults={'path': ''})
