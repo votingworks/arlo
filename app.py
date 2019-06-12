@@ -11,7 +11,9 @@ db = SQLAlchemy(app)
 
 from models import *
 
-# Serve React App
+
+
+# React App
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):

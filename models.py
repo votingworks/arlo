@@ -48,7 +48,15 @@ class TargetedContestJurisdiction(db.Model):
     __table_args__ = (
         db.PrimaryKeyConstraint('contest_id', 'jurisdiction_id'),
     )
-        
+
+class AuditBoard(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'), nullable=False)
+    member_1 = db.Column(db.String(200), nullable=True)
+    member_1_affiliation = db.Column(db.String(200), nullable=True)
+    member_2 = db.Column(db.String(200), nullable=True)
+    member_2_affiliation = db.Column(db.String(200), nullable=True)
+    
 class Round(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
