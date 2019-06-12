@@ -19,6 +19,13 @@ class Jurisdiction(db.Model):
     name = db.Column(db.String(200), unique=True, nullable=False)
     manifest = db.Column(db.Text, nullable=True)
     manifest_uploaded_at = db.Column(db.DateTime(timezone=False), nullable=True)
+
+    # any error in the upload? null == none
+    manifest_errors = db.Column(db.Text, nullable=True)
+
+    # a JSON array of field names that are included in the CSV
+    manifest_fields = db.Column(db.Text, nullable=True)
+
     cvrs = db.Column(db.Text, nullable=True)
     cvrs_uploaded_at = db.Column(db.DateTime(timezone=False), nullable=True)
 
@@ -30,6 +37,14 @@ class User(db.Model):
     jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'),
                                 nullable=True)    
 
+class Batch(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'), nullable=False)
+    num_ballots = db.Column(db.Integer, nullable=False)
+
+    # JSON dictionary of all the field values that correspond to manifest_fields
+    field_values = db.Column(db.Text, nullable=False)
+        
 class TargetedContest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
@@ -59,21 +74,19 @@ class AuditBoard(db.Model):
     
 class Round(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-
-class JurisdictionRound(db.Model):
-    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'), nullable=False)
-    round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
-
-    __table_args__ = (
-        db.PrimaryKeyConstraint('jurisdiction_id', 'round_id'),
-    )
-
-    num_ballots_to_audit = db.Column(db.Integer, nullable=True)
+    started_at = db.Column(db.DateTime, nullable=False)
+    ended_at = db.Column(db.DateTime, nullable=True)
 
 class CVR(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'), nullable=False)
     round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
+    audit_board_id = db.Column(db.Integer, db.ForeignKey('audit_board.id'), nullable=False)
+    batch_id = db.Column(db.Integer, db.ForeignKey('batch.id'), nullable=False)
+    position = db.Column(db.Integer, nullable=False)
+    
+    audited_at = db.Column(db.DateTime, nullable=True)
+    marked_not_found_at = db.Column(db.DateTime, nullable=True)
 
 class CVRSelection(db.Model):
     cvr_id = db.Column(db.Integer, db.ForeignKey('CVR.id'), nullable=False)
@@ -81,4 +94,12 @@ class CVRSelection(db.Model):
     __table_args__ = (
         db.PrimaryKeyConstraint('cvr_id', 'contest_id'),
     )
-    choice_id = db.Column(db.Integer, db.ForeignKey('targeted_contest_choice.id'), nullable=False)
+
+    # choice can be null if ballot is blank
+    choice_id = db.Column(db.Integer, db.ForeignKey('targeted_contest_choice.id'), nullable=True)
+
+    # consensus should be False if there is no audit board consensus
+    consensus = db.Column(db.Boolean, nullable=False)
+
+    comment = db.Column(db.String(250), nullable=True)
+    
