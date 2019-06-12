@@ -6,6 +6,11 @@ import pytest
 
 import app
 
+def post_json(client, url, obj):
+    return client.post(url, headers = {
+        'Content-Type' : 'application/json'
+    }, data = json.dumps(obj))
+
 @pytest.fixture
 def client():
     db_fd, db_path = tempfile.mkstemp()
@@ -30,14 +35,22 @@ def test_audit_config(client):
     config = json.loads(rv.data)
     assert config['id'] == 1
 
-    rv = client.post('/admin/config', headers = {
-        'Content-Type': 'application/json'
-    }, data = json.dumps({
+    rv = post_json(client, '/admin/config', {
         'name': 'Test Election',
         'jurisdictions': ['A', 'Q', 'F']
-    }))
+    })
 
     rv = client.get('/admin/config')
     config = json.loads(rv.data)
     assert config['jurisdictions'] == ['A','Q','F']
     assert config['name'] == 'Test Election'
+
+def test_random_seed(client):
+    rv = client.get('/admin/random_seed')
+    assert json.loads(rv.data)['random_seed'] is None
+
+    rv = post_json(client, '/admin/random_seed', {'random_seed': 'foobar'})
+
+    rv = client.get('/admin/random_seed')
+    assert json.loads(rv.data)['random_seed'] == 'foobar'
+    
