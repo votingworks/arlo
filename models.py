@@ -30,9 +30,6 @@ class Jurisdiction(db.Model):
     # a JSON array of field names that are included in the CSV
     manifest_fields = db.Column(db.Text, nullable=True)
 
-    cvrs = db.Column(db.Text, nullable=True)
-    cvrs_uploaded_at = db.Column(db.DateTime(timezone=False), nullable=True)
-
 # users that log in
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

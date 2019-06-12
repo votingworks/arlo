@@ -45,6 +45,11 @@ def test_audit_config(client):
     assert config['jurisdictions'] == ['A','Q','F']
     assert config['name'] == 'Test Election'
 
+    rv = client.get('/admin/status')
+    jurisdictions = json.loads(rv.data)['jurisdictions']
+    assert len(jurisdictions) == 3
+    assert {'name': 'Q', 'manifest_uploaded_at' : None, 'manifest_errors' : None} in jurisdictions
+    
 def test_random_seed(client):
     rv = client.get('/admin/random_seed')
     assert json.loads(rv.data)['random_seed'] is None
@@ -53,4 +58,4 @@ def test_random_seed(client):
 
     rv = client.get('/admin/random_seed')
     assert json.loads(rv.data)['random_seed'] == 'foobar'
-    
+
