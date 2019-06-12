@@ -1,21 +1,25 @@
 
 from app import db
+from sqlalchemy.orm import relationship
 
 # there is usually only one of these
 # State is in here
 class Election(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), unique=True, nullable=False)
-    state = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(200), unique=True, nullable=True)
+    state = db.Column(db.String(100), nullable=True)
     election_date = db.Column(db.Date, nullable=True)
     election_type = db.Column(db.String(200), nullable=True)
     meeting_date = db.Column(db.Date, nullable=True)
     desired_risk_limit = db.Column(db.Integer, nullable=True)
     random_seed = db.Column(db.String(100), nullable=True)
+    jurisdictions = relationship('Jurisdiction', back_populates='election')
 
 # these are typically counties
 class Jurisdiction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
+    election = relationship('Election', back_populates = 'jurisdictions')
     name = db.Column(db.String(200), unique=True, nullable=False)
     manifest = db.Column(db.Text, nullable=True)
     manifest_uploaded_at = db.Column(db.DateTime(timezone=False), nullable=True)
