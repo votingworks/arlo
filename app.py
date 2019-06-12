@@ -47,9 +47,17 @@ def audit_config():
 def audit_setup():
     pass
 
-@app.route('/admin/randomseed')
+@app.route('/admin/random_seed', methods=["GET","POST"])
 def audit_randomseed():
-    pass
+    election = get_election()
+    if request.method == 'POST':
+        election_info = request.get_json()
+        election.random_seed = election_info['random_seed']
+        db.session.commit()
+
+    return jsonify(
+        random_seed = election.random_seed
+    )        
 
 # state of all the jurisdictions, round #, and contest status
 @app.route('/admin/status')
