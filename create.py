@@ -1,2 +1,3 @@
-from app import db
-db.create_all()
+from app import init_db
+init_db()
+
