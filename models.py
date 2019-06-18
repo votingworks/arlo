@@ -14,6 +14,8 @@ class Election(db.Model):
     desired_risk_limit = db.Column(db.Integer, nullable=True)
     random_seed = db.Column(db.String(100), nullable=True)
     jurisdictions = relationship('Jurisdiction', back_populates='election')
+    contests = relationship('TargetedContest', back_populates='election')
+    
 
 # these are typically counties
 class Jurisdiction(db.Model):
@@ -21,8 +23,12 @@ class Jurisdiction(db.Model):
     election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
     election = relationship('Election', back_populates = 'jurisdictions')
     name = db.Column(db.String(200), unique=True, nullable=False)
+
+
     manifest = db.Column(db.Text, nullable=True)
     manifest_uploaded_at = db.Column(db.DateTime(timezone=False), nullable=True)
+    manifest_num_ballots = db.Column(db.Integer)
+    manifest_num_batches = db.Column(db.Integer)
 
     # any error in the upload? null == none
     manifest_errors = db.Column(db.Text, nullable=True)
@@ -48,6 +54,8 @@ class Batch(db.Model):
         
 class TargetedContest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
+    election = relationship('Election', back_populates = 'contests')
     name = db.Column(db.String(200), nullable=False)
     ballots_cast = db.Column(db.Integer, nullable=False)
 
@@ -78,6 +86,31 @@ class Round(db.Model):
     started_at = db.Column(db.DateTime, nullable=False)
     ended_at = db.Column(db.DateTime, nullable=True)
 
+class RoundContest(db.Model):
+    round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
+    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id'), nullable=False)
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('round_id', 'contest_id'),
+    )
+
+    end_risk = db.Column(db.Integer)
+    end_p_value = db.Column(db.Float)
+    is_complete = db.Column(db.Boolean)
+
+    min_sample_size = db.Column(db.Integer)
+    chosen_sample_size = db.Column(db.Integer)
+
+class RoundContestResults(db.Model):
+    round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
+    targeted_contest_choice_id = db.Column(db.Integer, db.ForeignKey('targeted_contest_choice.id'), nullable=False)
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('round_id', 'targeted_contest_choice_id'),
+    )
+
+    result = db.Column(db.Integer)
+    
 class CVR(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'), nullable=False)
