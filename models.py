@@ -25,8 +25,8 @@ class Jurisdiction(db.Model):
     election = relationship('Election', back_populates = 'jurisdictions')
     name = db.Column(db.String(200), unique=True, nullable=False)
 
-
     manifest = db.Column(db.Text, nullable=True)
+    manifest_filename = db.Column(db.String(250), nullable=True)
     manifest_uploaded_at = db.Column(db.DateTime(timezone=False), nullable=True)
     manifest_num_ballots = db.Column(db.Integer)
     manifest_num_batches = db.Column(db.Integer)
@@ -36,6 +36,9 @@ class Jurisdiction(db.Model):
 
     # a JSON array of field names that are included in the CSV
     manifest_fields = db.Column(db.Text, nullable=True)
+
+    audit_boards = relationship('AuditBoard', back_populates='jurisdiction')
+    contests = relationship('TargetedContestJurisdiction', back_populates='jurisdiction')
 
 # users that log in
 class User(db.Model):
@@ -70,6 +73,7 @@ class TargetedContestChoice(db.Model):
 
 class TargetedContestJurisdiction(db.Model):
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
+    jurisdiction = relationship('Jurisdiction', back_populates= 'contests')
     jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
 
     __table_args__ = (
@@ -77,8 +81,10 @@ class TargetedContestJurisdiction(db.Model):
     )
 
 class AuditBoard(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(200), primary_key=True)
     jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
+    jurisdiction = relationship(Jurisdiction, back_populates='audit_boards')
+    
     member_1 = db.Column(db.String(200), nullable=True)
     member_1_affiliation = db.Column(db.String(200), nullable=True)
     member_2 = db.Column(db.String(200), nullable=True)
