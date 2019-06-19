@@ -15,6 +15,7 @@ class Election(db.Model):
     random_seed = db.Column(db.String(100), nullable=True)
     jurisdictions = relationship('Jurisdiction', back_populates='election')
     contests = relationship('TargetedContest', back_populates='election')
+    rounds = relationship('Round', back_populates='election')
     
 
 # these are typically counties
@@ -61,13 +62,13 @@ class TargetedContest(db.Model):
 
 class TargetedContestChoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id'), nullable=False)
+    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
     name = db.Column(db.String(200), nullable=False)
-    num_votes_for = db.Column(db.Integer, nullable=False)
+    num_votes = db.Column(db.Integer, nullable=False)
 
 class TargetedContestJurisdiction(db.Model):
-    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id'), nullable=False)
-    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'), nullable=False)
+    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
+    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
 
     __table_args__ = (
         db.PrimaryKeyConstraint('contest_id', 'jurisdiction_id'),
@@ -75,7 +76,7 @@ class TargetedContestJurisdiction(db.Model):
 
 class AuditBoard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'), nullable=False)
+    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
     member_1 = db.Column(db.String(200), nullable=True)
     member_1_affiliation = db.Column(db.String(200), nullable=True)
     member_2 = db.Column(db.String(200), nullable=True)
@@ -83,12 +84,14 @@ class AuditBoard(db.Model):
     
 class Round(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
+    election = relationship('Election', back_populates = 'rounds')
     started_at = db.Column(db.DateTime, nullable=False)
     ended_at = db.Column(db.DateTime, nullable=True)
 
 class RoundContest(db.Model):
-    round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
-    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id'), nullable=False)
+    round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
+    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
 
     __table_args__ = (
         db.PrimaryKeyConstraint('round_id', 'contest_id'),
@@ -102,8 +105,8 @@ class RoundContest(db.Model):
     chosen_sample_size = db.Column(db.Integer)
 
 class RoundContestResults(db.Model):
-    round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
-    targeted_contest_choice_id = db.Column(db.Integer, db.ForeignKey('targeted_contest_choice.id'), nullable=False)
+    round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
+    targeted_contest_choice_id = db.Column(db.Integer, db.ForeignKey('targeted_contest_choice.id', ondelete='cascade'), nullable=False)
 
     __table_args__ = (
         db.PrimaryKeyConstraint('round_id', 'targeted_contest_choice_id'),
