@@ -40,9 +40,26 @@ def audit_status():
         db.session.commit()
 
     return jsonify(
-        id=election.id,
-        name=election.name,
-        jurisdictions=[j.name for j in election.jurisdictions])
+        name = election.name,
+        riskLimit = election.risk_limit,
+        randomSeed = election.random_seed,
+        contests = [
+            {
+                "id": contest.id,
+                "name": contest.name,
+                "choices": [
+                    {
+                        "name": choice.name,
+                        "numVotes": choice.num_votes
+                    }
+                for choice in contest.choices]
+            }
+            for contest in election.contests],
+        jurisdictions=[
+            {
+                "name": j.name
+            }
+            for j in election.jurisdictions])
 
 @app.route('/audit/basic', methods=["POST"])
 def audit_basic_update():

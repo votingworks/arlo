@@ -60,4 +60,12 @@ def test_audit_basic_update(client):
             ]
         })
     
-                     
+    assert json.loads(rv.data)['status'] == "ok"
+
+    rv = client.get('/audit/status')
+    status = json.loads(rv.data)
+
+    assert status["randomSeed"] == "1234567890987654321"
+    assert len(status["contests"]) == 1
+    assert status["riskLimit"] == 10
+    assert status["name"] == "Primary 2019"
