@@ -69,3 +69,37 @@ def test_audit_basic_update(client):
     assert len(status["contests"]) == 1
     assert status["riskLimit"] == 10
     assert status["name"] == "Primary 2019"
+
+def test_audit_set_jurisdictions(client):
+    rv = post_json(
+        client, '/audit/jurisdictions',
+        {
+	    "jurisdictions": [
+		{
+		    "id": "adams-county",
+		    "name": "Adams County",
+		    "contests": ["contest-1"],
+                    "auditBoards": [
+			{
+			    "id": "audit-board-1",
+			    "members": []
+			},
+			{
+			    "id": "audit-board-2",
+			    "members": []
+			}
+		    ]
+		}
+	    ]
+        })
+
+    assert json.loads(rv.data)['status'] == 'ok'
+
+    rv = client.get('/audit/status')
+    status = json.loads(rv.data)
+
+    assert len(status["jurisdictions"]) == 1
+    jurisdiction = status["jurisdictions"][0]
+    assert jurisdiction["name"] == "Adams County"
+    assert jurisdiction["auditBoards"][1]["id"] == "audit-board-2"
+    assert jurisdiction["contests"] == ["contest-1"]

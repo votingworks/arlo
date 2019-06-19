@@ -27,17 +27,6 @@ def get_election():
 @app.route('/audit/status', methods=["GET"])
 def audit_status():
     election = get_election()
-    if request.method == 'POST':
-        election_info = request.get_json()
-        election.name = election_info['name']
-        db.session.query(Jurisdiction).filter_by(election_id = election.id).delete()
-        for jurisdiction in election_info['jurisdictions']:
-            j = Jurisdiction(
-                election_id = election.id,
-                name = jurisdiction)
-            db.session.add(j)
-
-        db.session.commit()
 
     return jsonify(
         name = election.name,
@@ -57,7 +46,21 @@ def audit_status():
             for contest in election.contests],
         jurisdictions=[
             {
-                "name": j.name
+                "id": j.id,
+                "name": j.name,
+                "contests": [c.contest_id for c in j.contests],
+                "auditBoards": [
+                    {
+                        "id": audit_board.id,
+                        "members": []
+                    }
+                    for audit_board in j.audit_boards],
+                "ballotManifest": {
+                    "filename": j.manifest_filename,
+                    "numBallots": j.manifest_num_ballots,
+                    "numBatches": j.manifest_num_batches,
+                    "uploadedAt": j.manifest_uploaded_at
+                }
             }
             for j in election.jurisdictions],
         rounds=[
@@ -112,7 +115,41 @@ def audit_basic_update():
     db.session.commit()
 
     return jsonify(status="ok")
+
+@app.route('/audit/jurisdictions', methods=["POST"])
+def jurisdictions_set():
+    election = get_election()
+    jurisdictions = request.get_json()['jurisdictions']
     
+    db.session.query(Jurisdiction).filter_by(election_id = election.id).delete()
+
+    for jurisdiction in jurisdictions:
+        jurisdiction_obj = Jurisdiction(
+            election_id = election.id,
+            id = jurisdiction['id'],
+            name = jurisdiction['name']
+        )
+        db.session.add(jurisdiction_obj)
+
+        for contest_id in jurisdiction["contests"]:
+            jurisdiction_contest = TargetedContestJurisdiction(
+                contest_id = contest_id,
+                jurisdiction_id = jurisdiction_obj.id
+            )
+            db.session.add(jurisdiction_contest)
+
+        for audit_board in jurisdiction["auditBoards"]:
+            audit_board_obj = AuditBoard(
+                id = audit_board["id"],
+                jurisdiction_id = jurisdiction_obj.id
+            )
+            db.session.add(audit_board_obj)
+        
+    db.session.commit()
+
+    return jsonify(status="ok")
+        
+
 @app.route('/jurisdiction/<jurisdiction_id>/manifest')
 def jurisdiction_manifest(jurisdiction_id):
     pass
