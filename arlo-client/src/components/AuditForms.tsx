@@ -259,11 +259,19 @@ const AuditForms = () => {
             <form>
                 <Section>
                     <PageSection>
-                        <SectionLabel>Audit Status: </SectionLabel>
+                        <SectionLabel>Audit Status: INCOMPLETE</SectionLabel>
                         <InputSection>
                             <InlineInput><InputLabel>Risk Limit: </InputLabel></InlineInput>
                             <InlineInput><InputLabel>Risk Measurement: </InputLabel></InlineInput>
                             <InlineInput><InputLabel>P-value: </InputLabel></InlineInput>
+                        </InputSection> 
+                        <SectionLabel>Ballot Retrieval List</SectionLabel>
+                        <InlineButton>Download Ballot Retrieval List for Round 2</InlineButton>
+                        <SectionLabel>Audited Results: Round 2</SectionLabel>
+                        <SectionDetail>Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 2</SectionDetail>
+                        <InputSection>
+                            <InlineInput><InputLabel>Jane Doe III</InputLabel><Field/></InlineInput>
+                            <InlineInput><InputLabel>Martin Van Buren</InputLabel><Field/></InlineInput>
                         </InputSection> 
                         <SmallInlineButton>Download Audit Report</SmallInlineButton>
                     </PageSection>
