@@ -52,15 +52,21 @@ def audit_basic_update():
     election.risk_limit = info['riskLimit']
     election.random_seed = info['randomSeed']
 
-    # remove existing contests
     db.session.query(TargetedContest).filter_by(election_id = election.id).delete()
 
     for contest in info['contests']:
-        c = TargetedContests(election_id = election.id,
+        contest_obj = TargetedContest(election_id = election.id,
                              id = contest['id'],
                              name = contest['name'],
                              total_ballots_cast = contest['totalBallotsCast'])
-        db.session.add(c)
+        db.session.add(contest_obj)
+
+        for choice in contest['choices']:
+            choice_obj = TargetedContestChoice(id = choice['id'],
+                                               contest_id = contest_obj.id,
+                                               name = choice['name'],
+                                               num_votes = choice['numVotes'])
+            db.session.add(choice_obj)
 
     db.session.commit()
     
