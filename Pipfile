@@ -10,6 +10,7 @@ flask = "*"
 flask-sqlalchemy = "*"
 pytest = "*"
 cryptorandom = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.7"
