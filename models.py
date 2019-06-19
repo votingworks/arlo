@@ -11,7 +11,7 @@ class Election(db.Model):
     election_date = db.Column(db.Date, nullable=True)
     election_type = db.Column(db.String(200), nullable=True)
     meeting_date = db.Column(db.Date, nullable=True)
-    desired_risk_limit = db.Column(db.Integer, nullable=True)
+    risk_limit = db.Column(db.Integer, nullable=True)
     random_seed = db.Column(db.String(100), nullable=True)
     jurisdictions = relationship('Jurisdiction', back_populates='election')
     contests = relationship('TargetedContest', back_populates='election')
@@ -57,12 +57,14 @@ class TargetedContest(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
     election = relationship('Election', back_populates = 'contests')
+    choices = relationship('TargetedContestChoice', back_populates='contest')
     name = db.Column(db.String(200), nullable=False)
     total_ballots_cast = db.Column(db.Integer, nullable=False)
 
 class TargetedContestChoice(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
+    contest = relationship('TargetedContest', back_populates='choices')    
     name = db.Column(db.String(200), nullable=False)
     num_votes = db.Column(db.Integer, nullable=False)
 
@@ -113,30 +115,4 @@ class RoundContestResults(db.Model):
     )
 
     result = db.Column(db.Integer)
-    
-class CVR(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'), nullable=False)
-    round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
-    audit_board_id = db.Column(db.Integer, db.ForeignKey('audit_board.id'), nullable=False)
-    batch_id = db.Column(db.Integer, db.ForeignKey('batch.id'), nullable=False)
-    position = db.Column(db.Integer, nullable=False)
-    
-    audited_at = db.Column(db.DateTime, nullable=True)
-    marked_not_found_at = db.Column(db.DateTime, nullable=True)
-
-class CVRSelection(db.Model):
-    cvr_id = db.Column(db.Integer, db.ForeignKey('CVR.id'), nullable=False)
-    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id'), nullable=False)
-    __table_args__ = (
-        db.PrimaryKeyConstraint('cvr_id', 'contest_id'),
-    )
-
-    # choice can be null if ballot is blank
-    choice_id = db.Column(db.Integer, db.ForeignKey('targeted_contest_choice.id'), nullable=True)
-
-    # consensus should be False if there is no audit board consensus
-    consensus = db.Column(db.Boolean, nullable=False)
-
-    comment = db.Column(db.String(250), nullable=True)
     
