@@ -1,25 +1,24 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import styled from 'styled-components';
+import AuditSetupPage from './pages/AuditSetupPage';
+
+const Main = styled.div`
+  height: 100%;
+  max-width: 35rem;
+  margin: auto auto !important;
+  display: block;
+  margin: 1.5rem 0 1rem;
+  font-size: 1.25rem;
+  overflow: scroll;
+`
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+   
+      <Main>
+        <AuditSetupPage></AuditSetupPage>
+      </Main>
   );
 }
 
