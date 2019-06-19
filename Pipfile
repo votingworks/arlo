@@ -11,6 +11,7 @@ flask-sqlalchemy = "*"
 pytest = "*"
 cryptorandom = "*"
 psycopg2 = "*"
+consistent_sampler = "*"
 
 [requires]
 python_version = "3.7"

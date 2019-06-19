@@ -1,6 +1,11 @@
 # Handles generating sample sizes and taking samples
 from cryptorandom.cryptorandom import SHA256
 import math
+import numpy as np
+from scipy import stats
+import consistent_sampler
+from joblib import Parallel, delayed
+import multiprocessing
 
 
 class Sampler:
@@ -31,6 +36,7 @@ class Sampler:
         self.risk_limit = risk_limit
         self.contests = contests
         self.margins = self.compute_margins()
+        self.num_cores =  multiprocessing.cpu_count()
 
 
     def compute_margins(self):
@@ -128,7 +134,26 @@ class Sampler:
                 asns[contest] = math.ceil((math.log(1/self.risk_limit) + (z_w / 2)) / ((p_w * z_w) + (p_r * z_l)))
 
         return asns
-    
+
+
+    def simulate_bravo(self, num_ballots, p_w, iterations=10000):
+        """
+        Runs <iterations> trials of random elections with <num_ballots> ballots
+        for contest with diluted margin p_w. Returns sample sizes of all trials.
+
+        Input:
+            num_ballots - the number of ballots in the contest
+            p_w - the fraction of vote share for the winner 
+            iterations - the number of trials to run
+
+        Output:
+            trials - an array of sample sizes
+        """
+
+        np.random.seed(self.prng.randint(0, 2**32, 1)[0])
+
+        return Parallel(n_jobs=self.num_cores)(delayed(run_bravo_trial)(p_w, num_ballots, self.risk_limit) \
+                    for i in range(iterations))
 
     
     def get_sample_sizes(self):
@@ -149,6 +174,26 @@ class Sampler:
                             ...
                         }
         """
+        quants = [.7, .8, .9]
+
+        samples = {}
+
+        margins = self.compute_margins()
+        asns = self.get_asns()
+        for contest in self.contests:
+            p_w = margins[contest]['p_w']
+            num_ballots = self.contests[contest]['ballots']
+            
+            trials = sorted(self.simulate_bravo(num_ballots, p_w))
+
+            
+            samples[contest] = {}
+            samples[contest]['asn'] = asns[contest]   
+            for quant in quants: 
+                quant_str = str(int(100*quant)) + '%'
+                samples[contest][quant_str] = np.quantile(trials, quant)
+
+        return samples
 
 
     def draw_sample(self, manifest, sample_size):
@@ -202,3 +247,23 @@ class Sampler:
 
 
 
+def run_bravo_trial(p_w, num_ballots, risk_limit):
+    """
+    A paralellizable trial function for bravo simulations
+    """
+
+    test = 1
+    c_samp = 0
+    votes = stats.binom.rvs(1, p_w, size=num_ballots)
+
+    for vote in votes:
+        if test >= 1/risk_limit:
+            break
+        if vote:
+            test = test*p_w/.5
+        else:
+            test = test*(1 - p_w)/.5
+
+        c_samp += 1
+
+    return c_samp
