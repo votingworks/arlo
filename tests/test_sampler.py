@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 
 from sampler import Sampler
 
@@ -63,8 +64,9 @@ def test_asn(sampler):
     # Test ASN computation
 
     true_asns = {
-            'test1': 119,
-            'test2': 22,
+        'test1': 119,
+        'test2': 22,
+        'test3': 0,
     }
 
     computed_asns = sampler.get_asns()
@@ -74,9 +76,47 @@ def test_asn(sampler):
 
         assert expected == computed, 'asn failed: got {}, expected {}'.format(computed, expected)
 
+def test_simulate_bravo(sampler):
+    # Test bravo sample simulator
+
+    expected_mean1 = 118
+    computed_mean1 = np.mean(sampler.simulate_bravo(10000, .6))
+    delta = expected_mean1 - computed_mean1
+    assert delta > -5, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
+    assert delta < 5, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
+
 def test_get_sample_sizes(sampler):
     # Test retrieving menu of sample sizes
-    assert False, 'not implemented'
+
+    true_sample_sizes = {
+        'test1': {
+            'asn': 119,
+            '70%': 130,
+            '80%': 170,
+            '90%': 243,
+        }, 
+        'test2': {
+            'asn': 22,
+            '70%': 19,
+            '80%': 24,
+            '90%': 38,
+        },
+        'test3': {
+            'asn': 0,
+            '70%': 0,
+            '80%': 0,
+            '90%': 0,
+        },
+    }
+
+    computed_samples = sampler.get_sample_sizes()
+    for contest in computed_samples:
+        for key in true_sample_sizes[contest]:
+            expected =  true_sample_sizes[contest][key]
+            computed = computed_samples[contest][key]
+            diff = expected - computed
+            assert abs(diff) < 10 , '{} sample size for {} failed: got {}, expected {}'.format(key, contest, computed, expected)
+
 
 
 def test_draw_sample(sampler):
