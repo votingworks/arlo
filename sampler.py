@@ -1,5 +1,6 @@
 # Handles generating sample sizes and taking samples
 from cryptorandom.cryptorandom import SHA256
+import math
 
 
 class Sampler:
@@ -12,12 +13,13 @@ class Sampler:
         Inputs:
             seed - seed used to initialized random functions
             risk_limit - the risk-limit to compute sample sizes from
-            contest - dictionary of targeted contests. Maps:
+            contests - dictionary of targeted contests. Maps:
                         {
                             contest: {
                                 candidate1: votes,
                                 candidate2: votes,
                                 ...
+                                'ballots': ballots # total ballots cast
                             }
                             ...
                         }
@@ -28,6 +30,105 @@ class Sampler:
         self.prng = SHA256(seed)
         self.risk_limit = risk_limit
         self.contests = contests
+        self.margins = self.compute_margins()
+
+
+    def compute_margins(self):
+        """
+        Method that computes all margins for the contests in <contests>, and 
+        returns a mapping of contest name to margin info. 
+
+        Input:
+            contests - dictionary of targeted contests. Maps:
+                        {
+                            contest: {
+                                candidate1: votes,
+                                candidate2: votes,
+                                ...
+                                'ballots': ballots
+                            }
+                            ...
+                        }
+        Output:
+            margins - dictionary of diluted margin info:
+                        {
+                            contest: {
+                                'p_w': p_w # The proportion of votes for winner
+                                'p_r': p_r # proportion of votes for runner up
+                                
+                            }
+                        }
+
+        """
+
+        margins = {}
+        for contest in self.contests:
+            winner = ''
+            win_votes = 0
+            runner_up = ''
+            rup_votes = 0
+
+            ballots = self.contests[contest]['ballots']
+
+            # Find the winner and runner up
+            for cand in self.contests[contest]:
+                if cand == 'ballots':
+                    continue
+                
+                votes = self.contests[contest][cand]
+                if votes > win_votes:
+                    runner_up = winner
+                    rup_votes = win_votes
+
+                    winner = cand
+                    win_votes = votes
+                elif votes > rup_votes:
+                    runner_up = cand
+                    rup_votes = votes
+
+            # Find the diluted margins and margin of valid votes for winner
+            v_wl = win_votes + rup_votes
+            margins[contest] = {
+                'p_w': win_votes/v_wl,
+                'p_r': rup_votes/v_wl,
+                's_w': win_votes/ballots,
+            }
+
+        return margins
+
+
+    def get_asns(self):
+        """
+        Returns the ASN for a BRAVO audit of each contest in  self.contests.
+
+        Input:
+            None
+
+        Output:
+            ASNs - dict of computed ASN for each contest:
+                {
+                    contest1: asn1,
+                    contest2: asn2,
+                    ...
+                }
+        """
+        asns = {}
+        margins = self.compute_margins()
+        for contest in self.contests:
+            p_w = margins[contest]['p_w']
+            p_r = margins[contest]['p_r']
+            s_w = margins[contest]['s_w']
+
+            if p_w == 1:
+                # Handle single-candidate or crazy landslides
+                asns[contest] = 0
+            else: 
+                z_w = math.log(2 * s_w)
+                z_l = math.log(2 - 2 * s_w)
+                asns[contest] = math.ceil((math.log(1/self.risk_limit) + (z_w / 2)) / ((p_w * z_w) + (p_r * z_l)))
+
+        return asns
+    
 
     
     def get_sample_sizes(self):
@@ -74,6 +175,9 @@ class Sampler:
 
         """
 
+        # TODO: Use Rivest's consistent-sampler
+
+
     def compute_risk(self, contest, sample_results):
         """
         Computes the risk-value of <sample_results> based on results in <contest>.
@@ -88,9 +192,11 @@ class Sampler:
                     }
 
         Outputs:
-            risk - the risk-calculation of the election result based on the sample
+            risk - the p-value of the hypotheses that the election result is 
+                   correct based on the sample. 
         """
-
+        
+        # TODO: also a risk-calculation
 
 
 
