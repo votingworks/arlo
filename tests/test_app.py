@@ -30,32 +30,34 @@ def test_index(client):
     rv = client.get('/')
     assert b'React App' in rv.data
 
-def test_audit_config(client):
-    rv = client.get('/admin/config')
-    config = json.loads(rv.data)
-    assert config['id'] == 1
+def test_audit_basic_update(client):
+    rv = post_json(
+        client, '/audit/basic',
+        {
+            "name" : "Primary 2019",
+            "riskLimit" : 10,
+            "randomSeed": "1234567890987654321",
 
-    rv = post_json(client, '/admin/config', {
-        'name': 'Test Election',
-        'jurisdictions': ['A', 'Q', 'F']
-    })
+            "contests" : [
+                {
+                    "id": "contest-1",
+                    "name": "Contest 1",
+                    "choices": [
+                        {
+                            "id": "candidate-1",
+                            "name": "Candidate 1",
+                            "numVotes": 42
+                        },
+                        {
+                            "id": "candidate-2",
+                            "name": "Candidate 2",
+                            "numVotes": 19
+                        }                        
+                    ],
 
-    rv = client.get('/admin/config')
-    config = json.loads(rv.data)
-    assert config['jurisdictions'] == ['A','Q','F']
-    assert config['name'] == 'Test Election'
-
-    rv = client.get('/admin/status')
-    jurisdictions = json.loads(rv.data)['jurisdictions']
-    assert len(jurisdictions) == 3
-    assert {'name': 'Q', 'manifest_uploaded_at' : None, 'manifest_errors' : None} in jurisdictions
+                    "totalBallotsCast": 85
+                }
+            ]
+        })
     
-def test_random_seed(client):
-    rv = client.get('/admin/random_seed')
-    assert json.loads(rv.data)['random_seed'] is None
-
-    rv = post_json(client, '/admin/random_seed', {'random_seed': 'foobar'})
-
-    rv = client.get('/admin/random_seed')
-    assert json.loads(rv.data)['random_seed'] == 'foobar'
-
+                     
