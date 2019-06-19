@@ -59,7 +59,31 @@ def audit_status():
             {
                 "name": j.name
             }
-            for j in election.jurisdictions])
+            for j in election.jurisdictions],
+        rounds=[
+            {
+                "startedAt": round.started_at,
+                "endedAt": round.ended_at,
+                "contests": [
+                    {
+                        "id": round_contest.contest_id,
+                        "endMeasurements": {
+                            "risk": round_contest.end_risk,
+                            "pvalue": round_contest.end_p_value,
+                            "isComplete": round_contest.is_complete
+                        },
+                        "results": dict([
+                            [result.contest.id, result.result]
+                            for result in round_contest.results]),
+                        "minSampleSize": round_contest.min_sample_size,
+                        "chosenSampleSize": round_contest.chosen_sample_size,
+                    }
+                    for round_contest in round.round_contests
+                ]
+            }
+            for round in election.rounds
+        ]
+    )
 
 @app.route('/audit/basic', methods=["POST"])
 def audit_basic_update():
