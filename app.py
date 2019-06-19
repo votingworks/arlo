@@ -69,6 +69,8 @@ def audit_basic_update():
             db.session.add(choice_obj)
 
     db.session.commit()
+
+    return jsonify(status="ok")
     
 @app.route('/jurisdiction/<jurisdiction_id>/manifest')
 def jurisdiction_manifest(jurisdiction_id):

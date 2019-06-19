@@ -20,7 +20,7 @@ class Election(db.Model):
 
 # these are typically counties
 class Jurisdiction(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(200), primary_key=True)
     election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
     election = relationship('Election', back_populates = 'jurisdictions')
     name = db.Column(db.String(200), unique=True, nullable=False)
@@ -42,33 +42,33 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
     election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
-    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'),
+    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id'),
                                 nullable=True)    
 
 class Batch(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id'), nullable=False)
+    id = db.Column(db.String(200), primary_key=True)
+    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id'), nullable=False)
     num_ballots = db.Column(db.Integer, nullable=False)
 
     # JSON dictionary of all the field values that correspond to manifest_fields
     field_values = db.Column(db.Text, nullable=False)
         
 class TargetedContest(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(200), primary_key=True)
     election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
     election = relationship('Election', back_populates = 'contests')
     name = db.Column(db.String(200), nullable=False)
-    ballots_cast = db.Column(db.Integer, nullable=False)
+    total_ballots_cast = db.Column(db.Integer, nullable=False)
 
 class TargetedContestChoice(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
+    id = db.Column(db.String(200), primary_key=True)
+    contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
     name = db.Column(db.String(200), nullable=False)
     num_votes = db.Column(db.Integer, nullable=False)
 
 class TargetedContestJurisdiction(db.Model):
-    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
-    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
+    contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
+    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
 
     __table_args__ = (
         db.PrimaryKeyConstraint('contest_id', 'jurisdiction_id'),
@@ -76,7 +76,7 @@ class TargetedContestJurisdiction(db.Model):
 
 class AuditBoard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    jurisdiction_id = db.Column(db.Integer, db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
+    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
     member_1 = db.Column(db.String(200), nullable=True)
     member_1_affiliation = db.Column(db.String(200), nullable=True)
     member_2 = db.Column(db.String(200), nullable=True)
@@ -91,7 +91,7 @@ class Round(db.Model):
 
 class RoundContest(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
-    contest_id = db.Column(db.Integer, db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
+    contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
 
     __table_args__ = (
         db.PrimaryKeyConstraint('round_id', 'contest_id'),
@@ -106,7 +106,7 @@ class RoundContest(db.Model):
 
 class RoundContestResults(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
-    targeted_contest_choice_id = db.Column(db.Integer, db.ForeignKey('targeted_contest_choice.id', ondelete='cascade'), nullable=False)
+    targeted_contest_choice_id = db.Column(db.String(200), db.ForeignKey('targeted_contest_choice.id', ondelete='cascade'), nullable=False)
 
     __table_args__ = (
         db.PrimaryKeyConstraint('round_id', 'targeted_contest_choice_id'),
