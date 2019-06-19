@@ -1,33 +1,164 @@
-.App {
-  text-align: center;
+/* Reset */
+
+html {
+  box-sizing: border-box;
+  line-height: 1;
+  user-select: none;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+table {
+  border-collapse: collapse;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+fieldset {
+  margin: 0;
+  border: none;
+  padding: 0;
 }
 
-.App-link {
-  color: #61dafb;
+legend {
+  display: block;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+:link,
+:visited {
+  color: rgb(0, 0, 238);
+}
+
+:focus {
+  outline: rgb(77, 144, 254) dashed 0.25rem;
+}
+
+/* Foundational */
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+@media print {
+  html,
+  body,
+  #root {
+    height: auto;
+    overflow: visible;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+/* Typography */
+/* stylelint-disable-next-line no-duplicate-selectors */
+html {
+  background: #edeff0;
+  color: #263238;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  font-size: 24px; /* Magic number, must synced with JavaScript global defaults */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+@media print {
+  html {
+    background: #ffffff;
+
+    /* Adjust printed ballot font-size */
+    font-size: 16px !important; /* stylelint-disable-line declaration-no-important */
   }
+}
+
+/* Accessibility Utilities */
+.visually-hidden {
+  position: absolute !important; /* stylelint-disable-line declaration-no-important */
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+}
+.visually-hidden a:focus,
+.visually-hidden input:focus,
+.visually-hidden button:focus {
+  position: static;
+  width: auto;
+  height: auto;
+}
+
+/* Utilities */
+.print-only {
+  display: none;
+}
+@media print {
+  .print-only {
+    display: block;
+  }
+  .no-print {
+    display: none;
+  }
+}
+
+/* React Simple Keyboard */
+.simple-keyboard.hg-theme-default.vs-simple-keyboard {
+  border-radius: 0;
+  background-color: rgb(211, 211, 211);
+  padding: 0;
+}
+.simple-keyboard.vs-simple-keyboard .hg-button {
+  flex: 1;
+  white-space: nowrap;
+}
+.simple-keyboard.vs-simple-keyboard .hg-button-space {
+  flex: 3;
+}
+.simple-keyboard.vs-simple-keyboard .hg-button-bksp {
+  flex: 2;
+}
+.simple-keyboard.vs-simple-keyboard .hg-row:nth-child(2) {
+  margin-right: 0;
+  margin-left: 0.4rem;
+}
+.simple-keyboard.vs-simple-keyboard .hg-row:nth-child(3) {
+  margin-right: 0.5rem;
+  margin-left: 0.9rem;
+}
+@media (min-width: 480px) {
+  .simple-keyboard.vs-simple-keyboard .hg-button-space {
+    flex: 2;
+  }
+  .simple-keyboard.vs-simple-keyboard .hg-button-bksp {
+    flex: 1;
+  }
+  .simple-keyboard.vs-simple-keyboard .hg-row:nth-child(1) {
+    margin-right: 0.4rem;
+    margin-left: 0;
+  }
+  .simple-keyboard.vs-simple-keyboard .hg-row:nth-child(2) {
+    margin-right: 0;
+    margin-left: 0.75rem;
+  }
+  .simple-keyboard.vs-simple-keyboard .hg-row:nth-child(3) {
+    margin-right: 1.4rem;
+    margin-left: 1.7rem;
+  }
+  .simple-keyboard.vs-simple-keyboard .hg-row:nth-child(4) {
+    margin-right: 0;
+    margin-left: 2.7rem;
+  }
+}
+
+@media print {
+  /* stylelint-disable-next-line selector-class-pattern */
+  html body .cvox_indicator_container {
+    /* Extra specificity/!important ensure this rule is followed. */
+    display: none !important; /* stylelint-disable-line declaration-no-important */
+  }
+}
+
+/* Adjust printed ballot paper settings */
+@page {
+  margin: 0.375in;
+  size: letter portrait;
 }
