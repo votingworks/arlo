@@ -90,10 +90,13 @@ class Round(db.Model):
     election = relationship('Election', back_populates = 'rounds')
     started_at = db.Column(db.DateTime, nullable=False)
     ended_at = db.Column(db.DateTime, nullable=True)
+    round_contests = relationship('RoundContest', back_populates='round')        
 
 class RoundContest(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
+    round = relationship('Round', back_populates='round_contests')
+    results = relationship('RoundContestResults')
 
     __table_args__ = (
         db.PrimaryKeyConstraint('round_id', 'contest_id'),
@@ -108,10 +111,14 @@ class RoundContest(db.Model):
 
 class RoundContestResults(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
+    contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
+    contest = relationship('TargetedContest')
+    round_contest = relationship('RoundContest', foreign_keys=[round_id, contest_id], back_populates = 'results')
     targeted_contest_choice_id = db.Column(db.String(200), db.ForeignKey('targeted_contest_choice.id', ondelete='cascade'), nullable=False)
 
     __table_args__ = (
         db.PrimaryKeyConstraint('round_id', 'targeted_contest_choice_id'),
+        db.ForeignKeyConstraint(['round_id', 'contest_id'], ['round_contest.round_id', 'round_contest.contest_id'])
     )
 
     result = db.Column(db.Integer)
