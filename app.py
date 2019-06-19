@@ -24,8 +24,8 @@ def get_election():
 
 # get/set audit config
 # state and jurisdictions[]
-@app.route('/admin/config', methods=["GET","POST"])
-def audit_config():
+@app.route('/audit/status', methods=["GET"])
+def audit_status():
     election = get_election()
     if request.method == 'POST':
         election_info = request.get_json()
@@ -44,35 +44,26 @@ def audit_config():
         name=election.name,
         jurisdictions=[j.name for j in election.jurisdictions])
 
-@app.route('/admin/setup')
-def audit_setup():
-    pass
-
-@app.route('/admin/random_seed', methods=["GET","POST"])
-def audit_randomseed():
+@app.route('/audit/basic', methods=["POST"])
+def audit_basic_update():
     election = get_election()
-    if request.method == 'POST':
-        election_info = request.get_json()
-        election.random_seed = election_info['random_seed']
-        db.session.commit()
+    info = request.get_json()
+    election.name = info['name']
+    election.risk_limit = info['riskLimit']
+    election.random_seed = info['randomSeed']
 
-    return jsonify(
-        random_seed = election.random_seed
-    )        
+    # remove existing contests
+    db.session.query(TargetedContest).filter_by(election_id = election.id).delete()
 
-# state of all the jurisdictions, round #, and contest status
-@app.route('/admin/status', methods=["GET"])
-def audit_status():
-    election = get_election()
-    jurisdictions = db.session.query(Jurisdiction).filter_by(election_id = election.id).all()
-    return jsonify(
-        jurisdictions = [{
-            'name' : j.name,
-            'manifest_uploaded_at': j.manifest_uploaded_at,
-            'manifest_errors': j.manifest_errors
-        } for j in jurisdictions]
-    )
+    for contest in info['contests']:
+        c = TargetedContests(election_id = election.id,
+                             id = contest['id'],
+                             name = contest['name'],
+                             total_ballots_cast = contest['totalBallotsCast'])
+        db.session.add(c)
 
+    db.session.commit()
+    
 @app.route('/jurisdiction/<jurisdiction_id>/manifest')
 def jurisdiction_manifest(jurisdiction_id):
     pass
