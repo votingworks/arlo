@@ -12,6 +12,7 @@ pytest = "*"
 cryptorandom = "*"
 psycopg2 = "*"
 consistent_sampler = "*"
+joblib = "*"
 
 [requires]
 python_version = "3.7"
