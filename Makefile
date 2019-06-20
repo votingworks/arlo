@@ -2,6 +2,7 @@
 install:
 	pipenv install
 	yarn --cwd arlo-client install
+	yarn --cwd arlo-client build
 
 resetdb-sqlite:
 	rm -f arlo.db
