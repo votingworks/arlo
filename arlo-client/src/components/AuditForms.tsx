@@ -123,20 +123,7 @@ const SmallInlineButton = styled.button`
 
 const AuditForms = () => {
 
-    const renderSelectMenu = () => {
-
-        let obj = {
-            array: [] as number[]
-        };
-    
-        for (var i=0; i < 100; i++){
-            obj.array[i] = i+1;
-        };
-
-    }
-
     const parseFile = () => {}
-
     
     return (
         <React.Fragment>
