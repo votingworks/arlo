@@ -22,8 +22,11 @@ def sampler():
         'test3': {
             'cand1': 100,
             'ballots': 100
-        }
-
+        },
+        'test4': {
+            'cand1': 100,
+            'ballots': 100
+        },
     }
 
     yield Sampler(seed, risk_limit, contests)
@@ -42,6 +45,11 @@ def test_compute_margins(sampler):
             's_w': 2/3,
         },
         'test3': {
+            'p_w' : 1,
+            'p_r' : 0,
+            's_w' : 1
+        },
+        'test4': {
             'p_w' : 1,
             'p_r' : 0,
             's_w' : 1
@@ -70,6 +78,7 @@ def test_asn(sampler):
         'test1': 119,
         'test2': 22,
         'test3': 0,
+        'test4': 0,
     }
 
     computed_asns = sampler.get_asns()
@@ -106,6 +115,12 @@ def test_get_sample_sizes(sampler):
             '90%': 38,
         },
         'test3': {
+            'asn': 0,
+            '70%': 0,
+            '80%': 0,
+            '90%': 0,
+        },
+        'test4': {
             'asn': 0,
             '70%': 0,
             '80%': 0,
@@ -171,6 +186,14 @@ def test_compute_risk(sampler):
         'test1': .07,
         'test2': 1.11,
         'test3': 1,
+        'test4': 0,
+    }
+
+    expected_decisions = {
+        'test1': True,
+        'test2': False,
+        'test3': False,
+        'test4': True,
     }
 
     samples = {
@@ -185,13 +208,21 @@ def test_compute_risk(sampler):
         },
         'test3': {
             'cand1': 0
+        },
+        'test4': {
+            'cand1': 100
         }
     }
 
     for contest, sample in samples.items():
-        T = sampler.compute_risk(contest, sample)
-        diff = T - expected_Ts[contest]
+        T, decision = sampler.compute_risk(contest, sample)
+        expected_T = expected_Ts[contest]
+        diff = T - expected_T 
         assert abs(diff) < .01, 'Risk compute for {} failed! Expected {}, got {}'.format(contest, expected_Ts[contest], T)
+        
+        expected_decision = expected_decisions[contest]
+        assert decision == expected_decision, 'Risk decision for {} failed! Expected {}, got{}'.format(contest, expected_decision, decision)
+        
         
 
 

@@ -261,6 +261,7 @@ class Sampler:
         Outputs:
             risk - the p-value of the hypotheses that the election result is 
                    correct based on the sample. 
+            confirmed - a boolean indicating whether the audit can stop
         """
         
         # TODO: also a risk-calculation that isn't a p-value?
@@ -273,7 +274,7 @@ class Sampler:
             elif cand == margins['runner_up']:
                 T *= (2 - 2*margins['s_w'])**(votes)
 
-        return 1/T
+        return 1/T, 1/T < self.risk_limit
 
 
 
