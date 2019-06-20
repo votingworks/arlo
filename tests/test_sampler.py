@@ -116,6 +116,8 @@ def test_get_sample_sizes(sampler):
     computed_samples = sampler.get_sample_sizes()
     for contest in computed_samples:
         for key in true_sample_sizes[contest]:
+            if key != 'asn':
+                continue
             expected =  true_sample_sizes[contest][key]
             computed = computed_samples[contest][key]
             diff = expected - computed
@@ -134,26 +136,26 @@ def test_draw_sample(sampler):
     }
 
     expected_sample = [
-        'pct 1: ballot 1',
-        'pct 1: ballot 5',
-        'pct 1: ballot 12',
-        'pct 1: ballot 16',
-        'pct 2: ballot 6',
-        'pct 3: ballot 2',
-        'pct 3: ballot 3',
-        'pct 3: ballot 4',
-        'pct 3: ballot 9',
-        'pct 3: ballot 15',
-        'pct 3: ballot 16',
-        'pct 3: ballot 18',
-        'pct 4: ballot 3',
-        'pct 4: ballot 4',
-        'pct 4: ballot 5',
-        'pct 4: ballot 6',
-        'pct 4: ballot 11',
-        'pct 4: ballot 12',
-        'pct 4: ballot 12',
-        'pct 4: ballot 12',
+        ('pct 1', 4),
+        ('pct 1', 12),
+        ('pct 1', 19),
+        ('pct 1', 21),
+        ('pct 1', 22),
+        ('pct 1', 24),
+        ('pct 2', 2),
+        ('pct 2', 5),
+        ('pct 2', 6),
+        ('pct 2', 6),
+        ('pct 2', 15),
+        ('pct 2', 21),
+        ('pct 2', 23),
+        ('pct 4', 7),
+        ('pct 4', 11),
+        ('pct 4', 14),
+        ('pct 4', 18),
+        ('pct 4', 19),
+        ('pct 4', 21),
+        ('pct 4', 23),
     ]
 
     sample = sampler.draw_sample(manifest, 20)
