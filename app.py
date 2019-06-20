@@ -222,8 +222,8 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_id):
     return response
 
 @app.route('/jurisdiction/<jurisdiction_id>/<round_id>/results', methods=["POST"])
-def jurisdiction_results(jurisdiction_id):
-    pass
+def jurisdiction_results(jurisdiction_id, round_id):
+    round_contest = RoundContest.query()
 
 @app.route('/audit/report', methods=["GET"])
 def audit_report():
