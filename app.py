@@ -1,5 +1,5 @@
 import os, datetime, csv, io
-from flask import Flask, send_from_directory, jsonify, request
+from flask import Flask, send_from_directory, jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, static_folder='arlo-client/build/')
@@ -206,12 +206,23 @@ def jurisdiction_manifest(jurisdiction_id):
     
     return jsonify(status="ok")
 
-@app.route('/jurisdiction/<jurisdiction_id>/results', methods=["POST"])
-def jurisdiction_results(jurisdiction_id):
-    pass
+@app.route('/jurisdiction/<jurisdiction_id>/<round_id>/retrieval-list', methods=["GET"])
+def jurisdiction_retrieval_list(jurisdiction_id, round_id):
+    csv_io = io.StringIO()
+    retrieval_list_writer = csv.writer(csv_io)
+    retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Times Selected","Audit Board"])
 
-@app.route('/jurisdiction/<jurisdiction_id>/retrieval-list', methods=["GET"])
-def jurisdiction_retrieval_list(jurisdiction_id):
+    ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = int(round_id)).order_by('batch_id', 'ballot_position').all()
+
+    for ballot in ballots:
+        retrieval_list_writer.writerow([ballot.batch_id, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, 1, "don't know yet"])
+
+    response = Response(csv_io.getvalue())
+    response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-%s-%s.csv"' % (jurisdiction_id, round_id)
+    return response
+
+@app.route('/jurisdiction/<jurisdiction_id>/<round_id>/results', methods=["POST"])
+def jurisdiction_results(jurisdiction_id):
     pass
 
 @app.route('/audit/report', methods=["GET"])
