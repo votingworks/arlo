@@ -156,6 +156,7 @@ class Sampler:
         """
         # TODO We should probably be using more like 10**7 iterations
 
+        # This is a hack for efficient sample generation w/ repeatability 
         np.random.seed(self.prng.randint(0, 2**32, 1)[0])
 
         return Parallel(n_jobs=self.num_cores)(delayed(run_bravo_trial)(p_w, num_ballots, self.risk_limit) \
@@ -263,8 +264,8 @@ class Sampler:
                    correct based on the sample. 
         """
         
+        # TODO: also a risk-calculation that isn't a p-value?
 
-        # TODO: also a risk-calculation?
         margins = self.compute_margins()[contest]
         T = 1
         for cand, votes in sample_results.items():
@@ -274,9 +275,6 @@ class Sampler:
                 T *= (2 - 2*margins['s_w'])**(votes)
 
         return 1/T
-
-
-
 
 
 
