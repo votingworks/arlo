@@ -124,7 +124,7 @@ class Sampler:
                 }
         """
         asns = {}
-        margins = self.compute_margins()
+        margins = self.margins
         for contest in self.contests:
             p_w = margins[contest]['p_w']
             p_r = margins[contest]['p_r']
@@ -188,7 +188,7 @@ class Sampler:
 
         samples = {}
 
-        margins = self.compute_margins()
+        margins = self.margins
         asns = self.get_asns()
         for contest in self.contests:
             p_w = margins[contest]['p_w']
@@ -266,7 +266,7 @@ class Sampler:
         
         # TODO: also a risk-calculation that isn't a p-value?
 
-        margins = self.compute_margins()[contest]
+        margins = self.margins[contest]
         T = 1
         for cand, votes in sample_results.items():
             if cand == margins['winner']:
@@ -288,7 +288,6 @@ def run_bravo_trial(p_w, num_ballots, risk_limit):
     c_samp = 0
     votes = stats.binom.rvs(1, p_w, size=num_ballots)
 
-    # TODO Vectorize this
     for vote in votes:
         if test >= 1/risk_limit:
             break

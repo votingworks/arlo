@@ -50,14 +50,17 @@ def test_compute_margins(sampler):
 
     margins = sampler.compute_margins()
     for contest in margins:
-        expected =  true_margins[contest]['p_w']
-        computed = margins[contest]['p_w']
+        true_margins_for_contest = true_margins[contest]
+        computed_margins_for_contest = margins[contest]
+
+        expected =  true_margins_for_contest['p_w']
+        computed = computed_margins_for_contest['p_w']
         assert expected == computed, 'p_w failed: got {}, expected {}'.format(computed, expected)
-        expected =  true_margins[contest]['p_r']
-        computed = margins[contest]['p_r']
+        expected =  true_margins_for_contest['p_r']
+        computed = computed_margins_for_contest['p_r']
         assert expected == computed, 'p_r failed: got {}, expected {}'.format(computed, expected)
-        expected =  true_margins[contest]['s_w']
-        computed = margins[contest]['s_w']
+        expected =  true_margins_for_contest['s_w']
+        computed = computed_margins_for_contest['s_w']
         assert expected == computed, 's_w failed: got {}, expected {}'.format(computed, expected)
 
 def test_asn(sampler):
