@@ -174,6 +174,9 @@ class Sampler:
                             ...
                         }
         """
+        # TODO Note this treats each contest separately instead of together
+
+        # TODO Do we want these hard-coded or parameterized?
         quants = [.7, .8, .9]
 
         samples = {}
@@ -184,6 +187,7 @@ class Sampler:
             p_w = margins[contest]['p_w']
             num_ballots = self.contests[contest]['ballots']
             
+            # TODO is there a way to do this that isn't simulation?
             trials = sorted(self.simulate_bravo(num_ballots, p_w))
 
             
@@ -219,8 +223,20 @@ class Sampler:
                     ]
 
         """
+        ballots = []
+        # First build a faux list of ballots
+        for batch in manifest:
+            for i in range(manifest[batch]):
+                ballots.append(batch + ': ballot ' +  str(i))
 
-        # TODO: Use Rivest's consistent-sampler
+        sample =  list(consistent_sampler.sampler(ballots, 
+                                                  seed=self.seed, 
+                                                  take=sample_size, 
+                                                  with_replacement=True,
+                                                  output='id'))
+        
+        # TODO this is sort of a hack to get the list sorted right. Maybe it's okay?
+        return sorted(sorted(sample, key=lambda item: int(item.split(' ')[-1])), key=lambda item: item.split(':')[0])
 
 
     def compute_risk(self, contest, sample_results):
@@ -252,10 +268,12 @@ def run_bravo_trial(p_w, num_ballots, risk_limit):
     A paralellizable trial function for bravo simulations
     """
 
+    # TODO this is kinda gross, but it's probably better than lamda-izing it
     test = 1
     c_samp = 0
     votes = stats.binom.rvs(1, p_w, size=num_ballots)
 
+    # TODO Vectorize this
     for vote in votes:
         if test >= 1/risk_limit:
             break
