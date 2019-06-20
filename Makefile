@@ -1,4 +1,6 @@
 
+install:
+	pipenv install
 
 resetdb-sqlite:
 	rm -f arlo.db
