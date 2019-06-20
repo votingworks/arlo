@@ -29,6 +29,8 @@ def sampler():
         },
     }
 
+
+
     yield Sampler(seed, risk_limit, contests)
 
 def test_compute_margins(sampler):
@@ -88,11 +90,48 @@ def test_asn(sampler):
 
         assert expected == computed, 'asn failed: got {}, expected {}'.format(computed, expected)
 
-def test_simulate_bravo(sampler):
+def test_simulate_bravo_round0(sampler):
     # Test bravo sample simulator
-
+    # Test without sample
     expected_mean1 = 118
-    computed_mean1 = np.mean(sampler.simulate_bravo(10000, .6))
+    r0_sample_win = round0_sample_results['test1']['cand1']
+    r0_sample_rup = round0_sample_results['test1']['cand2']
+
+    computed_mean1 = np.mean(sampler.simulate_bravo(10000, 
+                                                       .6, 
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup))
+    delta = expected_mean1 - computed_mean1
+
+    # TODO are these tolerances acceptable?
+    assert abs(delta) < 5, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
+
+
+def test_simulate_bravo_round1_confirmed(sampler):
+    # Test with round-one sample that already confirmed
+    expected_mean1 = 0 # Our sample already confirmed our results
+    r0_sample_win = round1_sample_results['test1']['cand1']
+    r0_sample_rup = round1_sample_results['test1']['cand2']
+
+    computed_mean1 = np.mean(sampler.simulate_bravo(10000, 
+                                                       .6, 
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup))
+    delta = expected_mean1 - computed_mean1
+
+    # TODO are these tolerances acceptable?
+    assert abs(delta) < 5, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
+
+def test_simulate_bravo_round1_unconfirmed(sampler):
+    # Test with round-one sample that didn't confirm
+    expected_mean1 = 91 
+    r0_sample_win = round1_sample_results['test2']['cand1']
+    r0_sample_rup = round1_sample_results['test2']['cand2']
+
+    computed_mean1 = np.mean(sampler.simulate_bravo(10000, 
+                                                       .6, 
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup))
     delta = expected_mean1 - computed_mean1
 
     # TODO are these tolerances acceptable?
@@ -100,35 +139,7 @@ def test_simulate_bravo(sampler):
 
 def test_get_sample_sizes(sampler):
     # Test retrieving menu of sample sizes
-
-    true_sample_sizes = {
-        'test1': {
-            'asn': 119,
-            '70%': 130,
-            '80%': 170,
-            '90%': 243,
-        }, 
-        'test2': {
-            'asn': 22,
-            '70%': 19,
-            '80%': 24,
-            '90%': 38,
-        },
-        'test3': {
-            'asn': 0,
-            '70%': 0,
-            '80%': 0,
-            '90%': 0,
-        },
-        'test4': {
-            'asn': 0,
-            '70%': 0,
-            '80%': 0,
-            '90%': 0,
-        },
-    }
-
-    computed_samples = sampler.get_sample_sizes()
+    computed_samples = sampler.get_sample_sizes(round0_sample_results)
     for contest in computed_samples:
         for key in true_sample_sizes[contest]:
             if key != 'asn':
@@ -149,29 +160,6 @@ def test_draw_sample(sampler):
         'pct 3': 25,
         'pct 4': 25,
     }
-
-    expected_sample = [
-        ('pct 1', 4),
-        ('pct 1', 12),
-        ('pct 1', 19),
-        ('pct 1', 21),
-        ('pct 1', 22),
-        ('pct 1', 24),
-        ('pct 2', 2),
-        ('pct 2', 5),
-        ('pct 2', 6),
-        ('pct 2', 6),
-        ('pct 2', 15),
-        ('pct 2', 21),
-        ('pct 2', 23),
-        ('pct 4', 7),
-        ('pct 4', 11),
-        ('pct 4', 14),
-        ('pct 4', 18),
-        ('pct 4', 19),
-        ('pct 4', 21),
-        ('pct 4', 23),
-    ]
 
     sample = sampler.draw_sample(manifest, 20)
 
@@ -196,25 +184,7 @@ def test_compute_risk(sampler):
         'test4': True,
     }
 
-    samples = {
-        'test1': {
-            'cand1': 72,
-            'cand2': 47
-        },
-        'test2': {
-            'cand1': 25,
-            'cand2': 18,
-            'cand3': '5',
-        },
-        'test3': {
-            'cand1': 0
-        },
-        'test4': {
-            'cand1': 100
-        }
-    }
-
-    for contest, sample in samples.items():
+    for contest, sample in round1_sample_results.items():
         T, decision = sampler.compute_risk(contest, sample)
         expected_T = expected_Ts[contest]
         diff = T - expected_T 
@@ -225,4 +195,92 @@ def test_compute_risk(sampler):
         
         
 
+# Useful test data
+round0_sample_results = {
+    'test1': {
+        'cand1': 0,
+        'cand2': 0,
+    },
+    'test2': {
+        'cand1': 0,
+        'cand2': 0,
+        'cand3': 0,
+    },
+    'test3': {
+        'cand1': 0,
+    },
+    'test4': {
+        'cand1': 0,
+    },
+}
 
+
+round1_sample_results = {
+    'test1': {
+        'cand1': 72,
+        'cand2': 47
+    },
+    'test2': {
+        'cand1': 25,
+        'cand2': 18,
+        'cand3': '5',
+    },
+    'test3': {
+        'cand1': 0
+    },
+    'test4': {
+        'cand1': 100
+    }
+}
+
+
+expected_sample = [
+    ('pct 1', 4),
+    ('pct 1', 12),
+    ('pct 1', 19),
+    ('pct 1', 21),
+    ('pct 1', 22),
+    ('pct 1', 24),
+    ('pct 2', 2),
+    ('pct 2', 5),
+    ('pct 2', 6),
+    ('pct 2', 6),
+    ('pct 2', 15),
+    ('pct 2', 21),
+    ('pct 2', 23),
+    ('pct 4', 7),
+    ('pct 4', 11),
+    ('pct 4', 14),
+    ('pct 4', 18),
+    ('pct 4', 19),
+    ('pct 4', 21),
+    ('pct 4', 23),
+]
+
+
+true_sample_sizes = {
+    'test1': {
+        'asn': 119,
+        '70%': 130,
+        '80%': 170,
+        '90%': 243,
+    }, 
+    'test2': {
+        'asn': 22,
+        '70%': 19,
+        '80%': 24,
+        '90%': 38,
+    },
+    'test3': {
+        'asn': 0,
+        '70%': 0,
+        '80%': 0,
+        '90%': 0,
+    },
+    'test4': {
+        'asn': 0,
+        '70%': 0,
+        '80%': 0,
+        '90%': 0,
+    },
+}
