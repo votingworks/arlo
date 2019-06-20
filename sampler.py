@@ -184,25 +184,25 @@ class Sampler:
         # TODO Note this treats each contest separately instead of together
 
         # TODO Do we want these hard-coded or parameterized?
-        quants = [.7, .8, .9]
+    #    quants = [.7, .8, .9]
 
         samples = {}
 
         margins = self.margins
         asns = self.get_asns()
         for contest in self.contests:
-            p_w = margins[contest]['p_w']
-            num_ballots = self.contests[contest]['ballots']
+        #    p_w = margins[contest]['p_w']
+        #    num_ballots = self.contests[contest]['ballots']
             
             # TODO is there a way to do this that isn't simulation?
-            trials = sorted(self.simulate_bravo(num_ballots, p_w))
+        #    trials = sorted(self.simulate_bravo(num_ballots, p_w))
 
             
             samples[contest] = {}
             samples[contest]['asn'] = asns[contest]   
-            for quant in quants: 
-                quant_str = str(int(100*quant)) + '%'
-                samples[contest][quant_str] = np.quantile(trials, quant)
+        #    for quant in quants: 
+        #        quant_str = str(int(100*quant)) + '%'
+        #        samples[contest][quant_str] = np.quantile(trials, quant)
 
         return samples
 
@@ -222,10 +222,10 @@ class Sampler:
                         }
                     
         Outputs:
-            sample - list of <batch>-<ballot number> pairs to sample, with duplicates
+            sample - list of (<batch>, <ballot number>) tuples to sample, with duplicates
                     [   
-                        batch1: ballot1,
-                        batch2: ballot49,
+                        (batch1, 1),
+                        (batch2, 49),
                         ...
                     ]
 
@@ -234,7 +234,7 @@ class Sampler:
         # First build a faux list of ballots
         for batch in manifest:
             for i in range(manifest[batch]):
-                ballots.append(batch + ': ballot ' +  str(i))
+                ballots.append((batch, i))
 
         sample =  list(consistent_sampler.sampler(ballots, 
                                                   seed=self.seed, 
@@ -243,8 +243,7 @@ class Sampler:
                                                   output='id'))
         
         # TODO this is sort of a hack to get the list sorted right. Maybe it's okay?
-        return sorted(sorted(sample, key=lambda item: int(item.split(' ')[-1])), key=lambda item: item.split(':')[0])
-
+        return sorted(sample)#, key=lambda item: int(item.split(' ')[-1]))
 
     def compute_risk(self, contest, sample_results):
         """
