@@ -104,6 +104,8 @@ class SampledBallot(db.Model):
     jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id'), nullable=False)
 
     batch_id = db.Column(db.Integer, db.ForeignKey('batch.id'), nullable=False)
+    batch = relationship('Batch')
+    
     ballot_position = db.Column(db.Integer, nullable=False)
     
     __table_args__ = (

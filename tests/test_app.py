@@ -133,3 +133,10 @@ def test_whole_audit_flow(client):
 
     assert manifest['filename'] is None
     assert manifest['uploadedAt'] is None
+
+    # get the retrieval list for round 1
+    rv = client.get('/jurisdiction/adams-county/1/retrieval-list')
+    first_line = rv.data.decode('utf-8').split("\r\n")[0]
+    assert first_line == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
+    assert 'attachment' in rv.headers['Content-Disposition']
+
