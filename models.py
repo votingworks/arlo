@@ -51,10 +51,11 @@ class User(db.Model):
 class Batch(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id'), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
     num_ballots = db.Column(db.Integer, nullable=False)
 
-    # JSON dictionary of all the field values that correspond to manifest_fields
-    field_values = db.Column(db.Text, nullable=False)
+    storage_location = db.Column(db.String(200), nullable=True)
+    tabulator = db.Column(db.String(200), nullable=True)
         
 class TargetedContest(db.Model):
     id = db.Column(db.String(200), primary_key=True)
@@ -96,8 +97,22 @@ class Round(db.Model):
     election = relationship('Election', back_populates = 'rounds')
     started_at = db.Column(db.DateTime, nullable=False)
     ended_at = db.Column(db.DateTime, nullable=True)
-    round_contests = relationship('RoundContest', back_populates='round')        
+    round_contests = relationship('RoundContest', back_populates='round')
 
+class SampledBallot(db.Model):
+    round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
+    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id'), nullable=False)
+
+    batch_id = db.Column(db.Integer, db.ForeignKey('batch.id'), nullable=False)
+    ballot_position = db.Column(db.Integer, nullable=False)
+    
+    __table_args__ = (
+        db.PrimaryKeyConstraint('round_id', 'jurisdiction_id', 'batch_id', 'ballot_position'),
+    )
+    
+    times_sampled = db.Column(db.Integer, nullable=False)
+    audit_board = db.Column(db.String(200), db.ForeignKey('audit_board.id'), nullable=False)    
+    
 class RoundContest(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
