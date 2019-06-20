@@ -1,0 +1,25 @@
+version: 2
+jobs:
+  build-and-test:
+    docker:
+      - image: circleci/python:3.7.3-node
+    steps:
+      - checkout
+      - run:
+          name: install
+          command: |
+            make install
+      - run:
+          name: backend tests
+          command: |
+            make test-server
+      - run:
+          name: frontend tests
+          command: |
+            make test-client
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build-and-test
