@@ -1,4 +1,4 @@
-import os
+import os, datetime
 from flask import Flask, send_from_directory, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -151,26 +151,44 @@ def jurisdictions_set():
     db.session.commit()
 
     return jsonify(status="ok")
-        
 
-@app.route('/jurisdiction/<jurisdiction_id>/manifest')
+@app.route('/audit/sample-sizes', methods=["POST"])
+def audit_set_sample_sizes():
+    pass
+
+@app.route('/jurisdiction/<jurisdiction_id>/manifest', methods=["DELETE","POST"])
 def jurisdiction_manifest(jurisdiction_id):
+    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+
+    if not jurisdiction_id:
+        return "no jurisdiction", 404
+
+    if request.method == "DELETE":
+        jurisdiction.manifest = None
+        jurisdiction.manifest_filename = None
+        jurisdiction.manifest_uploaded_at = None
+        jurisdiction.manifest_num_ballots = None
+        jurisdiction.manifest_num_batches = None
+        db.session.commit()
+        return jsonify(status="ok")
+
+    manifest = request.files['manifest']
+    jurisdiction.manifest_filename = manifest.filename
+    jurisdiction.manifest_uploaded_at = datetime.datetime.utcnow()
+    jurisdiction.manifest = manifest.read()
+
+    return jsonify(status="ok")
+
+@app.route('/jurisdiction/<jurisdiction_id>/results', methods=["POST"])
+def jurisdiction_results(jurisdiction_id):
     pass
 
-@app.route('/jurisdiction/<jurisdiction_id>/auditboards')
-def jurisdiction_auditboards(jurisdiction_id):
+@app.route('/jurisdiction/<jurisdiction_id>/retrieval-list', methods=["GET"])
+def jurisdiction_retrieval_list(jurisdiction_id):
     pass
 
-@app.route('/jurisdiction/<jurisdiction_id>/auditboard/<audit_board_id>')
-def jurisdiction_auditboard(jurisdiction_id, audit_board_id):
-    pass
-
-@app.route('/jurisdiction/<jurisdiction_id>/auditboard/<audit_board_id>/status')
-def jurisdiction_auditboard_status(jurisdiction_id, audit_board_id):
-    pass
-
-@app.route('/jurisdiction/<jurisdiction_id>/auditboard/<audit_board_id>/cvr/<cvr_id>')
-def jurisdiction_auditboard_cvr(jurisdiction_id, audit_board_id, cvr_id):
+@app.route('/audit/report', methods=["GET"])
+def audit_report():
     pass
 
 

@@ -6,6 +6,8 @@ import pytest
 
 import app
 
+manifest_file_path = os.path.join(os.path.dirname(__file__), "manifest.csv")
+
 def post_json(client, url, obj):
     return client.post(url, headers = {
         'Content-Type' : 'application/json'
@@ -30,7 +32,7 @@ def test_index(client):
     rv = client.get('/')
     assert b'React App' in rv.data
 
-def test_audit_basic_update(client):
+def test_whole_audit_flow(client):
     rv = post_json(
         client, '/audit/basic',
         {
@@ -70,7 +72,6 @@ def test_audit_basic_update(client):
     assert status["riskLimit"] == 10
     assert status["name"] == "Primary 2019"
 
-def test_audit_set_jurisdictions(client):
     rv = post_json(
         client, '/audit/jurisdictions',
         {
@@ -103,3 +104,12 @@ def test_audit_set_jurisdictions(client):
     assert jurisdiction["name"] == "Adams County"
     assert jurisdiction["auditBoards"][1]["id"] == "audit-board-2"
     assert jurisdiction["contests"] == ["contest-1"]
+
+    # upload the manifest
+    data = {}
+    data['manifest'] = (open(manifest_file_path, "rb"), 'manifest.csv')
+    rv = client.post(
+        '/jurisdiction/adams-county/manifest', data=data,
+        content_type='multipart/form-data')
+
+    assert json.loads(rv.data)['status'] == 'ok'
