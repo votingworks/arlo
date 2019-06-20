@@ -82,8 +82,9 @@ def test_simulate_bravo(sampler):
     expected_mean1 = 118
     computed_mean1 = np.mean(sampler.simulate_bravo(10000, .6))
     delta = expected_mean1 - computed_mean1
-    assert delta > -5, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
-    assert delta < 5, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
+
+    # TODO are these tolerances acceptable?
+    assert abs(delta) < 5, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
 
 def test_get_sample_sizes(sampler):
     # Test retrieving menu of sample sizes
@@ -115,14 +116,50 @@ def test_get_sample_sizes(sampler):
             expected =  true_sample_sizes[contest][key]
             computed = computed_samples[contest][key]
             diff = expected - computed
+            # TODO are these tolerances acceptable?
             assert abs(diff) < 10 , '{} sample size for {} failed: got {}, expected {}'.format(key, contest, computed, expected)
 
 
 
 def test_draw_sample(sampler):
     # Test getting a sample
+    manifest = {
+        'pct 1': 25,
+        'pct 2': 25,
+        'pct 3': 25,
+        'pct 4': 25,
+    }
 
-    assert False, 'not implemented'
+    expected_sample = [
+        'pct 1: ballot 1',
+        'pct 1: ballot 5',
+        'pct 1: ballot 12',
+        'pct 1: ballot 16',
+        'pct 2: ballot 6',
+        'pct 3: ballot 2',
+        'pct 3: ballot 3',
+        'pct 3: ballot 4',
+        'pct 3: ballot 9',
+        'pct 3: ballot 15',
+        'pct 3: ballot 16',
+        'pct 3: ballot 18',
+        'pct 4: ballot 3',
+        'pct 4: ballot 4',
+        'pct 4: ballot 5',
+        'pct 4: ballot 6',
+        'pct 4: ballot 11',
+        'pct 4: ballot 12',
+        'pct 4: ballot 12',
+        'pct 4: ballot 12',
+    ]
+
+    sample = sampler.draw_sample(manifest, 20)
+
+    for i, item in enumerate(sample):
+        expected = expected_sample[i]
+        assert item == expected, 'Draw sample failed: got {}, expected {}'.format(item, expected)
+
+
 def test_compute_risk(sampler):
     # Test computing sample
     assert False, 'not implemented'
