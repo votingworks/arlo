@@ -140,3 +140,18 @@ def test_whole_audit_flow(client):
     assert first_line == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
+    # post results for round 1
+    rv = post_json(client, '/jurisdiction/adams-county/1/results',
+                   {
+	               "contests": [
+		           {
+			       "id": "contest-1",
+   			       "results": {
+				   "candidate-1": 55,
+				   "candidate-2": 35
+			       }
+		           }
+	               ]
+                   })
+
+    assert json.loads(rv.data)['status'] == 'ok'

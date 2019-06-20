@@ -127,7 +127,7 @@ class RoundContest(db.Model):
 
     end_risk = db.Column(db.Integer)
     end_p_value = db.Column(db.Float)
-    is_complete = db.Column(db.Boolean)
+    is_audit_complete = db.Column(db.Boolean)
 
     min_sample_size = db.Column(db.Integer)
     chosen_sample_size = db.Column(db.Integer)
