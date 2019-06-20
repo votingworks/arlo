@@ -61,6 +61,9 @@ class Sampler:
                             contest: {
                                 'p_w': p_w # The proportion of votes for winner
                                 'p_r': p_r # proportion of votes for runner up
+                                's_w': s_w # the proportion of total ballots for the winner
+                                'winner': winner # the name of the winner
+                                'runner_up': runner_up # name of the runner up
                                 
                             }
                         }
@@ -98,6 +101,8 @@ class Sampler:
                 'p_w': win_votes/v_wl,
                 'p_r': rup_votes/v_wl,
                 's_w': win_votes/ballots,
+                'winner': winner,
+                'runner_up': runner_up
             }
 
         return margins
@@ -149,6 +154,7 @@ class Sampler:
         Output:
             trials - an array of sample sizes
         """
+        # TODO We should probably be using more like 10**7 iterations
 
         np.random.seed(self.prng.randint(0, 2**32, 1)[0])
 
@@ -257,7 +263,18 @@ class Sampler:
                    correct based on the sample. 
         """
         
-        # TODO: also a risk-calculation
+
+        # TODO: also a risk-calculation?
+        margins = self.compute_margins()[contest]
+        T = 1
+        for cand, votes in sample_results.items():
+            if cand == margins['winner']:
+                T *= (2*margins['s_w'])**(votes)
+            elif cand == margins['runner_up']:
+                T *= (2 - 2*margins['s_w'])**(votes)
+
+        return 1/T
+
 
 
 
