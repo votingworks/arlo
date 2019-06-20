@@ -170,6 +170,7 @@ def jurisdiction_manifest(jurisdiction_id):
         jurisdiction.manifest_num_ballots = None
         jurisdiction.manifest_num_batches = None
         db.session.commit()
+        
         return jsonify(status="ok")
 
     manifest_bytesio = io.BytesIO()
