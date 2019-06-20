@@ -141,36 +141,42 @@ class Sampler:
         return asns
 
 
-    def simulate_bravo(self, num_ballots, p_w, iterations=10000):
+    def simulate_bravo(self, num_ballots, p_w, sample_w, sample_r, iterations=10000):
         """
         Runs <iterations> trials of random elections with <num_ballots> ballots
         for contest with diluted margin p_w. Returns sample sizes of all trials.
 
         Input:
             num_ballots - the number of ballots in the contest
-            p_w - the fraction of vote share for the winner 
-            iterations - the number of trials to run
+            p_w         - the fraction of vote share for the winner 
+            sample_w    - the number of votes for the winner that have already 
+                          been sampled
+            sample_r    - the number of votes for the runner-up that have 
+                          already been sampled
+            iterations  - the number of trials to run
 
         Output:
-            trials - an array of sample sizes
+            trials      - an array of sample sizes
         """
         # TODO We should probably be using more like 10**7 iterations
 
         # This is a hack for efficient sample generation w/ repeatability 
         np.random.seed(self.prng.randint(0, 2**32, 1)[0])
 
-        return Parallel(n_jobs=self.num_cores)(delayed(run_bravo_trial)(p_w, num_ballots, self.risk_limit) \
+        return Parallel(n_jobs=self.num_cores)(delayed(run_bravo_trial)(p_w, num_ballots, sample_w, sample_r, self.risk_limit) \
                     for i in range(iterations))
 
     
-    def get_sample_sizes(self):
+    def get_sample_sizes(self, sample_results):
         """
         Computes initial sample sizes parameterized by likelihood that the
         initial sample will confirm the election result, assuming no
         discrpancies.
 
         Inputs:
-            None
+            sample_results - if a sample has already been drawn, this will
+                             contain its results. 
+
             TODO: could take in likelihood parameters instead of hardcoding
 
         Outputs:
@@ -184,25 +190,39 @@ class Sampler:
         # TODO Note this treats each contest separately instead of together
 
         # TODO Do we want these hard-coded or parameterized?
-    #    quants = [.7, .8, .9]
+        quants = [.7, .8, .9]
 
         samples = {}
 
-        margins = self.margins
         asns = self.get_asns()
         for contest in self.contests:
-        #    p_w = margins[contest]['p_w']
-        #    num_ballots = self.contests[contest]['ballots']
-            
-            # TODO is there a way to do this that isn't simulation?
-        #    trials = sorted(self.simulate_bravo(num_ballots, p_w))
-
-            
             samples[contest] = {}
+
+            winner = self.margins[contest]['winner']
+            runner_up = self.margins[contest]['runner_up']
+
+            # If we're in a single-candidate race, set sample to 0
+            if not runner_up:
+                samples[contest]['asn'] = 0
+                for quant in quants:
+                    quant_str = str(int(100*quant)) + '%'
+                    samples[contest][quant_str] = 0 
+
+                continue
+
+            p_w = self.margins[contest]['p_w']
+            num_ballots = self.contests[contest]['ballots']
+
+            sample_w = sample_results[contest][winner]
+            sample_r = sample_results[contest][runner_up]
+           
+            # TODO is there a way to do this that isn't simulation?
+            trials = sorted(self.simulate_bravo(num_ballots, p_w, sample_w, sample_r))
+            
             samples[contest]['asn'] = asns[contest]   
-        #    for quant in quants: 
-        #        quant_str = str(int(100*quant)) + '%'
-        #        samples[contest][quant_str] = np.quantile(trials, quant)
+            for quant in quants: 
+                quant_str = str(int(100*quant)) + '%'
+                samples[contest][quant_str] = np.quantile(trials, quant)
 
         return samples
 
@@ -250,8 +270,10 @@ class Sampler:
         Computes the risk-value of <sample_results> based on results in <contest>.
 
         Inputs: 
-            contest - the name of the contest that is targeted
-            sample_results - mapping of candidates to votes in the sample:
+            contest        - the name of the contest that is targeted
+            sample_results - mapping of candidates to votes in the (cumulative)
+                             sample:
+
                     {
                         candidate1: sampled_votes,
                         candidate2: sampled_votes,
@@ -259,13 +281,14 @@ class Sampler:
                     }
 
         Outputs:
-            risk - the p-value of the hypotheses that the election result is 
-                   correct based on the sample. 
-            confirmed - a boolean indicating whether the audit can stop
+            risk            - the p-value of the hypotheses that the election
+                              result is correct based on the sample. 
+            confirmed       - a boolean indicating whether the audit can stop
         """
         
         # TODO: also a risk-calculation that isn't a p-value?
 
+        # TODO Do we assume sample_results is cumulative? 
         margins = self.margins[contest]
         T = 1
         for cand, votes in sample_results.items():
@@ -278,13 +301,13 @@ class Sampler:
 
 
 
-def run_bravo_trial(p_w, num_ballots, risk_limit):
+def run_bravo_trial(p_w, num_ballots, sample_w, sample_r, risk_limit):
     """
     A paralellizable trial function for bravo simulations
     """
 
-    # TODO this is kinda gross, but it's probably better than lamda-izing it
-    test = 1
+    # Start our test-statistic based on previously audited stuff
+    test = ((2*p_w)**sample_w)*((2 - 2*p_w)**sample_r)
     c_samp = 0
     votes = stats.binom.rvs(1, p_w, size=num_ballots)
 
