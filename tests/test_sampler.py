@@ -162,4 +162,31 @@ def test_draw_sample(sampler):
 
 def test_compute_risk(sampler):
     # Test computing sample
-    assert False, 'not implemented'
+    expected_Ts = {
+        'test1': .07,
+        'test2': 1.11,
+        'test3': 1,
+    }
+
+    samples = {
+        'test1': {
+            'cand1': 72,
+            'cand2': 47
+        },
+        'test2': {
+            'cand1': 25,
+            'cand2': 18,
+            'cand3': '5',
+        },
+        'test3': {
+            'cand1': 0
+        }
+    }
+
+    for contest, sample in samples.items():
+        T = sampler.compute_risk(contest, sample)
+        diff = T - expected_Ts[contest]
+        assert abs(diff) < .01, 'Risk compute for {} failed! Expected {}, got {}'.format(contest, expected_Ts[contest], T)
+        
+
+
