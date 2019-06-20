@@ -1,0 +1,447 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders corretly 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa PXaPp"
+  >
+    Audit Setup
+  </div>
+  <form>
+    <div
+      class="sc-EHOje hIirbm"
+    >
+      <div
+        class="sc-htpNat ioVugT"
+      >
+        Contest Information
+      </div>
+      <div
+        class="sc-bwzfXH evNVdE"
+      >
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Contest Name
+        </div>
+        <div
+          class="sc-bxivhb jctXmO"
+        >
+          Enter the name of the contest that will drive the audit.
+        </div>
+        <input
+          class="sc-iwsKbI gXelZt"
+        />
+      </div>
+      <div
+        class="sc-bwzfXH evNVdE"
+      >
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Candidates/Choices & Vote Totals
+        </div>
+        <div
+          class="sc-bxivhb jctXmO"
+        >
+          Enter the name of each candidate choice that appears on the ballot for this contest.
+        </div>
+        <div
+          class="sc-gzVnrw kvaLuz"
+        >
+          <div
+            class="sc-htoDjs bojbPY"
+          >
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              Name of Candidate/Choice 1
+            </label>
+            <label
+              class="sc-VigVT ixYpDM"
+            >
+              Votes for Candidate/Choice 1
+            </label>
+          </div>
+          <div
+            class="sc-dnqmqq fPdHOE"
+          >
+            <input
+              class="sc-iwsKbI gXelZt"
+            />
+            <input
+              class="sc-gZMcBi cdSvXt"
+            />
+          </div>
+          <div
+            class="sc-htoDjs bojbPY"
+          >
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              Name of Candidate/Choice 1
+            </label>
+            <label
+              class="sc-VigVT ixYpDM"
+            >
+              Votes for Candidate/Choice 1
+            </label>
+          </div>
+          <div
+            class="sc-dnqmqq fPdHOE"
+          >
+            <input
+              class="sc-iwsKbI gXelZt"
+            />
+            <input
+              class="sc-gZMcBi cdSvXt"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bwzfXH evNVdE"
+      >
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Total Ballots Cast
+        </div>
+        <div
+          class="sc-bxivhb jctXmO"
+        >
+          Enter the overall number of ballot cards cast in jurisdictoins containing this contest.
+        </div>
+        <input
+          class="sc-iwsKbI gXelZt"
+        />
+      </div>
+      <div
+        class="sc-htpNat ioVugT"
+      >
+        Audit Settings
+      </div>
+      <div
+        class="sc-bwzfXH evNVdE"
+      >
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Desired Risk Limit
+        </div>
+        <div
+          class="sc-bxivhb jctXmO"
+        >
+          Set the risk for the audit as as percentage (e.g. "5" = 5%).
+        </div>
+        <select>
+          <option>
+            1
+          </option>
+          <option>
+            2
+          </option>
+          <option>
+            3
+          </option>
+          <option>
+            4
+          </option>
+          <option>
+            5
+          </option>
+        </select>
+      </div>
+      <div
+        class="sc-bwzfXH evNVdE"
+      >
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Random Seed
+        </div>
+        <div
+          class="sc-bxivhb jctXmO"
+        >
+          Enter the random number to seed the pseudo-random number generator.
+        </div>
+        <input
+          class="sc-iwsKbI gXelZt"
+        />
+      </div>
+    </div>
+    <div
+      class="sc-fjdhpX xePCd"
+    >
+      <button
+        class="sc-jzJRlG ldhbWy"
+      >
+        Estimate Sample Size
+      </button>
+    </div>
+  </form>
+  <form>
+    <div
+      class="sc-EHOje hIirbm"
+    >
+      <div
+        class="sc-bwzfXH evNVdE"
+      >
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Estimated Sample Size
+        </div>
+        <div
+          class="sc-bxivhb jctXmO"
+        >
+          Choose the initial sample size you would like to use for Round 1 of the audit from the options below.
+          <div>
+            <input
+              type="radio"
+            />
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              223 samples (80% chance of reaching risk limit in one round)
+            </label>
+          </div>
+          <div>
+            <input
+              type="radio"
+            />
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              456 samples (90% chance of reaching risk limit in one round)
+            </label>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bwzfXH evNVdE"
+      >
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Number of Audit Boards
+        </div>
+        <div
+          class="sc-bxivhb jctXmO"
+        >
+          Set the number of audit boards you wish to use.
+        </div>
+        <select>
+          <option>
+            1
+          </option>
+          <option>
+            2
+          </option>
+          <option>
+            3
+          </option>
+          <option>
+            4
+          </option>
+          <option>
+            5
+          </option>
+        </select>
+      </div>
+      <div
+        class="sc-bwzfXH evNVdE"
+      >
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Ballot Manifest
+        </div>
+        <div
+          class="sc-bxivhb jctXmO"
+        >
+          Click "Browse" to choose the appropriate Ballot Manifest file from your computer
+        </div>
+        <input
+          type="file"
+        />
+      </div>
+    </div>
+    <div
+      class="sc-fjdhpX xePCd"
+    >
+      <button
+        class="sc-jzJRlG ldhbWy"
+      >
+        Select Ballots To Audit
+      </button>
+    </div>
+  </form>
+  <form>
+    <div
+      class="sc-EHOje hIirbm"
+    >
+      <div
+        class="sc-bwzfXH evNVdE"
+      >
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Ballot Retrieval List
+        </div>
+        <button
+          class="sc-cSHVUG dYxZYE"
+        >
+          Download Ballot Retrieval List for Round 1
+        </button>
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Audited Results: Round 1
+        </div>
+        <div
+          class="sc-bxivhb jctXmO"
+        >
+          Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 1
+        </div>
+        <div
+          class="sc-bZQynM kIMjDG"
+        >
+          <div
+            class="sc-jTzLTM bZsTLM"
+          >
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              Jane Doe III
+            </label>
+            <input
+              class="sc-iwsKbI gXelZt"
+            />
+          </div>
+          <div
+            class="sc-jTzLTM bZsTLM"
+          >
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              Martin Van Buren
+            </label>
+            <input
+              class="sc-iwsKbI gXelZt"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-fjdhpX xePCd"
+    >
+      <button
+        class="sc-jzJRlG ldhbWy"
+      >
+        Calculate Risk Measurement
+      </button>
+    </div>
+  </form>
+  <form>
+    <div
+      class="sc-bwzfXH evNVdE"
+    >
+      <div
+        class="sc-EHOje hIirbm"
+      >
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Audit Status: INCOMPLETE
+        </div>
+        <div
+          class="sc-bZQynM kIMjDG"
+        >
+          <div
+            class="sc-jTzLTM bZsTLM"
+          >
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              Risk Limit: 
+            </label>
+          </div>
+          <div
+            class="sc-jTzLTM bZsTLM"
+          >
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              Risk Measurement: 
+            </label>
+          </div>
+          <div
+            class="sc-jTzLTM bZsTLM"
+          >
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              P-value: 
+            </label>
+          </div>
+        </div>
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Ballot Retrieval List
+        </div>
+        <button
+          class="sc-cSHVUG dYxZYE"
+        >
+          Download Ballot Retrieval List for Round 2
+        </button>
+        <div
+          class="sc-ifAKCX iwNaox"
+        >
+          Audited Results: Round 2
+        </div>
+        <div
+          class="sc-bxivhb jctXmO"
+        >
+          Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 2
+        </div>
+        <div
+          class="sc-bZQynM kIMjDG"
+        >
+          <div
+            class="sc-jTzLTM bZsTLM"
+          >
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              Jane Doe III
+            </label>
+            <input
+              class="sc-iwsKbI gXelZt"
+            />
+          </div>
+          <div
+            class="sc-jTzLTM bZsTLM"
+          >
+            <label
+              class="sc-gqjmRU dWKOzu"
+            >
+              Martin Van Buren
+            </label>
+            <input
+              class="sc-iwsKbI gXelZt"
+            />
+          </div>
+        </div>
+        <button
+          class="sc-kAzzGY iUEsIW"
+        >
+          Download Audit Report
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+`;
