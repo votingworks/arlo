@@ -113,3 +113,13 @@ def test_whole_audit_flow(client):
         content_type='multipart/form-data')
 
     assert json.loads(rv.data)['status'] == 'ok'
+
+    rv = client.get('/audit/status')
+    status = json.loads(rv.data)
+
+    manifest = status['jurisdictions'][0]['ballotManifest']
+    assert manifest['filename'] == 'manifest.csv'
+    assert manifest['numBallots'] == 86147
+    assert manifest['numBatches'] == 484
+    assert manifest['uploadedAt']
+

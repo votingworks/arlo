@@ -1,4 +1,4 @@
-import os, datetime
+import os, datetime, csv, io
 from flask import Flask, send_from_directory, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
@@ -160,7 +160,7 @@ def audit_set_sample_sizes():
 def jurisdiction_manifest(jurisdiction_id):
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
-    if not jurisdiction_id:
+    if not jurisdiction:
         return "no jurisdiction", 404
 
     if request.method == "DELETE":
@@ -172,11 +172,37 @@ def jurisdiction_manifest(jurisdiction_id):
         db.session.commit()
         return jsonify(status="ok")
 
+    manifest_bytesio = io.BytesIO()
     manifest = request.files['manifest']
+    manifest.save(manifest_bytesio)
+    manifest_string = manifest_bytesio.getvalue().decode('utf-8')
+    jurisdiction.manifest = manifest_string
+
     jurisdiction.manifest_filename = manifest.filename
     jurisdiction.manifest_uploaded_at = datetime.datetime.utcnow()
-    jurisdiction.manifest = manifest.read()
 
+    # TODO: factor out manifest processing for more intensive testing and background processing
+
+    manifest_csv = csv.DictReader(io.StringIO(manifest_string))
+    num_batches = 0
+    num_ballots = 0
+    for row in manifest_csv:
+        batch = Batch(
+            id = row['Batch Name'],
+            name = row['Batch Name'],
+            jurisdiction_id = jurisdiction.id,
+            num_ballots = int(row['Number of Ballots']),
+            storage_location = row.get('Storage Location', None),
+            tabulator = row.get('Tabulator', None)
+        )
+        db.session.add(batch)
+        num_batches += 1
+        num_ballots += batch.num_ballots
+
+    jurisdiction.manifest_num_ballots = num_ballots
+    jurisdiction.manifest_num_batches = num_batches
+    db.session.commit()
+    
     return jsonify(status="ok")
 
 @app.route('/jurisdiction/<jurisdiction_id>/results', methods=["POST"])
