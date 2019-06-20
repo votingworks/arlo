@@ -155,3 +155,11 @@ def test_whole_audit_flow(client):
                    })
 
     assert json.loads(rv.data)['status'] == 'ok'
+
+    rv = client.get('/audit/status')
+    status = json.loads(rv.data)
+    round_contest = status["rounds"][0]["contests"][0]
+    assert round_contest["id"] == "contest-1"
+    assert round_contest["results"]["candidate-1"] == 55
+    assert round_contest["results"]["candidate-2"] == 35
+    

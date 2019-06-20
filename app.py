@@ -23,6 +23,30 @@ def init_db():
 
 def get_election():
     return Election.query.all()[0]
+
+def setup_next_round(election):
+    rounds = election.rounds
+
+    round = Round(
+        id = len(rounds) + 1,
+        election_id = election.id,
+        started_at = datetime.datetime.utcnow())
+
+    db.session.add(round)
+
+    # all contests for now
+    for contest in election.contests:
+        round_contest = RoundContest(
+            round_id = round.id,
+            contest_id = contest.id
+        )
+        db.session.add(round_contest)
+
+    # here we should figure out sample size and actually sample
+
+    db.session.commit()
+        
+    
     
 
 # get/set audit config
@@ -79,7 +103,7 @@ def audit_status():
                             "isComplete": round_contest.is_complete
                         },
                         "results": dict([
-                            [result.contest.id, result.result]
+                            [result.targeted_contest_choice_id, result.result]
                             for result in round_contest.results]),
                         "minSampleSize": round_contest.min_sample_size,
                         "chosenSampleSize": round_contest.chosen_sample_size,
@@ -158,6 +182,7 @@ def audit_set_sample_sizes():
 
 @app.route('/jurisdiction/<jurisdiction_id>/manifest', methods=["DELETE","POST"])
 def jurisdiction_manifest(jurisdiction_id):
+    election = get_election()
     jurisdiction = Jurisdiction.query.get(jurisdiction_id)
 
     if not jurisdiction:
@@ -203,6 +228,9 @@ def jurisdiction_manifest(jurisdiction_id):
     jurisdiction.manifest_num_ballots = num_ballots
     jurisdiction.manifest_num_batches = num_batches
     db.session.commit()
+
+    # get the next round setup
+    setup_next_round(election)
     
     return jsonify(status="ok")
 
@@ -223,7 +251,28 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_id):
 
 @app.route('/jurisdiction/<jurisdiction_id>/<round_id>/results', methods=["POST"])
 def jurisdiction_results(jurisdiction_id, round_id):
-    round_contest = RoundContest.query()
+    results = request.get_json()
+
+    for contest in results["contests"]:
+        round_contest = RoundContest.query.filter_by(contest_id = contest["id"], round_id = round_id).one()
+        RoundContestResult.query.filter_by(contest_id = contest["id"], round_id = round_id).delete()
+
+        for choice_id, result in contest["results"].items():
+            contest_result = RoundContestResult(
+                round_id = round_id,
+                contest_id = contest["id"],
+                targeted_contest_choice_id = choice_id,
+                result = result)
+            db.session.add(contest_result)
+
+    db.session.commit()
+
+    # get the next round setup if needed
+    # TODO : check the state of things with sampling
+    if False:
+        setup_next_round(election)
+
+    return jsonify(status="ok")
 
 @app.route('/audit/report', methods=["GET"])
 def audit_report():

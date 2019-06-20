@@ -119,7 +119,7 @@ class RoundContest(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
     round = relationship('Round', back_populates='round_contests')
-    results = relationship('RoundContestResults')
+    results = relationship('RoundContestResult')
 
     __table_args__ = (
         db.PrimaryKeyConstraint('round_id', 'contest_id'),
@@ -127,12 +127,12 @@ class RoundContest(db.Model):
 
     end_risk = db.Column(db.Integer)
     end_p_value = db.Column(db.Float)
-    is_audit_complete = db.Column(db.Boolean)
+    is_complete = db.Column(db.Boolean)
 
     min_sample_size = db.Column(db.Integer)
     chosen_sample_size = db.Column(db.Integer)
 
-class RoundContestResults(db.Model):
+class RoundContestResult(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
     contest = relationship('TargetedContest')
