@@ -16,11 +16,14 @@ db = SQLAlchemy(app)
 
 from models import *
 
-def init_db():
-    db.create_all()
+def create_election():
     e = Election(id=1, name="Election")
     db.session.add(e)
     db.session.commit()
+
+def init_db():
+    db.create_all()
+    create_election()
 
 def get_election():
     return Election.query.all()[0]
@@ -366,6 +369,17 @@ def jurisdiction_results(jurisdiction_id, round_id):
 def audit_report():
     pass
 
+@app.route('/audit/reset', methods=["POST"])
+def audit_reset():
+    RoundContest.query.delete()
+    Round.query.delete()
+    Election.query.delete()
+    TargetedContest.query.delete()
+    Jurisdiction.query.delete()
+    db.session.commit()
+    create_election()
+    db.session.commit()   
+    return jsonify(status="ok")
 
 
 # React App

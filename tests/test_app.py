@@ -180,6 +180,17 @@ def test_whole_audit_flow(client):
     assert round_contest["endMeasurements"]["isComplete"]
     assert math.floor(round_contest["endMeasurements"]["pvalue"] * 100) <= 5
 
+    # reset
+    rv = client.post('/audit/reset')
+    rv = client.get('/audit/status')
+    status = json.loads(rv.data)
+
+    assert status["riskLimit"] == None
+    assert status["randomSeed"] == None
+    assert status["contests"] == []
+    assert status["jurisdictions"] == []
+    assert status["rounds"] == []        
+    
 @pytest.mark.quick
 def test_small_election(client):
     rv = post_json(
