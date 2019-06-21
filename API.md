@@ -157,3 +157,5 @@ straight file upload `multipart/form-data`
 - `GET /jurisdiction/<jurisdiction_id>/<round_id>/retrieval-list` -- retrieval list as an attachment
 
 - `GET /audit/report` -- the audit report
+
+- `POST /audit/reset` -- reset the whole thing

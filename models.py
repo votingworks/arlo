@@ -21,7 +21,7 @@ class Election(db.Model):
 # these are typically counties
 class Jurisdiction(db.Model):
     id = db.Column(db.String(200), primary_key=True)
-    election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
+    election_id = db.Column(db.Integer, db.ForeignKey('election.id', ondelete='cascade'), nullable=False)
     election = relationship('Election', back_populates = 'jurisdictions')
     batches = relationship('Batch', back_populates='jurisdiction')
     name = db.Column(db.String(200), unique=True, nullable=False)
@@ -45,13 +45,13 @@ class Jurisdiction(db.Model):
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
-    election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
+    election_id = db.Column(db.Integer, db.ForeignKey('election.id', ondelete='cascade'), nullable=False)
     jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id'),
                                 nullable=True)    
 
 class Batch(db.Model):
     id = db.Column(db.String(200), primary_key=True)
-    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id'), nullable=False)
+    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
     jurisdiction = relationship('Jurisdiction', back_populates='batches')
     name = db.Column(db.String(200), nullable=False)
     num_ballots = db.Column(db.Integer, nullable=False)
@@ -61,7 +61,7 @@ class Batch(db.Model):
         
 class TargetedContest(db.Model):
     id = db.Column(db.String(200), primary_key=True)
-    election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
+    election_id = db.Column(db.Integer, db.ForeignKey('election.id', ondelete='cascade'), nullable=False)
     election = relationship('Election', back_populates = 'contests')
     choices = relationship('TargetedContestChoice', back_populates='contest')
     name = db.Column(db.String(200), nullable=False)
@@ -95,7 +95,7 @@ class AuditBoard(db.Model):
     
 class Round(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    election_id = db.Column(db.Integer, db.ForeignKey('election.id'), nullable=False)
+    election_id = db.Column(db.Integer, db.ForeignKey('election.id', ondelete='cascade'), nullable=False)
     election = relationship('Election', back_populates = 'rounds')
     started_at = db.Column(db.DateTime, nullable=False)
     ended_at = db.Column(db.DateTime, nullable=True)
@@ -103,7 +103,7 @@ class Round(db.Model):
 
 class SampledBallot(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
-    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id'), nullable=False)
+    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
 
     batch_id = db.Column(db.String(200), db.ForeignKey('batch.id'), nullable=False)
     batch = relationship('Batch')
