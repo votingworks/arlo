@@ -75,8 +75,7 @@ def setup_next_round(election):
     db.session.add(round)
 
     sampler = get_sampler(election)
-    sr = sample_results(election)
-    sample_sizes = sampler.get_sample_sizes(sr)
+    sample_sizes = sampler.get_sample_sizes(sample_results(election))
     
     # all contests for now
     chosen_sample_size = None
@@ -86,8 +85,8 @@ def setup_next_round(election):
             contest_id = contest.id
         )
 
-        round_contest.chosen_sample_size = sample_sizes[contest.id]['80%']
-        chosen_sample_size = round_contest.chosen_sample_size
+        round_contest.sample_size = sample_sizes[contest.id]['90%']
+        chosen_sample_size = round_contest.sample_size
 
         db.session.add(round_contest)
     
@@ -192,15 +191,13 @@ def audit_status():
                     {
                         "id": round_contest.contest_id,
                         "endMeasurements": {
-                            "risk": round_contest.end_risk,
                             "pvalue": round_contest.end_p_value,
                             "isComplete": round_contest.is_complete
                         },
                         "results": dict([
                             [result.targeted_contest_choice_id, result.result]
                             for result in round_contest.results]),
-                        "minSampleSize": round_contest.min_sample_size,
-                        "chosenSampleSize": round_contest.chosen_sample_size,
+                        "sampleSize": round_contest.sample_size
                     }
                     for round_contest in round.round_contests
                 ]
@@ -269,10 +266,6 @@ def jurisdictions_set():
     db.session.commit()
 
     return jsonify(status="ok")
-
-@app.route('/audit/sample-sizes', methods=["POST"])
-def audit_set_sample_sizes():
-    pass
 
 @app.route('/jurisdiction/<jurisdiction_id>/manifest', methods=["DELETE","POST"])
 def jurisdiction_manifest(jurisdiction_id):

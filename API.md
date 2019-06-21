@@ -58,7 +58,6 @@ JSON for sure.
 				{
 					id: "contest-1",
 					endMeasurements: {
-						risk: 11,
 						pvalue: 0.085,
 						isComplete: false
 					},
@@ -66,8 +65,7 @@ JSON for sure.
 						"candidate-1": 55,
 						"candidate-2": 35
 					},
-					minSampleSize: 55,
-					chosenSampleSize: 66
+					sampleSize: 25,
 				}
 			],
 			jurisdictions: {
@@ -128,19 +126,6 @@ JSON for sure.
 					members: []
 				}
 			]
-		}
-	]
-}
-```
-
-- `POST /audit/sample-sizes` -- the desired sample sizes for round 1
-
-```
-{
-	contests: [
-	    {
-			id: "contest-1",
-			chosenSampleSize: 66
 		}
 	]
 }
