@@ -1,6 +1,7 @@
-import os, datetime, csv, io
+import os, datetime, csv, io, math
 from flask import Flask, send_from_directory, jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
+from sampler import Sampler
 
 app = Flask(__name__, static_folder='arlo-client/build/')
 
@@ -24,8 +25,47 @@ def init_db():
 def get_election():
     return Election.query.all()[0]
 
+def contest_status(election):
+    contests = {}
+
+    for contest in election.contests:
+        contests[contest.id] = dict([
+            [choice.id, choice.num_votes]
+            for choice in contest.choices])
+        contests[contest.id]['ballots'] = contest.total_ballots_cast
+
+    return contests
+
+def sample_results(election):
+    contests = {}
+
+    for contest in election.contests:
+        contests[contest.id] = dict([
+            [choice.id, 0]
+            for choice in contest.choices])
+
+        # now add in all the results
+        round_contests = RoundContest.query.filter_by(contest_id = contest.id).order_by('round_id').all()
+        for round_contest in round_contests:
+            for result in round_contest.results:
+                contests[contest.id][result.targeted_contest_choice_id] += result.result
+
+    return contests
+
+def manifest_summary(jurisdiction):
+    manifest = {}
+
+    for batch in jurisdiction.batches:
+        manifest[batch.id] = batch.num_ballots
+
+    return manifest
+
+def get_sampler(election):
+    return Sampler(election.random_seed, election.risk_limit / 100, contest_status(election))
+
 def setup_next_round(election):
-    rounds = election.rounds
+    jurisdiction = election.jurisdictions[0]
+    rounds = Round.query.filter_by(election_id = election.id).order_by('id').all()
 
     round = Round(
         id = len(rounds) + 1,
@@ -34,20 +74,74 @@ def setup_next_round(election):
 
     db.session.add(round)
 
+    sampler = get_sampler(election)
+    sample_sizes = sampler.get_sample_sizes(sample_results(election))
+    
     # all contests for now
+    chosen_sample_size = None
     for contest in election.contests:
         round_contest = RoundContest(
             round_id = round.id,
             contest_id = contest.id
         )
-        db.session.add(round_contest)
 
-    # here we should figure out sample size and actually sample
+        round_contest.chosen_sample_size = sample_sizes[contest.id]['80%']
+        chosen_sample_size = round_contest.chosen_sample_size
+
+        db.session.add(round_contest)
+    
+    sample = sampler.draw_sample(manifest_summary(jurisdiction), chosen_sample_size)
+
+    audit_boards = jurisdiction.audit_boards
+    
+    last_sample = None
+    last_sampled_ballot = None
+    
+    for sample_number, (batch_id, ballot_position) in enumerate(sample):
+        if last_sample == (batch_id, ballot_position):
+            last_sampled_ballot.times_sampled += 1
+            continue
+        
+        audit_board_num = math.floor(len(audit_boards) * sample_number / len(sample))
+        audit_board = audit_boards[audit_board_num]
+        sampled_ballot = SampledBallot(
+            round_id = round.id,
+            jurisdiction_id = jurisdiction.id,
+            batch_id = batch_id,
+            ballot_position = ballot_position,
+            times_sampled = 1,
+            audit_board_id = audit_board.id)
+        
+        # keep track for doubly-sampled ballots
+        last_sample = (batch_id, ballot_position)
+        last_sampled_ballot = sampled_ballot
+
+        db.session.add(sampled_ballot)
 
     db.session.commit()
         
+
+def check_round(election, jurisdiction_id, round_id):
+    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+    round = Round.query.get(round_id)
+
+    # assume one contest
+    round_contest = round.round_contests[0]
+    print(round_contest)
     
+    sampler = get_sampler(election)
+    current_sample_results = sample_results(election)
+
+    risk, is_complete = sampler.compute_risk(round_contest.contest_id, current_sample_results[round_contest.contest_id])
+
+    round.ended_at = datetime.datetime.utcnow()
+    round_contest.end_p_value = risk
+    round_contest.is_complete = is_complete
+
+    db.session.commit()
     
+    if not is_complete:
+        setup_next_round(election)
 
 # get/set audit config
 # state and jurisdictions[]
@@ -194,6 +288,9 @@ def jurisdiction_manifest(jurisdiction_id):
         jurisdiction.manifest_uploaded_at = None
         jurisdiction.manifest_num_ballots = None
         jurisdiction.manifest_num_batches = None
+
+        Batch.query.filter_by(jurisdiction = jurisdiction).delete()
+        
         db.session.commit()
         
         return jsonify(status="ok")
@@ -243,7 +340,7 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_id):
     ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = int(round_id)).order_by('batch_id', 'ballot_position').all()
 
     for ballot in ballots:
-        retrieval_list_writer.writerow([ballot.batch_id, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, 1, "don't know yet"])
+        retrieval_list_writer.writerow([ballot.batch_id, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, 1, ballot.audit_board_id])
 
     response = Response(csv_io.getvalue())
     response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-%s-%s.csv"' % (jurisdiction_id, round_id)
@@ -251,6 +348,7 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_id):
 
 @app.route('/jurisdiction/<jurisdiction_id>/<round_id>/results', methods=["POST"])
 def jurisdiction_results(jurisdiction_id, round_id):
+    election = get_election()
     results = request.get_json()
 
     for contest in results["contests"]:
@@ -267,10 +365,7 @@ def jurisdiction_results(jurisdiction_id, round_id):
 
     db.session.commit()
 
-    # get the next round setup if needed
-    # TODO : check the state of things with sampling
-    if False:
-        setup_next_round(election)
+    check_round(election, jurisdiction_id, round_id)
 
     return jsonify(status="ok")
 

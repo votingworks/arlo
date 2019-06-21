@@ -1,4 +1,4 @@
-import os
+import os, math
 import tempfile
 import json
 
@@ -48,16 +48,16 @@ def test_whole_audit_flow(client):
                         {
                             "id": "candidate-1",
                             "name": "Candidate 1",
-                            "numVotes": 42
+                            "numVotes": 48121
                         },
                         {
                             "id": "candidate-2",
                             "name": "Candidate 2",
-                            "numVotes": 19
+                            "numVotes": 38026
                         }                        
                     ],
 
-                    "totalBallotsCast": 85
+                    "totalBallotsCast": 86147
                 }
             ]
         })
@@ -134,21 +134,35 @@ def test_whole_audit_flow(client):
     assert manifest['filename'] is None
     assert manifest['uploadedAt'] is None
 
+    # upload the manifest again
+    data = {}
+    data['manifest'] = (open(manifest_file_path, "rb"), 'manifest.csv')
+    rv = client.post(
+        '/jurisdiction/adams-county/manifest', data=data,
+        content_type='multipart/form-data')
+
+    assert json.loads(rv.data)['status'] == 'ok'
+
+    
     # get the retrieval list for round 1
     rv = client.get('/jurisdiction/adams-county/1/retrieval-list')
-    first_line = rv.data.decode('utf-8').split("\r\n")[0]
-    assert first_line == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
+    lines = rv.data.decode('utf-8').split("\r\n")
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
+    num_ballots = len(lines) - 1
+
     # post results for round 1
+    num_for_winner = int(num_ballots * 0.56)
+    num_for_loser = num_ballots - num_for_winner
     rv = post_json(client, '/jurisdiction/adams-county/1/results',
                    {
 	               "contests": [
 		           {
 			       "id": "contest-1",
    			       "results": {
-				   "candidate-1": 55,
-				   "candidate-2": 35
+				   "candidate-1": num_for_winner,
+				   "candidate-2": num_for_loser
 			       }
 		           }
 	               ]
@@ -160,6 +174,9 @@ def test_whole_audit_flow(client):
     status = json.loads(rv.data)
     round_contest = status["rounds"][0]["contests"][0]
     assert round_contest["id"] == "contest-1"
-    assert round_contest["results"]["candidate-1"] == 55
-    assert round_contest["results"]["candidate-2"] == 35
+    assert round_contest["results"]["candidate-1"] == num_for_winner
+    assert round_contest["results"]["candidate-2"] == num_for_loser
+    assert round_contest["endMeasurements"]["isComplete"]
+    assert math.floor(round_contest["endMeasurements"]["pvalue"] * 100) == 3
+
     
