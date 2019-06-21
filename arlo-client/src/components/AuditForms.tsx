@@ -207,23 +207,19 @@ class AuditForms extends React.Component<any, any>{
     }
 
     inputChange(e: any): any {
-        console.log(e.target.name, ': ', e.target.value)
         this.setState({ [e.target.name]: e.target.value });
     }
 
     componentDidMount() {
-        this.pollStatus();
+        this.getStatus();
     }
 
-    pollStatus() {
-        setInterval(async () => {
-            const audit: any = await api("/audit/status", {})
-            const state: any = { audit };
-            this.setState(state)
-            console.log("res: ", audit)
-        }, 3000);
-    }
-
+  async getStatus() {
+    const audit: any = await api("/audit/status", {})
+    const state: any = { audit };
+    this.setState(state)
+    console.log("res: ", audit)
+  }
     async submitFormOne(e: any) {
         e.preventDefault();
         this.setState({ canEstimateSampleSize: false })
@@ -350,13 +346,9 @@ class AuditForms extends React.Component<any, any>{
     }
 
     downloadBallotRetrievalList(e: any) {
-        e.preventDefault();
-        // ToDo what is jurisdiction id?
-        const id: number = 1;
-        api(`/jurisdiction/${id}/retrieval-list`, {})
-            .then(res => {
-                console.log("res: ", res);
-            })
+      e.preventDefault();
+      const jurisdictionID: string = this.state.audit.jurisdictions[0].id;
+      window.open(`/jurisdiction/${jurisdictionID}/1/retrieval-list`)
     }
 
     calculateRiskMeasurement(e: any) {
