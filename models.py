@@ -127,12 +127,10 @@ class RoundContest(db.Model):
         db.PrimaryKeyConstraint('round_id', 'contest_id'),
     )
 
-    end_risk = db.Column(db.Integer)
     end_p_value = db.Column(db.Float)
     is_complete = db.Column(db.Boolean)
 
-    min_sample_size = db.Column(db.Integer)
-    chosen_sample_size = db.Column(db.Integer)
+    sample_size = db.Column(db.Integer)
 
 class RoundContestResult(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
