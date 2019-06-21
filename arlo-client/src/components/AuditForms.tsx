@@ -281,21 +281,23 @@ class AuditForms extends React.Component<any, any>{
     }
 
     async submitFormTwo(e: any) {
-        e.preventDefault();
-        const { manifestCSV, name, audit } = this.state;
-        console.log("jurisdiction: ", audit.jurisdictions[0])
+      e.preventDefault();
+      const { manifestCSV, name, audit } = this.state;
+      console.log("jurisdiction: ", audit.jurisdictions[0]);
+
+      const auditBoards = Array.from(Array(this.state.auditBoards).keys()).map( i => {
+	return {
+	  id: `audit-board-${i+1}`,	members: []
+	}
+      })
+      
         try {
             // upload jurisdictions
             const data: Array<Jurisdiction> = [{
                 id: uuid(),
                 name,
                 contests: ["contest-1"],
-                auditBoards: [
-                    {
-                        id: uuid(),
-                        members: []
-                    }
-                ]
+                auditBoards: auditBoards,
             }];
             let res: any = await api("/audit/jurisdictions", {
                 method: "POST",
