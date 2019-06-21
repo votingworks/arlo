@@ -75,7 +75,8 @@ def setup_next_round(election):
     db.session.add(round)
 
     sampler = get_sampler(election)
-    sample_sizes = sampler.get_sample_sizes(sample_results(election))
+    sr = sample_results(election)
+    sample_sizes = sampler.get_sample_sizes(sr)
     
     # all contests for now
     chosen_sample_size = None
@@ -127,7 +128,6 @@ def check_round(election, jurisdiction_id, round_id):
 
     # assume one contest
     round_contest = round.round_contests[0]
-    print(round_contest)
     
     sampler = get_sampler(election)
     current_sample_results = sample_results(election)
@@ -340,7 +340,7 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_id):
     ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = int(round_id)).order_by('batch_id', 'ballot_position').all()
 
     for ballot in ballots:
-        retrieval_list_writer.writerow([ballot.batch_id, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, 1, ballot.audit_board_id])
+        retrieval_list_writer.writerow([ballot.batch_id, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board_id])
 
     response = Response(csv_io.getvalue())
     response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-%s-%s.csv"' % (jurisdiction_id, round_id)
