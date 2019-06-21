@@ -1,4 +1,5 @@
 import pytest
+import math
 import numpy as np
 
 from sampler import Sampler
@@ -97,14 +98,13 @@ def test_simulate_bravo_round0(sampler):
     r0_sample_win = round0_sample_results['test1']['cand1']
     r0_sample_rup = round0_sample_results['test1']['cand2']
 
-    computed_mean1 = np.mean(sampler.simulate_bravo(10000, 
+    computed_mean1 = math.ceil(np.mean(sampler.simulate_bravo(10000, 
                                                        .6, 
                                     sample_w=r0_sample_win, 
-                                    sample_r=r0_sample_rup))
+                                    sample_r=r0_sample_rup)))
     delta = expected_mean1 - computed_mean1
 
-    # TODO are these tolerances acceptable?
-    assert abs(delta) < 5, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
+    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
 
 
 def test_simulate_bravo_round1_confirmed(sampler):
@@ -113,14 +113,14 @@ def test_simulate_bravo_round1_confirmed(sampler):
     r0_sample_win = round1_sample_results['test1']['cand1']
     r0_sample_rup = round1_sample_results['test1']['cand2']
 
-    computed_mean1 = np.mean(sampler.simulate_bravo(10000, 
+    computed_mean1 = math.ceil(np.mean(sampler.simulate_bravo(10000, 
                                                        .6, 
                                     sample_w=r0_sample_win, 
-                                    sample_r=r0_sample_rup))
+                                    sample_r=r0_sample_rup)))
     delta = expected_mean1 - computed_mean1
 
     # TODO are these tolerances acceptable?
-    assert abs(delta) < 5, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
+    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
 
 def test_simulate_bravo_round1_unconfirmed(sampler):
     # Test with round-one sample that didn't confirm
@@ -128,14 +128,14 @@ def test_simulate_bravo_round1_unconfirmed(sampler):
     r0_sample_win = round1_sample_results['test2']['cand1']
     r0_sample_rup = round1_sample_results['test2']['cand2']
 
-    computed_mean1 = np.mean(sampler.simulate_bravo(10000, 
+    computed_mean1 = math.ceil(np.mean(sampler.simulate_bravo(10000, 
                                                        .6, 
                                     sample_w=r0_sample_win, 
-                                    sample_r=r0_sample_rup))
+                                    sample_r=r0_sample_rup)))
     delta = expected_mean1 - computed_mean1
 
     # TODO are these tolerances acceptable?
-    assert abs(delta) < 5, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
+    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
 
 def test_get_sample_sizes(sampler):
     # Test retrieving menu of sample sizes
@@ -148,7 +148,7 @@ def test_get_sample_sizes(sampler):
             computed = computed_samples[contest][key]
             diff = expected - computed
             # TODO are these tolerances acceptable?
-            assert abs(diff) < 10 , '{} sample size for {} failed: got {}, expected {}'.format(key, contest, computed, expected)
+            assert not diff , '{} sample size for {} failed: got {}, expected {}'.format(key, contest, computed, expected)
 
 
 

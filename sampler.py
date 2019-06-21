@@ -160,10 +160,8 @@ class Sampler:
         """
         # TODO We should probably be using more like 10**7 iterations
 
-        # This is a hack for efficient sample generation w/ repeatability 
-        np.random.seed(self.prng.randint(0, 2**32, 1)[0])
 
-        return Parallel(n_jobs=self.num_cores)(delayed(run_bravo_trial)(p_w, num_ballots, sample_w, sample_r, self.risk_limit) \
+        return Parallel(n_jobs=self.num_cores)(delayed(run_bravo_trial)(self.prng.randint(0, 2**32, 1)[0], p_w, num_ballots, sample_w, sample_r, self.risk_limit) \
                     for i in range(iterations))
 
     
@@ -181,11 +179,14 @@ class Sampler:
 
         Outputs:
             samples - dictionary mapping confirmation likelihood to sample size:
-                        { 
+                    {
+                       contest1:  { 
                             likelihood1: sample_size,
                             likelihood2: sample_size,
                             ...
-                        }
+                        },
+                        ...
+                    }
         """
         # TODO Note this treats each contest separately instead of together
 
@@ -263,7 +264,7 @@ class Sampler:
                                                   output='id'))
         
         # TODO this is sort of a hack to get the list sorted right. Maybe it's okay?
-        return sorted(sample)#, key=lambda item: int(item.split(' ')[-1]))
+        return sorted(sample)
 
     def compute_risk(self, contest, sample_results):
         """
@@ -301,10 +302,12 @@ class Sampler:
 
 
 
-def run_bravo_trial(p_w, num_ballots, sample_w, sample_r, risk_limit):
+def run_bravo_trial(seed, p_w, num_ballots, sample_w, sample_r, risk_limit):
     """
     A paralellizable trial function for bravo simulations
     """
+    # This is a hack for efficient sample generation w/ repeatability 
+    np.random.seed(seed)
 
     # Start our test-statistic based on previously audited stuff
     test = ((2*p_w)**sample_w)*((2 - 2*p_w)**sample_r)
