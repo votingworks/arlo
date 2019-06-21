@@ -105,7 +105,7 @@ class SampledBallot(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
     jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id'), nullable=False)
 
-    batch_id = db.Column(db.Integer, db.ForeignKey('batch.id'), nullable=False)
+    batch_id = db.Column(db.String(200), db.ForeignKey('batch.id'), nullable=False)
     batch = relationship('Batch')
     
     ballot_position = db.Column(db.Integer, nullable=False)
@@ -137,7 +137,7 @@ class RoundContest(db.Model):
 class RoundContestResult(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
-    contest = relationship('TargetedContest')
+    contest = relationship('TargetedContest', viewonly=True)
     round_contest = relationship('RoundContest', foreign_keys=[round_id, contest_id], back_populates = 'results')
     targeted_contest_choice_id = db.Column(db.String(200), db.ForeignKey('targeted_contest_choice.id', ondelete='cascade'), nullable=False)
 
