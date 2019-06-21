@@ -142,6 +142,11 @@ interface Audit {
     contests: Array<Contest>
 };
 
+interface AuditBoard {
+    id: string,
+    members: Array<any>
+}
+
 interface State {
     name: string,
     randomSeed: number,
@@ -153,6 +158,13 @@ interface State {
     auditBoards: number,
     desiredRiskLimit: number
 };
+
+interface Jurisdiction {
+    id: string,
+    name: string,
+    contests: Array<string>
+    auditBoards: Array<AuditBoard>
+}
 
 function api<T>(endpoint: string, options: any): Promise<T> {
     console.log("options: ", options)
@@ -170,6 +182,7 @@ class AuditForms extends React.Component<any, any>{
     constructor(props: any) {
         super(props);
         this.state = {
+            audit: null,
             // form 1
             name: "",
             randomSeed: 0,
@@ -179,12 +192,17 @@ class AuditForms extends React.Component<any, any>{
             candidateTwoVotes: 0,
             totalBallots: 0,
             desiredRiskLimit: 1,
+            canEstimateSampleSize: true,
             // form 2
             showFormTwo: false,
             showFormThree: false,
             showFormFour: false,
             sampleSize: "",
             auditBoards: 1,
+            manifestCSV: null,
+            manifestUploaded: false,
+            // jurisdiction
+            jurisdictionID: ""
         };
     }
 
@@ -194,14 +212,21 @@ class AuditForms extends React.Component<any, any>{
     }
 
     componentDidMount() {
-        api("/audit/status", {})
-            .then(res => {
-                console.log("/audit/status: ", res)
-            })
+        this.pollStatus();
     }
 
-    submitFormOne(e: any) {
+    pollStatus() {
+        setInterval(async () => {
+            const audit: any = await api("/audit/status", {})
+            const state: any = { audit };
+            this.setState(state)
+            console.log("res: ", audit)
+        }, 3000);
+    }
+
+    async submitFormOne(e: any) {
         e.preventDefault();
+        this.setState({ canEstimateSampleSize: false })
         const {
             name, randomSeed, desiredRiskLimit,
             candidateOneName, candidateOneVotes,
@@ -232,26 +257,87 @@ class AuditForms extends React.Component<any, any>{
                 },
             ]
         };
-        api(`${apiBaseURL}/audit/basic`, {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(res => {
-            console.log("result: ", res);
-            this.setState({ showFormTwo: true })
-        }).catch(err => {
+        try {
+            await api(`${apiBaseURL}/audit/basic`, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const audit: any = await api("/audit/status", {})
+            console.log("res: ", audit)
+            this.setState({ showFormTwo: true, canEstimateSampleSize: true, audit });
+
+        } catch(err) {
             console.log("error: ", err);
-        })
+            this.setState({ canEstimateSampleSize: true });
+        }
     }
 
-    fileInputChange(e: any) {
-        console.log(e.target.files[0]);
+    async fileInputChange(e: any) {
+        const files: Array<any> = e.target.files;
+        if (files.length < 1) {
+            return; // no file selected
+        }
+        this.setState({ manifestCSV: files[0] })
     }
 
-    submitFormTwo(e: any) {
-        e.preventDefualt();
+    async submitFormTwo(e: any) {
+        e.preventDefault();
+        const { manifestCSV, name, audit } = this.state;
+        console.log("jurisdiction: ", audit.jurisdictions[0])
+        try {
+            // upload jurisdictions
+            const data: Array<Jurisdiction> = [{
+                id: uuid(),
+                name,
+                contests: ["contest-1"],
+                auditBoards: [
+                    {
+                        id: uuid(),
+                        members: []
+                    }
+                ]
+            }];
+            let res: any = await api("/audit/jurisdictions", {
+                method: "POST",
+                body: JSON.stringify({ jurisdictions: data }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            console.log("upload jurisdictions response: ", res)
+
+            // get latest audit with jurisdiction id and use it to upload the data
+            let audit: any = await api("/audit/status", {})
+            this.setState({ audit })
+            if (audit.jurisdictions.length < 1) {
+                return;
+            }
+            const jurisdictionID: string = audit.jurisdictions[0].id
+            // TODO get uploads to work before showing form 3
+            this.setState({ showFormThree: true })
+            // upload form data
+            if (manifestCSV == null) {
+                return;
+            }
+            console.log("manifestCSV: ", manifestCSV)
+            const formData: FormData = new FormData();
+            formData.append("manifest", manifestCSV, manifestCSV.name);
+            res = await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+                method: "POST",
+                body: formData
+            })
+            console.log("Upload manifest response: ", res)
+
+            audit = await api("/audit/status", {})
+            this.setState({ audit, manifestUploaded: true })
+
+        } catch (err) {
+            console.log("Error when Uploading manifest: ", err)
+        }
         // TODO: Api endpoints not yet clear
     }
 
@@ -283,7 +369,20 @@ class AuditForms extends React.Component<any, any>{
         // ToDo: validate endpoint
     }
 
+    async deleteBallotManifest(e: any) {
+        e.preventDefault();
+        try {
+            const jurisdictionID: string = this.state.audit.jurisdictions[0].id;
+            await api(`/jurisdiction/${jurisdictionID}/manifest`, { method: "DELETE"});
+            const audit: any = api("audit/status", {method: "GET"})
+            this.setState({ audit, manifestUploaded: false})
+        } catch(err) {
+            console.log("failed to delete ballot Manifest: ", err);
+        }
+    }
+
     render() {
+        const { audit, manifestUploaded } = this.state
         return (
             <React.Fragment>
                 <PageTitle>Audit Setup</PageTitle>
@@ -342,13 +441,13 @@ class AuditForms extends React.Component<any, any>{
                         </Section>
                     </PageSection>
                     <ButtonBar>
-                        <Button onClick={e => this.submitFormOne(e)}>Estimate Sample Size</Button>
+                        <Button onClick={e => this.submitFormOne(e)} disabled={!this.state.canEstimateSampleSize} style={{cursor: this.state.canEstimateSampleSize? "wait": ''}}>Estimate Sample Size</Button>
                     </ButtonBar>
                 </form>
 
                 {/* Form 2 */}
                 {this.state.showFormTwo &&
-                <form>
+                <form onSubmit={e => this.submitFormTwo(e)}>
                     <PageSection>
                         <Section>
                             <SectionLabel>Estimated Sample Size</SectionLabel>
@@ -367,8 +466,18 @@ class AuditForms extends React.Component<any, any>{
                         </Section>
                         <Section>
                             <SectionLabel>Ballot Manifest</SectionLabel>
-                            <SectionDetail>Click "Browse" to choose the appropriate Ballot Manifest file from your computer</SectionDetail>
-                            <input type="file" accept=".csv" onChange={e => this.fileInputChange(e)}></input>
+                            {manifestUploaded ? 
+                                <React.Fragment>
+                                    <SectionDetail><b>Filename:</b> {audit.jurisdictions[0].ballotManifest.filename}</SectionDetail>
+                                    <SectionDetail><b>Ballots:</b> {audit.jurisdictions[0].ballotManifest.numBallots}</SectionDetail>
+                                    <SectionDetail><b>Batches:</b> {audit.jurisdictions[0].ballotManifest.numBatches}</SectionDetail>
+                                    <Button onClick={e => this.deleteBallotManifest(e)}>Delete File</Button>
+                                </React.Fragment> :
+                                <React.Fragment>
+                                    <SectionDetail>Click "Browse" to choose the appropriate Ballot Manifest file from your computer</SectionDetail>
+                                    <input type="file" accept=".csv" onChange={e => this.fileInputChange(e)}></input>
+                                </React.Fragment>
+                            }
                         </Section>
                     </PageSection>
                     <ButtonBar>
