@@ -74,6 +74,8 @@ class TargetedContestChoice(db.Model):
     name = db.Column(db.String(200), nullable=False)
     num_votes = db.Column(db.Integer, nullable=False)
 
+    results = relationship('RoundContestResult', back_populates='targeted_contest_choice')
+
 class TargetedContestJurisdiction(db.Model):
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
     jurisdiction = relationship('Jurisdiction', back_populates= 'contests')
@@ -138,6 +140,7 @@ class RoundContestResult(db.Model):
     contest = relationship('TargetedContest', viewonly=True)
     round_contest = relationship('RoundContest', foreign_keys=[round_id, contest_id], back_populates = 'results')
     targeted_contest_choice_id = db.Column(db.String(200), db.ForeignKey('targeted_contest_choice.id', ondelete='cascade'), nullable=False)
+    targeted_contest_choice = relationship('TargetedContestChoice')
 
     __table_args__ = (
         db.PrimaryKeyConstraint('round_id', 'targeted_contest_choice_id'),
@@ -145,4 +148,4 @@ class RoundContestResult(db.Model):
     )
 
     result = db.Column(db.Integer)
-    
+   

@@ -367,7 +367,48 @@ def jurisdiction_results(jurisdiction_id, round_id):
 
 @app.route('/audit/report', methods=["GET"])
 def audit_report():
-    pass
+    election = get_election()
+    jurisdiction = election.jurisdictions[0]
+
+    csv_io = io.StringIO()
+    report_writer = csv.writer(csv_io)
+
+    contest = election.contests[0]
+    choices = contest.choices
+    
+    report_writer.writerow(["Contest Name", contest.name])
+    report_writer.writerow(["Total Ballots Cast", contest.total_ballots_cast])
+
+    for choice in choices:
+        report_writer.writerow(["%s Votes" % choice.name, choice.num_votes])
+
+    report_writer.writerow(["Risk Limit", "%s%%" % election.risk_limit])
+    report_writer.writerow(["Random Seed", election.random_seed])
+
+    for round in election.rounds:
+        round_contest = round.round_contests[0]
+        round_contest_results = round_contest.results
+
+        report_writer.writerow(["Round %s Sample Size" % round.id, round_contest.sample_size])
+
+        for result in round_contest.results:
+            report_writer.writerow(["Round %s Audited Votes for %s" % (round.id, result.targeted_contest_choice.name), result.result])
+
+        report_writer.writerow(["Round %s P-Value" % round.id, round_contest.end_p_value])
+        report_writer.writerow(["Round %s Risk Limit Met?" % round.id, 'Yes' if round_contest.is_complete else 'No'])
+
+        report_writer.writerow(["Round %s Start" % round.id, round.started_at])
+        report_writer.writerow(["Round %s End" % round.id, round.ended_at])
+
+        ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction.id, round_id = round.id).order_by('batch_id', 'ballot_position').all()
+
+        report_writer.writerow(["Round %s Samples" % round.id, " ".join(["(Batch %s, #%s)" % (b.batch_id, b.ballot_position) for b in ballots])])
+
+    
+    response = Response(csv_io.getvalue())
+    response.headers['Content-Disposition'] = 'attachment; filename="audit-report.csv"'
+    return response
+    
 
 @app.route('/audit/reset', methods=["POST"])
 def audit_reset():
