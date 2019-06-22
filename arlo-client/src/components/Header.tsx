@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 const HeaderContainer = styled.div`
     text-align: center;
-    height 100px;
     padding: 20px;
 `
 const ButtonBar = styled.div `
@@ -46,7 +45,7 @@ const Header = () => {
   
   return (
     <HeaderContainer>
-      ARLO
+      <img height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
       <ButtonBar>
         <Button onClick={reset}>Clear & Restart</Button>
       </ButtonBar>
