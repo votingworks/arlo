@@ -23,17 +23,36 @@ const Button = styled.button`
     margin: 0 auto;
 `
 
+// TODO: refactor so we're not copying code here from AuditForms.tsx
+// doing this for now so there are fewer merge conflicts later.
+function api<T>(endpoint: string, options: any): Promise<T> {
+    console.log("options: ", options)
+    return fetch(endpoint, options)
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(res.statusText)
+            }
+            return res.json() as Promise<T>
+        })
+}
+
+
+
 const Header = () => {
 
-    return (
-        <HeaderContainer>
-           ARLO
-           <ButtonBar>
-                <Button>Clear & Restart</Button>
-           </ButtonBar>
-        </HeaderContainer>
-    );
-
+  const reset = async () => {
+    await api(`/audit/reset`, {method: "POST"});
+  }
+  
+  return (
+    <HeaderContainer>
+      ARLO
+      <ButtonBar>
+        <Button onClick={reset}>Clear & Restart</Button>
+      </ButtonBar>
+    </HeaderContainer>
+  );
+  
 }
 
 export default Header

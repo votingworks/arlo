@@ -207,23 +207,19 @@ class AuditForms extends React.Component<any, any>{
     }
 
     inputChange(e: any): any {
-        console.log(e.target.name, ': ', e.target.value)
         this.setState({ [e.target.name]: e.target.value });
     }
 
     componentDidMount() {
-        this.pollStatus();
+        this.getStatus();
     }
 
-    pollStatus() {
-        setInterval(async () => {
-            const audit: any = await api("/audit/status", {})
-            const state: any = { audit };
-            this.setState(state)
-            console.log("res: ", audit)
-        }, 3000);
-    }
-
+  async getStatus() {
+    const audit: any = await api("/audit/status", {})
+    const state: any = { audit };
+    this.setState(state)
+    console.log("res: ", audit)
+  }
     async submitFormOne(e: any) {
         e.preventDefault();
         this.setState({ canEstimateSampleSize: false })
@@ -285,21 +281,23 @@ class AuditForms extends React.Component<any, any>{
     }
 
     async submitFormTwo(e: any) {
-        e.preventDefault();
-        const { manifestCSV, name, audit } = this.state;
-        console.log("jurisdiction: ", audit.jurisdictions[0])
+      e.preventDefault();
+      const { manifestCSV, name, audit } = this.state;
+      console.log("jurisdiction: ", audit.jurisdictions[0]);
+
+      const auditBoards = Array.from(Array(this.state.auditBoards).keys()).map( i => {
+	return {
+	  id: `audit-board-${i+1}`,	members: []
+	}
+      })
+      
         try {
             // upload jurisdictions
             const data: Array<Jurisdiction> = [{
                 id: uuid(),
                 name,
                 contests: ["contest-1"],
-                auditBoards: [
-                    {
-                        id: uuid(),
-                        members: []
-                    }
-                ]
+                auditBoards: auditBoards,
             }];
             let res: any = await api("/audit/jurisdictions", {
                 method: "POST",
@@ -350,13 +348,9 @@ class AuditForms extends React.Component<any, any>{
     }
 
     downloadBallotRetrievalList(e: any) {
-        e.preventDefault();
-        // ToDo what is jurisdiction id?
-        const id: number = 1;
-        api(`/jurisdiction/${id}/retrieval-list`, {})
-            .then(res => {
-                console.log("res: ", res);
-            })
+      e.preventDefault();
+      const jurisdictionID: string = this.state.audit.jurisdictions[0].id;
+      window.open(`/jurisdiction/${jurisdictionID}/1/retrieval-list`)
     }
 
     calculateRiskMeasurement(e: any) {
@@ -495,8 +489,8 @@ class AuditForms extends React.Component<any, any>{
                             <SectionLabel>Audited Results: Round 1</SectionLabel>
                             <SectionDetail>Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 1</SectionDetail>
                             <InputSection>
-                                <InlineInput><InputLabel>Jane Doe III</InputLabel><Field /></InlineInput>
-                                <InlineInput><InputLabel>Martin Van Buren</InputLabel><Field /></InlineInput>
+                                <InlineInput><InputLabel>{this.state.candidateOneName}</InputLabel><Field /></InlineInput>
+                                <InlineInput><InputLabel>{this.state.candidateTwoName}</InputLabel><Field /></InlineInput>
                             </InputSection>
                         </Section>
                     </PageSection>
