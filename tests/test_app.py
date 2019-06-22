@@ -315,3 +315,8 @@ def test_small_election(client):
     assert round_contest["endMeasurements"]["isComplete"]
     assert math.floor(round_contest["endMeasurements"]["pvalue"] * 100) <= 9
 
+    rv = client.get('/audit/report')
+    lines = rv.data.decode('utf-8').split("\r\n")
+    assert lines[0] == "Contest Name,Contest 1"
+    assert 'attachment' in rv.headers['Content-Disposition']
+    
