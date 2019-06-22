@@ -339,7 +339,7 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_id):
         retrieval_list_writer.writerow([ballot.batch_id, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board_id])
 
     response = Response(csv_io.getvalue())
-    response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-%s-%s.csv"' % (jurisdiction_id, round_id)
+    response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-{:s}-{:s}.csv"'.format(jurisdiction_id, round_id)
     return response
 
 @app.route('/jurisdiction/<jurisdiction_id>/<round_id>/results', methods=["POST"])
@@ -380,29 +380,29 @@ def audit_report():
     report_writer.writerow(["Total Ballots Cast", contest.total_ballots_cast])
 
     for choice in choices:
-        report_writer.writerow(["%s Votes" % choice.name, choice.num_votes])
+        report_writer.writerow(["{:s} Votes".format(choice.name), choice.num_votes])
 
-    report_writer.writerow(["Risk Limit", "%s%%" % election.risk_limit])
+    report_writer.writerow(["Risk Limit", "{:d}%".format(election.risk_limit)])
     report_writer.writerow(["Random Seed", election.random_seed])
 
     for round in election.rounds:
         round_contest = round.round_contests[0]
         round_contest_results = round_contest.results
 
-        report_writer.writerow(["Round %s Sample Size" % round.id, round_contest.sample_size])
+        report_writer.writerow(["Round {:d} Sample Size".format(round.id), round_contest.sample_size])
 
         for result in round_contest.results:
-            report_writer.writerow(["Round %s Audited Votes for %s" % (round.id, result.targeted_contest_choice.name), result.result])
+            report_writer.writerow(["Round {:d} Audited Votes for {:s}".format(round.id, result.targeted_contest_choice.name), result.result])
 
-        report_writer.writerow(["Round %s P-Value" % round.id, round_contest.end_p_value])
-        report_writer.writerow(["Round %s Risk Limit Met?" % round.id, 'Yes' if round_contest.is_complete else 'No'])
+        report_writer.writerow(["Round {:d} P-Value".format(round.id), round_contest.end_p_value])
+        report_writer.writerow(["Round {:d} Risk Limit Met?".format(round.id), 'Yes' if round_contest.is_complete else 'No'])
 
-        report_writer.writerow(["Round %s Start" % round.id, round.started_at])
-        report_writer.writerow(["Round %s End" % round.id, round.ended_at])
+        report_writer.writerow(["Round {:d} Start".format(round.id), round.started_at])
+        report_writer.writerow(["Round {:d} End".format(round.id), round.ended_at])
 
         ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction.id, round_id = round.id).order_by('batch_id', 'ballot_position').all()
 
-        report_writer.writerow(["Round %s Samples" % round.id, " ".join(["(Batch %s, #%s)" % (b.batch_id, b.ballot_position) for b in ballots])])
+        report_writer.writerow(["Round {:d} Samples".format(round.id), " ".join(["(Batch {:s}, #{:d})".format(b.batch_id, b.ballot_position) for b in ballots])])
 
     
     response = Response(csv_io.getvalue())
