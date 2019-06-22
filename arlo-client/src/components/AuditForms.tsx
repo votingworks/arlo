@@ -489,8 +489,8 @@ class AuditForms extends React.Component<any, any>{
                             <SectionLabel>Audited Results: Round 1</SectionLabel>
                             <SectionDetail>Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 1</SectionDetail>
                             <InputSection>
-                                <InlineInput><InputLabel>Jane Doe III</InputLabel><Field /></InlineInput>
-                                <InlineInput><InputLabel>Martin Van Buren</InputLabel><Field /></InlineInput>
+                                <InlineInput><InputLabel>{this.state.candidateOneName}</InputLabel><Field /></InlineInput>
+                                <InlineInput><InputLabel>{this.state.candidateTwoName}</InputLabel><Field /></InlineInput>
                             </InputSection>
                         </Section>
                     </PageSection>

@@ -371,6 +371,7 @@ def audit_report():
 
 @app.route('/audit/reset', methods=["POST"])
 def audit_reset():
+    AuditBoard.query.delete()
     SampledBallot.query.delete()
     Batch.query.delete()
     RoundContest.query.delete()
