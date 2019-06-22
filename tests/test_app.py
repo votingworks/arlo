@@ -31,7 +31,7 @@ def client():
 
 def test_index(client):
     rv = client.get('/')
-    assert b'React App' in rv.data
+    assert b'Arlo (by VotingWorks)' in rv.data
 
 def test_whole_audit_flow(client):
     rv = post_json(
