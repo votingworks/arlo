@@ -167,7 +167,6 @@ interface Jurisdiction {
 }
 
 function api<T>(endpoint: string, options: any): Promise<T> {
-    console.log("options: ", options)
     return fetch(endpoint, options)
         .then(res => {
             if (!res.ok) {
@@ -184,42 +183,42 @@ class AuditForms extends React.Component<any, any>{
         this.state = {
             audit: null,
             // form 1
-            name: "",
+            name: "Contest Test",
             randomSeed: 0,
-            candidateOneName: "",
-            candidateOneVotes: 0,
-            candidateTwoName: "",
-            candidateTwoVotes: 0,
-            totalBallots: 0,
+            candidateOneName: "XYZ",
+            candidateOneVotes: 10,
+            candidateTwoName: "ZYZ",
+            candidateTwoVotes: 20,
+            totalBallots: 300,
             desiredRiskLimit: 1,
             canEstimateSampleSize: true,
             // form 2
             showFormTwo: false,
-            showFormThree: false,
-            showFormFour: false,
+            showFormThree: true,
+            showFormFour: true,
             sampleSize: "",
             auditBoards: 1,
             manifestCSV: null,
             manifestUploaded: false,
             // jurisdiction
-            jurisdictionID: ""
+            jurisdictionID: "",
+            roundsExist: false,
+            rounds: [],
+            isLoading: false
         };
+        this.generateFormThree = this.generateFormThree.bind(this);
     }
 
     inputChange(e: any): any {
         this.setState({ [e.target.name]: e.target.value });
     }
 
-    componentDidMount() {
-        this.getStatus();
+    async getStatus() {
+        const audit: any = await api("/audit/status", {})
+        console.log("res: ", audit)
+        return audit
     }
 
-  async getStatus() {
-    const audit: any = await api("/audit/status", {})
-    const state: any = { audit };
-    this.setState(state)
-    console.log("res: ", audit)
-  }
     async submitFormOne(e: any) {
         e.preventDefault();
         this.setState({ canEstimateSampleSize: false })
@@ -235,17 +234,17 @@ class AuditForms extends React.Component<any, any>{
             riskLimit: Number(desiredRiskLimit),
             contests: [
                 {
-                    id: uuid(),
+                    id: 'contest-1',
                     name,
                     totalBallotsCast: Number(totalBallots),
                     choices: [
                         {
-                            id: uuid(),
+                            id: 'candidate-1',
                             name: candidateOneName,
                             numVotes: Number(candidateOneVotes)
                         },
                         {
-                            id: uuid(),
+                            id: 'candidate-2',
                             name: candidateTwoName,
                             numVotes: Number(candidateTwoVotes)
                         }
@@ -254,6 +253,7 @@ class AuditForms extends React.Component<any, any>{
             ]
         };
         try {
+            this.setState({isLoading: true})
             await api(`${apiBaseURL}/audit/basic`, {
                 method: "POST",
                 body: JSON.stringify(data),
@@ -266,9 +266,11 @@ class AuditForms extends React.Component<any, any>{
             console.log("res: ", audit)
             this.setState({ showFormTwo: true, canEstimateSampleSize: true, audit });
 
-        } catch(err) {
+        } catch (err) {
             console.log("error: ", err);
             this.setState({ canEstimateSampleSize: true });
+        } finally {
+            this.setState({isLoading: false})
         }
     }
 
@@ -281,24 +283,25 @@ class AuditForms extends React.Component<any, any>{
     }
 
     async submitFormTwo(e: any) {
-      e.preventDefault();
-      const { manifestCSV, name, audit } = this.state;
-      console.log("jurisdiction: ", audit.jurisdictions[0]);
+        e.preventDefault();
+        const { manifestCSV, name, audit } = this.state;
+        console.log("jurisdiction: ", audit.jurisdictions[0]);
 
-      const auditBoards = Array.from(Array(this.state.auditBoards).keys()).map( i => {
-	return {
-	  id: `audit-board-${i+1}`,	members: []
-	}
-      })
-      
+        const auditBoards = Array.from(Array(this.state.auditBoards).keys()).map(i => {
+            return {
+                id: uuid(), members: []
+            }
+        })
+
         try {
             // upload jurisdictions
             const data: Array<Jurisdiction> = [{
                 id: uuid(),
                 name,
-                contests: ["contest-1"],
+                contests: [`contest-${uuid()}`],
                 auditBoards: auditBoards,
             }];
+            this.setState({isLoading: true})
             let res: any = await api("/audit/jurisdictions", {
                 method: "POST",
                 body: JSON.stringify({ jurisdictions: data }),
@@ -315,10 +318,10 @@ class AuditForms extends React.Component<any, any>{
                 return;
             }
             const jurisdictionID: string = audit.jurisdictions[0].id
-            // TODO get uploads to work before showing form 3
             this.setState({ showFormThree: true })
             // upload form data
             if (manifestCSV == null) {
+                this.setState({ audit, manifestUploaded: true, rounds: audit.rounds })
                 return;
             }
             console.log("manifestCSV: ", manifestCSV)
@@ -331,8 +334,7 @@ class AuditForms extends React.Component<any, any>{
             console.log("Upload manifest response: ", res)
 
             audit = await api("/audit/status", {})
-            this.setState({ audit, manifestUploaded: true })
-
+            this.setState({ audit, manifestUploaded: true, rounds: audit.rounds })
         } catch (err) {
             console.log("Error when Uploading manifest: ", err)
         }
@@ -347,40 +349,137 @@ class AuditForms extends React.Component<any, any>{
         return elements;
     }
 
-    downloadBallotRetrievalList(e: any) {
-      e.preventDefault();
-      const jurisdictionID: string = this.state.audit.jurisdictions[0].id;
-      window.open(`/jurisdiction/${jurisdictionID}/1/retrieval-list`)
+    getJurisdictionId() {
+        return this.state.audit.jurisdictions[0].id
     }
 
-    calculateRiskMeasurement(e: any) {
-        e.preventDefualt();
-        // ToDo: validate endpoint
-    }
-
-    downloadAuditReport(e: any) {
+    downloadBallotRetrievalList(id: number, e: any) {
         e.preventDefault();
-        // ToDo: validate endpoint
+        const jurisdictionID: string = this.getJurisdictionId()
+        window.open(`/jurisdiction/${jurisdictionID}/${id}/retrieval-list`)
     }
 
     async deleteBallotManifest(e: any) {
         e.preventDefault();
         try {
             const jurisdictionID: string = this.state.audit.jurisdictions[0].id;
-            await api(`/jurisdiction/${jurisdictionID}/manifest`, { method: "DELETE"});
-            const audit: any = api("audit/status", {method: "GET"})
-            this.setState({ audit, manifestUploaded: false})
-        } catch(err) {
+            await api(`/jurisdiction/${jurisdictionID}/manifest`, { method: "DELETE" });
+            const audit: any = await api("audit/status", { method: "GET" })
+            this.setState({ audit, manifestUploaded: false })
+        } catch (err) {
             console.log("failed to delete ballot Manifest: ", err);
         }
     }
 
+    async calculateRiskMeasurement(data: any, evt: any) {
+        evt.preventDefault();
+        const { id, round, candidateOne, candidateTwo, roundIndex } = data;
+        console.log("calculateRiskMeasurement For Round: ", id, ", ", round)
+        try {
+            const jurisdictionID: string = this.state.audit.jurisdictions[0].id;
+            console.log(jurisdictionID, 'jurisdictionID')
+            const body: any = {
+                "contests": [
+                    {
+                        id: "contest-1",
+                        results: {
+                            "candidate-1": Number(candidateOne),
+                            "candidate-2": Number(candidateTwo)
+                        }
+                    }
+                ]
+            }
+            console.log("data: ", body)
+            await  api(`/jurisdiction/${jurisdictionID}/${id}/results`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            })
+            const audit: any = await this.getStatus();
+            this.setState({ audit })
+        } catch (err) {
+            console.log("failed to calcualteRiskManagement(): ", err);
+        }
+    }
+
+    async downloadAuditReport(i: number, round: any, evt: any) {
+        evt.preventDefault();
+        try {
+            console.log("Download Audit Report Form For Round: ", i, ", ", round)
+            const jurisdictionID: string = this.state.audit.jurisdictions[0].id;
+            window.open(`/audit/report`)
+            const audit: any = await this.getStatus();
+            this.setState({ audit })
+            console.log("status: ", audit)
+        } catch (err) {
+            console.log("downloadAuditReport: ", err)
+        }
+    }
+
+    generateFormThree() {
+        const { audit } = this.state;
+        if (!audit) {
+            return;
+        }
+        console.log({ audit })
+        return audit.rounds.map((v: any, i: number) => {
+            console.log("v.contests > 0: ", v.contestspo);
+            const round: number = i + 1;
+            const contest: any = v.contests.length > 0 ? v.contests[0] : null;
+            console.log("contests: ", v.contests, ", v.contest[0]:", contest)
+            let candidateOne: string = "";
+            let candidateTwo: string = "";
+            return (
+                <React.Fragment key={i}>
+                    <form>
+                        <PageSection>
+                            <Section>
+                                <SectionLabel>Ballot Retrieval List {contest ? `${contest.sampleSize} Ballots` : ""}</SectionLabel>
+                                <InlineButton onClick={e => this.downloadBallotRetrievalList(round, e)}>Download Ballot Retrieval List for Round {i + 1}</InlineButton>
+                                <SectionLabel>Audited Results: Round {round}</SectionLabel>
+                                <SectionDetail>Enter the number of votes recorded for each candidate/choice in the audited ballots for Round {i + 1}</SectionDetail>
+                                <InputSection>
+                                    <InlineInput onChange={(e: any) => candidateOne = e.target.value}><InputLabel>{this.state.candidateOneName}</InputLabel><Field /></InlineInput>
+                                    <InlineInput onChange={(e: any) => candidateTwo = e.target.value}><InputLabel>{this.state.candidateTwoName}</InputLabel><Field /></InlineInput>
+                                </InputSection>
+                            </Section>
+                        </PageSection>
+                        <ButtonBar>
+                            <Button type="button" onClick={e => this.calculateRiskMeasurement({ id: round, round: v, candidateOne, candidateTwo, roundIndex: i }, e)}>Calculate Risk Measurement</Button>
+                        </ButtonBar>
+                    </form>
+                    {contest && contest.endMeasurements.pvalue && (contest.endMeasurements.isComplete !== null) &&
+                        <form>
+                            <Section>
+                                <PageSection>
+                                    <SectionLabel>Audit Status: {contest.endMeasurements.isComplete ? "COMPLETE" : "INCOMPLETE"}</SectionLabel>
+                                    <InputSection>
+                                        <InlineInput ><InputLabel>Risk Limit: </InputLabel>{this.state.desiredRiskLimit}%</InlineInput>
+                                        <InlineInput><InputLabel>P-value: </InputLabel> {contest.endMeasurements.pvalue}</InlineInput>
+                                    </InputSection>
+                                    {/* {Form 3} */}
+                                    {contest.endMeasurements.isComplete &&
+                                        <SmallInlineButton onClick={e => this.downloadAuditReport(i, v, e)}>Download Audit Report</SmallInlineButton>}
+                                </PageSection>
+                            </Section>
+                        </form>
+                    }
+                </React.Fragment>
+            )
+        })
+    }
+
     render() {
-        const { audit, manifestUploaded } = this.state
+        const { audit, manifestUploaded, rounds } = this.state
+        console.log({ rounds })
         return (
             <React.Fragment>
                 <PageTitle>Audit Setup</PageTitle>
-
+                {this.state.isLoading ? (<div>
+                    Loading...
+                </div>) : null}
                 {/* Form 1 */}
 
                 <form>
@@ -389,7 +488,7 @@ class AuditForms extends React.Component<any, any>{
                         <Section>
                             <SectionLabel>Contest Name</SectionLabel>
                             <SectionDetail>Enter the name of the contest that will drive the audit.</SectionDetail>
-                            <Field name="name" onChange={e => this.inputChange(e)} />
+                            <Field name="name" onChange={e => this.inputChange(e)} value={this.state.name} />
                         </Section>
                         <Section>
                             <SectionLabel>Candidates/Choices & Vote Totals</SectionLabel>
@@ -400,23 +499,23 @@ class AuditForms extends React.Component<any, any>{
                                     <InputLabelRight>Votes for Candidate/Choice 1</InputLabelRight>
                                 </InputLabelRow>
                                 <InputFieldRow>
-                                    <Field name="candidateOneName" onChange={e => this.inputChange(e)} />
-                                    <FieldRight type="number" name="candidateOneVotes" onChange={e => this.inputChange(e)} />
+                                    <Field name="candidateOneName" onChange={e => this.inputChange(e)} value={this.state.candidateOneName} />
+                                    <FieldRight type="number" name="candidateOneVotes" onChange={e => this.inputChange(e)} value={this.state.candidateOneVotes} />
                                 </InputFieldRow>
                                 <InputLabelRow>
-                                    <InputLabel>Name of Candidate/Choice 1</InputLabel>
-                                    <InputLabelRight>Votes for Candidate/Choice 1</InputLabelRight>
+                                    <InputLabel>Name of Candidate/Choice 2</InputLabel>
+                                    <InputLabelRight>Votes for Candidate/Choice 2</InputLabelRight>
                                 </InputLabelRow>
                                 <InputFieldRow>
-                                    <Field name="candidateTwoName" onChange={e => this.inputChange(e)} />
-                                    <FieldRight type="number" name="candidateTwoVotes" onChange={e => this.inputChange(e)} />
+                                    <Field name="candidateTwoName" onChange={e => this.inputChange(e)} value={this.state.candidateTwoName} />
+                                    <FieldRight type="number" name="candidateTwoVotes" onChange={e => this.inputChange(e)} value={this.state.candidateTwoVotes} />
                                 </InputFieldRow>
                             </TwoColumnSection>
                         </Section>
                         <Section>
                             <SectionLabel>Total Ballots Cast</SectionLabel>
                             <SectionDetail>Enter the overall number of ballot cards cast in jurisdictoins containing this contest.</SectionDetail>
-                            <Field type="number" name="totalBallots" onChange={e => this.inputChange(e)} />
+                            <Field type="number" name="totalBallots" onChange={e => this.inputChange(e)} value={this.state.totalBallots} />
                         </Section>
                         <SectionTitle>Audit Settings</SectionTitle>
                         <Section>
@@ -424,7 +523,7 @@ class AuditForms extends React.Component<any, any>{
                             <SectionDetail>Set the risk for the audit as as percentage (e.g. "5" = 5%).</SectionDetail>
                             <select name="desiredRiskLimit" value={this.state.desiredRiskLimit} onChange={e => this.inputChange(e)}>
                                 {
-                                    this.generateOptions(100)
+                                    this.generateOptions(20)
                                 }
                             </select>
                         </Section>
@@ -435,100 +534,56 @@ class AuditForms extends React.Component<any, any>{
                         </Section>
                     </PageSection>
                     <ButtonBar>
-                        <Button onClick={e => this.submitFormOne(e)} disabled={!this.state.canEstimateSampleSize} style={{cursor: this.state.canEstimateSampleSize? "wait": ''}}>Estimate Sample Size</Button>
+                        <Button onClick={e => this.submitFormOne(e)} disabled={!this.state.canEstimateSampleSize} style={{ cursor: this.state.canEstimateSampleSize ? "wait" : '' }}>Estimate Sample Size</Button>
                     </ButtonBar>
                 </form>
 
                 {/* Form 2 */}
                 {this.state.showFormTwo &&
-                <form onSubmit={e => this.submitFormTwo(e)}>
-                    <PageSection>
-                        <Section>
-                            <SectionLabel>Estimated Sample Size</SectionLabel>
-                            <SectionDetail>
-                                Choose the initial sample size you would like to use for Round 1 of the audit from the options below.
+                    <form onSubmit={e => this.submitFormTwo(e)}>
+                        <PageSection>
+                            {/* <Section>
+                                <SectionLabel>Estimated Sample Size</SectionLabel>
+                                <SectionDetail>
+                                    Choose the initial sample size you would like to use for Round 1 of the audit from the options below.
                                     <div><input name="sampleSize" type="radio" value="223" onChange={e => this.inputChange(e)} /><InputLabel>223 samples (80% chance of reaching risk limit in one round)</InputLabel></div>
-                                <div><input name="sampleSize" type="radio" value="456" onChange={e => this.inputChange(e)} /><InputLabel>456 samples (90% chance of reaching risk limit in one round)</InputLabel></div>
-                            </SectionDetail>
-                        </Section>
-                        <Section>
-                            <SectionLabel>Number of Audit Boards</SectionLabel>
-                            <SectionDetail>Set the number of audit boards you wish to use.</SectionDetail>
-                            <select name="auditBoards" value={this.state.auditBoards} onChange={e => this.inputChange(e)}>
-                                {this.generateOptions(5)}
-                            </select>
-                        </Section>
-                        <Section>
-                            <SectionLabel>Ballot Manifest</SectionLabel>
-                            {manifestUploaded ? 
-                                <React.Fragment>
-                                    <SectionDetail><b>Filename:</b> {audit.jurisdictions[0].ballotManifest.filename}</SectionDetail>
-                                    <SectionDetail><b>Ballots:</b> {audit.jurisdictions[0].ballotManifest.numBallots}</SectionDetail>
-                                    <SectionDetail><b>Batches:</b> {audit.jurisdictions[0].ballotManifest.numBatches}</SectionDetail>
-                                    <Button onClick={e => this.deleteBallotManifest(e)}>Delete File</Button>
-                                </React.Fragment> :
-                                <React.Fragment>
-                                    <SectionDetail>Click "Browse" to choose the appropriate Ballot Manifest file from your computer</SectionDetail>
-                                    <input type="file" accept=".csv" onChange={e => this.fileInputChange(e)}></input>
-                                </React.Fragment>
-                            }
-                        </Section>
-                    </PageSection>
-                    <ButtonBar>
-                        <Button onClick={e => this.submitFormTwo(e)}>Select Ballots To Audit</Button>
-                    </ButtonBar>
-                </form>
+                                    <div><input name="sampleSize" type="radio" value="456" onChange={e => this.inputChange(e)} /><InputLabel>456 samples (90% chance of reaching risk limit in one round)</InputLabel></div>
+                                </SectionDetail>
+                            </Section> */}
+                            <Section>
+                                <SectionLabel>Number of Audit Boards</SectionLabel>
+                                <SectionDetail>Set the number of audit boards you wish to use.</SectionDetail>
+                                <select name="auditBoards" value={this.state.auditBoards} onChange={e => this.inputChange(e)}>
+                                    {this.generateOptions(5)}
+                                </select>
+                            </Section>
+                            <Section>
+                                <SectionLabel>Ballot Manifest</SectionLabel>
+                                {manifestUploaded ?
+                                    <React.Fragment>
+                                        <SectionDetail><b>Filename:</b> {audit.jurisdictions[0].ballotManifest.filename}</SectionDetail>
+                                        <SectionDetail><b>Ballots:</b> {audit.jurisdictions[0].ballotManifest.numBallots}</SectionDetail>
+                                        <SectionDetail><b>Batches:</b> {audit.jurisdictions[0].ballotManifest.numBatches}</SectionDetail>
+                                        <Button onClick={e => this.deleteBallotManifest(e)}>Delete File</Button>
+                                    </React.Fragment> :
+                                    <React.Fragment>
+                                        <SectionDetail>Click "Browse" to choose the appropriate Ballot Manifest file from your computer</SectionDetail>
+                                        <input type="file" accept=".csv" onChange={e => this.fileInputChange(e)}></input>
+                                    </React.Fragment>
+                                }
+                            </Section>
+                        </PageSection>
+                        <ButtonBar>
+                            <Button onClick={e => this.submitFormTwo(e)}>Select Ballots To Audit</Button>
+                        </ButtonBar>
+                    </form>
                 }
                 {/* Form 3 */}
-                {this.state.showFormThree &&
-                <form>
-                    <PageSection>
-                        <Section>
-                            <SectionLabel>Ballot Retrieval List</SectionLabel>
-                            <InlineButton onClick={e => this.downloadBallotRetrievalList(e)}>Download Ballot Retrieval List for Round 1</InlineButton>
-                            <SectionLabel>Audited Results: Round 1</SectionLabel>
-                            <SectionDetail>Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 1</SectionDetail>
-                            <InputSection>
-                                <InlineInput><InputLabel>{this.state.candidateOneName}</InputLabel><Field /></InlineInput>
-                                <InlineInput><InputLabel>{this.state.candidateTwoName}</InputLabel><Field /></InlineInput>
-                            </InputSection>
-                        </Section>
-                    </PageSection>
-                    <ButtonBar>
-                        <Button onClick={e => this.calculateRiskMeasurement(e)}>Calculate Risk Measurement</Button>
-                    </ButtonBar>
-                </form>
-                }
-
-                {/* Form 4 */}
-                {this.state.showFormFour &&
-                <form>
-                    <Section>
-                        <PageSection>
-                            <SectionLabel>Audit Status: INCOMPLETE</SectionLabel>
-                            <InputSection>
-                                <InlineInput><InputLabel>Risk Limit: </InputLabel></InlineInput>
-                                <InlineInput><InputLabel>Risk Measurement: </InputLabel></InlineInput>
-                                <InlineInput><InputLabel>P-value: </InputLabel></InlineInput>
-                            </InputSection>
-                            <SectionLabel>Ballot Retrieval List</SectionLabel>
-                            <InlineButton>Download Ballot Retrieval List for Round 2</InlineButton>
-                            <SectionLabel>Audited Results: Round 2</SectionLabel>
-                            <SectionDetail>Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 2</SectionDetail>
-                            <InputSection>
-                                <InlineInput><InputLabel>Jane Doe III</InputLabel><Field /></InlineInput>
-                                <InlineInput><InputLabel>Martin Van Buren</InputLabel><Field /></InlineInput>
-                            </InputSection>
-                            <SmallInlineButton onClick={e => this.downloadAuditReport(e)}>Download Audit Report</SmallInlineButton>
-                        </PageSection>
-                    </Section>
-                </form>
-                }
+                {this.generateFormThree()}
 
             </React.Fragment>
         );
     }
-
 }
 
 export default AuditForms;
