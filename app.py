@@ -418,6 +418,7 @@ def audit_reset():
     RoundContest.query.delete()
     Round.query.delete()
     Election.query.delete()
+    TargetedContestChoice.query.delete()    
     TargetedContest.query.delete()
     Jurisdiction.query.delete()
     db.session.commit()
