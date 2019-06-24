@@ -197,7 +197,7 @@ class AuditForms extends React.Component<any, any>{
             showFormThree: true,
             showFormFour: true,
             sampleSize: "",
-            auditBoards: 1,
+            auditBoards: null,
             manifestCSV: null,
             manifestUploaded: false,
             // jurisdiction
@@ -282,21 +282,23 @@ class AuditForms extends React.Component<any, any>{
         this.setState({ manifestCSV: files[0] })
     }
 
-    async submitFormTwo(e: any) {
+  async submitFormTwo(e: any) {
         e.preventDefault();
         const { manifestCSV, name, audit } = this.state;
         console.log("jurisdiction: ", audit.jurisdictions[0]);
 
-        const auditBoards = Array.from(Array(this.state.auditBoards).keys()).map(i => {
+        const numAuditBoards = parseInt((document.getElementById('auditBoards') as HTMLInputElement).value);
+    
+        const auditBoards = Array.from(Array(numAuditBoards).keys()).map(i => {
             return {
-                id: uuid(), members: []
+                id: `audit-board-${i+1}`, members: []
             }
         })
 
         try {
             // upload jurisdictions
             const data: Array<Jurisdiction> = [{
-                id: uuid(),
+                id: 'jurisdiction-1',
                 name,
                 contests: [`contest-${uuid()}`],
                 auditBoards: auditBoards,
@@ -539,7 +541,7 @@ class AuditForms extends React.Component<any, any>{
 
                 {/* Form 2 */}
                 {this.state.showFormTwo &&
-                    <form onSubmit={e => this.submitFormTwo(e)}>
+                    <form onSubmit={e => this.submitFormTwo(e)} id="formTwo">
                         <PageSection>
                             {/* <Section>
                                 <SectionLabel>Estimated Sample Size</SectionLabel>
@@ -552,7 +554,7 @@ class AuditForms extends React.Component<any, any>{
                             <Section>
                                 <SectionLabel>Number of Audit Boards</SectionLabel>
                                 <SectionDetail>Set the number of audit boards you wish to use.</SectionDetail>
-                                <select name="auditBoards" value={this.state.auditBoards} onChange={e => this.inputChange(e)}>
+                                <select id="auditBoards" name="auditBoards" value={this.state.auditBoards}>
                                     {this.generateOptions(5)}
                                 </select>
                             </Section>
