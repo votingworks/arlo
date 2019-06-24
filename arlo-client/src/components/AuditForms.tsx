@@ -373,7 +373,7 @@ class AuditForms extends React.Component<any, any>{
 
     async calculateRiskMeasurement(data: any, evt: any) {
         evt.preventDefault();
-        const { id, round, candidateOne, candidateTwo, roundIndex } = data;
+        const { id, round, candidateOne, candidateTwo } = data;
         console.log("calculateRiskMeasurement For Round: ", id, ", ", round)
         try {
             const jurisdictionID: string = this.state.audit.jurisdictions[0].id;
@@ -408,7 +408,6 @@ class AuditForms extends React.Component<any, any>{
         evt.preventDefault();
         try {
             console.log("Download Audit Report Form For Round: ", i, ", ", round)
-            const jurisdictionID: string = this.state.audit.jurisdictions[0].id;
             window.open(`/audit/report`)
             const audit: any = await this.getStatus();
             this.setState({ audit })
