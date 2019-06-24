@@ -32,7 +32,7 @@ exports[`renders corretly 1`] = `
         <input
           class="sc-iwsKbI gXelZt"
           name="name"
-          value="Contest Test"
+          value=""
         />
       </div>
       <div
@@ -71,13 +71,13 @@ exports[`renders corretly 1`] = `
             <input
               class="sc-iwsKbI gXelZt"
               name="candidateOneName"
-              value="XYZ"
+              value=""
             />
             <input
               class="sc-gZMcBi cdSvXt"
               name="candidateOneVotes"
               type="number"
-              value="10"
+              value=""
             />
           </div>
           <div
@@ -100,13 +100,13 @@ exports[`renders corretly 1`] = `
             <input
               class="sc-iwsKbI gXelZt"
               name="candidateTwoName"
-              value="ZYZ"
+              value=""
             />
             <input
               class="sc-gZMcBi cdSvXt"
               name="candidateTwoVotes"
               type="number"
-              value="20"
+              value=""
             />
           </div>
         </div>
@@ -128,7 +128,7 @@ exports[`renders corretly 1`] = `
           class="sc-iwsKbI gXelZt"
           name="totalBallots"
           type="number"
-          value="300"
+          value=""
         />
       </div>
       <div

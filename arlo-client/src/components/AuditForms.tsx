@@ -183,27 +183,27 @@ class AuditForms extends React.Component<any, any>{
         this.state = {
             audit: null,
             // form 1
-            name: null,
-            randomSeed: null,
-            candidateOneName: null,
-            candidateOneVotes: null,
-            candidateTwoName: null,
-            candidateTwoVotes: null,
-            totalBallots: null,
+            name: "",
+            randomSeed: "",
+            candidateOneName: "",
+            candidateOneVotes: "",
+            candidateTwoName: "",
+            candidateTwoVotes: "",
+            totalBallots: "",
             desiredRiskLimit: 10,
             canEstimateSampleSize: true,
             // form 2
             showFormTwo: false,
             showFormThree: true,
             showFormFour: true,
-            sampleSize: null,
-            auditBoards: null,
+            sampleSize: "",
+            auditBoards: [],
             manifestCSV: null,
             manifestUploaded: false,
             // jurisdiction
-            jurisdictionID: null,
+            jurisdictionID: "",
             roundsExist: false,
-            rounds: null,
+            rounds: [],
             isLoading: false
         };
         this.generateFormThree = this.generateFormThree.bind(this);
@@ -474,7 +474,6 @@ class AuditForms extends React.Component<any, any>{
 
     render() {
         const { audit, manifestUploaded, rounds } = this.state
-        console.log({ rounds })
         return (
             <React.Fragment>
                 <PageTitle>Audit Setup</PageTitle>
