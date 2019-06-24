@@ -164,7 +164,8 @@ def audit_status():
                         "name": choice.name,
                         "numVotes": choice.num_votes
                     }
-                for choice in contest.choices]
+                    for choice in contest.choices],
+                "totalBallotsCast": contest.total_ballots_cast
             }
             for contest in election.contests],
         jurisdictions=[

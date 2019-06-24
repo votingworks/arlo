@@ -182,16 +182,6 @@ class AuditForms extends React.Component<any, any>{
         super(props);
         this.state = {
             audit: null,
-            // form 1
-            name: "",
-            randomSeed: "",
-            candidateOneName: "",
-            candidateOneVotes: "",
-            candidateTwoName: "",
-            candidateTwoVotes: "",
-            totalBallots: "",
-            desiredRiskLimit: 10,
-            canEstimateSampleSize: true,
             // form 2
             showFormTwo: false,
             showFormThree: true,
@@ -219,34 +209,34 @@ class AuditForms extends React.Component<any, any>{
         return audit
     }
 
-    async submitFormOne(e: any) {
+  async componentDidMount() {
+    const audit = await this.getStatus()
+    this.setState({audit})
+  }
+
+  async submitFormOne(e: any) {
         e.preventDefault();
-        this.setState({ canEstimateSampleSize: false })
-        const {
-            name, randomSeed, desiredRiskLimit,
-            candidateOneName, candidateOneVotes,
-            candidateTwoName, candidateTwoVotes,
-            totalBallots
-        } = this.state
+    this.setState({ canEstimateSampleSize: false })
+    const formData = new FormData(document.getElementById('formOne') as HTMLFormElement)
         const data: Audit = {
-            name,
-            randomSeed: Number(randomSeed),
-            riskLimit: Number(desiredRiskLimit),
+            name: 'Election',
+            randomSeed: Number(formData.get('randomSeed')),
+            riskLimit: Number(formData.get('desiredRiskLimit')),
             contests: [
                 {
                     id: 'contest-1',
-                    name,
-                    totalBallotsCast: Number(totalBallots),
+                    name: formData.get('name') as string,
+                    totalBallotsCast: Number(formData.get('totalBallotsCast')),
                     choices: [
                         {
                             id: 'candidate-1',
-                            name: candidateOneName,
-                            numVotes: Number(candidateOneVotes)
+                            name: formData.get('candidateOneName') as string,
+                            numVotes: Number(formData.get('candidateOneVotes'))
                         },
                         {
                             id: 'candidate-2',
-                            name: candidateTwoName,
-                            numVotes: Number(candidateTwoVotes)
+                            name: formData.get('candidateTwoName') as string,
+                            numVotes: Number(formData.get('candidateTwoVotes'))
                         }
                     ]
                 },
@@ -283,8 +273,8 @@ class AuditForms extends React.Component<any, any>{
     }
 
   async submitFormTwo(e: any) {
-        e.preventDefault();
-        const { manifestCSV, name, audit } = this.state;
+    e.preventDefault();
+        const { manifestCSV, audit } = this.state;
         console.log("jurisdiction: ", audit.jurisdictions[0]);
 
         const numAuditBoards = parseInt((document.getElementById('auditBoards') as HTMLInputElement).value);
@@ -299,7 +289,7 @@ class AuditForms extends React.Component<any, any>{
             // upload jurisdictions
             const data: Array<Jurisdiction> = [{
                 id: 'jurisdiction-1',
-                name,
+                name: 'Jurisdiction 1',
                 contests: [`contest-${uuid()}`],
                 auditBoards: auditBoards,
             }];
@@ -426,7 +416,7 @@ class AuditForms extends React.Component<any, any>{
         }
         console.log({ audit })
         return audit.rounds.map((v: any, i: number) => {
-            console.log("v.contests > 0: ", v.contestspo);
+            console.log("v.contests > 0: ", v.contests);
             const round: number = i + 1;
             const contest: any = v.contests.length > 0 ? v.contests[0] : null;
             console.log("contests: ", v.contests, ", v.contest[0]:", contest)
@@ -442,8 +432,8 @@ class AuditForms extends React.Component<any, any>{
                                 <SectionLabel>Audited Results: Round {round}</SectionLabel>
                                 <SectionDetail>Enter the number of votes recorded for each candidate/choice in the audited ballots for Round {i + 1}</SectionDetail>
                                 <InputSection>
-                                    <InlineInput onChange={(e: any) => candidateOne = e.target.value}><InputLabel>{this.state.candidateOneName}</InputLabel><Field /></InlineInput>
-                                    <InlineInput onChange={(e: any) => candidateTwo = e.target.value}><InputLabel>{this.state.candidateTwoName}</InputLabel><Field /></InlineInput>
+                                    <InlineInput onChange={(e: any) => candidateOne = e.target.value}><InputLabel>{this.state.audit.contests[0].choices[0].name}</InputLabel><Field /></InlineInput>
+                                    <InlineInput onChange={(e: any) => candidateTwo = e.target.value}><InputLabel>{this.state.audit.contests[0].choices[1].name}</InputLabel><Field /></InlineInput>
                                 </InputSection>
                             </Section>
                         </PageSection>
@@ -457,7 +447,7 @@ class AuditForms extends React.Component<any, any>{
                                 <PageSection>
                                     <SectionLabel>Audit Status: {contest.endMeasurements.isComplete ? "COMPLETE" : "INCOMPLETE"}</SectionLabel>
                                     <InputSection>
-                                        <InlineInput ><InputLabel>Risk Limit: </InputLabel>{this.state.desiredRiskLimit}%</InlineInput>
+                                        <InlineInput ><InputLabel>Risk Limit: </InputLabel>{this.state.audit.riskLimit}%</InlineInput>
                                         <InlineInput><InputLabel>P-value: </InputLabel> {contest.endMeasurements.pvalue}</InlineInput>
                                     </InputSection>
                                     {/* {Form 3} */}
@@ -472,8 +462,12 @@ class AuditForms extends React.Component<any, any>{
         })
     }
 
+  
     render() {
-        const { audit, manifestUploaded } = this.state
+      const formOneHasData = this.state.audit && this.state.audit.contests[0]
+      const formTwoHasData = this.state.audit && this.state.audit.jurisdictions[0]
+      const manifestUploaded = formTwoHasData && this.state.audit.jurisdictions[0].ballotManifest.filename
+        const { audit } = this.state
         return (
             <React.Fragment>
                 <PageTitle>Audit Setup</PageTitle>
@@ -482,13 +476,13 @@ class AuditForms extends React.Component<any, any>{
                 </div>) : null}
                 {/* Form 1 */}
 
-                <form>
+                <form id="formOne">
                     <PageSection>
                         <SectionTitle>Contest Information</SectionTitle>
                         <Section>
                             <SectionLabel>Contest Name</SectionLabel>
                             <SectionDetail>Enter the name of the contest that will drive the audit.</SectionDetail>
-                            <Field name="name" onChange={e => this.inputChange(e)} value={this.state.name} />
+                            <Field name="name" defaultValue={formOneHasData && this.state.audit.contests[0].name} />
                         </Section>
                         <Section>
                             <SectionLabel>Candidates/Choices & Vote Totals</SectionLabel>
@@ -499,29 +493,29 @@ class AuditForms extends React.Component<any, any>{
                                     <InputLabelRight>Votes for Candidate/Choice 1</InputLabelRight>
                                 </InputLabelRow>
                                 <InputFieldRow>
-                                    <Field name="candidateOneName" onChange={e => this.inputChange(e)} value={this.state.candidateOneName} />
-                                    <FieldRight type="number" name="candidateOneVotes" onChange={e => this.inputChange(e)} value={this.state.candidateOneVotes} />
+                                    <Field name="candidateOneName" defaultValue={formOneHasData && this.state.audit.contests[0].choices[0].name} />
+                                    <FieldRight type="number" name="candidateOneVotes" defaultValue={formOneHasData && this.state.audit.contests[0].choices[0].numVotes} />
                                 </InputFieldRow>
                                 <InputLabelRow>
                                     <InputLabel>Name of Candidate/Choice 2</InputLabel>
                                     <InputLabelRight>Votes for Candidate/Choice 2</InputLabelRight>
                                 </InputLabelRow>
                                 <InputFieldRow>
-                                    <Field name="candidateTwoName" onChange={e => this.inputChange(e)} value={this.state.candidateTwoName} />
-                                    <FieldRight type="number" name="candidateTwoVotes" onChange={e => this.inputChange(e)} value={this.state.candidateTwoVotes} />
+                                    <Field name="candidateTwoName" defaultValue={formOneHasData && this.state.audit.contests[0].choices[1].name} />
+                                    <FieldRight type="number" name="candidateTwoVotes" defaultValue={formOneHasData && this.state.audit.contests[0].choices[1].numVotes} />
                                 </InputFieldRow>
                             </TwoColumnSection>
                         </Section>
                         <Section>
                             <SectionLabel>Total Ballots Cast</SectionLabel>
                             <SectionDetail>Enter the overall number of ballot cards cast in jurisdictoins containing this contest.</SectionDetail>
-                            <Field type="number" name="totalBallots" onChange={e => this.inputChange(e)} value={this.state.totalBallots} />
+                            <Field type="number" name="totalBallotsCast" defaultValue={formOneHasData && this.state.audit.contests[0].totalBallotsCast} />
                         </Section>
                         <SectionTitle>Audit Settings</SectionTitle>
                         <Section>
                             <SectionLabel>Desired Risk Limit</SectionLabel>
                             <SectionDetail>Set the risk for the audit as as percentage (e.g. "5" = 5%).</SectionDetail>
-                            <select name="desiredRiskLimit" value={this.state.desiredRiskLimit} onChange={e => this.inputChange(e)}>
+                            <select name="desiredRiskLimit" defaultValue={formOneHasData && this.state.audit.riskLimit}>
                                 {
                                     this.generateOptions(20)
                                 }
@@ -530,16 +524,16 @@ class AuditForms extends React.Component<any, any>{
                         <Section>
                             <SectionLabel>Random Seed</SectionLabel>
                             <SectionDetail>Enter the random number to seed the pseudo-random number generator.</SectionDetail>
-                            <Field type="number" name="randomSeed" onChange={e => this.inputChange(e)} />
+                            <Field type="number" defaultValue={formOneHasData && this.state.audit.randomSeed} name="randomSeed" />
                         </Section>
                     </PageSection>
                     <ButtonBar>
-                        <Button onClick={e => this.submitFormOne(e)} disabled={!this.state.canEstimateSampleSize} style={{ cursor: this.state.canEstimateSampleSize ? "wait" : '' }}>Estimate Sample Size</Button>
+                        <Button onClick={e => this.submitFormOne(e)}>Estimate Sample Size</Button>
                     </ButtonBar>
                 </form>
 
                 {/* Form 2 */}
-                {this.state.showFormTwo &&
+                {formOneHasData &&
                     <form onSubmit={e => this.submitFormTwo(e)} id="formTwo">
                         <PageSection>
                             {/* <Section>
@@ -553,7 +547,7 @@ class AuditForms extends React.Component<any, any>{
                             <Section>
                                 <SectionLabel>Number of Audit Boards</SectionLabel>
                                 <SectionDetail>Set the number of audit boards you wish to use.</SectionDetail>
-                                <select id="auditBoards" name="auditBoards" value={this.state.auditBoards}>
+                                <select id="auditBoards" name="auditBoards" defaultValue={formTwoHasData && this.state.audit.jurisdictions[0].auditBoards.length}>
                                     {this.generateOptions(5)}
                                 </select>
                             </Section>
