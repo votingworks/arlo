@@ -407,13 +407,11 @@ class AuditForms extends React.Component<any, any>{
             return;
         }
         return audit.rounds.map((v: any, i: number) => {
-            console.log("v.contests > 0: ", v.contests);
             const round: number = i + 1;
             const contest: any = v.contests.length > 0 ? v.contests[0] : null;
-            console.log("contests: ", v.contests, ", v.contest[0]:", contest)
             let candidateOne: string = "";
           let candidateTwo: string = "";	
-	  const showCalculateButton = (i+1) === audit.rounds.length && contest.endMeasurements && !contest.endMeasurements.isComplete
+	  const showCalculateButton = (i+1) === audit.rounds.length && contest && contest.endMeasurements && !contest.endMeasurements.isComplete
             return (
                 <React.Fragment key={i}>
                       <PageSection>
