@@ -7,7 +7,9 @@ exports[`renders corretly 1`] = `
   >
     Audit Setup
   </div>
-  <form>
+  <form
+    id="formOne"
+  >
     <div
       class="sc-EHOje hIirbm"
     >
@@ -126,7 +128,7 @@ exports[`renders corretly 1`] = `
         </div>
         <input
           class="sc-iwsKbI gXelZt"
-          name="totalBallots"
+          name="totalBallotsCast"
           type="number"
           value=""
         />
@@ -231,6 +233,7 @@ exports[`renders corretly 1`] = `
           class="sc-iwsKbI gXelZt"
           name="randomSeed"
           type="number"
+          value=""
         />
       </div>
     </div>
@@ -239,7 +242,6 @@ exports[`renders corretly 1`] = `
     >
       <button
         class="sc-jzJRlG ldhbWy"
-        style="cursor: wait;"
       >
         Estimate Sample Size
       </button>
