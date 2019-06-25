@@ -473,7 +473,7 @@ class AuditForms extends React.Component<any, any>{
     }
 
     render() {
-        const { audit, manifestUploaded, rounds } = this.state
+        const { audit, manifestUploaded } = this.state
         return (
             <React.Fragment>
                 <PageTitle>Audit Setup</PageTitle>
