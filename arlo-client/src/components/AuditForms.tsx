@@ -1,20 +1,14 @@
 import React from 'react'
 import styled from 'styled-components';
 
-const PageTitle = styled.div`
-    font-size: .9em;
-    font-weight: bold;
-    margin: 0 0 25px 0;
-`
-
 const Section = styled.div`
-    margin 50px 0 50px 0;
+    margin 20px 0 20px 0;
 `
 
 const SectionTitle = styled.div`
     font-size: .8em;
     text-align: center; 
-    margin: 0 0 25px 0;
+    margin: 40px 0 25px 0;
 `
 const SectionDetail = styled.div`
     font-size: .4em;
@@ -27,7 +21,7 @@ const SectionLabel = styled.div`
 `
 const PageSection = styled.div`
     text-align: left;
-    display: inline-block;
+    display: block;
     width: 50%;
 `
 
@@ -253,7 +247,7 @@ class AuditForms extends React.Component<any, any>{
 
             const audit: any = await api("/audit/status", {})
             console.log("res: ", audit)
-            this.setState({ showFormTwo: true, canEstimateSampleSize: true, audit });
+            this.setState({ isLoading: false, audit });
 
         } catch (err) {
             console.log("error: ", err);
@@ -273,8 +267,7 @@ class AuditForms extends React.Component<any, any>{
 
   async submitFormTwo(e: any) {
     e.preventDefault();
-        const { manifestCSV, audit } = this.state;
-        console.log("jurisdiction: ", audit.jurisdictions[0]);
+        const { manifestCSV } = this.state;
 
         const numAuditBoards = parseInt((document.getElementById('auditBoards') as HTMLInputElement).value);
     
@@ -300,7 +293,6 @@ class AuditForms extends React.Component<any, any>{
                     "Content-Type": "application/json"
                 }
             })
-            console.log("upload jurisdictions response: ", res)
 
             // get latest audit with jurisdiction id and use it to upload the data
             let audit: any = await api("/audit/status", {})
@@ -309,10 +301,10 @@ class AuditForms extends React.Component<any, any>{
                 return;
             }
             const jurisdictionID: string = audit.jurisdictions[0].id
-            this.setState({ showFormThree: true })
-            // upload form data
+
+          // upload form data
             if (manifestCSV == null) {
-                this.setState({ audit, manifestUploaded: true, rounds: audit.rounds })
+                this.setState({ audit })
                 return;
             }
             console.log("manifestCSV: ", manifestCSV)
@@ -325,7 +317,7 @@ class AuditForms extends React.Component<any, any>{
             console.log("Upload manifest response: ", res)
 
             audit = await api("/audit/status", {})
-            this.setState({ audit, manifestUploaded: true, rounds: audit.rounds })
+            this.setState({ audit, isLoading: false})
         } catch (err) {
             console.log("Error when Uploading manifest: ", err)
         }
@@ -380,7 +372,8 @@ class AuditForms extends React.Component<any, any>{
                     }
                 ]
             }
-            console.log("data: ", body)
+
+	  this.setState({isLoading:true})
             await  api(`/jurisdiction/${jurisdictionID}/${id}/results`, {
                 method: "POST",
                 headers: {
@@ -389,7 +382,7 @@ class AuditForms extends React.Component<any, any>{
                 body: JSON.stringify(body)
             })
             const audit: any = await this.getStatus();
-            this.setState({ audit })
+            this.setState({ audit , isLoading:false})
         } catch (err) {
             console.log("failed to calcualteRiskManagement(): ", err);
         }
@@ -413,49 +406,52 @@ class AuditForms extends React.Component<any, any>{
         if (!audit) {
             return;
         }
-        console.log({ audit })
         return audit.rounds.map((v: any, i: number) => {
             console.log("v.contests > 0: ", v.contests);
             const round: number = i + 1;
             const contest: any = v.contests.length > 0 ? v.contests[0] : null;
             console.log("contests: ", v.contests, ", v.contest[0]:", contest)
             let candidateOne: string = "";
-            let candidateTwo: string = "";
+          let candidateTwo: string = "";	
+	  const showCalculateButton = (i+1) === audit.rounds.length && !contest.endMeasurements.isComplete
             return (
                 <React.Fragment key={i}>
-                    <form>
-                        <PageSection>
-                            <Section>
-                                <SectionLabel>Ballot Retrieval List {contest ? `${contest.sampleSize} Ballots` : ""}</SectionLabel>
-                                <InlineButton onClick={e => this.downloadBallotRetrievalList(round, e)}>Download Ballot Retrieval List for Round {i + 1}</InlineButton>
-                                <SectionLabel>Audited Results: Round {round}</SectionLabel>
-                                <SectionDetail>Enter the number of votes recorded for each candidate/choice in the audited ballots for Round {i + 1}</SectionDetail>
-                                <InputSection>
-                                    <InlineInput onChange={(e: any) => candidateOne = e.target.value}><InputLabel>{this.state.audit.contests[0].choices[0].name}</InputLabel><Field /></InlineInput>
-                                    <InlineInput onChange={(e: any) => candidateTwo = e.target.value}><InputLabel>{this.state.audit.contests[0].choices[1].name}</InputLabel><Field /></InlineInput>
-                                </InputSection>
-                            </Section>
-                        </PageSection>
-                        <ButtonBar>
-                            <Button type="button" onClick={e => this.calculateRiskMeasurement({ id: round, round: v, candidateOne, candidateTwo, roundIndex: i }, e)}>Calculate Risk Measurement</Button>
-                        </ButtonBar>
-                    </form>
-                    {contest && contest.endMeasurements.pvalue && (contest.endMeasurements.isComplete !== null) &&
-                        <form>
-                            <Section>
-                                <PageSection>
-                                    <SectionLabel>Audit Status: {contest.endMeasurements.isComplete ? "COMPLETE" : "INCOMPLETE"}</SectionLabel>
-                                    <InputSection>
-                                        <InlineInput ><InputLabel>Risk Limit: </InputLabel>{this.state.audit.riskLimit}%</InlineInput>
-                                        <InlineInput><InputLabel>P-value: </InputLabel> {contest.endMeasurements.pvalue}</InlineInput>
-                                    </InputSection>
-                                    {/* {Form 3} */}
-                                    {contest.endMeasurements.isComplete &&
-                                        <SmallInlineButton onClick={e => this.downloadAuditReport(i, v, e)}>Download Audit Report</SmallInlineButton>}
-                                </PageSection>
-                            </Section>
-                        </form>
-                    }
+                      <PageSection>
+                        <SectionTitle>Round {i+1}</SectionTitle>
+			
+                          <Section>
+                              <SectionLabel>Ballot Retrieval List {contest ? `${contest.sampleSize} Ballots` : ""}</SectionLabel>
+                              <InlineButton onClick={e => this.downloadBallotRetrievalList(round, e)}>Download Ballot Retrieval List for Round {i + 1}</InlineButton>
+                              <SectionLabel>Audited Results: Round {round}</SectionLabel>
+                              <SectionDetail>Enter the number of votes recorded for each candidate/choice in the audited ballots for Round {i + 1}</SectionDetail>
+			      <form>
+                              <InputSection>
+                                <InlineInput onChange={(e: any) => candidateOne = e.target.value}><InputLabel>{this.state.audit.contests[0].choices[0].name}</InputLabel><Field /></InlineInput>
+                                <InlineInput onChange={(e: any) => candidateTwo = e.target.value}><InputLabel>{this.state.audit.contests[0].choices[1].name}</InputLabel><Field /></InlineInput>
+                              </InputSection>
+			      </form>
+                          </Section>
+	      {this.state.isLoading &&
+	       <p>Loading...</p>
+	      }
+		      {showCalculateButton &&
+                       <ButtonBar>
+                         <Button type="button" onClick={e => this.calculateRiskMeasurement({ id: round, round: v, candidateOne, candidateTwo, roundIndex: i }, e)}>Calculate Risk Measurement</Button>
+                       </ButtonBar>
+		      }
+			  {contest && contest.endMeasurements.pvalue && (contest.endMeasurements.isComplete !== null) &&
+                           <Section>
+                             <SectionLabel>Audit Status: {contest.endMeasurements.isComplete ? "COMPLETE" : "INCOMPLETE"}</SectionLabel>
+                             <InputSection>
+                               <InlineInput ><InputLabel>Risk Limit: </InputLabel>{this.state.audit.riskLimit}%</InlineInput>
+                               <InlineInput><InputLabel>P-value: </InputLabel> {contest.endMeasurements.pvalue}</InlineInput>
+                             </InputSection>
+                             {/* {Form 3} */}
+                             {contest.endMeasurements.isComplete &&
+                              <SmallInlineButton onClick={e => this.downloadAuditReport(i, v, e)}>Download Audit Report</SmallInlineButton>}
+                           </Section>
+			  }
+                      </PageSection>
                 </React.Fragment>
             )
         })
@@ -463,16 +459,13 @@ class AuditForms extends React.Component<any, any>{
 
   
     render() {
-      const formOneHasData = this.state.audit && this.state.audit.contests[0]
-      const formTwoHasData = this.state.audit && this.state.audit.jurisdictions[0]
-      const manifestUploaded = formTwoHasData && this.state.audit.jurisdictions[0].ballotManifest.filename
-        const { audit } = this.state
+      const { audit } = this.state
+      const formOneHasData = audit && audit.contests[0]
+      const formTwoHasData = audit && audit.jurisdictions[0]
+      const manifestUploaded = formTwoHasData && audit.jurisdictions[0].ballotManifest.filename
+      const formThreeHasData = manifestUploaded && (audit.rounds.length>0)
         return (
             <React.Fragment>
-                <PageTitle>Audit Setup</PageTitle>
-                {this.state.isLoading ? (<div>
-                    Loading...
-                </div>) : null}
                 {/* Form 1 */}
 
                 <form id="formOne">
@@ -526,9 +519,13 @@ class AuditForms extends React.Component<any, any>{
                             <Field type="number" defaultValue={formOneHasData && this.state.audit.randomSeed} name="randomSeed" />
                         </Section>
                     </PageSection>
-                    <ButtonBar>
-                        <Button onClick={e => this.submitFormOne(e)}>Estimate Sample Size</Button>
-                    </ButtonBar>
+		    {!formOneHasData && this.state.isLoading &&
+		     <p>Loading...</p>}
+		    {!formOneHasData && !this.state.isLoading &&
+                     <ButtonBar>
+                       <Button onClick={e => this.submitFormOne(e)}>Estimate Sample Size</Button>
+                     </ButtonBar>
+		    }
                 </form>
 
                 {/* Form 2 */}
@@ -557,7 +554,8 @@ class AuditForms extends React.Component<any, any>{
                                         <SectionDetail><b>Filename:</b> {audit.jurisdictions[0].ballotManifest.filename}</SectionDetail>
                                         <SectionDetail><b>Ballots:</b> {audit.jurisdictions[0].ballotManifest.numBallots}</SectionDetail>
                                         <SectionDetail><b>Batches:</b> {audit.jurisdictions[0].ballotManifest.numBatches}</SectionDetail>
-                                        <Button onClick={e => this.deleteBallotManifest(e)}>Delete File</Button>
+					{!formThreeHasData &&
+                                        <Button onClick={e => this.deleteBallotManifest(e)}>Delete File</Button>}
                                     </React.Fragment> :
                                     <React.Fragment>
                                         <SectionDetail>Click "Browse" to choose the appropriate Ballot Manifest file from your computer</SectionDetail>
@@ -566,9 +564,14 @@ class AuditForms extends React.Component<any, any>{
                                 }
                             </Section>
                         </PageSection>
+			{!formThreeHasData && this.state.isLoading &&
+			<p>Loading...</p>
+			}
+			{!formThreeHasData && !this.state.isLoading &&
                         <ButtonBar>
                             <Button onClick={e => this.submitFormTwo(e)}>Select Ballots To Audit</Button>
                         </ButtonBar>
+			}
                     </form>
                 }
                 {/* Form 3 */}
