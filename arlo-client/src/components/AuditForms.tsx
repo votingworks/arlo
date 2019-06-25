@@ -542,7 +542,7 @@ class AuditForms extends React.Component<any, any>{
                                 <SectionLabel>Number of Audit Boards</SectionLabel>
                                 <SectionDetail>Set the number of audit boards you wish to use.</SectionDetail>
                                 <select id="auditBoards" name="auditBoards" defaultValue={formTwoHasData && this.state.audit.jurisdictions[0].auditBoards.length}>
-                                    {this.generateOptions(5)}
+                                    {this.generateOptions(10)}
                                 </select>
                             </Section>
                             <Section>
