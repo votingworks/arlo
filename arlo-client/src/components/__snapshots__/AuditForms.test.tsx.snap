@@ -2,110 +2,105 @@
 
 exports[`renders corretly 1`] = `
 <div>
-  <div
-    class="sc-bdVaJa PXaPp"
-  >
-    Audit Setup
-  </div>
   <form
     id="formOne"
   >
     <div
-      class="sc-EHOje hIirbm"
+      class="sc-ifAKCX iiyMor"
     >
       <div
-        class="sc-htpNat ioVugT"
+        class="sc-bwzfXH cUElZt"
       >
         Contest Information
       </div>
       <div
-        class="sc-bwzfXH evNVdE"
+        class="sc-bdVaJa dMzhyk"
       >
         <div
-          class="sc-ifAKCX iwNaox"
+          class="sc-bxivhb cLZMuR"
         >
           Contest Name
         </div>
         <div
-          class="sc-bxivhb jctXmO"
+          class="sc-htpNat iIeAQe"
         >
           Enter the name of the contest that will drive the audit.
         </div>
         <input
-          class="sc-iwsKbI gXelZt"
+          class="sc-dnqmqq iUPgct"
           name="name"
           value=""
         />
       </div>
       <div
-        class="sc-bwzfXH evNVdE"
+        class="sc-bdVaJa dMzhyk"
       >
         <div
-          class="sc-ifAKCX iwNaox"
+          class="sc-bxivhb cLZMuR"
         >
           Candidates/Choices & Vote Totals
         </div>
         <div
-          class="sc-bxivhb jctXmO"
+          class="sc-htpNat iIeAQe"
         >
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gzVnrw kvaLuz"
+          class="sc-bZQynM kIMjDG"
         >
           <div
-            class="sc-htoDjs bojbPY"
+            class="sc-gzVnrw egbnPy"
           >
             <label
-              class="sc-gqjmRU dWKOzu"
+              class="sc-gZMcBi rEVIo"
             >
               Name of Candidate/Choice 1
             </label>
             <label
-              class="sc-VigVT ixYpDM"
+              class="sc-gqjmRU fApRHX"
             >
               Votes for Candidate/Choice 1
             </label>
           </div>
           <div
-            class="sc-dnqmqq fPdHOE"
+            class="sc-htoDjs gveuAp"
           >
             <input
-              class="sc-iwsKbI gXelZt"
+              class="sc-dnqmqq iUPgct"
               name="candidateOneName"
               value=""
             />
             <input
-              class="sc-gZMcBi cdSvXt"
+              class="sc-iwsKbI lhmAex"
               name="candidateOneVotes"
               type="number"
               value=""
             />
           </div>
           <div
-            class="sc-htoDjs bojbPY"
+            class="sc-gzVnrw egbnPy"
           >
             <label
-              class="sc-gqjmRU dWKOzu"
+              class="sc-gZMcBi rEVIo"
             >
               Name of Candidate/Choice 2
             </label>
             <label
-              class="sc-VigVT ixYpDM"
+              class="sc-gqjmRU fApRHX"
             >
               Votes for Candidate/Choice 2
             </label>
           </div>
           <div
-            class="sc-dnqmqq fPdHOE"
+            class="sc-htoDjs gveuAp"
           >
             <input
-              class="sc-iwsKbI gXelZt"
+              class="sc-dnqmqq iUPgct"
               name="candidateTwoName"
               value=""
             />
             <input
-              class="sc-gZMcBi cdSvXt"
+              class="sc-iwsKbI lhmAex"
               name="candidateTwoVotes"
               type="number"
               value=""
@@ -114,40 +109,40 @@ exports[`renders corretly 1`] = `
         </div>
       </div>
       <div
-        class="sc-bwzfXH evNVdE"
+        class="sc-bdVaJa dMzhyk"
       >
         <div
-          class="sc-ifAKCX iwNaox"
+          class="sc-bxivhb cLZMuR"
         >
           Total Ballots Cast
         </div>
         <div
-          class="sc-bxivhb jctXmO"
+          class="sc-htpNat iIeAQe"
         >
           Enter the overall number of ballot cards cast in jurisdictoins containing this contest.
         </div>
         <input
-          class="sc-iwsKbI gXelZt"
+          class="sc-dnqmqq iUPgct"
           name="totalBallotsCast"
           type="number"
           value=""
         />
       </div>
       <div
-        class="sc-htpNat ioVugT"
+        class="sc-bwzfXH cUElZt"
       >
         Audit Settings
       </div>
       <div
-        class="sc-bwzfXH evNVdE"
+        class="sc-bdVaJa dMzhyk"
       >
         <div
-          class="sc-ifAKCX iwNaox"
+          class="sc-bxivhb cLZMuR"
         >
           Desired Risk Limit
         </div>
         <div
-          class="sc-bxivhb jctXmO"
+          class="sc-htpNat iIeAQe"
         >
           Set the risk for the audit as as percentage (e.g. "5" = 5%).
         </div>
@@ -217,20 +212,20 @@ exports[`renders corretly 1`] = `
         </select>
       </div>
       <div
-        class="sc-bwzfXH evNVdE"
+        class="sc-bdVaJa dMzhyk"
       >
         <div
-          class="sc-ifAKCX iwNaox"
+          class="sc-bxivhb cLZMuR"
         >
           Random Seed
         </div>
         <div
-          class="sc-bxivhb jctXmO"
+          class="sc-htpNat iIeAQe"
         >
           Enter the random number to seed the pseudo-random number generator.
         </div>
         <input
-          class="sc-iwsKbI gXelZt"
+          class="sc-dnqmqq iUPgct"
           name="randomSeed"
           type="number"
           value=""
@@ -238,10 +233,10 @@ exports[`renders corretly 1`] = `
       </div>
     </div>
     <div
-      class="sc-fjdhpX xePCd"
+      class="sc-jTzLTM bibkGc"
     >
       <button
-        class="sc-jzJRlG ldhbWy"
+        class="sc-fjdhpX gcfxuJ"
       >
         Estimate Sample Size
       </button>
