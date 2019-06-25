@@ -41,6 +41,9 @@ const Header = () => {
 
   const reset = async () => {
     await api(`/audit/reset`, {method: "POST"});
+
+    // ugly but works
+    window.location.reload()
   }
   
   return (
