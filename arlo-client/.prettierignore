@@ -1,0 +1,7 @@
+.build
+android
+build
+coverage
+dist
+ios
+node_modules

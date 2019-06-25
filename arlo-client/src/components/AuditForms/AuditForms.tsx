@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components';
-
+import AppInlineInput from '../Form/InlineInput'
 const Section = styled.div`
     margin 20px 0 20px 0;
 `
@@ -56,6 +56,10 @@ const Field = styled.input`
     width: 45%;
 `
 
+const AppField = styled(AppInlineInput)`
+    width: 45%;
+`
+
 const FieldRight = styled.input`
     width: 45%;
     margin-left: 50px;
@@ -69,13 +73,13 @@ const InputLabelRight = styled.label`
     margin-left: 75px;
 `
 
-const InlineInput = styled.div`
+/*const InlineInput = styled.div`
     width: 50%;
     display: flex; 
     flex-direction: row;
     justify-content: space-between;
     margin-bottom: 10px;
-`
+`*/
 
 const ButtonBar = styled.div`
     margin 50px 0 50px 0;
@@ -102,6 +106,13 @@ const InlineButton = styled.button`
     height: 20px; 
     border-radius: 5px;
     margin 10px 0 30px 0;
+`
+const InlineInput = styled.div`
+    width: 50%;
+    display: flex; 
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
 `
 
 const SmallInlineButton = styled.button`
@@ -462,10 +473,23 @@ class AuditForms extends React.Component<any, any>{
       const formTwoHasData = audit && audit.jurisdictions[0]
       const manifestUploaded = formTwoHasData && audit.jurisdictions[0].ballotManifest.filename
       const formThreeHasData = manifestUploaded && (audit.rounds.length>0)
+
+      /**
+       * 
+       * state = {
+       *    query: ''
+       * }
+       * Controlled
+       * <input type="text" value={this.state.query} onChange={e => setState({query: e.target.value})} />
+       * Uncontrolled
+       * <input type="text" defaultValue="Search" />
+       */
         return (
             <React.Fragment>
                 {/* Form 1 */}
-
+                <InputSection>
+                    <AppField value="test" onChange={() => {}} label="Input label" />
+                </InputSection>
                 <form id="formOne">
                     <PageSection>
                         <SectionTitle>Contest Information</SectionTitle>

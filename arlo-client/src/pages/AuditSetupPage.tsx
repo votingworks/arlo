@@ -1,6 +1,6 @@
 import React from 'react'
 import Header from '../components/Header';
-import AuditForms from '../components/AuditForms';
+import AuditForms from '../components/AuditForms/AuditForms';
 
 
 export interface RiskLimitingAudit {

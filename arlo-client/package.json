@@ -26,8 +26,47 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsc && lint-staged"
+    }
+  },
+  "lint-staged": {
+    "linters": {
+      "*.+(js|jsx|ts|tsx)": [
+        "stylelint",
+        "eslint --quiet --fix",
+        "git add"
+      ],
+      "*.css": [
+        "stylelint --config .stylelintrc-css.js --fix",
+        "git add"
+      ],
+      "*.+(css|graphql|json|less|md|mdx|sass|scss|yaml|yml)": [
+        "prettier --write",
+        "git add"
+      ]
+    }
+  },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts",
+      "!src/index.tsx",
+      "!src/contexts/ballotContext.ts",
+      "!src/serviceWorker.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 100,
+        "branches": 100,
+        "lines": 100,
+        "functions": 100
+      }
+    }
   },
   "browserslist": {
     "production": [
@@ -42,6 +81,29 @@
     ]
   },
   "devDependencies": {
-    "@testing-library/react": "^8.0.1"
+    "@testing-library/react": "^8.0.1",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^4.2.0",
+    "eslint-plugin-cypress": "^2.2.1",
+    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-jest": "^22.5.1",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-no-null": "^1.0.2",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.13.0",
+    "husky": "^2.3.0",
+    "is-ci-cli": "^1.1.1",
+    "jest-fetch-mock": "^2.1.2",
+    "jest-styled-components": "^6.3.1",
+    "lint-staged": "^8.1.7",
+    "prettier": "^1.17.1",
+    "stylelint": "^10.0.1",
+    "stylelint-config-palantir": "^4.0.0",
+    "stylelint-config-prettier": "^5.1.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.7.0"
   }
 }
