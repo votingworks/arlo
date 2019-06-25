@@ -413,7 +413,7 @@ class AuditForms extends React.Component<any, any>{
             console.log("contests: ", v.contests, ", v.contest[0]:", contest)
             let candidateOne: string = "";
           let candidateTwo: string = "";	
-	  const showCalculateButton = (i+1) === audit.rounds.length && !contest.endMeasurements.isComplete
+	  const showCalculateButton = (i+1) === audit.rounds.length && contest.endMeasurements && !contest.endMeasurements.isComplete
             return (
                 <React.Fragment key={i}>
                       <PageSection>
