@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components';
-import uuid from 'uuid/v1';
 
 const PageTitle = styled.div`
     font-size: .9em;
@@ -290,7 +289,7 @@ class AuditForms extends React.Component<any, any>{
             const data: Array<Jurisdiction> = [{
                 id: 'jurisdiction-1',
                 name: 'Jurisdiction 1',
-                contests: [`contest-${uuid()}`],
+                contests: [`contest-1`],
                 auditBoards: auditBoards,
             }];
             this.setState({isLoading: true})
