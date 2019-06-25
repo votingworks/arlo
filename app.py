@@ -295,14 +295,13 @@ def jurisdiction_manifest(jurisdiction_id):
     manifest_bytesio = io.BytesIO()
     manifest = request.files['manifest']
     manifest.save(manifest_bytesio)
-    manifest_string = manifest_bytesio.getvalue().decode('utf-8')
+    manifest_string = manifest_bytesio.getvalue().decode('utf-8-sig')
     jurisdiction.manifest = manifest_string
 
     jurisdiction.manifest_filename = manifest.filename
     jurisdiction.manifest_uploaded_at = datetime.datetime.utcnow()
 
     # TODO: factor out manifest processing for more intensive testing and background processing
-
     manifest_csv = csv.DictReader(io.StringIO(manifest_string))
     num_batches = 0
     num_ballots = 0
