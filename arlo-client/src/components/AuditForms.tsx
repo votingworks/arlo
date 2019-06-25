@@ -498,7 +498,7 @@ class AuditForms extends React.Component<any, any>{
                         </Section>
                         <Section>
                             <SectionLabel>Total Ballots Cast</SectionLabel>
-                            <SectionDetail>Enter the overall number of ballot cards cast in jurisdictoins containing this contest.</SectionDetail>
+                            <SectionDetail>Enter the overall number of ballot cards cast in jurisdictions containing this contest.</SectionDetail>
                             <Field type="number" name="totalBallotsCast" defaultValue={formOneHasData && this.state.audit.contests[0].totalBallotsCast} />
                         </Section>
                         <SectionTitle>Audit Settings</SectionTitle>
