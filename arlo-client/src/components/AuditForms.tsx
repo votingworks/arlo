@@ -434,7 +434,7 @@ class AuditForms extends React.Component<any, any>{
 	      {this.state.isLoading &&
 	       <p>Loading...</p>
 	      }
-		      {showCalculateButton &&
+		      {showCalculateButton && !this.state.isLoading &&
                        <ButtonBar>
                          <Button type="button" onClick={e => this.calculateRiskMeasurement({ id: round, round: v, candidateOne, candidateTwo, roundIndex: i }, e)}>Calculate Risk Measurement</Button>
                        </ButtonBar>
