@@ -1,29 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-
-const Section = styled.div`
-  margin: 20px 0 20px 0;
-`
-
-const SectionTitle = styled.div`
-  margin: 40px 0 25px 0;
-  text-align: center;
-  font-size: 0.8em;
-`
-const SectionDetail = styled.div`
-  margin-top: 10px;
-  font-size: 0.4em;
-`
-
-const SectionLabel = styled.div`
-  font-size: 0.5em;
-  font-weight: 700;
-`
-const PageSection = styled.div`
-  display: block;
-  width: 50%;
-  text-align: left;
-`
+import FormSection, {
+  FormSectionLabel,
+  FormSectionDescription,
+} from '../Form/FormSection'
+import FormWrapper from '../Form/FormWrapper'
+import FormButton from '../Form/FormButton'
+import FormField from '../Form/FormField'
+import FormButtonBar from '../Form/FormButtonBar'
 
 const InputSection = styled.div`
   display: block;
@@ -32,57 +16,16 @@ const InputSection = styled.div`
   font-size: 0.4em;
 `
 
-const Field = styled.input`
-  width: 45%;
-`
-
 const InputLabel = styled.label`
   display: inline-block;
 `
 
-const ButtonBar = styled.div`
-  margin: 50px 0 50px 0;
-  text-align: center;
-`
-
-const Button = styled.button`
-  margin: 0 auto;
-  border-radius: 5px;
-  background: rgb(211, 211, 211);
-  width: 200px;
-  height: 30px;
-  color: #000000;
-  font-size: 0.4em;
-  font-weight: 700;
-`
-
-const InlineButton = styled.button`
-  margin: 10px 0 30px 0;
-  border-radius: 5px;
-  background: rgb(211, 211, 211);
-  width: 275px;
-  height: 20px;
-  color: 700;
-  font-size: 0.4em;
-  font-weight: 700;
-`
 const InlineInput = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-bottom: 10px;
   width: 50%;
-`
-
-const SmallInlineButton = styled.button`
-  margin: 10px 0 30px 0;
-  border-radius: 5px;
-  background: rgb(211, 211, 211);
-  width: 170px;
-  height: 20px;
-  color: #000000;
-  font-size: 0.4em;
-  font-weight: 700;
 `
 
 interface Props {
@@ -117,45 +60,50 @@ const CalculateRiskMeasurmeent = (props: Props) => {
     /* eslint-disable react/no-array-index-key */
     return (
       <React.Fragment key={i}>
-        <PageSection>
-          <SectionTitle>Round {i + 1}</SectionTitle>
-
-          <Section>
-            <SectionLabel>
-              Ballot Retrieval List{' '}
+        <FormWrapper title={`Round ${i + 1}`}>
+          <FormSection
+            label={`Ballot Retrieval List \n
+              ${contest ? `${contest.sampleSize} Ballots` : ''}`}
+          >
+            {/*<SectionLabel>
+              Ballot Retrieval List \n
               {contest ? `${contest.sampleSize} Ballots` : ''}
-            </SectionLabel>
-            <InlineButton onClick={e => downloadBallotRetrievalList(round, e)}>
+            </SectionLabel>*/}
+            <FormButton
+              onClick={(e: React.MouseEvent) =>
+                downloadBallotRetrievalList(round, e)
+              }
+              inline
+            >
               Download Ballot Retrieval List for Round {i + 1}
-            </InlineButton>
-            <SectionLabel>Audited Results: Round {round}</SectionLabel>
-            <SectionDetail>
+            </FormButton>
+            <FormSectionLabel>Audited Results: Round {round}</FormSectionLabel>
+            <FormSectionDescription>
               Enter the number of votes recorded for each candidate/choice in
               the audited ballots for Round {i + 1}
-            </SectionDetail>
+            </FormSectionDescription>
             <form>
               <InputSection>
                 <InlineInput
                   onChange={(e: any) => (candidateOne = e.target.value)}
                 >
                   <InputLabel>{audit.contests[0].choices[0].name}</InputLabel>
-                  <Field />
+                  <FormField />
                 </InlineInput>
                 <InlineInput
                   onChange={(e: any) => (candidateTwo = e.target.value)}
                 >
                   <InputLabel>{audit.contests[0].choices[1].name}</InputLabel>
-                  <Field />
+                  <FormField />
                 </InlineInput>
               </InputSection>
             </form>
-          </Section>
+          </FormSection>
           {isLoading && <p>Loading...</p>}
           {showCalculateButton && !isLoading && (
-            <ButtonBar>
-              <Button
-                type="button"
-                onClick={e =>
+            <FormButtonBar>
+              <FormButton
+                onClick={(e: any) =>
                   calculateRiskMeasurement(
                     {
                       id: round,
@@ -169,19 +117,19 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                 }
               >
                 Calculate Risk Measurement
-              </Button>
-            </ButtonBar>
+              </FormButton>
+            </FormButtonBar>
           )}
           {contest &&
             contest.endMeasurements.pvalue &&
             contest.endMeasurements.isComplete && (
-              <Section>
-                <SectionLabel>
+              <FormSection>
+                <FormSectionLabel>
                   Audit Status:{' '}
                   {contest.endMeasurements.isComplete
                     ? 'COMPLETE'
                     : 'INCOMPLETE'}
-                </SectionLabel>
+                </FormSectionLabel>
                 <InputSection>
                   <InlineInput>
                     <InputLabel>Risk Limit: </InputLabel>
@@ -194,15 +142,19 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                 </InputSection>
                 {/* {Form 3} */}
                 {contest.endMeasurements.isComplete && (
-                  <SmallInlineButton
-                    onClick={e => downloadAuditReport(i, v, e)}
+                  <FormButton
+                    onClick={(e: React.MouseEvent) =>
+                      downloadAuditReport(i, v, e)
+                    }
+                    size="sm"
+                    inline
                   >
                     Download Audit Report
-                  </SmallInlineButton>
+                  </FormButton>
                 )}
-              </Section>
+              </FormSection>
             )}
-        </PageSection>
+        </FormWrapper>
       </React.Fragment>
     )
   })

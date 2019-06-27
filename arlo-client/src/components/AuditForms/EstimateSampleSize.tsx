@@ -3,20 +3,9 @@ import styled from 'styled-components'
 import FormSection from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormTitle from '../Form/FormTitle'
-
-const Section = styled.div`
-  margin: 20px 0 20px 0;
-`
-
-const SectionDetail = styled.div`
-  margin-top: 10px;
-  font-size: 0.4em;
-`
-
-const SectionLabel = styled.div`
-  font-size: 0.5em;
-  font-weight: 700;
-`
+import FormButton from '../Form/FormButton'
+import FormField from '../Form/FormField'
+import FormButtonBar from '../Form/FormButtonBar'
 
 const TwoColumnSection = styled.div`
   display: block;
@@ -38,13 +27,8 @@ const InputFieldRow = styled.div`
   width: 100%;
 `
 
-const Field = styled.input`
-  width: 45%;
-`
-
-const FieldRight = styled.input`
+const FieldRight = styled(FormField)`
   margin-left: 50px;
-  width: 45%;
 `
 
 const InputLabel = styled.label`
@@ -53,22 +37,6 @@ const InputLabel = styled.label`
 
 const InputLabelRight = styled.label`
   margin-left: 75px;
-`
-
-const ButtonBar = styled.div`
-  margin: 50px 0 50px 0;
-  text-align: center;
-`
-
-const Button = styled.button`
-  margin: 0 auto;
-  border-radius: 5px;
-  background: rgb(211, 211, 211);
-  width: 200px;
-  height: 30px;
-  color: #000000;
-  font-size: 0.4em;
-  font-weight: 700;
 `
 
 interface Props {
@@ -92,41 +60,27 @@ const EstimateSampleSize = (props: Props) => {
   return (
     <form id="formOne">
       <FormWrapper title="Contest Information">
-        <Section>
-          <SectionLabel>Contest Name</SectionLabel>
-          <SectionDetail>
-            Enter the name of the contest that will drive the audit.
-          </SectionDetail>
-          <Field
-            name="name"
-            defaultValue={formOneHasData && audit.contests[0].name}
-            disabled={!canEstimateSampleSize}
-          />
-        </Section>
         <FormSection
           label="Contest Name"
           description="Enter the name of the contest that will drive the audit."
         >
-          <Field
+          <FormField
             name="name"
             defaultValue={formOneHasData && audit.contests[0].name}
             disabled={!canEstimateSampleSize}
           />
         </FormSection>
-
-        <Section>
-          <SectionLabel>Candidates/Choices & Vote Totals</SectionLabel>
-          <SectionDetail>
-            Enter the name of each candidate choice that appears on the ballot
-            for this contest.
-          </SectionDetail>
+        <FormSection
+          label="Candidates/Choices & Vote Totals"
+          description="Enter the name of each candidate choice that appears on the ballot for this contest."
+        >
           <TwoColumnSection>
             <InputLabelRow>
               <InputLabel>Name of Candidate/Choice 1</InputLabel>
               <InputLabelRight>Votes for Candidate/Choice 1</InputLabelRight>
             </InputLabelRow>
             <InputFieldRow>
-              <Field
+              <FormField
                 name="candidateOneName"
                 defaultValue={
                   formOneHasData && audit.contests[0].choices[0].name
@@ -147,7 +101,7 @@ const EstimateSampleSize = (props: Props) => {
               <InputLabelRight>Votes for Candidate/Choice 2</InputLabelRight>
             </InputLabelRow>
             <InputFieldRow>
-              <Field
+              <FormField
                 name="candidateTwoName"
                 defaultValue={
                   formOneHasData && audit.contests[0].choices[1].name
@@ -164,20 +118,20 @@ const EstimateSampleSize = (props: Props) => {
               />
             </InputFieldRow>
           </TwoColumnSection>
-        </Section>
-        <Section>
-          <SectionLabel>Total Ballots Cast</SectionLabel>
-          <SectionDetail>
-            Enter the overall number of ballot cards cast in jurisdictoins
-            containing this contest.
-          </SectionDetail>
-          <Field
+        </FormSection>
+
+        <FormSection
+          label="Total Ballots Cast"
+          description="Enter the overall number of ballot cards cast in jurisdictoins
+          containing this contest."
+        >
+          <FormField
             type="number"
             name="totalBallotsCast"
             defaultValue={formOneHasData && audit.contests[0].totalBallotsCast}
             disabled={!canEstimateSampleSize}
           />
-        </Section>
+        </FormSection>
         <FormTitle>Audit Settings</FormTitle>
         <FormSection
           label="Desired Risk Limit"
@@ -195,7 +149,7 @@ const EstimateSampleSize = (props: Props) => {
           label="Random Seed"
           description="Enter the random number to seed the pseudo-random number generator."
         >
-          <Field
+          <FormField
             type="number"
             defaultValue={formOneHasData && audit.randomSeed}
             name="randomSeed"
@@ -205,14 +159,11 @@ const EstimateSampleSize = (props: Props) => {
       </FormWrapper>
       {!formOneHasData && isLoading && <p>Loading...</p>}
       {!formOneHasData && !isLoading && (
-        <ButtonBar>
-          <Button
-            disabled={!canEstimateSampleSize}
-            onClick={e => submitFormOne(e)}
-          >
+        <FormButtonBar>
+          <FormButton disabled={!canEstimateSampleSize} onClick={submitFormOne}>
             Estimate Sample Size
-          </Button>
-        </ButtonBar>
+          </FormButton>
+        </FormButtonBar>
       )}
     </form>
   )

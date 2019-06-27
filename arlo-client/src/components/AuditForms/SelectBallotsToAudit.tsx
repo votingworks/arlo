@@ -1,40 +1,8 @@
 import React from 'react'
-import styled from 'styled-components'
-
-const Section = styled.div`
-  margin: 20px 0 20px 0;
-`
-
-const SectionDetail = styled.div`
-  margin-top: 10px;
-  font-size: 0.4em;
-`
-
-const SectionLabel = styled.div`
-  font-size: 0.5em;
-  font-weight: 700;
-`
-const PageSection = styled.div`
-  display: block;
-  width: 50%;
-  text-align: left;
-`
-
-const ButtonBar = styled.div`
-  margin: 50px 0 50px 0;
-  text-align: center;
-`
-
-const Button = styled.button`
-  margin: 0 auto;
-  border-radius: 5px;
-  background: rgb(211, 211, 211);
-  width: 200px;
-  height: 30px;
-  color: #000000;
-  font-size: 0.4em;
-  font-weight: 700;
-`
+import FormSection, { FormSectionDescription } from '../Form/FormSection'
+import FormWrapper from '../Form/FormWrapper'
+import FormButton from '../Form/FormButton'
+import FormButtonBar from '../Form/FormButtonBar'
 
 interface Props {
   formOneHasData: any
@@ -65,7 +33,7 @@ const SelectBallotsToAudit = (props: Props) => {
 
   return formOneHasData ? (
     <form onSubmit={submitFormTwo} id="formTwo">
-      <PageSection>
+      <FormWrapper>
         {/* <Section>
             <SectionLabel>Estimated Sample Size</SectionLabel>
             <SectionDetail>
@@ -74,11 +42,10 @@ const SelectBallotsToAudit = (props: Props) => {
                 <div><input name="sampleSize" type="radio" value="456" onChange={e => this.inputChange(e)} /><InputLabel>456 samples (90% chance of reaching risk limit in one round)</InputLabel></div>
             </SectionDetail>
         </Section> */}
-        <Section>
-          <SectionLabel>Number of Audit Boards</SectionLabel>
-          <SectionDetail>
-            Set the number of audit boards you wish to use.
-          </SectionDetail>
+        <FormSection
+          label="Number of Audit Boards"
+          description="Set the number of audit boards you with to use."
+        >
           <select
             id="auditBoards"
             name="auditBoards"
@@ -88,33 +55,34 @@ const SelectBallotsToAudit = (props: Props) => {
           >
             {generateOptions(5)}
           </select>
-        </Section>
-        <Section>
-          <SectionLabel>Ballot Manifest</SectionLabel>
+        </FormSection>
+        <FormSection label="Ballot Manifest">
           {manifestUploaded ? (
             <React.Fragment>
-              <SectionDetail>
+              <FormSectionDescription>
                 <b>Filename:</b>{' '}
                 {audit.jurisdictions[0].ballotManifest.filename}
-              </SectionDetail>
-              <SectionDetail>
+              </FormSectionDescription>
+              <FormSectionDescription>
                 <b>Ballots:</b>{' '}
                 {audit.jurisdictions[0].ballotManifest.numBallots}
-              </SectionDetail>
-              <SectionDetail>
+              </FormSectionDescription>
+              <FormSectionDescription>
                 <b>Batches:</b>{' '}
                 {audit.jurisdictions[0].ballotManifest.numBatches}
-              </SectionDetail>
+              </FormSectionDescription>
               {!formThreeHasData && (
-                <Button onClick={deleteBallotManifest}>Delete File</Button>
+                <FormButton onClick={deleteBallotManifest}>
+                  Delete File
+                </FormButton>
               )}
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <SectionDetail>
+              <FormSectionDescription>
                 Click &quot;Browse&quot; to choose the appropriate Ballot
                 Manifest file from your computer
-              </SectionDetail>
+              </FormSectionDescription>
               <input
                 type="file"
                 accept=".csv"
@@ -122,13 +90,15 @@ const SelectBallotsToAudit = (props: Props) => {
               ></input>
             </React.Fragment>
           )}
-        </Section>
-      </PageSection>
+        </FormSection>
+      </FormWrapper>
       {!formThreeHasData && isLoading && <p>Loading...</p>}
       {!formThreeHasData && !isLoading && (
-        <ButtonBar>
-          <Button onClick={submitFormTwo}>Select Ballots To Audit</Button>
-        </ButtonBar>
+        <FormButtonBar>
+          <FormButton onClick={submitFormTwo}>
+            Select Ballots To Audit
+          </FormButton>
+        </FormButtonBar>
       )}
     </form>
   ) : (

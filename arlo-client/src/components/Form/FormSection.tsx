@@ -5,18 +5,18 @@ const Section = styled.div`
   margin: 20px 0 20px 0;
 `
 
-const SectionDescription = styled.div`
+export const FormSectionDescription = styled.div`
   margin-top: 10px;
   font-size: 0.4em;
 `
 
-const SectionLabel = styled.div`
+export const FormSectionLabel = styled.div`
   font-size: 0.5em;
   font-weight: 700;
 `
 
 interface Props {
-  label: string
+  label?: string
   description?: string
   children: any
 }
@@ -25,9 +25,9 @@ const FormSection = (props: Props) => {
   const { label, description, children } = props
   return (
     <Section>
-      {label ? <SectionLabel>{label}</SectionLabel> : undefined}
+      {label ? <FormSectionLabel>{label}</FormSectionLabel> : undefined}
       {description ? (
-        <SectionDescription>{description}</SectionDescription>
+        <FormSectionDescription>{description}</FormSectionDescription>
       ) : (
         undefined
       )}
