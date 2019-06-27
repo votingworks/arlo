@@ -122,7 +122,7 @@ const EstimateSampleSize = (props: Props) => {
 
         <FormSection
           label="Total Ballots Cast"
-          description="Enter the overall number of ballot cards cast in jurisdictions           containing this contest."
+          description="Enter the overall number of ballot cards cast in jurisdictions containing this contest."
         >
           <FormField
             type="number"
