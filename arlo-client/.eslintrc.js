@@ -72,6 +72,7 @@ module.exports = {
         devDependencies: true,
       },
     ],
+    'no-unused-vars': 1,
     'no-null/no-null': 2, // TypeScript with strictNullChecks
     'react/destructuring-assignment': 'off',
     'react/jsx-boolean-value': [2, 'never'],
