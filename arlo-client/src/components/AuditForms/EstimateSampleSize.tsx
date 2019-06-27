@@ -8,11 +8,6 @@ const Section = styled.div`
   margin: 20px 0 20px 0;
 `
 
-const SectionTitle = styled.div`
-  margin: 40px 0 25px 0;
-  text-align: center;
-  font-size: 0.8em;
-`
 const SectionDetail = styled.div`
   margin-top: 10px;
   font-size: 0.4em;
@@ -21,18 +16,6 @@ const SectionDetail = styled.div`
 const SectionLabel = styled.div`
   font-size: 0.5em;
   font-weight: 700;
-`
-const PageSection = styled.div`
-  display: block;
-  width: 50%;
-  text-align: left;
-`
-
-const InputSection = styled.div`
-  display: block;
-  margin-top: 25px;
-  width: 100%;
-  font-size: 0.4em;
 `
 
 const TwoColumnSection = styled.div`
@@ -83,35 +66,6 @@ const Button = styled.button`
   background: rgb(211, 211, 211);
   width: 200px;
   height: 30px;
-  color: #000000;
-  font-size: 0.4em;
-  font-weight: 700;
-`
-
-const InlineButton = styled.button`
-  margin: 10px 0 30px 0;
-  border-radius: 5px;
-  background: rgb(211, 211, 211);
-  width: 275px;
-  height: 20px;
-  color: 700;
-  font-size: 0.4em;
-  font-weight: 700;
-`
-const InlineInput = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  width: 50%;
-`
-
-const SmallInlineButton = styled.button`
-  margin: 10px 0 30px 0;
-  border-radius: 5px;
-  background: rgb(211, 211, 211);
-  width: 170px;
-  height: 20px;
   color: #000000;
   font-size: 0.4em;
   font-weight: 700;

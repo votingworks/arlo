@@ -32,41 +32,12 @@ const InputSection = styled.div`
   font-size: 0.4em;
 `
 
-const TwoColumnSection = styled.div`
-  display: block;
-  margin-top: 25px;
-  width: 100%;
-  font-size: 0.4em;
-`
-
-const InputLabelRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 10px;
-  width: 100%;
-`
-const InputFieldRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 25px;
-  width: 100%;
-`
-
 const Field = styled.input`
-  width: 45%;
-`
-
-const FieldRight = styled.input`
-  margin-left: 50px;
   width: 45%;
 `
 
 const InputLabel = styled.label`
   display: inline-block;
-`
-
-const InputLabelRight = styled.label`
-  margin-left: 75px;
 `
 
 const ButtonBar = styled.div`

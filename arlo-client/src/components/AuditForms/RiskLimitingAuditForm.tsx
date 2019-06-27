@@ -1,7 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
-import { ToastContainer, toast } from 'react-toastify'
-import AppInlineInput from '../Form/InlineInput'
+import { toast } from 'react-toastify'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -30,18 +28,6 @@ interface Audit {
 interface AuditBoard {
   id: string
   members: any[]
-}
-
-interface State {
-  name: string
-  randomSeed: number
-  candidateOneName: string
-  candidateOneVotes: number
-  candidateTwoName: string
-  candidateTwoVotes: number
-  totalBallots: number
-  auditBoards: number
-  desiredRiskLimit: number
 }
 
 interface Jurisdiction {
@@ -181,7 +167,7 @@ class AuditForms extends React.Component<any, any> {
         },
       ]
       this.setState({ isLoading: true })
-      let res: any = await api('/audit/jurisdictions', {
+      await api('/audit/jurisdictions', {
         method: 'POST',
         body: JSON.stringify({ jurisdictions: data }),
         headers: {
@@ -204,7 +190,7 @@ class AuditForms extends React.Component<any, any> {
       }
       const formData: FormData = new FormData()
       formData.append('manifest', manifestCSV, manifestCSV.name)
-      res = await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+      await api(`/jurisdiction/${jurisdictionID}/manifest`, {
         method: 'POST',
         body: formData,
       })
@@ -247,7 +233,7 @@ class AuditForms extends React.Component<any, any> {
 
   public calculateRiskMeasurement = async (data: any, evt: any) => {
     evt.preventDefault()
-    const { id, round, candidateOne, candidateTwo } = data
+    const { id, candidateOne, candidateTwo } = data
     try {
       const jurisdictionID: string = this.state.audit.jurisdictions[0].id
       const body: any = {
@@ -300,16 +286,6 @@ class AuditForms extends React.Component<any, any> {
       formTwoHasData && audit.jurisdictions[0].ballotManifest.filename
     const formThreeHasData = manifestUploaded && audit.rounds.length > 0
 
-    /**
-     *
-     * state = {
-     *    query: ''
-     * }
-     * Controlled
-     * <input type="text" value={this.state.query} onChange={e => setState({query: e.target.value})} />
-     * Uncontrolled
-     * <input type="text" defaultValue="Search" />
-     */
     return (
       <React.Fragment>
         <EstimateSampleSize
