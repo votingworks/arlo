@@ -119,7 +119,7 @@ exports[`renders corretly 1`] = `
         <div
           class="sc-bwzfXH xctbO"
         >
-          Enter the overall number of ballot cards cast in jurisdictoins containing this contest.
+          Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
         <input
           class="sc-htoDjs jjofgS"
