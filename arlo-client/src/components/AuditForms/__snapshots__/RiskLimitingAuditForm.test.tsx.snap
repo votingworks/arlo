@@ -6,101 +6,120 @@ exports[`renders corretly 1`] = `
     id="formOne"
   >
     <div
-      class="sc-ifAKCX iiyMor"
+      class="sc-ifAKCX gVocmv"
     >
       <div
-        class="sc-bwzfXH cUElZt"
+        class="sc-bxivhb doxbWk"
       >
         Contest Information
       </div>
       <div
-        class="sc-bdVaJa dMzhyk"
+        class="sc-EHOje gNDuQv"
       >
         <div
-          class="sc-bxivhb cLZMuR"
+          class="sc-htoDjs bEVyns"
         >
           Contest Name
         </div>
         <div
-          class="sc-htpNat iIeAQe"
+          class="sc-gzVnrw kAhCKd"
         >
           Enter the name of the contest that will drive the audit.
         </div>
         <input
-          class="sc-dnqmqq iUPgct"
+          class="sc-jTzLTM gTHUJn"
           name="name"
           value=""
         />
       </div>
       <div
-        class="sc-bdVaJa dMzhyk"
+        class="sc-bdVaJa fdbLH"
       >
         <div
-          class="sc-bxivhb cLZMuR"
+          class="sc-htpNat kRUApY"
+        >
+          Contest Name
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Enter the name of the contest that will drive the audit.
+        </div>
+        <input
+          class="sc-jTzLTM gTHUJn"
+          name="name"
+          value=""
+        />
+      </div>
+      <div
+        class="sc-EHOje gNDuQv"
+      >
+        <div
+          class="sc-htoDjs bEVyns"
         >
           Candidates/Choices & Vote Totals
         </div>
         <div
-          class="sc-htpNat iIeAQe"
+          class="sc-gzVnrw kAhCKd"
         >
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-bZQynM kIMjDG"
+          class="sc-gZMcBi ipuReX"
         >
           <div
-            class="sc-gzVnrw egbnPy"
+            class="sc-gqjmRU cRqxXY"
           >
             <label
-              class="sc-gZMcBi rEVIo"
+              class="sc-jzJRlG iboUur"
             >
               Name of Candidate/Choice 1
             </label>
             <label
-              class="sc-gqjmRU fApRHX"
+              class="sc-cSHVUG yyuZ"
             >
               Votes for Candidate/Choice 1
             </label>
           </div>
           <div
-            class="sc-htoDjs gveuAp"
+            class="sc-VigVT iAXWaN"
           >
             <input
-              class="sc-dnqmqq iUPgct"
+              class="sc-jTzLTM gTHUJn"
               name="candidateOneName"
               value=""
             />
             <input
-              class="sc-iwsKbI lhmAex"
+              class="sc-fjdhpX kCdTnB"
               name="candidateOneVotes"
               type="number"
               value=""
             />
           </div>
           <div
-            class="sc-gzVnrw egbnPy"
+            class="sc-gqjmRU cRqxXY"
           >
             <label
-              class="sc-gZMcBi rEVIo"
+              class="sc-jzJRlG iboUur"
             >
               Name of Candidate/Choice 2
             </label>
             <label
-              class="sc-gqjmRU fApRHX"
+              class="sc-cSHVUG yyuZ"
             >
               Votes for Candidate/Choice 2
             </label>
           </div>
           <div
-            class="sc-htoDjs gveuAp"
+            class="sc-VigVT iAXWaN"
           >
             <input
-              class="sc-dnqmqq iUPgct"
+              class="sc-jTzLTM gTHUJn"
               name="candidateTwoName"
               value=""
             />
             <input
-              class="sc-iwsKbI lhmAex"
+              class="sc-fjdhpX kCdTnB"
               name="candidateTwoVotes"
               type="number"
               value=""
@@ -109,42 +128,42 @@ exports[`renders corretly 1`] = `
         </div>
       </div>
       <div
-        class="sc-bdVaJa dMzhyk"
+        class="sc-EHOje gNDuQv"
       >
         <div
-          class="sc-bxivhb cLZMuR"
+          class="sc-htoDjs bEVyns"
         >
           Total Ballots Cast
         </div>
         <div
-          class="sc-htpNat iIeAQe"
+          class="sc-gzVnrw kAhCKd"
         >
           Enter the overall number of ballot cards cast in jurisdictoins containing this contest.
         </div>
         <input
-          class="sc-dnqmqq iUPgct"
+          class="sc-jTzLTM gTHUJn"
           name="totalBallotsCast"
           type="number"
           value=""
         />
       </div>
       <div
-        class="sc-bwzfXH cUElZt"
+        class="sc-bxivhb doxbWk"
       >
         Audit Settings
       </div>
       <div
-        class="sc-bdVaJa dMzhyk"
+        class="sc-bdVaJa fdbLH"
       >
         <div
-          class="sc-bxivhb cLZMuR"
+          class="sc-htpNat kRUApY"
         >
           Desired Risk Limit
         </div>
         <div
-          class="sc-htpNat iIeAQe"
+          class="sc-bwzfXH xctbO"
         >
-          Set the risk for the audit as as percentage (e.g. "5" = 5%).
+          Set the risk for the audit as as percentage (e.g. "5" = 5%
         </div>
         <select
           name="desiredRiskLimit"
@@ -212,20 +231,20 @@ exports[`renders corretly 1`] = `
         </select>
       </div>
       <div
-        class="sc-bdVaJa dMzhyk"
+        class="sc-bdVaJa fdbLH"
       >
         <div
-          class="sc-bxivhb cLZMuR"
+          class="sc-htpNat kRUApY"
         >
           Random Seed
         </div>
         <div
-          class="sc-htpNat iIeAQe"
+          class="sc-bwzfXH xctbO"
         >
           Enter the random number to seed the pseudo-random number generator.
         </div>
         <input
-          class="sc-dnqmqq iUPgct"
+          class="sc-jTzLTM gTHUJn"
           name="randomSeed"
           type="number"
           value=""
@@ -233,14 +252,15 @@ exports[`renders corretly 1`] = `
       </div>
     </div>
     <div
-      class="sc-jTzLTM bibkGc"
+      class="sc-kAzzGY kCzPYL"
     >
       <button
-        class="sc-fjdhpX gcfxuJ"
+        class="sc-chPdSV cjlSAK"
       >
         Estimate Sample Size
       </button>
     </div>
   </form>
+  <div />
 </div>
 `;

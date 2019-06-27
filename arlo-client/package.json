@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@types/jest": "24.0.13",
     "@types/node": "12.0.7",
     "@types/react": "16.8.19",
     "@types/react-dom": "16.8.4",
@@ -25,8 +24,12 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test": "is-ci \"test:ci\" \"test:watch\"",
+    "test:watch": "react-scripts test",
+    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage && yarn test:e2e:ci",
+    "test:update": "react-scripts test -u  --watchAll=false",
+    "test:coverage": "react-scripts test --coverage --watchAll=false"
   },
   "husky": {
     "hooks": {
@@ -84,8 +87,10 @@
   },
   "devDependencies": {
     "@testing-library/react": "^8.0.1",
+    "@types/jest": "^24.0.15",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
     "@typescript-eslint/parser": "^1.9.0",
+    "babel-jest": "^24.8.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^4.2.0",
