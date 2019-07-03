@@ -1,6 +1,6 @@
 {
   "addons": [
-
+    "heroku-postgresql:hobby-free"
   ],
   "buildpacks": [
     {
