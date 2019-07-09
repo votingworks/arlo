@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders corretly 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa fCyZCP"
+  >
+    <label
+      class="sc-bwzfXH kNDdYo"
+    />
+    <input
+      value=""
+    />
+  </div>
+</div>
+`;
