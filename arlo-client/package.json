@@ -28,7 +28,7 @@
     "eject": "react-scripts eject",
     "test": "is-ci \"test:ci\" \"test:watch\"",
     "test:watch": "react-scripts test",
-    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage && yarn test:e2e:ci",
+    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage",
     "test:update": "react-scripts test -u  --watchAll=false",
     "test:coverage": "react-scripts test --coverage --watchAll=false"
   },
