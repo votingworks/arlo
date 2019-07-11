@@ -1,20 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { toast } from 'react-toastify'
 import FormSection, { FormSectionDescription } from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
+import { Jurisdiction } from '../../types'
+import { api } from '../utilities'
 
 interface Props {
   formOneHasData: any
   formTwoHasData: any
   formThreeHasData: any
-  submitFormTwo: any
   audit: any
   isLoading: any
   deleteBallotManifest: any
   generateOptions: any
-  fileInputChange: any
   manifestUploaded: any
+  setIsLoading: any
+  updateAudit: any
+  getStatus: any
 }
 
 const SelectBallotsToAudit = (props: Props) => {
@@ -22,14 +26,88 @@ const SelectBallotsToAudit = (props: Props) => {
     formOneHasData,
     formTwoHasData,
     formThreeHasData,
-    submitFormTwo,
     audit,
     isLoading,
     deleteBallotManifest,
     generateOptions,
-    fileInputChange,
     manifestUploaded,
+    setIsLoading,
+    updateAudit,
+    getStatus,
   } = props
+
+  const [manifestCSV, setManifestCSV] = useState<File | null>()
+
+  const [numAuditBoards, setNumAuditBoards] = useState(
+    formTwoHasData && audit.jurisdictions[0].auditBoards.length
+  )
+
+  const fileInputChange = (e: any) => {
+    const files: any[] = e.target.files
+    if (files.length < 1) {
+      return
+    }
+    setManifestCSV(files[0])
+  }
+
+  const onAuditBoardsChange = (e: any) => {
+    setNumAuditBoards(e.target.value)
+  }
+
+  const submitFormTwo = async (e: any) => {
+    e.preventDefault()
+
+    const auditBoards = Array.from(Array(numAuditBoards).keys()).map(i => {
+      return {
+        id: `audit-board-${i + 1}`,
+        members: [],
+      }
+    })
+
+    try {
+      // upload jurisdictions
+      const data: Jurisdiction[] = [
+        {
+          id: 'jurisdiction-1',
+          name: 'Jurisdiction 1',
+          contests: [`contest-1`],
+          auditBoards: auditBoards,
+        },
+      ]
+      setIsLoading(true)
+      await api('/audit/jurisdictions', {
+        method: 'POST',
+        body: JSON.stringify({ jurisdictions: data }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      const newStatus = await getStatus()
+
+      if (newStatus.jurisdictions.length < 1) {
+        return
+      }
+      const jurisdictionID: string = newStatus.jurisdictions[0].id
+
+      // upload form data
+      if (!manifestCSV) {
+        updateAudit()
+        return
+      }
+      const formData: FormData = new FormData()
+      formData.append('manifest', manifestCSV, manifestCSV.name)
+      await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      await updateAudit()
+    } catch (err) {
+      toast.error(err.message)
+    }
+    // TODO: Api endpoints not yet clear
+  }
 
   return formOneHasData ? (
     <form onSubmit={submitFormTwo} id="formTwo">
@@ -49,9 +127,8 @@ const SelectBallotsToAudit = (props: Props) => {
           <select
             id="auditBoards"
             name="auditBoards"
-            defaultValue={
-              formTwoHasData && audit.jurisdictions[0].auditBoards.length
-            }
+            value={numAuditBoards}
+            onBlur={onAuditBoardsChange}
           >
             {generateOptions(5)}
           </select>

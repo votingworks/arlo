@@ -7,23 +7,11 @@ import { api } from '../utilities'
 import { Jurisdiction } from '../../types'
 
 class AuditForms extends React.Component<any, any> {
-  // state: State;
   public constructor(props: any) {
     super(props)
     this.state = {
       audit: '',
-      // form 2
-      //showFormTwo: false,
-      //showFormThree: true,
-      //showFormFour: true,
-      //sampleSize: '',
-      //auditBoards: [],
       manifestCSV: '',
-      //manifestUploaded: false,
-      // jurisdiction
-      //jurisdictionID: '',
-      //roundsExist: false,
-      //rounds: [],
       isLoading: false,
     }
   }
@@ -49,14 +37,6 @@ class AuditForms extends React.Component<any, any> {
   public updateAudit = async () => {
     const audit = await api('/audit/status', {})
     this.setState({ audit, isLoading: false })
-  }
-
-  public fileInputChange = async (e: any) => {
-    const files: any[] = e.target.files
-    if (files.length < 1) {
-      return // no file selected
-    }
-    this.setState({ manifestCSV: files[0] })
   }
 
   public submitFormTwo = async (e: any) => {
@@ -221,11 +201,12 @@ class AuditForms extends React.Component<any, any> {
           formTwoHasData={formTwoHasData}
           formThreeHasData={formThreeHasData}
           isLoading={this.state.isLoading}
-          submitFormTwo={this.submitFormTwo}
           generateOptions={this.generateOptions}
           manifestUploaded={manifestUploaded}
-          fileInputChange={this.fileInputChange}
           deleteBallotManifest={this.deleteBallotManifest}
+          setIsLoading={this.setIsLoading}
+          updateAudit={this.updateAudit}
+          getStatus={this.getStatus}
         />
 
         <CalculateRiskMeasurement
