@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import { toast } from 'react-toastify'
 import FormSection from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormTitle from '../Form/FormTitle'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
+import { Audit } from '../../types'
+import { api } from '../utilities'
 
 const TwoColumnSection = styled.div`
   display: block;
@@ -45,18 +48,68 @@ interface Props {
   generateOptions?: any
   isLoading?: any
   submitFormOne?: any
-  canEstimateSampleSize: boolean
+  setIsLoading: (isLoading: boolean) => void
+  updateAudit: () => void
 }
 
-const EstimateSampleSize = (props: Props) => {
-  const {
-    formOneHasData,
-    audit,
-    generateOptions,
-    isLoading,
-    submitFormOne,
-    canEstimateSampleSize,
-  } = props
+const EstimateSampleSize = ({
+  formOneHasData,
+  audit,
+  generateOptions,
+  isLoading,
+  setIsLoading,
+  updateAudit,
+}: Props) => {
+  const [canEstimateSampleSize, setCanEstimateSampleSize] = useState(true)
+
+  const submitFormOne = async (e: any) => {
+    e.preventDefault()
+    setCanEstimateSampleSize(false)
+    const formData = new FormData(document.getElementById(
+      'formOne'
+    ) as HTMLFormElement)
+    const data: Audit = {
+      name: 'Election',
+      randomSeed: Number(formData.get('randomSeed')),
+      riskLimit: Number(formData.get('desiredRiskLimit')),
+      contests: [
+        {
+          id: 'contest-1',
+          name: formData.get('name') as string,
+          totalBallotsCast: Number(formData.get('totalBallotsCast')),
+          choices: [
+            {
+              id: 'candidate-1',
+              name: formData.get('candidateOneName') as string,
+              numVotes: Number(formData.get('candidateOneVotes')),
+            },
+            {
+              id: 'candidate-2',
+              name: formData.get('candidateTwoName') as string,
+              numVotes: Number(formData.get('candidateTwoVotes')),
+            },
+          ],
+        },
+      ],
+    }
+    try {
+      setIsLoading(true)
+      await api(`/audit/basic`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      updateAudit()
+    } catch (err) {
+      toast.error(err.message)
+      setCanEstimateSampleSize(true)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <form id="formOne">
       <FormWrapper title="Contest Information">

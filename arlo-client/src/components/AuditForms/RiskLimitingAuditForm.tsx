@@ -3,48 +3,8 @@ import { toast } from 'react-toastify'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
-
-const apiBaseURL = ''
-interface Candidate {
-  id: string
-  name: string
-  numVotes: number
-}
-
-interface Contest {
-  id: string
-  name: string
-  choices: Candidate[]
-  totalBallotsCast: number
-}
-
-interface Audit {
-  name: string
-  riskLimit: number
-  randomSeed: number
-  contests: Contest[]
-}
-
-interface AuditBoard {
-  id: string
-  members: any[]
-}
-
-interface Jurisdiction {
-  id: string
-  name: string
-  contests: string[]
-  auditBoards: AuditBoard[]
-}
-
-function api<T>(endpoint: string, options: any): Promise<T> {
-  return fetch(endpoint, options).then(res => {
-    if (!res.ok) {
-      throw new Error(res.statusText)
-    }
-    return res.json() as Promise<T>
-  })
-}
+import { api } from '../utilities'
+import { Jurisdiction } from '../../types'
 
 class AuditForms extends React.Component<any, any> {
   // state: State;
@@ -52,7 +12,6 @@ class AuditForms extends React.Component<any, any> {
     super(props)
     this.state = {
       audit: '',
-      canEstimateSampleSize: true,
       // form 2
       //showFormTwo: false,
       //showFormThree: true,
@@ -74,6 +33,10 @@ class AuditForms extends React.Component<any, any> {
     this.setState({ audit })
   }
 
+  public setIsLoading = (isLoading: boolean) => {
+    this.setState({ isLoading })
+  }
+
   public async getStatus() {
     const audit: any = await api('/audit/status', {})
     return audit
@@ -83,54 +46,9 @@ class AuditForms extends React.Component<any, any> {
     return this.state.audit.jurisdictions[0].id
   }
 
-  public submitFormOne = async (e: any) => {
-    e.preventDefault()
-    this.setState({ canEstimateSampleSize: false })
-    const formData = new FormData(document.getElementById(
-      'formOne'
-    ) as HTMLFormElement)
-    const data: Audit = {
-      name: 'Election',
-      randomSeed: Number(formData.get('randomSeed')),
-      riskLimit: Number(formData.get('desiredRiskLimit')),
-      contests: [
-        {
-          id: 'contest-1',
-          name: formData.get('name') as string,
-          totalBallotsCast: Number(formData.get('totalBallotsCast')),
-          choices: [
-            {
-              id: 'candidate-1',
-              name: formData.get('candidateOneName') as string,
-              numVotes: Number(formData.get('candidateOneVotes')),
-            },
-            {
-              id: 'candidate-2',
-              name: formData.get('candidateTwoName') as string,
-              numVotes: Number(formData.get('candidateTwoVotes')),
-            },
-          ],
-        },
-      ],
-    }
-    try {
-      this.setState({ isLoading: true })
-      await api(`${apiBaseURL}/audit/basic`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      const audit: any = await api('/audit/status', {})
-      this.setState({ isLoading: false, audit })
-    } catch (err) {
-      toast.error(err.message)
-      this.setState({ canEstimateSampleSize: true })
-    } finally {
-      this.setState({ isLoading: false })
-    }
+  public updateAudit = async () => {
+    const audit = await api('/audit/status', {})
+    this.setState({ audit, isLoading: false })
   }
 
   public fileInputChange = async (e: any) => {
@@ -279,7 +197,7 @@ class AuditForms extends React.Component<any, any> {
   }
 
   public render() {
-    const { audit, canEstimateSampleSize } = this.state
+    const { audit } = this.state
     const formOneHasData = audit && audit.contests[0]
     const formTwoHasData = audit && audit.jurisdictions[0]
     const manifestUploaded =
@@ -293,8 +211,8 @@ class AuditForms extends React.Component<any, any> {
           formOneHasData={formOneHasData}
           generateOptions={this.generateOptions}
           isLoading={this.state.isLoading}
-          submitFormOne={this.submitFormOne}
-          canEstimateSampleSize={canEstimateSampleSize}
+          setIsLoading={this.setIsLoading}
+          updateAudit={this.updateAudit}
         />
 
         <SelectBallotsToAudit
