@@ -3,6 +3,7 @@ import { toast } from 'react-toastify'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
+
 const uuidv4 = require('uuid/v4')
 
 const apiBaseURL = ''
@@ -228,12 +229,12 @@ class AuditForms extends React.Component<any, any> {
       results: {
         'candidate-1': Number(candidateOne),
         'candidate-2': Number(candidateTwo),
-      }
+      },
     }))
     try {
       const jurisdictionID: string = this.state.audit.jurisdictions[0].id
       const body: any = {
-        contests
+        contests,
       }
 
       this.setState({ isLoading: true })
