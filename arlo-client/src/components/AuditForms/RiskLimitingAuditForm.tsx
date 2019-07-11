@@ -4,14 +4,12 @@ import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
-import { Jurisdiction } from '../../types'
 
 class AuditForms extends React.Component<any, any> {
   public constructor(props: any) {
     super(props)
     this.state = {
       audit: '',
-      manifestCSV: '',
       isLoading: false,
     }
   }
@@ -37,68 +35,6 @@ class AuditForms extends React.Component<any, any> {
   public updateAudit = async () => {
     const audit = await api('/audit/status', {})
     this.setState({ audit, isLoading: false })
-  }
-
-  public submitFormTwo = async (e: any) => {
-    e.preventDefault()
-    const { manifestCSV } = this.state
-
-    const numAuditBoards = parseInt(
-      (document.getElementById('auditBoards') as HTMLInputElement).value
-    )
-
-    const auditBoards = Array.from(Array(numAuditBoards).keys()).map(i => {
-      return {
-        id: `audit-board-${i + 1}`,
-        members: [],
-      }
-    })
-
-    try {
-      // upload jurisdictions
-      const data: Jurisdiction[] = [
-        {
-          id: 'jurisdiction-1',
-          name: 'Jurisdiction 1',
-          contests: [`contest-1`],
-          auditBoards: auditBoards,
-        },
-      ]
-      this.setState({ isLoading: true })
-      await api('/audit/jurisdictions', {
-        method: 'POST',
-        body: JSON.stringify({ jurisdictions: data }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      // get latest audit with jurisdiction id and use it to upload the data
-      let audit: any = await api('/audit/status', {})
-      this.setState({ audit })
-      if (audit.jurisdictions.length < 1) {
-        return
-      }
-      const jurisdictionID: string = audit.jurisdictions[0].id
-
-      // upload form data
-      if (!manifestCSV) {
-        this.setState({ audit })
-        return
-      }
-      const formData: FormData = new FormData()
-      formData.append('manifest', manifestCSV, manifestCSV.name)
-      await api(`/jurisdiction/${jurisdictionID}/manifest`, {
-        method: 'POST',
-        body: formData,
-      })
-
-      audit = await api('/audit/status', {})
-      this.setState({ audit, isLoading: false })
-    } catch (err) {
-      toast.error(err.message)
-    }
-    // TODO: Api endpoints not yet clear
   }
 
   public generateOptions = (count: number): JSX.Element[] => {
