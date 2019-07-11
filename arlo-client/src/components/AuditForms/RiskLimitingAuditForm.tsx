@@ -3,6 +3,7 @@ import { toast } from 'react-toastify'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
+const uuidv4 = require('uuid/v4')
 
 const apiBaseURL = ''
 interface Candidate {
@@ -47,24 +48,12 @@ function api<T>(endpoint: string, options: any): Promise<T> {
 }
 
 class AuditForms extends React.Component<any, any> {
-  // state: State;
   public constructor(props: any) {
     super(props)
     this.state = {
       audit: '',
       canEstimateSampleSize: true,
-      // form 2
-      //showFormTwo: false,
-      //showFormThree: true,
-      //showFormFour: true,
-      //sampleSize: '',
-      //auditBoards: [],
       manifestCSV: '',
-      //manifestUploaded: false,
-      // jurisdiction
-      //jurisdictionID: '',
-      //roundsExist: false,
-      //rounds: [],
       isLoading: false,
     }
   }
@@ -95,17 +84,17 @@ class AuditForms extends React.Component<any, any> {
       riskLimit: Number(formData.get('desiredRiskLimit')),
       contests: [
         {
-          id: 'contest-1',
+          id: uuidv4(),
           name: formData.get('name') as string,
           totalBallotsCast: Number(formData.get('totalBallotsCast')),
           choices: [
             {
-              id: 'candidate-1',
+              id: uuidv4(),
               name: formData.get('candidateOneName') as string,
               numVotes: Number(formData.get('candidateOneVotes')),
             },
             {
-              id: 'candidate-2',
+              id: uuidv4(),
               name: formData.get('candidateTwoName') as string,
               numVotes: Number(formData.get('candidateTwoVotes')),
             },
@@ -160,9 +149,9 @@ class AuditForms extends React.Component<any, any> {
       // upload jurisdictions
       const data: Jurisdiction[] = [
         {
-          id: 'jurisdiction-1',
+          id: uuidv4(),
           name: 'Jurisdiction 1',
-          contests: [`contest-1`],
+          contests: this.state.audit.contests.map((contest: any) => contest.id),
           auditBoards: auditBoards,
         },
       ]
@@ -234,18 +223,17 @@ class AuditForms extends React.Component<any, any> {
   public calculateRiskMeasurement = async (data: any, evt: any) => {
     evt.preventDefault()
     const { id, candidateOne, candidateTwo } = data
+    const contests = this.state.audit.contests.map((contest: any) => ({
+      id: contest.id,
+      results: {
+        'candidate-1': Number(candidateOne),
+        'candidate-2': Number(candidateTwo),
+      }
+    }))
     try {
       const jurisdictionID: string = this.state.audit.jurisdictions[0].id
       const body: any = {
-        contests: [
-          {
-            id: 'contest-1',
-            results: {
-              'candidate-1': Number(candidateOne),
-              'candidate-2': Number(candidateTwo),
-            },
-          },
-        ],
+        contests
       }
 
       this.setState({ isLoading: true })
@@ -255,7 +243,7 @@ class AuditForms extends React.Component<any, any> {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
-      })
+      }) // returning server 500 error
       const audit: any = await this.getStatus()
       this.setState({ audit, isLoading: false })
     } catch (err) {
