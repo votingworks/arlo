@@ -4,37 +4,31 @@ import FormSection, { FormSectionDescription } from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
-import { Jurisdiction } from '../../types'
+import { Jurisdiction, Audit } from '../../types'
 import { api } from '../utilities'
+import { generateOptions } from '../Form/_helpers'
 
 interface Props {
-  formOneHasData: any
-  formTwoHasData: any
-  formThreeHasData: any
-  audit: any
-  isLoading: any
-  deleteBallotManifest: any
-  generateOptions: any
-  manifestUploaded: any
-  setIsLoading: any
-  updateAudit: any
-  getStatus: any
+  audit: Audit
+  isLoading: boolean
+  setIsLoading: (isLoading: boolean) => void
+  updateAudit: () => void
+  getStatus: () => Promise<Audit>
 }
 
 const SelectBallotsToAudit = (props: Props) => {
-  const {
-    formOneHasData,
-    formTwoHasData,
-    formThreeHasData,
-    audit,
-    isLoading,
-    deleteBallotManifest,
-    generateOptions,
-    manifestUploaded,
-    setIsLoading,
-    updateAudit,
-    getStatus,
-  } = props
+  const { audit, isLoading, setIsLoading, updateAudit, getStatus } = props
+  const formOneHasData = audit && audit.contests[0]
+  const formTwoHasData = audit && audit.jurisdictions && audit.jurisdictions[0]
+  const manifestUploaded =
+    formTwoHasData &&
+    audit.jurisdictions[0].ballotManifest &&
+    audit.jurisdictions[0].ballotManifest.filename &&
+    audit.jurisdictions[0].ballotManifest.numBallots &&
+    audit.jurisdictions[0].ballotManifest.numBatches
+
+  const formThreeHasData =
+    manifestUploaded && audit.rounds && audit.rounds.length > 0
 
   const [manifestCSV, setManifestCSV] = useState<File | null>()
 
@@ -54,7 +48,7 @@ const SelectBallotsToAudit = (props: Props) => {
     setNumAuditBoards(e.target.value)
   }
 
-  const submitFormTwo = async (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault()
 
     const auditBoards = Array.from(Array(numAuditBoards).keys()).map(i => {
@@ -81,36 +75,50 @@ const SelectBallotsToAudit = (props: Props) => {
         headers: {
           'Content-Type': 'application/json',
         },
-      })
+      }).then(
+        async success => {
+          const newStatus = await getStatus()
+          const jurisdictionID: string = newStatus.jurisdictions[0].id
 
-      const newStatus = await getStatus()
+          // upload form data
+          if (!manifestCSV) {
+            updateAudit()
+            return
+          }
+          const formData: FormData = new FormData()
+          formData.append('manifest', manifestCSV, manifestCSV.name)
+          await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+            method: 'POST',
+            body: formData,
+          })
 
-      if (newStatus.jurisdictions.length < 1) {
-        return
-      }
-      const jurisdictionID: string = newStatus.jurisdictions[0].id
-
-      // upload form data
-      if (!manifestCSV) {
-        updateAudit()
-        return
-      }
-      const formData: FormData = new FormData()
-      formData.append('manifest', manifestCSV, manifestCSV.name)
-      await api(`/jurisdiction/${jurisdictionID}/manifest`, {
-        method: 'POST',
-        body: formData,
-      })
-
-      await updateAudit()
+          updateAudit()
+        },
+        error => {
+          toast.error(error.message)
+          return
+        }
+      )
     } catch (err) {
       toast.error(err.message)
     }
-    // TODO: Api endpoints not yet clear
+  }
+
+  const deleteBallotManifest = async (e: any) => {
+    e.preventDefault()
+    try {
+      const jurisdictionID: string = audit.jurisdictions[0].id
+      await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+        method: 'DELETE',
+      })
+      updateAudit()
+    } catch (err) {
+      toast.error(err.message)
+    }
   }
 
   return formOneHasData ? (
-    <form onSubmit={submitFormTwo} id="formTwo">
+    <form onSubmit={handleSubmit} id="formTwo">
       <FormWrapper>
         {/* <Section>
             <SectionLabel>Estimated Sample Size</SectionLabel>
@@ -128,13 +136,14 @@ const SelectBallotsToAudit = (props: Props) => {
             id="auditBoards"
             name="auditBoards"
             value={numAuditBoards}
+            onChange={e => setNumAuditBoards(parseInt(e.target.value))}
             onBlur={onAuditBoardsChange}
           >
             {generateOptions(5)}
           </select>
         </FormSection>
         <FormSection label="Ballot Manifest">
-          {manifestUploaded ? (
+          {manifestUploaded && audit.jurisdictions[0].ballotManifest ? ( // duplicating effect of manifestUploaded for TS
             <React.Fragment>
               <FormSectionDescription>
                 <b>Filename:</b>{' '}
@@ -172,7 +181,7 @@ const SelectBallotsToAudit = (props: Props) => {
       {!formThreeHasData && isLoading && <p>Loading...</p>}
       {!formThreeHasData && !isLoading && (
         <FormButtonBar>
-          <FormButton onClick={submitFormTwo}>
+          <FormButton onClick={handleSubmit}>
             Select Ballots To Audit
           </FormButton>
         </FormButtonBar>

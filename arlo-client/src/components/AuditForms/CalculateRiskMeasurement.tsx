@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { toast } from 'react-toastify'
 import FormSection, {
   FormSectionLabel,
   FormSectionDescription,
@@ -8,6 +9,7 @@ import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
+import { api } from '../utilities'
 
 const InputSection = styled.div`
   display: block;
@@ -30,23 +32,64 @@ const InlineInput = styled.div`
 
 interface Props {
   audit: any
-  downloadBallotRetrievalList: any
-  isLoading: any
-  calculateRiskMeasurement: any
-  downloadAuditReport: any
+  isLoading: boolean
+  setIsLoading: (isLoading: boolean) => void
+  updateAudit: () => void
 }
 
 const CalculateRiskMeasurmeent = (props: Props) => {
-  const {
-    audit,
-    downloadBallotRetrievalList,
-    isLoading,
-    calculateRiskMeasurement,
-    downloadAuditReport,
-  } = props
+  const { audit, isLoading, setIsLoading, updateAudit } = props
   if (!audit) {
     return <></>
   }
+
+  const downloadBallotRetrievalList = (id: number, e: any) => {
+    e.preventDefault()
+    const jurisdictionID: string = audit.jurisdictions[0].id
+    window.open(`/jurisdiction/${jurisdictionID}/${id}/retrieval-list`)
+  }
+
+  const downloadAuditReport = async (i: number, round: any, evt: any) => {
+    evt.preventDefault()
+    try {
+      window.open(`/audit/report`)
+      updateAudit()
+    } catch (err) {
+      toast.error(err.message)
+    }
+  }
+
+  const calculateRiskMeasurement = async (data: any, evt: any) => {
+    evt.preventDefault()
+    const { id, candidateOne, candidateTwo } = data
+    try {
+      const jurisdictionID: string = audit.jurisdictions[0].id
+      const body: any = {
+        contests: [
+          {
+            id: 'contest-1',
+            results: {
+              'candidate-1': Number(candidateOne),
+              'candidate-2': Number(candidateTwo),
+            },
+          },
+        ],
+      }
+
+      setIsLoading(true)
+      await api(`/jurisdiction/${jurisdictionID}/${id}/results`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      })
+      updateAudit()
+    } catch (err) {
+      toast.error(err.message)
+    }
+  }
+
   return audit.rounds.map((v: any, i: number) => {
     const round: number = i + 1
     const contest: any = v.contests.length > 0 ? v.contests[0] : undefined

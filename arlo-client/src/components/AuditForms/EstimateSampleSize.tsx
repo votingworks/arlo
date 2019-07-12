@@ -7,8 +7,9 @@ import FormTitle from '../Form/FormTitle'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { Audit } from '../../types'
+// import { Audit } from '../../types'
 import { api } from '../utilities'
+import { generateOptions } from '../Form/_helpers'
 
 const TwoColumnSection = styled.div`
   display: block;
@@ -43,32 +44,29 @@ const InputLabelRight = styled.label`
 `
 
 interface Props {
-  formOneHasData?: any
   audit?: any
-  generateOptions?: any
   isLoading?: any
-  submitFormOne?: any
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
 }
 
 const EstimateSampleSize = ({
-  formOneHasData,
   audit,
-  generateOptions,
   isLoading,
   setIsLoading,
   updateAudit,
 }: Props) => {
   const [canEstimateSampleSize, setCanEstimateSampleSize] = useState(true)
+  const formOneHasData = audit && audit.contests[0]
 
-  const submitFormOne = async (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault()
     setCanEstimateSampleSize(false)
     const formData = new FormData(document.getElementById(
       'formOne'
     ) as HTMLFormElement)
-    const data: Audit = {
+    const data = {
+      // incomplete Audit
       name: 'Election',
       randomSeed: Number(formData.get('randomSeed')),
       riskLimit: Number(formData.get('desiredRiskLimit')),
@@ -212,7 +210,7 @@ const EstimateSampleSize = ({
       {!formOneHasData && isLoading && <p>Loading...</p>}
       {!formOneHasData && !isLoading && (
         <FormButtonBar>
-          <FormButton disabled={!canEstimateSampleSize} onClick={submitFormOne}>
+          <FormButton disabled={!canEstimateSampleSize} onClick={handleSubmit}>
             Estimate Sample Size
           </FormButton>
         </FormButtonBar>
