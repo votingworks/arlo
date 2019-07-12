@@ -10,10 +10,10 @@ const AuditForms = () => {
 
   const [audit, setAudit] = useState()
 
-  async function getStatus(): Promise<Audit> {
+  const getStatus = useCallback(async (): Promise<Audit> => {
     const audit: any = await api('/audit/status', {})
     return audit
-  }
+  }, [])
 
   const updateAudit = useCallback(async () => {
     const audit = await getStatus()
