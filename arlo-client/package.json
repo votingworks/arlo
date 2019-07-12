@@ -111,6 +111,7 @@
     "eslint-plugin-no-null": "^1.0.2",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.13.0",
+    "eslint-plugin-react-hooks": "^1.6.1",
     "husky": "^2.3.0",
     "is-ci-cli": "^1.1.1",
     "jest-fetch-mock": "^2.1.2",
