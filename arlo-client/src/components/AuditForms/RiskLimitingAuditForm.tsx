@@ -24,7 +24,7 @@ const AuditForms = () => {
 
   useEffect(() => {
     updateAudit()
-  }, [])
+  }, [updateAudit])
 
   return (
     <React.Fragment>
