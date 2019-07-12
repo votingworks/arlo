@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa dAWyHW"
+  >
+    <img
+      alt="Arlo, by VotingWorks"
+      height="60px"
+      src="/arlo.png"
+    />
+    <div
+      class="sc-bwzfXH htgwGT"
+    >
+      <button
+        class="sc-htpNat frZMJK"
+      >
+        Clear & Restart
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders correctly 2`] = `
+<div>
+  <div
+    class="sc-bdVaJa dAWyHW"
+  >
+    <img
+      alt="Arlo, by VotingWorks"
+      height="60px"
+      src="/arlo.png"
+    />
+    <div
+      class="sc-bwzfXH htgwGT"
+    >
+      <button
+        class="sc-htpNat frZMJK"
+      >
+        Clear & Restart
+      </button>
+    </div>
+  </div>
+</div>
+`;
