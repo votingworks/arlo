@@ -20,6 +20,7 @@ export interface BallotManifest {
   filename: string
   numBallots: number
   numBatches: number
+  uploadedAt: string
 }
 
 export interface Jurisdiction {
