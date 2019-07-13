@@ -11,6 +11,7 @@
     "@types/react-toastify": "^4.0.2",
     "@types/styled-components": "^4.1.15",
     "@types/uuid": "^3.4.4",
+    "formik": "^1.5.8",
     "http-proxy-middleware": "^0.19.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
