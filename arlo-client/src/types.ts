@@ -1,14 +1,14 @@
 export interface Candidate {
   id: string
   name: string
-  numVotes: number
+  numVotes: number | ''
 }
 
 export interface Contest {
   id: string
   name: string
   choices: Candidate[]
-  totalBallotsCast: number
+  totalBallotsCast: number | ''
 }
 
 export interface AuditBoard {
@@ -18,8 +18,8 @@ export interface AuditBoard {
 
 export interface BallotManifest {
   filename: string
-  numBallots: number
-  numBatches: number
+  numBallots: number | ''
+  numBatches: number | ''
   uploadedAt: string
 }
 
@@ -37,8 +37,8 @@ export interface Jurisdiction {
 
 export interface Audit {
   name: string
-  riskLimit: number
-  randomSeed: number
+  riskLimit: number | ''
+  randomSeed: number | ''
   contests: Contest[]
   jurisdictions: Jurisdiction[]
   rounds?: any[]

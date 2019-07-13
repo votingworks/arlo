@@ -5,10 +5,84 @@ import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
 import { Audit } from '../../types'
 
+const blankAudit: Audit = {
+  name: '',
+  riskLimit: '',
+  randomSeed: '',
+
+  contests: [
+    {
+      id: '',
+      name: '',
+
+      choices: [
+        {
+          id: '',
+          name: '',
+          numVotes: '',
+        },
+        {
+          id: '',
+          name: '',
+          numVotes: '',
+        },
+      ],
+
+      totalBallotsCast: '',
+    },
+  ],
+
+  jurisdictions: [
+    {
+      id: '',
+      name: '',
+      contests: [],
+      auditBoards: [
+        //{
+        //  id: '',
+        // members: []
+        //}
+      ],
+      ballotManifest: {
+        filename: '',
+        numBallots: '',
+        numBatches: '',
+        uploadedAt: '',
+      },
+    },
+  ],
+
+  rounds: [
+    {
+      startedAt: '',
+      endedAt: '',
+      contests: [
+        {
+          id: '',
+          endMeasurements: {
+            //pvalue: 0.085,
+            isComplete: false,
+          },
+          results: {
+            //"candidate-1": 55,
+            //"candidate-2": 35
+          },
+          sampleSize: '',
+        },
+      ],
+      jurisdictions: {
+        //"adams-county": {
+        //  numBallots: 15,
+        //}
+      },
+    },
+  ],
+}
+
 const AuditForms = () => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const [audit, setAudit] = useState()
+  const [audit, setAudit] = useState(blankAudit)
 
   const getStatus = useCallback(async (): Promise<Audit> => {
     const audit: any = await api('/audit/status', {})

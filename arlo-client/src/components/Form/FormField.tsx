@@ -6,14 +6,15 @@ const Field = styled.input`
 `
 interface Props {
   disabled?: boolean
-  defaultValue?: any
+  value?: string | number
+  onChange?: (e: React.ChangeEvent<any>) => void
+  onBlur?: (e: any) => void
   name?: string
   type?: string
 }
 
-const FormField = (props: Props) => {
-  const { disabled, defaultValue = '' } = props
-  return <Field disabled={disabled} defaultValue={defaultValue} {...props} />
-}
+const FormField = ({ disabled, value, onChange, ...rest }: Props) => (
+  <Field disabled={disabled} onChange={onChange} value={value} {...rest} />
+)
 
 export default FormField

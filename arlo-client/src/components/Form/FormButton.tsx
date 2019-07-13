@@ -40,12 +40,19 @@ interface Props {
   children?: any
   inline?: boolean
   size?: string
+  type?: string
 }
-const FormButton = (props: Props) => {
-  const { disabled, onClick, size, inline, children } = props
+const FormButton = ({
+  disabled,
+  onClick,
+  size,
+  inline,
+  children,
+  ...rest
+}: Props) => {
   return React.createElement(
     inline ? (size === 'sm' ? SmallInlineButton : InlineButton) : Button,
-    { disabled, onClick, ...props },
+    { disabled, onClick, ...rest },
     children
   )
 }
