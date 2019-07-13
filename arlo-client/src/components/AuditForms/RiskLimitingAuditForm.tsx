@@ -1,10 +1,9 @@
 import React from 'react'
 import { toast } from 'react-toastify'
+import uuidv4 from 'uuidv4'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
-
-const uuidv4 = require('uuid/v4')
 
 const apiBaseURL = ''
 interface Candidate {
@@ -223,12 +222,12 @@ class AuditForms extends React.Component<any, any> {
 
   public calculateRiskMeasurement = async (data: any, evt: any) => {
     evt.preventDefault()
-    const { id, candidateOne, candidateTwo } = data
+    const { id, candidateOne, candidateTwo } = data // support n candidates?
     const contests = this.state.audit.contests.map((contest: any) => ({
       id: contest.id,
       results: {
-        'candidate-1': Number(candidateOne),
-        'candidate-2': Number(candidateTwo),
+        [contest.choices[0].id]: Number(candidateOne),
+        [contest.choices[1].id]: Number(candidateTwo),
       },
     }))
     try {
@@ -239,6 +238,7 @@ class AuditForms extends React.Component<any, any> {
 
       this.setState({ isLoading: true })
       await api(`/jurisdiction/${jurisdictionID}/${id}/results`, {
+        // throws 500 internal server error
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

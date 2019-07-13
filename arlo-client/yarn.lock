@@ -1480,12 +1480,10 @@
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.3.tgz#9c088679876f374eb5983f150d4787aa6fb32d7e"
   integrity sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==
 
-"@types/uuid@^3.4.4":
-  version "3.4.4"
-  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.4.tgz#7af69360fa65ef0decb41fd150bf4ca5c0cefdf5"
-  integrity sha512-tPIgT0GUmdJQNSHxp0X2jnpQfBSTfGxUMc/2CXBU2mnyTFVYVa2ojpoQ74w0U2yn2vw3jnC640+77lkFFpdVDw==
-  dependencies:
-    "@types/node" "*"
+"@types/uuidv4@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/uuidv4/-/uuidv4-2.0.0.tgz#9579daf4812281a40c93028012635eed08d7210d"
+  integrity sha512-qMAfgZE8tjisI2/4/rkGvtSYpuI+t/6Q+wa38X3v6RfeaqI1ZM6W6Aye93d1WNPT2SgeFeHVbO+7uEJmIVbiwA==
 
 "@types/vfile-message@*":
   version "1.0.1"
@@ -11378,10 +11376,17 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
-uuid@^3.0.1, uuid@^3.3.2:
+uuid@3.3.2, uuid@^3.0.1, uuid@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
+
+uuidv4@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/uuidv4/-/uuidv4-4.0.0.tgz#ac4b05ecf0efa62dda532d55b7a8de8f726f8f7c"
+  integrity sha512-mG90kcW04v6frNmnLsnd7xqiKubIYgaQHxaHoBplAJpR95hgqkTDq8wpZQU5cN5w9gtKphqdsflHoEnXr2+ing==
+  dependencies:
+    uuid "3.3.2"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.4"
