@@ -57,18 +57,18 @@ const blankAudit: Audit = {
       startedAt: '',
       endedAt: '',
       contests: [
-        {
-          id: '',
-          endMeasurements: {
-            //pvalue: 0.085,
-            isComplete: false,
-          },
-          results: {
-            //"candidate-1": 55,
-            //"candidate-2": 35
-          },
-          sampleSize: '',
-        },
+        //{
+        //  id: '',
+        //  endMeasurements: {
+        //pvalue: 0.085,
+        //    isComplete: false,
+        //  },
+        //  results: {
+        //"candidate-1": 55,
+        //"candidate-2": 35
+        //  },
+        //  sampleSize: '',
+        //},
       ],
       jurisdictions: {
         //"adams-county": {
@@ -117,12 +117,14 @@ const AuditForms = () => {
         getStatus={getStatus}
       />
 
-      <CalculateRiskMeasurement
-        audit={audit}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
-        updateAudit={updateAudit}
-      />
+      {audit.contests.length && (
+        <CalculateRiskMeasurement
+          audit={audit}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          updateAudit={updateAudit}
+        />
+      )}
     </React.Fragment>
   )
 }

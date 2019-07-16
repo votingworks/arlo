@@ -124,7 +124,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
           handleChange,
           handleBlur,
           handleSubmit,
-          setFieldValue,
         }: FormikProps<CalculateRiskMeasurementValues>) => (
           <FormWrapper title={`Round ${i + 1}`}>
             <FormSection
