@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'styled-components'
 
 export const generateOptions = (count: number): JSX.Element[] => {
   let elements: JSX.Element[] = []
@@ -7,5 +8,10 @@ export const generateOptions = (count: number): JSX.Element[] => {
   }
   return elements
 }
+
+export const ErrorLabel = styled.p`
+  color: #ff0000;
+  font-size: 10px;
+`
 
 export default generateOptions

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { Formik, FormikProps, FormikActions } from 'formik'
+import * as Yup from 'yup'
 import FormSection from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormTitle from '../Form/FormTitle'
@@ -10,7 +11,7 @@ import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 // import { Audit } from '../../types'
 import { api } from '../utilities'
-import { generateOptions } from '../Form/_helpers'
+import { generateOptions, ErrorLabel } from '../Form/_helpers'
 
 const TwoColumnSection = styled.div`
   display: block;
@@ -61,6 +62,53 @@ interface EstimateSampleSizeValues {
   candidateOneVotes: number
   candidateTwoVotes: number
 }
+
+const defaultValues = {
+  name: '',
+  randomSeed: 0,
+  riskLimit: 0,
+  totalBallotsCast: 0,
+  candidateOneName: '',
+  candidateTwoName: '',
+  candidateOneVotes: 0,
+  candidateTwoVotes: 0,
+}
+
+const schema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, 'Name must be longer than 2 characters')
+    .max(50, 'Name must be shorter than 50 characters')
+    .required('Required'),
+  randomSeed: Yup.number()
+    .min(1, 'Must be at least 1')
+    .max(99999999999999999999, 'Cannot exceed 20 digits')
+    .required('Required'),
+  riskLimit: Yup.number()
+    .min(1, 'Must be greater than 0')
+    .max(20, 'Must be less than 21')
+    .required('Required'),
+  totalBallotsCast: Yup.number().test(
+    'match',
+    'Must equal sum of all votes',
+    function(totalBallotsCast) {
+      const {
+        candidateOneVotes,
+        candidateTwoVotes,
+      }: EstimateSampleSizeValues = { ...defaultValues, ...this.parent }
+      return totalBallotsCast === candidateOneVotes + candidateTwoVotes
+    }
+  ),
+  candidateOneName: Yup.string()
+    .min(2, 'Name must be longer than 2 characters')
+    .max(50, 'Name must be shorter than 50 characters')
+    .required('Required'),
+  candidateTwoName: Yup.string()
+    .min(2, 'Name must be longer than 2 characters')
+    .max(50, 'Name must be shorter than 50 characters')
+    .required('Required'),
+  candidateOneVotes: Yup.number().required('Required'),
+  candidateTwoVotes: Yup.number().required('Required'),
+})
 
 const EstimateSampleSize = ({
   audit,
@@ -130,23 +178,17 @@ const EstimateSampleSize = ({
         candidateOneVotes: audit.contests[0].choices[0].numVotes,
         candidateTwoVotes: audit.contests[0].choices[1].numVotes,
       }
-    : {
-        name: '',
-        randomSeed: 0,
-        riskLimit: 0,
-        totalBallotsCast: 0,
-        candidateOneName: '',
-        candidateTwoName: '',
-        candidateOneVotes: 0,
-        candidateTwoVotes: 0,
-      } // improve when refactor contest form component into dynamic generation
+    : defaultValues // improve when refactor contest form component into dynamic generation
 
   return (
     <Formik
       initialValues={cleanAudit}
+      validationSchema={schema}
       onSubmit={handlePost}
       render={({
         values,
+        errors,
+        touched,
         handleChange,
         handleBlur,
         handleSubmit,
@@ -163,6 +205,8 @@ const EstimateSampleSize = ({
                 onChange={handleChange}
                 onBlur={handleBlur}
                 disabled={!canEstimateSampleSize}
+                error={errors.name}
+                touched={touched.name}
               />
             </FormSection>
             <FormSection
@@ -183,6 +227,8 @@ const EstimateSampleSize = ({
                     onChange={handleChange}
                     onBlur={handleBlur}
                     disabled={!canEstimateSampleSize}
+                    error={errors.candidateOneName}
+                    touched={touched.candidateOneName}
                   />
                   <FieldRight
                     type="number"
@@ -191,6 +237,8 @@ const EstimateSampleSize = ({
                     onBlur={handleBlur}
                     value={values.candidateOneVotes}
                     disabled={!canEstimateSampleSize}
+                    error={errors.candidateOneVotes}
+                    touched={touched.candidateOneVotes}
                   />
                 </InputFieldRow>
                 <InputLabelRow>
@@ -206,6 +254,8 @@ const EstimateSampleSize = ({
                     onBlur={handleBlur}
                     value={values.candidateTwoName}
                     disabled={!canEstimateSampleSize}
+                    error={errors.candidateTwoName}
+                    touched={touched.candidateTwoName}
                   />
                   <FieldRight
                     type="number"
@@ -214,6 +264,8 @@ const EstimateSampleSize = ({
                     onBlur={handleBlur}
                     value={values.candidateTwoVotes}
                     disabled={!canEstimateSampleSize}
+                    error={errors.candidateTwoVotes}
+                    touched={touched.candidateTwoVotes}
                   />
                 </InputFieldRow>
               </TwoColumnSection>
@@ -230,6 +282,12 @@ const EstimateSampleSize = ({
                 onBlur={handleBlur}
                 value={values.totalBallotsCast}
                 disabled={!canEstimateSampleSize}
+                error={errors.totalBallotsCast}
+                touched={
+                  touched.totalBallotsCast &&
+                  touched.candidateOneVotes &&
+                  touched.candidateTwoVotes
+                }
               />
             </FormSection>
             <FormTitle>Audit Settings</FormTitle>
@@ -246,6 +304,9 @@ const EstimateSampleSize = ({
               >
                 {generateOptions(20)}
               </select>
+              {errors.riskLimit && touched.riskLimit && (
+                <ErrorLabel>{errors.riskLimit}</ErrorLabel>
+              )}
             </FormSection>
             <FormSection
               label="Random Seed"
@@ -258,6 +319,8 @@ const EstimateSampleSize = ({
                 onBlur={handleBlur}
                 name="randomSeed"
                 disabled={!canEstimateSampleSize}
+                error={errors.randomSeed}
+                touched={touched.randomSeed}
               />
             </FormSection>
           </FormWrapper>

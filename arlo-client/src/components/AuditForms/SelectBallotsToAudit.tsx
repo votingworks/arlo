@@ -3,13 +3,14 @@
 import React from 'react'
 import { toast } from 'react-toastify'
 import { Formik, FormikProps } from 'formik'
+import * as Yup from 'yup'
 import FormSection, { FormSectionDescription } from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
 import { Jurisdiction, Audit } from '../../types'
 import { api } from '../utilities'
-import { generateOptions } from '../Form/_helpers'
+import { generateOptions, ErrorLabel } from '../Form/_helpers'
 
 interface Props {
   audit: Audit
@@ -23,6 +24,20 @@ interface SelectBallotsToAuditValues {
   auditBoards: number
   manifest: File | null
 }
+
+const schema = Yup.object().shape({
+  auditBoards: Yup.number()
+    .min(1, 'Too few Audit Boards')
+    .max(5, 'Too many Audit Boards')
+    .required('Required'),
+  manifest: Yup.mixed()
+    .required('You must upload a manifest')
+    .test(
+      'fileType',
+      'You must upload a CSV file',
+      value => value && value.type === 'text/csv'
+    ),
+})
 
 const SelectBallotsToAudit = (props: Props) => {
   const { audit, isLoading, setIsLoading, updateAudit, getStatus } = props
@@ -112,12 +127,15 @@ const SelectBallotsToAudit = (props: Props) => {
   return (
     <Formik
       initialValues={initialState}
+      validationSchema={schema}
       onSubmit={handlePost}
       render={({
         handleBlur,
         handleChange,
         handleSubmit,
         values,
+        errors,
+        touched,
         setFieldValue,
       }: FormikProps<SelectBallotsToAuditValues>) => (
         <form onSubmit={handleSubmit} id="formTwo">
@@ -143,6 +161,9 @@ const SelectBallotsToAudit = (props: Props) => {
               >
                 {generateOptions(5)}
               </select>
+              {errors.auditBoards && touched.auditBoards && (
+                <ErrorLabel>{errors.auditBoards}</ErrorLabel>
+              )}
             </FormSection>
             <FormSection label="Ballot Manifest">
               {manifestUploaded && audit.jurisdictions[0].ballotManifest ? ( // duplicating effect of manifestUploaded for TS
@@ -184,6 +205,9 @@ const SelectBallotsToAudit = (props: Props) => {
                     }}
                     onBlur={handleBlur}
                   />
+                  {errors.manifest && touched.manifest && (
+                    <ErrorLabel>{errors.manifest}</ErrorLabel>
+                  )}
                 </React.Fragment>
               )}
             </FormSection>

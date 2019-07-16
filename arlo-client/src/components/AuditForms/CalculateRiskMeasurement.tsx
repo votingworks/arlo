@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { Formik, FormikProps } from 'formik'
+import * as Yup from 'yup'
 import FormSection, {
   FormSectionLabel,
   FormSectionDescription,
@@ -11,6 +12,7 @@ import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api } from '../utilities'
+import { Contest } from '../../types'
 
 const InputSection = styled.div`
   display: block;
@@ -46,9 +48,8 @@ interface CalculateRiskMeasurementValues {
 
 const CalculateRiskMeasurmeent = (props: Props) => {
   const { audit, isLoading, setIsLoading, updateAudit } = props
-  if (!audit) {
-    return <></>
-  }
+
+  const sumOfAuditedVotes: { current: number } = useRef(0)
 
   const downloadBallotRetrievalList = (id: number, e: any) => {
     e.preventDefault()
@@ -91,6 +92,8 @@ const CalculateRiskMeasurmeent = (props: Props) => {
         },
         body: JSON.stringify(body),
       })
+      sumOfAuditedVotes.current +=
+        Number(values.candidateOne) + Number(values.candidateTwo)
       updateAudit()
     } catch (err) {
       toast.error(err.message)
@@ -108,19 +111,51 @@ const CalculateRiskMeasurmeent = (props: Props) => {
   return audit.rounds.map((v: any, i: number) => {
     const round: number = i + 1
     const contest: any = v.contests.length > 0 ? v.contests[0] : undefined
+    const maxVotes: number = audit.contests.find(
+      (c: Contest) => c.id === contest.id
+    ).totalBallotsCast
     const showCalculateButton =
       i + 1 === audit.rounds.length &&
       contest &&
       contest.endMeasurements &&
       !contest.endMeasurements.isComplete
+    const schema = Yup.object().shape({
+      candidateOne: Yup.number().test(
+        'overCountOne',
+        'Cannot exceed the number of total ballots cast',
+        function(votes) {
+          return (
+            (this.parent.candidateTwo || 0) +
+              (votes || 0) +
+              sumOfAuditedVotes.current <=
+            maxVotes
+          )
+        }
+      ),
+      candidateTwo: Yup.number().test(
+        'overCountTwo',
+        'Cannot exceed the number of total ballots cast',
+        function(votes) {
+          return (
+            (this.parent.candidateOne || 0) +
+              (votes || 0) +
+              sumOfAuditedVotes.current <=
+            maxVotes
+          )
+        }
+      ),
+    })
     /* eslint-disable react/no-array-index-key */
     return (
       <Formik
         key={i}
         onSubmit={calculateRiskMeasurement}
         initialValues={{ ...auditedResults[i], ...{ round: i + 1 } }}
+        validationSchema={schema}
         render={({
           values,
+          errors,
+          touched,
           handleChange,
           handleBlur,
           handleSubmit,
@@ -164,6 +199,8 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                       onBlur={handleBlur}
                       value={values.candidateOne}
                       type="number"
+                      error={errors.candidateOne}
+                      touched={touched.candidateOne}
                     />
                   </InlineInput>
                   <InlineInput>
@@ -174,6 +211,8 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                       onBlur={handleBlur}
                       value={values.candidateTwo}
                       type="number"
+                      error={errors.candidateTwo}
+                      touched={touched.candidateTwo}
                     />
                   </InlineInput>
                 </InputSection>
