@@ -59,7 +59,7 @@ export interface Round {
 
 export interface Audit {
   name: string
-  riskLimit: number | ''
+  riskLimit: number | string
   randomSeed: number | string
   contests: Contest[] | []
   jurisdictions: Jurisdiction[] | []

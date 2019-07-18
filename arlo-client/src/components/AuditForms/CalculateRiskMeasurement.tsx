@@ -12,7 +12,7 @@ import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api } from '../utilities'
-import { Contest } from '../../types'
+import { Contest, Round, RoundContest } from '../../types'
 
 const InputSection = styled.div`
   display: block;
@@ -42,8 +42,8 @@ interface Props {
 
 interface CalculateRiskMeasurementValues {
   round: number
-  candidateOne: number | ''
-  candidateTwo: number | ''
+  'candidate-1': number | ''
+  'candidate-2': number | ''
 }
 
 const CalculateRiskMeasurmeent = (props: Props) => {
@@ -77,8 +77,8 @@ const CalculateRiskMeasurmeent = (props: Props) => {
           {
             id: 'contest-1',
             results: {
-              'candidate-1': Number(values.candidateOne),
-              'candidate-2': Number(values.candidateTwo),
+              'candidate-1': Number(values['candidate-1']),
+              'candidate-2': Number(values['candidate-2']),
             },
           },
         ],
@@ -93,24 +93,23 @@ const CalculateRiskMeasurmeent = (props: Props) => {
         body: JSON.stringify(body),
       })
       sumOfAuditedVotes.current +=
-        Number(values.candidateOne) + Number(values.candidateTwo)
+        Number(values['candidate-1']) + Number(values['candidate-2'])
       updateAudit()
     } catch (err) {
       toast.error(err.message)
     }
   }
 
-  const auditedResults: CalculateRiskMeasurementValues[] = [
-    {
-      round: 1,
-      candidateOne: '',
-      candidateTwo: '',
-    },
-  ]
+  const auditedResults: CalculateRiskMeasurementValues[] = audit.rounds.map(
+    (r: Round, i: number) => ({
+      ...r.contests[0].results,
+      round: i + 1,
+    })
+  )
 
-  return audit.rounds.map((v: any, i: number) => {
+  return audit.rounds.map((v: Round, i: number) => {
     const round: number = i + 1
-    const contest: any = v.contests.length > 0 ? v.contests[0] : undefined
+    const contest: RoundContest = v.contests[0]
     const maxVotes: number = audit.contests.find(
       (c: Contest) => c.id === contest.id
     ).totalBallotsCast
@@ -120,24 +119,24 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       contest.endMeasurements &&
       !contest.endMeasurements.isComplete
     const schema = Yup.object().shape({
-      candidateOne: Yup.number().test(
+      'candidate-1': Yup.number().test(
         'overCountOne',
         'Cannot exceed the number of total ballots cast',
         function(votes) {
           return (
-            (this.parent.candidateTwo || 0) +
+            (this.parent['candidate-2'] || 0) +
               (votes || 0) +
               sumOfAuditedVotes.current <=
             maxVotes
           )
         }
       ),
-      candidateTwo: Yup.number().test(
+      'candidate-2': Yup.number().test(
         'overCountTwo',
         'Cannot exceed the number of total ballots cast',
         function(votes) {
           return (
-            (this.parent.candidateOne || 0) +
+            (this.parent['candidate-1'] || 0) +
               (votes || 0) +
               sumOfAuditedVotes.current <=
             maxVotes
@@ -150,8 +149,9 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       <Formik
         key={i}
         onSubmit={calculateRiskMeasurement}
-        initialValues={{ ...auditedResults[i], ...{ round: i + 1 } }}
+        initialValues={auditedResults[i]}
         validationSchema={schema}
+        enableReinitialize
         render={({
           values,
           errors,
@@ -194,25 +194,25 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                   <InlineInput>
                     <InputLabel>{audit.contests[0].choices[0].name}</InputLabel>
                     <FormField
-                      name="candidateOne"
+                      name="'candidate-1'"
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.candidateOne}
+                      value={values['candidate-1']}
                       type="number"
-                      error={errors.candidateOne}
-                      touched={touched.candidateOne}
+                      error={errors['candidate-1']}
+                      touched={touched['candidate-1']}
                     />
                   </InlineInput>
                   <InlineInput>
                     <InputLabel>{audit.contests[0].choices[1].name}</InputLabel>
                     <FormField
-                      name="candidateTwo"
+                      name="'candidate-2'"
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.candidateTwo}
+                      value={values['candidate-2']}
                       type="number"
-                      error={errors.candidateTwo}
-                      touched={touched.candidateTwo}
+                      error={errors['candidate-2']}
+                      touched={touched['candidate-2']}
                     />
                   </InlineInput>
                 </InputSection>

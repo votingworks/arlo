@@ -107,7 +107,6 @@ const EstimateSampleSize = ({
   updateAudit,
 }: Props) => {
   const [canEstimateSampleSize, setCanEstimateSampleSize] = useState(true)
-  const formOneHasData = audit && audit.contests[0]
 
   const handlePost = async (
     values: EstimateSampleSizeValues,
@@ -157,7 +156,7 @@ const EstimateSampleSize = ({
     }
   }
 
-  const cleanAudit = formOneHasData
+  const cleanAudit = audit.contests.length
     ? {
         name: audit.contests[0].name,
         randomSeed: audit.randomSeed,
@@ -175,6 +174,7 @@ const EstimateSampleSize = ({
       initialValues={cleanAudit}
       validationSchema={schema}
       onSubmit={handlePost}
+      enableReinitialize
       render={({
         values,
         errors,
@@ -314,8 +314,8 @@ const EstimateSampleSize = ({
               />
             </FormSection>
           </FormWrapper>
-          {!formOneHasData && isLoading && <p>Loading...</p>}
-          {!formOneHasData && !isLoading && (
+          {!audit.contests.length && isLoading && <p>Loading...</p>}
+          {!audit.contests.length && !isLoading && (
             <FormButtonBar>
               <FormButton
                 type="submit"

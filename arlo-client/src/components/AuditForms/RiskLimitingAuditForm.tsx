@@ -4,16 +4,15 @@ import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
 import { Audit } from '../../types'
-// import { statusStates } from './_mocks'
+import { statusStates } from './_mocks'
 
 const AuditForms = () => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [audit, setAudit] = useState()
+  const [audit, setAudit] = useState<Audit>(statusStates[0])
 
   const getStatus = useCallback(async (): Promise<Audit> => {
     const audit: any = await api('/audit/status', {})
-    // const audit = statusStates[1]
     return audit
   }, [])
 
@@ -37,15 +36,17 @@ const AuditForms = () => {
         updateAudit={updateAudit}
       />
 
-      <SelectBallotsToAudit
-        audit={audit}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
-        updateAudit={updateAudit}
-        getStatus={getStatus}
-      />
+      {!!audit.contests.length && (
+        <SelectBallotsToAudit
+          audit={audit}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          updateAudit={updateAudit}
+          getStatus={getStatus}
+        />
+      )}
 
-      {audit && audit.contests.length && (
+      {!!audit.rounds.length && (
         <CalculateRiskMeasurement
           audit={audit}
           isLoading={isLoading}

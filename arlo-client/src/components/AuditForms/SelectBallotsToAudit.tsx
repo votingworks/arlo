@@ -129,6 +129,7 @@ const SelectBallotsToAudit = (props: Props) => {
       initialValues={initialState}
       validationSchema={schema}
       onSubmit={handlePost}
+      enableReinitialize
       render={({
         handleBlur,
         handleChange,

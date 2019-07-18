@@ -80,6 +80,14 @@ export const mockAudit: Audit = {
 
 export const statusStates = [
   {
+    name: '',
+    riskLimit: '',
+    randomSeed: '',
+    contests: [],
+    jurisdictions: [],
+    rounds: [],
+  },
+  {
     contests: [
       {
         choices: [
