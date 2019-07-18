@@ -4,6 +4,7 @@ import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
 import { Audit } from '../../types'
+// import { statusStates } from './_mocks'
 
 const AuditForms = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -12,6 +13,7 @@ const AuditForms = () => {
 
   const getStatus = useCallback(async (): Promise<Audit> => {
     const audit: any = await api('/audit/status', {})
+    // const audit = statusStates[1]
     return audit
   }, [])
 

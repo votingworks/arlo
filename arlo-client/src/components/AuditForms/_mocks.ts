@@ -78,4 +78,192 @@ export const mockAudit: Audit = {
   ],
 }
 
+export const statusStates = [
+  {
+    contests: [
+      {
+        choices: [
+          {
+            name: 'choice one',
+            numVotes: 792,
+          },
+          {
+            name: 'choice two',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-1',
+        name: 'contest name',
+        totalBallotsCast: 2123,
+      },
+    ],
+    jurisdictions: [],
+    rounds: [],
+    name: 'contest name',
+    randomSeed: '123456789',
+    riskLimit: 1,
+  },
+  {
+    contests: [
+      {
+        choices: [
+          {
+            name: 'choice one',
+            numVotes: 792,
+          },
+          {
+            name: 'choice two',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-1',
+        name: 'contest name',
+        totalBallotsCast: 2123,
+      },
+    ],
+    jurisdictions: [
+      {
+        auditBoards: [
+          {
+            id: 'audit-board-1',
+            members: [],
+          },
+        ],
+        ballotManifest: {
+          filename: 'Ballot Manifest May 2019 Election - WYNADOTTE.csv',
+          numBallots: 2117,
+          numBatches: 10,
+          uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+        },
+        contests: ['contest-1'],
+        id: 'jurisdiction-1',
+        name: 'Jurisdiction 1',
+      },
+    ],
+    rounds: [],
+    name: 'contest name',
+    randomSeed: '123456789',
+    riskLimit: 1,
+  },
+  {
+    contests: [
+      {
+        choices: [
+          {
+            name: 'choice one',
+            numVotes: 792,
+          },
+          {
+            name: 'choice two',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-1',
+        name: 'contest name',
+        totalBallotsCast: 2123,
+      },
+    ],
+    jurisdictions: [
+      {
+        auditBoards: [
+          {
+            id: 'audit-board-1',
+            members: [],
+          },
+        ],
+        ballotManifest: {
+          filename: 'Ballot Manifest May 2019 Election - WYNADOTTE.csv',
+          numBallots: 2117,
+          numBatches: 10,
+          uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+        },
+        contests: ['contest-1'],
+        id: 'jurisdiction-1',
+        name: 'Jurisdiction 1',
+      },
+    ],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: null,
+              pvalue: null,
+            },
+            id: 'contest-1',
+            results: {},
+            sampleSize: 269,
+          },
+        ],
+        endedAt: null,
+        startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+      },
+    ],
+    name: 'contest name',
+    randomSeed: '123456789',
+    riskLimit: 1,
+  },
+  {
+    contests: [
+      {
+        choices: [
+          {
+            name: 'choice one',
+            numVotes: 792,
+          },
+          {
+            name: 'choice two',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-1',
+        name: 'contest name',
+        totalBallotsCast: 2123,
+      },
+    ],
+    jurisdictions: [
+      {
+        auditBoards: [
+          {
+            id: 'audit-board-1',
+            members: [],
+          },
+        ],
+        ballotManifest: {
+          filename: 'Ballot Manifest May 2019 Election - WYNADOTTE.csv',
+          numBallots: 2117,
+          numBatches: 10,
+          uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+        },
+        contests: ['contest-1'],
+        id: 'jurisdiction-1',
+        name: 'Jurisdiction 1',
+      },
+    ],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: true,
+              pvalue: 0.00020431431380638307,
+            },
+            id: 'contest-1',
+            results: {
+              'candidate-1': 100,
+              'candidate-2': 167,
+            },
+            sampleSize: 269,
+          },
+        ],
+        endedAt: 'Thu, 18 Jul 2019 16:59:34 GMT',
+        startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+      },
+    ],
+    name: 'contest name',
+    randomSeed: '123456789',
+    riskLimit: 1,
+  },
+]
+
 export default mockAudit

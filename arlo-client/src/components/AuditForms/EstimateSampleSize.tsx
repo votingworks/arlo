@@ -66,7 +66,7 @@ interface EstimateSampleSizeValues {
 const defaultValues = {
   name: '',
   randomSeed: 0,
-  riskLimit: 0,
+  riskLimit: 1,
   totalBallotsCast: 0,
   candidateOneName: '',
   candidateTwoName: '',
@@ -87,17 +87,7 @@ const schema = Yup.object().shape({
     .min(1, 'Must be greater than 0')
     .max(20, 'Must be less than 21')
     .required('Required'),
-  totalBallotsCast: Yup.number().test(
-    'match',
-    'Must equal sum of all votes',
-    function(totalBallotsCast) {
-      const {
-        candidateOneVotes,
-        candidateTwoVotes,
-      }: EstimateSampleSizeValues = { ...defaultValues, ...this.parent }
-      return totalBallotsCast === candidateOneVotes + candidateTwoVotes
-    }
-  ),
+  totalBallotsCast: Yup.number().required('Required'),
   candidateOneName: Yup.string()
     .min(2, 'Name must be longer than 2 characters')
     .max(50, 'Name must be shorter than 50 characters')
