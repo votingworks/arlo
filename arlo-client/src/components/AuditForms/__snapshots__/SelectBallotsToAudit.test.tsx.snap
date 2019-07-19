@@ -83,6 +83,11 @@ Object {
                
               560
             </div>
+            <button
+              class="sc-EHOje hXhzUo"
+            >
+              Delete File
+            </button>
           </div>
         </div>
       </form>
@@ -167,6 +172,11 @@ Object {
              
             560
           </div>
+          <button
+            class="sc-EHOje hXhzUo"
+          >
+            Delete File
+          </button>
         </div>
       </div>
     </form>

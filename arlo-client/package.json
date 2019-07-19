@@ -10,10 +10,11 @@
     "@types/react-tap-event-plugin": "^0.0.30",
     "@types/react-toastify": "^4.0.2",
     "@types/styled-components": "^4.1.15",
-    "@types/uuid": "^3.4.4",
+    "@types/uuidv4": "^2.0.0",
     "@types/yup": "^0.26.22",
     "formik": "^1.5.8",
     "http-proxy-middleware": "^0.19.1",
+    "jest": "^24.8.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
@@ -22,7 +23,7 @@
     "react-toastify": "^5.3.1",
     "styled-components": "^4.3.2",
     "typescript": "3.5.1",
-    "uuid": "^3.3.2",
+    "uuidv4": "^4.0.0",
     "yup": "^0.27.0"
   },
   "scripts": {
