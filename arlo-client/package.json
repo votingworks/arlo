@@ -12,6 +12,7 @@
     "@types/styled-components": "^4.1.15",
     "@types/uuid": "^3.4.4",
     "http-proxy-middleware": "^0.19.1",
+    "jest": "^24.8.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
