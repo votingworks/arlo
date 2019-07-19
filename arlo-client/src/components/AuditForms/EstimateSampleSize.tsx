@@ -54,12 +54,12 @@ interface Props {
 }
 
 interface ContestValues {
-  name: string
-  totalBallotsCast: number
-  candidateOneName: string
-  candidateTwoName: string
-  candidateOneVotes: number
-  candidateTwoVotes: number
+  name?: string
+  totalBallotsCast?: number
+  candidateOneName?: string
+  candidateTwoName?: string
+  candidateOneVotes?: number
+  candidateTwoVotes?: number
 }
 
 interface EstimateSampleSizeValues {
@@ -109,12 +109,17 @@ const EstimateSampleSize = ({
 }: Props) => {
   const [canEstimateSampleSize, setCanEstimateSampleSize] = useState(true)
 
+  const [numContests, setNumContests] = useState<number>(
+    audit.contests.length || 1
+  )
+  const contestForms = useRef<Function[]>([])
   const contests = useRef<ContestValues[]>([])
-  //const contestForms = useRef<React.RefObject<HTMLInputElement>[]>([])
-  const contestForms = useRef([])
+  const addContest = () => {
+    setNumContests(numContests + 1)
+  }
 
   const handlePost = async (values: EstimateSampleSizeValues) => {
-    contestForms.current.forEach((form: any) => form.handleSubmit())
+    contestForms.current.forEach(formSubmit => formSubmit())
     setCanEstimateSampleSize(false)
     const data = {
       // incomplete Audit
@@ -157,13 +162,6 @@ const EstimateSampleSize = ({
     }
   }
 
-  const [numContests, setNumContests] = useState<number>(
-    audit.contests.length || 1
-  )
-  const addContest = () => {
-    setNumContests(numContests + 1)
-  }
-
   const initialValues = {
     randomSeed: audit.randomSeed || '',
     riskLimit: audit.riskLimit || 1,
@@ -194,7 +192,6 @@ const EstimateSampleSize = ({
         return (
           <Formik
             key={i}
-            ref={contestForms.current[i]}
             initialValues={contestValues[i]}
             validationSchema={contestsSchema}
             onSubmit={values => {
@@ -207,114 +204,119 @@ const EstimateSampleSize = ({
               touched,
               handleChange,
               handleBlur,
-            }: FormikProps<ContestValues>) => (
-              <form id="formOne">
-                <FormWrapper title="Contest Information">
-                  <React.Fragment key={i}>
-                    {i > 0 && (
-                      <FormSection>
-                        <hr />
+              submitForm,
+              handleSubmit,
+            }: FormikProps<ContestValues>) => {
+              contestForms.current[i] = submitForm
+              return (
+                <form onSubmit={handleSubmit}>
+                  <FormWrapper title="Contest Information">
+                    <React.Fragment key={i}>
+                      {i > 0 && (
+                        <FormSection>
+                          <hr />
+                        </FormSection>
+                      )}
+                      <FormSection
+                        label={`Contest ${numContests > 1 ? i + 1 : ''} Name`}
+                        description="Enter the name of the contest that will drive the audit."
+                      >
+                        <FormField
+                          name="name"
+                          value={values.name}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          disabled={!canEstimateSampleSize}
+                          error={errors.name}
+                          touched={touched.name}
+                        />
                       </FormSection>
-                    )}
-                    <FormSection
-                      label={`Contest ${numContests > 1 ? i + 1 : ''} Name`}
-                      description="Enter the name of the contest that will drive the audit."
-                    >
-                      <FormField
-                        name="name"
-                        value={values.name}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        disabled={!canEstimateSampleSize}
-                        error={errors.name}
-                        touched={touched.name}
-                      />
-                    </FormSection>
-                    <FormSection
-                      label="Candidates/Choices & Vote Totals"
-                      description="Enter the name of each candidate choice that appears on the ballot for this contest."
-                    >
-                      <TwoColumnSection>
-                        <InputLabelRow>
-                          <InputLabel>Name of Candidate/Choice 1</InputLabel>
-                          <InputLabelRight>
-                            Votes for Candidate/Choice 1
-                          </InputLabelRight>
-                        </InputLabelRow>
-                        <InputFieldRow>
-                          <FormField
-                            name="candidateOneName"
-                            value={values.candidateOneName}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            disabled={!canEstimateSampleSize}
-                            error={errors.candidateOneName}
-                            touched={touched.candidateOneName}
-                          />
-                          <FieldRight
-                            type="number"
-                            name="candidateOneVotes"
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            value={values.candidateOneVotes}
-                            disabled={!canEstimateSampleSize}
-                            error={errors.candidateOneVotes}
-                            touched={touched.candidateOneVotes}
-                          />
-                        </InputFieldRow>
-                        <InputLabelRow>
-                          <InputLabel>Name of Candidate/Choice 2</InputLabel>
-                          <InputLabelRight>
-                            Votes for Candidate/Choice 2
-                          </InputLabelRight>
-                        </InputLabelRow>
-                        <InputFieldRow>
-                          <FormField
-                            name="candidateTwoName"
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            value={values.candidateTwoName}
-                            disabled={!canEstimateSampleSize}
-                            error={errors.candidateTwoName}
-                            touched={touched.candidateTwoName}
-                          />
-                          <FieldRight
-                            type="number"
-                            name="candidateTwoVotes"
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            value={values.candidateTwoVotes}
-                            disabled={!canEstimateSampleSize}
-                            error={errors.candidateTwoVotes}
-                            touched={touched.candidateTwoVotes}
-                          />
-                        </InputFieldRow>
-                      </TwoColumnSection>
-                    </FormSection>
+                      <FormSection
+                        label="Candidates/Choices & Vote Totals"
+                        description="Enter the name of each candidate choice that appears on the ballot for this contest."
+                      >
+                        <TwoColumnSection>
+                          <InputLabelRow>
+                            <InputLabel>Name of Candidate/Choice 1</InputLabel>
+                            <InputLabelRight>
+                              Votes for Candidate/Choice 1
+                            </InputLabelRight>
+                          </InputLabelRow>
+                          <InputFieldRow>
+                            <FormField
+                              name="candidateOneName"
+                              value={values.candidateOneName}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              disabled={!canEstimateSampleSize}
+                              error={errors.candidateOneName}
+                              touched={touched.candidateOneName}
+                            />
+                            <FieldRight
+                              type="number"
+                              name="candidateOneVotes"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={values.candidateOneVotes}
+                              disabled={!canEstimateSampleSize}
+                              error={errors.candidateOneVotes}
+                              touched={touched.candidateOneVotes}
+                            />
+                          </InputFieldRow>
+                          <InputLabelRow>
+                            <InputLabel>Name of Candidate/Choice 2</InputLabel>
+                            <InputLabelRight>
+                              Votes for Candidate/Choice 2
+                            </InputLabelRight>
+                          </InputLabelRow>
+                          <InputFieldRow>
+                            <FormField
+                              name="candidateTwoName"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={values.candidateTwoName}
+                              disabled={!canEstimateSampleSize}
+                              error={errors.candidateTwoName}
+                              touched={touched.candidateTwoName}
+                            />
+                            <FieldRight
+                              type="number"
+                              name="candidateTwoVotes"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={values.candidateTwoVotes}
+                              disabled={!canEstimateSampleSize}
+                              error={errors.candidateTwoVotes}
+                              touched={touched.candidateTwoVotes}
+                            />
+                          </InputFieldRow>
+                        </TwoColumnSection>
+                      </FormSection>
 
-                    <FormSection
-                      label="Total Ballots Cast"
-                      description="Enter the overall number of ballot cards cast in jurisdictions containing this contest."
-                    >
-                      <FormField
-                        type="number"
-                        name="totalBallotsCast"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values.totalBallotsCast}
-                        disabled={!canEstimateSampleSize}
-                        error={errors.totalBallotsCast}
-                        touched={
-                          touched.totalBallotsCast &&
-                          touched.candidateOneVotes &&
-                          touched.candidateTwoVotes
-                        }
-                      />
-                    </FormSection>
-                  </React.Fragment>
-                </FormWrapper>
-              </form>
-            )}
+                      <FormSection
+                        label="Total Ballots Cast"
+                        description="Enter the overall number of ballot cards cast in jurisdictions containing this contest."
+                      >
+                        <FormField
+                          type="number"
+                          name="totalBallotsCast"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.totalBallotsCast}
+                          disabled={!canEstimateSampleSize}
+                          error={errors.totalBallotsCast}
+                          touched={
+                            touched.totalBallotsCast &&
+                            touched.candidateOneVotes &&
+                            touched.candidateTwoVotes
+                          }
+                        />
+                      </FormSection>
+                    </React.Fragment>
+                  </FormWrapper>
+                </form>
+              )
+            }}
           />
         )
       })}
