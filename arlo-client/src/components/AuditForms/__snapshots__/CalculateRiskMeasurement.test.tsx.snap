@@ -21,7 +21,7 @@ Object {
           >
             Ballot Retrieval List 
 
-              25 Ballots
+                25 Ballots
           </div>
           <button
             class="sc-bZQynM esiHiM"
@@ -42,43 +42,62 @@ Object {
             1
           </div>
           <form>
+            <input
+              name="round"
+              type="hidden"
+              value="1"
+            />
+             
             <div
-              class="sc-iwsKbI jXpGYC"
+              class="sc-gqjmRU bqmubQ"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-VigVT hLPYRt"
                 >
                   Candidate 1
                 </label>
-                <input
+                <div
                   class="sc-htoDjs jjofgS"
-                  value=""
-                />
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    name="'candidate-1'"
+                    type="number"
+                    value="55"
+                  />
+                </div>
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-VigVT hLPYRt"
                 >
                   Candidate 2
                 </label>
-                <input
+                <div
                   class="sc-htoDjs jjofgS"
-                  value=""
-                />
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    name="'candidate-2'"
+                    type="number"
+                    value="35"
+                  />
+                </div>
               </div>
             </div>
           </form>
         </div>
         <div
-          class="sc-dnqmqq itqjch"
+          class="sc-gZMcBi DmELe"
         >
           <button
             class="sc-EHOje hXhzUo"
+            type="submit"
           >
             Calculate Risk Measurement
           </button>
@@ -103,7 +122,7 @@ Object {
         >
           Ballot Retrieval List 
 
-              25 Ballots
+                25 Ballots
         </div>
         <button
           class="sc-bZQynM esiHiM"
@@ -124,43 +143,62 @@ Object {
           1
         </div>
         <form>
+          <input
+            name="round"
+            type="hidden"
+            value="1"
+          />
+           
           <div
-            class="sc-iwsKbI jXpGYC"
+            class="sc-gqjmRU bqmubQ"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-VigVT hLPYRt"
               >
                 Candidate 1
               </label>
-              <input
+              <div
                 class="sc-htoDjs jjofgS"
-                value=""
-              />
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  name="'candidate-1'"
+                  type="number"
+                  value="55"
+                />
+              </div>
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-VigVT hLPYRt"
               >
                 Candidate 2
               </label>
-              <input
+              <div
                 class="sc-htoDjs jjofgS"
-                value=""
-              />
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  name="'candidate-2'"
+                  type="number"
+                  value="35"
+                />
+              </div>
             </div>
           </div>
         </form>
       </div>
       <div
-        class="sc-dnqmqq itqjch"
+        class="sc-gZMcBi DmELe"
       >
         <button
           class="sc-EHOje hXhzUo"
+          type="submit"
         >
           Calculate Risk Measurement
         </button>
