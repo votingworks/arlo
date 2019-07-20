@@ -1,7 +1,14 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
-import { Formik, FormikProps } from 'formik'
+import {
+  Formik,
+  FormikProps,
+  Form,
+  Field,
+  FieldArray,
+  ErrorMessage,
+} from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
 import FormSection from '../Form/FormSection'
@@ -53,31 +60,24 @@ interface Props {
   updateAudit: () => void
 }
 
+interface ChoiceValues {
+  id: number
+  name: string
+  numVotes: number
+}
+
 interface ContestValues {
   name?: string
   totalBallotsCast?: number
-  candidateOneName?: string
-  candidateTwoName?: string
-  candidateOneVotes?: number
-  candidateTwoVotes?: number
+  choices: ChoiceValues[]
 }
 
 interface EstimateSampleSizeValues {
+  name: string
   randomSeed: number
   riskLimit: number
-  contests?: ContestValues[]
+  contests: ContestValues[]
 }
-
-const schema = Yup.object().shape({
-  randomSeed: Yup.number()
-    .min(1, 'Must be at least 1')
-    .max(99999999999999999999, 'Cannot exceed 20 digits')
-    .required('Required'),
-  riskLimit: Yup.number()
-    .min(1, 'Must be greater than 0')
-    .max(20, 'Must be less than 21')
-    .required('Required'),
-})
 
 const contestsSchema = Yup.array()
   .required()
@@ -88,18 +88,32 @@ const contestsSchema = Yup.array()
         .max(50, 'Name must be shorter than 50 characters')
         .required('Required'),
       totalBallotsCast: Yup.number().required('Required'),
-      candidateOneName: Yup.string()
-        .min(2, 'Name must be longer than 2 characters')
-        .max(50, 'Name must be shorter than 50 characters')
-        .required('Required'),
-      candidateTwoName: Yup.string()
-        .min(2, 'Name must be longer than 2 characters')
-        .max(50, 'Name must be shorter than 50 characters')
-        .required('Required'),
-      candidateOneVotes: Yup.number().required('Required'),
-      candidateTwoVotes: Yup.number().required('Required'),
+      choices: Yup.array()
+        .required()
+        .of(
+          Yup.object().shape({
+            name: Yup.string()
+              .required('Required')
+              .min(2, 'Name must be longer than 2 characters')
+              .max(50, 'Name must be shorter than 50 characters'),
+            numVotes: Yup.number().required('Required'),
+          })
+        ),
     })
   )
+
+const schema = Yup.object().shape({
+  name: Yup.string().required('Required'),
+  randomSeed: Yup.number()
+    .min(1, 'Must be at least 1')
+    .max(99999999999999999999, 'Cannot exceed 20 digits')
+    .required('Required'),
+  riskLimit: Yup.number()
+    .min(1, 'Must be greater than 0')
+    .max(20, 'Must be less than 21')
+    .required('Required'),
+  contests: contestsSchema,
+})
 
 const EstimateSampleSize = ({
   audit,
@@ -109,39 +123,22 @@ const EstimateSampleSize = ({
 }: Props) => {
   const [canEstimateSampleSize, setCanEstimateSampleSize] = useState(true)
 
-  const [numContests, setNumContests] = useState<number>(
-    audit.contests.length || 1
-  )
-  const contestForms = useRef<Function[]>([])
-  const contests = useRef<ContestValues[]>([])
-  const addContest = () => {
-    setNumContests(numContests + 1)
-  }
-
   const handlePost = async (values: EstimateSampleSizeValues) => {
-    contestForms.current.forEach(formSubmit => formSubmit())
     setCanEstimateSampleSize(false)
     const data = {
       // incomplete Audit
-      name: 'Election', // hardcoded to 'Election'?
+      name: values.name,
       randomSeed: Number(values.randomSeed),
       riskLimit: Number(values.riskLimit),
-      contests: contests.current.map(contest => ({
+      contests: values.contests.map(contest => ({
         id: uuidv4(),
         name: contest.name,
         totalBallotsCast: Number(contest.totalBallotsCast),
-        choices: [
-          {
-            id: 'candidate-1',
-            name: contest.candidateOneName,
-            numVotes: Number(contest.candidateOneVotes),
-          },
-          {
-            id: 'candidate-2',
-            name: contest.candidateTwoName,
-            numVotes: Number(contest.candidateTwoVotes),
-          },
-        ],
+        choices: contest.choices.map(choice => ({
+          id: uuidv4(),
+          name: choice.name,
+          numVotes: Number(choice.numVotes),
+        })),
       })),
     }
     try {
@@ -162,32 +159,182 @@ const EstimateSampleSize = ({
     }
   }
 
+  const contestValues = [
+    {
+      name: '',
+      totalBallotsCast: '',
+      choices: [
+        {
+          name: '',
+          numVotes: '',
+        },
+        {
+          name: '',
+          numVotes: '',
+        },
+      ],
+    },
+  ]
+
   const initialValues = {
     randomSeed: audit.randomSeed || '',
     riskLimit: audit.riskLimit || 1,
+    name: audit.name || '',
+    contests: audit.contests.length ? audit.contests : contestValues,
   }
-
-  const contestValues = Array.from(Array(numContests).keys()).map(i => {
-    const {
-      name = '',
-      totalBallotsCast = '',
-      candidateOneName = '',
-      candidateTwoName = '',
-      candidateOneVotes = '',
-      candidateTwoVotes = '',
-    } = audit.contests[i] || {}
-    return {
-      name,
-      totalBallotsCast,
-      candidateOneName,
-      candidateTwoName,
-      candidateOneVotes,
-      candidateTwoVotes,
-    }
-  })
 
   return (
     <>
+      <h1>Audit Setup</h1>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={schema}
+        onSubmit={handlePost}
+        enableReinitialize
+      >
+        {({ values, handleSubmit }: FormikProps<EstimateSampleSizeValues>) => (
+          <Form>
+            <FormWrapper>
+              <FormSection label="Audit Name">
+                <Field name="name" component={FormField} />
+              </FormSection>
+              <FieldArray
+                name="contests"
+                render={contestsArrayHelpers => (
+                  <>
+                    {values.contests.map(
+                      (contest: ContestValues, i: number) => (
+                        /* eslint-disable react/no-array-index-key */
+                        <React.Fragment key={i}>
+                          {i > 0 && (
+                            <FormSection>
+                              <hr />
+                            </FormSection>
+                          )}
+                          <FormSection
+                            label={`Contest ${
+                              values.contests.length > 1 ? i + 1 : ''
+                            } Name`}
+                            description="Enter the name of the contest that will drive the audit."
+                          >
+                            <Field
+                              name={`contests[${i}].name`}
+                              disabled={!canEstimateSampleSize}
+                              component={FormField}
+                            />
+                          </FormSection>
+                          <FieldArray
+                            name={`contests[${i}].choices`}
+                            render={choicesArrayHelpers => (
+                              <FormSection
+                                label="Candidates/Choices & Vote Totals"
+                                description="Enter the name of each candidate choice that appears on the ballot for this contest."
+                              >
+                                <TwoColumnSection>
+                                  {contest.choices.map(
+                                    (choice: ChoiceValues, j: number) => (
+                                      /* eslint-disable react/no-array-index-key */
+                                      <React.Fragment key={j}>
+                                        <InputLabelRow>
+                                          {/** add button for removing a choice */}
+                                          <InputLabel>
+                                            Name of Candidate/Choice {j}
+                                          </InputLabel>
+                                          <InputLabelRight>
+                                            Votes for Candidate/Choice {j}
+                                          </InputLabelRight>
+                                        </InputLabelRow>
+                                        <InputFieldRow>
+                                          <Field
+                                            name={`contests[${i}].choices[${j}].name`}
+                                            disabled={!canEstimateSampleSize}
+                                            component={FormField}
+                                          />
+                                          <Field
+                                            name={`contests[${i}].choices[${j}].numVotes`}
+                                            type="number"
+                                            disabled={!canEstimateSampleSize}
+                                            component={FieldRight}
+                                          />
+                                        </InputFieldRow>
+                                      </React.Fragment>
+                                    )
+                                  )}
+                                </TwoColumnSection>
+                                {/** add a button for adding a choice */}
+                              </FormSection>
+                            )}
+                          />
+                          <FormSection
+                            label="Total Ballots Cast"
+                            description="Enter the overall number of ballot cards cast in jurisdictions containing this contest."
+                          >
+                            <Field
+                              type="number"
+                              name={`contests[${i}].totalBallotsCast`}
+                              disabled={!canEstimateSampleSize}
+                              component={FormField}
+                            />
+                          </FormSection>
+                        </React.Fragment>
+                      )
+                    )}
+                    <FormButtonBar>
+                      <FormButton
+                        type="button"
+                        onClick={() =>
+                          contestsArrayHelpers.push({ ...contestValues[0] })
+                        }
+                      >
+                        Add another targeted contest
+                      </FormButton>
+                    </FormButtonBar>
+                  </>
+                )}
+              />
+              <FormTitle>Audit Settings</FormTitle>
+              <FormSection
+                label="Desired Risk Limit"
+                description='Set the risk for the audit as as percentage (e.g. "5" = 5%'
+              >
+                <Field
+                  name="riskLimit"
+                  disabled={!canEstimateSampleSize}
+                  component="select"
+                >
+                  {generateOptions(20)}
+                </Field>
+                <ErrorMessage name="riskLimit" component={ErrorLabel} />
+              </FormSection>
+              <FormSection
+                label="Random Seed"
+                description="Enter the random number to seed the pseudo-random number generator."
+              >
+                <Field
+                  type="number"
+                  name="randomSeed"
+                  disabled={!canEstimateSampleSize}
+                  component={FormField}
+                />
+              </FormSection>
+            </FormWrapper>
+            {!audit.contests.length && isLoading && <p>Loading...</p>}
+            {!audit.contests.length && !isLoading && (
+              <FormButtonBar>
+                <FormButton
+                  type="submit"
+                  disabled={!canEstimateSampleSize}
+                  onClick={handleSubmit}
+                >
+                  Estimate Sample Size
+                </FormButton>
+              </FormButtonBar>
+            )}
+          </Form>
+        )}
+      </Formik>
+
+      {/** old code
       {Array.from(Array(numContests).keys()).map(i => {
         return (
           <Formik
@@ -389,6 +536,7 @@ const EstimateSampleSize = ({
           </form>
         )}
       />
+      */}
     </>
   )
 }
