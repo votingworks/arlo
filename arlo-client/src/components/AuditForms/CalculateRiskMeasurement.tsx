@@ -12,7 +12,7 @@ import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api } from '../utilities'
-import { Contest, Round, RoundContest } from '../../types'
+import { Contest, Round, Candidate, RoundContest } from '../../types'
 
 const InputSection = styled.div`
   display: block;
@@ -42,8 +42,7 @@ interface Props {
 
 interface CalculateRiskMeasurementValues {
   round: number
-  'candidate-1': number | ''
-  'candidate-2': number | ''
+  [key: string]: number | ''
 }
 
 const CalculateRiskMeasurmeent = (props: Props) => {
@@ -73,15 +72,22 @@ const CalculateRiskMeasurmeent = (props: Props) => {
     try {
       const jurisdictionID: string = audit.jurisdictions[0].id
       const body: any = {
-        contests: [
-          {
-            id: 'contest-1',
-            results: {
-              'candidate-1': Number(values['candidate-1']),
-              'candidate-2': Number(values['candidate-2']),
-            },
+        contests: audit.contests.map((contest: Contest) => ({
+          id: contest.id,
+          results: {
+            ...contest.choices.reduce(
+              (
+                acc: { [key: string]: number },
+                choice: Candidate
+              ): { [key: string]: number } => {
+                const { id } = choice
+                if (id) acc[id] = Number(values[id])
+                return acc
+              },
+              {}
+            ),
           },
-        ],
+        })),
       }
 
       setIsLoading(true)
@@ -118,31 +124,27 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       contest &&
       contest.endMeasurements &&
       !contest.endMeasurements.isComplete
-    const schema = Yup.object().shape({
-      'candidate-1': Yup.number().test(
-        'overCountOne',
-        'Cannot exceed the number of total ballots cast',
-        function(votes) {
-          return (
-            (this.parent['candidate-2'] || 0) +
-              (votes || 0) +
-              sumOfAuditedVotes.current <=
-            maxVotes
-          )
-        }
-      ),
-      'candidate-2': Yup.number().test(
-        'overCountTwo',
-        'Cannot exceed the number of total ballots cast',
-        function(votes) {
-          return (
-            (this.parent['candidate-1'] || 0) +
-              (votes || 0) +
-              sumOfAuditedVotes.current <=
-            maxVotes
-          )
-        }
-      ),
+    const overCount = function(this: {
+      parent: { [key: string]: number }
+    }): boolean {
+      const count = Object.values(this.parent).reduce(
+        (c: number, v: number) => {
+          c += v || 0
+          return c
+        },
+        0
+      )
+      return count + sumOfAuditedVotes.current <= maxVotes
+    }
+    const schema = Yup.lazy(() => {
+      return Object.keys(v).reduce((acc: any, result: string) => {
+        acc[result] = Yup.number().test(
+          'overCount',
+          'Cannot exceed the number of total ballots cast',
+          overCount
+        )
+        return acc
+      }, {})
     })
     /* eslint-disable react/no-array-index-key */
     return (
@@ -194,7 +196,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                   <InlineInput>
                     <InputLabel>{audit.contests[0].choices[0].name}</InputLabel>
                     <FormField
-                      name="'candidate-1'"
+                      name="'candidate-1'" // need to update these to be dynamic, using FieldArray
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values['candidate-1']}
