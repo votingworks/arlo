@@ -37,11 +37,17 @@ const InputLabelRow = styled.div`
 const InputFieldRow = styled.div`
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   margin-bottom: 25px;
   width: 100%;
 `
 
-const FieldRight = styled(FormField)`
+const FieldLeft = styled(FormField)`
+  flex-grow: 2;
+  width: unset;
+`
+
+const FieldRight = styled(FieldLeft)`
   margin-left: 50px;
 `
 
@@ -51,6 +57,16 @@ const InputLabel = styled.label`
 
 const InputLabelRight = styled.label`
   margin-left: 75px;
+`
+
+const Action = styled.p`
+  margin: 5px 0 0 0;
+  width: 100%;
+  color: #000088;
+  font-size: 14px;
+  &:hover {
+    cursor: pointer;
+  }
 `
 
 interface Props {
@@ -222,6 +238,13 @@ const EstimateSampleSize = ({
                               disabled={!canEstimateSampleSize}
                               component={FormField}
                             />
+                            {values.contests.length > 1 && (
+                              <Action
+                                onClick={() => contestsArrayHelpers.remove(i)}
+                              >
+                                Remove Contest {i + 1}
+                              </Action>
+                            )}
                           </FormSection>
                           <FieldArray
                             name={`contests[${i}].choices`}
@@ -236,19 +259,18 @@ const EstimateSampleSize = ({
                                       /* eslint-disable react/no-array-index-key */
                                       <React.Fragment key={j}>
                                         <InputLabelRow>
-                                          {/** add button for removing a choice */}
                                           <InputLabel>
-                                            Name of Candidate/Choice {j}
+                                            Name of Candidate/Choice {j + 1}
                                           </InputLabel>
                                           <InputLabelRight>
-                                            Votes for Candidate/Choice {j}
+                                            Votes for Candidate/Choice {j + 1}
                                           </InputLabelRight>
                                         </InputLabelRow>
                                         <InputFieldRow>
                                           <Field
                                             name={`contests[${i}].choices[${j}].name`}
                                             disabled={!canEstimateSampleSize}
-                                            component={FormField}
+                                            component={FieldLeft}
                                           />
                                           <Field
                                             name={`contests[${i}].choices[${j}].numVotes`}
@@ -256,12 +278,30 @@ const EstimateSampleSize = ({
                                             disabled={!canEstimateSampleSize}
                                             component={FieldRight}
                                           />
+                                          {contest.choices.length > 2 && (
+                                            <Action
+                                              onClick={() =>
+                                                choicesArrayHelpers.remove(j)
+                                              }
+                                            >
+                                              Remove choice {j + 1}
+                                            </Action>
+                                          )}
                                         </InputFieldRow>
                                       </React.Fragment>
                                     )
                                   )}
+                                  <Action
+                                    onClick={() =>
+                                      choicesArrayHelpers.push({
+                                        name: '',
+                                        numVotes: '',
+                                      })
+                                    }
+                                  >
+                                    Add a new candidate/choice
+                                  </Action>
                                 </TwoColumnSection>
-                                {/** add a button for adding a choice */}
                               </FormSection>
                             )}
                           />
