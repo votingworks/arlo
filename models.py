@@ -92,6 +92,8 @@ class AuditBoard(db.Model):
     jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
     jurisdiction = relationship(Jurisdiction, back_populates='audit_boards')
     
+    name = db.Column(db.String(200))
+
     member_1 = db.Column(db.String(200), nullable=True)
     member_1_affiliation = db.Column(db.String(200), nullable=True)
     member_2 = db.Column(db.String(200), nullable=True)
