@@ -141,7 +141,7 @@ JSON for sure.
 
 ```
 {
-	selectionSampleSize: 578
+	sampleSize: 578
 }
 ```
 
