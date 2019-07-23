@@ -3,7 +3,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import AuditForms from './RiskLimitingAuditForm'
 
-it('renders corretly', () => {
+it('renders correctly', () => {
   const container = shallow(<AuditForms />)
   expect(container).toMatchSnapshot()
 })
