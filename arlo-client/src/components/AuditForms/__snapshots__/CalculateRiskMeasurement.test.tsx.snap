@@ -24,7 +24,7 @@ Object {
                 25 Ballots
           </div>
           <button
-            class="sc-bZQynM esiHiM"
+            class="sc-bZQynM cjVqOQ"
           >
             Download Ballot Retrieval List for Round 
             1
@@ -64,7 +64,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
-                    name="'candidate-1'"
+                    name="candidate-1"
                     type="number"
                     value="55"
                   />
@@ -83,7 +83,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
-                    name="'candidate-2'"
+                    name="candidate-2"
                     type="number"
                     value="35"
                   />
@@ -125,7 +125,7 @@ Object {
                 25 Ballots
         </div>
         <button
-          class="sc-bZQynM esiHiM"
+          class="sc-bZQynM cjVqOQ"
         >
           Download Ballot Retrieval List for Round 
           1
@@ -165,7 +165,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
-                  name="'candidate-1'"
+                  name="candidate-1"
                   type="number"
                   value="55"
                 />
@@ -184,7 +184,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
-                  name="'candidate-2'"
+                  name="candidate-2"
                   type="number"
                   value="35"
                 />

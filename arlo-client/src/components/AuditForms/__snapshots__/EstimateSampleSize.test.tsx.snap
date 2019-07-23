@@ -22,7 +22,7 @@ Object {
             <div
               class="sc-htpNat kRUApY"
             >
-              Contest  Name
+              Contest Name
             </div>
             <div
               class="sc-bwzfXH xctbO"
@@ -78,7 +78,7 @@ Object {
                   <input
                     class="sc-dnqmqq dvJRiU"
                     name="candidateOneName"
-                    value=""
+                    value="Candidate 1"
                   />
                 </div>
                 <div
@@ -88,7 +88,7 @@ Object {
                     class="sc-dnqmqq dvJRiU"
                     name="candidateOneVotes"
                     type="number"
-                    value=""
+                    value="42"
                   />
                 </div>
               </div>
@@ -115,7 +115,7 @@ Object {
                   <input
                     class="sc-dnqmqq dvJRiU"
                     name="candidateTwoName"
-                    value=""
+                    value="Candidate 2"
                   />
                 </div>
                 <div
@@ -125,7 +125,7 @@ Object {
                     class="sc-dnqmqq dvJRiU"
                     name="candidateTwoVotes"
                     type="number"
-                    value=""
+                    value="72"
                   />
                 </div>
               </div>
@@ -155,15 +155,6 @@ Object {
               />
             </div>
           </div>
-        </div>
-      </form>
-      <form>
-        <div
-          class="sc-ifAKCX gVocmv"
-        >
-          <div
-            class="sc-bxivhb doxbWk"
-          />
           <div
             class="sc-bxivhb doxbWk"
           >
@@ -272,18 +263,7 @@ Object {
             </div>
           </div>
         </div>
-        <div
-          class="sc-gZMcBi DmELe"
-        >
-          <button
-            class="sc-EHOje hXhzUo"
-            type="button"
-          >
-            Add another targeted contest
-          </button>
-        </div>
       </form>
-      /&gt;
     </div>
   </body>,
   "container": <div>
@@ -304,7 +284,7 @@ Object {
           <div
             class="sc-htpNat kRUApY"
           >
-            Contest  Name
+            Contest Name
           </div>
           <div
             class="sc-bwzfXH xctbO"
@@ -360,7 +340,7 @@ Object {
                 <input
                   class="sc-dnqmqq dvJRiU"
                   name="candidateOneName"
-                  value=""
+                  value="Candidate 1"
                 />
               </div>
               <div
@@ -370,7 +350,7 @@ Object {
                   class="sc-dnqmqq dvJRiU"
                   name="candidateOneVotes"
                   type="number"
-                  value=""
+                  value="42"
                 />
               </div>
             </div>
@@ -397,7 +377,7 @@ Object {
                 <input
                   class="sc-dnqmqq dvJRiU"
                   name="candidateTwoName"
-                  value=""
+                  value="Candidate 2"
                 />
               </div>
               <div
@@ -407,7 +387,7 @@ Object {
                   class="sc-dnqmqq dvJRiU"
                   name="candidateTwoVotes"
                   type="number"
-                  value=""
+                  value="72"
                 />
               </div>
             </div>
@@ -437,15 +417,6 @@ Object {
             />
           </div>
         </div>
-      </div>
-    </form>
-    <form>
-      <div
-        class="sc-ifAKCX gVocmv"
-      >
-        <div
-          class="sc-bxivhb doxbWk"
-        />
         <div
           class="sc-bxivhb doxbWk"
         >
@@ -554,18 +525,7 @@ Object {
           </div>
         </div>
       </div>
-      <div
-        class="sc-gZMcBi DmELe"
-      >
-        <button
-          class="sc-EHOje hXhzUo"
-          type="button"
-        >
-          Add another targeted contest
-        </button>
-      </div>
     </form>
-    /&gt;
   </div>,
   "debug": [Function],
   "findAllByAltText": [Function],
