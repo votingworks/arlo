@@ -161,6 +161,7 @@ def audit_status():
                 "name": contest.name,
                 "choices": [
                     {
+                        "id": choice.id,
                         "name": choice.name,
                         "numVotes": choice.num_votes
                     }

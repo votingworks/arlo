@@ -1,0 +1,21 @@
+{
+  "addons": [
+    "heroku-postgresql:hobby-free"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "env": {
+  },
+  "formation": {
+  },
+  "name": "arlo",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}

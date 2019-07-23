@@ -28,7 +28,6 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "eject": "react-scripts eject",
     "test": "is-ci \"test:ci\" \"test:watch\"",
     "test:watch": "react-scripts test",
     "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage",
@@ -126,5 +125,8 @@
     "stylelint-config-prettier": "^5.1.0",
     "stylelint-config-styled-components": "^0.1.1",
     "stylelint-processor-styled-components": "^1.7.0"
+  },
+  "resolutions": {
+    "jest": "24.7.1"
   }
 }

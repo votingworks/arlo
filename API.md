@@ -17,6 +17,7 @@ JSON for sure.
 			
 			choices: [
 				{
+					id: "candidate-1",
 					name: "Candidate 1",
 					numVotes: 42
 				}
