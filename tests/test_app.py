@@ -85,11 +85,13 @@ def test_whole_audit_flow(client):
 		    "contests": ["contest-1"],
                     "auditBoards": [
 			{
-			    "id": "audit-board-1",
+			    "id": "1a528034-acf1-11e9-bac5-2fee92515700",
+                            "name": "Audit Board #1",
 			    "members": []
 			},
 			{
-			    "id": "audit-board-2",
+			    "id": "22e68ce0-acf1-11e9-9e25-e38239fbbe6b",
+                            "name": "Audit Board #2",
 			    "members": []
 			}
 		    ]
@@ -105,7 +107,7 @@ def test_whole_audit_flow(client):
     assert len(status["jurisdictions"]) == 1
     jurisdiction = status["jurisdictions"][0]
     assert jurisdiction["name"] == "Adams County"
-    assert jurisdiction["auditBoards"][1]["id"] == "audit-board-2"
+    assert jurisdiction["auditBoards"][1]["name"] == "Audit Board #2"
     assert jurisdiction["contests"] == ["contest-1"]
 
     # upload the manifest
@@ -241,11 +243,13 @@ def test_small_election(client):
 		    "contests": ["contest-1"],
                     "auditBoards": [
 			{
-			    "id": "audit-board-1",
+			    "id": "1a528034-acf1-11e9-bac5-2fee92515700",
+                            "name": "Audit Board #1",
 			    "members": []
 			},
 			{
-			    "id": "audit-board-2",
+			    "id": "22e68ce0-acf1-11e9-9e25-e38239fbbe6b",
+                            "name": "Audit Board #2",
 			    "members": []
 			}
 		    ]
@@ -261,7 +265,7 @@ def test_small_election(client):
     assert len(status["jurisdictions"]) == 1
     jurisdiction = status["jurisdictions"][0]
     assert jurisdiction["name"] == "County 1"
-    assert jurisdiction["auditBoards"][1]["id"] == "audit-board-2"
+    assert jurisdiction["auditBoards"][1]["name"] == "Audit Board #2"
     assert jurisdiction["contests"] == ["contest-1"]
 
     # upload the manifest
