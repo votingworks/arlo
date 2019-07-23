@@ -46,6 +46,7 @@ module.exports = {
     'react',
     'cypress',
     'jsx-a11y',
+    'react-hooks'
   ],
   settings: {
     react: {
@@ -62,6 +63,7 @@ module.exports = {
     },
   },
   rules: {
+    'react-hooks/rules-of-hooks': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off', // Want to use it, but it requires return types for all built-in React lifecycle methods.
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-null-keyword': 'on',

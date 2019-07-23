@@ -3,7 +3,7 @@
 exports[`renders correctly 1`] = `
 <div>
   <div
-    class="sc-bdVaJa dAWyHW"
+    class="sc-bdVaJa cdOnQX"
   >
     <img
       alt="Arlo, by VotingWorks"
@@ -11,10 +11,10 @@ exports[`renders correctly 1`] = `
       src="/arlo.png"
     />
     <div
-      class="sc-bwzfXH htgwGT"
+      class="sc-bwzfXH iHMWje"
     >
       <button
-        class="sc-htpNat frZMJK"
+        class="sc-htpNat fQFApV"
       >
         Clear & Restart
       </button>
@@ -26,7 +26,7 @@ exports[`renders correctly 1`] = `
 exports[`renders correctly 2`] = `
 <div>
   <div
-    class="sc-bdVaJa dAWyHW"
+    class="sc-bdVaJa cdOnQX"
   >
     <img
       alt="Arlo, by VotingWorks"
@@ -34,10 +34,10 @@ exports[`renders correctly 2`] = `
       src="/arlo.png"
     />
     <div
-      class="sc-bwzfXH htgwGT"
+      class="sc-bwzfXH iHMWje"
     >
       <button
-        class="sc-htpNat frZMJK"
+        class="sc-htpNat fQFApV"
       >
         Clear & Restart
       </button>

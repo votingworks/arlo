@@ -5,6 +5,7 @@
 //
 /* eslint-disable */
 /* istanbul ignore file */
+/* tslint:disable */
 
 const proxy = require('http-proxy-middleware')
 
