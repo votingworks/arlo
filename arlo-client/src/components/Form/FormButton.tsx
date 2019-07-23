@@ -16,7 +16,6 @@ const InlineButton = styled.button`
   margin: 10px 0 30px 0;
   border-radius: 5px;
   background: rgb(211, 211, 211);
-  width: 275px;
   height: 20px;
   color: 700;
   font-size: 0.4em;

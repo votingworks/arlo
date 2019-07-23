@@ -194,7 +194,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                   <InlineInput>
                     <InputLabel>{audit.contests[0].choices[0].name}</InputLabel>
                     <FormField
-                      name="'candidate-1'"
+                      name="candidate-1"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values['candidate-1']}
@@ -206,7 +206,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                   <InlineInput>
                     <InputLabel>{audit.contests[0].choices[1].name}</InputLabel>
                     <FormField
-                      name="'candidate-2'"
+                      name="candidate-2"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values['candidate-2']}
