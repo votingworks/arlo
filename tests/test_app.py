@@ -73,6 +73,8 @@ def test_whole_audit_flow(client):
     assert status["riskLimit"] == 10
     assert status["name"] == "Primary 2019"
 
+    assert status["contests"][0]["choices"][0]["id"] == "candidate-1"
+
     rv = post_json(
         client, '/audit/jurisdictions',
         {
