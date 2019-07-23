@@ -17,10 +17,10 @@ export interface AuditBoard {
 }
 
 export interface BallotManifest {
-  filename: string
-  numBallots: number | ''
-  numBatches: number | ''
-  uploadedAt: string
+  filename: string | null
+  numBallots: number | '' | null
+  numBatches: number | '' | null
+  uploadedAt: string | null
 }
 
 export interface Jurisdiction {

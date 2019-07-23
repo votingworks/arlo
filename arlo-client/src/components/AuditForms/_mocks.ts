@@ -116,10 +116,12 @@ export const statusStates = [
       {
         choices: [
           {
+            id: 'contest-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
+            id: 'contest-2',
             name: 'choice two',
             numVotes: 1325,
           },
@@ -138,10 +140,10 @@ export const statusStates = [
           },
         ],
         ballotManifest: {
-          filename: 'Ballot Manifest May 2019 Election - WYNADOTTE.csv',
-          numBallots: 2117,
-          numBatches: 10,
-          uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+          filename: null,
+          numBallots: null,
+          numBatches: null,
+          uploadedAt: null,
         },
         contests: ['contest-1'],
         id: 'jurisdiction-1',
@@ -158,10 +160,12 @@ export const statusStates = [
       {
         choices: [
           {
+            id: 'contest-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
+            id: 'contest-2',
             name: 'choice two',
             numVotes: 1325,
           },
@@ -216,10 +220,12 @@ export const statusStates = [
       {
         choices: [
           {
+            id: 'contest-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
+            id: 'contest-2',
             name: 'choice two',
             numVotes: 1325,
           },

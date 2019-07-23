@@ -216,7 +216,7 @@ const SelectBallotsToAudit = (props: Props) => {
           {!formThreeHasData && isLoading && <p>Loading...</p>}
           {!formThreeHasData && !isLoading && (
             <FormButtonBar>
-              <FormButton type="submit" onClick={handleSubmit}>
+              <FormButton type="button" onClick={handleSubmit}>
                 Select Ballots To Audit
               </FormButton>
             </FormButtonBar>
