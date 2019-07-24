@@ -154,6 +154,13 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       })
     }) */
     /* eslint-disable react/no-array-index-key */
+    const aggregatedBallots = aggregateContests.reduce(
+      (acc: number, contest: AggregateContest) => {
+        acc += contest.sampleSize
+        return acc
+      },
+      0
+    )
     return (
       <Formik
         key={i}
@@ -168,10 +175,17 @@ const CalculateRiskMeasurmeent = (props: Props) => {
           <Form>
             <FormWrapper title={`Round ${i + 1}`}>
               <FormSectionLabel>
-                {`Ballot Retrieval List \n
-                  ${aggregateContests[0].sampleSize} Ballots`}{' '}
-                {/** do all contests in the audit have the same sampleSize or is this the sum of all the sample sizes? */}
+                Ballot Retrieval List: {aggregatedBallots} Total Ballots
               </FormSectionLabel>
+              <FormSectionDescription>
+                {aggregateContests.map(
+                  (contest: AggregateContest, i: number) => (
+                    <p key={contest.id}>
+                      Contest {i + 1}: {contest.sampleSize} ballots
+                    </p>
+                  )
+                )}
+              </FormSectionDescription>
               {/*<SectionLabel>
                 Ballot Retrieval List \n
                 {contest ? `${contest.sampleSize} Ballots` : ''}
@@ -182,7 +196,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                 }
                 inline
               >
-                Download Ballot Retrieval List for Round {i + 1}
+                Download Aggregated Ballot Retrieval List for Round {i + 1}
               </FormButton>
               {/** contest iteration */}
               <FieldArray
