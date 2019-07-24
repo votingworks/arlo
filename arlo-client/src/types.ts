@@ -1,14 +1,14 @@
 export interface Candidate {
-  id: string
+  id?: string
   name: string
-  numVotes: number
+  numVotes: number | ''
 }
 
 export interface Contest {
   id: string
   name: string
   choices: Candidate[]
-  totalBallotsCast: number
+  totalBallotsCast: number | ''
 }
 
 export interface AuditBoard {
@@ -18,8 +18,8 @@ export interface AuditBoard {
 
 export interface BallotManifest {
   filename: string
-  numBallots: number
-  numBatches: number
+  numBallots: number | ''
+  numBatches: number | ''
   uploadedAt: string
 }
 
@@ -31,15 +31,37 @@ export interface Jurisdiction {
   ballotManifest?: BallotManifest
 }
 
-// export interface Round {
-// look this up
-//}
+export interface RoundContest {
+  id: string
+  results: {
+    [one: string]: number
+  }
+  sampleSize: number
+  endMeasurements: {
+    isComplete: null | boolean
+    pvalue: null | number
+  }
+}
+
+export interface Round {
+  name?: string
+  randomSeed?: string
+  riskLimit?: number
+  contests: RoundContest[]
+  startedAt: string
+  endedAt: string | null
+  jurisdictions?: {
+    [key: string]: {
+      numBallots: number
+    }
+  }
+}
 
 export interface Audit {
   name: string
-  riskLimit: number
-  randomSeed: number
-  contests: Contest[]
-  jurisdictions: Jurisdiction[]
-  rounds?: any[]
+  riskLimit: number | string
+  randomSeed: number | string
+  contests: Contest[] | []
+  jurisdictions: Jurisdiction[] | []
+  rounds: Round[] | []
 }

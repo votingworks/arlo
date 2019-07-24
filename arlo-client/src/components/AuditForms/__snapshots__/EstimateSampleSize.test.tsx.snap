@@ -29,11 +29,16 @@ Object {
             >
               Enter the name of the contest that will drive the audit.
             </div>
-            <input
+            <div
               class="sc-htoDjs jjofgS"
-              name="name"
-              value="Contest 1"
-            />
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="name"
+                value="Contest 1"
+              />
+            </div>
           </div>
           <div
             class="sc-bdVaJa fdbLH"
@@ -49,65 +54,85 @@ Object {
               Enter the name of each candidate choice that appears on the ballot for this contest.
             </div>
             <div
-              class="sc-iwsKbI jXpGYC"
+              class="sc-VigVT gSWWKv"
             >
               <div
-                class="sc-gZMcBi cMCokj"
+                class="sc-jTzLTM kHOUMK"
               >
                 <label
-                  class="sc-jTzLTM dDDcMX"
+                  class="sc-cSHVUG cPUcQE"
                 >
                   Name of Candidate/Choice 1
                 </label>
                 <label
-                  class="sc-fjdhpX hIsizZ"
+                  class="sc-kAzzGY gugxKZ"
                 >
                   Votes for Candidate/Choice 1
                 </label>
               </div>
               <div
-                class="sc-gqjmRU kujNUU"
+                class="sc-fjdhpX cBsFuD"
               >
-                <input
+                <div
                   class="sc-htoDjs jjofgS"
-                  name="candidateOneName"
-                  value="Candidate 1"
-                />
-                <input
-                  class="sc-VigVT gbwbfv sc-htoDjs jjofgS"
-                  name="candidateOneVotes"
-                  type="number"
-                  value="42"
-                />
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="candidateOneName"
+                    value="Candidate 1"
+                  />
+                </div>
+                <div
+                  class="sc-jzJRlG eMbkiL sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="candidateOneVotes"
+                    type="number"
+                    value="42"
+                  />
+                </div>
               </div>
               <div
-                class="sc-gZMcBi cMCokj"
+                class="sc-jTzLTM kHOUMK"
               >
                 <label
-                  class="sc-jTzLTM dDDcMX"
+                  class="sc-cSHVUG cPUcQE"
                 >
                   Name of Candidate/Choice 2
                 </label>
                 <label
-                  class="sc-fjdhpX hIsizZ"
+                  class="sc-kAzzGY gugxKZ"
                 >
                   Votes for Candidate/Choice 2
                 </label>
               </div>
               <div
-                class="sc-gqjmRU kujNUU"
+                class="sc-fjdhpX cBsFuD"
               >
-                <input
+                <div
                   class="sc-htoDjs jjofgS"
-                  name="candidateTwoName"
-                  value="Candidate 2"
-                />
-                <input
-                  class="sc-VigVT gbwbfv sc-htoDjs jjofgS"
-                  name="candidateTwoVotes"
-                  type="number"
-                  value="72"
-                />
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="candidateTwoName"
+                    value="Candidate 2"
+                  />
+                </div>
+                <div
+                  class="sc-jzJRlG eMbkiL sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="candidateTwoVotes"
+                    type="number"
+                    value="72"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -124,12 +149,17 @@ Object {
             >
               Enter the overall number of ballot cards cast in jurisdictions containing this contest.
             </div>
-            <input
+            <div
               class="sc-htoDjs jjofgS"
-              name="totalBallotsCast"
-              type="number"
-              value="4200"
-            />
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="totalBallotsCast"
+                type="number"
+                value="4200"
+              />
+            </div>
           </div>
           <div
             class="sc-bxivhb doxbWk"
@@ -150,7 +180,8 @@ Object {
               Set the risk for the audit as as percentage (e.g. "5" = 5%
             </div>
             <select
-              name="desiredRiskLimit"
+              disabled=""
+              name="riskLimit"
             >
               <option>
                 1
@@ -179,9 +210,7 @@ Object {
               <option>
                 9
               </option>
-              <option
-                selected=""
-              >
+              <option>
                 10
               </option>
               <option>
@@ -229,12 +258,17 @@ Object {
             >
               Enter the random number to seed the pseudo-random number generator.
             </div>
-            <input
+            <div
               class="sc-htoDjs jjofgS"
-              name="randomSeed"
-              type="number"
-              value="123123123"
-            />
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="randomSeed"
+                type="number"
+                value="123123123"
+              />
+            </div>
           </div>
         </div>
       </form>
@@ -265,11 +299,16 @@ Object {
           >
             Enter the name of the contest that will drive the audit.
           </div>
-          <input
+          <div
             class="sc-htoDjs jjofgS"
-            name="name"
-            value="Contest 1"
-          />
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="name"
+              value="Contest 1"
+            />
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -285,65 +324,85 @@ Object {
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-iwsKbI jXpGYC"
+            class="sc-VigVT gSWWKv"
           >
             <div
-              class="sc-gZMcBi cMCokj"
+              class="sc-jTzLTM kHOUMK"
             >
               <label
-                class="sc-jTzLTM dDDcMX"
+                class="sc-cSHVUG cPUcQE"
               >
                 Name of Candidate/Choice 1
               </label>
               <label
-                class="sc-fjdhpX hIsizZ"
+                class="sc-kAzzGY gugxKZ"
               >
                 Votes for Candidate/Choice 1
               </label>
             </div>
             <div
-              class="sc-gqjmRU kujNUU"
+              class="sc-fjdhpX cBsFuD"
             >
-              <input
+              <div
                 class="sc-htoDjs jjofgS"
-                name="candidateOneName"
-                value="Candidate 1"
-              />
-              <input
-                class="sc-VigVT gbwbfv sc-htoDjs jjofgS"
-                name="candidateOneVotes"
-                type="number"
-                value="42"
-              />
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="candidateOneName"
+                  value="Candidate 1"
+                />
+              </div>
+              <div
+                class="sc-jzJRlG eMbkiL sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="candidateOneVotes"
+                  type="number"
+                  value="42"
+                />
+              </div>
             </div>
             <div
-              class="sc-gZMcBi cMCokj"
+              class="sc-jTzLTM kHOUMK"
             >
               <label
-                class="sc-jTzLTM dDDcMX"
+                class="sc-cSHVUG cPUcQE"
               >
                 Name of Candidate/Choice 2
               </label>
               <label
-                class="sc-fjdhpX hIsizZ"
+                class="sc-kAzzGY gugxKZ"
               >
                 Votes for Candidate/Choice 2
               </label>
             </div>
             <div
-              class="sc-gqjmRU kujNUU"
+              class="sc-fjdhpX cBsFuD"
             >
-              <input
+              <div
                 class="sc-htoDjs jjofgS"
-                name="candidateTwoName"
-                value="Candidate 2"
-              />
-              <input
-                class="sc-VigVT gbwbfv sc-htoDjs jjofgS"
-                name="candidateTwoVotes"
-                type="number"
-                value="72"
-              />
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="candidateTwoName"
+                  value="Candidate 2"
+                />
+              </div>
+              <div
+                class="sc-jzJRlG eMbkiL sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="candidateTwoVotes"
+                  type="number"
+                  value="72"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -360,12 +419,17 @@ Object {
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
-          <input
+          <div
             class="sc-htoDjs jjofgS"
-            name="totalBallotsCast"
-            type="number"
-            value="4200"
-          />
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="totalBallotsCast"
+              type="number"
+              value="4200"
+            />
+          </div>
         </div>
         <div
           class="sc-bxivhb doxbWk"
@@ -386,7 +450,8 @@ Object {
             Set the risk for the audit as as percentage (e.g. "5" = 5%
           </div>
           <select
-            name="desiredRiskLimit"
+            disabled=""
+            name="riskLimit"
           >
             <option>
               1
@@ -415,9 +480,7 @@ Object {
             <option>
               9
             </option>
-            <option
-              selected=""
-            >
+            <option>
               10
             </option>
             <option>
@@ -465,12 +528,17 @@ Object {
           >
             Enter the random number to seed the pseudo-random number generator.
           </div>
-          <input
+          <div
             class="sc-htoDjs jjofgS"
-            name="randomSeed"
-            type="number"
-            value="123123123"
-          />
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="randomSeed"
+              type="number"
+              value="123123123"
+            />
+          </div>
         </div>
       </div>
     </form>

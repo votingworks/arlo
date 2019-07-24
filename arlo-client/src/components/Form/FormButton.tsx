@@ -16,7 +16,6 @@ const InlineButton = styled.button`
   margin: 10px 0 30px 0;
   border-radius: 5px;
   background: rgb(211, 211, 211);
-  width: 275px;
   height: 20px;
   color: 700;
   font-size: 0.4em;
@@ -40,12 +39,19 @@ interface Props {
   children?: any
   inline?: boolean
   size?: string
+  type?: string
 }
-const FormButton = (props: Props) => {
-  const { disabled, onClick, size, inline, children } = props
+const FormButton = ({
+  disabled,
+  onClick,
+  size,
+  inline,
+  children,
+  ...rest
+}: Props) => {
   return React.createElement(
     inline ? (size === 'sm' ? SmallInlineButton : InlineButton) : Button,
-    { disabled, onClick, ...props },
+    { disabled, onClick, ...rest },
     children
   )
 }

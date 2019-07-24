@@ -28,6 +28,7 @@ Object {
               Set the number of audit boards you with to use.
             </div>
             <select
+              disabled=""
               id="auditBoards"
               name="auditBoards"
             >
@@ -112,6 +113,7 @@ Object {
             Set the number of audit boards you with to use.
           </div>
           <select
+            disabled=""
             id="auditBoards"
             name="auditBoards"
           >
