@@ -103,6 +103,11 @@ export const statusStates = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: 2123,
+        sampleSizeOptions: [
+          { size: 269, type: 'ASN' },
+          { size: 379, prob: '80%' },
+          { size: 78 },
+        ],
       },
     ],
     jurisdictions: [],
@@ -127,6 +132,11 @@ export const statusStates = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: 2123,
+        sampleSizeOptions: [
+          { size: 269, type: 'ASN' },
+          { size: 379, prob: '80%' },
+          { size: 78 },
+        ],
       },
     ],
     jurisdictions: [
@@ -169,6 +179,11 @@ export const statusStates = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: 2123,
+        sampleSizeOptions: [
+          { size: 269, type: 'ASN' },
+          { size: 379, prob: '80%' },
+          { size: 78 },
+        ],
       },
     ],
     jurisdictions: [
@@ -227,6 +242,11 @@ export const statusStates = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: 2123,
+        sampleSizeOptions: [
+          { size: 269, type: 'ASN' },
+          { size: 379, prob: '80%' },
+          { size: 78 },
+        ],
       },
     ],
     jurisdictions: [

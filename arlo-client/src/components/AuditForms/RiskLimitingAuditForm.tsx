@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
-import { api } from '../utilities'
+//import { api } from '../utilities'
 import { Audit } from '../../types'
 import { statusStates } from './_mocks'
 
@@ -12,8 +12,8 @@ const AuditForms = () => {
   const [audit, setAudit] = useState<Audit>(statusStates[0])
 
   const getStatus = useCallback(async (): Promise<Audit> => {
-    const audit: any = await api('/audit/status', {})
-    return audit
+    //const audit: any = await api('/audit/status', {})
+    return statusStates[1]
   }, [])
 
   const updateAudit = useCallback(async () => {

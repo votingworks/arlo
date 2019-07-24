@@ -12,7 +12,7 @@ export interface Contest {
   sampleSizeOptions?: {
     size: number
     prob?: string | number
-    type?: 'ASN'
+    type?: string
   }[]
 }
 
