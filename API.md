@@ -27,7 +27,7 @@ JSON for sure.
 
 			sampleSizeOptions: [
                 {"prob": 0.5, "size": 143},
-				{"prob": 0.8, "size": 578}
+				{"type": "ASN", "size": 157},
             ]
 		}
 	],
