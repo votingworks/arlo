@@ -19,7 +19,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Audit Name
             </div>
@@ -37,7 +37,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Contest  Name
             </div>
@@ -51,8 +51,8 @@ Object {
             >
               <input
                 class="sc-dnqmqq dvJRiU"
-                name="contests[0].name"
                 disabled=""
+                name="contests[0].name"
                 value="Contest 1"
               />
             </div>
@@ -61,7 +61,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Candidates/Choices & Vote Totals
             </div>
@@ -97,8 +97,8 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
-                    name="contests[0].choices[0].name"
                     disabled=""
+                    name="contests[0].choices[0].name"
                     value="Candidate 1"
                   />
                 </div>
@@ -107,8 +107,8 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
-                    name="contests[0].choices[0].numVotes"
                     disabled=""
+                    name="contests[0].choices[0].numVotes"
                     type="number"
                     value="42"
                   />
@@ -138,8 +138,8 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
-                    name="contests[0].choices[1].name"
                     disabled=""
+                    name="contests[0].choices[1].name"
                     value="Candidate 2"
                   />
                 </div>
@@ -148,8 +148,8 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
-                    name="contests[0].choices[1].numVotes"
                     disabled=""
+                    name="contests[0].choices[1].numVotes"
                     type="number"
                     value="72"
                   />
@@ -161,7 +161,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Total Ballots Cast
             </div>
@@ -175,8 +175,8 @@ Object {
             >
               <input
                 class="sc-dnqmqq dvJRiU"
-                name="contests[0].totalBallotsCast"
                 disabled=""
+                name="contests[0].totalBallotsCast"
                 type="number"
                 value="4200"
               />
@@ -194,7 +194,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Desired Risk Limit
             </div>
@@ -273,7 +273,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Random Seed
             </div>
@@ -313,7 +313,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Audit Name
           </div>
@@ -331,7 +331,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Contest  Name
           </div>
@@ -345,8 +345,8 @@ Object {
           >
             <input
               class="sc-dnqmqq dvJRiU"
-              name="contests[0].name"
               disabled=""
+              name="contests[0].name"
               value="Contest 1"
             />
           </div>
@@ -355,7 +355,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Candidates/Choices & Vote Totals
           </div>
@@ -391,8 +391,8 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
-                  name="contests[0].choices[0].name"
                   disabled=""
+                  name="contests[0].choices[0].name"
                   value="Candidate 1"
                 />
               </div>
@@ -401,8 +401,8 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
-                  name="contests[0].choices[0].numVotes"
                   disabled=""
+                  name="contests[0].choices[0].numVotes"
                   type="number"
                   value="42"
                 />
@@ -432,8 +432,8 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
-                  name="contests[0].choices[1].name"
                   disabled=""
+                  name="contests[0].choices[1].name"
                   value="Candidate 2"
                 />
               </div>
@@ -442,8 +442,8 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
-                  name="contests[0].choices[1].numVotes"
                   disabled=""
+                  name="contests[0].choices[1].numVotes"
                   type="number"
                   value="72"
                 />
@@ -455,7 +455,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Total Ballots Cast
           </div>
@@ -469,8 +469,8 @@ Object {
           >
             <input
               class="sc-dnqmqq dvJRiU"
-              name="contests[0].totalBallotsCast"
               disabled=""
+              name="contests[0].totalBallotsCast"
               type="number"
               value="4200"
             />
@@ -488,7 +488,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Desired Risk Limit
           </div>
@@ -567,7 +567,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Random Seed
           </div>
