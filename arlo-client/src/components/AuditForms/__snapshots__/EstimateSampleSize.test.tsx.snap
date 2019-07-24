@@ -34,6 +34,7 @@ Object {
             >
               <input
                 class="sc-dnqmqq dvJRiU"
+                disabled=""
                 name="name"
                 value="Contest 1"
               />
@@ -77,6 +78,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
+                    disabled=""
                     name="candidateOneName"
                     value="Candidate 1"
                   />
@@ -86,6 +88,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
+                    disabled=""
                     name="candidateOneVotes"
                     type="number"
                     value="42"
@@ -114,6 +117,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
+                    disabled=""
                     name="candidateTwoName"
                     value="Candidate 2"
                   />
@@ -123,6 +127,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
+                    disabled=""
                     name="candidateTwoVotes"
                     type="number"
                     value="72"
@@ -149,6 +154,7 @@ Object {
             >
               <input
                 class="sc-dnqmqq dvJRiU"
+                disabled=""
                 name="totalBallotsCast"
                 type="number"
                 value="4200"
@@ -174,6 +180,7 @@ Object {
               Set the risk for the audit as as percentage (e.g. "5" = 5%
             </div>
             <select
+              disabled=""
               name="riskLimit"
             >
               <option>
@@ -256,6 +263,7 @@ Object {
             >
               <input
                 class="sc-dnqmqq dvJRiU"
+                disabled=""
                 name="randomSeed"
                 type="number"
                 value="123123123"
@@ -296,6 +304,7 @@ Object {
           >
             <input
               class="sc-dnqmqq dvJRiU"
+              disabled=""
               name="name"
               value="Contest 1"
             />
@@ -339,6 +348,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
+                  disabled=""
                   name="candidateOneName"
                   value="Candidate 1"
                 />
@@ -348,6 +358,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
+                  disabled=""
                   name="candidateOneVotes"
                   type="number"
                   value="42"
@@ -376,6 +387,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
+                  disabled=""
                   name="candidateTwoName"
                   value="Candidate 2"
                 />
@@ -385,6 +397,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
+                  disabled=""
                   name="candidateTwoVotes"
                   type="number"
                   value="72"
@@ -411,6 +424,7 @@ Object {
           >
             <input
               class="sc-dnqmqq dvJRiU"
+              disabled=""
               name="totalBallotsCast"
               type="number"
               value="4200"
@@ -436,6 +450,7 @@ Object {
             Set the risk for the audit as as percentage (e.g. "5" = 5%
           </div>
           <select
+            disabled=""
             name="riskLimit"
           >
             <option>
@@ -518,6 +533,7 @@ Object {
           >
             <input
               class="sc-dnqmqq dvJRiU"
+              disabled=""
               name="randomSeed"
               type="number"
               value="123123123"
