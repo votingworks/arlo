@@ -102,19 +102,6 @@ const SelectBallotsToAudit = (props: Props) => {
     }
   }
 
-  // const deleteBallotManifest = async (e: any) => {
-  //   e.preventDefault()
-  //   try {
-  //     const jurisdictionID: string = audit.jurisdictions[0].id
-  //     await api(`/jurisdiction/${jurisdictionID}/manifest`, {
-  //       method: 'DELETE',
-  //     })
-  //     updateAudit()
-  //   } catch (err) {
-  //     toast.error(err.message)
-  //   }
-  // }
-
   const initialState: SelectBallotsToAuditValues = {
     auditBoards:
       (audit.jurisdictions.length &&
@@ -181,11 +168,6 @@ const SelectBallotsToAudit = (props: Props) => {
                     <b>Batches:</b>{' '}
                     {audit.jurisdictions[0].ballotManifest.numBatches}
                   </FormSectionDescription>
-                  {/*manifestUploaded && !audit.rounds.length && (
-                    <FormButton onClick={deleteBallotManifest}>
-                      Delete File
-                    </FormButton>
-                  )*/}
                 </React.Fragment>
               ) : (
                 <React.Fragment>

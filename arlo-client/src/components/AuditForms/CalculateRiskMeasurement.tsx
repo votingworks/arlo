@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
-// import * as Yup from 'yup'
 import FormSection, {
   FormSectionLabel,
   FormSectionDescription,
@@ -52,8 +51,6 @@ type AggregateContest = Contest & RoundContest
 const CalculateRiskMeasurmeent = (props: Props) => {
   const { audit, isLoading, setIsLoading, updateAudit } = props
 
-  //const sumOfAuditedVotes: { current: number } = useRef(0)
-
   const downloadBallotRetrievalList = (id: number, e: any) => {
     e.preventDefault()
     const jurisdictionID: string = audit.jurisdictions[0].id
@@ -77,7 +74,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       const jurisdictionID: string = audit.jurisdictions[0].id
       const body: any = {
         contests: audit.contests.map((contest: Contest, i: number) => ({
-          // map values.contests
           id: contest.id,
           results: {
             ...values.contests[i],
@@ -93,8 +89,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
         },
         body: JSON.stringify(body),
       })
-      //sumOfAuditedVotes.current +=
-      //  Number(values['candidate-1']) + Number(values['candidate-2'])
       updateAudit()
     } catch (err) {
       toast.error(err.message)
@@ -132,32 +126,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       }
       return acc
     }, 0)
-    /*
-      const overCount = function(this: {
-      parent: { [key: string]: number }
-    }): boolean {
-      const count = Object.values(this.parent).reduce(
-        (c: number, v: number) => {
-          c += v || 0
-          return c
-        },
-        0
-      )
-      const maxVotes = this.parent.parent.id
-      return count + sumOfAuditedVotes.current <= max
-    }
-    const schema = Yup.object().shape({
-      contests: Yup.lazy(() => {
-        return Object.keys(v.contests).reduce((acc: any, result: string) => {
-          acc[result] = Yup.number().test(
-            'overCount',
-            'Cannot exceed the number of total ballots cast',
-            overCount
-          )
-          return acc
-        }, {})
-      })
-    }) */
     /* eslint-disable react/no-array-index-key */
     const aggregatedBallots = aggregateContests.reduce(
       (acc: number, contest: AggregateContest) => {
@@ -171,7 +139,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
         key={i}
         onSubmit={calculateRiskMeasurement}
         initialValues={rounds[i]}
-        //validationSchema={schema}
         enableReinitialize
         render={({
           values,
@@ -199,7 +166,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
               >
                 Download Aggregated Ballot Retrieval List for Round {i + 1}
               </FormButton>
-              {/** contest iteration */}
               <FieldArray
                 name="contests"
                 render={() => {

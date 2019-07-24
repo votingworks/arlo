@@ -17,7 +17,6 @@ import FormTitle from '../Form/FormTitle'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-// import { Audit } from '../../types'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 
@@ -141,7 +140,6 @@ const EstimateSampleSize = ({
 
   const handlePost = async (values: EstimateSampleSizeValues) => {
     const data = {
-      // incomplete Audit
       name: values.name,
       randomSeed: Number(values.randomSeed),
       riskLimit: Number(values.riskLimit),
@@ -237,7 +235,7 @@ const EstimateSampleSize = ({
                               component={FormField}
                             />
                             {values.contests.length > 1 &&
-                              !audit.jurisdictions.length && (
+                              !audit.contests.length && (
                                 <Action
                                   onClick={() => contestsArrayHelpers.remove(i)}
                                 >
@@ -278,7 +276,7 @@ const EstimateSampleSize = ({
                                             component={FieldRight}
                                           />
                                           {contest.choices.length > 2 &&
-                                            !audit.jurisdictions.length && (
+                                            !audit.contests.length && (
                                               <Action
                                                 onClick={() =>
                                                   choicesArrayHelpers.remove(j)
@@ -291,7 +289,7 @@ const EstimateSampleSize = ({
                                       </React.Fragment>
                                     )
                                   )}
-                                  {!audit.jurisdictions.length && (
+                                  {!audit.contests.length && (
                                     <Action
                                       onClick={() =>
                                         choicesArrayHelpers.push({
@@ -322,7 +320,7 @@ const EstimateSampleSize = ({
                       )
                     )}
                     <FormButtonBar>
-                      {!audit.jurisdictions.length && (
+                      {!audit.contests.length && (
                         <FormButton
                           type="button"
                           onClick={() =>
@@ -377,210 +375,6 @@ const EstimateSampleSize = ({
           </Form>
         )}
       </Formik>
-
-      {/** old code
-      {Array.from(Array(numContests).keys()).map(i => {
-        return (
-          <Formik
-            key={i}
-            initialValues={contestValues[i]}
-            validationSchema={contestsSchema}
-            onSubmit={values => {
-              contests.current.push(values)
-            }}
-            enableReinitialize
-            render={({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              submitForm,
-              handleSubmit,
-            }: FormikProps<ContestValues>) => {
-              contestForms.current[i] = submitForm
-              return (
-                <form onSubmit={handleSubmit}>
-                  <FormWrapper title="Contest Information">
-                    <React.Fragment key={i}>
-                      {i > 0 && (
-                        <FormSection>
-                          <hr />
-                        </FormSection>
-                      )}
-                      <FormSection
-                        label={`Contest ${numContests > 1 ? i + 1 : ''} Name`}
-                        description="Enter the name of the contest that will drive the audit."
-                      >
-                        <FormField
-                          name="name"
-                          value={values.name}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          disabled={!canEstimateSampleSize}
-                          error={errors.name}
-                          touched={touched.name}
-                        />
-                      </FormSection>
-                      <FormSection
-                        label="Candidates/Choices & Vote Totals"
-                        description="Enter the name of each candidate choice that appears on the ballot for this contest."
-                      >
-                        <TwoColumnSection>
-                          <InputLabelRow>
-                            <InputLabel>Name of Candidate/Choice 1</InputLabel>
-                            <InputLabelRight>
-                              Votes for Candidate/Choice 1
-                            </InputLabelRight>
-                          </InputLabelRow>
-                          <InputFieldRow>
-                            <FormField
-                              name="candidateOneName"
-                              value={values.candidateOneName}
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              disabled={!canEstimateSampleSize}
-                              error={errors.candidateOneName}
-                              touched={touched.candidateOneName}
-                            />
-                            <FieldRight
-                              type="number"
-                              name="candidateOneVotes"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              value={values.candidateOneVotes}
-                              disabled={!canEstimateSampleSize}
-                              error={errors.candidateOneVotes}
-                              touched={touched.candidateOneVotes}
-                            />
-                          </InputFieldRow>
-                          <InputLabelRow>
-                            <InputLabel>Name of Candidate/Choice 2</InputLabel>
-                            <InputLabelRight>
-                              Votes for Candidate/Choice 2
-                            </InputLabelRight>
-                          </InputLabelRow>
-                          <InputFieldRow>
-                            <FormField
-                              name="candidateTwoName"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              value={values.candidateTwoName}
-                              disabled={!canEstimateSampleSize}
-                              error={errors.candidateTwoName}
-                              touched={touched.candidateTwoName}
-                            />
-                            <FieldRight
-                              type="number"
-                              name="candidateTwoVotes"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              value={values.candidateTwoVotes}
-                              disabled={!canEstimateSampleSize}
-                              error={errors.candidateTwoVotes}
-                              touched={touched.candidateTwoVotes}
-                            />
-                          </InputFieldRow>
-                        </TwoColumnSection>
-                      </FormSection>
-
-                      <FormSection
-                        label="Total Ballots Cast"
-                        description="Enter the overall number of ballot cards cast in jurisdictions containing this contest."
-                      >
-                        <FormField
-                          type="number"
-                          name="totalBallotsCast"
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values.totalBallotsCast}
-                          disabled={!canEstimateSampleSize}
-                          error={errors.totalBallotsCast}
-                          touched={
-                            touched.totalBallotsCast &&
-                            touched.candidateOneVotes &&
-                            touched.candidateTwoVotes
-                          }
-                        />
-                      </FormSection>
-                    </React.Fragment>
-                  </FormWrapper>
-                </form>
-              )
-            }}
-          />
-        )
-      })}
-      <Formik
-        initialValues={initialValues}
-        validationSchema={schema}
-        onSubmit={handlePost}
-        enableReinitialize
-        render={({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-        }: FormikProps<EstimateSampleSizeValues>) => (
-          <form>
-            <FormWrapper>
-              <FormTitle>Audit Settings</FormTitle>
-              <FormSection
-                label="Desired Risk Limit"
-                description='Set the risk for the audit as as percentage (e.g. "5" = 5%'
-              >
-                <select
-                  name="riskLimit"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.riskLimit}
-                  disabled={!canEstimateSampleSize}
-                >
-                  {generateOptions(20)}
-                </select>
-                {errors.riskLimit && touched.riskLimit && (
-                  <ErrorLabel>{errors.riskLimit}</ErrorLabel>
-                )}
-              </FormSection>
-              <FormSection
-                label="Random Seed"
-                description="Enter the random number to seed the pseudo-random number generator."
-              >
-                <FormField
-                  type="number"
-                  onChange={handleChange}
-                  value={values.randomSeed}
-                  onBlur={handleBlur}
-                  name="randomSeed"
-                  disabled={!canEstimateSampleSize}
-                  error={errors.randomSeed}
-                  touched={touched.randomSeed}
-                />
-              </FormSection>
-            </FormWrapper>
-            <FormButtonBar>
-              <FormButton type="button" onClick={addContest}>
-                Add another targeted contest
-              </FormButton>
-            </FormButtonBar>
-            {!audit.contests.length && isLoading && <p>Loading...</p>}
-            {!audit.contests.length && !isLoading && (
-              <FormButtonBar>
-                <FormButton
-                  type="submit"
-                  disabled={!canEstimateSampleSize}
-                  onClick={handleSubmit}
-                >
-                  Estimate Sample Size
-                </FormButton>
-              </FormButtonBar>
-            )}
-          </form>
-        )}
-      />
-      */}
     </>
   )
 }
