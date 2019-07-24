@@ -121,6 +121,11 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       },
       []
     )
+    const isSubmitted =
+      round < audit.rounds.length ||
+      aggregateContests.every(
+        (contest: AggregateContest) => !!contest.endMeasurements.isComplete
+      )
     const completeContests = aggregateContests.reduce((acc, c) => {
       if (c.endMeasurements.isComplete) {
         acc += 1
@@ -186,10 +191,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                   )
                 )}
               </FormSectionDescription>
-              {/*<SectionLabel>
-                Ballot Retrieval List \n
-                {contest ? `${contest.sampleSize} Ballots` : ''}
-              </SectionLabel>*/}
               <FormButton
                 onClick={(e: React.MouseEvent) =>
                   downloadBallotRetrievalList(i + 1, e)
@@ -258,6 +259,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                                             name={`contests[${j}][${choiceId}]`}
                                             type="number"
                                             component={FormField}
+                                            disabled={isSubmitted}
                                           />
                                         </InlineInput>
                                       </React.Fragment>
@@ -293,23 +295,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                   </FormButtonBar>
                 )}
               <FormSection>
-                {/*<FormSectionLabel>
-                  Audit Status:{' '}
-                  {contest.endMeasurements.isComplete
-                    ? 'COMPLETE'
-                    : 'INCOMPLETE'}
-                </FormSectionLabel>
-                <InputSection>
-                  <InlineInput>
-                    <InputLabel>Risk Limit: </InputLabel>
-                    {audit.riskLimit}%
-                  </InlineInput>
-                  <InlineInput>
-                    <InputLabel>P-value: </InputLabel>{' '}
-                    {contest.endMeasurements.pvalue}
-                  </InlineInput>
-                </InputSection>*/}
-                {/* {Form 3} */}
                 {completeContests === audit.contests.length && (
                   <FormButton
                     onClick={(e: React.MouseEvent) => downloadAuditReport(e)}

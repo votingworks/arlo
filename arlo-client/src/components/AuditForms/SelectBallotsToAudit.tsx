@@ -41,16 +41,12 @@ const schema = Yup.object().shape({
 
 const SelectBallotsToAudit = (props: Props) => {
   const { audit, isLoading, setIsLoading, updateAudit, getStatus } = props
-  const formTwoHasData = audit && audit.jurisdictions && audit.jurisdictions[0]
   const manifestUploaded =
-    formTwoHasData &&
+    audit.jurisdictions.length &&
     audit.jurisdictions[0].ballotManifest &&
     audit.jurisdictions[0].ballotManifest.filename &&
     audit.jurisdictions[0].ballotManifest.numBallots &&
     audit.jurisdictions[0].ballotManifest.numBatches
-
-  const formThreeHasData =
-    manifestUploaded && audit.rounds && audit.rounds.length > 0
 
   const handlePost = async (values: SelectBallotsToAuditValues) => {
     const auditBoards = Array.from(Array(values.auditBoards).keys()).map(i => {
@@ -106,21 +102,24 @@ const SelectBallotsToAudit = (props: Props) => {
     }
   }
 
-  const deleteBallotManifest = async (e: any) => {
-    e.preventDefault()
-    try {
-      const jurisdictionID: string = audit.jurisdictions[0].id
-      await api(`/jurisdiction/${jurisdictionID}/manifest`, {
-        method: 'DELETE',
-      })
-      updateAudit()
-    } catch (err) {
-      toast.error(err.message)
-    }
-  }
+  // const deleteBallotManifest = async (e: any) => {
+  //   e.preventDefault()
+  //   try {
+  //     const jurisdictionID: string = audit.jurisdictions[0].id
+  //     await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+  //       method: 'DELETE',
+  //     })
+  //     updateAudit()
+  //   } catch (err) {
+  //     toast.error(err.message)
+  //   }
+  // }
 
   const initialState: SelectBallotsToAuditValues = {
-    auditBoards: formTwoHasData && audit.jurisdictions[0].auditBoards.length,
+    auditBoards:
+      (audit.jurisdictions.length &&
+        audit.jurisdictions[0].auditBoards.length) ||
+      1,
     manifest: null,
   }
 
@@ -159,6 +158,7 @@ const SelectBallotsToAudit = (props: Props) => {
                 value={values.auditBoards}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                disabled={!!audit.rounds.length}
               >
                 {generateOptions(5)}
               </select>
@@ -181,11 +181,11 @@ const SelectBallotsToAudit = (props: Props) => {
                     <b>Batches:</b>{' '}
                     {audit.jurisdictions[0].ballotManifest.numBatches}
                   </FormSectionDescription>
-                  {formThreeHasData && (
+                  {/*manifestUploaded && !audit.rounds.length && (
                     <FormButton onClick={deleteBallotManifest}>
                       Delete File
                     </FormButton>
-                  )}
+                  )*/}
                 </React.Fragment>
               ) : (
                 <React.Fragment>
@@ -213,8 +213,8 @@ const SelectBallotsToAudit = (props: Props) => {
               )}
             </FormSection>
           </FormWrapper>
-          {!formThreeHasData && isLoading && <p>Loading...</p>}
-          {!formThreeHasData && !isLoading && (
+          {!audit.rounds.length && isLoading && <p>Loading...</p>}
+          {!audit.rounds.length && !isLoading && (
             <FormButtonBar>
               <FormButton type="button" onClick={handleSubmit}>
                 Select Ballots To Audit

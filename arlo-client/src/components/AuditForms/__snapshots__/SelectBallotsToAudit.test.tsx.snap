@@ -28,6 +28,7 @@ Object {
               Set the number of audit boards you with to use.
             </div>
             <select
+              disabled=""
               id="auditBoards"
               name="auditBoards"
             >
@@ -83,11 +84,6 @@ Object {
                
               560
             </div>
-            <button
-              class="sc-EHOje hXhzUo"
-            >
-              Delete File
-            </button>
           </div>
         </div>
       </form>
@@ -117,6 +113,7 @@ Object {
             Set the number of audit boards you with to use.
           </div>
           <select
+            disabled=""
             id="auditBoards"
             name="auditBoards"
           >
@@ -172,11 +169,6 @@ Object {
              
             560
           </div>
-          <button
-            class="sc-EHOje hXhzUo"
-          >
-            Delete File
-          </button>
         </div>
       </div>
     </form>
