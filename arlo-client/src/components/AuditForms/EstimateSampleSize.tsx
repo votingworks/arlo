@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { Formik, FormikProps, FormikActions } from 'formik'
@@ -106,13 +106,12 @@ const EstimateSampleSize = ({
   setIsLoading,
   updateAudit,
 }: Props) => {
-  const [canEstimateSampleSize, setCanEstimateSampleSize] = useState(true)
+  const canEstimateSampleSize = !audit.contests.length
 
   const handlePost = async (
     values: EstimateSampleSizeValues,
     actions: FormikActions<EstimateSampleSizeValues>
   ) => {
-    setCanEstimateSampleSize(false)
     const data = {
       // incomplete Audit
       name: values.name, // hardcoded to 'Election'?
@@ -150,7 +149,6 @@ const EstimateSampleSize = ({
       updateAudit()
     } catch (err) {
       toast.error(err.message)
-      setCanEstimateSampleSize(true)
     } finally {
       setIsLoading(false)
     }

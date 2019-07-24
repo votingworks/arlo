@@ -110,6 +110,8 @@ const CalculateRiskMeasurmeent = (props: Props) => {
   return audit.rounds.map((v: Round, i: number) => {
     const round: number = i + 1
     const contest: RoundContest = v.contests[0]
+    const isSubmitted =
+      contest.endMeasurements.isComplete || round < audit.rounds.length
     const maxVotes: number = audit.contests.find(
       (c: Contest) => c.id === contest.id
     ).totalBallotsCast
@@ -201,6 +203,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                       type="number"
                       error={errors['candidate-1']}
                       touched={touched['candidate-1']}
+                      disabled={isSubmitted}
                     />
                   </InlineInput>
                   <InlineInput>
@@ -213,6 +216,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                       type="number"
                       error={errors['candidate-2']}
                       touched={touched['candidate-2']}
+                      disabled={isSubmitted}
                     />
                   </InlineInput>
                 </InputSection>
