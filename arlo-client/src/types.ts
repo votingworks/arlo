@@ -9,6 +9,11 @@ export interface Contest {
   name: string
   choices: Candidate[]
   totalBallotsCast: number | ''
+  sampleSizeOptions?: {
+    size: number
+    prob?: string | number
+    type?: 'ASN'
+  }[]
 }
 
 export interface AuditBoard {

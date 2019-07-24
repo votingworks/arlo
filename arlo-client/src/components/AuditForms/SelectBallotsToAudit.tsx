@@ -1,16 +1,24 @@
 /* eslint-disable no-null */
 
 import React from 'react'
+import styled from 'styled-components'
 import { toast } from 'react-toastify'
-import { Formik, FormikProps } from 'formik'
+import { Formik, FormikProps, Field } from 'formik'
 import * as Yup from 'yup'
-import FormSection, { FormSectionDescription } from '../Form/FormSection'
+import FormSection, {
+  FormSectionDescription,
+  FormSectionLabel,
+} from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
-import { Jurisdiction, Audit } from '../../types'
+import { Jurisdiction, Audit, Contest } from '../../types'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
+
+const InputLabel = styled.label`
+  display: inline-block;
+`
 
 interface Props {
   audit: Audit
@@ -23,6 +31,9 @@ interface Props {
 interface SelectBallotsToAuditValues {
   auditBoards: number
   manifest: File | null
+  sampleSize: {
+    [key: string]: number | ''
+  }
 }
 
 const schema = Yup.object().shape({
@@ -67,6 +78,9 @@ const SelectBallotsToAudit = (props: Props) => {
         },
       ]
       setIsLoading(true)
+      if (values.sampleSize) {
+        // await api('/audit/sampleSize', {method: 'POST', body: values.sampleSize}) // wait until API is ready
+      }
       await api('/audit/jurisdictions', {
         method: 'POST',
         body: JSON.stringify({ jurisdictions: data }),
@@ -121,7 +135,23 @@ const SelectBallotsToAudit = (props: Props) => {
         audit.jurisdictions[0].auditBoards.length) ||
       1,
     manifest: null,
+    sampleSize: [...audit.contests].reduce((a: any, c) => {
+      a[c.id] = '' // default to rounds sampleSize if available
+      return a
+    }, {}),
   }
+
+  const sampleSizeOptions = [...audit.contests].reduce(
+    (acc: any, contest: Contest) => {
+      acc[contest.id] = contest.sampleSizeOptions || [
+        { size: 141, type: 'ASN' },
+        { size: 223 },
+        { size: 456, prob: '80%' },
+      ]
+      return acc
+    },
+    {}
+  )
 
   return (
     <Formik
@@ -140,14 +170,48 @@ const SelectBallotsToAudit = (props: Props) => {
       }: FormikProps<SelectBallotsToAuditValues>) => (
         <form onSubmit={handleSubmit} id="formTwo">
           <FormWrapper>
-            {/* <Section>
-                <SectionLabel>Estimated Sample Size</SectionLabel>
-                <SectionDetail>
-                    Choose the initial sample size you would like to use for Round 1 of the audit from the options below.
-                    <div><input name="sampleSize" type="radio" value="223" onChange={e => this.inputChange(e)} /><InputLabel>223 samples (80% chance of reaching risk limit in one round)</InputLabel></div>
-                    <div><input name="sampleSize" type="radio" value="456" onChange={e => this.inputChange(e)} /><InputLabel>456 samples (90% chance of reaching risk limit in one round)</InputLabel></div>
-                </SectionDetail>
-            </Section> */}
+            {Object.keys(sampleSizeOptions).length && (
+              <FormSection>
+                <FormSectionLabel>Estimated Sample Size</FormSectionLabel>
+                <FormSectionDescription>
+                  Choose the initial sample size for each contest you would like
+                  to use for Round 1 of the audit from the options below.
+                </FormSectionDescription>
+                {Object.keys(sampleSizeOptions).map((key: any, i: number) => (
+                  <React.Fragment key={key}>
+                    {Object.keys(sampleSizeOptions).length > 1 && (
+                      <FormSectionLabel>
+                        Contest {i + 1} sample size
+                      </FormSectionLabel>
+                    )}
+                    <FormSectionDescription>
+                      {/* eslint-disable react/no-array-index-key */}
+                      {sampleSizeOptions[key].map((option: any, j: number) => (
+                        <p key={key + j}>
+                          <span style={{ whiteSpace: 'nowrap' }}>
+                            <Field
+                              name={`sampleSize[${key}]`}
+                              component="input"
+                              value={option.size}
+                              type="radio"
+                            />
+                            <InputLabel>
+                              {option.type
+                                ? 'BRAVO Average Sample Number: '
+                                : ''}
+                              {`${option.size} samples`}
+                              {option.prob
+                                ? ` (${option.prob} chance of reaching risk limit and completing the audit in one round)`
+                                : ''}
+                            </InputLabel>
+                          </span>
+                        </p>
+                      ))}
+                    </FormSectionDescription>
+                  </React.Fragment>
+                ))}
+              </FormSection>
+            )}
             <FormSection
               label="Number of Audit Boards"
               description="Set the number of audit boards you with to use."
@@ -216,7 +280,7 @@ const SelectBallotsToAudit = (props: Props) => {
           {!audit.rounds.length && isLoading && <p>Loading...</p>}
           {!audit.rounds.length && !isLoading && (
             <FormButtonBar>
-              <FormButton type="submit" onClick={handleSubmit}>
+              <FormButton onClick={handleSubmit}>
                 Select Ballots To Audit
               </FormButton>
             </FormButtonBar>

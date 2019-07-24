@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-const Section = styled.div`
+export const Section = styled.div`
   margin: 20px 0 20px 0;
 `
 
