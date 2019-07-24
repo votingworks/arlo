@@ -78,7 +78,7 @@ const SelectBallotsToAudit = (props: Props) => {
         },
       ]
       setIsLoading(true)
-      if (values.sampleSize) {
+      if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
         // await api('/audit/sampleSize', {method: 'POST', body: values.sampleSize}) // wait until API is ready
       }
       await api('/audit/jurisdictions', {
@@ -143,11 +143,7 @@ const SelectBallotsToAudit = (props: Props) => {
 
   const sampleSizeOptions = [...audit.contests].reduce(
     (acc: any, contest: Contest) => {
-      acc[contest.id] = contest.sampleSizeOptions || [
-        { size: 141, type: 'ASN' },
-        { size: 223 },
-        { size: 456, prob: '80%' },
-      ]
+      acc[contest.id] = contest.sampleSizeOptions || []
       return acc
     },
     {}
