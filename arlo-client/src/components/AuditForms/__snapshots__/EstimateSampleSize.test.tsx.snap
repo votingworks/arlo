@@ -150,11 +150,6 @@ Object {
                   />
                 </div>
               </div>
-              <p
-                class="sc-kgoBCf ehqtTc"
-              >
-                Add a new candidate/choice
-              </p>
             </div>
           </div>
           <div
@@ -183,14 +178,7 @@ Object {
           </div>
           <div
             class="sc-gZMcBi DmELe"
-          >
-            <button
-              class="sc-EHOje hXhzUo"
-              type="button"
-            >
-              Add another targeted contest
-            </button>
-          </div>
+          />
           <div
             class="sc-bxivhb doxbWk"
           >
@@ -448,11 +436,6 @@ Object {
                 />
               </div>
             </div>
-            <p
-              class="sc-kgoBCf ehqtTc"
-            >
-              Add a new candidate/choice
-            </p>
           </div>
         </div>
         <div
@@ -481,14 +464,7 @@ Object {
         </div>
         <div
           class="sc-gZMcBi DmELe"
-        >
-          <button
-            class="sc-EHOje hXhzUo"
-            type="button"
-          >
-            Add another targeted contest
-          </button>
-        </div>
+        />
         <div
           class="sc-bxivhb doxbWk"
         >

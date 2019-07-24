@@ -41,7 +41,8 @@ Object {
             >
               Audited Results: Round 
               1
-              , Contest 
+              , Contest
+               
               1
                INCOMPLETE
             </div>
@@ -56,14 +57,14 @@ Object {
             <div
               class="sc-gqjmRU bqmubQ"
             >
-              <label
-                class="sc-VigVT hLPYRt"
-              >
-                Candidate 1
-              </label>
               <div
                 class="sc-jTzLTM hJXymL"
               >
+                <label
+                  class="sc-VigVT hLPYRt"
+                >
+                  Candidate 1
+                </label>
                 <div
                   class="sc-htoDjs jjofgS"
                 >
@@ -75,14 +76,14 @@ Object {
                   />
                 </div>
               </div>
-              <label
-                class="sc-VigVT hLPYRt"
-              >
-                Candidate 2
-              </label>
               <div
                 class="sc-jTzLTM hJXymL"
               >
+                <label
+                  class="sc-VigVT hLPYRt"
+                >
+                  Candidate 2
+                </label>
                 <div
                   class="sc-htoDjs jjofgS"
                 >
@@ -106,7 +107,8 @@ Object {
               0
                of 
               1
-               complete
+               
+              complete
             </div>
           </div>
           <div
@@ -163,7 +165,8 @@ Object {
           >
             Audited Results: Round 
             1
-            , Contest 
+            , Contest
+             
             1
              INCOMPLETE
           </div>
@@ -178,14 +181,14 @@ Object {
           <div
             class="sc-gqjmRU bqmubQ"
           >
-            <label
-              class="sc-VigVT hLPYRt"
-            >
-              Candidate 1
-            </label>
             <div
               class="sc-jTzLTM hJXymL"
             >
+              <label
+                class="sc-VigVT hLPYRt"
+              >
+                Candidate 1
+              </label>
               <div
                 class="sc-htoDjs jjofgS"
               >
@@ -197,14 +200,14 @@ Object {
                 />
               </div>
             </div>
-            <label
-              class="sc-VigVT hLPYRt"
-            >
-              Candidate 2
-            </label>
             <div
               class="sc-jTzLTM hJXymL"
             >
+              <label
+                class="sc-VigVT hLPYRt"
+              >
+                Candidate 2
+              </label>
               <div
                 class="sc-htoDjs jjofgS"
               >
@@ -228,7 +231,8 @@ Object {
             0
              of 
             1
-             complete
+             
+            complete
           </div>
         </div>
         <div
