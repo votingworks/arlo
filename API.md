@@ -141,7 +141,8 @@ JSON for sure.
 
 ```
 {
-	sampleSize: 578
+	'contest-id-1': 578,
+	'contest-id-2': 130
 }
 ```
 
