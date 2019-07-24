@@ -92,10 +92,12 @@ export const statusStates = [
       {
         choices: [
           {
+            id: 'choice-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
+            id: 'choice-2',
             name: 'choice two',
             numVotes: 1325,
           },
@@ -116,12 +118,12 @@ export const statusStates = [
       {
         choices: [
           {
-            id: 'contest-1',
+            id: 'choice-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
-            id: 'contest-2',
+            id: 'choice-2',
             name: 'choice two',
             numVotes: 1325,
           },
@@ -160,12 +162,12 @@ export const statusStates = [
       {
         choices: [
           {
-            id: 'contest-1',
+            id: 'choice-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
-            id: 'contest-2',
+            id: 'choice-2',
             name: 'choice two',
             numVotes: 1325,
           },
@@ -220,12 +222,12 @@ export const statusStates = [
       {
         choices: [
           {
-            id: 'contest-1',
+            id: 'choice-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
-            id: 'contest-2',
+            id: 'choice-2',
             name: 'choice two',
             numVotes: 1325,
           },
@@ -264,8 +266,8 @@ export const statusStates = [
             },
             id: 'contest-1',
             results: {
-              'candidate-1': 100,
-              'candidate-2': 167,
+              'choice-1': 100,
+              'choice-2': 167,
             },
             sampleSize: 269,
           },
@@ -278,6 +280,98 @@ export const statusStates = [
     randomSeed: '123456789',
     riskLimit: 1,
   },
+  /*{
+    contests: [
+      {
+        choices: [
+          {
+            id: 'choice-1',
+            name: 'choice one',
+            numVotes: 792,
+          },
+          {
+            id: 'choice-2',
+            name: 'choice two',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-1',
+        name: 'contest one',
+        totalBallotsCast: 2123,
+      },
+      {
+        choices: [
+          {
+            id: 'choice-3',
+            name: 'choice three',
+            numVotes: 792,
+          },
+          {
+            id: 'choice-4',
+            name: 'choice four',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-2',
+        name: 'contest two',
+        totalBallotsCast: 2123,
+      },
+    ],
+    jurisdictions: [
+      {
+        auditBoards: [
+          {
+            id: 'audit-board-1',
+            members: [],
+          },
+        ],
+        ballotManifest: {
+          filename: 'Ballot Manifest May 2019 Election - WYNADOTTE.csv',
+          numBallots: 2117,
+          numBatches: 10,
+          uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+        },
+        contests: ['contest-1', 'contest-2'],
+        id: 'jurisdiction-1',
+        name: 'Jurisdiction 1',
+      },
+    ],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: true,
+              pvalue: 0.00020431431380638307,
+            },
+            id: 'contest-1',
+            results: {
+              'choice-1': 100,
+              'choice-2': 167,
+            },
+            sampleSize: 269,
+          },
+          {
+            endMeasurements: {
+              isComplete: true,
+              pvalue: 0.00020431431380638307,
+            },
+            id: 'contest-2',
+            results: {
+              'choice-3': 100,
+              'choice-4': 167,
+            },
+            sampleSize: 269,
+          },
+        ],
+        endedAt: 'Thu, 18 Jul 2019 16:59:34 GMT',
+        startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+      },
+    ],
+    name: 'contest name',
+    randomSeed: '123456789',
+    riskLimit: 1,
+  },*/
 ]
 
 export default mockAudit

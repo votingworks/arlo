@@ -76,10 +76,11 @@ const CalculateRiskMeasurmeent = (props: Props) => {
     try {
       const jurisdictionID: string = audit.jurisdictions[0].id
       const body: any = {
-        contests: audit.contests.map((contest: Contest, i: number) => ({ // map values.contests
+        contests: audit.contests.map((contest: Contest, i: number) => ({
+          // map values.contests
           id: contest.id,
           results: {
-            ...values.contests[i]
+            ...values.contests[i],
           },
         })),
       }
@@ -102,30 +103,31 @@ const CalculateRiskMeasurmeent = (props: Props) => {
 
   const rounds: CalculateRiskMeasurementValues[] = audit.rounds.map(
     (r: Round, i: number) => ({
-      contests: r.contests.map((c: RoundContest) => ({
-        ...c.results
+      contests: audit.contests.map((contest: Contest, j: number) => ({
+        ...contest.choices.reduce((acc, choice: Candidate) => {
+          return { ...acc, [choice.id]: r.contests[j].results[choice.id] || '' }
+        }, {}),
       })),
       round: i + 1,
     })
   )
 
   return audit.rounds.map((round: Round, i: number) => {
-    const aggregateContests: AggregateContest[] = audit.contests.reduce((acc: any[], contest: Contest) => {
-      const roundContest = round.contests.find(v => v.id === contest.id)
-      acc.push({ ...contest, ...roundContest })
-      return acc
-    },[])
+    const aggregateContests: AggregateContest[] = audit.contests.reduce(
+      (acc: any[], contest: Contest) => {
+        const roundContest = round.contests.find(v => v.id === contest.id)
+        acc.push({ ...contest, ...roundContest })
+        return acc
+      },
+      []
+    )
     const completeContests = aggregateContests.reduce((acc, c) => {
-      if (c.endMeasurements.isComplete) acc += 1
+      if (c.endMeasurements.isComplete) {
+        acc += 1
+      }
       return acc
     }, 0)
-    console.log(rounds, aggregateContests, audit)
-    {/*const showCalculateButton =
-      i + 1 === audit.rounds.length &&
-      contest &&
-      contest.endMeasurements &&
-    !contest.endMeasurements.isComplete*/}
-    {/*
+    /*
       const overCount = function(this: {
       parent: { [key: string]: number }
     }): boolean {
@@ -150,7 +152,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
           return acc
         }, {})
       })
-    }) */}
+    }) */
     /* eslint-disable react/no-array-index-key */
     return (
       <Formik
@@ -167,7 +169,8 @@ const CalculateRiskMeasurmeent = (props: Props) => {
             <FormWrapper title={`Round ${i + 1}`}>
               <FormSectionLabel>
                 {`Ballot Retrieval List \n
-                  ${aggregateContests[0].sampleSize} Ballots`} {/** do all contests in the audit have the same sampleSize or is this the sum of all the sample sizes? */}
+                  ${aggregateContests[0].sampleSize} Ballots`}{' '}
+                {/** do all contests in the audit have the same sampleSize or is this the sum of all the sample sizes? */}
               </FormSectionLabel>
               {/*<SectionLabel>
                 Ballot Retrieval List \n
@@ -175,89 +178,106 @@ const CalculateRiskMeasurmeent = (props: Props) => {
               </SectionLabel>*/}
               <FormButton
                 onClick={(e: React.MouseEvent) =>
-                  downloadBallotRetrievalList(i+1, e)
+                  downloadBallotRetrievalList(i + 1, e)
                 }
                 inline
               >
                 Download Ballot Retrieval List for Round {i + 1}
               </FormButton>
               {/** contest iteration */}
-              <FieldArray name="contests" render={() => {
-
-                return (
-                  <>
-                    {values.contests.map((contest, j) => {
-                      return (
-
-                        <FormSection
-                          label={`Contest ${j+1}: ${aggregateContests[j].name}`}
-                        >
-                          {aggregateContests[j].endMeasurements.isComplete ? (
-                            <>
-                              <FormSectionLabel>
-                                Contest Status: COMPLETE
-                              </FormSectionLabel>
-                              <InputSection>
-                                <InlineInput>
-                                  <InputLabel>Risk Limit: </InputLabel>
-                                  {audit.riskLimit}%
-                                </InlineInput>
-                                <InlineInput>
-                                  <InputLabel>P-value: </InputLabel>{' '}
-                                  {aggregateContests[j].endMeasurements.pvalue}
-                                </InlineInput>
-                              </InputSection>
-                            </>
-                          ) : (
-                            <>
-                              <FormSectionLabel>
-                                Audited Results: Round {i+1}, Contest {j+1} INCOMPLETE
-                              </FormSectionLabel>
-                              <FormSectionDescription>
-                                Enter the number of votes recorded for each candidate/choice in
-                                the audited ballots for Round {i + 1}, Contest {j+1}
-                              </FormSectionDescription>
-                              <InputSection>
-                                {Object.keys(contest).map(choiceId => {
-                                  const name = aggregateContests[j].choices.find(
-                                    (candidate: Candidate) => candidate.id === choiceId)!.name
-                                  return (
-                                    <>
-                                      <InputLabel>{name}</InputLabel>
-                                      <InlineInput>
-                                        <Field
-                                          name={`contests[${j}][${choiceId}]`}
-                                          type="number"
-                                          component={FormField}
-                                        />
-                                      </InlineInput>
-                                    </>
-                                  )
-                                })}
-                              </InputSection>
-                            </>
-                          )}
-                        </FormSection>
-                      )
-                    })}
-                  </>
-                )
-              }}/>
+              <FieldArray
+                name="contests"
+                render={() => {
+                  return (
+                    <>
+                      {values.contests.map((contest, j) => {
+                        return (
+                          <FormSection
+                            key={aggregateContests[j].id}
+                            label={`Contest ${j + 1}: ${
+                              aggregateContests[j].name
+                            }`}
+                          >
+                            {aggregateContests[j].endMeasurements.isComplete ? (
+                              <>
+                                <FormSectionLabel>
+                                  Contest Status: COMPLETE
+                                </FormSectionLabel>
+                                <InputSection>
+                                  <InlineInput>
+                                    <InputLabel>Risk Limit: </InputLabel>
+                                    {audit.riskLimit}%
+                                  </InlineInput>
+                                  <InlineInput>
+                                    <InputLabel>P-value: </InputLabel>{' '}
+                                    {
+                                      aggregateContests[j].endMeasurements
+                                        .pvalue
+                                    }
+                                  </InlineInput>
+                                </InputSection>
+                              </>
+                            ) : (
+                              <>
+                                <FormSectionLabel>
+                                  Audited Results: Round {i + 1}, Contest{' '}
+                                  {j + 1} INCOMPLETE
+                                </FormSectionLabel>
+                                <FormSectionDescription>
+                                  Enter the number of votes recorded for each
+                                  candidate/choice in the audited ballots for
+                                  Round {i + 1}, Contest {j + 1}
+                                </FormSectionDescription>
+                                <InputSection>
+                                  {Object.keys(contest).map(choiceId => {
+                                    const name = aggregateContests[
+                                      j
+                                    ].choices.find(
+                                      (candidate: Candidate) =>
+                                        candidate.id === choiceId
+                                    )!.name
+                                    return (
+                                      <React.Fragment key={choiceId}>
+                                        <InlineInput>
+                                          <InputLabel>{name}</InputLabel>
+                                          <Field
+                                            name={`contests[${j}][${choiceId}]`}
+                                            type="number"
+                                            component={FormField}
+                                          />
+                                        </InlineInput>
+                                      </React.Fragment>
+                                    )
+                                  })}
+                                </InputSection>
+                              </>
+                            )}
+                          </FormSection>
+                        )
+                      })}
+                    </>
+                  )
+                }}
+              />
               {isLoading && <p>Loading...</p>}
               <FormSection>
                 <FormSectionLabel>
-                  Audit Progress: {completeContests} of {audit.contests.length} complete
+                  Audit Progress: {completeContests} of {audit.contests.length}{' '}
+                  complete
                 </FormSectionLabel>
               </FormSection>
               {i + 1 === audit.rounds.length &&
-                aggregateContests.some((contest: AggregateContest) => !contest.endMeasurements.isComplete) &&
+                aggregateContests.some(
+                  (contest: AggregateContest) =>
+                    !contest.endMeasurements.isComplete
+                ) &&
                 !isLoading && (
-                <FormButtonBar>
-                  <FormButton type="button" onClick={handleSubmit}>
-                    Calculate Risk Measurement
-                  </FormButton>
-                </FormButtonBar>
-              )}
+                  <FormButtonBar>
+                    <FormButton type="button" onClick={handleSubmit}>
+                      Calculate Risk Measurement
+                    </FormButton>
+                  </FormButtonBar>
+                )}
               <FormSection>
                 {/*<FormSectionLabel>
                   Audit Status:{' '}
@@ -278,9 +298,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                 {/* {Form 3} */}
                 {completeContests === audit.contests.length && (
                   <FormButton
-                    onClick={(e: React.MouseEvent) =>
-                      downloadAuditReport(e)
-                    }
+                    onClick={(e: React.MouseEvent) => downloadAuditReport(e)}
                     size="sm"
                     inline
                   >

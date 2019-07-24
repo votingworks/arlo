@@ -1,5 +1,5 @@
 export interface Candidate {
-  id?: string
+  id: string
   name: string
   numVotes: number | ''
 }
@@ -34,7 +34,7 @@ export interface Jurisdiction {
 export interface RoundContest {
   id: string
   results: {
-    [one: string]: number
+    [key: string]: number
   }
   sampleSize: number
   endMeasurements: {

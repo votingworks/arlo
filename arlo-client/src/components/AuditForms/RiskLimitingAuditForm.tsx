@@ -12,6 +12,7 @@ const AuditForms = () => {
   const [audit, setAudit] = useState<Audit>(statusStates[0])
 
   const getStatus = useCallback(async (): Promise<Audit> => {
+    // await api(`/audit/reset`, { method: 'POST' })
     const audit: any = await api('/audit/status', {})
     return audit
   }, [])

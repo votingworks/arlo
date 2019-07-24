@@ -66,7 +66,7 @@ const SelectBallotsToAudit = (props: Props) => {
         {
           id: 'jurisdiction-1',
           name: 'Jurisdiction 1',
-          contests: [`contest-1`],
+          contests: [...audit.contests].map(contest => contest.id),
           auditBoards: auditBoards,
         },
       ]

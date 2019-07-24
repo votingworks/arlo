@@ -238,13 +238,14 @@ const EstimateSampleSize = ({
                               disabled={!canEstimateSampleSize}
                               component={FormField}
                             />
-                            {values.contests.length > 1 && (
-                              <Action
-                                onClick={() => contestsArrayHelpers.remove(i)}
-                              >
-                                Remove Contest {i + 1}
-                              </Action>
-                            )}
+                            {values.contests.length > 1 &&
+                              !audit.jurisdictions.length && (
+                                <Action
+                                  onClick={() => contestsArrayHelpers.remove(i)}
+                                >
+                                  Remove Contest {i + 1}
+                                </Action>
+                              )}
                           </FormSection>
                           <FieldArray
                             name={`contests[${i}].choices`}
@@ -278,29 +279,32 @@ const EstimateSampleSize = ({
                                             disabled={!canEstimateSampleSize}
                                             component={FieldRight}
                                           />
-                                          {contest.choices.length > 2 && (
-                                            <Action
-                                              onClick={() =>
-                                                choicesArrayHelpers.remove(j)
-                                              }
-                                            >
-                                              Remove choice {j + 1}
-                                            </Action>
-                                          )}
+                                          {contest.choices.length > 2 &&
+                                            !audit.jurisdictions.length && (
+                                              <Action
+                                                onClick={() =>
+                                                  choicesArrayHelpers.remove(j)
+                                                }
+                                              >
+                                                Remove choice {j + 1}
+                                              </Action>
+                                            )}
                                         </InputFieldRow>
                                       </React.Fragment>
                                     )
                                   )}
-                                  <Action
-                                    onClick={() =>
-                                      choicesArrayHelpers.push({
-                                        name: '',
-                                        numVotes: '',
-                                      })
-                                    }
-                                  >
-                                    Add a new candidate/choice
-                                  </Action>
+                                  {!audit.jurisdictions.length && (
+                                    <Action
+                                      onClick={() =>
+                                        choicesArrayHelpers.push({
+                                          name: '',
+                                          numVotes: '',
+                                        })
+                                      }
+                                    >
+                                      Add a new candidate/choice
+                                    </Action>
+                                  )}
                                 </TwoColumnSection>
                               </FormSection>
                             )}
@@ -320,14 +324,16 @@ const EstimateSampleSize = ({
                       )
                     )}
                     <FormButtonBar>
-                      <FormButton
-                        type="button"
-                        onClick={() =>
-                          contestsArrayHelpers.push({ ...contestValues[0] })
-                        }
-                      >
-                        Add another targeted contest
-                      </FormButton>
+                      {!audit.jurisdictions.length && (
+                        <FormButton
+                          type="button"
+                          onClick={() =>
+                            contestsArrayHelpers.push({ ...contestValues[0] })
+                          }
+                        >
+                          Add another targeted contest
+                        </FormButton>
+                      )}
                     </FormButtonBar>
                   </>
                 )}
