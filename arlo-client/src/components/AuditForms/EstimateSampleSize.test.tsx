@@ -18,5 +18,5 @@ describe('EstimateSampleSize', () => {
     expect(container).toMatchSnapshot()
   })
 
-  it('is able to submit the form successfully', () => [])
+  it('is able to submit the form successfully', () => undefined)
 })

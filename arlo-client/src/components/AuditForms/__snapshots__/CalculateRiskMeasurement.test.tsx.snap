@@ -17,15 +17,25 @@ Object {
           <div
             class="sc-htpNat kRUApY"
           >
-            Ballot Retrieval List 
-
-                  25 Ballots
-             
+            Ballot Retrieval List: 
+            25
+             Total Ballots
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            <p>
+              Contest 
+              1
+              : 
+              25
+               ballots
+            </p>
           </div>
           <button
             class="sc-bZQynM cjVqOQ"
           >
-            Download Ballot Retrieval List for Round 
+            Download Aggregated Ballot Retrieval List for Round 
             1
           </button>
           <div
@@ -141,15 +151,25 @@ Object {
         <div
           class="sc-htpNat kRUApY"
         >
-          Ballot Retrieval List 
-
-                  25 Ballots
-           
+          Ballot Retrieval List: 
+          25
+           Total Ballots
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <p>
+            Contest 
+            1
+            : 
+            25
+             ballots
+          </p>
         </div>
         <button
           class="sc-bZQynM cjVqOQ"
         >
-          Download Ballot Retrieval List for Round 
+          Download Aggregated Ballot Retrieval List for Round 
           1
         </button>
         <div
