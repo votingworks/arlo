@@ -5,16 +5,15 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <h1>
-        Audit Setup
-      </h1>
       <form>
         <div
           class="sc-ifAKCX gVocmv"
         >
           <div
             class="sc-bxivhb doxbWk"
-          />
+          >
+            Contest Information
+          </div>
           <div
             class="sc-bdVaJa fdbLH"
           >
@@ -299,16 +298,15 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <h1>
-      Audit Setup
-    </h1>
     <form>
       <div
         class="sc-ifAKCX gVocmv"
       >
         <div
           class="sc-bxivhb doxbWk"
-        />
+        >
+          Contest Information
+        </div>
         <div
           class="sc-bdVaJa fdbLH"
         >
