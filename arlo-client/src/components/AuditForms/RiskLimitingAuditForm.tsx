@@ -13,7 +13,7 @@ const AuditForms = () => {
 
   const getStatus = useCallback(async (): Promise<Audit> => {
     //const audit: any = await api('/audit/status', {})
-    return statusStates[1]
+    return statusStates[4]
   }, [])
 
   const updateAudit = useCallback(async () => {

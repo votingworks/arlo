@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import { statusStates } from './_mocks'
 
-it('renders corretly', () => {
+it('renders correctly', () => {
   const container = render(
     <SelectBallotsToAudit
       audit={statusStates[1]}
@@ -17,7 +17,7 @@ it('renders corretly', () => {
 })
 
 it('has radio for selecting sampleSize', () => {
-  const { getByText } = render(
+  const { getByText, getByLabelText } = render(
     <SelectBallotsToAudit
       audit={statusStates[1]}
       isLoading={false}
@@ -27,6 +27,7 @@ it('has radio for selecting sampleSize', () => {
     />
   )
 
+  // all options should be present
   expect(getByText('BRAVO Average Sample Number: 269 samples')).toBeTruthy()
   expect(
     getByText(
@@ -34,4 +35,29 @@ it('has radio for selecting sampleSize', () => {
     )
   ).toBeTruthy()
   expect(getByText('78 samples'))
+
+  // correct default should be selected
+  expect(
+    getByLabelText('BRAVO Average Sample Number: 269 samples').hasAttribute(
+      'checked'
+    )
+  ).toBeTruthy()
+})
+
+it('changes sampleSize based on audit.rounds.contests.sampleSize', () => {
+  const { getByLabelText } = render(
+    <SelectBallotsToAudit
+      audit={statusStates[4]}
+      isLoading={false}
+      setIsLoading={jest.fn()}
+      updateAudit={jest.fn()}
+      getStatus={jest.fn()}
+    />
+  )
+
+  expect(
+    getByLabelText(
+      '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
+    ).hasAttribute('checked')
+  ).toBeTruthy()
 })

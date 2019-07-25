@@ -202,6 +202,7 @@ const SelectBallotsToAudit = (props: Props) => {
                               component="input"
                               value={option.size}
                               checked={values.sampleSize[key] === option.size}
+                              disabled={!!audit.rounds.length}
                               type="radio"
                             />
                             <InputLabel htmlFor={`${key}-${option.size}`}>
