@@ -298,7 +298,7 @@ const EstimateSampleSize = ({
                                       onClick={() =>
                                         choicesArrayHelpers.push({
                                           name: '',
-                                          numVotes: '',
+                                          numVotes: 0,
                                         })
                                       }
                                     >
