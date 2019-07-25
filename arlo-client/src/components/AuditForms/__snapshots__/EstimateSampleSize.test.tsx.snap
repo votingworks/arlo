@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EstimateSampleSize renders corretly 1`] = `
+exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
@@ -28,7 +28,7 @@ Object {
               <input
                 class="sc-dnqmqq dvJRiU"
                 name="name"
-                value="Primary 2019"
+                value="contest name"
               />
             </div>
           </div>
@@ -52,7 +52,7 @@ Object {
                 class="sc-dnqmqq dvJRiU"
                 disabled=""
                 name="contests[0].name"
-                value="Contest 1"
+                value="contest name"
               />
             </div>
           </div>
@@ -98,7 +98,7 @@ Object {
                     class="sc-dnqmqq dvJRiU"
                     disabled=""
                     name="contests[0].choices[0].name"
-                    value="Candidate 1"
+                    value="choice one"
                   />
                 </div>
                 <div
@@ -109,7 +109,7 @@ Object {
                     disabled=""
                     name="contests[0].choices[0].numVotes"
                     type="number"
-                    value="42"
+                    value="792"
                   />
                 </div>
               </div>
@@ -139,7 +139,7 @@ Object {
                     class="sc-dnqmqq dvJRiU"
                     disabled=""
                     name="contests[0].choices[1].name"
-                    value="Candidate 2"
+                    value="choice two"
                   />
                 </div>
                 <div
@@ -150,7 +150,7 @@ Object {
                     disabled=""
                     name="contests[0].choices[1].numVotes"
                     type="number"
-                    value="72"
+                    value="1325"
                   />
                 </div>
               </div>
@@ -177,7 +177,7 @@ Object {
                 disabled=""
                 name="contests[0].totalBallotsCast"
                 type="number"
-                value="4200"
+                value="2123"
               />
             </div>
           </div>
@@ -289,7 +289,7 @@ Object {
                 disabled=""
                 name="randomSeed"
                 type="number"
-                value="123123123"
+                value="123456789"
               />
             </div>
           </div>
@@ -321,7 +321,7 @@ Object {
             <input
               class="sc-dnqmqq dvJRiU"
               name="name"
-              value="Primary 2019"
+              value="contest name"
             />
           </div>
         </div>
@@ -345,7 +345,7 @@ Object {
               class="sc-dnqmqq dvJRiU"
               disabled=""
               name="contests[0].name"
-              value="Contest 1"
+              value="contest name"
             />
           </div>
         </div>
@@ -391,7 +391,7 @@ Object {
                   class="sc-dnqmqq dvJRiU"
                   disabled=""
                   name="contests[0].choices[0].name"
-                  value="Candidate 1"
+                  value="choice one"
                 />
               </div>
               <div
@@ -402,7 +402,7 @@ Object {
                   disabled=""
                   name="contests[0].choices[0].numVotes"
                   type="number"
-                  value="42"
+                  value="792"
                 />
               </div>
             </div>
@@ -432,7 +432,7 @@ Object {
                   class="sc-dnqmqq dvJRiU"
                   disabled=""
                   name="contests[0].choices[1].name"
-                  value="Candidate 2"
+                  value="choice two"
                 />
               </div>
               <div
@@ -443,7 +443,7 @@ Object {
                   disabled=""
                   name="contests[0].choices[1].numVotes"
                   type="number"
-                  value="72"
+                  value="1325"
                 />
               </div>
             </div>
@@ -470,7 +470,7 @@ Object {
               disabled=""
               name="contests[0].totalBallotsCast"
               type="number"
-              value="4200"
+              value="2123"
             />
           </div>
         </div>
@@ -582,10 +582,2610 @@ Object {
               disabled=""
               name="randomSeed"
               type="number"
-              value="123123123"
+              value="123456789"
             />
           </div>
         </div>
+      </div>
+    </form>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <form>
+        <div
+          class="sc-ifAKCX gVocmv"
+        >
+          <div
+            class="sc-bxivhb doxbWk"
+          >
+            Contest Information
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Audit Name
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                name="name"
+                value="contest name"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Contest  Name
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the name of the contest that will drive the audit.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="contests[0].name"
+                value="contest name"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Candidates/Choices & Vote Totals
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the name of each candidate choice that appears on the ballot for this contest.
+            </div>
+            <div
+              class="sc-VigVT gSWWKv"
+            >
+              <div
+                class="sc-jTzLTM kHOUMK"
+              >
+                <label
+                  class="sc-kAzzGY cmOrRM"
+                >
+                  Name of Candidate/Choice 
+                  1
+                </label>
+                <label
+                  class="sc-chPdSV kHjWou"
+                >
+                  Votes for Candidate/Choice 
+                  1
+                </label>
+              </div>
+              <div
+                class="sc-fjdhpX gYcVlS"
+              >
+                <div
+                  class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[0].name"
+                    value="choice one"
+                  />
+                </div>
+                <div
+                  class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[0].numVotes"
+                    type="number"
+                    value="792"
+                  />
+                </div>
+              </div>
+              <div
+                class="sc-jTzLTM kHOUMK"
+              >
+                <label
+                  class="sc-kAzzGY cmOrRM"
+                >
+                  Name of Candidate/Choice 
+                  2
+                </label>
+                <label
+                  class="sc-chPdSV kHjWou"
+                >
+                  Votes for Candidate/Choice 
+                  2
+                </label>
+              </div>
+              <div
+                class="sc-fjdhpX gYcVlS"
+              >
+                <div
+                  class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[1].name"
+                    value="choice two"
+                  />
+                </div>
+                <div
+                  class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[1].numVotes"
+                    type="number"
+                    value="1325"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Total Ballots Cast
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="contests[0].totalBallotsCast"
+                type="number"
+                value="2123"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-gZMcBi DmELe"
+          />
+          <div
+            class="sc-bxivhb doxbWk"
+          >
+            Audit Settings
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Desired Risk Limit
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Set the risk for the audit as as percentage (e.g. "5" = 5%
+            </div>
+            <select
+              disabled=""
+              name="riskLimit"
+            >
+              <option>
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Random Seed
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the random number to seed the pseudo-random number generator.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="randomSeed"
+                type="number"
+                value="123456789"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>,
+  "container": <div>
+    <form>
+      <div
+        class="sc-ifAKCX gVocmv"
+      >
+        <div
+          class="sc-bxivhb doxbWk"
+        >
+          Contest Information
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Audit Name
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              name="name"
+              value="contest name"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Contest  Name
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="contests[0].name"
+              value="contest name"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Candidates/Choices & Vote Totals
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-VigVT gSWWKv"
+          >
+            <div
+              class="sc-jTzLTM kHOUMK"
+            >
+              <label
+                class="sc-kAzzGY cmOrRM"
+              >
+                Name of Candidate/Choice 
+                1
+              </label>
+              <label
+                class="sc-chPdSV kHjWou"
+              >
+                Votes for Candidate/Choice 
+                1
+              </label>
+            </div>
+            <div
+              class="sc-fjdhpX gYcVlS"
+            >
+              <div
+                class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[0].name"
+                  value="choice one"
+                />
+              </div>
+              <div
+                class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[0].numVotes"
+                  type="number"
+                  value="792"
+                />
+              </div>
+            </div>
+            <div
+              class="sc-jTzLTM kHOUMK"
+            >
+              <label
+                class="sc-kAzzGY cmOrRM"
+              >
+                Name of Candidate/Choice 
+                2
+              </label>
+              <label
+                class="sc-chPdSV kHjWou"
+              >
+                Votes for Candidate/Choice 
+                2
+              </label>
+            </div>
+            <div
+              class="sc-fjdhpX gYcVlS"
+            >
+              <div
+                class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[1].name"
+                  value="choice two"
+                />
+              </div>
+              <div
+                class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[1].numVotes"
+                  type="number"
+                  value="1325"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Total Ballots Cast
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="contests[0].totalBallotsCast"
+              type="number"
+              value="2123"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-gZMcBi DmELe"
+        />
+        <div
+          class="sc-bxivhb doxbWk"
+        >
+          Audit Settings
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Desired Risk Limit
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Set the risk for the audit as as percentage (e.g. "5" = 5%
+          </div>
+          <select
+            disabled=""
+            name="riskLimit"
+          >
+            <option>
+              1
+            </option>
+            <option>
+              2
+            </option>
+            <option>
+              3
+            </option>
+            <option>
+              4
+            </option>
+            <option>
+              5
+            </option>
+            <option>
+              6
+            </option>
+            <option>
+              7
+            </option>
+            <option>
+              8
+            </option>
+            <option>
+              9
+            </option>
+            <option>
+              10
+            </option>
+            <option>
+              11
+            </option>
+            <option>
+              12
+            </option>
+            <option>
+              13
+            </option>
+            <option>
+              14
+            </option>
+            <option>
+              15
+            </option>
+            <option>
+              16
+            </option>
+            <option>
+              17
+            </option>
+            <option>
+              18
+            </option>
+            <option>
+              19
+            </option>
+            <option>
+              20
+            </option>
+          </select>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Random Seed
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the random number to seed the pseudo-random number generator.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="randomSeed"
+              type="number"
+              value="123456789"
+            />
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`EstimateSampleSize renders after sample size is estimated correctly 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <form>
+        <div
+          class="sc-ifAKCX gVocmv"
+        >
+          <div
+            class="sc-bxivhb doxbWk"
+          >
+            Contest Information
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Audit Name
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                name="name"
+                value="contest name"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Contest  Name
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the name of the contest that will drive the audit.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="contests[0].name"
+                value="contest name"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Candidates/Choices & Vote Totals
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the name of each candidate choice that appears on the ballot for this contest.
+            </div>
+            <div
+              class="sc-VigVT gSWWKv"
+            >
+              <div
+                class="sc-jTzLTM kHOUMK"
+              >
+                <label
+                  class="sc-kAzzGY cmOrRM"
+                >
+                  Name of Candidate/Choice 
+                  1
+                </label>
+                <label
+                  class="sc-chPdSV kHjWou"
+                >
+                  Votes for Candidate/Choice 
+                  1
+                </label>
+              </div>
+              <div
+                class="sc-fjdhpX gYcVlS"
+              >
+                <div
+                  class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[0].name"
+                    value="choice one"
+                  />
+                </div>
+                <div
+                  class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[0].numVotes"
+                    type="number"
+                    value="792"
+                  />
+                </div>
+              </div>
+              <div
+                class="sc-jTzLTM kHOUMK"
+              >
+                <label
+                  class="sc-kAzzGY cmOrRM"
+                >
+                  Name of Candidate/Choice 
+                  2
+                </label>
+                <label
+                  class="sc-chPdSV kHjWou"
+                >
+                  Votes for Candidate/Choice 
+                  2
+                </label>
+              </div>
+              <div
+                class="sc-fjdhpX gYcVlS"
+              >
+                <div
+                  class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[1].name"
+                    value="choice two"
+                  />
+                </div>
+                <div
+                  class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[1].numVotes"
+                    type="number"
+                    value="1325"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Total Ballots Cast
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="contests[0].totalBallotsCast"
+                type="number"
+                value="2123"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-gZMcBi DmELe"
+          />
+          <div
+            class="sc-bxivhb doxbWk"
+          >
+            Audit Settings
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Desired Risk Limit
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Set the risk for the audit as as percentage (e.g. "5" = 5%
+            </div>
+            <select
+              disabled=""
+              name="riskLimit"
+            >
+              <option>
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Random Seed
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the random number to seed the pseudo-random number generator.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="randomSeed"
+                type="number"
+                value="123456789"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>,
+  "container": <div>
+    <form>
+      <div
+        class="sc-ifAKCX gVocmv"
+      >
+        <div
+          class="sc-bxivhb doxbWk"
+        >
+          Contest Information
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Audit Name
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              name="name"
+              value="contest name"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Contest  Name
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="contests[0].name"
+              value="contest name"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Candidates/Choices & Vote Totals
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-VigVT gSWWKv"
+          >
+            <div
+              class="sc-jTzLTM kHOUMK"
+            >
+              <label
+                class="sc-kAzzGY cmOrRM"
+              >
+                Name of Candidate/Choice 
+                1
+              </label>
+              <label
+                class="sc-chPdSV kHjWou"
+              >
+                Votes for Candidate/Choice 
+                1
+              </label>
+            </div>
+            <div
+              class="sc-fjdhpX gYcVlS"
+            >
+              <div
+                class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[0].name"
+                  value="choice one"
+                />
+              </div>
+              <div
+                class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[0].numVotes"
+                  type="number"
+                  value="792"
+                />
+              </div>
+            </div>
+            <div
+              class="sc-jTzLTM kHOUMK"
+            >
+              <label
+                class="sc-kAzzGY cmOrRM"
+              >
+                Name of Candidate/Choice 
+                2
+              </label>
+              <label
+                class="sc-chPdSV kHjWou"
+              >
+                Votes for Candidate/Choice 
+                2
+              </label>
+            </div>
+            <div
+              class="sc-fjdhpX gYcVlS"
+            >
+              <div
+                class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[1].name"
+                  value="choice two"
+                />
+              </div>
+              <div
+                class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[1].numVotes"
+                  type="number"
+                  value="1325"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Total Ballots Cast
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="contests[0].totalBallotsCast"
+              type="number"
+              value="2123"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-gZMcBi DmELe"
+        />
+        <div
+          class="sc-bxivhb doxbWk"
+        >
+          Audit Settings
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Desired Risk Limit
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Set the risk for the audit as as percentage (e.g. "5" = 5%
+          </div>
+          <select
+            disabled=""
+            name="riskLimit"
+          >
+            <option>
+              1
+            </option>
+            <option>
+              2
+            </option>
+            <option>
+              3
+            </option>
+            <option>
+              4
+            </option>
+            <option>
+              5
+            </option>
+            <option>
+              6
+            </option>
+            <option>
+              7
+            </option>
+            <option>
+              8
+            </option>
+            <option>
+              9
+            </option>
+            <option>
+              10
+            </option>
+            <option>
+              11
+            </option>
+            <option>
+              12
+            </option>
+            <option>
+              13
+            </option>
+            <option>
+              14
+            </option>
+            <option>
+              15
+            </option>
+            <option>
+              16
+            </option>
+            <option>
+              17
+            </option>
+            <option>
+              18
+            </option>
+            <option>
+              19
+            </option>
+            <option>
+              20
+            </option>
+          </select>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Random Seed
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the random number to seed the pseudo-random number generator.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="randomSeed"
+              type="number"
+              value="123456789"
+            />
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <form>
+        <div
+          class="sc-ifAKCX gVocmv"
+        >
+          <div
+            class="sc-bxivhb doxbWk"
+          >
+            Contest Information
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Audit Name
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                name="name"
+                value="contest name"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Contest  Name
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the name of the contest that will drive the audit.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="contests[0].name"
+                value="contest name"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Candidates/Choices & Vote Totals
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the name of each candidate choice that appears on the ballot for this contest.
+            </div>
+            <div
+              class="sc-VigVT gSWWKv"
+            >
+              <div
+                class="sc-jTzLTM kHOUMK"
+              >
+                <label
+                  class="sc-kAzzGY cmOrRM"
+                >
+                  Name of Candidate/Choice 
+                  1
+                </label>
+                <label
+                  class="sc-chPdSV kHjWou"
+                >
+                  Votes for Candidate/Choice 
+                  1
+                </label>
+              </div>
+              <div
+                class="sc-fjdhpX gYcVlS"
+              >
+                <div
+                  class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[0].name"
+                    value="choice one"
+                  />
+                </div>
+                <div
+                  class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[0].numVotes"
+                    type="number"
+                    value="792"
+                  />
+                </div>
+              </div>
+              <div
+                class="sc-jTzLTM kHOUMK"
+              >
+                <label
+                  class="sc-kAzzGY cmOrRM"
+                >
+                  Name of Candidate/Choice 
+                  2
+                </label>
+                <label
+                  class="sc-chPdSV kHjWou"
+                >
+                  Votes for Candidate/Choice 
+                  2
+                </label>
+              </div>
+              <div
+                class="sc-fjdhpX gYcVlS"
+              >
+                <div
+                  class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[1].name"
+                    value="choice two"
+                  />
+                </div>
+                <div
+                  class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0].choices[1].numVotes"
+                    type="number"
+                    value="1325"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Total Ballots Cast
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="contests[0].totalBallotsCast"
+                type="number"
+                value="2123"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-gZMcBi DmELe"
+          />
+          <div
+            class="sc-bxivhb doxbWk"
+          >
+            Audit Settings
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Desired Risk Limit
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Set the risk for the audit as as percentage (e.g. "5" = 5%
+            </div>
+            <select
+              disabled=""
+              name="riskLimit"
+            >
+              <option>
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Random Seed
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the random number to seed the pseudo-random number generator.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                disabled=""
+                name="randomSeed"
+                type="number"
+                value="123456789"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>,
+  "container": <div>
+    <form>
+      <div
+        class="sc-ifAKCX gVocmv"
+      >
+        <div
+          class="sc-bxivhb doxbWk"
+        >
+          Contest Information
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Audit Name
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              name="name"
+              value="contest name"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Contest  Name
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="contests[0].name"
+              value="contest name"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Candidates/Choices & Vote Totals
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-VigVT gSWWKv"
+          >
+            <div
+              class="sc-jTzLTM kHOUMK"
+            >
+              <label
+                class="sc-kAzzGY cmOrRM"
+              >
+                Name of Candidate/Choice 
+                1
+              </label>
+              <label
+                class="sc-chPdSV kHjWou"
+              >
+                Votes for Candidate/Choice 
+                1
+              </label>
+            </div>
+            <div
+              class="sc-fjdhpX gYcVlS"
+            >
+              <div
+                class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[0].name"
+                  value="choice one"
+                />
+              </div>
+              <div
+                class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[0].numVotes"
+                  type="number"
+                  value="792"
+                />
+              </div>
+            </div>
+            <div
+              class="sc-jTzLTM kHOUMK"
+            >
+              <label
+                class="sc-kAzzGY cmOrRM"
+              >
+                Name of Candidate/Choice 
+                2
+              </label>
+              <label
+                class="sc-chPdSV kHjWou"
+              >
+                Votes for Candidate/Choice 
+                2
+              </label>
+            </div>
+            <div
+              class="sc-fjdhpX gYcVlS"
+            >
+              <div
+                class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[1].name"
+                  value="choice two"
+                />
+              </div>
+              <div
+                class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0].choices[1].numVotes"
+                  type="number"
+                  value="1325"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Total Ballots Cast
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="contests[0].totalBallotsCast"
+              type="number"
+              value="2123"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-gZMcBi DmELe"
+        />
+        <div
+          class="sc-bxivhb doxbWk"
+        >
+          Audit Settings
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Desired Risk Limit
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Set the risk for the audit as as percentage (e.g. "5" = 5%
+          </div>
+          <select
+            disabled=""
+            name="riskLimit"
+          >
+            <option>
+              1
+            </option>
+            <option>
+              2
+            </option>
+            <option>
+              3
+            </option>
+            <option>
+              4
+            </option>
+            <option>
+              5
+            </option>
+            <option>
+              6
+            </option>
+            <option>
+              7
+            </option>
+            <option>
+              8
+            </option>
+            <option>
+              9
+            </option>
+            <option>
+              10
+            </option>
+            <option>
+              11
+            </option>
+            <option>
+              12
+            </option>
+            <option>
+              13
+            </option>
+            <option>
+              14
+            </option>
+            <option>
+              15
+            </option>
+            <option>
+              16
+            </option>
+            <option>
+              17
+            </option>
+            <option>
+              18
+            </option>
+            <option>
+              19
+            </option>
+            <option>
+              20
+            </option>
+          </select>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Random Seed
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the random number to seed the pseudo-random number generator.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              disabled=""
+              name="randomSeed"
+              type="number"
+              value="123456789"
+            />
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`EstimateSampleSize renders empty state correctly 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <form>
+        <div
+          class="sc-ifAKCX gVocmv"
+        >
+          <div
+            class="sc-bxivhb doxbWk"
+          >
+            Contest Information
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Audit Name
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                name="name"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Contest  Name
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the name of the contest that will drive the audit.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                name="contests[0].name"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Candidates/Choices & Vote Totals
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the name of each candidate choice that appears on the ballot for this contest.
+            </div>
+            <div
+              class="sc-VigVT gSWWKv"
+            >
+              <div
+                class="sc-jTzLTM kHOUMK"
+              >
+                <label
+                  class="sc-kAzzGY cmOrRM"
+                >
+                  Name of Candidate/Choice 
+                  1
+                </label>
+                <label
+                  class="sc-chPdSV kHjWou"
+                >
+                  Votes for Candidate/Choice 
+                  1
+                </label>
+              </div>
+              <div
+                class="sc-fjdhpX gYcVlS"
+              >
+                <div
+                  class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    name="contests[0].choices[0].name"
+                    value=""
+                  />
+                </div>
+                <div
+                  class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    name="contests[0].choices[0].numVotes"
+                    type="number"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div
+                class="sc-jTzLTM kHOUMK"
+              >
+                <label
+                  class="sc-kAzzGY cmOrRM"
+                >
+                  Name of Candidate/Choice 
+                  2
+                </label>
+                <label
+                  class="sc-chPdSV kHjWou"
+                >
+                  Votes for Candidate/Choice 
+                  2
+                </label>
+              </div>
+              <div
+                class="sc-fjdhpX gYcVlS"
+              >
+                <div
+                  class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    name="contests[0].choices[1].name"
+                    value=""
+                  />
+                </div>
+                <div
+                  class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    name="contests[0].choices[1].numVotes"
+                    type="number"
+                    value=""
+                  />
+                </div>
+              </div>
+              <p
+                class="sc-kgoBCf ehqtTc"
+              >
+                Add a new candidate/choice
+              </p>
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Total Ballots Cast
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                name="contests[0].totalBallotsCast"
+                type="number"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="sc-gZMcBi DmELe"
+          >
+            <button
+              class="sc-EHOje iYzqVS"
+              type="button"
+            >
+              Add another targeted contest
+            </button>
+          </div>
+          <div
+            class="sc-bxivhb doxbWk"
+          >
+            Audit Settings
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Desired Risk Limit
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Set the risk for the audit as as percentage (e.g. "5" = 5%
+            </div>
+            <select
+              name="riskLimit"
+            >
+              <option>
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Random Seed
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the random number to seed the pseudo-random number generator.
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                name="randomSeed"
+                type="number"
+                value=""
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="sc-gZMcBi DmELe"
+        >
+          <button
+            class="sc-EHOje iYzqVS"
+            type="submit"
+          >
+            Estimate Sample Size
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>,
+  "container": <div>
+    <form>
+      <div
+        class="sc-ifAKCX gVocmv"
+      >
+        <div
+          class="sc-bxivhb doxbWk"
+        >
+          Contest Information
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Audit Name
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              name="name"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Contest  Name
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              name="contests[0].name"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Candidates/Choices & Vote Totals
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-VigVT gSWWKv"
+          >
+            <div
+              class="sc-jTzLTM kHOUMK"
+            >
+              <label
+                class="sc-kAzzGY cmOrRM"
+              >
+                Name of Candidate/Choice 
+                1
+              </label>
+              <label
+                class="sc-chPdSV kHjWou"
+              >
+                Votes for Candidate/Choice 
+                1
+              </label>
+            </div>
+            <div
+              class="sc-fjdhpX gYcVlS"
+            >
+              <div
+                class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  name="contests[0].choices[0].name"
+                  value=""
+                />
+              </div>
+              <div
+                class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  name="contests[0].choices[0].numVotes"
+                  type="number"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              class="sc-jTzLTM kHOUMK"
+            >
+              <label
+                class="sc-kAzzGY cmOrRM"
+              >
+                Name of Candidate/Choice 
+                2
+              </label>
+              <label
+                class="sc-chPdSV kHjWou"
+              >
+                Votes for Candidate/Choice 
+                2
+              </label>
+            </div>
+            <div
+              class="sc-fjdhpX gYcVlS"
+            >
+              <div
+                class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  name="contests[0].choices[1].name"
+                  value=""
+                />
+              </div>
+              <div
+                class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  name="contests[0].choices[1].numVotes"
+                  type="number"
+                  value=""
+                />
+              </div>
+            </div>
+            <p
+              class="sc-kgoBCf ehqtTc"
+            >
+              Add a new candidate/choice
+            </p>
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Total Ballots Cast
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              name="contests[0].totalBallotsCast"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="sc-gZMcBi DmELe"
+        >
+          <button
+            class="sc-EHOje iYzqVS"
+            type="button"
+          >
+            Add another targeted contest
+          </button>
+        </div>
+        <div
+          class="sc-bxivhb doxbWk"
+        >
+          Audit Settings
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Desired Risk Limit
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Set the risk for the audit as as percentage (e.g. "5" = 5%
+          </div>
+          <select
+            name="riskLimit"
+          >
+            <option>
+              1
+            </option>
+            <option>
+              2
+            </option>
+            <option>
+              3
+            </option>
+            <option>
+              4
+            </option>
+            <option>
+              5
+            </option>
+            <option>
+              6
+            </option>
+            <option>
+              7
+            </option>
+            <option>
+              8
+            </option>
+            <option>
+              9
+            </option>
+            <option>
+              10
+            </option>
+            <option>
+              11
+            </option>
+            <option>
+              12
+            </option>
+            <option>
+              13
+            </option>
+            <option>
+              14
+            </option>
+            <option>
+              15
+            </option>
+            <option>
+              16
+            </option>
+            <option>
+              17
+            </option>
+            <option>
+              18
+            </option>
+            <option>
+              19
+            </option>
+            <option>
+              20
+            </option>
+          </select>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Random Seed
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the random number to seed the pseudo-random number generator.
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              name="randomSeed"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-gZMcBi DmELe"
+      >
+        <button
+          class="sc-EHOje iYzqVS"
+          type="submit"
+        >
+          Estimate Sample Size
+        </button>
       </div>
     </form>
   </div>,
