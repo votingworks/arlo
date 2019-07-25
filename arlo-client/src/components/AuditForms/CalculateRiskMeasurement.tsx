@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
+import * as Yup from 'yup'
 import FormSection, {
   FormSectionLabel,
   FormSectionDescription,
@@ -45,6 +46,13 @@ interface CalculateRiskMeasurementValues {
     [key: string]: number | ''
   }[]
 }
+
+const numberSchema = Yup.number()
+  .typeError('Must be a number')
+  .min(0, 'Must be a positive number')
+  .required('Required')
+const testNumber = (value: any) =>
+  numberSchema.validate(value).then(success => true, error => error.errors[0])
 
 type AggregateContest = Contest & RoundContest
 
@@ -99,7 +107,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
     (r: Round, i: number) => ({
       contests: audit.contests.map((contest: Contest, j: number) => ({
         ...contest.choices.reduce((acc, choice: Candidate) => {
-          return { ...acc, [choice.id]: r.contests[j].results[choice.id] || '' }
+          return { ...acc, [choice.id]: r.contests[j].results[choice.id] || 0 }
         }, {}),
       })),
       round: i + 1,
@@ -126,7 +134,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       }
       return acc
     }, 0)
-    /* eslint-disable react/no-array-index-key */
     const aggregatedBallots = aggregateContests.reduce(
       (acc: number, contest: AggregateContest) => {
         acc += contest.sampleSize
@@ -134,6 +141,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       },
       0
     )
+    /* eslint-disable react/no-array-index-key */
     return (
       <Formik
         key={i}
@@ -224,6 +232,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                                           <Field
                                             name={`contests[${j}][${choiceId}]`}
                                             type="number"
+                                            validate={testNumber}
                                             component={FormField}
                                             disabled={isSubmitted}
                                           />
