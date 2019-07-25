@@ -212,7 +212,11 @@ const EstimateSampleSize = ({
           <Form>
             <FormWrapper>
               <FormSection label="Audit Name">
-                <Field name="name" component={FormField} />
+                <Field
+                  name="name"
+                  disabled={audit.contests.length}
+                  component={FormField}
+                />
               </FormSection>
               <FieldArray
                 name="contests"

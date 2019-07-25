@@ -52,8 +52,11 @@ const numberSchema = Yup.number()
   .integer('Must be an integer')
   .min(0, 'Must be a positive number')
   .required('Required')
+
 const testNumber = (value: any) =>
-  numberSchema.validate(value).then(success => true, error => error.errors[0])
+  numberSchema
+    .validate(value)
+    .then(success => undefined, error => error.errors[0])
 
 type AggregateContest = Contest & RoundContest
 
@@ -104,17 +107,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
     }
   }
 
-  const rounds: CalculateRiskMeasurementValues[] = audit.rounds.map(
-    (r: Round, i: number) => ({
-      contests: audit.contests.map((contest: Contest, j: number) => ({
-        ...contest.choices.reduce((acc, choice: Candidate) => {
-          return { ...acc, [choice.id]: r.contests[j].results[choice.id] || 0 }
-        }, {}),
-      })),
-      round: i + 1,
-    })
-  )
-
   return audit.rounds.map((round: Round, i: number) => {
     const aggregateContests: AggregateContest[] = audit.contests.reduce(
       (acc: any[], contest: Contest) => {
@@ -124,8 +116,16 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       },
       []
     )
+    const roundValues = {
+      contests: aggregateContests.map((contest: AggregateContest) =>
+        contest.choices.reduce((acc, choice) => {
+          return { ...acc, [choice.id]: contest.results[choice.id] || 0 }
+        }, {})
+      ),
+      round: i + 1,
+    }
     const isSubmitted =
-      round < audit.rounds.length ||
+      i + 1 < audit.rounds.length ||
       aggregateContests.every(
         (contest: AggregateContest) => !!contest.endMeasurements.isComplete
       )
@@ -147,7 +147,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       <Formik
         key={i}
         onSubmit={calculateRiskMeasurement}
-        initialValues={rounds[i]}
+        initialValues={roundValues}
         enableReinitialize
         render={({
           values,
