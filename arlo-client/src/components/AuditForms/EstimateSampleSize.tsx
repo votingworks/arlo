@@ -197,7 +197,6 @@ const EstimateSampleSize = ({
 
   return (
     <>
-      <h1>Audit Setup</h1>
       <Formik
         initialValues={initialValues}
         validationSchema={schema}
@@ -206,7 +205,7 @@ const EstimateSampleSize = ({
       >
         {({ values, handleSubmit }: FormikProps<EstimateSampleSizeValues>) => (
           <Form>
-            <FormWrapper>
+            <FormWrapper title="Contest Information">
               <FormSection label="Audit Name">
                 <Field name="name" component={FormField} />
               </FormSection>
