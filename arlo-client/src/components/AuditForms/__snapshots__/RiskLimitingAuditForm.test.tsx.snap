@@ -24,6 +24,7 @@ exports[`renders correctly 1`] = `
         >
           <input
             class="sc-dnqmqq dvJRiU"
+            data-testid="audit-name"
             name="name"
             value=""
           />
@@ -47,6 +48,7 @@ exports[`renders correctly 1`] = `
         >
           <input
             class="sc-dnqmqq dvJRiU"
+            data-testid="contest-1-name"
             name="contests[0].name"
             value=""
           />
@@ -92,6 +94,7 @@ exports[`renders correctly 1`] = `
             >
               <input
                 class="sc-dnqmqq dvJRiU"
+                data-testid="contest-1-choice-1-name"
                 name="contests[0].choices[0].name"
                 value=""
               />
@@ -101,6 +104,7 @@ exports[`renders correctly 1`] = `
             >
               <input
                 class="sc-dnqmqq dvJRiU"
+                data-testid="contest-1-choice-1-votes"
                 name="contests[0].choices[0].numVotes"
                 type="number"
                 value=""
@@ -131,6 +135,7 @@ exports[`renders correctly 1`] = `
             >
               <input
                 class="sc-dnqmqq dvJRiU"
+                data-testid="contest-1-choice-2-name"
                 name="contests[0].choices[1].name"
                 value=""
               />
@@ -140,6 +145,7 @@ exports[`renders correctly 1`] = `
             >
               <input
                 class="sc-dnqmqq dvJRiU"
+                data-testid="contest-1-choice-2-votes"
                 name="contests[0].choices[1].numVotes"
                 type="number"
                 value=""
@@ -171,6 +177,7 @@ exports[`renders correctly 1`] = `
         >
           <input
             class="sc-dnqmqq dvJRiU"
+            data-testid="contest-1-total-ballots"
             name="contests[0].totalBallotsCast"
             type="number"
             value=""
@@ -206,6 +213,7 @@ exports[`renders correctly 1`] = `
           Set the risk for the audit as as percentage (e.g. "5" = 5%
         </div>
         <select
+          data-testid="risk-limit"
           name="riskLimit"
         >
           <option>
@@ -288,6 +296,7 @@ exports[`renders correctly 1`] = `
         >
           <input
             class="sc-dnqmqq dvJRiU"
+            data-testid="random-seed"
             name="randomSeed"
             type="number"
             value=""

@@ -207,7 +207,11 @@ const EstimateSampleSize = ({
           <Form>
             <FormWrapper title="Contest Information">
               <FormSection label="Audit Name">
-                <Field name="name" component={FormField} />
+                <Field
+                  name="name"
+                  data-testid="audit-name"
+                  component={FormField}
+                />
               </FormSection>
               <FieldArray
                 name="contests"
@@ -232,6 +236,7 @@ const EstimateSampleSize = ({
                               name={`contests[${i}].name`}
                               disabled={!canEstimateSampleSize}
                               component={FormField}
+                              data-testid={`contest-${i + 1}-name`}
                             />
                             {values.contests.length > 1 &&
                               !audit.contests.length && (
@@ -267,12 +272,16 @@ const EstimateSampleSize = ({
                                             name={`contests[${i}].choices[${j}].name`}
                                             disabled={!canEstimateSampleSize}
                                             component={FieldLeft}
+                                            data-testid={`contest-${i +
+                                              1}-choice-${j + 1}-name`}
                                           />
                                           <Field
                                             name={`contests[${i}].choices[${j}].numVotes`}
                                             type="number"
                                             disabled={!canEstimateSampleSize}
                                             component={FieldRight}
+                                            data-testid={`contest-${i +
+                                              1}-choice-${j + 1}-votes`}
                                           />
                                           {contest.choices.length > 2 &&
                                             !audit.contests.length && (
@@ -313,6 +322,7 @@ const EstimateSampleSize = ({
                               name={`contests[${i}].totalBallotsCast`}
                               disabled={!canEstimateSampleSize}
                               component={FormField}
+                              data-testid={`contest-${i + 1}-total-ballots`}
                             />
                           </FormSection>
                         </React.Fragment>
@@ -342,6 +352,7 @@ const EstimateSampleSize = ({
                   name="riskLimit"
                   disabled={!canEstimateSampleSize}
                   component="select"
+                  data-testid="risk-limit"
                 >
                   {generateOptions(20)}
                 </Field>
@@ -356,6 +367,7 @@ const EstimateSampleSize = ({
                   name="randomSeed"
                   disabled={!canEstimateSampleSize}
                   component={FormField}
+                  data-testid="random-seed"
                 />
               </FormSection>
             </FormWrapper>

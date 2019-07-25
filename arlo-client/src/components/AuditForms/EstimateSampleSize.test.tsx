@@ -2,6 +2,7 @@ import React from 'react'
 import { render, fireEvent, cleanup, wait } from '@testing-library/react'
 import EstimateSampleSize from './EstimateSampleSize'
 import { statusStates } from './_mocks'
+//import apiMock from '../utilities'
 
 afterEach(cleanup)
 
@@ -123,5 +124,38 @@ describe('EstimateSampleSize', () => {
       expect(getAllByText(/Name of Candidate\/Choice \d/i).length).toBe(2)
       expect(getAllByText(/Votes for Candidate\/Choice \d/i).length).toBe(2)
     })
+  })
+
+  it('is able to submit the form successfully', () => {
+    const { getByTestId, getByText } = render(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
+
+    const inputs = [
+      { key: 'audit-name', value: 'Election Name' },
+      { key: 'contest-1-name', value: 'Contest Name' },
+      { key: 'contest-1-choice-1-name', value: 'Choice One' },
+      { key: 'contest-1-choice-2-name', value: 'Choice Two' },
+      { key: 'contest-1-choice-1-votes', value: '10' },
+      { key: 'contest-1-choice-2-votes', value: '20' },
+      { key: 'contest-1-total-ballots', value: '30' },
+      { key: 'risk-limit', value: '2' },
+      { key: 'random-seed', value: '123456789' },
+    ]
+
+    inputs.forEach(inputData => {
+      const input: any = getByTestId(inputData.key)
+      fireEvent.change(input, { target: { value: inputData.value } })
+      expect(input.value).toBe(inputData.value)
+    })
+
+    fireEvent.click(getByText('Estimate Sample Size'))
+
+    //expect((apiMock as jest.Mock)).toHaveBeenCalledTimes(1)
   })
 })
