@@ -844,9 +844,6 @@ Object {
             </div>
           </div>
           <div
-            class="sc-gZMcBi DmELe"
-          />
-          <div
             class="sc-bxivhb doxbWk"
           >
             Audit Settings
@@ -1145,9 +1142,6 @@ Object {
             />
           </div>
         </div>
-        <div
-          class="sc-gZMcBi DmELe"
-        />
         <div
           class="sc-bxivhb doxbWk"
         >
@@ -1505,9 +1499,6 @@ Object {
             </div>
           </div>
           <div
-            class="sc-gZMcBi DmELe"
-          />
-          <div
             class="sc-bxivhb doxbWk"
           >
             Audit Settings
@@ -1806,9 +1797,6 @@ Object {
             />
           </div>
         </div>
-        <div
-          class="sc-gZMcBi DmELe"
-        />
         <div
           class="sc-bxivhb doxbWk"
         >
@@ -2166,9 +2154,6 @@ Object {
             </div>
           </div>
           <div
-            class="sc-gZMcBi DmELe"
-          />
-          <div
             class="sc-bxivhb doxbWk"
           >
             Audit Settings
@@ -2467,9 +2452,6 @@ Object {
             />
           </div>
         </div>
-        <div
-          class="sc-gZMcBi DmELe"
-        />
         <div
           class="sc-bxivhb doxbWk"
         >
@@ -2826,16 +2808,6 @@ Object {
             </div>
           </div>
           <div
-            class="sc-gZMcBi DmELe"
-          >
-            <button
-              class="sc-EHOje iYzqVS"
-              type="button"
-            >
-              Add another targeted contest
-            </button>
-          </div>
-          <div
             class="sc-bxivhb doxbWk"
           >
             Audit Settings
@@ -3140,16 +3112,6 @@ Object {
               value=""
             />
           </div>
-        </div>
-        <div
-          class="sc-gZMcBi DmELe"
-        >
-          <button
-            class="sc-EHOje iYzqVS"
-            type="button"
-          >
-            Add another targeted contest
-          </button>
         </div>
         <div
           class="sc-bxivhb doxbWk"
