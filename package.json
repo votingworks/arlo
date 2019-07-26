@@ -1,0 +1,12 @@
+{
+  "name": "arlo",
+  "private": true,
+  "engines": {
+    "node": "10.15.3",
+    "yarn": "1.17.3"
+  },
+  "scripts": {
+    "build": "yarn --cwd arlo-client install && yarn --cwd arlo-client build",
+    "heroku-postbuild": "yarn build"
+  }
+}
