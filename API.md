@@ -137,12 +137,11 @@ JSON for sure.
 }
 ```
 
-- `POST /audit/sampleSize` -- the selected sample size from the given sampleSizeOptions
+- `POST /audit/sample-size` -- the selected sample size from the given sampleSizeOptions
 
 ```
 {
-	'contest-id-1': 578,
-	'contest-id-2': 130
+	'size': 578,
 }
 ```
 
