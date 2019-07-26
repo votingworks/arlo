@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-const Section = styled.div`
+export const Section = styled.div`
   margin: 20px 0 20px 0;
 `
 
@@ -13,6 +13,9 @@ export const FormSectionDescription = styled.div`
 export const FormSectionLabel = styled.div`
   font-size: 0.5em;
   font-weight: 700;
+  & + & {
+    margin-top: 10px;
+  }
 `
 
 interface Props {

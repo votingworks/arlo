@@ -68,6 +68,9 @@ def test_whole_audit_flow(client):
     rv = client.get('/audit/status')
     status = json.loads(rv.data)
 
+    # sample size options
+    assert len(status["contests"][0]["sampleSizeOptions"]) == 4
+    
     assert status["randomSeed"] == "1234567890987654321"
     assert len(status["contests"]) == 1
     assert status["riskLimit"] == 10
@@ -85,11 +88,13 @@ def test_whole_audit_flow(client):
 		    "contests": ["contest-1"],
                     "auditBoards": [
 			{
-			    "id": "audit-board-1",
+			    "id": "1a528034-acf1-11e9-bac5-2fee92515700",
+                            "name": "Audit Board #1",
 			    "members": []
 			},
 			{
-			    "id": "audit-board-2",
+			    "id": "22e68ce0-acf1-11e9-9e25-e38239fbbe6b",
+                            "name": "Audit Board #2",
 			    "members": []
 			}
 		    ]
@@ -105,8 +110,20 @@ def test_whole_audit_flow(client):
     assert len(status["jurisdictions"]) == 1
     jurisdiction = status["jurisdictions"][0]
     assert jurisdiction["name"] == "Adams County"
-    assert jurisdiction["auditBoards"][1]["id"] == "audit-board-2"
+    assert jurisdiction["auditBoards"][1]["name"] == "Audit Board #2"
     assert jurisdiction["contests"] == ["contest-1"]
+
+    # choose a sample size
+    sample_size_90 = [option for option in status["contests"][0]["sampleSizeOptions"] if option["prob"] == 0.9]
+    assert len(sample_size_90) == 1
+    sample_size = sample_size_90[0]["size"]
+
+    # set the sample_size
+    rv = post_json(client, '/audit/sample-size', {
+        "size": sample_size
+    })
+
+    assert json.loads(rv.data)["status"] == "ok"
 
     # upload the manifest
     data = {}
@@ -151,6 +168,7 @@ def test_whole_audit_flow(client):
     rv = client.get('/jurisdiction/adams-county/1/retrieval-list')
     lines = rv.data.decode('utf-8').split("\r\n")
     assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
+    assert len(lines) > 5
     assert 'attachment' in rv.headers['Content-Disposition']
 
     num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
@@ -241,11 +259,13 @@ def test_small_election(client):
 		    "contests": ["contest-1"],
                     "auditBoards": [
 			{
-			    "id": "audit-board-1",
+			    "id": "1a528034-acf1-11e9-bac5-2fee92515700",
+                            "name": "Audit Board #1",
 			    "members": []
 			},
 			{
-			    "id": "audit-board-2",
+			    "id": "22e68ce0-acf1-11e9-9e25-e38239fbbe6b",
+                            "name": "Audit Board #2",
 			    "members": []
 			}
 		    ]
@@ -261,9 +281,19 @@ def test_small_election(client):
     assert len(status["jurisdictions"]) == 1
     jurisdiction = status["jurisdictions"][0]
     assert jurisdiction["name"] == "County 1"
-    assert jurisdiction["auditBoards"][1]["id"] == "audit-board-2"
+    assert jurisdiction["auditBoards"][1]["name"] == "Audit Board #2"
     assert jurisdiction["contests"] == ["contest-1"]
 
+    # choose a sample size
+    sample_size_90 = [option for option in status["contests"][0]["sampleSizeOptions"] if option["prob"] == 0.9]
+    assert len(sample_size_90) == 1
+    sample_size = sample_size_90[0]["size"]
+
+    # set the sample_size
+    rv = post_json(client, '/audit/sample-size', {
+        "size": sample_size
+    })
+    
     # upload the manifest
     data = {}
     data['manifest'] = (open(small_manifest_file_path, "rb"), 'small-manifest.csv')

@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { getIn } from 'formik'
 
 const Wrapper = styled.div`
   width: 45%;
@@ -16,6 +17,8 @@ const ErrorLabel = styled.p`
 `
 
 interface Props {
+  field?: any
+  form?: any
   disabled?: boolean
   value?: string | number
   onChange?: (e: React.ChangeEvent<any>) => void
@@ -28,17 +31,17 @@ interface Props {
 }
 
 const FormField = ({
+  field,
+  form: { touched, errors },
   disabled,
-  value,
-  error,
-  touched,
-  onChange,
   className,
   ...rest
 }: Props) => (
   <Wrapper className={className}>
-    <Field disabled={disabled} onChange={onChange} value={value} {...rest} />
-    {error && touched && <ErrorLabel>{error}</ErrorLabel>}
+    <Field disabled={disabled} {...field} {...rest} />
+    {getIn(errors, field.name) && getIn(touched, field.name) && (
+      <ErrorLabel>{getIn(errors, field.name)}</ErrorLabel>
+    )}
   </Wrapper>
 )
 

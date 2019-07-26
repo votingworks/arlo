@@ -13,6 +13,8 @@ class Election(db.Model):
     meeting_date = db.Column(db.Date, nullable=True)
     risk_limit = db.Column(db.Integer, nullable=True)
     random_seed = db.Column(db.String(100), nullable=True)
+    sample_size_options = db.Column(db.String(1000), nullable=True)
+    chosen_sample_size = db.Column(db.Integer, nullable=True)
     jurisdictions = relationship('Jurisdiction', back_populates='election')
     contests = relationship('TargetedContest', back_populates='election')
     rounds = relationship('Round', back_populates='election')
@@ -90,10 +92,14 @@ class AuditBoard(db.Model):
     jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
     jurisdiction = relationship(Jurisdiction, back_populates='audit_boards')
     
+    name = db.Column(db.String(200))
+
     member_1 = db.Column(db.String(200), nullable=True)
     member_1_affiliation = db.Column(db.String(200), nullable=True)
     member_2 = db.Column(db.String(200), nullable=True)
     member_2_affiliation = db.Column(db.String(200), nullable=True)
+
+    sampled_ballots = relationship('SampledBallot', back_populates='audit_board')
     
 class Round(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -117,7 +123,8 @@ class SampledBallot(db.Model):
     )
     
     times_sampled = db.Column(db.Integer, nullable=False)
-    audit_board_id = db.Column(db.String(200), db.ForeignKey('audit_board.id'), nullable=False)    
+    audit_board_id = db.Column(db.String(200), db.ForeignKey('audit_board.id'), nullable=False)
+    audit_board = relationship(AuditBoard, back_populates='sampled_ballots')
     
 class RoundContest(db.Model):
     round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)

@@ -23,7 +23,12 @@ JSON for sure.
 				}
 			],
 			
-			totalBallotsCast: 4200
+			totalBallotsCast: 4200,
+
+			sampleSizeOptions: [
+                {"prob": 0.5, "size": 143},
+				{"type": "ASN", "size": 157},
+            ]
 		}
 	],
 	
@@ -34,11 +39,13 @@ JSON for sure.
 			contests: ["contest-1"],
 			auditBoards: [
 				{
-					id: "audit-board-1",
+					id: "63ce500e-acf0-11e9-b49e-bfb880180fb4",
+					name: "Audit Board #1"
 					members: []
 				},
 				{
-					id: "audit-board-2",
+					id: "7134a64e-acf0-11e9-bb0c-57b152ee1513",
+					name: "Audit Board #2",
 					members: []
 				}
 			],
@@ -119,16 +126,26 @@ JSON for sure.
 			contests: ["contest-1"],
 			auditBoards: [
 				{
-					id: "audit-board-1",
+					id: "63ce500e-acf0-11e9-b49e-bfb880180fb4",
+					name: "Audit Board #1",
 					members: []
 				},
 				{
-					id: "audit-board-2",
+					id: "7134a64e-acf0-11e9-bb0c-57b152ee1513",
+					name: "Audit Board #2",					
 					members: []
 				}
 			]
 		}
 	]
+}
+```
+
+- `POST /audit/sample-size` -- the selected sample size from the given sampleSizeOptions
+
+```
+{
+	'size': 578,
 }
 ```
 
