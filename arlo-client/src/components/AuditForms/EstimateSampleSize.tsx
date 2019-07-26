@@ -318,7 +318,7 @@ const EstimateSampleSize = ({
                         </React.Fragment>
                       )
                     )}
-                    <FormButtonBar>
+                    {/*<FormButtonBar>
                       {!audit.contests.length && (
                         <FormButton
                           type="button"
@@ -329,7 +329,7 @@ const EstimateSampleSize = ({
                           Add another targeted contest
                         </FormButton>
                       )}
-                    </FormButtonBar>
+                    </FormButtonBar>*/}
                   </>
                 )}
               />
