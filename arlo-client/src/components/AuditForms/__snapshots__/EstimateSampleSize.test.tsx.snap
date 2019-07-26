@@ -27,6 +27,7 @@ Object {
             >
               <input
                 class="sc-dnqmqq dvJRiU"
+                disabled=""
                 name="name"
                 value="Primary 2019"
               />
@@ -317,6 +318,7 @@ Object {
           >
             <input
               class="sc-dnqmqq dvJRiU"
+              disabled=""
               name="name"
               value="Primary 2019"
             />

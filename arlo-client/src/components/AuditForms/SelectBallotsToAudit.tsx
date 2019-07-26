@@ -38,6 +38,7 @@ interface SelectBallotsToAuditValues {
 
 const schema = Yup.object().shape({
   auditBoards: Yup.number()
+    .typeError('Must be a number')
     .min(1, 'Too few Audit Boards')
     .max(5, 'Too many Audit Boards')
     .required('Required'),
