@@ -63,6 +63,7 @@ const SelectBallotsToAudit = (props: Props) => {
     const auditBoards = Array.from(Array(values.auditBoards).keys()).map(i => {
       return {
         id: `audit-board-${i + 1}`,
+        name: `Audit Board #${i + 1}`,
         members: [],
       }
     })
