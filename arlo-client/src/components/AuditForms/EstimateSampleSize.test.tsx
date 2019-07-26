@@ -2,11 +2,12 @@ import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import EstimateSampleSize from './EstimateSampleSize'
 import { statusStates } from './_mocks'
-//import apiMock from '../utilities'
+import apiMock from '../utilities'
 
 //afterEach(cleanup)
-
 //jest.mock('../utilities')
+
+//const apiMock = require('../utilities')
 
 describe('EstimateSampleSize', () => {
   it('renders empty state correctly', () => {
@@ -156,6 +157,6 @@ describe('EstimateSampleSize', () => {
 
     fireEvent.click(getByText('Estimate Sample Size'))
 
-    //expect((apiMock as jest.Mock)).toHaveBeenCalledTimes(1)
+    expect(apiMock as jest.Mock).toHaveBeenCalledTimes(1)
   })
 })
