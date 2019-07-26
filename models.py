@@ -13,6 +13,8 @@ class Election(db.Model):
     meeting_date = db.Column(db.Date, nullable=True)
     risk_limit = db.Column(db.Integer, nullable=True)
     random_seed = db.Column(db.String(100), nullable=True)
+    sample_size_options = db.Column(db.String(1000), nullable=True)
+    chosen_sample_size = db.Column(db.Integer, nullable=True)
     jurisdictions = relationship('Jurisdiction', back_populates='election')
     contests = relationship('TargetedContest', back_populates='election')
     rounds = relationship('Round', back_populates='election')
