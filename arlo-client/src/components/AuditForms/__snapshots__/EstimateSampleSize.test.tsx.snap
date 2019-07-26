@@ -1,13 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders corretly 1`] = `
+exports[`EstimateSampleSize renders corretly 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <form
-        id="formOne"
-      >
+      <form>
         <div
           class="sc-ifAKCX gVocmv"
         >
@@ -20,9 +18,27 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
-              Contest Name
+              Audit Name
+            </div>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                name="name"
+                value="Primary 2019"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Contest  Name
             </div>
             <div
               class="sc-bwzfXH xctbO"
@@ -35,7 +51,7 @@ Object {
               <input
                 class="sc-dnqmqq dvJRiU"
                 disabled=""
-                name="name"
+                name="contests[0].name"
                 value="Contest 1"
               />
             </div>
@@ -44,7 +60,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Candidates/Choices & Vote Totals
             </div>
@@ -60,36 +76,38 @@ Object {
                 class="sc-jTzLTM kHOUMK"
               >
                 <label
-                  class="sc-cSHVUG cPUcQE"
+                  class="sc-kAzzGY cmOrRM"
                 >
-                  Name of Candidate/Choice 1
+                  Name of Candidate/Choice 
+                  1
                 </label>
                 <label
-                  class="sc-kAzzGY gugxKZ"
+                  class="sc-chPdSV kHjWou"
                 >
-                  Votes for Candidate/Choice 1
+                  Votes for Candidate/Choice 
+                  1
                 </label>
               </div>
               <div
-                class="sc-fjdhpX cBsFuD"
+                class="sc-fjdhpX gYcVlS"
               >
                 <div
-                  class="sc-htoDjs jjofgS"
+                  class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
                     disabled=""
-                    name="candidateOneName"
+                    name="contests[0].choices[0].name"
                     value="Candidate 1"
                   />
                 </div>
                 <div
-                  class="sc-jzJRlG eMbkiL sc-htoDjs jjofgS"
+                  class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
                     disabled=""
-                    name="candidateOneVotes"
+                    name="contests[0].choices[0].numVotes"
                     type="number"
                     value="42"
                   />
@@ -99,36 +117,38 @@ Object {
                 class="sc-jTzLTM kHOUMK"
               >
                 <label
-                  class="sc-cSHVUG cPUcQE"
+                  class="sc-kAzzGY cmOrRM"
                 >
-                  Name of Candidate/Choice 2
+                  Name of Candidate/Choice 
+                  2
                 </label>
                 <label
-                  class="sc-kAzzGY gugxKZ"
+                  class="sc-chPdSV kHjWou"
                 >
-                  Votes for Candidate/Choice 2
+                  Votes for Candidate/Choice 
+                  2
                 </label>
               </div>
               <div
-                class="sc-fjdhpX cBsFuD"
+                class="sc-fjdhpX gYcVlS"
               >
                 <div
-                  class="sc-htoDjs jjofgS"
+                  class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
                     disabled=""
-                    name="candidateTwoName"
+                    name="contests[0].choices[1].name"
                     value="Candidate 2"
                   />
                 </div>
                 <div
-                  class="sc-jzJRlG eMbkiL sc-htoDjs jjofgS"
+                  class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
                     disabled=""
-                    name="candidateTwoVotes"
+                    name="contests[0].choices[1].numVotes"
                     type="number"
                     value="72"
                   />
@@ -140,7 +160,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Total Ballots Cast
             </div>
@@ -155,7 +175,7 @@ Object {
               <input
                 class="sc-dnqmqq dvJRiU"
                 disabled=""
-                name="totalBallotsCast"
+                name="contests[0].totalBallotsCast"
                 type="number"
                 value="4200"
               />
@@ -170,7 +190,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Desired Risk Limit
             </div>
@@ -249,7 +269,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Random Seed
             </div>
@@ -275,9 +295,7 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <form
-      id="formOne"
-    >
+    <form>
       <div
         class="sc-ifAKCX gVocmv"
       >
@@ -290,9 +308,27 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
-            Contest Name
+            Audit Name
+          </div>
+          <div
+            class="sc-htoDjs jjofgS"
+          >
+            <input
+              class="sc-dnqmqq dvJRiU"
+              name="name"
+              value="Primary 2019"
+            />
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Contest  Name
           </div>
           <div
             class="sc-bwzfXH xctbO"
@@ -305,7 +341,7 @@ Object {
             <input
               class="sc-dnqmqq dvJRiU"
               disabled=""
-              name="name"
+              name="contests[0].name"
               value="Contest 1"
             />
           </div>
@@ -314,7 +350,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Candidates/Choices & Vote Totals
           </div>
@@ -330,36 +366,38 @@ Object {
               class="sc-jTzLTM kHOUMK"
             >
               <label
-                class="sc-cSHVUG cPUcQE"
+                class="sc-kAzzGY cmOrRM"
               >
-                Name of Candidate/Choice 1
+                Name of Candidate/Choice 
+                1
               </label>
               <label
-                class="sc-kAzzGY gugxKZ"
+                class="sc-chPdSV kHjWou"
               >
-                Votes for Candidate/Choice 1
+                Votes for Candidate/Choice 
+                1
               </label>
             </div>
             <div
-              class="sc-fjdhpX cBsFuD"
+              class="sc-fjdhpX gYcVlS"
             >
               <div
-                class="sc-htoDjs jjofgS"
+                class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
                   disabled=""
-                  name="candidateOneName"
+                  name="contests[0].choices[0].name"
                   value="Candidate 1"
                 />
               </div>
               <div
-                class="sc-jzJRlG eMbkiL sc-htoDjs jjofgS"
+                class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
                   disabled=""
-                  name="candidateOneVotes"
+                  name="contests[0].choices[0].numVotes"
                   type="number"
                   value="42"
                 />
@@ -369,36 +407,38 @@ Object {
               class="sc-jTzLTM kHOUMK"
             >
               <label
-                class="sc-cSHVUG cPUcQE"
+                class="sc-kAzzGY cmOrRM"
               >
-                Name of Candidate/Choice 2
+                Name of Candidate/Choice 
+                2
               </label>
               <label
-                class="sc-kAzzGY gugxKZ"
+                class="sc-chPdSV kHjWou"
               >
-                Votes for Candidate/Choice 2
+                Votes for Candidate/Choice 
+                2
               </label>
             </div>
             <div
-              class="sc-fjdhpX cBsFuD"
+              class="sc-fjdhpX gYcVlS"
             >
               <div
-                class="sc-htoDjs jjofgS"
+                class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
                   disabled=""
-                  name="candidateTwoName"
+                  name="contests[0].choices[1].name"
                   value="Candidate 2"
                 />
               </div>
               <div
-                class="sc-jzJRlG eMbkiL sc-htoDjs jjofgS"
+                class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
                   disabled=""
-                  name="candidateTwoVotes"
+                  name="contests[0].choices[1].numVotes"
                   type="number"
                   value="72"
                 />
@@ -410,7 +450,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Total Ballots Cast
           </div>
@@ -425,7 +465,7 @@ Object {
             <input
               class="sc-dnqmqq dvJRiU"
               disabled=""
-              name="totalBallotsCast"
+              name="contests[0].totalBallotsCast"
               type="number"
               value="4200"
             />
@@ -440,7 +480,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Desired Risk Limit
           </div>
@@ -519,7 +559,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Random Seed
           </div>

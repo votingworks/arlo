@@ -62,7 +62,7 @@ const SelectBallotsToAudit = (props: Props) => {
         {
           id: 'jurisdiction-1',
           name: 'Jurisdiction 1',
-          contests: [`contest-1`],
+          contests: [...audit.contests].map(contest => contest.id),
           auditBoards: auditBoards,
         },
       ]
@@ -101,19 +101,6 @@ const SelectBallotsToAudit = (props: Props) => {
       toast.error(err.message)
     }
   }
-
-  // const deleteBallotManifest = async (e: any) => {
-  //   e.preventDefault()
-  //   try {
-  //     const jurisdictionID: string = audit.jurisdictions[0].id
-  //     await api(`/jurisdiction/${jurisdictionID}/manifest`, {
-  //       method: 'DELETE',
-  //     })
-  //     updateAudit()
-  //   } catch (err) {
-  //     toast.error(err.message)
-  //   }
-  // }
 
   const initialState: SelectBallotsToAuditValues = {
     auditBoards:
@@ -181,11 +168,6 @@ const SelectBallotsToAudit = (props: Props) => {
                     <b>Batches:</b>{' '}
                     {audit.jurisdictions[0].ballotManifest.numBatches}
                   </FormSectionDescription>
-                  {/*manifestUploaded && !audit.rounds.length && (
-                    <FormButton onClick={deleteBallotManifest}>
-                      Delete File
-                    </FormButton>
-                  )*/}
                 </React.Fragment>
               ) : (
                 <React.Fragment>
@@ -216,7 +198,7 @@ const SelectBallotsToAudit = (props: Props) => {
           {!audit.rounds.length && isLoading && <p>Loading...</p>}
           {!audit.rounds.length && !isLoading && (
             <FormButtonBar>
-              <FormButton type="submit" onClick={handleSubmit}>
+              <FormButton type="button" onClick={handleSubmit}>
                 Select Ballots To Audit
               </FormButton>
             </FormButtonBar>
