@@ -97,7 +97,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <div
-              class="sc-htpNat kRUApY"
+              class="sc-htpNat gYCOid"
             >
               Number of Audit Boards
             </div>
@@ -151,7 +151,8 @@ Object {
           class="sc-htoDjs jIiQXG"
         >
           <button
-            class="sc-EHOje hXhzUo"
+            class="sc-EHOje iYzqVS"
+            type="button"
           >
             Select Ballots To Audit
           </button>
@@ -252,7 +253,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
             Number of Audit Boards
           </div>
@@ -306,7 +307,8 @@ Object {
         class="sc-htoDjs jIiQXG"
       >
         <button
-          class="sc-EHOje hXhzUo"
+          class="sc-EHOje iYzqVS"
+          type="button"
         >
           Select Ballots To Audit
         </button>
