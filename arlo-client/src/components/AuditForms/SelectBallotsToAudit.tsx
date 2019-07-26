@@ -79,7 +79,10 @@ const SelectBallotsToAudit = (props: Props) => {
       ]
       setIsLoading(true)
       if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
-        // await api('/audit/sampleSize', {method: 'POST', body: values.sampleSize}) // wait until API is ready
+        const body = {
+          size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
+        }
+        await api('/audit/sample-size', { method: 'POST', body })
       }
       await api('/audit/jurisdictions', {
         method: 'POST',
