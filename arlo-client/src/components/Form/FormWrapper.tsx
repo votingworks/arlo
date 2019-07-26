@@ -4,7 +4,10 @@ import FormTitle from './FormTitle'
 
 const StyledFormWrapper = styled.div`
   display: block;
-  width: 50%;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 20rem;
   text-align: left;
 `
 
