@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders corretly 1`] = `
+exports[`renders correctly 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
@@ -20,6 +20,85 @@ Object {
             <div
               class="sc-htpNat gYCOid"
             >
+              Estimated Sample Size
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              <p>
+                <span
+                  style="white-space: nowrap;"
+                >
+                  <input
+                    checked=""
+                    id="contest-1-269"
+                    name="sampleSize[contest-1]"
+                    type="radio"
+                    value="269"
+                  />
+                  <label
+                    class="sc-iwsKbI xkrrd"
+                    for="contest-1-269"
+                  >
+                    BRAVO Average Sample Number: 
+                    269 samples
+                    
+                  </label>
+                </span>
+              </p>
+              <p>
+                <span
+                  style="white-space: nowrap;"
+                >
+                  <input
+                    id="contest-1-379"
+                    name="sampleSize[contest-1]"
+                    type="radio"
+                    value="379"
+                  />
+                  <label
+                    class="sc-iwsKbI xkrrd"
+                    for="contest-1-379"
+                  >
+                    
+                    379 samples
+                     (80% chance of reaching risk limit and completing the audit in one round)
+                  </label>
+                </span>
+              </p>
+              <p>
+                <span
+                  style="white-space: nowrap;"
+                >
+                  <input
+                    id="contest-1-78"
+                    name="sampleSize[contest-1]"
+                    type="radio"
+                    value="78"
+                  />
+                  <label
+                    class="sc-iwsKbI xkrrd"
+                    for="contest-1-78"
+                  >
+                    
+                    78 samples
+                    
+                  </label>
+                </span>
+              </p>
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
               Number of Audit Boards
             </div>
             <div
@@ -28,7 +107,6 @@ Object {
               Set the number of audit boards you with to use.
             </div>
             <select
-              disabled=""
               id="auditBoards"
               name="auditBoards"
             >
@@ -60,31 +138,24 @@ Object {
             <div
               class="sc-bwzfXH xctbO"
             >
-              <b>
-                Filename:
-              </b>
-               
-              Adams_County_Manifest.csv
+              Click "Browse" to choose the appropriate Ballot Manifest file from your computer
             </div>
-            <div
-              class="sc-bwzfXH xctbO"
-            >
-              <b>
-                Ballots:
-              </b>
-               
-              123456
-            </div>
-            <div
-              class="sc-bwzfXH xctbO"
-            >
-              <b>
-                Batches:
-              </b>
-               
-              560
-            </div>
+            <input
+              accept=".csv"
+              name="manifest"
+              type="file"
+            />
           </div>
+        </div>
+        <div
+          class="sc-htoDjs jIiQXG"
+        >
+          <button
+            class="sc-EHOje iYzqVS"
+            type="button"
+          >
+            Select Ballots To Audit
+          </button>
         </div>
       </form>
     </div>
@@ -105,6 +176,85 @@ Object {
           <div
             class="sc-htpNat gYCOid"
           >
+            Estimated Sample Size
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            <p>
+              <span
+                style="white-space: nowrap;"
+              >
+                <input
+                  checked=""
+                  id="contest-1-269"
+                  name="sampleSize[contest-1]"
+                  type="radio"
+                  value="269"
+                />
+                <label
+                  class="sc-iwsKbI xkrrd"
+                  for="contest-1-269"
+                >
+                  BRAVO Average Sample Number: 
+                  269 samples
+                  
+                </label>
+              </span>
+            </p>
+            <p>
+              <span
+                style="white-space: nowrap;"
+              >
+                <input
+                  id="contest-1-379"
+                  name="sampleSize[contest-1]"
+                  type="radio"
+                  value="379"
+                />
+                <label
+                  class="sc-iwsKbI xkrrd"
+                  for="contest-1-379"
+                >
+                  
+                  379 samples
+                   (80% chance of reaching risk limit and completing the audit in one round)
+                </label>
+              </span>
+            </p>
+            <p>
+              <span
+                style="white-space: nowrap;"
+              >
+                <input
+                  id="contest-1-78"
+                  name="sampleSize[contest-1]"
+                  type="radio"
+                  value="78"
+                />
+                <label
+                  class="sc-iwsKbI xkrrd"
+                  for="contest-1-78"
+                >
+                  
+                  78 samples
+                  
+                </label>
+              </span>
+            </p>
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
             Number of Audit Boards
           </div>
           <div
@@ -113,7 +263,6 @@ Object {
             Set the number of audit boards you with to use.
           </div>
           <select
-            disabled=""
             id="auditBoards"
             name="auditBoards"
           >
@@ -145,31 +294,24 @@ Object {
           <div
             class="sc-bwzfXH xctbO"
           >
-            <b>
-              Filename:
-            </b>
-             
-            Adams_County_Manifest.csv
+            Click "Browse" to choose the appropriate Ballot Manifest file from your computer
           </div>
-          <div
-            class="sc-bwzfXH xctbO"
-          >
-            <b>
-              Ballots:
-            </b>
-             
-            123456
-          </div>
-          <div
-            class="sc-bwzfXH xctbO"
-          >
-            <b>
-              Batches:
-            </b>
-             
-            560
-          </div>
+          <input
+            accept=".csv"
+            name="manifest"
+            type="file"
+          />
         </div>
+      </div>
+      <div
+        class="sc-htoDjs jIiQXG"
+      >
+        <button
+          class="sc-EHOje iYzqVS"
+          type="button"
+        >
+          Select Ballots To Audit
+        </button>
       </div>
     </form>
   </div>,
