@@ -68,6 +68,9 @@ def test_whole_audit_flow(client):
     rv = client.get('/audit/status')
     status = json.loads(rv.data)
 
+    # sample size options
+    assert len(status["contests"][0]["sampleSizeOptions"]) == 4
+    
     assert status["randomSeed"] == "1234567890987654321"
     assert len(status["contests"]) == 1
     assert status["riskLimit"] == 10
