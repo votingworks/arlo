@@ -5,49 +5,65 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <div
-        class="sc-ifAKCX gVocmv"
-      >
+      <form>
         <div
-          class="sc-bxivhb doxbWk"
-        >
-          Round 1
-        </div>
-        <div
-          class="sc-bdVaJa fdbLH"
+          class="sc-ifAKCX gVocmv"
         >
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-bxivhb doxbWk"
           >
-            Ballot Retrieval List 
-
-                25 Ballots
+            Round 1
           </div>
-          <button
-            class="sc-bZQynM cjVqOQ"
-          >
-            Download Ballot Retrieval List for Round 
-            1
-          </button>
           <div
-            class="sc-htpNat kRUApY"
+            class="sc-htpNat gYCOid"
           >
-            Audited Results: Round 
-            1
+            Ballot Retrieval List: 
+            25
+             Total Ballots
           </div>
           <div
             class="sc-bwzfXH xctbO"
           >
-            Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
-            1
+            <p>
+              Contest 
+              1
+              : 
+              25
+               ballots
+            </p>
           </div>
-          <form>
-            <input
-              name="round"
-              type="hidden"
-              value="1"
-            />
-             
+          <button
+            class="sc-bZQynM cjVqOQ"
+          >
+            Download Aggregated Ballot Retrieval List for Round 
+            1
+          </button>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Contest 1: Contest 1
+            </div>
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Audited Results: Round 
+              1
+              , Contest
+               
+              1
+               INCOMPLETE
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
+              1
+              , Contest 
+              1
+            </div>
             <div
               class="sc-gqjmRU bqmubQ"
             >
@@ -64,7 +80,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
-                    name="candidate-1"
+                    name="contests[0][candidate-1]"
                     type="number"
                     value="55"
                   />
@@ -83,72 +99,105 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
-                    name="candidate-2"
+                    name="contests[0][candidate-2]"
                     type="number"
                     value="35"
                   />
                 </div>
               </div>
             </div>
-          </form>
-        </div>
-        <div
-          class="sc-gZMcBi DmELe"
-        >
-          <button
-            class="sc-EHOje hXhzUo"
-            type="submit"
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
           >
-            Calculate Risk Measurement
-          </button>
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Audit Progress: 
+              0
+               of 
+              1
+               
+              complete
+            </div>
+          </div>
+          <div
+            class="sc-gZMcBi DmELe"
+          >
+            <button
+              class="sc-EHOje iYzqVS"
+              type="button"
+            >
+              Calculate Risk Measurement
+            </button>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          />
         </div>
-      </div>
+      </form>
     </div>
   </body>,
   "container": <div>
-    <div
-      class="sc-ifAKCX gVocmv"
-    >
+    <form>
       <div
-        class="sc-bxivhb doxbWk"
-      >
-        Round 1
-      </div>
-      <div
-        class="sc-bdVaJa fdbLH"
+        class="sc-ifAKCX gVocmv"
       >
         <div
-          class="sc-htpNat kRUApY"
+          class="sc-bxivhb doxbWk"
         >
-          Ballot Retrieval List 
-
-                25 Ballots
+          Round 1
         </div>
-        <button
-          class="sc-bZQynM cjVqOQ"
-        >
-          Download Ballot Retrieval List for Round 
-          1
-        </button>
         <div
-          class="sc-htpNat kRUApY"
+          class="sc-htpNat gYCOid"
         >
-          Audited Results: Round 
-          1
+          Ballot Retrieval List: 
+          25
+           Total Ballots
         </div>
         <div
           class="sc-bwzfXH xctbO"
         >
-          Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
-          1
+          <p>
+            Contest 
+            1
+            : 
+            25
+             ballots
+          </p>
         </div>
-        <form>
-          <input
-            name="round"
-            type="hidden"
-            value="1"
-          />
-           
+        <button
+          class="sc-bZQynM cjVqOQ"
+        >
+          Download Aggregated Ballot Retrieval List for Round 
+          1
+        </button>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Contest 1: Contest 1
+          </div>
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Audited Results: Round 
+            1
+            , Contest
+             
+            1
+             INCOMPLETE
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
+            1
+            , Contest 
+            1
+          </div>
           <div
             class="sc-gqjmRU bqmubQ"
           >
@@ -165,7 +214,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
-                  name="candidate-1"
+                  name="contests[0][candidate-1]"
                   type="number"
                   value="55"
                 />
@@ -184,26 +233,43 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
-                  name="candidate-2"
+                  name="contests[0][candidate-2]"
                   type="number"
                   value="35"
                 />
               </div>
             </div>
           </div>
-        </form>
-      </div>
-      <div
-        class="sc-gZMcBi DmELe"
-      >
-        <button
-          class="sc-EHOje hXhzUo"
-          type="submit"
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
         >
-          Calculate Risk Measurement
-        </button>
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Audit Progress: 
+            0
+             of 
+            1
+             
+            complete
+          </div>
+        </div>
+        <div
+          class="sc-gZMcBi DmELe"
+        >
+          <button
+            class="sc-EHOje iYzqVS"
+            type="button"
+          >
+            Calculate Risk Measurement
+          </button>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        />
       </div>
-    </div>
+    </form>
   </div>,
   "debug": [Function],
   "findAllByAltText": [Function],

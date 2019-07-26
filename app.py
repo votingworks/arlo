@@ -1,4 +1,4 @@
-import os, datetime, csv, io, math
+import os, datetime, csv, io, math, json
 from flask import Flask, send_from_directory, jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from sampler import Sampler
@@ -47,7 +47,6 @@ def sample_results(election):
             [choice.id, 0]
             for choice in contest.choices])
 
-        # now add in all the results
         round_contests = RoundContest.query.filter_by(contest_id = contest.id).order_by('round_id').all()
         for round_contest in round_contests:
             for result in round_contest.results:
@@ -66,9 +65,43 @@ def manifest_summary(jurisdiction):
 def get_sampler(election):
     return Sampler(election.random_seed, election.risk_limit / 100, contest_status(election))
 
+def compute_and_store_sample_sizes(election):
+    sampler = get_sampler(election)
+
+    # format the options properly
+    raw_sample_size_options = sampler.get_sample_sizes(sample_results(election))[election.contests[0].id]
+    sample_size_options = []
+    for (prob_or_asn, size) in raw_sample_size_options.items():
+        prob = None
+        type = None
+        if prob_or_asn == "asn":
+            type = "ASN"
+            prob = None
+        else:
+            type = None
+            prob = float(prob_or_asn.strip('%')) / 100
+        sample_size_options.append({
+            "type": type,
+            "prob": prob,
+            "size": int(size)
+        })
+    
+    election.sample_size_options = json.dumps(sample_size_options)
+
+    db.session.commit()
+    
 def setup_next_round(election):
+    if len(election.contests) > 1:
+        raise Exception("only supports one contest for now")
+
+    if not election.chosen_sample_size:
+        raise Exception("sample size must be set")
+    
+
     jurisdiction = election.jurisdictions[0]
     rounds = Round.query.filter_by(election_id = election.id).order_by('id').all()
+
+    is_first_round = (len(rounds) == 0)
 
     round = Round(
         id = len(rounds) + 1,
@@ -77,22 +110,25 @@ def setup_next_round(election):
 
     db.session.add(round)
 
+    # assume just one contest for now
+    contest = election.contests[0]
+    round_contest = RoundContest(
+        round_id = round.id,
+        contest_id = contest.id
+    )
+
+    if is_first_round:
+        round_contest.sample_size = election.chosen_sample_size
+    else:
+        # just use 90%
+        for option in json.loads(election.sample_size_options):
+            if option["prob"] == .9:
+                round_contest.sample_size = option["size"]
+                
+    db.session.add(round_contest)
+        
+    chosen_sample_size = round_contest.sample_size
     sampler = get_sampler(election)
-    sample_sizes = sampler.get_sample_sizes(sample_results(election))
-    
-    # all contests for now
-    chosen_sample_size = None
-    for contest in election.contests:
-        round_contest = RoundContest(
-            round_id = round.id,
-            contest_id = contest.id
-        )
-
-        round_contest.sample_size = sample_sizes[contest.id]['90%']
-        chosen_sample_size = round_contest.sample_size
-
-        db.session.add(round_contest)
-    
     sample = sampler.draw_sample(manifest_summary(jurisdiction), chosen_sample_size)
 
     audit_boards = jurisdiction.audit_boards
@@ -166,7 +202,8 @@ def audit_status():
                         "numVotes": choice.num_votes
                     }
                     for choice in contest.choices],
-                "totalBallotsCast": contest.total_ballots_cast
+                "totalBallotsCast": contest.total_ballots_cast,
+                "sampleSizeOptions": json.loads(election.sample_size_options)
             }
             for contest in election.contests],
         jurisdictions=[
@@ -235,9 +272,20 @@ def audit_basic_update():
                                                num_votes = choice['numVotes'])
             db.session.add(choice_obj)
 
+    compute_and_store_sample_sizes(election)
+            
     db.session.commit()
 
     return jsonify(status="ok")
+
+@app.route('/audit/sample-size', methods=["POST"])
+def samplesize_set():
+    election = get_election()
+    election.chosen_sample_size = int(request.get_json()['size'])
+    db.session.commit()
+
+    return jsonify(status="ok")
+
 
 @app.route('/audit/jurisdictions', methods=["POST"])
 def jurisdictions_set():
@@ -323,7 +371,7 @@ def jurisdiction_manifest(jurisdiction_id):
     jurisdiction.manifest_num_batches = num_batches
     db.session.commit()
 
-    # get the next round setup
+    # get the first round setup
     setup_next_round(election)
     
     return jsonify(status="ok")

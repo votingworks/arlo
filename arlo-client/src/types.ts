@@ -1,5 +1,5 @@
 export interface Candidate {
-  id?: string
+  id: string
   name: string
   numVotes: number | ''
 }
@@ -22,10 +22,10 @@ export interface AuditBoard {
 }
 
 export interface BallotManifest {
-  filename: string
-  numBallots: number | ''
-  numBatches: number | ''
-  uploadedAt: string
+  filename: string | null
+  numBallots: number | '' | null
+  numBatches: number | '' | null
+  uploadedAt: string | null
 }
 
 export interface Jurisdiction {
@@ -39,7 +39,7 @@ export interface Jurisdiction {
 export interface RoundContest {
   id: string
   results: {
-    [one: string]: number
+    [key: string]: number
   }
   sampleSize: number
   endMeasurements: {

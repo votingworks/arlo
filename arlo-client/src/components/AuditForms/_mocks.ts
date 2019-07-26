@@ -92,10 +92,12 @@ export const statusStates = [
       {
         choices: [
           {
+            id: 'choice-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
+            id: 'choice-2',
             name: 'choice two',
             numVotes: 1325,
           },
@@ -121,10 +123,12 @@ export const statusStates = [
       {
         choices: [
           {
+            id: 'choice-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
+            id: 'choice-2',
             name: 'choice two',
             numVotes: 1325,
           },
@@ -148,10 +152,10 @@ export const statusStates = [
           },
         ],
         ballotManifest: {
-          filename: 'Ballot Manifest May 2019 Election - WYNADOTTE.csv',
-          numBallots: 2117,
-          numBatches: 10,
-          uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+          filename: null,
+          numBallots: null,
+          numBatches: null,
+          uploadedAt: null,
         },
         contests: ['contest-1'],
         id: 'jurisdiction-1',
@@ -168,10 +172,12 @@ export const statusStates = [
       {
         choices: [
           {
+            id: 'choice-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
+            id: 'choice-2',
             name: 'choice two',
             numVotes: 1325,
           },
@@ -231,10 +237,12 @@ export const statusStates = [
       {
         choices: [
           {
+            id: 'choice-1',
             name: 'choice one',
             numVotes: 792,
           },
           {
+            id: 'choice-2',
             name: 'choice two',
             numVotes: 1325,
           },
@@ -278,8 +286,8 @@ export const statusStates = [
             },
             id: 'contest-1',
             results: {
-              'candidate-1': 100,
-              'candidate-2': 167,
+              'choice-1': 100,
+              'choice-2': 167,
             },
             sampleSize: 379,
           },

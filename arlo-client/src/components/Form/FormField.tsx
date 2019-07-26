@@ -16,6 +16,8 @@ const ErrorLabel = styled.p`
 `
 
 interface Props {
+  field?: any
+  form?: any
   disabled?: boolean
   value?: string | number
   onChange?: (e: React.ChangeEvent<any>) => void
@@ -28,17 +30,17 @@ interface Props {
 }
 
 const FormField = ({
+  field,
+  form: { touched, errors },
   disabled,
-  value,
-  error,
-  touched,
-  onChange,
   className,
   ...rest
 }: Props) => (
   <Wrapper className={className}>
-    <Field disabled={disabled} onChange={onChange} value={value} {...rest} />
-    {error && touched && <ErrorLabel>{error}</ErrorLabel>}
+    <Field disabled={disabled} {...field} {...rest} />
+    {errors[field.name] && touched[field.name] && (
+      <ErrorLabel>{errors[field.name]}</ErrorLabel>
+    )}
   </Wrapper>
 )
 

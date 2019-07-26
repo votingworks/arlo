@@ -23,7 +23,12 @@ JSON for sure.
 				}
 			],
 			
-			totalBallotsCast: 4200
+			totalBallotsCast: 4200,
+
+			sampleSizeOptions: [
+                {"prob": 0.5, "size": 143},
+				{"type": "ASN", "size": 157},
+            ]
 		}
 	],
 	
@@ -129,6 +134,14 @@ JSON for sure.
 			]
 		}
 	]
+}
+```
+
+- `POST /audit/sample-size` -- the selected sample size from the given sampleSizeOptions
+
+```
+{
+	'size': 578,
 }
 ```
 
