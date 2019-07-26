@@ -13,6 +13,7 @@ export interface Contest {
 
 export interface AuditBoard {
   id: string
+  name: string
   members: any[]
 }
 

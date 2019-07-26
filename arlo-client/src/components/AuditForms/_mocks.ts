@@ -35,10 +35,12 @@ export const mockAudit: Audit = {
       auditBoards: [
         {
           id: 'audit-board-1',
+          name: 'Audit Board #1',
           members: [],
         },
         {
           id: 'audit-board-2',
+          name: 'Audit Board #2',
           members: [],
         },
       ],
@@ -78,7 +80,7 @@ export const mockAudit: Audit = {
   ],
 }
 
-export const statusStates = [
+export const statusStates: Audit[] = [
   {
     name: '',
     riskLimit: '',
@@ -134,6 +136,7 @@ export const statusStates = [
         auditBoards: [
           {
             id: 'audit-board-1',
+            name: 'Audit Board #1',
             members: [],
           },
         ],
@@ -176,6 +179,7 @@ export const statusStates = [
         auditBoards: [
           {
             id: 'audit-board-1',
+            name: 'Audit Board #1',
             members: [],
           },
         ],
@@ -234,6 +238,7 @@ export const statusStates = [
         auditBoards: [
           {
             id: 'audit-board-1',
+            name: 'Audit Board #1',
             members: [],
           },
         ],
