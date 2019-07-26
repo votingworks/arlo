@@ -105,6 +105,11 @@ export const statusStates = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: 2123,
+        sampleSizeOptions: [
+          { size: 269, type: 'ASN' },
+          { size: 379, prob: '80%' },
+          { size: 78 },
+        ],
       },
     ],
     jurisdictions: [],
@@ -131,6 +136,11 @@ export const statusStates = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: 2123,
+        sampleSizeOptions: [
+          { size: 269, type: 'ASN' },
+          { size: 379, prob: '80%' },
+          { size: 78 },
+        ],
       },
     ],
     jurisdictions: [
@@ -175,6 +185,11 @@ export const statusStates = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: 2123,
+        sampleSizeOptions: [
+          { size: 269, type: 'ASN' },
+          { size: 379, prob: '80%' },
+          { size: 78 },
+        ],
       },
     ],
     jurisdictions: [
@@ -206,7 +221,7 @@ export const statusStates = [
             },
             id: 'contest-1',
             results: {},
-            sampleSize: 269,
+            sampleSize: 379,
           },
         ],
         endedAt: null,
@@ -235,6 +250,11 @@ export const statusStates = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: 2123,
+        sampleSizeOptions: [
+          { size: 269, type: 'ASN' },
+          { size: 379, prob: '80%' },
+          { size: 78 },
+        ],
       },
     ],
     jurisdictions: [
@@ -269,7 +289,7 @@ export const statusStates = [
               'choice-1': 100,
               'choice-2': 167,
             },
-            sampleSize: 269,
+            sampleSize: 379,
           },
         ],
         endedAt: 'Thu, 18 Jul 2019 16:59:34 GMT',
