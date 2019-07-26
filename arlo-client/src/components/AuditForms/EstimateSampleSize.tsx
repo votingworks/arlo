@@ -98,20 +98,22 @@ const contestsSchema = Yup.array()
   .required()
   .of(
     Yup.object().shape({
-      name: Yup.string()
-        .min(2, 'Name must be longer than 2 characters')
-        .max(50, 'Name must be shorter than 50 characters')
+      name: Yup.string().required('Required'),
+      totalBallotsCast: Yup.number()
+        .typeError('Must be a number')
+        .integer('Must be an integer')
+        .min(0, 'Must be a positive number')
         .required('Required'),
-      totalBallotsCast: Yup.number().required('Required'),
       choices: Yup.array()
         .required()
         .of(
           Yup.object().shape({
-            name: Yup.string()
-              .required('Required')
-              .min(2, 'Name must be longer than 2 characters')
-              .max(50, 'Name must be shorter than 50 characters'),
-            numVotes: Yup.number().required('Required'),
+            name: Yup.string().required('Required'),
+            numVotes: Yup.number()
+              .typeError('Must be a number')
+              .integer('Must be an integer')
+              .min(0, 'Must be a positive number')
+              .required('Required'),
           })
         ),
     })
@@ -120,10 +122,12 @@ const contestsSchema = Yup.array()
 const schema = Yup.object().shape({
   name: Yup.string().required('Required'),
   randomSeed: Yup.number()
+    .typeError('Must be a number')
     .min(1, 'Must be at least 1')
     .max(99999999999999999999, 'Cannot exceed 20 digits')
     .required('Required'),
   riskLimit: Yup.number()
+    .typeError('Must be a number')
     .min(1, 'Must be greater than 0')
     .max(20, 'Must be less than 21')
     .required('Required'),
@@ -174,22 +178,22 @@ const EstimateSampleSize = ({
   const contestValues = [
     {
       name: '',
-      totalBallotsCast: '',
+      totalBallotsCast: 0,
       choices: [
         {
           name: '',
-          numVotes: '',
+          numVotes: 0,
         },
         {
           name: '',
-          numVotes: '',
+          numVotes: 0,
         },
       ],
     },
   ]
 
   const initialValues = {
-    randomSeed: audit.randomSeed || '',
+    randomSeed: audit.randomSeed || 0,
     riskLimit: audit.riskLimit || 1,
     name: audit.name || '',
     contests: audit.contests.length ? audit.contests : contestValues,
@@ -210,6 +214,7 @@ const EstimateSampleSize = ({
                 <Field
                   name="name"
                   data-testid="audit-name"
+                  disabled={audit.contests.length}
                   component={FormField}
                 />
               </FormSection>
@@ -302,7 +307,7 @@ const EstimateSampleSize = ({
                                       onClick={() =>
                                         choicesArrayHelpers.push({
                                           name: '',
-                                          numVotes: '',
+                                          numVotes: 0,
                                         })
                                       }
                                     >

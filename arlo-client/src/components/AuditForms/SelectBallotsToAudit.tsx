@@ -38,6 +38,7 @@ interface SelectBallotsToAuditValues {
 
 const schema = Yup.object().shape({
   auditBoards: Yup.number()
+    .typeError('Must be a number')
     .min(1, 'Too few Audit Boards')
     .max(5, 'Too many Audit Boards')
     .required('Required'),
@@ -63,6 +64,7 @@ const SelectBallotsToAudit = (props: Props) => {
     const auditBoards = Array.from(Array(values.auditBoards).keys()).map(i => {
       return {
         id: `audit-board-${i + 1}`,
+        name: `Audit Board #${i + 1}`,
         members: [],
       }
     })

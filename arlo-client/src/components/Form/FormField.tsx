@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { getIn } from 'formik'
 
 const Wrapper = styled.div`
   width: 45%;
@@ -38,8 +39,8 @@ const FormField = ({
 }: Props) => (
   <Wrapper className={className}>
     <Field disabled={disabled} {...field} {...rest} />
-    {errors[field.name] && touched[field.name] && (
-      <ErrorLabel>{errors[field.name]}</ErrorLabel>
+    {getIn(errors, field.name) && getIn(touched, field.name) && (
+      <ErrorLabel>{getIn(errors, field.name)}</ErrorLabel>
     )}
   </Wrapper>
 )

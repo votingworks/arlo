@@ -214,6 +214,7 @@ def audit_status():
                 "auditBoards": [
                     {
                         "id": audit_board.id,
+                        "name": audit_board.name,
                         "members": []
                     }
                     for audit_board in j.audit_boards],
@@ -312,6 +313,7 @@ def jurisdictions_set():
         for audit_board in jurisdiction["auditBoards"]:
             audit_board_obj = AuditBoard(
                 id = audit_board["id"],
+                name = audit_board["name"],
                 jurisdiction_id = jurisdiction_obj.id
             )
             db.session.add(audit_board_obj)
@@ -385,7 +387,7 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_id):
     ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = int(round_id)).order_by('batch_id', 'ballot_position').all()
 
     for ballot in ballots:
-        retrieval_list_writer.writerow([ballot.batch_id, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board_id])
+        retrieval_list_writer.writerow([ballot.batch_id, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board.name])
 
     response = Response(csv_io.getvalue())
     response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-{:s}-{:s}.csv"'.format(jurisdiction_id, round_id)

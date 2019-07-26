@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
+import * as Yup from 'yup'
 import FormSection, {
   FormSectionLabel,
   FormSectionDescription,
@@ -45,6 +46,17 @@ interface CalculateRiskMeasurementValues {
     [key: string]: number | ''
   }[]
 }
+
+const numberSchema = Yup.number()
+  .typeError('Must be a number')
+  .integer('Must be an integer')
+  .min(0, 'Must be a positive number')
+  .required('Required')
+
+const testNumber = (value: any) =>
+  numberSchema
+    .validate(value)
+    .then(success => undefined, error => error.errors[0])
 
 type AggregateContest = Contest & RoundContest
 
@@ -95,17 +107,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
     }
   }
 
-  const rounds: CalculateRiskMeasurementValues[] = audit.rounds.map(
-    (r: Round, i: number) => ({
-      contests: audit.contests.map((contest: Contest, j: number) => ({
-        ...contest.choices.reduce((acc, choice: Candidate) => {
-          return { ...acc, [choice.id]: r.contests[j].results[choice.id] || '' }
-        }, {}),
-      })),
-      round: i + 1,
-    })
-  )
-
   return audit.rounds.map((round: Round, i: number) => {
     const aggregateContests: AggregateContest[] = audit.contests.reduce(
       (acc: any[], contest: Contest) => {
@@ -115,8 +116,16 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       },
       []
     )
+    const roundValues = {
+      contests: aggregateContests.map((contest: AggregateContest) =>
+        contest.choices.reduce((acc, choice) => {
+          return { ...acc, [choice.id]: contest.results[choice.id] || 0 }
+        }, {})
+      ),
+      round: i + 1,
+    }
     const isSubmitted =
-      round < audit.rounds.length ||
+      i + 1 < audit.rounds.length ||
       aggregateContests.every(
         (contest: AggregateContest) => !!contest.endMeasurements.isComplete
       )
@@ -126,7 +135,6 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       }
       return acc
     }, 0)
-    /* eslint-disable react/no-array-index-key */
     const aggregatedBallots = aggregateContests.reduce(
       (acc: number, contest: AggregateContest) => {
         acc += contest.sampleSize
@@ -134,11 +142,12 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       },
       0
     )
+    /* eslint-disable react/no-array-index-key */
     return (
       <Formik
         key={i}
         onSubmit={calculateRiskMeasurement}
-        initialValues={rounds[i]}
+        initialValues={roundValues}
         enableReinitialize
         render={({
           values,
@@ -224,6 +233,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                                           <Field
                                             name={`contests[${j}][${choiceId}]`}
                                             type="number"
+                                            validate={testNumber}
                                             component={FormField}
                                             disabled={isSubmitted}
                                           />

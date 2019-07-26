@@ -7,7 +7,7 @@ Object {
     <div>
       <form>
         <div
-          class="sc-ifAKCX gVocmv"
+          class="sc-ifAKCX jXnARC"
         >
           <div
             class="sc-bxivhb doxbWk"
@@ -27,7 +27,11 @@ Object {
             >
               <input
                 class="sc-dnqmqq dvJRiU"
+<<<<<<< HEAD
                 data-testid="audit-name"
+=======
+                disabled=""
+>>>>>>> aa95fa27cc8e43b0c531e3e79c0dd23a7af37d05
                 name="name"
                 value="contest name"
               />
@@ -306,7 +310,7 @@ Object {
   "container": <div>
     <form>
       <div
-        class="sc-ifAKCX gVocmv"
+        class="sc-ifAKCX jXnARC"
       >
         <div
           class="sc-bxivhb doxbWk"
@@ -326,7 +330,11 @@ Object {
           >
             <input
               class="sc-dnqmqq dvJRiU"
+<<<<<<< HEAD
               data-testid="audit-name"
+=======
+              disabled=""
+>>>>>>> aa95fa27cc8e43b0c531e3e79c0dd23a7af37d05
               name="name"
               value="contest name"
             />

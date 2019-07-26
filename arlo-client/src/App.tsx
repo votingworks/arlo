@@ -8,9 +8,9 @@ import 'react-toastify/dist/ReactToastify.css'
 const Main = styled.div`
   display: block;
   margin: auto;
-  max-width: 35rem;
   height: 100%;
   overflow: scroll;
+  padding: 40px;
   font-size: 1.25rem;
 `
 
