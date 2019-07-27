@@ -109,7 +109,7 @@ export const statusStates: Audit[] = [
         totalBallotsCast: 2123,
         sampleSizeOptions: [
           { size: 269, type: 'ASN' },
-          { size: 379, prob: '80%' },
+          { size: 379, prob: 0.8 },
           { size: 78 },
         ],
       },
@@ -140,7 +140,7 @@ export const statusStates: Audit[] = [
         totalBallotsCast: 2123,
         sampleSizeOptions: [
           { size: 269, type: 'ASN' },
-          { size: 379, prob: '80%' },
+          { size: 379, prob: 0.8 },
           { size: 78 },
         ],
       },
@@ -190,7 +190,7 @@ export const statusStates: Audit[] = [
         totalBallotsCast: 2123,
         sampleSizeOptions: [
           { size: 269, type: 'ASN' },
-          { size: 379, prob: '80%' },
+          { size: 379, prob: 0.8 },
           { size: 78 },
         ],
       },
@@ -256,7 +256,7 @@ export const statusStates: Audit[] = [
         totalBallotsCast: 2123,
         sampleSizeOptions: [
           { size: 269, type: 'ASN' },
-          { size: 379, prob: '80%' },
+          { size: 379, prob: 0.8 },
           { size: 78 },
         ],
       },
