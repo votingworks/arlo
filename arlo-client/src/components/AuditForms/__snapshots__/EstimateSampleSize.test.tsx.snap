@@ -27,11 +27,8 @@ Object {
             >
               <input
                 class="sc-dnqmqq dvJRiU"
-<<<<<<< HEAD
                 data-testid="audit-name"
-=======
                 disabled=""
->>>>>>> aa95fa27cc8e43b0c531e3e79c0dd23a7af37d05
                 name="name"
                 value="contest name"
               />
@@ -330,11 +327,8 @@ Object {
           >
             <input
               class="sc-dnqmqq dvJRiU"
-<<<<<<< HEAD
               data-testid="audit-name"
-=======
               disabled=""
->>>>>>> aa95fa27cc8e43b0c531e3e79c0dd23a7af37d05
               name="name"
               value="contest name"
             />
@@ -670,7 +664,7 @@ Object {
     <div>
       <form>
         <div
-          class="sc-ifAKCX gVocmv"
+          class="sc-ifAKCX jXnARC"
         >
           <div
             class="sc-bxivhb doxbWk"
@@ -691,6 +685,7 @@ Object {
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="audit-name"
+                disabled=""
                 name="name"
                 value="contest name"
               />
@@ -969,7 +964,7 @@ Object {
   "container": <div>
     <form>
       <div
-        class="sc-ifAKCX gVocmv"
+        class="sc-ifAKCX jXnARC"
       >
         <div
           class="sc-bxivhb doxbWk"
@@ -990,6 +985,7 @@ Object {
             <input
               class="sc-dnqmqq dvJRiU"
               data-testid="audit-name"
+              disabled=""
               name="name"
               value="contest name"
             />
@@ -1325,7 +1321,7 @@ Object {
     <div>
       <form>
         <div
-          class="sc-ifAKCX gVocmv"
+          class="sc-ifAKCX jXnARC"
         >
           <div
             class="sc-bxivhb doxbWk"
@@ -1346,6 +1342,7 @@ Object {
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="audit-name"
+                disabled=""
                 name="name"
                 value="contest name"
               />
@@ -1624,7 +1621,7 @@ Object {
   "container": <div>
     <form>
       <div
-        class="sc-ifAKCX gVocmv"
+        class="sc-ifAKCX jXnARC"
       >
         <div
           class="sc-bxivhb doxbWk"
@@ -1645,6 +1642,7 @@ Object {
             <input
               class="sc-dnqmqq dvJRiU"
               data-testid="audit-name"
+              disabled=""
               name="name"
               value="contest name"
             />
@@ -1980,7 +1978,7 @@ Object {
     <div>
       <form>
         <div
-          class="sc-ifAKCX gVocmv"
+          class="sc-ifAKCX jXnARC"
         >
           <div
             class="sc-bxivhb doxbWk"
@@ -2001,6 +1999,7 @@ Object {
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="audit-name"
+                disabled=""
                 name="name"
                 value="contest name"
               />
@@ -2279,7 +2278,7 @@ Object {
   "container": <div>
     <form>
       <div
-        class="sc-ifAKCX gVocmv"
+        class="sc-ifAKCX jXnARC"
       >
         <div
           class="sc-bxivhb doxbWk"
@@ -2300,6 +2299,7 @@ Object {
             <input
               class="sc-dnqmqq dvJRiU"
               data-testid="audit-name"
+              disabled=""
               name="name"
               value="contest name"
             />
@@ -2635,7 +2635,7 @@ Object {
     <div>
       <form>
         <div
-          class="sc-ifAKCX gVocmv"
+          class="sc-ifAKCX jXnARC"
         >
           <div
             class="sc-bxivhb doxbWk"
@@ -2738,7 +2738,7 @@ Object {
                     data-testid="contest-1-choice-1-votes"
                     name="contests[0].choices[0].numVotes"
                     type="number"
-                    value=""
+                    value="0"
                   />
                 </div>
               </div>
@@ -2779,7 +2779,7 @@ Object {
                     data-testid="contest-1-choice-2-votes"
                     name="contests[0].choices[1].numVotes"
                     type="number"
-                    value=""
+                    value="0"
                   />
                 </div>
               </div>
@@ -2811,7 +2811,7 @@ Object {
                 data-testid="contest-1-total-ballots"
                 name="contests[0].totalBallotsCast"
                 type="number"
-                value=""
+                value="0"
               />
             </div>
           </div>
@@ -2920,7 +2920,7 @@ Object {
                 data-testid="random-seed"
                 name="randomSeed"
                 type="number"
-                value=""
+                value="0"
               />
             </div>
           </div>
@@ -2941,7 +2941,7 @@ Object {
   "container": <div>
     <form>
       <div
-        class="sc-ifAKCX gVocmv"
+        class="sc-ifAKCX jXnARC"
       >
         <div
           class="sc-bxivhb doxbWk"
@@ -3044,7 +3044,7 @@ Object {
                   data-testid="contest-1-choice-1-votes"
                   name="contests[0].choices[0].numVotes"
                   type="number"
-                  value=""
+                  value="0"
                 />
               </div>
             </div>
@@ -3085,7 +3085,7 @@ Object {
                   data-testid="contest-1-choice-2-votes"
                   name="contests[0].choices[1].numVotes"
                   type="number"
-                  value=""
+                  value="0"
                 />
               </div>
             </div>
@@ -3117,7 +3117,7 @@ Object {
               data-testid="contest-1-total-ballots"
               name="contests[0].totalBallotsCast"
               type="number"
-              value=""
+              value="0"
             />
           </div>
         </div>
@@ -3226,7 +3226,7 @@ Object {
               data-testid="random-seed"
               name="randomSeed"
               type="number"
-              value=""
+              value="0"
             />
           </div>
         </div>

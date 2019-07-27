@@ -1,16 +1,30 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
-import { mockAudit } from './_mocks'
+import { statusStates } from './_mocks'
 
-it('renders corretly', () => {
-  const container = render(
-    <CalculateRiskMeasurement
-      audit={mockAudit}
-      isLoading={false}
-      setIsLoading={jest.fn()}
-      updateAudit={jest.fn()}
-    />
-  )
-  expect(container).toMatchSnapshot()
+describe('CalculateRiskMeasurement', () => {
+  it('renders first round corretly', () => {
+    const container = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[3]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders completion in first round corretly', () => {
+    const container = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[4]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
 })

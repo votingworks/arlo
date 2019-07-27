@@ -4,7 +4,7 @@ exports[`renders correctly 1`] = `
 <div>
   <form>
     <div
-      class="sc-ifAKCX gVocmv"
+      class="sc-ifAKCX jXnARC"
     >
       <div
         class="sc-bxivhb doxbWk"
@@ -107,7 +107,7 @@ exports[`renders correctly 1`] = `
                 data-testid="contest-1-choice-1-votes"
                 name="contests[0].choices[0].numVotes"
                 type="number"
-                value=""
+                value="0"
               />
             </div>
           </div>
@@ -148,7 +148,7 @@ exports[`renders correctly 1`] = `
                 data-testid="contest-1-choice-2-votes"
                 name="contests[0].choices[1].numVotes"
                 type="number"
-                value=""
+                value="0"
               />
             </div>
           </div>
@@ -180,19 +180,9 @@ exports[`renders correctly 1`] = `
             data-testid="contest-1-total-ballots"
             name="contests[0].totalBallotsCast"
             type="number"
-            value=""
+            value="0"
           />
         </div>
-      </div>
-      <div
-        class="sc-gZMcBi DmELe"
-      >
-        <button
-          class="sc-EHOje iYzqVS"
-          type="button"
-        >
-          Add another targeted contest
-        </button>
       </div>
       <div
         class="sc-bxivhb doxbWk"
@@ -299,7 +289,7 @@ exports[`renders correctly 1`] = `
             data-testid="random-seed"
             name="randomSeed"
             type="number"
-            value=""
+            value="0"
           />
         </div>
       </div>

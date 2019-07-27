@@ -1,13 +1,15 @@
 import React from 'react'
-import { render, fireEvent, wait } from '@testing-library/react'
+import {
+  render,
+  fireEvent,
+  wait,
+  waitForDomChange,
+} from '@testing-library/react'
 import EstimateSampleSize from './EstimateSampleSize'
-import { statusStates } from './_mocks'
+import statusStates, { estimateSampleSizeMocks } from './_mocks'
 import apiMock from '../utilities'
 
-//afterEach(cleanup)
-//jest.mock('../utilities')
-
-//const apiMock = require('../utilities')
+jest.mock('../utilities')
 
 describe('EstimateSampleSize', () => {
   it('renders empty state correctly', () => {
@@ -128,7 +130,7 @@ describe('EstimateSampleSize', () => {
   })
 
   it('is able to submit the form successfully', () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, container } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
@@ -137,19 +139,7 @@ describe('EstimateSampleSize', () => {
       />
     )
 
-    const inputs = [
-      { key: 'audit-name', value: 'Election Name' },
-      { key: 'contest-1-name', value: 'Contest Name' },
-      { key: 'contest-1-choice-1-name', value: 'Choice One' },
-      { key: 'contest-1-choice-2-name', value: 'Choice Two' },
-      { key: 'contest-1-choice-1-votes', value: '10' },
-      { key: 'contest-1-choice-2-votes', value: '20' },
-      { key: 'contest-1-total-ballots', value: '30' },
-      { key: 'risk-limit', value: '2' },
-      { key: 'random-seed', value: '123456789' },
-    ]
-
-    inputs.forEach(inputData => {
+    estimateSampleSizeMocks.inputs.forEach(inputData => {
       const input: any = getByTestId(inputData.key)
       fireEvent.change(input, { target: { value: inputData.value } })
       expect(input.value).toBe(inputData.value)
@@ -157,6 +147,17 @@ describe('EstimateSampleSize', () => {
 
     fireEvent.click(getByText('Estimate Sample Size'))
 
-    expect(apiMock as jest.Mock).toHaveBeenCalledTimes(1)
+    waitForDomChange({ container }).then(
+      () => {
+        expect((apiMock as jest.Mock).mock.calls.length).toBe(1)
+        expect((apiMock as jest.Mock).mock.calls[0][0]).toBe('/audit/basic')
+        expect((apiMock as jest.Mock).mock.calls[0][1]).toMatchObject(
+          estimateSampleSizeMocks.post
+        )
+      },
+      error => {
+        throw new Error(error)
+      }
+    )
   })
 })
