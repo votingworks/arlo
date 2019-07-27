@@ -81,9 +81,9 @@ const SelectBallotsToAudit = (props: Props) => {
       ]
       setIsLoading(true)
       if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
-        const body = {
-          size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
-        }
+        const body = JSON.stringify({
+          size: Number(values.sampleSize[audit.contests[0].id]), // until multiple contests are supported
+        })
         await api('/audit/sample-size', { method: 'POST', body })
       }
       await api('/audit/jurisdictions', {
@@ -185,30 +185,35 @@ const SelectBallotsToAudit = (props: Props) => {
                     )}
                     <FormSectionDescription>
                       {/* eslint-disable react/no-array-index-key */}
-                      {sampleSizeOptions[key].map((option: any, j: number) => (
-                        <p key={key + j}>
-                          <span style={{ whiteSpace: 'nowrap' }}>
-                            <Field
-                              id={`${key}-${option.size}`}
-                              name={`sampleSize[${key}]`}
-                              component="input"
-                              value={option.size}
-                              checked={values.sampleSize[key] === option.size}
-                              disabled={!!audit.rounds.length}
-                              type="radio"
-                            />
-                            <InputLabel htmlFor={`${key}-${option.size}`}>
-                              {option.type
-                                ? 'BRAVO Average Sample Number: '
-                                : ''}
-                              {`${option.size} samples`}
-                              {option.prob
-                                ? ` (${option.prob} chance of reaching risk limit and completing the audit in one round)`
-                                : ''}
-                            </InputLabel>
-                          </span>
-                        </p>
-                      ))}
+                      {sampleSizeOptions[key].map((option: any, j: number) => {
+                        const id = `sample-size-${key}-${
+                          option.size
+                        }-${option.prob || ''}`
+                        return (
+                          <p key={key + j}>
+                            <span style={{ whiteSpace: 'nowrap' }}>
+                              <Field
+                                id={id}
+                                name={`sampleSize[${key}]`}
+                                component="input"
+                                value={option.size}
+                                checked={values.sampleSize[key] === option.size}
+                                disabled={!!audit.rounds.length}
+                                type="radio"
+                              />
+                              <InputLabel htmlFor={id}>
+                                {option.type
+                                  ? 'BRAVO Average Sample Number: '
+                                  : ''}
+                                {`${option.size} samples`}
+                                {option.prob
+                                  ? ` (${option.prob} chance of reaching risk limit and completing the audit in one round)`
+                                  : ''}
+                              </InputLabel>
+                            </span>
+                          </p>
+                        )
+                      })}
                     </FormSectionDescription>
                   </React.Fragment>
                 ))}

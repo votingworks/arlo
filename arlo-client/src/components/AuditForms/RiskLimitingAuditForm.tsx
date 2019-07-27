@@ -4,12 +4,20 @@ import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
 import { Audit } from '../../types'
-import { statusStates } from './_mocks'
+
+const initialData = {
+  name: '',
+  riskLimit: '',
+  randomSeed: '',
+  contests: [],
+  jurisdictions: [],
+  rounds: [],
+}
 
 const AuditForms = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [audit, setAudit] = useState<Audit>(statusStates[0])
+  const [audit, setAudit] = useState<Audit>(initialData)
 
   const getStatus = useCallback(async (): Promise<Audit> => {
     const audit: any = await api('/audit/status', {})
