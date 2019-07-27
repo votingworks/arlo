@@ -212,7 +212,8 @@ const SelectBallotsToAudit = (props: Props) => {
                                 : ''}
                               {`${option.size} samples`}
                               {option.prob
-                                ? ` (${option.prob} chance of reaching risk limit and completing the audit in one round)`
+                                ? ` (${option.prob *
+                                    100}% chance of reaching risk limit and completing the audit in one round)`
                                 : ''}
                             </InputLabel>
                           </span>
