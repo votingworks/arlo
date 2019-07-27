@@ -17,7 +17,7 @@ db = SQLAlchemy(app)
 from models import *
 
 def create_election():
-    e = Election(id=1, name="Election")
+    e = Election(id=1, name="")
     db.session.add(e)
     db.session.commit()
 
