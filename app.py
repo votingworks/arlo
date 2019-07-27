@@ -83,7 +83,7 @@ def compute_and_store_sample_sizes(election):
         sample_size_options.append({
             "type": type,
             "prob": prob,
-            "size": int(size)
+            "size": int(math.ceil(size))
         })
     
     election.sample_size_options = json.dumps(sample_size_options)
