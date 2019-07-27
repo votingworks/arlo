@@ -178,23 +178,20 @@ const EstimateSampleSize = ({
   const contestValues = [
     {
       name: '',
-      totalBallotsCast: 0,
       choices: [
         {
           name: '',
-          numVotes: 0,
         },
         {
           name: '',
-          numVotes: 0,
         },
       ],
     },
   ]
 
   const initialValues = {
-    randomSeed: audit.randomSeed || 0,
-    riskLimit: audit.riskLimit || 1,
+    randomSeed: audit.randomSeed || '',
+    riskLimit: audit.riskLimit || 10,
     name: audit.name || '',
     contests: audit.contests.length ? audit.contests : contestValues,
   }
