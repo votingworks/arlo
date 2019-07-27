@@ -210,7 +210,7 @@ const EstimateSampleSize = ({
         {({ values, handleSubmit }: FormikProps<EstimateSampleSizeValues>) => (
           <Form>
             <FormWrapper title="Contest Information">
-              <FormSection label="Audit Name">
+              <FormSection label="Election Name">
                 <Field
                   name="name"
                   disabled={audit.contests.length}
