@@ -29,7 +29,7 @@ interface Props {
 }
 
 interface SelectBallotsToAuditValues {
-  auditBoards: number
+  auditBoards: string
   manifest: File | null
   sampleSize: {
     [key: string]: number | ''
@@ -61,7 +61,9 @@ const SelectBallotsToAudit = (props: Props) => {
     audit.jurisdictions[0].ballotManifest.numBatches
 
   const handlePost = async (values: SelectBallotsToAuditValues) => {
-    const auditBoards = Array.from(Array(values.auditBoards).keys()).map(i => {
+    const auditBoards = Array.from(
+      Array(parseInt(values.auditBoards)).keys()
+    ).map(i => {
       return {
         id: `audit-board-${i + 1}`,
         name: `Audit Board #${i + 1}`,
@@ -129,9 +131,10 @@ const SelectBallotsToAudit = (props: Props) => {
 
   const initialState: SelectBallotsToAuditValues = {
     auditBoards:
-      (audit.jurisdictions.length &&
+      '' +
+      ((audit.jurisdictions.length &&
         audit.jurisdictions[0].auditBoards.length) ||
-      1,
+        1),
     manifest: null,
     sampleSize: [...audit.contests].reduce((a: any, c) => {
       a[c.id] = c.sampleSizeOptions
