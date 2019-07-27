@@ -84,7 +84,13 @@ const SelectBallotsToAudit = (props: Props) => {
         const body = {
           size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
         }
-        await api('/audit/sample-size', { method: 'POST', body })
+        await api('/audit/sample-size', {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
       }
       await api('/audit/jurisdictions', {
         method: 'POST',
