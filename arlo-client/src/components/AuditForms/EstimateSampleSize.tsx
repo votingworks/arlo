@@ -341,7 +341,7 @@ const EstimateSampleSize = ({
               <FormTitle>Audit Settings</FormTitle>
               <FormSection
                 label="Desired Risk Limit"
-                description='Set the risk for the audit as as percentage (e.g. "5" = 5%)'
+                description='Set the risk for the audit as a percentage (e.g. "5" = 5%)'
               >
                 <Field
                   name="riskLimit"
