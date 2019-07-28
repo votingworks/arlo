@@ -36,14 +36,14 @@ Object {
                 >
                   <input
                     checked=""
-                    id="contest-1-269"
+                    id="sample-size-contest-1-269-"
                     name="sampleSize[contest-1]"
                     type="radio"
                     value="269"
                   />
                   <label
                     class="sc-iwsKbI xkrrd"
-                    for="contest-1-269"
+                    for="sample-size-contest-1-269-"
                   >
                     BRAVO Average Sample Number: 
                     269 samples
@@ -56,14 +56,14 @@ Object {
                   style="white-space: nowrap;"
                 >
                   <input
-                    id="contest-1-379"
+                    id="sample-size-contest-1-379-80%"
                     name="sampleSize[contest-1]"
                     type="radio"
                     value="379"
                   />
                   <label
                     class="sc-iwsKbI xkrrd"
-                    for="contest-1-379"
+                    for="sample-size-contest-1-379-80%"
                   >
                     
                     379 samples
@@ -76,14 +76,14 @@ Object {
                   style="white-space: nowrap;"
                 >
                   <input
-                    id="contest-1-78"
+                    id="sample-size-contest-1-78-"
                     name="sampleSize[contest-1]"
                     type="radio"
                     value="78"
                   />
                   <label
                     class="sc-iwsKbI xkrrd"
-                    for="contest-1-78"
+                    for="sample-size-contest-1-78-"
                   >
                     
                     78 samples
@@ -192,14 +192,14 @@ Object {
               >
                 <input
                   checked=""
-                  id="contest-1-269"
+                  id="sample-size-contest-1-269-"
                   name="sampleSize[contest-1]"
                   type="radio"
                   value="269"
                 />
                 <label
                   class="sc-iwsKbI xkrrd"
-                  for="contest-1-269"
+                  for="sample-size-contest-1-269-"
                 >
                   BRAVO Average Sample Number: 
                   269 samples
@@ -212,14 +212,14 @@ Object {
                 style="white-space: nowrap;"
               >
                 <input
-                  id="contest-1-379"
+                  id="sample-size-contest-1-379-80%"
                   name="sampleSize[contest-1]"
                   type="radio"
                   value="379"
                 />
                 <label
                   class="sc-iwsKbI xkrrd"
-                  for="contest-1-379"
+                  for="sample-size-contest-1-379-80%"
                 >
                   
                   379 samples
@@ -232,14 +232,14 @@ Object {
                 style="white-space: nowrap;"
               >
                 <input
-                  id="contest-1-78"
+                  id="sample-size-contest-1-78-"
                   name="sampleSize[contest-1]"
                   type="radio"
                   value="78"
                 />
                 <label
                   class="sc-iwsKbI xkrrd"
-                  for="contest-1-78"
+                  for="sample-size-contest-1-78-"
                 >
                   
                   78 samples
