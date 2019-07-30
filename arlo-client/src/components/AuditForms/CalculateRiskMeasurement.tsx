@@ -188,11 +188,15 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                               aggregateContests[j].name
                             }`}
                           >
-                            {aggregateContests[j].endMeasurements.isComplete ? (
-                              <>
-                                <FormSectionLabel>
-                                  Contest Status: COMPLETE
-                                </FormSectionLabel>
+                            <>
+                              <FormSectionLabel>
+                                Audited Results: Round {i + 1}, Contest {j + 1}{' '}
+                                {aggregateContests[j].endMeasurements.isComplete
+                                  ? 'COMPLETE'
+                                  : 'INCOMPLETE'}
+                              </FormSectionLabel>
+                              {aggregateContests[j].endMeasurements
+                                .isComplete && (
                                 <InputSection>
                                   <InlineInput>
                                     <InputLabel>Risk Limit: </InputLabel>
@@ -206,44 +210,39 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                                     }
                                   </InlineInput>
                                 </InputSection>
-                              </>
-                            ) : (
-                              <>
-                                <FormSectionLabel>
-                                  Audited Results: Round {i + 1}, Contest{' '}
-                                  {j + 1} INCOMPLETE
-                                </FormSectionLabel>
+                              )}
+                              {!isSubmitted && (
                                 <FormSectionDescription>
                                   Enter the number of votes recorded for each
                                   candidate/choice in the audited ballots for
                                   Round {i + 1}, Contest {j + 1}
                                 </FormSectionDescription>
-                                <InputSection>
-                                  {Object.keys(contest).map(choiceId => {
-                                    const name = aggregateContests[
-                                      j
-                                    ].choices.find(
-                                      (candidate: Candidate) =>
-                                        candidate.id === choiceId
-                                    )!.name
-                                    return (
-                                      <React.Fragment key={choiceId}>
-                                        <InlineInput>
-                                          <InputLabel>{name}</InputLabel>
-                                          <Field
-                                            name={`contests[${j}][${choiceId}]`}
-                                            type="number"
-                                            validate={testNumber}
-                                            component={FormField}
-                                            disabled={isSubmitted}
-                                          />
-                                        </InlineInput>
-                                      </React.Fragment>
-                                    )
-                                  })}
-                                </InputSection>
-                              </>
-                            )}
+                              )}
+                              <InputSection>
+                                {Object.keys(contest).map(choiceId => {
+                                  const name = aggregateContests[
+                                    j
+                                  ].choices.find(
+                                    (candidate: Candidate) =>
+                                      candidate.id === choiceId
+                                  )!.name
+                                  return (
+                                    <React.Fragment key={choiceId}>
+                                      <InlineInput>
+                                        <InputLabel>{name}</InputLabel>
+                                        <Field
+                                          name={`contests[${j}][${choiceId}]`}
+                                          type="number"
+                                          validate={testNumber}
+                                          component={FormField}
+                                          disabled={isSubmitted}
+                                        />
+                                      </InlineInput>
+                                    </React.Fragment>
+                                  )
+                                })}
+                              </InputSection>
+                            </>
                           </FormSection>
                         )
                       })}
