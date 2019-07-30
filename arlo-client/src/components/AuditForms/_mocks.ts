@@ -227,50 +227,6 @@ export const statusStates: Audit[] = [
   },
 ]
 
-export const estimateSampleSizeMocks = {
-  inputs: [
-    { key: 'audit-name', value: 'Election Name' },
-    { key: 'contest-1-name', value: 'Contest Name' },
-    { key: 'contest-1-choice-1-name', value: 'Choice One' },
-    { key: 'contest-1-choice-2-name', value: 'Choice Two' },
-    { key: 'contest-1-choice-1-votes', value: '10' },
-    { key: 'contest-1-choice-2-votes', value: '20' },
-    { key: 'contest-1-total-ballots', value: '30' },
-    { key: 'risk-limit', value: '2' },
-    { key: 'random-seed', value: '123456789' },
-  ],
-  post: {
-    method: 'POST',
-    body: {
-      name: 'Election Name',
-      randomSeed: 123456789,
-      riskLimit: 2,
-      contests: [
-        {
-          id: expect.stringMatching(/^\d*$/),
-          name: 'Contest Name',
-          totalBallotsCast: 30,
-          choices: [
-            {
-              id: expect.stringMatching(/^\d*$/),
-              name: 'Choice One',
-              numVotes: 10,
-            },
-            {
-              id: expect.stringMatching(/^\d*$/),
-              name: 'Choice Two',
-              numVotes: 20,
-            },
-          ],
-        },
-      ],
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  },
-}
-
 /*
 import { statusStates } from '../AuditForms/_mocks'
 import { Audit } from '../../types'
