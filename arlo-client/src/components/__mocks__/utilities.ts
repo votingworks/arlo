@@ -1,7 +1,7 @@
 import { statusStates } from '../AuditForms/_mocks'
 import { Audit } from '../../types'
 
-export const api = jest.fn(
+export const api = (jest as any).fn(
   <T>(endpoint: string, options: any): Promise<T | Audit> => {
     switch (endpoint) {
       case '/audit/status':
