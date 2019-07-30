@@ -20,7 +20,7 @@ Object {
             <div
               class="sc-htpNat gYCOid"
             >
-              Audit Name
+              Election Name
             </div>
             <div
               class="sc-htoDjs jjofgS"
@@ -205,7 +205,7 @@ Object {
             <div
               class="sc-bwzfXH xctbO"
             >
-              Set the risk for the audit as as percentage (e.g. "5" = 5%
+              Set the risk for the audit as a percentage (e.g. "5" = 5%)
             </div>
             <select
               data-testid="risk-limit"
@@ -320,7 +320,7 @@ Object {
           <div
             class="sc-htpNat gYCOid"
           >
-            Audit Name
+            Election Name
           </div>
           <div
             class="sc-htoDjs jjofgS"
@@ -505,7 +505,7 @@ Object {
           <div
             class="sc-bwzfXH xctbO"
           >
-            Set the risk for the audit as as percentage (e.g. "5" = 5%
+            Set the risk for the audit as a percentage (e.g. "5" = 5%)
           </div>
           <select
             data-testid="risk-limit"

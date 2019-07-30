@@ -17,7 +17,7 @@ db = SQLAlchemy(app)
 from models import *
 
 def create_election():
-    e = Election(id=1, name="Election")
+    e = Election(id=1, name="")
     db.session.add(e)
     db.session.commit()
 
@@ -83,7 +83,7 @@ def compute_and_store_sample_sizes(election):
         sample_size_options.append({
             "type": type,
             "prob": prob,
-            "size": int(size)
+            "size": int(math.ceil(size))
         })
     
     election.sample_size_options = json.dumps(sample_size_options)

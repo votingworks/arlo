@@ -29,7 +29,7 @@ interface Props {
 }
 
 interface SelectBallotsToAuditValues {
-  auditBoards: number
+  auditBoards: string
   manifest: File | null
   sampleSize: {
     [key: string]: number | ''
@@ -61,7 +61,9 @@ const SelectBallotsToAudit = (props: Props) => {
     audit.jurisdictions[0].ballotManifest.numBatches
 
   const handlePost = async (values: SelectBallotsToAuditValues) => {
-    const auditBoards = Array.from(Array(values.auditBoards).keys()).map(i => {
+    const auditBoards = Array.from(
+      Array(parseInt(values.auditBoards)).keys()
+    ).map(i => {
       return {
         id: `audit-board-${i + 1}`,
         name: `Audit Board #${i + 1}`,
@@ -81,10 +83,16 @@ const SelectBallotsToAudit = (props: Props) => {
       ]
       setIsLoading(true)
       if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
-        const body = JSON.stringify({
-          size: Number(values.sampleSize[audit.contests[0].id]), // until multiple contests are supported
+        const body = {
+          size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
+        }
+        await api('/audit/sample-size', {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers: {
+            'Content-Type': 'application/json',
+          },
         })
-        await api('/audit/sample-size', { method: 'POST', body })
       }
       await api('/audit/jurisdictions', {
         method: 'POST',
@@ -123,9 +131,10 @@ const SelectBallotsToAudit = (props: Props) => {
 
   const initialState: SelectBallotsToAuditValues = {
     auditBoards:
-      (audit.jurisdictions.length &&
+      '' +
+      ((audit.jurisdictions.length &&
         audit.jurisdictions[0].auditBoards.length) ||
-      1,
+        1),
     manifest: null,
     sampleSize: [...audit.contests].reduce((a: any, c) => {
       a[c.id] = c.sampleSizeOptions
@@ -207,7 +216,8 @@ const SelectBallotsToAudit = (props: Props) => {
                                   : ''}
                                 {`${option.size} samples`}
                                 {option.prob
-                                  ? ` (${option.prob} chance of reaching risk limit and completing the audit in one round)`
+                                  ? ` (${option.prob *
+                                      100}% chance of reaching risk limit and completing the audit in one round)`
                                   : ''}
                               </InputLabel>
                             </span>

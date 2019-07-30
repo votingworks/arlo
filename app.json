@@ -16,6 +16,7 @@
   },
   "name": "arlo",
   "scripts": {
+    "postdeploy": "pipenv run python create.py"
   },
   "stack": "heroku-18"
 }

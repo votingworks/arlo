@@ -178,23 +178,20 @@ const EstimateSampleSize = ({
   const contestValues = [
     {
       name: '',
-      totalBallotsCast: 0,
       choices: [
         {
           name: '',
-          numVotes: 0,
         },
         {
           name: '',
-          numVotes: 0,
         },
       ],
     },
   ]
 
   const initialValues = {
-    randomSeed: audit.randomSeed || 0,
-    riskLimit: audit.riskLimit || 1,
+    randomSeed: audit.randomSeed || '',
+    riskLimit: audit.riskLimit || 10,
     name: audit.name || '',
     contests: audit.contests.length ? audit.contests : contestValues,
   }
@@ -210,7 +207,7 @@ const EstimateSampleSize = ({
         {({ values, handleSubmit }: FormikProps<EstimateSampleSizeValues>) => (
           <Form>
             <FormWrapper title="Contest Information">
-              <FormSection label="Audit Name">
+              <FormSection label="Election Name">
                 <Field
                   name="name"
                   data-testid="audit-name"
@@ -351,7 +348,7 @@ const EstimateSampleSize = ({
               <FormTitle>Audit Settings</FormTitle>
               <FormSection
                 label="Desired Risk Limit"
-                description='Set the risk for the audit as as percentage (e.g. "5" = 5%'
+                description='Set the risk for the audit as a percentage (e.g. "5" = 5%)'
               >
                 <Field
                   name="riskLimit"
