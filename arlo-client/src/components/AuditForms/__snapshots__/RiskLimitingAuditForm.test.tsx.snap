@@ -17,7 +17,7 @@ exports[`renders correctly 1`] = `
         <div
           class="sc-htpNat gYCOid"
         >
-          Audit Name
+          Election Name
         </div>
         <div
           class="sc-htoDjs jjofgS"
@@ -107,7 +107,7 @@ exports[`renders correctly 1`] = `
                 data-testid="contest-1-choice-1-votes"
                 name="contests[0].choices[0].numVotes"
                 type="number"
-                value="0"
+                value=""
               />
             </div>
           </div>
@@ -148,7 +148,7 @@ exports[`renders correctly 1`] = `
                 data-testid="contest-1-choice-2-votes"
                 name="contests[0].choices[1].numVotes"
                 type="number"
-                value="0"
+                value=""
               />
             </div>
           </div>
@@ -180,7 +180,7 @@ exports[`renders correctly 1`] = `
             data-testid="contest-1-total-ballots"
             name="contests[0].totalBallotsCast"
             type="number"
-            value="0"
+            value=""
           />
         </div>
       </div>
@@ -200,7 +200,7 @@ exports[`renders correctly 1`] = `
         <div
           class="sc-bwzfXH xctbO"
         >
-          Set the risk for the audit as as percentage (e.g. "5" = 5%
+          Set the risk for the audit as a percentage (e.g. "5" = 5%)
         </div>
         <select
           data-testid="risk-limit"
@@ -289,7 +289,7 @@ exports[`renders correctly 1`] = `
             data-testid="random-seed"
             name="randomSeed"
             type="number"
-            value="0"
+            value=""
           />
         </div>
       </div>

@@ -56,14 +56,14 @@ Object {
                   style="white-space: nowrap;"
                 >
                   <input
-                    id="sample-size-contest-1-379-80%"
+                    id="sample-size-contest-1-379-0.8"
                     name="sampleSize[contest-1]"
                     type="radio"
                     value="379"
                   />
                   <label
                     class="sc-iwsKbI xkrrd"
-                    for="sample-size-contest-1-379-80%"
+                    for="sample-size-contest-1-379-0.8"
                   >
                     
                     379 samples
@@ -212,14 +212,14 @@ Object {
                 style="white-space: nowrap;"
               >
                 <input
-                  id="sample-size-contest-1-379-80%"
+                  id="sample-size-contest-1-379-0.8"
                   name="sampleSize[contest-1]"
                   type="radio"
                   value="379"
                 />
                 <label
                   class="sc-iwsKbI xkrrd"
-                  for="sample-size-contest-1-379-80%"
+                  for="sample-size-contest-1-379-0.8"
                 >
                   
                   379 samples
