@@ -10,6 +10,7 @@ import statusStates, { estimateSampleSizeMocks } from './_mocks'
 import apiMock from '../utilities'
 
 jest.mock('../utilities')
+;(apiMock as jest.Mock).mockImplementation(() => statusStates[1])
 
 describe('EstimateSampleSize', () => {
   it('renders empty state correctly', () => {
