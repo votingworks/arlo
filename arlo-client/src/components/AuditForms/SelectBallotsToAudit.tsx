@@ -158,13 +158,14 @@ const SelectBallotsToAudit = (props: Props) => {
               )
               const duplicateOption =
                 duplicateOptionIndex > -1 ? acc[duplicateOptionIndex] : false
-              if (
-                duplicateOption &&
-                option.prob &&
-                duplicateOption.prob &&
-                Number(duplicateOption.prob) < option.prob
-              ) {
-                duplicateOption.prob = option.prob
+              if (duplicateOption) {
+                if (
+                  option.prob &&
+                  duplicateOption.prob &&
+                  Number(duplicateOption.prob) < option.prob
+                ) {
+                  duplicateOption.prob = option.prob
+                }
               } else {
                 acc.push({
                   ...option,
