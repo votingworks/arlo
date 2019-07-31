@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Route } from 'react-router-dom'
 import { api } from './utilities'
 
 const HeaderContainer = styled.div`
@@ -33,9 +34,14 @@ const Header = () => {
   return (
     <HeaderContainer>
       <img height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      <ButtonBar>
-        <Button onClick={reset}>Clear & Restart</Button>
-      </ButtonBar>
+      <Route
+        path="/election"
+        render={() => (
+          <ButtonBar>
+            <Button onClick={reset}>Clear & Restart</Button>
+          </ButtonBar>
+        )}
+      />
     </HeaderContainer>
   )
 }
