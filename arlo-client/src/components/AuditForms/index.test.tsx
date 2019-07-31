@@ -1,7 +1,7 @@
 import React from 'react'
 // import { render } from '@testing-library/react'
 import { shallow } from 'enzyme'
-import AuditForms from './RiskLimitingAuditForm'
+import AuditForms from '.'
 
 it('renders correctly', () => {
   const container = shallow(<AuditForms />)
