@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import FormButton from './Form/FormButton'
+//import api from './utilities'
 
 const Button = styled(FormButton)`
   position: absolute;
@@ -13,12 +14,16 @@ const Button = styled(FormButton)`
 `
 
 const CreateAudit = ({ history }: any) => {
-  const onClick = () => {
-    history.push('/election/1')
+  const [loading, setLoading] = useState(false)
+  const onClick = async () => {
+    setLoading(true)
+    //const { id } = await api('/new-audit', {method: 'POST'})
+    const id = 1
+    history.push(`/election/${id}`)
   }
   return (
     <Button type="button" onClick={onClick}>
-      Create a New Audit
+      {loading ? 'Wait a moment...' : 'Create a New Audit'}
     </Button>
   )
 }
