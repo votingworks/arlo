@@ -22,7 +22,12 @@ const App: React.FC = () => {
     <Router>
       <ToastContainer />
       <Main>
-        <Header />
+        {/* eslint-disable react/no-children-prop */}
+        <Route
+          exact
+          path="/"
+          children={({ match }) => <Header isHome={!!match} />}
+        />
         <Route exact path="/" component={CreateAudit} />
         <Route path="/election/:id" component={AuditForms} />
       </Main>

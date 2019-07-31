@@ -9,9 +9,9 @@ const Button = styled(FormButton)`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 50%;
-  height: 100px;
-  font-size: 40px;
+  height: 2.5rem;
+  padding: 0 30px;
+  font-size: 1.5rem;
 `
 
 const CreateAudit = ({ history }: any) => {

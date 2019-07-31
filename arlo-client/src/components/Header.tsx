@@ -23,7 +23,14 @@ const Button = styled.button`
   font-weight: 500;
 `
 
-const Header = () => {
+const HomeImg = styled.img`
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translateX(-50%);
+`
+
+const Header = (props: any) => {
   const reset = async () => {
     await api(`/audit/reset`, { method: 'POST' })
 
@@ -33,7 +40,11 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <img height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
+      {props.isHome ? (
+        <HomeImg height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
+      ) : (
+        <img height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
+      )}
       <Route
         path="/election"
         render={() => (
