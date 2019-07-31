@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import FormButton from './Form/FormButton'
 //import api from './utilities'
+const wait = (ms: number) => new Promise((r, j) => setTimeout(r, ms))
 
 const Button = styled(FormButton)`
   position: absolute;
@@ -19,6 +20,7 @@ const CreateAudit = ({ history }: any) => {
     setLoading(true)
     //const { id } = await api('/new-audit', {method: 'POST'})
     const id = 1
+    await wait(2000)
     history.push(`/election/${id}`)
   }
   return (
