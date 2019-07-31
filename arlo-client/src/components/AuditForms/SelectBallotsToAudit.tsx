@@ -12,7 +12,7 @@ import FormSection, {
 import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
-import { Jurisdiction, Audit, Contest } from '../../types'
+import { Jurisdiction, Audit, Contest, SampleSizeOption } from '../../types'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 
@@ -151,10 +151,30 @@ const SelectBallotsToAudit = (props: Props) => {
   const sampleSizeOptions = [...audit.contests].reduce(
     (acc: any, contest: Contest) => {
       acc[contest.id] = contest.sampleSizeOptions
-        ? contest.sampleSizeOptions.map(option => ({
-            ...option,
-            size: option.size.toString(),
-          }))
+        ? contest.sampleSizeOptions.reduce(
+            (acc: SampleSizeOption[], option: SampleSizeOption) => {
+              const duplicateOptionIndex: number = acc.findIndex(
+                (v: any) => Number(v.size) === option.size
+              )
+              const duplicateOption =
+                duplicateOptionIndex > -1 ? acc[duplicateOptionIndex] : false
+              if (
+                duplicateOption &&
+                option.prob &&
+                duplicateOption.prob &&
+                Number(duplicateOption.prob) < option.prob
+              ) {
+                duplicateOption.prob = option.prob
+              } else {
+                acc.push({
+                  ...option,
+                  size: option.size.toString(),
+                })
+              }
+              return acc
+            },
+            []
+          )
         : []
       return acc
     },
