@@ -235,6 +235,7 @@ const SelectBallotsToAudit = (props: Props) => {
             >
               <select
                 id="auditBoards"
+                data-testid="audit-boards"
                 name="auditBoards"
                 value={values.auditBoards}
                 onChange={handleChange}

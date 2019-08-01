@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly 1`] = `
+exports[`SelectBallotsToAudit renders correctly 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
@@ -107,6 +107,7 @@ Object {
               Set the number of audit boards you with to use.
             </div>
             <select
+              data-testid="audit-boards"
               id="auditBoards"
               name="auditBoards"
             >
@@ -263,6 +264,7 @@ Object {
             Set the number of audit boards you with to use.
           </div>
           <select
+            data-testid="audit-boards"
             id="auditBoards"
             name="auditBoards"
           >
