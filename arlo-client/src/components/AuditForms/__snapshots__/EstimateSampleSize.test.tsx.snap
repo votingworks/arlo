@@ -77,13 +77,13 @@ Object {
                 class="sc-jTzLTM kHOUMK"
               >
                 <label
-                  class="sc-kAzzGY cmOrRM"
+                  class="sc-kAzzGY kQOXij"
                 >
                   Name of Candidate/Choice 
                   1
                 </label>
                 <label
-                  class="sc-chPdSV kHjWou"
+                  class="sc-kAzzGY sc-chPdSV gzFJUu"
                 >
                   Votes for Candidate/Choice 
                   1
@@ -118,13 +118,13 @@ Object {
                 class="sc-jTzLTM kHOUMK"
               >
                 <label
-                  class="sc-kAzzGY cmOrRM"
+                  class="sc-kAzzGY kQOXij"
                 >
                   Name of Candidate/Choice 
                   2
                 </label>
                 <label
-                  class="sc-chPdSV kHjWou"
+                  class="sc-kAzzGY sc-chPdSV gzFJUu"
                 >
                   Votes for Candidate/Choice 
                   2
@@ -368,13 +368,13 @@ Object {
               class="sc-jTzLTM kHOUMK"
             >
               <label
-                class="sc-kAzzGY cmOrRM"
+                class="sc-kAzzGY kQOXij"
               >
                 Name of Candidate/Choice 
                 1
               </label>
               <label
-                class="sc-chPdSV kHjWou"
+                class="sc-kAzzGY sc-chPdSV gzFJUu"
               >
                 Votes for Candidate/Choice 
                 1
@@ -409,13 +409,13 @@ Object {
               class="sc-jTzLTM kHOUMK"
             >
               <label
-                class="sc-kAzzGY cmOrRM"
+                class="sc-kAzzGY kQOXij"
               >
                 Name of Candidate/Choice 
                 2
               </label>
               <label
-                class="sc-chPdSV kHjWou"
+                class="sc-kAzzGY sc-chPdSV gzFJUu"
               >
                 Votes for Candidate/Choice 
                 2
