@@ -40,7 +40,7 @@ const schema = Yup.object().shape({
   auditBoards: Yup.number()
     .typeError('Must be a number')
     .min(1, 'Too few Audit Boards')
-    .max(5, 'Too many Audit Boards')
+    .max(15, 'Too many Audit Boards')
     .required('Required'),
   manifest: Yup.mixed()
     .required('You must upload a manifest')
@@ -236,7 +236,7 @@ const SelectBallotsToAudit = (props: Props) => {
                 onBlur={handleBlur}
                 disabled={!!audit.rounds.length}
               >
-                {generateOptions(5)}
+                {generateOptions(15)}
               </select>
               {errors.auditBoards && touched.auditBoards && (
                 <ErrorLabel>{errors.auditBoards}</ErrorLabel>
