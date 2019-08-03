@@ -17,7 +17,7 @@ db = SQLAlchemy(app)
 from models import *
 
 def create_election():
-    e = Election(id=1, name="")
+    e = Election(id='1', name="")
     db.session.add(e)
     db.session.commit()
 
@@ -25,8 +25,8 @@ def init_db():
     db.create_all()
     create_election()
 
-def get_election():
-    return Election.query.all()[0]
+def get_election(election_id=None):
+    return Election.query.filter_by(id = (election_id or '1')).one()
 
 def contest_status(election):
     contests = {}
@@ -183,9 +183,10 @@ def check_round(election, jurisdiction_id, round_id):
 
 # get/set audit config
 # state and jurisdictions[]
+@app.route('/election/{election_id}/audit/status', methods=["GET"])
 @app.route('/audit/status', methods=["GET"])
-def audit_status():
-    election = get_election()
+def audit_status(election_id = None):
+    election = get_election(election_id)
 
     return jsonify(
         name = election.name,
@@ -249,9 +250,10 @@ def audit_status():
         ]
     )
 
+@app.route('/election/{election_id}/audit/basic', methods=["POST"])
 @app.route('/audit/basic', methods=["POST"])
-def audit_basic_update():
-    election = get_election()
+def audit_basic_update(election_id=None):
+    election = get_election(election_id)
     info = request.get_json()
     election.name = info['name']
     election.risk_limit = info['riskLimit']
@@ -279,18 +281,20 @@ def audit_basic_update():
 
     return jsonify(status="ok")
 
+@app.route('/election/{election_id}/audit/sample-size', methods=["POST"])
 @app.route('/audit/sample-size', methods=["POST"])
-def samplesize_set():
-    election = get_election()
+def samplesize_set(election_id=None):
+    election = get_election(election_id)
     election.chosen_sample_size = int(request.get_json()['size'])
     db.session.commit()
 
     return jsonify(status="ok")
 
 
+@app.route('/election/{election_id}/audit/jurisdictions', methods=["POST"])
 @app.route('/audit/jurisdictions', methods=["POST"])
-def jurisdictions_set():
-    election = get_election()
+def jurisdictions_set(election_id=None):
+    election = get_election(election_id)
     jurisdictions = request.get_json()['jurisdictions']
     
     db.session.query(Jurisdiction).filter_by(election_id = election.id).delete()
@@ -322,10 +326,11 @@ def jurisdictions_set():
 
     return jsonify(status="ok")
 
+@app.route('/election/{election_id}/jurisdiction/<jurisdiction_id>/manifest', methods=["DELETE","POST"])
 @app.route('/jurisdiction/<jurisdiction_id>/manifest', methods=["DELETE","POST"])
-def jurisdiction_manifest(jurisdiction_id):
-    election = get_election()
-    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+def jurisdiction_manifest(jurisdiction_id, election_id=None):
+    election = get_election(election_id)
+    jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).one()
 
     if not jurisdiction:
         return "no jurisdiction", 404
@@ -378,12 +383,17 @@ def jurisdiction_manifest(jurisdiction_id):
     
     return jsonify(status="ok")
 
+@app.route('/election/{election_id}/jurisdiction/<jurisdiction_id>/<round_id>/retrieval-list', methods=["GET"])
 @app.route('/jurisdiction/<jurisdiction_id>/<round_id>/retrieval-list', methods=["GET"])
-def jurisdiction_retrieval_list(jurisdiction_id, round_id):
+def jurisdiction_retrieval_list(jurisdiction_id, round_id, election_id=None):
+    election = get_election(election_id)
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)
     retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Times Selected","Audit Board"])
 
+    # check the jurisdiction
+    jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).all()[0]
+    
     ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = int(round_id)).order_by('batch_id', 'ballot_position').all()
 
     for ballot in ballots:
@@ -393,11 +403,15 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_id):
     response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-{:s}-{:s}.csv"'.format(jurisdiction_id, round_id)
     return response
 
+@app.route('/election/{election_id}/jurisdiction/<jurisdiction_id>/<round_id>/results', methods=["POST"])
 @app.route('/jurisdiction/<jurisdiction_id>/<round_id>/results', methods=["POST"])
-def jurisdiction_results(jurisdiction_id, round_id):
-    election = get_election()
+def jurisdiction_results(jurisdiction_id, round_id, election_id=None):
+    election = get_election(election_id)
     results = request.get_json()
 
+    # check the round ownership
+    round = Round.query.filter_by(election_id = election.id, id = round_id).all()[0]
+    
     for contest in results["contests"]:
         round_contest = RoundContest.query.filter_by(contest_id = contest["id"], round_id = round_id).one()
         RoundContestResult.query.filter_by(contest_id = contest["id"], round_id = round_id).delete()
@@ -416,9 +430,10 @@ def jurisdiction_results(jurisdiction_id, round_id):
 
     return jsonify(status="ok")
 
+@app.route('/election/{election_id}/audit/report', methods=["GET"])
 @app.route('/audit/report', methods=["GET"])
-def audit_report():
-    election = get_election()
+def audit_report(election_id=None):
+    election = get_election(election_id)
     jurisdiction = election.jurisdictions[0]
 
     csv_io = io.StringIO()
@@ -461,8 +476,9 @@ def audit_report():
     return response
     
 
+@app.route('/election/{election_id}/audit/reset', methods=["POST"])
 @app.route('/audit/reset', methods=["POST"])
-def audit_reset():
+def audit_reset(election_id=None):
     SampledBallot.query.delete()
     AuditBoard.query.delete()
     Batch.query.delete()
