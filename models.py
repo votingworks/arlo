@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 # State is in here
 class Election(db.Model):
     id = db.Column(db.String(200), primary_key=True)
-    name = db.Column(db.String(200), unique=True, nullable=True)
+    name = db.Column(db.String(200), nullable=True)
     state = db.Column(db.String(100), nullable=True)
     election_date = db.Column(db.Date, nullable=True)
     election_type = db.Column(db.String(200), nullable=True)
