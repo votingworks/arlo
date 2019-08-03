@@ -1,8 +1,13 @@
 # API Documentation
 
-JSON for sure.
+- `POST /election/new`
+```
+{
+	electionId: "03649ac0-b623-11e9-83e1-bf0244df89af"
+}
+```
 
-- `GET /audit/status` -- get the whole data structure for the whole audit
+- `GET /election/{electionId}/audit/status` -- get the whole data structure for the whole audit
 
 ```
 {
@@ -87,7 +92,7 @@ JSON for sure.
 }
 ```
 
-- `POST /audit/basic` -- the overall audit configuration
+- `POST /election/{electionId}/audit/basic` -- the overall audit configuration
 
 ```
 {
@@ -115,7 +120,7 @@ JSON for sure.
 ```
 
 
-- `POST /audit/jurisdictions` -- the jurisdictions that are going to be auditing
+- `POST /election/{electionId}/audit/jurisdictions` -- the jurisdictions that are going to be auditing
 
 ```
 {
@@ -141,7 +146,7 @@ JSON for sure.
 }
 ```
 
-- `POST /audit/sample-size` -- the selected sample size from the given sampleSizeOptions
+- `POST /election/{electionId}/audit/sample-size` -- the selected sample size from the given sampleSizeOptions
 
 ```
 {
@@ -149,14 +154,14 @@ JSON for sure.
 }
 ```
 
-- `POST /jurisdiction/<jurisdiction_id>/manifest` -- the ballot manifest
+- `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/manifest` -- the ballot manifest
 
 straight file upload `multipart/form-data`
 
 
-- `DELETE /jurisdiction/<jurisdiction_id>/manifest` -- delete the ballot manifest
+- `DELETE /election/{electionId}/jurisdiction/<jurisdiction_id>/manifest` -- delete the ballot manifest
 
-- `POST /jurisdiction/<jurisdiction_id>/<round_id>/results` -- the results for one round
+- `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/<round_id>/results` -- the results for one round
 
 ```
 {
@@ -172,8 +177,8 @@ straight file upload `multipart/form-data`
 }
 ```
 
-- `GET /jurisdiction/<jurisdiction_id>/<round_id>/retrieval-list` -- retrieval list as an attachment
+- `GET /election/{electionId}/jurisdiction/<jurisdiction_id>/<round_id>/retrieval-list` -- retrieval list as an attachment
 
-- `GET /audit/report` -- the audit report
+- `GET /election/{electionId}/audit/report` -- the audit report
 
-- `POST /audit/reset` -- reset the whole thing
+- `POST /election/{electionId}/audit/reset` -- reset the whole thing (we may deprecate this one in the future to prevent erroneous deletions, since you can just create a new audit)
