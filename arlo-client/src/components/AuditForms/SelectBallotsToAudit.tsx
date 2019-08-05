@@ -233,17 +233,15 @@ const SelectBallotsToAudit = (props: Props) => {
               label="Number of Audit Boards"
               description="Set the number of audit boards you with to use."
             >
-              <select
+              <Field
+                component="select"
                 id="auditBoards"
                 data-testid="audit-boards"
                 name="auditBoards"
-                value={values.auditBoards}
-                onChange={handleChange}
-                onBlur={handleBlur}
                 disabled={!!audit.rounds.length}
               >
                 {generateOptions(5)}
-              </select>
+              </Field>
               {errors.auditBoards && touched.auditBoards && (
                 <ErrorLabel>{errors.auditBoards}</ErrorLabel>
               )}
