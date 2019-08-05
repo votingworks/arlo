@@ -179,4 +179,42 @@ describe('SelectBallotsToAudit', () => {
       }
     )
   })
+
+  it('uses the highest prob value from duplicate sampleSizes', () => {
+    statusStates[1].contests[0].sampleSizeOptions = [
+      { size: 30, prob: 0.9 },
+      { size: 30, prob: 0.8 },
+    ]
+    const { queryAllByText } = render(
+      <SelectBallotsToAudit
+        audit={statusStates[1]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+        getStatus={jest.fn()}
+      />
+    )
+
+    expect(
+      queryAllByText(
+        '30 samples (90% chance of reaching risk limit and completing the audit in one round)'
+      ).length
+    ).toBe(1)
+  })
+
+  it('does not display duplicate sampleSize options', () => {
+    const statusState = { ...statusStates[1] }
+    statusState.contests[0].sampleSizeOptions = [{ size: 30 }, { size: 30 }]
+    const { queryAllByText } = render(
+      <SelectBallotsToAudit
+        audit={statusState}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+        getStatus={jest.fn()}
+      />
+    )
+
+    expect(queryAllByText('30 samples').length).toBe(1)
+  })
 })

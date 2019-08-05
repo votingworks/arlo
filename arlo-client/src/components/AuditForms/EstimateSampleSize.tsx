@@ -52,10 +52,12 @@ const FieldRight = styled(FieldLeft)`
 
 const InputLabel = styled.label`
   display: inline-block;
+  flex-grow: 2;
+  width: unset;
 `
 
-const InputLabelRight = styled.label`
-  margin-left: 75px;
+const InputLabelRight = styled(InputLabel)`
+  margin-left: 60px;
 `
 
 const Action = styled.p`
@@ -178,12 +180,15 @@ const EstimateSampleSize = ({
   const contestValues = [
     {
       name: '',
+      totalBallotsCast: '',
       choices: [
         {
           name: '',
+          numVotes: '',
         },
         {
           name: '',
+          numVotes: '',
         },
       ],
     },
