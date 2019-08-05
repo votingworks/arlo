@@ -270,6 +270,7 @@ const SelectBallotsToAudit = (props: Props) => {
                   </FormSectionDescription>
                   <input
                     type="file"
+                    data-testid="ballot-manifest"
                     accept=".csv"
                     name="manifest"
                     onChange={e => {

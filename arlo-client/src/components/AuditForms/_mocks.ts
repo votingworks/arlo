@@ -245,4 +245,10 @@ export const api = <T>(endpoint: string, options: any): Promise<T | Audit> => {
 export default api
 */
 
+export const ballotManifest = new File(
+  ['ballot manifest'],
+  'ballotManifest.csv',
+  { type: 'text/csv' }
+)
+
 export default statusStates

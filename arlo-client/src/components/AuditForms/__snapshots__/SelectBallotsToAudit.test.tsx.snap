@@ -143,6 +143,7 @@ Object {
             </div>
             <input
               accept=".csv"
+              data-testid="ballot-manifest"
               name="manifest"
               type="file"
             />
@@ -300,6 +301,7 @@ Object {
           </div>
           <input
             accept=".csv"
+            data-testid="ballot-manifest"
             name="manifest"
             type="file"
           />
