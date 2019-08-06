@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`EstimateSampleSize renders Styled(styled.label) correctly 1`] = `
+<div>
+  <label
+    class="sc-kAzzGY sc-chPdSV gzFJUu"
+  />
+</div>
+`;
+
 exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
 Object {
   "asFragment": [Function],
@@ -3295,4 +3303,44 @@ Object {
   "rerender": [Function],
   "unmount": [Function],
 }
+`;
+
+exports[`EstimateSampleSize renders styled.div correctly 1`] = `
+<div>
+  <div
+    class="sc-VigVT gSWWKv"
+  />
+</div>
+`;
+
+exports[`EstimateSampleSize renders styled.div correctly 2`] = `
+<div>
+  <div
+    class="sc-jTzLTM kHOUMK"
+  />
+</div>
+`;
+
+exports[`EstimateSampleSize renders styled.div correctly 3`] = `
+<div>
+  <div
+    class="sc-fjdhpX gYcVlS"
+  />
+</div>
+`;
+
+exports[`EstimateSampleSize renders styled.label correctly 1`] = `
+<div>
+  <label
+    class="sc-kAzzGY kQOXij"
+  />
+</div>
+`;
+
+exports[`EstimateSampleSize renders styled.p correctly 1`] = `
+<div>
+  <p
+    class="sc-kgoBCf ehqtTc"
+  />
+</div>
 `;

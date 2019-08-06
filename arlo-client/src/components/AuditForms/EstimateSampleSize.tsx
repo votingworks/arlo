@@ -20,20 +20,20 @@ import FormButtonBar from '../Form/FormButtonBar'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 
-const TwoColumnSection = styled.div`
+export const TwoColumnSection = styled.div`
   display: block;
   margin-top: 25px;
   width: 100%;
   font-size: 0.4em;
 `
 
-const InputLabelRow = styled.div`
+export const InputLabelRow = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 10px;
   width: 100%;
 `
-const InputFieldRow = styled.div`
+export const InputFieldRow = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -41,26 +41,26 @@ const InputFieldRow = styled.div`
   width: 100%;
 `
 
-const FieldLeft = styled(FormField)`
+export const FieldLeft = styled(FormField)`
   flex-grow: 2;
   width: unset;
 `
 
-const FieldRight = styled(FieldLeft)`
+export const FieldRight = styled(FieldLeft)`
   margin-left: 50px;
 `
 
-const InputLabel = styled.label`
+export const InputLabel = styled.label`
   display: inline-block;
   flex-grow: 2;
   width: unset;
 `
 
-const InputLabelRight = styled(InputLabel)`
+export const InputLabelRight = styled(InputLabel)`
   margin-left: 60px;
 `
 
-const Action = styled.p`
+export const Action = styled.p`
   margin: 5px 0 0 0;
   width: 100%;
   color: #000088;
@@ -144,7 +144,7 @@ const EstimateSampleSize = ({
 }: Props) => {
   const canEstimateSampleSize = !audit.contests.length
 
-  const handlePost = async (values: EstimateSampleSizeValues) => {
+  const handlePost = (values: EstimateSampleSizeValues) => {
     const data = {
       name: values.name,
       randomSeed: Number(values.randomSeed),
@@ -160,21 +160,17 @@ const EstimateSampleSize = ({
         })),
       })),
     }
-    try {
-      setIsLoading(true)
-      await api(`/audit/basic`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      updateAudit()
-    } catch (err) {
-      toast.error(err.message)
-    } finally {
-      setIsLoading(false)
-    }
+    setIsLoading(true)
+    api(`/audit/basic`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(() => updateAudit())
+      .catch(err => toast.error(err.message))
+      .finally(() => setIsLoading(false))
   }
 
   const contestValues = [
@@ -245,14 +241,14 @@ const EstimateSampleSize = ({
                               component={FormField}
                               data-testid={`contest-${i + 1}-name`}
                             />
-                            {values.contests.length > 1 &&
+                            {/*values.contests.length > 1 &&
                               !audit.contests.length && (
                                 <Action
                                   onClick={() => contestsArrayHelpers.remove(i)}
                                 >
                                   Remove Contest {i + 1}
                                 </Action>
-                              )}
+                              )*/}
                           </FormSection>
                           <FieldArray
                             name={`contests[${i}].choices`}

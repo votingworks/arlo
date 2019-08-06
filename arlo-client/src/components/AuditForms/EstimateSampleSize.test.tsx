@@ -6,7 +6,16 @@ import {
   waitForDomChange,
 } from '@testing-library/react'
 import toastMock from 'react-toastify'
-import EstimateSampleSize from './EstimateSampleSize'
+import EstimateSampleSize, {
+  TwoColumnSection,
+  InputLabelRow,
+  InputFieldRow,
+  //FieldLeft,
+  //FieldRight,
+  InputLabel,
+  InputLabelRight,
+  Action,
+} from './EstimateSampleSize'
 import statusStates from './_mocks'
 import apiMock from '../utilities'
 
@@ -144,7 +153,27 @@ const estimateSampleSizeMocks = {
   },
 }
 
+function getDisplayName(WrappedComponent: any) {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component'
+}
+
 describe('EstimateSampleSize', () => {
+  ;[
+    TwoColumnSection,
+    InputLabelRow,
+    InputFieldRow,
+    //FieldLeft,
+    //FieldRight,
+    InputLabel,
+    InputLabelRight,
+    Action,
+  ].forEach((Component: any) => {
+    it(`renders ${getDisplayName(Component)} correctly`, () => {
+      const { container } = render(<Component />)
+      expect(container).toMatchSnapshot()
+    })
+  })
+
   it('renders empty state correctly', () => {
     const container = render(
       <EstimateSampleSize
@@ -331,16 +360,17 @@ describe('EstimateSampleSize', () => {
   it('is handles errors from the form submission', () => {
     ;(apiMock as jest.Mock).mockImplementation(() =>
       Promise.reject({
-        statusText: 'A test error',
+        message: 'A test error',
         ok: false,
       })
     )
+    const updateAuditMock = jest.fn()
     const { getByTestId, getByText, container } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
         setIsLoading={jest.fn()}
-        updateAudit={jest.fn()}
+        updateAudit={updateAuditMock}
       />
     )
 
@@ -356,6 +386,8 @@ describe('EstimateSampleSize', () => {
       () => {
         expect((apiMock as jest.Mock).mock.calls.length).toBe(1)
         expect(toastMock).toHaveBeenCalledTimes(1)
+        expect(toastMock).toHaveBeenCalledWith('A test error')
+        expect(updateAuditMock).toHaveBeenCalledTimes(0)
       },
       error => {
         throw new Error(error)
