@@ -4,6 +4,7 @@ import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
 import { Audit } from '../../types'
+import ResetButton from './ResetButton'
 
 const initialData = {
   name: '',
@@ -37,6 +38,8 @@ const AuditForms = () => {
 
   return (
     <React.Fragment>
+      <ResetButton updateAudit={updateAudit} />
+
       <EstimateSampleSize
         audit={audit}
         isLoading={isLoading}

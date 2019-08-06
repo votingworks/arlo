@@ -49,7 +49,12 @@ Object {
             <div
               class="sc-htpNat gYCOid"
             >
-              Contest Status: COMPLETE
+              Audited Results: Round 
+              1
+              , Contest 
+              1
+               
+              COMPLETE
             </div>
             <div
               class="sc-gqjmRU bqmubQ"
@@ -75,6 +80,50 @@ Object {
                 </label>
                  
                 0.00020431431380638307
+              </div>
+            </div>
+            <div
+              class="sc-gqjmRU bqmubQ"
+            >
+              <div
+                class="sc-jTzLTM hJXymL"
+              >
+                <label
+                  class="sc-VigVT hLPYRt"
+                >
+                  choice one
+                </label>
+                <div
+                  class="sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0][choice-1]"
+                    type="number"
+                    value="100"
+                  />
+                </div>
+              </div>
+              <div
+                class="sc-jTzLTM hJXymL"
+              >
+                <label
+                  class="sc-VigVT hLPYRt"
+                >
+                  choice two
+                </label>
+                <div
+                  class="sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    disabled=""
+                    name="contests[0][choice-2]"
+                    type="number"
+                    value="167"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -150,7 +199,12 @@ Object {
           <div
             class="sc-htpNat gYCOid"
           >
-            Contest Status: COMPLETE
+            Audited Results: Round 
+            1
+            , Contest 
+            1
+             
+            COMPLETE
           </div>
           <div
             class="sc-gqjmRU bqmubQ"
@@ -176,6 +230,50 @@ Object {
               </label>
                
               0.00020431431380638307
+            </div>
+          </div>
+          <div
+            class="sc-gqjmRU bqmubQ"
+          >
+            <div
+              class="sc-jTzLTM hJXymL"
+            >
+              <label
+                class="sc-VigVT hLPYRt"
+              >
+                choice one
+              </label>
+              <div
+                class="sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0][choice-1]"
+                  type="number"
+                  value="100"
+                />
+              </div>
+            </div>
+            <div
+              class="sc-jTzLTM hJXymL"
+            >
+              <label
+                class="sc-VigVT hLPYRt"
+              >
+                choice two
+              </label>
+              <div
+                class="sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  disabled=""
+                  name="contests[0][choice-2]"
+                  type="number"
+                  value="167"
+                />
+              </div>
             </div>
           </div>
         </div>
