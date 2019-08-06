@@ -24,6 +24,93 @@ const estimateSampleSizeMocks = {
     { key: 'risk-limit', value: '2' },
     { key: 'random-seed', value: '123456789' },
   ],
+  errorInputs: [
+    { key: 'audit-name', value: '', error: 'Required', count: 1 },
+    { key: 'contest-1-name', value: '', error: 'Required', count: 2 },
+    { key: 'contest-1-choice-1-name', value: '', error: 'Required', count: 3 },
+    { key: 'contest-1-choice-2-name', value: '', error: 'Required', count: 4 },
+    {
+      key: 'contest-1-choice-1-votes',
+      value: '',
+      error: 'Must be a number',
+      count: 1,
+    },
+    {
+      key: 'contest-1-choice-1-votes',
+      value: 'test',
+      error: 'Must be a number',
+      count: 2,
+    },
+    {
+      key: 'contest-1-choice-1-votes',
+      value: '-1',
+      error: 'Must be a positive number',
+      count: 1,
+    },
+    {
+      key: 'contest-1-choice-1-votes',
+      value: '0.5',
+      error: 'Must be an integer',
+      count: 1,
+    },
+    {
+      key: 'contest-1-choice-2-votes',
+      value: '',
+      error: 'Must be a number',
+      count: 3,
+    },
+    {
+      key: 'contest-1-choice-2-votes',
+      value: 'test',
+      error: 'Must be a number',
+      count: 4,
+    },
+    {
+      key: 'contest-1-choice-2-votes',
+      value: '-1',
+      error: 'Must be a positive number',
+      count: 2,
+    },
+    {
+      key: 'contest-1-choice-2-votes',
+      value: '0.5',
+      error: 'Must be an integer',
+      count: 2,
+    },
+    {
+      key: 'contest-1-total-ballots',
+      value: '',
+      error: 'Must be a number',
+      count: 5,
+    },
+    {
+      key: 'contest-1-total-ballots',
+      value: 'test',
+      error: 'Must be a number',
+      count: 6,
+    },
+    {
+      key: 'contest-1-total-ballots',
+      value: '-1',
+      error: 'Must be a positive number',
+      count: 3,
+    },
+    {
+      key: 'contest-1-total-ballots',
+      value: '0.5',
+      error: 'Must be an integer',
+      count: 3,
+    },
+    { key: 'random-seed', value: '', error: 'Must be a number', count: 7 },
+    { key: 'random-seed', value: 'test', error: 'Must be a number', count: 8 },
+    {
+      key: 'random-seed',
+      value: '-1',
+      error: 'Must be a positive number',
+      count: 4,
+    },
+    { key: 'random-seed', value: '0.5', error: 'Must be an integer', count: 4 },
+  ],
   post: {
     method: 'POST',
     body: {
@@ -199,6 +286,34 @@ describe('EstimateSampleSize', () => {
         expect((apiMock as jest.Mock).mock.calls[0][1]).toMatchObject(
           estimateSampleSizeMocks.post
         )
+      },
+      error => {
+        throw new Error(error)
+      }
+    )
+  })
+
+  it('is displays errors', () => {
+    const { getByTestId, getByText, container, queryAllByText } = render(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
+
+    estimateSampleSizeMocks.errorInputs.forEach(inputData => {
+      const input: any = getByTestId(inputData.key)
+      fireEvent.change(input, { target: { value: inputData.value } })
+      expect(queryAllByText(inputData.error).length).toBe(inputData.count)
+    })
+
+    fireEvent.click(getByText('Estimate Sample Size'))
+
+    waitForDomChange({ container }).then(
+      () => {
+        expect((apiMock as jest.Mock).mock.calls.length).toBe(0) // doesn't post because of errors
       },
       error => {
         throw new Error(error)
