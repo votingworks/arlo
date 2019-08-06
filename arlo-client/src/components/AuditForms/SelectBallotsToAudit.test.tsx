@@ -354,8 +354,8 @@ describe('SelectBallotsToAudit', () => {
 
   it('uses the highest prob value from duplicate sampleSizes', () => {
     statusStates[1].contests[0].sampleSizeOptions = [
-      { size: 30, prob: 0.9 },
       { size: 30, prob: 0.8 },
+      { size: 30, prob: 0.9 },
     ]
     const { queryAllByText } = render(
       <SelectBallotsToAudit
