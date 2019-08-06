@@ -10,7 +10,7 @@ import statusStates from './_mocks'
 import apiMock from '../utilities'
 
 jest.mock('../utilities')
-;(apiMock as jest.Mock).mockImplementation(() => statusStates[1])
+jest.mock('react-toastify')
 
 const estimateSampleSizeMocks = {
   inputs: [
@@ -262,12 +262,14 @@ describe('EstimateSampleSize', () => {
   })
 
   it('is able to submit the form successfully', () => {
+    const updateAuditMock = jest.fn()
+    const setIsLoadingMock = jest.fn()
     const { getByTestId, getByText, container } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
-        setIsLoading={jest.fn()}
-        updateAudit={jest.fn()}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
       />
     )
 
@@ -281,7 +283,9 @@ describe('EstimateSampleSize', () => {
 
     waitForDomChange({ container }).then(
       () => {
-        expect((apiMock as jest.Mock).mock.calls.length).toBe(1)
+        expect(updateAuditMock).toHaveBeenCalledTimes(1)
+        expect(setIsLoadingMock).toHaveBeenCalledTimes(2)
+        expect(apiMock).toHaveBeenCalledTimes(1)
         expect((apiMock as jest.Mock).mock.calls[0][0]).toBe('/audit/basic')
         expect((apiMock as jest.Mock).mock.calls[0][1]).toMatchObject(
           estimateSampleSizeMocks.post
@@ -316,6 +320,44 @@ describe('EstimateSampleSize', () => {
     waitForDomChange({ container }).then(
       () => {
         expect((apiMock as jest.Mock).mock.calls.length).toBe(0) // doesn't post because of errors
+      },
+      error => {
+        throw new Error(error)
+      }
+    )
+  })
+
+  it('is handles errors from the form submission', () => {
+    ;(apiMock as jest.Mock).mockImplementation(() =>
+      Promise.reject({
+        statusText: 'A test error',
+        ok: false,
+      })
+    )
+    const { getByTestId, getByText, container } = render(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
+
+    estimateSampleSizeMocks.inputs.forEach(inputData => {
+      const input: any = getByTestId(inputData.key)
+      fireEvent.change(input, { target: { value: inputData.value } })
+      expect(input.value).toBe(inputData.value)
+    })
+
+    fireEvent.click(getByText('Estimate Sample Size'))
+
+    waitForDomChange({ container }).then(
+      () => {
+        expect((apiMock as jest.Mock).mock.calls.length).toBe(1)
+        expect((apiMock as jest.Mock).mock.calls[0][0]).toBe('/audit/basic')
+        expect((apiMock as jest.Mock).mock.calls[0][1]).toMatchObject(
+          estimateSampleSizeMocks.post
+        )
       },
       error => {
         throw new Error(error)
