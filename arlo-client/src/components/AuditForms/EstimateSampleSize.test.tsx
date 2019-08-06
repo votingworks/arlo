@@ -303,10 +303,12 @@ describe('EstimateSampleSize', () => {
       />
     )
 
-    estimateSampleSizeMocks.errorInputs.forEach(inputData => {
+    estimateSampleSizeMocks.errorInputs.forEach(async inputData => {
       const input: any = getByTestId(inputData.key)
       fireEvent.change(input, { target: { value: inputData.value } })
-      expect(queryAllByText(inputData.error).length).toBe(inputData.count)
+      await wait(() => {
+        expect(queryAllByText(inputData.error).length).toBe(inputData.count)
+      })
     })
 
     fireEvent.click(getByText('Estimate Sample Size'))
