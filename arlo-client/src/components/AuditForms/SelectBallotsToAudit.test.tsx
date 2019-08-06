@@ -1,14 +1,12 @@
 import React from 'react'
 import { render, fireEvent, waitForDomChange } from '@testing-library/react'
+import toastMock from 'react-toastify'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import { statusStates, ballotManifest } from './_mocks'
 import apiMock from '../utilities'
 
 jest.mock('../utilities')
-;(apiMock as jest.Mock)
-  .mockImplementationOnce(() => Promise.resolve()) // the POST to /audit/sample-size
-  .mockImplementationOnce(() => Promise.resolve()) // the POST to /audit/jurisdictions
-  .mockImplementationOnce(() => Promise.resolve()) // the POST to /jurisdiction/:id/manifest
+jest.mock('react-toastify')
 
 describe('SelectBallotsToAudit', () => {
   it('renders correctly', () => {
@@ -87,6 +85,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('submits sample size, ballot manifest, and number of audits', async () => {
+    ;(apiMock as jest.Mock).mockImplementation(() => Promise.resolve())
     const getStatusMock = jest
       .fn()
       .mockImplementationOnce(() => Promise.resolve(statusStates[2])) // the POST to /audit/status after jurisdictions
@@ -173,6 +172,179 @@ describe('SelectBallotsToAudit', () => {
         expect((updateAuditMock as jest.Mock).mock.calls.length).toBe(1)
 
         expect(queryAllByText('Select Ballots To Audit').length).toBe(0)
+      },
+      error => {
+        throw new Error(error)
+      }
+    )
+  })
+
+  it('handles api error on /audit/sample-size', async () => {
+    ;(apiMock as jest.Mock)
+      .mockImplementationOnce(() => Promise.reject())
+      .mockImplementation(() => Promise.resolve())
+    const getStatusMock = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve(statusStates[2])) // the POST to /audit/status after jurisdictions
+    const updateAuditMock = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve(statusStates[3])) // the POST to /audit/status after manifest
+
+    const {
+      getByTestId,
+      getByLabelText,
+      getByText,
+      queryAllByText,
+      container,
+    } = render(
+      <SelectBallotsToAudit
+        audit={statusStates[1]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+      />
+    )
+
+    const manifestInput = getByTestId('ballot-manifest')
+    fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
+
+    const auditBoardInput: any = getByTestId('audit-boards')
+    fireEvent.change(auditBoardInput, { target: { selected: 1 } })
+
+    const sampleSizeInput = getByLabelText(
+      '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
+    )
+    fireEvent.click(sampleSizeInput)
+
+    const submitButton = getByText('Select Ballots To Audit')
+    fireEvent.click(submitButton)
+
+    waitForDomChange({ container }).then(
+      () => {
+        expect(apiMock).toBeCalledTimes(3) // failure on /audit/sample-size doesn't block other calls
+        expect(toastMock).toBeCalledTimes(1)
+
+        expect(getStatusMock).toBeCalledTimes(1)
+        expect(updateAuditMock).toBeCalledTimes(1)
+
+        expect(queryAllByText('Select Ballots To Audit').length).toBe(0)
+      },
+      error => {
+        throw new Error(error)
+      }
+    )
+  })
+
+  it('handles api error on /audit/jurisdictions', async () => {
+    ;(apiMock as jest.Mock)
+      .mockImplementationOnce(() => Promise.resolve())
+      .mockImplementationOnce(() => Promise.reject())
+      .mockImplementation(() => Promise.resolve())
+    const getStatusMock = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve(statusStates[2])) // the POST to /audit/status after jurisdictions
+    const updateAuditMock = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve(statusStates[3])) // the POST to /audit/status after manifest
+
+    const {
+      getByTestId,
+      getByLabelText,
+      getByText,
+      queryAllByText,
+      container,
+    } = render(
+      <SelectBallotsToAudit
+        audit={statusStates[1]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+      />
+    )
+
+    const manifestInput = getByTestId('ballot-manifest')
+    fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
+
+    const auditBoardInput: any = getByTestId('audit-boards')
+    fireEvent.change(auditBoardInput, { target: { selected: 1 } })
+
+    const sampleSizeInput = getByLabelText(
+      '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
+    )
+    fireEvent.click(sampleSizeInput)
+
+    const submitButton = getByText('Select Ballots To Audit')
+    fireEvent.click(submitButton)
+
+    waitForDomChange({ container }).then(
+      () => {
+        expect(apiMock).toBeCalledTimes(2)
+        expect(toastMock).toBeCalledTimes(1)
+
+        expect(getStatusMock).toBeCalledTimes(0)
+        expect(updateAuditMock).toBeCalledTimes(0)
+
+        expect(queryAllByText('Select Ballots To Audit').length).toBe(1)
+      },
+      error => {
+        throw new Error(error)
+      }
+    )
+  })
+
+  it('handles api error on /audit/jurisdiction/:id/manifest', async () => {
+    ;(apiMock as jest.Mock)
+      .mockImplementationOnce(() => Promise.resolve())
+      .mockImplementationOnce(() => Promise.resolve())
+      .mockImplementationOnce(() => Promise.reject())
+    const getStatusMock = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve(statusStates[2])) // the POST to /audit/status after jurisdictions
+    const updateAuditMock = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve(statusStates[3])) // the POST to /audit/status after manifest
+
+    const {
+      getByTestId,
+      getByLabelText,
+      getByText,
+      queryAllByText,
+      container,
+    } = render(
+      <SelectBallotsToAudit
+        audit={statusStates[1]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+      />
+    )
+
+    const manifestInput = getByTestId('ballot-manifest')
+    fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
+
+    const auditBoardInput: any = getByTestId('audit-boards')
+    fireEvent.change(auditBoardInput, { target: { selected: 1 } })
+
+    const sampleSizeInput = getByLabelText(
+      '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
+    )
+    fireEvent.click(sampleSizeInput)
+
+    const submitButton = getByText('Select Ballots To Audit')
+    fireEvent.click(submitButton)
+
+    waitForDomChange({ container }).then(
+      () => {
+        expect(apiMock).toBeCalledTimes(3)
+        expect(toastMock).toBeCalledTimes(1)
+
+        expect(getStatusMock).toBeCalledTimes(1)
+        expect(updateAuditMock).toBeCalledTimes(1)
+
+        expect(queryAllByText('Select Ballots To Audit').length).toBe(1)
       },
       error => {
         throw new Error(error)

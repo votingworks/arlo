@@ -71,62 +71,55 @@ const SelectBallotsToAudit = (props: Props) => {
       }
     })
 
-    try {
-      // upload jurisdictions
-      const data: Jurisdiction[] = [
-        {
-          id: 'jurisdiction-1',
-          name: 'Jurisdiction 1',
-          contests: [...audit.contests].map(contest => contest.id),
-          auditBoards: auditBoards,
-        },
-      ]
-      setIsLoading(true)
-      if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
-        const body = {
-          size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
-        }
-        await api('/audit/sample-size', {
-          method: 'POST',
-          body: JSON.stringify(body),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+    // upload jurisdictions
+    const data: Jurisdiction[] = [
+      {
+        id: 'jurisdiction-1',
+        name: 'Jurisdiction 1',
+        contests: [...audit.contests].map(contest => contest.id),
+        auditBoards: auditBoards,
+      },
+    ]
+    setIsLoading(true)
+    if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
+      const body = {
+        size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
       }
-      await api('/audit/jurisdictions', {
+      api('/audit/sample-size', {
         method: 'POST',
-        body: JSON.stringify({ jurisdictions: data }),
+        body: JSON.stringify(body),
         headers: {
           'Content-Type': 'application/json',
         },
-      }).then(
-        async success => {
-          const newStatus = await getStatus()
-          const jurisdictionID: string = newStatus.jurisdictions[0].id
+      }).catch(err => toast.error(err.message))
+    }
+    api('/audit/jurisdictions', {
+      method: 'POST',
+      body: JSON.stringify({ jurisdictions: data }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(
+      async success => {
+        const newStatus = await getStatus()
+        const jurisdictionID: string = newStatus.jurisdictions[0].id
 
-          // upload form data
-          if (!values.manifest) {
-            updateAudit()
-            return
-          }
-          const formData: FormData = new FormData()
-          formData.append('manifest', values.manifest, values.manifest.name)
-          await api(`/jurisdiction/${jurisdictionID}/manifest`, {
-            method: 'POST',
-            body: formData,
-          })
-
+        // upload form data
+        if (!values.manifest) {
           updateAudit()
-        },
-        error => {
-          toast.error(error.message)
           return
         }
-      )
-    } catch (err) {
-      toast.error(err.message)
-    }
+        const formData: FormData = new FormData()
+        formData.append('manifest', values.manifest, values.manifest.name)
+        api(`/jurisdiction/${jurisdictionID}/manifest`, {
+          method: 'POST',
+          body: formData,
+        }).catch(err => toast.error(err.message))
+
+        updateAudit()
+      },
+      error => toast.error(error.message)
+    )
   }
 
   const initialState: SelectBallotsToAuditValues = {
