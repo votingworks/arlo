@@ -84,14 +84,14 @@
     ],
     "coverageThreshold": {
       "global": {
-        "statements": 25,
-        "branches": 0,
-        "lines": 10,
-        "functions": 25
+        "statements": 55,
+        "branches": 75,
+        "lines": 55,
+        "functions": 55
       },
       "./src/components/Form": {
         "statements": 100,
-        "branches": 0,
+        "branches": 100,
         "lines": 100,
         "functions": 100
       }
