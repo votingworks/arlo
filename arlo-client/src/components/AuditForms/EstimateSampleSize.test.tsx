@@ -5,6 +5,7 @@ import {
   wait,
   waitForDomChange,
 } from '@testing-library/react'
+import toastMock from 'react-toastify'
 import EstimateSampleSize from './EstimateSampleSize'
 import statusStates from './_mocks'
 import apiMock from '../utilities'
@@ -354,10 +355,7 @@ describe('EstimateSampleSize', () => {
     waitForDomChange({ container }).then(
       () => {
         expect((apiMock as jest.Mock).mock.calls.length).toBe(1)
-        expect((apiMock as jest.Mock).mock.calls[0][0]).toBe('/audit/basic')
-        expect((apiMock as jest.Mock).mock.calls[0][1]).toMatchObject(
-          estimateSampleSizeMocks.post
-        )
+        expect(toastMock).toHaveBeenCalledTimes(1)
       },
       error => {
         throw new Error(error)
