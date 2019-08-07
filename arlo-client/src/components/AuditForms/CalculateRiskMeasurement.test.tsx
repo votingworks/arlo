@@ -15,7 +15,6 @@ jest.mock('react-toastify')
 
 const setIsLoadingMock = jest.fn()
 const updateAuditMock = jest.fn()
-;(global as any).open = jest.fn()
 
 describe('CalculateRiskMeasurement', () => {
   it('renders first round correctly', () => {
@@ -106,5 +105,43 @@ describe('CalculateRiskMeasurement', () => {
         throw new Error(error)
       }
     )
+  })
+
+  it('downloads aggregated ballots report', () => {
+    ;(global as any).open = jest.fn()
+    const { getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[3]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+      />
+    )
+
+    fireEvent.click(
+      getByText('Download Aggregated Ballot Retrieval List for Round 1')
+    )
+
+    expect((global as any).open).toHaveBeenCalledTimes(1)
+    expect((global as any).open).toHaveBeenCalledWith(
+      `/jurisdiction/jurisdiction-1/1/retrieval-list`
+    )
+  })
+
+  it('downloads audit report', () => {
+    ;(global as any).open = jest.fn()
+    const { getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[4]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+      />
+    )
+
+    fireEvent.click(getByText('Download Audit Report'))
+
+    expect((global as any).open).toHaveBeenCalledTimes(1)
+    expect((global as any).open).toHaveBeenCalledWith(`/audit/report`)
   })
 })

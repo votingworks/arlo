@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
+/* istanbul ignore next */
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import FormSection, {
@@ -71,40 +72,31 @@ const CalculateRiskMeasurmeent = (props: Props) => {
 
   const downloadAuditReport = async (e: React.MouseEvent) => {
     e.preventDefault()
-    try {
-      window.open(`/audit/report`)
-      updateAudit()
-    } catch (err) {
-      toast.error(err.message)
-    }
+    window.open(`/audit/report`)
+    updateAudit()
   }
 
-  const calculateRiskMeasurement = async (
-    values: CalculateRiskMeasurementValues
-  ) => {
-    try {
-      const jurisdictionID: string = audit.jurisdictions[0].id
-      const body: any = {
-        contests: audit.contests.map((contest: Contest, i: number) => ({
-          id: contest.id,
-          results: {
-            ...values.contests[i],
-          },
-        })),
-      }
-
-      setIsLoading(true)
-      await api(`/jurisdiction/${jurisdictionID}/${values.round}/results`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+  const calculateRiskMeasurement = (values: CalculateRiskMeasurementValues) => {
+    const jurisdictionID: string = audit.jurisdictions[0].id
+    const body: any = {
+      contests: audit.contests.map((contest: Contest, i: number) => ({
+        id: contest.id,
+        results: {
+          ...values.contests[i],
         },
-        body: JSON.stringify(body),
-      })
-      updateAudit()
-    } catch (err) {
-      toast.error(err.message)
+      })),
     }
+
+    setIsLoading(true)
+    api(`/jurisdiction/${jurisdictionID}/${values.round}/results`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+      .then(() => updateAudit())
+      .catch(err => toast.error(err.message))
   }
 
   return audit.rounds.map((round: Round, i: number) => {
