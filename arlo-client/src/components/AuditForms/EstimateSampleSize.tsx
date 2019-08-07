@@ -225,12 +225,14 @@ const EstimateSampleSize = ({
                         /* eslint-disable react/no-array-index-key */
                         <React.Fragment key={i}>
                           {i > 0 && (
+                            /* istanbul ignore next */
                             <FormSection>
                               <hr />
                             </FormSection>
                           )}
                           <FormSection
                             label={`Contest ${
+                              /* istanbul ignore next */
                               values.contests.length > 1 ? i + 1 : ''
                             } Name`}
                             description="Enter the name of the contest that will drive the audit."
