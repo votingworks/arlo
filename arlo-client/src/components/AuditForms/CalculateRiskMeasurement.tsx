@@ -233,6 +233,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                                         <Field
                                           name={`contests[${j}][${choiceId}]`}
                                           type="number"
+                                          data-testid={`round-${i}-contest-${j}-choice-${choiceId}`}
                                           validate={testNumber}
                                           component={FormField}
                                           disabled={isSubmitted}

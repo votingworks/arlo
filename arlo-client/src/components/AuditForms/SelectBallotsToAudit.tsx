@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { Formik, FormikProps, Field } from 'formik'
 import * as Yup from 'yup'
+import uuidv4 from 'uuidv4'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -74,7 +75,7 @@ const SelectBallotsToAudit = (props: Props) => {
     // upload jurisdictions
     const data: Jurisdiction[] = [
       {
-        id: 'jurisdiction-1',
+        id: uuidv4(),
         name: 'Jurisdiction 1',
         contests: [...audit.contests].map(contest => contest.id),
         auditBoards: auditBoards,

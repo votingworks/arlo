@@ -1,6 +1,144 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CalculateRiskMeasurement renders completion in first round corretly 1`] = `
+exports[`CalculateRiskMeasurement handles inputs 1`] = `
+<div>
+  <form>
+    <div
+      class="sc-ifAKCX jXnARC"
+    >
+      <div
+        class="sc-bxivhb doxbWk"
+      >
+        Round 1
+      </div>
+      <div
+        class="sc-htpNat gYCOid"
+      >
+        Ballot Retrieval List: 
+        379
+         Total Ballots
+      </div>
+      <div
+        class="sc-bwzfXH xctbO"
+      >
+        <p>
+          Contest 
+          1
+          : 
+          379
+           ballots
+        </p>
+      </div>
+      <button
+        class="sc-bZQynM cjVqOQ"
+      >
+        Download Aggregated Ballot Retrieval List for Round 
+        1
+      </button>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Contest 1: contest name
+        </div>
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Audited Results: Round 
+          1
+          , Contest 
+          1
+           
+          INCOMPLETE
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
+          1
+          , Contest 
+          1
+        </div>
+        <div
+          class="sc-gqjmRU bqmubQ"
+        >
+          <div
+            class="sc-jTzLTM hJXymL"
+          >
+            <label
+              class="sc-VigVT hLPYRt"
+            >
+              choice one
+            </label>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                data-testid="round-0-contest-0-choice-choice-1"
+                name="contests[0][choice-1]"
+                type="number"
+                value="0"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-jTzLTM hJXymL"
+          >
+            <label
+              class="sc-VigVT hLPYRt"
+            >
+              choice two
+            </label>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                data-testid="round-0-contest-0-choice-choice-2"
+                name="contests[0][choice-2]"
+                type="number"
+                value="0"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Audit Progress: 
+          0
+           of 
+          1
+           
+          complete
+        </div>
+      </div>
+      <div
+        class="sc-gZMcBi DmELe"
+      >
+        <button
+          class="sc-EHOje iYzqVS"
+          type="button"
+        >
+          Calculate Risk Measurement
+        </button>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      />
+    </div>
+  </form>
+</div>
+`;
+
+exports[`CalculateRiskMeasurement renders completion in first round correctly 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
@@ -98,6 +236,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
+                    data-testid="round-0-contest-0-choice-choice-1"
                     disabled=""
                     name="contests[0][choice-1]"
                     type="number"
@@ -118,6 +257,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
+                    data-testid="round-0-contest-0-choice-choice-2"
                     disabled=""
                     name="contests[0][choice-2]"
                     type="number"
@@ -248,6 +388,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
+                  data-testid="round-0-contest-0-choice-choice-1"
                   disabled=""
                   name="contests[0][choice-1]"
                   type="number"
@@ -268,6 +409,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
+                  data-testid="round-0-contest-0-choice-choice-2"
                   disabled=""
                   name="contests[0][choice-2]"
                   type="number"
@@ -357,7 +499,7 @@ Object {
 }
 `;
 
-exports[`CalculateRiskMeasurement renders first round corretly 1`] = `
+exports[`CalculateRiskMeasurement renders first round correctly 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
@@ -437,6 +579,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
+                    data-testid="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     type="number"
                     value="0"
@@ -456,6 +599,7 @@ Object {
                 >
                   <input
                     class="sc-dnqmqq dvJRiU"
+                    data-testid="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     type="number"
                     value="0"
@@ -571,6 +715,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
+                  data-testid="round-0-contest-0-choice-choice-1"
                   name="contests[0][choice-1]"
                   type="number"
                   value="0"
@@ -590,6 +735,7 @@ Object {
               >
                 <input
                   class="sc-dnqmqq dvJRiU"
+                  data-testid="round-0-contest-0-choice-choice-2"
                   name="contests[0][choice-2]"
                   type="number"
                   value="0"
