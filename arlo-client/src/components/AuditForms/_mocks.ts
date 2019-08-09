@@ -3,7 +3,7 @@ import { Audit } from '../../types'
 export const mockAudit: Audit = {
   name: 'Primary 2019',
   riskLimit: 10,
-  randomSeed: 123123123,
+  randomSeed: '123123123',
 
   contests: [
     {
