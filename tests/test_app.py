@@ -39,7 +39,7 @@ def test_whole_audit_flow(client):
         {
             "name" : "Primary 2019",
             "riskLimit" : 10,
-            "randomSeed": "1234567890987654321",
+            "randomSeed": "12345678901234567890",
 
             "contests" : [
                 {
@@ -71,7 +71,7 @@ def test_whole_audit_flow(client):
     # sample size options
     assert len(status["contests"][0]["sampleSizeOptions"]) == 4
     
-    assert status["randomSeed"] == "1234567890987654321"
+    assert status["randomSeed"] == "12345678901234567890"
     assert len(status["contests"]) == 1
     assert status["riskLimit"] == 10
     assert status["name"] == "Primary 2019"
