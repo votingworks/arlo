@@ -32,7 +32,7 @@ const estimateSampleSizeMocks = {
     { key: 'contest-1-choice-2-votes', value: '20' },
     { key: 'contest-1-total-ballots', value: '30' },
     { key: 'risk-limit', value: '2' },
-    { key: 'random-seed', value: '123456789' },
+    { key: 'random-seed', value: '12345678901234512345' },
   ],
   errorInputs: [
     { key: 'audit-name', value: '', error: 'Required', count: 1 },
@@ -125,7 +125,7 @@ const estimateSampleSizeMocks = {
     method: 'POST',
     body: {
       name: 'Election Name',
-      randomSeed: 123456789,
+      randomSeed: 12345678901234512345,
       riskLimit: 2,
       contests: [
         {
