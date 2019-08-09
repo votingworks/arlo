@@ -243,7 +243,7 @@ class Sampler:
                         }
                     
         Outputs:
-            sample - list of (<batch>, <ballot number>) tuples to sample, with duplicates
+            sample - list of (<batch>, <ballot number>) tuples to sample, with duplicates, ballot position is 0-indexed
                     [   
                         (batch1, 1),
                         (batch2, 49),
