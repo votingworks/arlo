@@ -288,7 +288,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
             class="sc-dnqmqq dvJRiU"
             data-testid="random-seed"
             name="randomSeed"
-            type="number"
+            type="text"
             value=""
           />
         </div>
@@ -596,7 +596,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             class="sc-dnqmqq dvJRiU"
             data-testid="random-seed"
             name="randomSeed"
-            type="number"
+            type="text"
             value=""
           />
         </div>
@@ -904,7 +904,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             class="sc-dnqmqq dvJRiU"
             data-testid="random-seed"
             name="randomSeed"
-            type="number"
+            type="text"
             value=""
           />
         </div>
@@ -1212,7 +1212,7 @@ exports[`RiskLimitingAuditForm renders correctly and fetches initial state from 
             class="sc-dnqmqq dvJRiU"
             data-testid="random-seed"
             name="randomSeed"
-            type="number"
+            type="text"
             value=""
           />
         </div>

@@ -91,7 +91,7 @@ interface ContestValues {
 
 interface EstimateSampleSizeValues {
   name: string
-  randomSeed: number
+  randomSeed: string
   riskLimit: number
   contests: ContestValues[]
 }
@@ -123,10 +123,9 @@ const contestsSchema = Yup.array()
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Required'),
-  randomSeed: Yup.number()
-    .typeError('Must be a number')
-    .min(1, 'Must be at least 1')
-    .max(99999999999999999999, 'Cannot exceed 20 digits')
+  randomSeed: Yup.string()
+    .max(20, 'Must be 20 digits or less')
+    .matches(/^\d+$/, 'Must be only numbers')
     .required('Required'),
   riskLimit: Yup.number()
     .typeError('Must be a number')
@@ -147,7 +146,7 @@ const EstimateSampleSize = ({
   const handlePost = (values: EstimateSampleSizeValues) => {
     const data = {
       name: values.name,
-      randomSeed: Number(values.randomSeed),
+      randomSeed: values.randomSeed,
       riskLimit: Number(values.riskLimit),
       contests: values.contests.map(contest => ({
         id: uuidv4(),
@@ -368,7 +367,7 @@ const EstimateSampleSize = ({
                 description="Enter the random number to seed the pseudo-random number generator."
               >
                 <Field
-                  type="number"
+                  type="text"
                   name="randomSeed"
                   disabled={!canEstimateSampleSize}
                   component={FormField}

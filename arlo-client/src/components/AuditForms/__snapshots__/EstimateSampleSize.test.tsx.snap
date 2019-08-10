@@ -303,7 +303,7 @@ Object {
                 data-testid="random-seed"
                 disabled=""
                 name="randomSeed"
-                type="number"
+                type="text"
                 value="123456789"
               />
             </div>
@@ -603,7 +603,7 @@ Object {
               data-testid="random-seed"
               disabled=""
               name="randomSeed"
-              type="number"
+              type="text"
               value="123456789"
             />
           </div>
@@ -960,7 +960,7 @@ Object {
                 data-testid="random-seed"
                 disabled=""
                 name="randomSeed"
-                type="number"
+                type="text"
                 value="123456789"
               />
             </div>
@@ -1260,7 +1260,7 @@ Object {
               data-testid="random-seed"
               disabled=""
               name="randomSeed"
-              type="number"
+              type="text"
               value="123456789"
             />
           </div>
@@ -1617,7 +1617,7 @@ Object {
                 data-testid="random-seed"
                 disabled=""
                 name="randomSeed"
-                type="number"
+                type="text"
                 value="123456789"
               />
             </div>
@@ -1917,7 +1917,7 @@ Object {
               data-testid="random-seed"
               disabled=""
               name="randomSeed"
-              type="number"
+              type="text"
               value="123456789"
             />
           </div>
@@ -2274,7 +2274,7 @@ Object {
                 data-testid="random-seed"
                 disabled=""
                 name="randomSeed"
-                type="number"
+                type="text"
                 value="123456789"
               />
             </div>
@@ -2574,7 +2574,7 @@ Object {
               data-testid="random-seed"
               disabled=""
               name="randomSeed"
-              type="number"
+              type="text"
               value="123456789"
             />
           </div>
@@ -2927,7 +2927,7 @@ Object {
                 class="sc-dnqmqq dvJRiU"
                 data-testid="random-seed"
                 name="randomSeed"
-                type="number"
+                type="text"
                 value=""
               />
             </div>
@@ -3233,7 +3233,7 @@ Object {
               class="sc-dnqmqq dvJRiU"
               data-testid="random-seed"
               name="randomSeed"
-              type="number"
+              type="text"
               value=""
             />
           </div>
