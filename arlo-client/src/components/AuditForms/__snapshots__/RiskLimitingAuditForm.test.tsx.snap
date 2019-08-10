@@ -2,7 +2,9 @@
 
 exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not 1`] = `
 <div>
-  <form>
+  <form
+    data-testid="form-one"
+  >
     <div
       class="sc-ifAKCX jXnARC"
     >
@@ -299,6 +301,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
     >
       <button
         class="sc-EHOje iYzqVS"
+        data-testid="submit-form-one"
         type="submit"
       >
         Estimate Sample Size
@@ -310,7 +313,9 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
 
 exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `
 <div>
-  <form>
+  <form
+    data-testid="form-one"
+  >
     <div
       class="sc-ifAKCX jXnARC"
     >
@@ -607,6 +612,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
     >
       <button
         class="sc-EHOje iYzqVS"
+        data-testid="submit-form-one"
         type="submit"
       >
         Estimate Sample Size
@@ -618,7 +624,9 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
 
 exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status returns contest data 1`] = `
 <div>
-  <form>
+  <form
+    data-testid="form-one"
+  >
     <div
       class="sc-ifAKCX jXnARC"
     >
@@ -915,6 +923,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
     >
       <button
         class="sc-EHOje iYzqVS"
+        data-testid="submit-form-one"
         type="submit"
       >
         Estimate Sample Size
@@ -926,7 +935,9 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
 
 exports[`RiskLimitingAuditForm renders correctly and fetches initial state from api 1`] = `
 <div>
-  <form>
+  <form
+    data-testid="form-one"
+  >
     <div
       class="sc-ifAKCX jXnARC"
     >
@@ -1223,6 +1234,7 @@ exports[`RiskLimitingAuditForm renders correctly and fetches initial state from 
     >
       <button
         class="sc-EHOje iYzqVS"
+        data-testid="submit-form-one"
         type="submit"
       >
         Estimate Sample Size

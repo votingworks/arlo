@@ -205,7 +205,7 @@ const EstimateSampleSize = ({
         enableReinitialize
       >
         {({ values, handleSubmit }: FormikProps<EstimateSampleSizeValues>) => (
-          <Form>
+          <Form data-testid="form-one">
             <FormWrapper title="Contest Information">
               <FormSection label="Election Name">
                 <Field
@@ -380,6 +380,7 @@ const EstimateSampleSize = ({
               <FormButtonBar>
                 <FormButton
                   type="submit"
+                  data-testid="submit-form-one"
                   disabled={!canEstimateSampleSize}
                   onClick={handleSubmit}
                 >

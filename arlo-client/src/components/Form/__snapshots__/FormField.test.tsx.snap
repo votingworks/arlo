@@ -28,6 +28,7 @@ exports[`FormField renders a Field with errors 1`] = `
     />
     <p
       class="sc-htpNat bhgSmC"
+      data-testid="field-name-error"
     >
       Required
     </p>

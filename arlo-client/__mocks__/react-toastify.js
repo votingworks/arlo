@@ -6,4 +6,4 @@ const toast = jest.genMockFromModule('react-toastify')
 
 toast.error = jest.fn()
 
-export default toast
+export default { toast }

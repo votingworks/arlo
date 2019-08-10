@@ -1,10 +1,5 @@
 import React from 'react'
-import {
-  render,
-  fireEvent,
-  wait,
-  waitForDomChange,
-} from '@testing-library/react'
+import { render, fireEvent, wait } from '@testing-library/react'
 import toastMock from 'react-toastify'
 import EstimateSampleSize, {
   TwoColumnSection,
@@ -16,11 +11,17 @@ import EstimateSampleSize, {
   InputLabelRight,
   Action,
 } from './EstimateSampleSize'
-import statusStates from './_mocks'
 import apiMock from '../utilities'
+import statusStates from './_mocks'
 
 jest.mock('../utilities')
 jest.mock('react-toastify')
+
+const asyncForEach = async (array: any[], callback: any) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array)
+  }
+}
 
 const estimateSampleSizeMocks = {
   inputs: [
@@ -35,9 +36,9 @@ const estimateSampleSizeMocks = {
     { key: 'random-seed', value: '12345678901234512345' },
   ],
   errorInputs: [
-    { key: 'audit-name', value: '', error: 'Required', count: 1 },
-    { key: 'contest-1-name', value: '', error: 'Required', count: 2 },
-    { key: 'contest-1-choice-1-name', value: '', error: 'Required', count: 3 },
+    { key: 'audit-name', value: '', error: 'Required', count: 4 },
+    { key: 'contest-1-name', value: '', error: 'Required', count: 4 },
+    { key: 'contest-1-choice-1-name', value: '', error: 'Required', count: 4 },
     { key: 'contest-1-choice-2-name', value: '', error: 'Required', count: 4 },
     {
       key: 'contest-1-choice-1-votes',
@@ -111,35 +112,39 @@ const estimateSampleSizeMocks = {
       error: 'Must be an integer',
       count: 3,
     },
-    { key: 'random-seed', value: '', error: 'Must be a number', count: 7 },
-    { key: 'random-seed', value: 'test', error: 'Must be a number', count: 8 },
+    { key: 'random-seed', value: '', error: 'Required', count: 5 },
     {
       key: 'random-seed',
-      value: '-1',
-      error: 'Must be a positive number',
-      count: 4,
+      value: 'test',
+      error: 'Must be only numbers',
+      count: 1,
     },
-    { key: 'random-seed', value: '0.5', error: 'Must be an integer', count: 4 },
+    {
+      key: 'random-seed',
+      value: '123451234512345123451',
+      error: 'Must be 20 digits or less',
+      count: 1,
+    },
   ],
   post: {
     method: 'POST',
     body: {
       name: 'Election Name',
-      randomSeed: 12345678901234512345,
+      randomSeed: '12345678901234512345',
       riskLimit: 2,
       contests: [
         {
-          id: expect.stringMatching(/^\d*$/),
+          id: expect.stringMatching(/^[-0-9a-z]*$/),
           name: 'Contest Name',
           totalBallotsCast: 30,
           choices: [
             {
-              id: expect.stringMatching(/^\d*$/),
+              id: expect.stringMatching(/^[-0-9a-z]*$/),
               name: 'Choice One',
               numVotes: 10,
             },
             {
-              id: expect.stringMatching(/^\d*$/),
+              id: expect.stringMatching(/^[-0-9a-z]*$/),
               name: 'Choice Two',
               numVotes: 20,
             },
@@ -291,10 +296,17 @@ describe('EstimateSampleSize', () => {
     })
   })
 
-  it('is able to submit the form successfully', () => {
+  it('is able to submit the form successfully', async () => {
+    ;(apiMock as jest.Mock).mockImplementation(() =>
+      Promise.resolve({
+        message: 'success',
+        ok: true,
+      })
+    )
     const updateAuditMock = jest.fn()
     const setIsLoadingMock = jest.fn()
-    const { getByTestId, getByText, container } = render(
+
+    const { getByTestId } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
@@ -309,26 +321,20 @@ describe('EstimateSampleSize', () => {
       expect(input.value).toBe(inputData.value)
     })
 
-    fireEvent.click(getByText('Estimate Sample Size'))
-
-    waitForDomChange({ container }).then(
-      () => {
-        expect(updateAuditMock).toHaveBeenCalledTimes(1)
-        expect(setIsLoadingMock).toHaveBeenCalledTimes(2)
-        expect(apiMock).toHaveBeenCalledTimes(1)
-        expect((apiMock as jest.Mock).mock.calls[0][0]).toBe('/audit/basic')
-        expect((apiMock as jest.Mock).mock.calls[0][1]).toMatchObject(
-          estimateSampleSizeMocks.post
-        )
-      },
-      error => {
-        throw new Error(error)
-      }
-    )
+    fireEvent.click(getByTestId('submit-form-one'))
+    await wait(() => {
+      const { body } = (apiMock as jest.Mock).mock.calls[0][1]
+      expect(setIsLoadingMock).toHaveBeenCalledTimes(2)
+      expect(apiMock).toHaveBeenCalledTimes(1)
+      expect((apiMock as jest.Mock).mock.calls[0][0]).toBe('/audit/basic')
+      expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
+      expect(updateAuditMock).toHaveBeenCalledTimes(1)
+    })
   })
 
-  it('displays errors', () => {
-    const { getByTestId, getByText, container, queryAllByText } = render(
+  it('displays errors', async () => {
+    ;(apiMock as jest.Mock).mockReset()
+    const { getByTestId } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
@@ -337,27 +343,34 @@ describe('EstimateSampleSize', () => {
       />
     )
 
-    estimateSampleSizeMocks.errorInputs.forEach(async inputData => {
-      const input: any = getByTestId(inputData.key)
-      fireEvent.change(input, { target: { value: inputData.value } })
-      await wait(() => {
-        expect(queryAllByText(inputData.error).length).toBe(inputData.count)
-      })
-    })
-
-    fireEvent.click(getByText('Estimate Sample Size'))
-
-    waitForDomChange({ container }).then(
-      () => {
-        expect((apiMock as jest.Mock).mock.calls.length).toBe(0) // doesn't post because of errors
-      },
-      error => {
-        throw new Error(error)
+    await asyncForEach(
+      estimateSampleSizeMocks.errorInputs,
+      async (inputData: any) => {
+        const { key, value, error } = inputData
+        const input: any = getByTestId(key)
+        const errorID = input.name + '-error'
+        fireEvent.change(input, { target: { value: value } })
+        fireEvent.blur(input)
+        await wait(() => {
+          expect({
+            text: getByTestId(errorID).textContent,
+            context: `${key}, ${value}: ${input.value}, ${error}`,
+          }).toMatchObject({
+            text: error,
+            context: `${key}, ${value}: ${input.value}, ${error}`,
+          })
+        })
       }
     )
+
+    fireEvent.click(getByTestId('submit-form-one'))
+    await wait(() => {
+      expect((apiMock as jest.Mock).mock.calls.length).toBe(0) // doesn't post because of errors
+    })
   })
 
-  it('handles errors from the form submission', () => {
+  it('handles errors from the form submission', async () => {
+    ;(apiMock as jest.Mock).mockReset()
     ;(apiMock as jest.Mock).mockImplementation(() =>
       Promise.reject({
         message: 'A test error',
@@ -365,7 +378,7 @@ describe('EstimateSampleSize', () => {
       })
     )
     const updateAuditMock = jest.fn()
-    const { getByTestId, getByText, container } = render(
+    const { getByTestId } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
@@ -380,18 +393,13 @@ describe('EstimateSampleSize', () => {
       expect(input.value).toBe(inputData.value)
     })
 
-    fireEvent.click(getByText('Estimate Sample Size'))
+    fireEvent.click(getByTestId('submit-form-one'))
 
-    waitForDomChange({ container }).then(
-      () => {
-        expect((apiMock as jest.Mock).mock.calls.length).toBe(1)
-        expect(toastMock).toHaveBeenCalledTimes(1)
-        expect(toastMock).toHaveBeenCalledWith('A test error')
-        expect(updateAuditMock).toHaveBeenCalledTimes(0)
-      },
-      error => {
-        throw new Error(error)
-      }
-    )
+    await wait(() => {
+      expect((apiMock as jest.Mock).mock.calls.length).toBe(7)
+      expect(toastMock).toHaveBeenCalledTimes(1)
+      expect(toastMock).toHaveBeenCalledWith('A test error')
+      expect(updateAuditMock).toHaveBeenCalledTimes(0)
+    })
   })
 })

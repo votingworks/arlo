@@ -40,7 +40,9 @@ const FormField = ({
   <Wrapper className={className}>
     <Field disabled={disabled} {...field} {...rest} />
     {getIn(errors, field.name) && getIn(touched, field.name) && (
-      <ErrorLabel>{getIn(errors, field.name)}</ErrorLabel>
+      <ErrorLabel data-testid={`${field.name}-error`}>
+        {getIn(errors, field.name)}
+      </ErrorLabel>
     )}
   </Wrapper>
 )

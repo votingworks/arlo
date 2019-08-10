@@ -13,7 +13,9 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <form>
+      <form
+        data-testid="form-one"
+      >
         <div
           class="sc-ifAKCX jXnARC"
         >
@@ -313,7 +315,9 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <form>
+    <form
+      data-testid="form-one"
+    >
       <div
         class="sc-ifAKCX jXnARC"
       >
@@ -670,7 +674,9 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <form>
+      <form
+        data-testid="form-one"
+      >
         <div
           class="sc-ifAKCX jXnARC"
         >
@@ -970,7 +976,9 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <form>
+    <form
+      data-testid="form-one"
+    >
       <div
         class="sc-ifAKCX jXnARC"
       >
@@ -1327,7 +1335,9 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <form>
+      <form
+        data-testid="form-one"
+      >
         <div
           class="sc-ifAKCX jXnARC"
         >
@@ -1627,7 +1637,9 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <form>
+    <form
+      data-testid="form-one"
+    >
       <div
         class="sc-ifAKCX jXnARC"
       >
@@ -1984,7 +1996,9 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <form>
+      <form
+        data-testid="form-one"
+      >
         <div
           class="sc-ifAKCX jXnARC"
         >
@@ -2284,7 +2298,9 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <form>
+    <form
+      data-testid="form-one"
+    >
       <div
         class="sc-ifAKCX jXnARC"
       >
@@ -2641,7 +2657,9 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <form>
+      <form
+        data-testid="form-one"
+      >
         <div
           class="sc-ifAKCX jXnARC"
         >
@@ -2938,6 +2956,7 @@ Object {
         >
           <button
             class="sc-EHOje iYzqVS"
+            data-testid="submit-form-one"
             type="submit"
           >
             Estimate Sample Size
@@ -2947,7 +2966,9 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <form>
+    <form
+      data-testid="form-one"
+    >
       <div
         class="sc-ifAKCX jXnARC"
       >
@@ -3244,6 +3265,7 @@ Object {
       >
         <button
           class="sc-EHOje iYzqVS"
+          data-testid="submit-form-one"
           type="submit"
         >
           Estimate Sample Size
