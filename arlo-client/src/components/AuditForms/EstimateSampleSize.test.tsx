@@ -327,7 +327,7 @@ describe('EstimateSampleSize', () => {
     )
   })
 
-  it('is displays errors', () => {
+  it('displays errors', () => {
     const { getByTestId, getByText, container, queryAllByText } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
@@ -357,7 +357,7 @@ describe('EstimateSampleSize', () => {
     )
   })
 
-  it('is handles errors from the form submission', () => {
+  it('handles errors from the form submission', () => {
     ;(apiMock as jest.Mock).mockImplementation(() =>
       Promise.reject({
         message: 'A test error',
