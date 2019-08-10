@@ -266,6 +266,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                 {completeContests === audit.contests.length && (
                   <FormButton
                     onClick={(e: React.MouseEvent) => downloadAuditReport(e)}
+                    data-testid="submit-form-three"
                     size="sm"
                     inline
                   >

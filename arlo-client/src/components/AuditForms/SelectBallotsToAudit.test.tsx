@@ -118,10 +118,10 @@ describe('SelectBallotsToAudit', () => {
     const sampleSizeInput = getByLabelText(
       '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
     )
-    fireEvent.click(sampleSizeInput)
+    fireEvent.click(sampleSizeInput, { bubbles: true })
 
     const submitButton = getByText('Select Ballots To Audit')
-    fireEvent.click(submitButton)
+    fireEvent.click(submitButton, { bubbles: true })
 
     waitForDomChange({ container }).then(
       () => {
@@ -215,10 +215,10 @@ describe('SelectBallotsToAudit', () => {
     const sampleSizeInput = getByLabelText(
       '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
     )
-    fireEvent.click(sampleSizeInput)
+    fireEvent.click(sampleSizeInput, { bubbles: true })
 
     const submitButton = getByText('Select Ballots To Audit')
-    fireEvent.click(submitButton)
+    fireEvent.click(submitButton, { bubbles: true })
 
     waitForDomChange({ container }).then(
       () => {
@@ -273,10 +273,10 @@ describe('SelectBallotsToAudit', () => {
     const sampleSizeInput = getByLabelText(
       '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
     )
-    fireEvent.click(sampleSizeInput)
+    fireEvent.click(sampleSizeInput, { bubbles: true })
 
     const submitButton = getByText('Select Ballots To Audit')
-    fireEvent.click(submitButton)
+    fireEvent.click(submitButton, { bubbles: true })
 
     waitForDomChange({ container }).then(
       () => {
@@ -331,10 +331,10 @@ describe('SelectBallotsToAudit', () => {
     const sampleSizeInput = getByLabelText(
       '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
     )
-    fireEvent.click(sampleSizeInput)
+    fireEvent.click(sampleSizeInput, { bubbles: true })
 
     const submitButton = getByText('Select Ballots To Audit')
-    fireEvent.click(submitButton)
+    fireEvent.click(submitButton, { bubbles: true })
 
     waitForDomChange({ container }).then(
       () => {

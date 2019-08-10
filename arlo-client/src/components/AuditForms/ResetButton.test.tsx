@@ -23,7 +23,7 @@ describe('ResetButton', () => {
       { container: document.body.appendChild(wrapper) }
     )
 
-    fireEvent.click(getByText('Clear & Restart'))
+    fireEvent.click(getByText('Clear & Restart'), { bubbles: true })
 
     await wait(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)

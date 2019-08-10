@@ -281,13 +281,13 @@ describe('EstimateSampleSize', () => {
       />
     )
 
-    fireEvent.click(getByText('Add a new candidate/choice'))
+    fireEvent.click(getByText('Add a new candidate/choice'), { bubbles: true })
 
     expect(getAllByText(/Name of Candidate\/Choice \d/i).length).toBe(3)
     expect(getAllByText(/Votes for Candidate\/Choice \d/i).length).toBe(3)
     expect(getAllByText(/Remove choice \d/i).length).toBe(3)
 
-    fireEvent.click(getByText('Remove choice 1'))
+    fireEvent.click(getByText('Remove choice 1'), { bubbles: true })
 
     await wait(() => {
       expect(queryAllByText(/Remove choice \d/i).length).toBe(0)
@@ -321,7 +321,7 @@ describe('EstimateSampleSize', () => {
       expect(input.value).toBe(inputData.value)
     })
 
-    fireEvent.click(getByTestId('submit-form-one'))
+    fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
     await wait(() => {
       const { body } = (apiMock as jest.Mock).mock.calls[0][1]
       expect(setIsLoadingMock).toHaveBeenCalledTimes(2)
@@ -363,7 +363,7 @@ describe('EstimateSampleSize', () => {
       }
     )
 
-    fireEvent.click(getByTestId('submit-form-one'))
+    fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
     await wait(() => {
       expect((apiMock as jest.Mock).mock.calls.length).toBe(0) // doesn't post because of errors
     })
@@ -393,7 +393,7 @@ describe('EstimateSampleSize', () => {
       expect(input.value).toBe(inputData.value)
     })
 
-    fireEvent.click(getByTestId('submit-form-one'))
+    fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
 
     await wait(() => {
       expect((apiMock as jest.Mock).mock.calls.length).toBe(7)

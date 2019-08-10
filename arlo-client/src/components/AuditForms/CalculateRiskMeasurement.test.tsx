@@ -1,10 +1,5 @@
 import React from 'react'
-import {
-  render,
-  fireEvent,
-  waitForDomChange,
-  wait,
-} from '@testing-library/react'
+import { render, fireEvent, wait } from '@testing-library/react'
 import toastMock from 'react-toastify'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { statusStates } from './_mocks'
@@ -42,6 +37,12 @@ describe('CalculateRiskMeasurement', () => {
   })
 
   it(`handles inputs`, async () => {
+    ;(apiMock as jest.Mock).mockImplementation(() =>
+      Promise.resolve({
+        message: 'success',
+        ok: true,
+      })
+    )
     const { container, getByTestId, queryAllByText, getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates[3]}
@@ -92,19 +93,14 @@ describe('CalculateRiskMeasurement', () => {
     fireEvent.blur(choiceTwo)
     expect(choiceOne.value).toBe('5')
     expect(choiceTwo.value).toBe('5')
-    fireEvent.click(getByText('Calculate Risk Measurement'))
+    fireEvent.click(getByText('Calculate Risk Measurement'), { bubbles: true })
 
-    waitForDomChange({ container }).then(
-      () => {
-        expect(apiMock).toBeCalledTimes(1)
-        expect(setIsLoadingMock).toBeCalledTimes(1)
-        expect(updateAuditMock).toBeCalledTimes(1)
-        expect(toastMock).toBeCalledTimes(0)
-      },
-      error => {
-        throw new Error(error)
-      }
-    )
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(setIsLoadingMock).toBeCalledTimes(1)
+      expect(updateAuditMock).toBeCalledTimes(1)
+      expect(toastMock).toBeCalledTimes(0)
+    })
   })
 
   it('downloads aggregated ballots report', () => {
@@ -119,7 +115,8 @@ describe('CalculateRiskMeasurement', () => {
     )
 
     fireEvent.click(
-      getByText('Download Aggregated Ballot Retrieval List for Round 1')
+      getByText('Download Aggregated Ballot Retrieval List for Round 1'),
+      { bubbles: true }
     )
 
     expect((global as any).open).toHaveBeenCalledTimes(1)
@@ -139,7 +136,7 @@ describe('CalculateRiskMeasurement', () => {
       />
     )
 
-    fireEvent.click(getByText('Download Audit Report'))
+    fireEvent.click(getByText('Download Audit Report'), { bubbles: true })
 
     expect((global as any).open).toHaveBeenCalledTimes(1)
     expect((global as any).open).toHaveBeenCalledWith(`/audit/report`)

@@ -286,6 +286,7 @@ Object {
           >
             <button
               class="sc-gzVnrw kCekyN"
+              data-testid="submit-form-three"
             >
               Download Audit Report
             </button>
@@ -438,6 +439,7 @@ Object {
         >
           <button
             class="sc-gzVnrw kCekyN"
+            data-testid="submit-form-three"
           >
             Download Audit Report
           </button>
