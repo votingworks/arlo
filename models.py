@@ -115,7 +115,8 @@ class SampledBallot(db.Model):
 
     batch_id = db.Column(db.String(200), db.ForeignKey('batch.id'), nullable=False)
     batch = relationship('Batch')
-    
+
+    # this ballot position should be 1-indexed
     ballot_position = db.Column(db.Integer, nullable=False)
     
     __table_args__ = (

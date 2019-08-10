@@ -147,7 +147,7 @@ def setup_next_round(election):
             round_id = round.id,
             jurisdiction_id = jurisdiction.id,
             batch_id = batch_id,
-            ballot_position = ballot_position,
+            ballot_position = ballot_position + 1, # sampler is 0-indexed, we're 1-indexing here
             times_sampled = 1,
             audit_board_id = audit_board.id)
         
