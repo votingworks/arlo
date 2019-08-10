@@ -146,7 +146,7 @@ const EstimateSampleSize = ({
   const handlePost = async (values: EstimateSampleSizeValues) => {
     const data = {
       name: values.name,
-      randomSeed: Number(values.randomSeed),
+      randomSeed: values.randomSeed,
       riskLimit: Number(values.riskLimit),
       contests: values.contests.map(contest => ({
         id: uuidv4(),
