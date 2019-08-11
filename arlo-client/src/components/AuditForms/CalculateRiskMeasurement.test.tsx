@@ -141,4 +141,36 @@ describe('CalculateRiskMeasurement', () => {
     expect((global as any).open).toHaveBeenCalledTimes(1)
     expect((global as any).open).toHaveBeenCalledWith(`/audit/report`)
   })
+
+  it('handles errors from api', async () => {
+    ;(apiMock as jest.Mock).mockReset()
+    ;(apiMock as jest.Mock).mockImplementation(() =>
+      Promise.reject({
+        message: 'error',
+        ok: false,
+      })
+    )
+    const { getByTestId, getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[3]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+      />
+    )
+
+    const choiceOne: any = getByTestId(`round-0-contest-0-choice-choice-1`)
+    const choiceTwo: any = getByTestId(`round-0-contest-0-choice-choice-2`)
+
+    fireEvent.change(choiceOne, { target: { value: '5' } })
+    fireEvent.change(choiceTwo, { target: { value: '5' } })
+    fireEvent.click(getByText('Calculate Risk Measurement'), { bubbles: true })
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(setIsLoadingMock).toBeCalledTimes(1)
+      expect(updateAuditMock).toBeCalledTimes(0)
+      expect(toastMock).toBeCalledTimes(1)
+    })
+  })
 })
