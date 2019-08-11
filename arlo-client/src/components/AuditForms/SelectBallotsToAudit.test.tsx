@@ -1,12 +1,17 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
-import toastMock from 'react-toastify'
+import { toast } from 'react-toastify'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import { statusStates, ballotManifest } from './_mocks'
 import apiMock from '../utilities'
 
 jest.mock('../utilities')
-jest.mock('react-toastify')
+const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
+
+beforeEach(() => {
+  ;(apiMock as jest.Mock).mockReset()
+  ;(toastSpy as jest.Mock).mockReset()
+})
 
 describe('SelectBallotsToAudit', () => {
   it('renders correctly', () => {
@@ -133,7 +138,7 @@ describe('SelectBallotsToAudit', () => {
       .fn()
       .mockImplementationOnce(() => Promise.resolve(statusStates[3])) // the POST to /audit/status after manifest
 
-    const { getByTestId, getByLabelText, getByText, queryAllByText } = render(
+    const { getByTestId, getByLabelText, getByText } = render(
       <SelectBallotsToAudit
         audit={statusStates[1]}
         isLoading={false}
@@ -204,14 +209,13 @@ describe('SelectBallotsToAudit', () => {
 
       expect((getStatusMock as jest.Mock).mock.calls.length).toBe(1)
       expect((updateAuditMock as jest.Mock).mock.calls.length).toBe(1)
-
-      expect(queryAllByText('Select Ballots To Audit').length).toBe(0)
     })
   })
 
   it('handles api error on /audit/sample-size', async () => {
+    const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     ;(apiMock as jest.Mock)
-      .mockImplementationOnce(() => Promise.reject())
+      .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
       .mockImplementation(() => Promise.resolve())
     const getStatusMock = jest
       .fn()
@@ -220,7 +224,7 @@ describe('SelectBallotsToAudit', () => {
       .fn()
       .mockImplementationOnce(() => Promise.resolve(statusStates[3])) // the POST to /audit/status after manifest
 
-    const { getByTestId, getByLabelText, getByText, queryAllByText } = render(
+    const { getByTestId, getByLabelText, getByText } = render(
       <SelectBallotsToAudit
         audit={statusStates[1]}
         isLoading={false}
@@ -246,19 +250,17 @@ describe('SelectBallotsToAudit', () => {
 
     await wait(() => {
       expect(apiMock).toBeCalledTimes(3) // failure on /audit/sample-size doesn't block other calls
-      expect(toastMock).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledTimes(1)
 
       expect(getStatusMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(1)
-
-      expect(queryAllByText('Select Ballots To Audit').length).toBe(0)
     })
   })
 
   it('handles api error on /audit/jurisdictions', async () => {
     ;(apiMock as jest.Mock)
       .mockImplementationOnce(() => Promise.resolve())
-      .mockImplementationOnce(() => Promise.reject())
+      .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
       .mockImplementation(() => Promise.resolve())
     const getStatusMock = jest
       .fn()
@@ -267,7 +269,7 @@ describe('SelectBallotsToAudit', () => {
       .fn()
       .mockImplementationOnce(() => Promise.resolve(statusStates[3])) // the POST to /audit/status after manifest
 
-    const { getByTestId, getByLabelText, getByText, queryAllByText } = render(
+    const { getByTestId, getByLabelText, getByText } = render(
       <SelectBallotsToAudit
         audit={statusStates[1]}
         isLoading={false}
@@ -293,12 +295,10 @@ describe('SelectBallotsToAudit', () => {
 
     await wait(() => {
       expect(apiMock).toBeCalledTimes(2)
-      expect(toastMock).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledTimes(1)
 
       expect(getStatusMock).toBeCalledTimes(0)
       expect(updateAuditMock).toBeCalledTimes(0)
-
-      expect(queryAllByText('Select Ballots To Audit').length).toBe(1)
     })
   })
 
@@ -306,7 +306,7 @@ describe('SelectBallotsToAudit', () => {
     ;(apiMock as jest.Mock)
       .mockImplementationOnce(() => Promise.resolve())
       .mockImplementationOnce(() => Promise.resolve())
-      .mockImplementationOnce(() => Promise.reject())
+      .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
     const getStatusMock = jest
       .fn()
       .mockImplementationOnce(() => Promise.resolve(statusStates[2])) // the POST to /audit/status after jurisdictions
@@ -314,7 +314,7 @@ describe('SelectBallotsToAudit', () => {
       .fn()
       .mockImplementationOnce(() => Promise.resolve(statusStates[3])) // the POST to /audit/status after manifest
 
-    const { getByTestId, getByLabelText, getByText, queryAllByText } = render(
+    const { getByTestId, getByLabelText, getByText } = render(
       <SelectBallotsToAudit
         audit={statusStates[1]}
         isLoading={false}
@@ -340,12 +340,10 @@ describe('SelectBallotsToAudit', () => {
 
     await wait(() => {
       expect(apiMock).toBeCalledTimes(3)
-      expect(toastMock).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledTimes(1)
 
       expect(getStatusMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(1)
-
-      expect(queryAllByText('Select Ballots To Audit').length).toBe(1)
     })
   })
 

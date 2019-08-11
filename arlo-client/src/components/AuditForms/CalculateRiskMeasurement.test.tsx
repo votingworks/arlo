@@ -1,15 +1,20 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
-import toastMock from 'react-toastify'
+import { toast } from 'react-toastify'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { statusStates } from './_mocks'
 import apiMock from '../utilities'
 
 jest.mock('../utilities')
-jest.mock('react-toastify')
+//jest.mock('react-toastify')
 
 const setIsLoadingMock = jest.fn()
 const updateAuditMock = jest.fn()
+
+beforeEach(() => {
+  ;(setIsLoadingMock as jest.Mock).mockReset()
+  ;(updateAuditMock as jest.Mock).mockReset()
+})
 
 describe('CalculateRiskMeasurement', () => {
   it('renders first round correctly', () => {
@@ -37,6 +42,7 @@ describe('CalculateRiskMeasurement', () => {
   })
 
   it(`handles inputs`, async () => {
+    const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     ;(apiMock as jest.Mock).mockImplementation(() =>
       Promise.resolve({
         message: 'success',
@@ -99,7 +105,7 @@ describe('CalculateRiskMeasurement', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(setIsLoadingMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(1)
-      expect(toastMock).toBeCalledTimes(0)
+      expect(toastSpy).toBeCalledTimes(0)
     })
   })
 
@@ -150,6 +156,7 @@ describe('CalculateRiskMeasurement', () => {
         ok: false,
       })
     )
+    const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const { getByTestId, getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates[3]}
@@ -170,7 +177,7 @@ describe('CalculateRiskMeasurement', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(setIsLoadingMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(0)
-      expect(toastMock).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledTimes(1)
     })
   })
 })

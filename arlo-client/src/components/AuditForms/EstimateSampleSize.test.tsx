@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
-import toastMock from 'react-toastify'
+import { toast } from 'react-toastify'
 import EstimateSampleSize, {
   TwoColumnSection,
   InputLabelRow,
@@ -15,7 +15,6 @@ import apiMock from '../utilities'
 import statusStates from './_mocks'
 
 jest.mock('../utilities')
-jest.mock('react-toastify')
 
 const asyncForEach = async (array: any[], callback: any) => {
   for (let index = 0; index < array.length; index++) {
@@ -363,6 +362,7 @@ describe('EstimateSampleSize', () => {
         ok: false,
       })
     )
+    const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const updateAuditMock = jest.fn()
     const { getByTestId } = render(
       <EstimateSampleSize
@@ -382,9 +382,9 @@ describe('EstimateSampleSize', () => {
     fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
 
     await wait(() => {
-      expect((apiMock as jest.Mock).mock.calls.length).toBe(7)
-      expect(toastMock).toHaveBeenCalledTimes(1)
-      expect(toastMock).toHaveBeenCalledWith('A test error')
+      expect((apiMock as jest.Mock).mock.calls.length).toBe(1)
+      expect(toastSpy).toHaveBeenCalledTimes(1)
+      expect(toastSpy).toHaveBeenCalledWith('A test error')
       expect(updateAuditMock).toHaveBeenCalledTimes(0)
     })
   })
