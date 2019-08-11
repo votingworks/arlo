@@ -286,7 +286,7 @@ Object {
                 class="sc-dnqmqq dvJRiU"
                 disabled=""
                 name="randomSeed"
-                type="number"
+                type="text"
                 value="123123123"
               />
             </div>
@@ -577,7 +577,7 @@ Object {
               class="sc-dnqmqq dvJRiU"
               disabled=""
               name="randomSeed"
-              type="number"
+              type="text"
               value="123123123"
             />
           </div>
