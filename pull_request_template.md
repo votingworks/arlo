@@ -1,6 +1,6 @@
 **DESCRIPTION**
 
-[Describe what is changed, including refences to any relevant issues.]
+[Describe what is changed, including references to any relevant issues.]
 
 **New Tests**
 
