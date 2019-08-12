@@ -11,16 +11,11 @@ import EstimateSampleSize, {
   InputLabelRight,
   Action,
 } from './EstimateSampleSize'
+import asyncForEach from '../testUtilities'
 import apiMock from '../utilities'
 import statusStates from './_mocks'
 
 jest.mock('../utilities')
-
-const asyncForEach = async (array: any[], callback: any) => {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array)
-  }
-}
 
 const estimateSampleSizeMocks = {
   inputs: [
