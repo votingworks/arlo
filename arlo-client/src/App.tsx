@@ -25,6 +25,4 @@ const App: React.FC = () => {
   )
 }
 
-/** just adding a comment so there's a diff */
-
 export default App
