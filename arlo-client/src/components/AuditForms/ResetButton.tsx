@@ -27,7 +27,7 @@ const ResetButton = (props: OwnProps) => {
   }
   if (resetButtonWrapper) {
     return ReactDOM.createPortal(
-      <Button onClick={reset}>Clear & Restart</Button>,
+      <Button onClick={reset}>Clear &amp; Restart</Button>,
       resetButtonWrapper
     )
   }
