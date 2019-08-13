@@ -69,7 +69,7 @@ export interface Audit {
   name: string
   riskLimit: number | string
   randomSeed: string
-  contests: Contest[] | []
-  jurisdictions: Jurisdiction[] | []
-  rounds: Round[] | []
+  contests: Contest[]
+  jurisdictions: Jurisdiction[]
+  rounds: Round[]
 }
