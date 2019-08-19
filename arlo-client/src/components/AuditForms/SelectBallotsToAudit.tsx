@@ -1,11 +1,11 @@
 /* eslint-disable no-null */
 
 import React from 'react'
-import styled from 'styled-components'
 import { toast } from 'react-toastify'
-import { Formik, FormikProps, Field } from 'formik'
+import { Formik, FormikProps, Field, getIn } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
+import { RadioGroup, Radio } from '@blueprintjs/core'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -16,10 +16,6 @@ import FormButtonBar from '../Form/FormButtonBar'
 import { Jurisdiction, Audit, SampleSizeOption } from '../../types'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
-
-const InputLabel = styled.label`
-  display: inline-block;
-`
 
 interface SampleSizeOptionsByContest {
   [key: string]: SampleSizeOption[]
@@ -214,39 +210,32 @@ const SelectBallotsToAudit = (props: Props) => {
                         </FormSectionLabel>
                       )}
                       <FormSectionDescription>
-                        {/* eslint-disable react/no-array-index-key */}
-                        {sampleSizeOptions[key].map((option, j) => {
-                          const id = `sample-size-${key}-${
-                            option.size
-                          }-${option.prob || ''}`
-                          return (
-                            <p key={key + j}>
-                              <span style={{ whiteSpace: 'nowrap' }}>
-                                <Field
-                                  id={id}
-                                  name={`sampleSize[${key}]`}
-                                  component="input"
-                                  value={option.size}
-                                  checked={
-                                    values.sampleSize[key] === option.size
-                                  }
-                                  disabled={!!audit.rounds.length}
-                                  type="radio"
-                                />
-                                <InputLabel htmlFor={id}>
-                                  {option.type
-                                    ? 'BRAVO Average Sample Number: '
-                                    : ''}
-                                  {`${option.size} samples`}
-                                  {option.prob
-                                    ? ` (${option.prob *
-                                        100}% chance of reaching risk limit and completing the audit in one round)`
-                                    : ''}
-                                </InputLabel>
-                              </span>
-                            </p>
-                          )
-                        })}
+                        <RadioGroup
+                          name={`sampleSize[${key}]`}
+                          onChange={e =>
+                            setFieldValue(
+                              `sampleSize[${key}]`,
+                              e.currentTarget.value
+                            )
+                          }
+                          selectedValue={getIn(values, `sampleSize[${key}]`)}
+                          disabled={!!audit.rounds.length}
+                        >
+                          {sampleSizeOptions[key].map((option, j) => {
+                            return (
+                              <Radio value={option.size} key={option.size}>
+                                {option.type
+                                  ? 'BRAVO Average Sample Number: '
+                                  : ''}
+                                {`${option.size} samples`}
+                                {option.prob
+                                  ? ` (${option.prob *
+                                      100}% chance of reaching risk limit and completing the audit in one round)`
+                                  : ''}
+                              </Radio>
+                            )
+                          })}
+                        </RadioGroup>
                       </FormSectionDescription>
                     </React.Fragment>
                   ))}
