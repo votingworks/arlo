@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { Formik, FormikProps, Field, getIn } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
-import { RadioGroup, Radio } from '@blueprintjs/core'
+import { RadioGroup, Radio, HTMLSelect, FileInput } from '@blueprintjs/core'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -246,10 +246,13 @@ const SelectBallotsToAudit = (props: Props) => {
               description="Set the number of audit boards you with to use."
             >
               <Field
-                component="select"
+                component={HTMLSelect}
                 id="auditBoards"
                 data-testid="audit-boards"
                 name="auditBoards"
+                onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                  setFieldValue('auditBoards', e.currentTarget.value)
+                }
                 disabled={!!audit.rounds.length}
               >
                 {generateOptions(15)}
@@ -277,18 +280,25 @@ const SelectBallotsToAudit = (props: Props) => {
                     Click &quot;Browse&quot; to choose the appropriate Ballot
                     Manifest file from your computer
                   </FormSectionDescription>
-                  <input
-                    type="file"
+                  <FileInput
                     data-testid="ballot-manifest"
-                    accept=".csv"
-                    name="manifest"
-                    onChange={e => {
+                    inputProps={{
+                      accept: '.csv',
+                      name: 'manifest',
+                    }}
+                    onInputChange={e => {
                       setFieldValue(
                         'manifest',
                         (e.currentTarget.files && e.currentTarget.files[0]) ||
                           null
                       )
                     }}
+                    hasSelection={!!values.manifest}
+                    text={
+                      values.manifest
+                        ? values.manifest.name
+                        : 'Select manifest...'
+                    }
                     onBlur={handleBlur}
                   />
                   {errors.manifest && touched.manifest && (
