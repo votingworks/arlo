@@ -11,6 +11,7 @@ import {
 } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
+import { HTMLSelect, Label } from '@blueprintjs/core'
 import FormSection from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormTitle from '../Form/FormTitle'
@@ -50,7 +51,7 @@ export const FieldRight = styled(FieldLeft)`
   margin-left: 50px;
 `
 
-export const InputLabel = styled.label`
+export const InputLabel = styled(Label)`
   display: inline-block;
   flex-grow: 2;
   width: unset;
@@ -359,7 +360,7 @@ const EstimateSampleSize = ({
                 <Field
                   name="riskLimit"
                   disabled={!canEstimateSampleSize}
-                  component="select"
+                  component={HTMLSelect}
                   data-testid="risk-limit"
                 >
                   {generateOptions(20)}

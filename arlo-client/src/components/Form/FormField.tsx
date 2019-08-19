@@ -1,12 +1,17 @@
 import React from 'react'
 import styled from 'styled-components'
+import { InputGroup, NumericInput } from '@blueprintjs/core'
 import { getIn } from 'formik'
 
 const Wrapper = styled.div`
   width: 45%;
 `
 
-const Field = styled.input`
+const Field = styled(InputGroup)`
+  width: 100%;
+`
+
+const NumberField = styled(NumericInput)`
   width: 100%;
 `
 
@@ -38,7 +43,11 @@ const FormField = ({
   ...rest
 }: Props) => (
   <Wrapper className={className}>
-    <Field disabled={disabled} {...field} {...rest} />
+    {rest.type === 'number' ? (
+      <NumberField disabled={disabled} {...field} {...rest} />
+    ) : (
+      <Field disabled={disabled} {...field} {...rest} />
+    )}
     {getIn(errors, field.name) && getIn(touched, field.name) && (
       <ErrorLabel data-testid={`${field.name}-error`}>
         {getIn(errors, field.name)}
