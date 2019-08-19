@@ -28,9 +28,9 @@ export const statusStates: Audit[] = [
         name: 'contest name',
         totalBallotsCast: 2123,
         sampleSizeOptions: [
-          { size: 269, type: 'ASN' },
-          { size: 379, prob: 0.8 },
-          { size: 78 },
+          { size: 269, type: 'ASN', prob: null },
+          { size: 379, prob: 0.8, type: null },
+          { size: 78, prob: null, type: null },
         ],
       },
     ],
@@ -59,9 +59,9 @@ export const statusStates: Audit[] = [
         name: 'contest name',
         totalBallotsCast: 2123,
         sampleSizeOptions: [
-          { size: 269, type: 'ASN' },
-          { size: 379, prob: 0.8 },
-          { size: 78 },
+          { size: 269, type: 'ASN', prob: null },
+          { size: 379, prob: 0.8, type: null },
+          { size: 78, prob: null, type: null },
         ],
       },
     ],
@@ -109,9 +109,9 @@ export const statusStates: Audit[] = [
         name: 'contest name',
         totalBallotsCast: 2123,
         sampleSizeOptions: [
-          { size: 269, type: 'ASN' },
-          { size: 379, prob: 0.8 },
-          { size: 78 },
+          { size: 269, type: 'ASN', prob: null },
+          { size: 379, prob: 0.8, type: null },
+          { size: 78, prob: null, type: null },
         ],
       },
     ],
@@ -175,9 +175,9 @@ export const statusStates: Audit[] = [
         name: 'contest name',
         totalBallotsCast: 2123,
         sampleSizeOptions: [
-          { size: 269, type: 'ASN' },
-          { size: 379, prob: 0.8 },
-          { size: 78 },
+          { size: 269, type: 'ASN', prob: null },
+          { size: 379, prob: 0.8, type: null },
+          { size: 78, prob: null, type: null },
         ],
       },
     ],
@@ -226,24 +226,6 @@ export const statusStates: Audit[] = [
     riskLimit: 1,
   },
 ]
-
-/*
-import { statusStates } from '../AuditForms/_mocks'
-import { Audit } from '../../types'
-
-export const api = <T>(endpoint: string, options: any): Promise<T | Audit> => {
-    switch (endpoint) {
-      case '/audit/status':
-        return Promise.resolve(statusStates[0]) as Promise<Audit>
-      case '/audit/basic':
-        return Promise.resolve({}) as Promise<T>
-      default:
-        return Promise.reject(new Error('Endpoint not found'))
-    }
-  }
-
-export default api
-*/
 
 export const ballotManifest = new File(
   ['ballot manifest'],

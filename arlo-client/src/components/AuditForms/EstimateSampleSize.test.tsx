@@ -5,15 +5,17 @@ import EstimateSampleSize, {
   TwoColumnSection,
   InputLabelRow,
   InputFieldRow,
-  //FieldLeft,
+  //FieldLeft, TODO: need to mock Formik Field to test these like this
   //FieldRight,
   InputLabel,
   InputLabelRight,
   Action,
 } from './EstimateSampleSize'
 import asyncForEach from '../testUtilities'
-import apiMock from '../utilities'
 import statusStates from './_mocks'
+import api from '../utilities'
+
+const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
 jest.mock('../utilities')
 
@@ -138,7 +140,7 @@ const estimateSampleSizeMocks = {
   },
 }
 
-function getDisplayName(WrappedComponent: any) {
+function getDisplayName(WrappedComponent: React.ComponentClass) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component'
 }
 
@@ -147,7 +149,7 @@ describe('EstimateSampleSize', () => {
     TwoColumnSection,
     InputLabelRow,
     InputFieldRow,
-    //FieldLeft,
+    //FieldLeft, TODO: need to mock Formik Field to test these like this
     //FieldRight,
     InputLabel,
     InputLabelRight,
@@ -219,37 +221,38 @@ describe('EstimateSampleSize', () => {
     expect(container).toMatchSnapshot()
   })
 
-  // it('adds and removes contests', async () => {
-  //   const { getByText, getAllByText, queryByText } = render(
-  //     <EstimateSampleSize
-  //       audit={statusStates[0]}
-  //       isLoading={false}
-  //       setIsLoading={jest.fn()}
-  //       updateAudit={jest.fn()}
-  //     />
-  //   )
+  it.skip('adds and removes contests', async () => {
+    // skip until feature is complete in backend
+    const { getByText, getAllByText, queryByText } = render(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
 
-  //   fireEvent.click(getByText('Add another targeted contest'))
+    fireEvent.click(getByText('Add another targeted contest'))
 
-  //   expect(
-  //     getAllByText('Enter the name of the contest that will drive the audit.')
-  //       .length
-  //   ).toBe(2)
-  //   expect(getByText('Contest 1 Name')).toBeTruthy()
-  //   expect(getByText('Contest 2 Name')).toBeTruthy()
+    expect(
+      getAllByText('Enter the name of the contest that will drive the audit.')
+        .length
+    ).toBe(2)
+    expect(getByText('Contest 1 Name')).toBeTruthy()
+    expect(getByText('Contest 2 Name')).toBeTruthy()
 
-  //   fireEvent.click(getByText('Remove Contest 2'))
+    fireEvent.click(getByText('Remove Contest 2'))
 
-  //   expect(
-  //     getAllByText('Enter the name of the contest that will drive the audit.')
-  //       .length
-  //   ).toBe(1)
-  //   expect(getByText('Contest Name')).toBeTruthy()
-  //   await wait(() => {
-  //     expect(queryByText('Contest 2')).not.toBeInTheDocument()
-  //     expect(queryByText('Remove Contest 1')).not.toBeInTheDocument()
-  //   })
-  // })
+    expect(
+      getAllByText('Enter the name of the contest that will drive the audit.')
+        .length
+    ).toBe(1)
+    expect(getByText('Contest Name')).toBeTruthy()
+    await wait(() => {
+      expect(queryByText('Contest 2')).not.toBeInTheDocument()
+      expect(queryByText('Remove Contest 1')).not.toBeInTheDocument()
+    })
+  })
 
   it('adds and removes choices', async () => {
     const { getByText, getAllByText, queryAllByText } = render(
@@ -277,7 +280,7 @@ describe('EstimateSampleSize', () => {
   })
 
   it('is able to submit the form successfully', async () => {
-    ;(apiMock as jest.Mock).mockImplementation(() =>
+    apiMock.mockImplementation(() =>
       Promise.resolve({
         message: 'success',
         ok: true,
@@ -303,17 +306,17 @@ describe('EstimateSampleSize', () => {
 
     fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
     await wait(() => {
-      const { body } = (apiMock as jest.Mock).mock.calls[0][1]
+      const { body } = apiMock.mock.calls[0][1]
       expect(setIsLoadingMock).toHaveBeenCalledTimes(2)
       expect(apiMock).toHaveBeenCalledTimes(1)
-      expect((apiMock as jest.Mock).mock.calls[0][0]).toBe('/audit/basic')
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
       expect(updateAuditMock).toHaveBeenCalledTimes(1)
     })
   })
 
   it('displays errors', async () => {
-    ;(apiMock as jest.Mock).mockReset()
+    apiMock.mockReset()
     const { getByTestId } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
@@ -323,35 +326,32 @@ describe('EstimateSampleSize', () => {
       />
     )
 
-    await asyncForEach(
-      estimateSampleSizeMocks.errorInputs,
-      async (inputData: any) => {
-        const { key, value, error } = inputData
-        const input: any = getByTestId(key)
-        const errorID = input.name + '-error'
-        fireEvent.change(input, { target: { value: value } })
-        fireEvent.blur(input)
-        await wait(() => {
-          expect({
-            text: getByTestId(errorID).textContent,
-            context: `${key}, ${value}: ${input.value}, ${error}`,
-          }).toMatchObject({
-            text: error,
-            context: `${key}, ${value}: ${input.value}, ${error}`,
-          })
+    await asyncForEach(estimateSampleSizeMocks.errorInputs, async inputData => {
+      const { key, value, error } = inputData
+      const input: any = getByTestId(key)
+      const errorID = input.name + '-error'
+      fireEvent.change(input, { target: { value: value } })
+      fireEvent.blur(input)
+      await wait(() => {
+        expect({
+          text: getByTestId(errorID).textContent,
+          context: `${key}, ${value}: ${input.value}, ${error}`,
+        }).toMatchObject({
+          text: error,
+          context: `${key}, ${value}: ${input.value}, ${error}`,
         })
-      }
-    )
+      })
+    })
 
     fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
     await wait(() => {
-      expect((apiMock as jest.Mock).mock.calls.length).toBe(0) // doesn't post because of errors
+      expect(apiMock.mock.calls.length).toBe(0) // doesn't post because of errors
     })
   })
 
   it('handles errors from the form submission', async () => {
-    ;(apiMock as jest.Mock).mockReset()
-    ;(apiMock as jest.Mock).mockImplementation(() =>
+    apiMock.mockReset()
+    apiMock.mockImplementation(() =>
       Promise.reject({
         message: 'A test error',
         ok: false,
@@ -377,7 +377,7 @@ describe('EstimateSampleSize', () => {
     fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
 
     await wait(() => {
-      expect((apiMock as jest.Mock).mock.calls.length).toBe(1)
+      expect(apiMock.mock.calls.length).toBe(1)
       expect(toastSpy).toHaveBeenCalledTimes(1)
       expect(toastSpy).toHaveBeenCalledWith('A test error')
       expect(updateAuditMock).toHaveBeenCalledTimes(0)

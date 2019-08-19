@@ -6,7 +6,7 @@ import { api } from '../utilities'
 import { Audit } from '../../types'
 import ResetButton from './ResetButton'
 
-const initialData = {
+const initialData: Audit = {
   name: '',
   riskLimit: '',
   randomSeed: '',
@@ -18,10 +18,10 @@ const initialData = {
 const AuditForms = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [audit, setAudit] = useState<Audit>(initialData)
+  const [audit, setAudit] = useState(initialData)
 
   const getStatus = useCallback(async (): Promise<Audit> => {
-    const audit: any = await api('/audit/status', {})
+    const audit: Audit = await api('/audit/status', {})
     return audit
   }, [])
 

@@ -1,15 +1,14 @@
 import api from './utilities'
 
-const mockFetchSuccessPromise = Promise.resolve({
-  json: () => Promise.resolve({ success: true }),
-  ok: true,
-})
-const mockFetchFailurePromise = Promise.resolve({
+const response = new Response(new Blob([JSON.stringify({ success: true })]))
+const mockFetchSuccessPromise = Promise.resolve(response)
+const badResponse = new Response(null, {
+  status: 404,
   statusText: 'A test error',
-  ok: false,
 })
-;(jest as any)
-  .spyOn(global, 'fetch')
+const mockFetchFailurePromise = Promise.resolve(badResponse)
+jest
+  .spyOn(window, 'fetch')
   .mockImplementationOnce(() => mockFetchSuccessPromise)
   .mockImplementationOnce(() => mockFetchFailurePromise)
 
@@ -20,14 +19,14 @@ describe('utilities.ts', () => {
     const result = await api('/test', options)
 
     expect(result).toMatchObject({ success: true })
-    expect((global as any).fetch).toHaveBeenCalledTimes(1)
-    expect((global as any).fetch).toHaveBeenCalledWith('/test', options)
+    expect(window.fetch).toHaveBeenCalledTimes(1)
+    expect(window.fetch).toHaveBeenCalledWith('/test', options)
   })
 
   it('throws an error', async () => {
     await expect(api('/test', options)).rejects.toThrow('A test error')
-    expect((global as any).fetch).toHaveBeenCalledTimes(2)
+    expect(window.fetch).toHaveBeenCalledTimes(2)
 
-    expect((global as any).fetch).toHaveBeenCalledWith('/test', options)
+    expect(window.fetch).toHaveBeenCalledWith('/test', options)
   })
 })

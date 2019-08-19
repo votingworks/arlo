@@ -6,8 +6,8 @@ export interface Candidate {
 
 export interface SampleSizeOption {
   size: number | string
-  prob?: string | number
-  type?: string
+  prob: number | null
+  type: string | null
 }
 
 export interface Contest {
@@ -69,7 +69,7 @@ export interface Audit {
   name: string
   riskLimit: number | string
   randomSeed: string
-  contests: Contest[] | []
-  jurisdictions: Jurisdiction[] | []
-  rounds: Round[] | []
+  contests: Contest[]
+  jurisdictions: Jurisdiction[]
+  rounds: Round[]
 }

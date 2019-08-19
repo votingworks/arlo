@@ -1,10 +1,12 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import ResetButton from './ResetButton'
-import apiMock from '../utilities'
+import api from '../utilities'
+
+const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
 jest.mock('../utilities')
-;(apiMock as jest.Mock).mockImplementationOnce(() => Promise.resolve())
+apiMock.mockImplementationOnce(() => Promise.resolve({}))
 
 describe('ResetButton', () => {
   it('renders', () => {
