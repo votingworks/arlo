@@ -1,10 +1,10 @@
 import React from 'react'
+import { H2 } from '@blueprintjs/core'
 import styled from 'styled-components'
 
-const StyledFormTitle = styled.div`
+const StyledFormTitle = styled(H2)`
   margin: 40px 0 25px 0;
   text-align: center;
-  font-size: 0.8em;
 `
 
 interface Props {

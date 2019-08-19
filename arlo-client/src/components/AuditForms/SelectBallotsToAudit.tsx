@@ -312,7 +312,7 @@ const SelectBallotsToAudit = (props: Props) => {
           {!audit.rounds.length && isLoading && <p>Loading...</p>}
           {!audit.rounds.length && !isLoading && (
             <FormButtonBar>
-              <FormButton type="button" onClick={handleSubmit}>
+              <FormButton intent="primary" type="button" onClick={handleSubmit}>
                 Select Ballots To Audit
               </FormButton>
             </FormButtonBar>

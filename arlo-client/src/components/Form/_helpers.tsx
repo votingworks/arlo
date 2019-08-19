@@ -11,7 +11,6 @@ export const generateOptions = (count: number): JSX.Element[] => {
 
 export const ErrorLabel = styled.p`
   color: #ff0000;
-  font-size: 10px;
 `
 
 export default generateOptions

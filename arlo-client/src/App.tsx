@@ -11,7 +11,6 @@ const Main = styled.div`
   height: 100%;
   overflow: scroll;
   padding: 40px;
-  font-size: 1.25rem;
 `
 
 const App: React.FC = () => {

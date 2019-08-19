@@ -19,14 +19,13 @@ const InputSection = styled.div`
   display: block;
   margin-top: 25px;
   width: 100%;
-  font-size: 0.4em;
 `
 
 const InputLabel = styled.label`
   display: inline-block;
 `
 
-const InlineInput = styled.div`
+const InlineWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -195,17 +194,17 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                               {aggregateContests[j].endMeasurements
                                 .isComplete && (
                                 <InputSection>
-                                  <InlineInput>
+                                  <InlineWrapper>
                                     <InputLabel>Risk Limit: </InputLabel>
                                     {audit.riskLimit}%
-                                  </InlineInput>
-                                  <InlineInput>
+                                  </InlineWrapper>
+                                  <InlineWrapper>
                                     <InputLabel>P-value: </InputLabel>{' '}
                                     {
                                       aggregateContests[j].endMeasurements
                                         .pvalue
                                     }
-                                  </InlineInput>
+                                  </InlineWrapper>
                                 </InputSection>
                               )}
                               {!isSubmitted && (
@@ -225,7 +224,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                                   )!.name
                                   return (
                                     <React.Fragment key={choiceId}>
-                                      <InlineInput>
+                                      <InlineWrapper>
                                         <InputLabel>{name}</InputLabel>
                                         <Field
                                           name={`contests[${j}][${choiceId}]`}
@@ -235,7 +234,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                                           component={FormField}
                                           disabled={isSubmitted}
                                         />
-                                      </InlineInput>
+                                      </InlineWrapper>
                                     </React.Fragment>
                                   )
                                 })}
@@ -262,7 +261,11 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                 ) &&
                 !isLoading && (
                   <FormButtonBar>
-                    <FormButton type="button" onClick={handleSubmit}>
+                    <FormButton
+                      type="button"
+                      intent="primary"
+                      onClick={handleSubmit}
+                    >
                       Calculate Risk Measurement
                     </FormButton>
                   </FormButtonBar>

@@ -7,11 +7,9 @@ export const Section = styled.div`
 
 export const FormSectionDescription = styled.div`
   margin-top: 10px;
-  font-size: 0.4em;
 `
 
 export const FormSectionLabel = styled.div`
-  font-size: 0.5em;
   font-weight: 700;
   & + & {
     margin-top: 10px;

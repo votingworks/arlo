@@ -18,7 +18,6 @@ const NumberField = styled(NumericInput)`
 const ErrorLabel = styled.p`
   width: 100%;
   color: #ff0000;
-  font-size: 10px;
 `
 
 interface Props {
@@ -37,14 +36,22 @@ interface Props {
 
 const FormField = ({
   field,
-  form: { touched, errors },
+  form: { touched, errors, setFieldTouched, setFieldValue },
   disabled,
   className,
   ...rest
 }: Props) => (
   <Wrapper className={className}>
     {rest.type === 'number' ? (
-      <NumberField disabled={disabled} {...field} {...rest} />
+      <NumberField
+        disabled={disabled}
+        onValueChange={(n, s) => {
+          setFieldValue(field.name, n)
+          setFieldTouched(field.name)
+        }}
+        {...field}
+        {...rest}
+      />
     ) : (
       <Field disabled={disabled} {...field} {...rest} />
     )}

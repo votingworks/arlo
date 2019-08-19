@@ -25,7 +25,6 @@ export const TwoColumnSection = styled.div`
   display: block;
   margin-top: 25px;
   width: 100%;
-  font-size: 0.4em;
 `
 
 export const InputLabelRow = styled.div`
@@ -65,7 +64,6 @@ export const Action = styled.p`
   margin: 5px 0 0 0;
   width: 100%;
   color: #000088;
-  font-size: 14px;
   &:hover {
     cursor: pointer;
   }
@@ -385,6 +383,7 @@ const EstimateSampleSize = ({
               <FormButtonBar>
                 <FormButton
                   type="submit"
+                  intent="primary"
                   data-testid="submit-form-one"
                   disabled={!canEstimateSampleSize}
                   onClick={handleSubmit}
