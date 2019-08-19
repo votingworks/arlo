@@ -66,64 +66,64 @@ const SelectBallotsToAudit = (props: Props) => {
     audit.jurisdictions[0].ballotManifest.numBatches
 
   const handlePost = async (values: SelectBallotsToAuditValues) => {
-    const auditBoards = Array.from(
-      Array(parseInt(values.auditBoards)).keys()
-    ).map(i => {
-      return {
-        id: `audit-board-${i + 1}`,
-        name: `Audit Board #${i + 1}`,
-        members: [],
-      }
-    })
+    try {
+      const auditBoards = Array.from(
+        Array(parseInt(values.auditBoards)).keys()
+      ).map(i => {
+        return {
+          id: `audit-board-${i + 1}`,
+          name: `Audit Board #${i + 1}`,
+          members: [],
+        }
+      })
 
-    // upload jurisdictions
-    const data: Jurisdiction[] = [
-      {
-        id: uuidv4(),
-        name: 'Jurisdiction 1',
-        contests: [...audit.contests].map(contest => contest.id),
-        auditBoards: auditBoards,
-      },
-    ]
-    setIsLoading(true)
-    /* istanbul ignore else */
-    if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
-      const body = {
-        size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
+      // upload jurisdictions
+      const data: Jurisdiction[] = [
+        {
+          id: uuidv4(),
+          name: 'Jurisdiction 1',
+          contests: [...audit.contests].map(contest => contest.id),
+          auditBoards: auditBoards,
+        },
+      ]
+      setIsLoading(true)
+      /* istanbul ignore else */
+      if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
+        const body = {
+          size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
+        }
+        await api('/audit/sample-size', {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
       }
-      api('/audit/sample-size', {
+      await api('/audit/jurisdictions', {
         method: 'POST',
-        body: JSON.stringify(body),
+        body: JSON.stringify({ jurisdictions: data }),
         headers: {
           'Content-Type': 'application/json',
         },
-      }).catch(err => toast.error(err.message))
+      })
+      const newStatus = await getStatus()
+      const jurisdictionID: string = newStatus.jurisdictions[0].id
+
+      /* istanbul ignore else */
+      if (values.manifest) {
+        const formData: FormData = new FormData()
+        formData.append('manifest', values.manifest, values.manifest.name)
+        await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+          method: 'POST',
+          body: formData,
+        })
+      }
+
+      updateAudit()
+    } catch (err) {
+      toast.error(err.message)
     }
-    api('/audit/jurisdictions', {
-      method: 'POST',
-      body: JSON.stringify({ jurisdictions: data }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(
-      async success => {
-        const newStatus = await getStatus()
-        const jurisdictionID: string = newStatus.jurisdictions[0].id
-
-        /* istanbul ignore else */
-        if (values.manifest) {
-          const formData: FormData = new FormData()
-          formData.append('manifest', values.manifest, values.manifest.name)
-          api(`/jurisdiction/${jurisdictionID}/manifest`, {
-            method: 'POST',
-            body: formData,
-          }).catch(err => toast.error(err.message))
-        }
-
-        updateAudit()
-      },
-      error => toast.error(error.message)
-    )
   }
 
   const initialState: SelectBallotsToAuditValues = {

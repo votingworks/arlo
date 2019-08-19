@@ -76,7 +76,9 @@ const CalculateRiskMeasurmeent = (props: Props) => {
     updateAudit()
   }
 
-  const calculateRiskMeasurement = (values: CalculateRiskMeasurementValues) => {
+  const calculateRiskMeasurement = async (
+    values: CalculateRiskMeasurementValues
+  ) => {
     const jurisdictionID: string = audit.jurisdictions[0].id
     const body: any = {
       contests: audit.contests.map((contest: Contest, i: number) => ({
@@ -87,16 +89,19 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       })),
     }
 
-    setIsLoading(true)
-    api(`/jurisdiction/${jurisdictionID}/${values.round}/results`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-      .then(() => updateAudit())
-      .catch(err => toast.error(err.message))
+    try {
+      setIsLoading(true)
+      await api(`/jurisdiction/${jurisdictionID}/${values.round}/results`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      })
+      updateAudit()
+    } catch (err) {
+      toast.error(err.message)
+    }
   }
 
   return audit.rounds.map((round: Round, i: number) => {

@@ -143,7 +143,7 @@ const EstimateSampleSize = ({
 }: Props) => {
   const canEstimateSampleSize = !audit.contests.length
 
-  const handlePost = (values: EstimateSampleSizeValues) => {
+  const handlePost = async (values: EstimateSampleSizeValues) => {
     const data = {
       name: values.name,
       randomSeed: values.randomSeed,
@@ -159,17 +159,21 @@ const EstimateSampleSize = ({
         })),
       })),
     }
-    setIsLoading(true)
-    api(`/audit/basic`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => updateAudit())
-      .catch(err => toast.error(err.message))
-      .finally(() => setIsLoading(false))
+    try {
+      setIsLoading(true)
+      await api(`/audit/basic`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      updateAudit()
+    } catch (err) {
+      toast.error(err.message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const contestValues = [

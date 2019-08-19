@@ -211,7 +211,6 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('handles api error on /audit/sample-size', async () => {
-    const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     apiMock
       .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
       .mockImplementation(() => Promise.resolve({}))
@@ -247,11 +246,11 @@ describe('SelectBallotsToAudit', () => {
     fireEvent.click(submitButton, { bubbles: true })
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(3) // failure on /audit/sample-size doesn't block other calls
+      expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(1)
 
-      expect(getStatusMock).toBeCalledTimes(1)
-      expect(updateAuditMock).toBeCalledTimes(1)
+      expect(getStatusMock).toBeCalledTimes(0)
+      expect(updateAuditMock).toBeCalledTimes(0)
     })
   })
 
@@ -341,7 +340,7 @@ describe('SelectBallotsToAudit', () => {
       expect(toastSpy).toBeCalledTimes(1)
 
       expect(getStatusMock).toBeCalledTimes(1)
-      expect(updateAuditMock).toBeCalledTimes(1)
+      expect(updateAuditMock).toBeCalledTimes(0)
     })
   })
 
