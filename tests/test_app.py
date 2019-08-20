@@ -74,7 +74,6 @@ def test_create_separate_election(client):
         })
 
     rv = client.get("/election/{}/audit/status".format(election_id_1))
-    print(rv.data)
     result1 = json.loads(rv.data)
 
     rv = post_json(
@@ -107,7 +106,6 @@ def test_create_separate_election(client):
         })
 
     rv = client.get('/election/{}/audit/status'.format(election_id_2))
-    print(rv.data)
     result2 = json.loads(rv.data)
 
     assert result1["riskLimit"] == 1
@@ -249,7 +247,6 @@ def test_whole_audit_flow(client):
     rv = client.get('/jurisdiction/adams-county/1/retrieval-list')
     lines = rv.data.decode('utf-8').split("\r\n")
     assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
-    print(lines)
     assert len(lines) > 5
     assert 'attachment' in rv.headers['Content-Disposition']
 
