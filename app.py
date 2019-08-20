@@ -3,6 +3,9 @@ from flask import Flask, send_from_directory, jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from sampler import Sampler
 
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
+
 app = Flask(__name__, static_folder='arlo-client/build/')
 
 # database config
@@ -10,6 +13,15 @@ SQLITE_DATABASE_URL = 'sqlite:///./arlo.db'
 database_url = os.environ.get('DATABASE_URL', SQLITE_DATABASE_URL)
 if database_url == "":
     database_url = SQLITE_DATABASE_URL
+
+# enforce foreign keys in SQLite
+if database_url[:7] == "sqlite:":
+    @event.listens_for(Engine, "connect")
+    def set_sqlite_pragma(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -349,6 +361,7 @@ def jurisdiction_manifest(jurisdiction_id, election_id=None):
         jurisdiction.manifest_num_batches = None
 
         Batch.query.filter_by(jurisdiction = jurisdiction).delete()
+        Round.query.filter_by(election = election).delete()
         
         db.session.commit()
         
@@ -485,20 +498,23 @@ def audit_report(election_id=None):
 @app.route('/election/<election_id>/audit/reset', methods=["POST"])
 @app.route('/audit/reset', methods=["POST"])
 def audit_reset(election_id=None):
-    SampledBallot.query.delete()
-    AuditBoard.query.delete()
-    Batch.query.delete()
-    RoundContestResult.query.delete()
-    RoundContest.query.delete()
-    Round.query.delete()
-    TargetedContestJurisdiction.query.delete()
-    TargetedContestChoice.query.delete()
-    TargetedContest.query.delete()
-    Jurisdiction.query.delete()
-    User.query.delete()
+    print("RESETTING")
+    # SampledBallot.query.delete()
+    # AuditBoard.query.delete()
+    # Batch.query.delete()
+    # RoundContestResult.query.delete()
+    # RoundContest.query.delete()
+    # Round.query.delete()
+    # TargetedContestJurisdiction.query.delete()
+    # TargetedContestChoice.query.delete()
+    # TargetedContest.query.delete()
+    # Jurisdiction.query.delete()
+    # User.query.delete()
     Election.query.delete()
     
     db.session.commit()
+
+    print("DELETED", TargetedContest.query.all())
     create_election(election_id='1')
     db.session.commit()   
     return jsonify(status="ok")
