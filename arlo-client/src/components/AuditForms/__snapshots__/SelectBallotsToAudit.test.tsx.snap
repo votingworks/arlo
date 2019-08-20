@@ -6,7 +6,7 @@ Object {
   "baseElement": <body>
     <div>
       <form
-        data-testid="formTwo"
+        data-testid="form-two"
         id="formTwo"
       >
         <div
@@ -116,7 +116,7 @@ Object {
   </body>,
   "container": <div>
     <form
-      data-testid="formTwo"
+      data-testid="form-two"
       id="formTwo"
     >
       <div
@@ -280,7 +280,7 @@ Object {
 exports[`SelectBallotsToAudit renders correctly 1`] = `
 <div>
   <form
-    data-testid="formTwo"
+    data-testid="form-two"
     id="formTwo"
   >
     <div
@@ -471,7 +471,7 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
 exports[`SelectBallotsToAudit renders correctly 2`] = `
 <div>
   <form
-    data-testid="formTwo"
+    data-testid="form-two"
     id="formTwo"
   >
     <div

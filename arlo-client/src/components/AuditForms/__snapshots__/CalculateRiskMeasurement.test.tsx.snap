@@ -3,7 +3,7 @@
 exports[`CalculateRiskMeasurement handles inputs 1`] = `
 <div>
   <form
-    data-testid="formThree-1"
+    data-testid="form-three-1"
   >
     <div
       class="sc-ifAKCX jXnARC"
@@ -146,7 +146,7 @@ Object {
   "baseElement": <body>
     <div>
       <form
-        data-testid="formThree-1"
+        data-testid="form-three-1"
       >
         <div
           class="sc-ifAKCX jXnARC"
@@ -301,7 +301,7 @@ Object {
   </body>,
   "container": <div>
     <form
-      data-testid="formThree-1"
+      data-testid="form-three-1"
     >
       <div
         class="sc-ifAKCX jXnARC"
@@ -513,7 +513,7 @@ Object {
   "baseElement": <body>
     <div>
       <form
-        data-testid="formThree-1"
+        data-testid="form-three-1"
       >
         <div
           class="sc-ifAKCX jXnARC"
@@ -671,7 +671,7 @@ Object {
   </body>,
   "container": <div>
     <form
-      data-testid="formThree-1"
+      data-testid="form-three-1"
     >
       <div
         class="sc-ifAKCX jXnARC"
@@ -886,7 +886,7 @@ Object {
   "baseElement": <body>
     <div>
       <form
-        data-testid="formThree-1"
+        data-testid="form-three-1"
       >
         <div
           class="sc-ifAKCX jXnARC"
@@ -1024,7 +1024,7 @@ Object {
   </body>,
   "container": <div>
     <form
-      data-testid="formThree-1"
+      data-testid="form-three-1"
     >
       <div
         class="sc-ifAKCX jXnARC"
@@ -1219,7 +1219,7 @@ Object {
   "baseElement": <body>
     <div>
       <form
-        data-testid="formThree-1"
+        data-testid="form-three-1"
       >
         <div
           class="sc-ifAKCX jXnARC"
@@ -1350,7 +1350,7 @@ Object {
   </body>,
   "container": <div>
     <form
-      data-testid="formThree-1"
+      data-testid="form-three-1"
     >
       <div
         class="sc-ifAKCX jXnARC"

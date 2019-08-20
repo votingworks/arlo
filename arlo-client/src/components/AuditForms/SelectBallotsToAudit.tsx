@@ -195,7 +195,7 @@ const SelectBallotsToAudit = (props: Props) => {
         touched,
         setFieldValue,
       }: FormikProps<SelectBallotsToAuditValues>) => (
-        <form onSubmit={handleSubmit} id="formTwo" data-testid="formTwo">
+        <form onSubmit={handleSubmit} id="formTwo" data-testid="form-two">
           <FormWrapper>
             {Object.keys(sampleSizeOptions).length &&
               Object.values(sampleSizeOptions).some(v => !!v.length) && (
