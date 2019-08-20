@@ -161,7 +161,7 @@ def test_draw_sample(sampler):
         'pct 4': 25,
     }
 
-    sample = sampler.draw_sample(manifest, 20)
+    sample = sampler.draw_sample(manifest, 20, 0)
 
     for i, item in enumerate(sample):
         expected = expected_sample[i]

@@ -38,7 +38,6 @@ class Sampler:
         self.margins = self.compute_margins()
         self.num_cores =  multiprocessing.cpu_count()
 
-
     def compute_margins(self):
         """
         Method that computes all margins for the contests in <contests>, and 
@@ -228,13 +227,14 @@ class Sampler:
         return samples
 
 
-    def draw_sample(self, manifest, sample_size):
+    def draw_sample(self, manifest, sample_size, num_sampled):
         """
         Draws uniform random sample with replacement of size <sample_size> from the
         provided ballot manifest.
 
         Inputs:
-            sample_size: number of ballots to randomly draw
+            sample_size - number of ballots to randomly draw
+            num_sampled - number of ballots that have already been sampled
             manifest - mapping of batches to the ballots they contain:
                         { 
                             batch1: num_balots,
@@ -259,9 +259,9 @@ class Sampler:
 
         sample =  list(consistent_sampler.sampler(ballots, 
                                                   seed=self.seed, 
-                                                  take=sample_size, 
+                                                  take=sample_size + num_sampled, 
                                                   with_replacement=True,
-                                                  output='id'))
+                                                  output='id'))[num_sampled:]
         
         # TODO this is sort of a hack to get the list sorted right. Maybe it's okay?
         return sorted(sample)
