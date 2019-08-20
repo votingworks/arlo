@@ -498,23 +498,10 @@ def audit_report(election_id=None):
 @app.route('/election/<election_id>/audit/reset', methods=["POST"])
 @app.route('/audit/reset', methods=["POST"])
 def audit_reset(election_id=None):
-    print("RESETTING")
-    # SampledBallot.query.delete()
-    # AuditBoard.query.delete()
-    # Batch.query.delete()
-    # RoundContestResult.query.delete()
-    # RoundContest.query.delete()
-    # Round.query.delete()
-    # TargetedContestJurisdiction.query.delete()
-    # TargetedContestChoice.query.delete()
-    # TargetedContest.query.delete()
-    # Jurisdiction.query.delete()
-    # User.query.delete()
+    # deleting the election cascades to all the data structures
     Election.query.delete()
-    
     db.session.commit()
 
-    print("DELETED", TargetedContest.query.all())
     create_election(election_id='1')
     db.session.commit()   
     return jsonify(status="ok")
