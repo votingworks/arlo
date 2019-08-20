@@ -281,7 +281,6 @@ const SelectBallotsToAudit = (props: Props) => {
                     Manifest file from your computer
                   </FormSectionDescription>
                   <FileInput
-                    data-testid="ballot-manifest"
                     inputProps={{
                       accept: '.csv',
                       name: 'manifest',

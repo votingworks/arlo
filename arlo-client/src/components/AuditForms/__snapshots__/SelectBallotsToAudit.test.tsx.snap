@@ -118,7 +118,6 @@ Object {
             </div>
             <label
               class="bp3-file-input"
-              data-testid="ballot-manifest"
             >
               <input
                 accept=".csv"
@@ -264,7 +263,6 @@ Object {
           </div>
           <label
             class="bp3-file-input"
-            data-testid="ballot-manifest"
           >
             <input
               accept=".csv"
@@ -533,7 +531,6 @@ Object {
             </div>
             <label
               class="bp3-file-input"
-              data-testid="ballot-manifest"
             >
               <input
                 accept=".csv"
@@ -745,7 +742,6 @@ Object {
           </div>
           <label
             class="bp3-file-input"
-            data-testid="ballot-manifest"
           >
             <input
               accept=".csv"

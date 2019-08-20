@@ -456,7 +456,9 @@ Object {
                 field="[object Object]"
                 form="[object Object]"
               >
-                <option>
+                <option
+                  selected=""
+                >
                   1
                 </option>
                 <option>
@@ -1009,7 +1011,9 @@ Object {
               field="[object Object]"
               form="[object Object]"
             >
-              <option>
+              <option
+                selected=""
+              >
                 1
               </option>
               <option>
@@ -1619,7 +1623,9 @@ Object {
                 field="[object Object]"
                 form="[object Object]"
               >
-                <option>
+                <option
+                  selected=""
+                >
                   1
                 </option>
                 <option>
@@ -2172,7 +2178,9 @@ Object {
               field="[object Object]"
               form="[object Object]"
             >
-              <option>
+              <option
+                selected=""
+              >
                 1
               </option>
               <option>
@@ -2782,7 +2790,9 @@ Object {
                 field="[object Object]"
                 form="[object Object]"
               >
-                <option>
+                <option
+                  selected=""
+                >
                   1
                 </option>
                 <option>
@@ -3335,7 +3345,9 @@ Object {
               field="[object Object]"
               form="[object Object]"
             >
-              <option>
+              <option
+                selected=""
+              >
                 1
               </option>
               <option>
@@ -3945,7 +3957,9 @@ Object {
                 field="[object Object]"
                 form="[object Object]"
               >
-                <option>
+                <option
+                  selected=""
+                >
                   1
                 </option>
                 <option>
@@ -4498,7 +4512,9 @@ Object {
               field="[object Object]"
               form="[object Object]"
             >
-              <option>
+              <option
+                selected=""
+              >
                 1
               </option>
               <option>
@@ -5120,7 +5136,9 @@ Object {
                 <option>
                   9
                 </option>
-                <option>
+                <option
+                  selected=""
+                >
                   10
                 </option>
                 <option>
@@ -5672,7 +5690,9 @@ Object {
               <option>
                 9
               </option>
-              <option>
+              <option
+                selected=""
+              >
                 10
               </option>
               <option>

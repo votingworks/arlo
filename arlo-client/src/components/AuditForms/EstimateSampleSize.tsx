@@ -207,7 +207,11 @@ const EstimateSampleSize = ({
         onSubmit={handlePost}
         enableReinitialize
       >
-        {({ values, handleSubmit }: FormikProps<EstimateSampleSizeValues>) => (
+        {({
+          values,
+          handleSubmit,
+          setFieldValue,
+        }: FormikProps<EstimateSampleSizeValues>) => (
           <Form data-testid="form-one">
             <FormWrapper title="Contest Information">
               <FormSection label="Election Name">
@@ -360,6 +364,10 @@ const EstimateSampleSize = ({
                   disabled={!canEstimateSampleSize}
                   component={HTMLSelect}
                   data-testid="risk-limit"
+                  defaultValue={values.riskLimit}
+                  onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                    setFieldValue('riskLimit', e.currentTarget.value)
+                  }
                 >
                   {generateOptions(20)}
                 </Field>

@@ -150,7 +150,7 @@ describe('SelectBallotsToAudit', () => {
       />
     )
 
-    const manifestInput = getByTestId('ballot-manifest')
+    const manifestInput = getByLabelText('Select manifest...')
     fireEvent.change(manifestInput, { target: { files: [] } })
     fireEvent.blur(manifestInput)
     await wait(() => {
@@ -231,7 +231,7 @@ describe('SelectBallotsToAudit', () => {
       />
     )
 
-    const manifestInput = getByTestId('ballot-manifest')
+    const manifestInput = getByLabelText('Select manifest...')
     fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
 
     const auditBoardInput: any = getByTestId('audit-boards')
@@ -276,7 +276,7 @@ describe('SelectBallotsToAudit', () => {
       />
     )
 
-    const manifestInput = getByTestId('ballot-manifest')
+    const manifestInput = getByLabelText('Select manifest...')
     fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
 
     const auditBoardInput: any = getByTestId('audit-boards')
@@ -321,7 +321,7 @@ describe('SelectBallotsToAudit', () => {
       />
     )
 
-    const manifestInput = getByTestId('ballot-manifest')
+    const manifestInput = getByLabelText('Select manifest...')
     fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
 
     const auditBoardInput: any = getByTestId('audit-boards')
