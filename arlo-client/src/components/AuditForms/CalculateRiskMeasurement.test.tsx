@@ -42,6 +42,30 @@ describe('CalculateRiskMeasurement', () => {
     expect(container).toMatchSnapshot()
   })
 
+  it('renders first round with loading correctly', () => {
+    const container = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[3]}
+        isLoading
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders completion in first round with loading correctly', () => {
+    const container = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[4]}
+        isLoading
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
   it(`handles inputs`, async () => {
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     apiMock.mockImplementation(() =>

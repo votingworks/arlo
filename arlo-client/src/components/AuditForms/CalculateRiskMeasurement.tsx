@@ -150,7 +150,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
           values,
           handleSubmit,
         }: FormikProps<CalculateRiskMeasurementValues>) => (
-          <Form>
+          <Form data-testid={`formThree-${i + 1}`}>
             <FormWrapper title={`Round ${i + 1}`}>
               <FormSectionLabel>
                 Ballot Retrieval List: {aggregatedBallots} Total Ballots

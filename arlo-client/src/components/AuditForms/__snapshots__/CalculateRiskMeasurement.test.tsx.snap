@@ -2,7 +2,9 @@
 
 exports[`CalculateRiskMeasurement handles inputs 1`] = `
 <div>
-  <form>
+  <form
+    data-testid="formThree-1"
+  >
     <div
       class="sc-ifAKCX jXnARC"
     >
@@ -143,7 +145,9 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <form>
+      <form
+        data-testid="formThree-1"
+      >
         <div
           class="sc-ifAKCX jXnARC"
         >
@@ -296,7 +300,9 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <form>
+    <form
+      data-testid="formThree-1"
+    >
       <div
         class="sc-ifAKCX jXnARC"
       >
@@ -501,12 +507,387 @@ Object {
 }
 `;
 
+exports[`CalculateRiskMeasurement renders completion in first round with loading correctly 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <form
+        data-testid="formThree-1"
+      >
+        <div
+          class="sc-ifAKCX jXnARC"
+        >
+          <div
+            class="sc-bxivhb doxbWk"
+          >
+            Round 1
+          </div>
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Ballot Retrieval List: 
+            379
+             Total Ballots
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            <p>
+              Contest 
+              1
+              : 
+              379
+               ballots
+            </p>
+          </div>
+          <button
+            class="sc-bZQynM cjVqOQ"
+          >
+            Download Aggregated Ballot Retrieval List for Round 
+            1
+          </button>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Contest 1: contest name
+            </div>
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Audited Results: Round 
+              1
+              , Contest 
+              1
+               
+              COMPLETE
+            </div>
+            <div
+              class="sc-gqjmRU bqmubQ"
+            >
+              <div
+                class="sc-jTzLTM hJXymL"
+              >
+                <label
+                  class="sc-VigVT hLPYRt"
+                >
+                  Risk Limit: 
+                </label>
+                1
+                %
+              </div>
+              <div
+                class="sc-jTzLTM hJXymL"
+              >
+                <label
+                  class="sc-VigVT hLPYRt"
+                >
+                  P-value: 
+                </label>
+                 
+                0.00020431431380638307
+              </div>
+            </div>
+            <div
+              class="sc-gqjmRU bqmubQ"
+            >
+              <div
+                class="sc-jTzLTM hJXymL"
+              >
+                <label
+                  class="sc-VigVT hLPYRt"
+                >
+                  choice one
+                </label>
+                <div
+                  class="sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    data-testid="round-0-contest-0-choice-choice-1"
+                    disabled=""
+                    name="contests[0][choice-1]"
+                    type="number"
+                    value="100"
+                  />
+                </div>
+              </div>
+              <div
+                class="sc-jTzLTM hJXymL"
+              >
+                <label
+                  class="sc-VigVT hLPYRt"
+                >
+                  choice two
+                </label>
+                <div
+                  class="sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    data-testid="round-0-contest-0-choice-choice-2"
+                    disabled=""
+                    name="contests[0][choice-2]"
+                    type="number"
+                    value="167"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <p>
+            Loading...
+          </p>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Audit Progress: 
+              1
+               of 
+              1
+               
+              complete
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <button
+              class="sc-gzVnrw kCekyN"
+              data-testid="submit-form-three"
+            >
+              Download Audit Report
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>,
+  "container": <div>
+    <form
+      data-testid="formThree-1"
+    >
+      <div
+        class="sc-ifAKCX jXnARC"
+      >
+        <div
+          class="sc-bxivhb doxbWk"
+        >
+          Round 1
+        </div>
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Ballot Retrieval List: 
+          379
+           Total Ballots
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <p>
+            Contest 
+            1
+            : 
+            379
+             ballots
+          </p>
+        </div>
+        <button
+          class="sc-bZQynM cjVqOQ"
+        >
+          Download Aggregated Ballot Retrieval List for Round 
+          1
+        </button>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Contest 1: contest name
+          </div>
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Audited Results: Round 
+            1
+            , Contest 
+            1
+             
+            COMPLETE
+          </div>
+          <div
+            class="sc-gqjmRU bqmubQ"
+          >
+            <div
+              class="sc-jTzLTM hJXymL"
+            >
+              <label
+                class="sc-VigVT hLPYRt"
+              >
+                Risk Limit: 
+              </label>
+              1
+              %
+            </div>
+            <div
+              class="sc-jTzLTM hJXymL"
+            >
+              <label
+                class="sc-VigVT hLPYRt"
+              >
+                P-value: 
+              </label>
+               
+              0.00020431431380638307
+            </div>
+          </div>
+          <div
+            class="sc-gqjmRU bqmubQ"
+          >
+            <div
+              class="sc-jTzLTM hJXymL"
+            >
+              <label
+                class="sc-VigVT hLPYRt"
+              >
+                choice one
+              </label>
+              <div
+                class="sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  data-testid="round-0-contest-0-choice-choice-1"
+                  disabled=""
+                  name="contests[0][choice-1]"
+                  type="number"
+                  value="100"
+                />
+              </div>
+            </div>
+            <div
+              class="sc-jTzLTM hJXymL"
+            >
+              <label
+                class="sc-VigVT hLPYRt"
+              >
+                choice two
+              </label>
+              <div
+                class="sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  data-testid="round-0-contest-0-choice-choice-2"
+                  disabled=""
+                  name="contests[0][choice-2]"
+                  type="number"
+                  value="167"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <p>
+          Loading...
+        </p>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Audit Progress: 
+            1
+             of 
+            1
+             
+            complete
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <button
+            class="sc-gzVnrw kCekyN"
+            data-testid="submit-form-three"
+          >
+            Download Audit Report
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
 exports[`CalculateRiskMeasurement renders first round correctly 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <form>
+      <form
+        data-testid="formThree-1"
+      >
         <div
           class="sc-ifAKCX jXnARC"
         >
@@ -642,7 +1023,9 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <form>
+    <form
+      data-testid="formThree-1"
+    >
       <div
         class="sc-ifAKCX jXnARC"
       >
@@ -769,6 +1152,325 @@ Object {
           >
             Calculate Risk Measurement
           </button>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        />
+      </div>
+    </form>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`CalculateRiskMeasurement renders first round with loading correctly 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <form
+        data-testid="formThree-1"
+      >
+        <div
+          class="sc-ifAKCX jXnARC"
+        >
+          <div
+            class="sc-bxivhb doxbWk"
+          >
+            Round 1
+          </div>
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Ballot Retrieval List: 
+            379
+             Total Ballots
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            <p>
+              Contest 
+              1
+              : 
+              379
+               ballots
+            </p>
+          </div>
+          <button
+            class="sc-bZQynM cjVqOQ"
+          >
+            Download Aggregated Ballot Retrieval List for Round 
+            1
+          </button>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Contest 1: contest name
+            </div>
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Audited Results: Round 
+              1
+              , Contest 
+              1
+               
+              INCOMPLETE
+            </div>
+            <div
+              class="sc-bwzfXH xctbO"
+            >
+              Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
+              1
+              , Contest 
+              1
+            </div>
+            <div
+              class="sc-gqjmRU bqmubQ"
+            >
+              <div
+                class="sc-jTzLTM hJXymL"
+              >
+                <label
+                  class="sc-VigVT hLPYRt"
+                >
+                  choice one
+                </label>
+                <div
+                  class="sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    data-testid="round-0-contest-0-choice-choice-1"
+                    name="contests[0][choice-1]"
+                    type="number"
+                    value="0"
+                  />
+                </div>
+              </div>
+              <div
+                class="sc-jTzLTM hJXymL"
+              >
+                <label
+                  class="sc-VigVT hLPYRt"
+                >
+                  choice two
+                </label>
+                <div
+                  class="sc-htoDjs jjofgS"
+                >
+                  <input
+                    class="sc-dnqmqq dvJRiU"
+                    data-testid="round-0-contest-0-choice-choice-2"
+                    name="contests[0][choice-2]"
+                    type="number"
+                    value="0"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <p>
+            Loading...
+          </p>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat gYCOid"
+            >
+              Audit Progress: 
+              0
+               of 
+              1
+               
+              complete
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          />
+        </div>
+      </form>
+    </div>
+  </body>,
+  "container": <div>
+    <form
+      data-testid="formThree-1"
+    >
+      <div
+        class="sc-ifAKCX jXnARC"
+      >
+        <div
+          class="sc-bxivhb doxbWk"
+        >
+          Round 1
+        </div>
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Ballot Retrieval List: 
+          379
+           Total Ballots
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <p>
+            Contest 
+            1
+            : 
+            379
+             ballots
+          </p>
+        </div>
+        <button
+          class="sc-bZQynM cjVqOQ"
+        >
+          Download Aggregated Ballot Retrieval List for Round 
+          1
+        </button>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Contest 1: contest name
+          </div>
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Audited Results: Round 
+            1
+            , Contest 
+            1
+             
+            INCOMPLETE
+          </div>
+          <div
+            class="sc-bwzfXH xctbO"
+          >
+            Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
+            1
+            , Contest 
+            1
+          </div>
+          <div
+            class="sc-gqjmRU bqmubQ"
+          >
+            <div
+              class="sc-jTzLTM hJXymL"
+            >
+              <label
+                class="sc-VigVT hLPYRt"
+              >
+                choice one
+              </label>
+              <div
+                class="sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  data-testid="round-0-contest-0-choice-choice-1"
+                  name="contests[0][choice-1]"
+                  type="number"
+                  value="0"
+                />
+              </div>
+            </div>
+            <div
+              class="sc-jTzLTM hJXymL"
+            >
+              <label
+                class="sc-VigVT hLPYRt"
+              >
+                choice two
+              </label>
+              <div
+                class="sc-htoDjs jjofgS"
+              >
+                <input
+                  class="sc-dnqmqq dvJRiU"
+                  data-testid="round-0-contest-0-choice-choice-2"
+                  name="contests[0][choice-2]"
+                  type="number"
+                  value="0"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <p>
+          Loading...
+        </p>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat gYCOid"
+          >
+            Audit Progress: 
+            0
+             of 
+            1
+             
+            complete
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
