@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, act, RenderResult } from '@testing-library/react'
+import { render, act } from '@testing-library/react'
 import AuditForms from './RiskLimitingAuditForm'
 import statusStates from './_mocks'
 import api from '../utilities'
@@ -15,11 +15,11 @@ apiMock
 
 describe('RiskLimitingAuditForm', () => {
   it('renders correctly and fetches initial state from api', () => {
-    let utils: RenderResult
+    let utils: any
     act(() => {
       utils = render(<AuditForms />)
     })
-    const { container } = utils!
+    const { container } = utils
 
     expect(container).toMatchSnapshot()
     expect(apiMock).toBeCalledTimes(1)
@@ -27,11 +27,11 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('renders SelectBallotsToAudit when /audit/status returns contest data', () => {
-    let utils: RenderResult
+    let utils: any
     act(() => {
       utils = render(<AuditForms />)
     })
-    const { container } = utils!
+    const { container } = utils
 
     expect(container).toMatchSnapshot()
     expect(apiMock).toBeCalledTimes(2)
@@ -39,11 +39,11 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', () => {
-    let utils: RenderResult
+    let utils: any
     act(() => {
       utils = render(<AuditForms />) // this one will not have the first empty round
     })
-    const { container } = utils!
+    const { container } = utils
 
     expect(apiMock).toBeCalledTimes(3)
     expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
@@ -51,11 +51,11 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('renders CalculateRiskMeasurement when /audit/status returns round data', () => {
-    let utils: RenderResult
+    let utils: any
     act(() => {
       utils = render(<AuditForms />) // this one will not have the first empty round
     })
-    const { container } = utils!
+    const { container } = utils
 
     expect(apiMock).toBeCalledTimes(4)
     expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
