@@ -4,16 +4,18 @@ export interface Candidate {
   numVotes: number | ''
 }
 
+export interface SampleSizeOption {
+  size: number | string
+  prob?: string | number
+  type?: string
+}
+
 export interface Contest {
   id: string
   name: string
   choices: Candidate[]
   totalBallotsCast: number | ''
-  sampleSizeOptions?: {
-    size: number
-    prob?: string | number
-    type?: string
-  }[]
+  sampleSizeOptions?: SampleSizeOption[]
 }
 
 export interface AuditBoard {
@@ -66,7 +68,7 @@ export interface Round {
 export interface Audit {
   name: string
   riskLimit: number | string
-  randomSeed: number | string
+  randomSeed: string
   contests: Contest[] | []
   jurisdictions: Jurisdiction[] | []
   rounds: Round[] | []

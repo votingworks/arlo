@@ -33,13 +33,93 @@ def test_index(client):
     rv = client.get('/')
     assert b'Arlo (by VotingWorks)' in rv.data
 
+def test_create_separate_election(client):
+    rv = post_json(client, '/election/new', {})
+    election_id_1 = json.loads(rv.data)['electionId']
+    assert election_id_1
+
+    rv = post_json(client, '/election/new', {})
+    election_id_2 = json.loads(rv.data)['electionId']
+    assert election_id_2
+
+    assert election_id_1 != election_id_2
+
+    rv = post_json(
+        client, "/election/{}/audit/basic".format(election_id_1),
+        {
+            "name" : "Election #1",
+            "riskLimit" : 1,
+            "randomSeed": "12345",
+
+            "contests" : [
+                {
+                    "id": "contest-1-1",
+                    "name": "Contest 1-1",
+                    "choices": [
+                        {
+                            "id": "candidate-1-1",
+                            "name": "Candidate 1-1",
+                            "numVotes": 48121
+                        },
+                        {
+                            "id": "candidate-1-2",
+                            "name": "Candidate 1-2",
+                            "numVotes": 38026
+                        }                        
+                    ],
+
+                    "totalBallotsCast": 86148
+                }
+            ]
+        })
+
+    rv = client.get("/election/{}/audit/status".format(election_id_1))
+    result1 = json.loads(rv.data)
+
+    rv = post_json(
+        client, '/election/{}/audit/basic'.format(election_id_2),
+        {
+            "name" : "Election #2",
+            "riskLimit" : 2,
+            "randomSeed": "54321",
+
+            "contests" : [
+                {
+                    "id": "contest-2-1",
+                    "name": "Contest 2-1",
+                    "choices": [
+                        {
+                            "id": "candidate-2-1",
+                            "name": "Candidate 2-1",
+                            "numVotes": 48121
+                        },
+                        {
+                            "id": "candidate-2-2",
+                            "name": "Candidate 2-2",
+                            "numVotes": 38026
+                        }                        
+                    ],
+
+                    "totalBallotsCast": 86147
+                }
+            ]
+        })
+
+    rv = client.get('/election/{}/audit/status'.format(election_id_2))
+    result2 = json.loads(rv.data)
+
+    assert result1["riskLimit"] == 1
+    assert result2["riskLimit"] == 2
+
+    
+    
 def test_whole_audit_flow(client):
     rv = post_json(
         client, '/audit/basic',
         {
             "name" : "Primary 2019",
             "riskLimit" : 10,
-            "randomSeed": "1234567890987654321",
+            "randomSeed": "12345678901234567890",
 
             "contests" : [
                 {
@@ -71,7 +151,7 @@ def test_whole_audit_flow(client):
     # sample size options
     assert len(status["contests"][0]["sampleSizeOptions"]) == 4
     
-    assert status["randomSeed"] == "1234567890987654321"
+    assert status["randomSeed"] == "12345678901234567890"
     assert len(status["contests"]) == 1
     assert status["riskLimit"] == 10
     assert status["name"] == "Primary 2019"
@@ -163,7 +243,6 @@ def test_whole_audit_flow(client):
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    
     # get the retrieval list for round 1
     rv = client.get('/jurisdiction/adams-county/1/retrieval-list')
     lines = rv.data.decode('utf-8').split("\r\n")

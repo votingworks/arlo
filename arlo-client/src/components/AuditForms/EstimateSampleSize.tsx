@@ -52,10 +52,12 @@ const FieldRight = styled(FieldLeft)`
 
 const InputLabel = styled.label`
   display: inline-block;
+  flex-grow: 2;
+  width: unset;
 `
 
-const InputLabelRight = styled.label`
-  margin-left: 75px;
+const InputLabelRight = styled(InputLabel)`
+  margin-left: 60px;
 `
 
 const Action = styled.p`
@@ -89,7 +91,7 @@ interface ContestValues {
 
 interface EstimateSampleSizeValues {
   name: string
-  randomSeed: number
+  randomSeed: string
   riskLimit: number
   contests: ContestValues[]
 }
@@ -121,10 +123,9 @@ const contestsSchema = Yup.array()
 
 const schema = Yup.object().shape({
   name: Yup.string().required('Required'),
-  randomSeed: Yup.number()
-    .typeError('Must be a number')
-    .min(1, 'Must be at least 1')
-    .max(99999999999999999999, 'Cannot exceed 20 digits')
+  randomSeed: Yup.string()
+    .max(20, 'Must be 20 digits or less')
+    .matches(/^\d+$/, 'Must be only numbers')
     .required('Required'),
   riskLimit: Yup.number()
     .typeError('Must be a number')
@@ -145,7 +146,7 @@ const EstimateSampleSize = ({
   const handlePost = async (values: EstimateSampleSizeValues) => {
     const data = {
       name: values.name,
-      randomSeed: Number(values.randomSeed),
+      randomSeed: values.randomSeed,
       riskLimit: Number(values.riskLimit),
       contests: values.contests.map(contest => ({
         id: uuidv4(),
@@ -178,12 +179,15 @@ const EstimateSampleSize = ({
   const contestValues = [
     {
       name: '',
+      totalBallotsCast: '',
       choices: [
         {
           name: '',
+          numVotes: '',
         },
         {
           name: '',
+          numVotes: '',
         },
       ],
     },
@@ -357,7 +361,7 @@ const EstimateSampleSize = ({
                 description="Enter the random number to seed the pseudo-random number generator."
               >
                 <Field
-                  type="number"
+                  type="text"
                   name="randomSeed"
                   disabled={!canEstimateSampleSize}
                   component={FormField}
