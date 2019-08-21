@@ -16,6 +16,7 @@ import FormButtonBar from '../Form/FormButtonBar'
 import { Jurisdiction, Audit, SampleSizeOption } from '../../types'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
+import FormTitle from '../Form/FormTitle'
 
 interface SampleSizeOptionsByContest {
   [key: string]: SampleSizeOption[]
@@ -192,7 +193,9 @@ const SelectBallotsToAudit = (props: Props) => {
         setFieldValue,
       }: FormikProps<SelectBallotsToAuditValues>) => (
         <form onSubmit={handleSubmit} id="formTwo">
+          <hr />
           <FormWrapper>
+            <FormTitle>Select Ballots to Audit</FormTitle>
             {Object.keys(sampleSizeOptions).length &&
               Object.values(sampleSizeOptions).some(v => !!v.length) && (
                 <FormSection>

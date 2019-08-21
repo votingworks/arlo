@@ -39,7 +39,6 @@ html,
 body,
 #root {
   height: 100%;
-  overflow: hidden;
 }
 @media print {
   html,
@@ -53,7 +52,7 @@ body,
 /* Typography */
 /* stylelint-disable-next-line no-duplicate-selectors */
 html {
-  background: #edeff0;
+  background: #ffffff;
   color: #263238;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -62,6 +61,16 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+body {
+  margin: 0;
+  line-height: 1.28581;
+  letter-spacing: 0;
+  color: #182026;
+  font-size: 14px;
+  font-weight: 400;
+}
+
 @media print {
   html {
     background: #ffffff;
@@ -161,4 +170,19 @@ html {
 @page {
   margin: 0.375in;
   size: letter portrait;
+}
+
+code {
+  font-family: 'source-code-pro', 'Menlo', 'Monaco', 'Consolas', 'Courier New',
+    monospace;
+}
+
+.bp3-heading {
+  color: #394b59;
+}
+
+hr {
+  margin: 40px 0;
+  border: none;
+  border-bottom: 1px solid rgba(16, 22, 26, 0.15);
 }

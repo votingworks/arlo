@@ -4,7 +4,6 @@ import styled from 'styled-components'
 
 const StyledFormTitle = styled(H2)`
   margin: 40px 0 25px 0;
-  text-align: center;
 `
 
 interface Props {

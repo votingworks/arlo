@@ -6,10 +6,10 @@ import AuditSetupPage from './pages/AuditSetupPage'
 import 'react-toastify/dist/ReactToastify.css'
 
 const Main = styled.div`
-  display: block;
-  margin: auto;
-  height: 100%;
-  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
   padding: 40px;
 `
 

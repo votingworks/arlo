@@ -6,7 +6,7 @@ export const Section = styled.div`
 `
 
 export const FormSectionDescription = styled.div`
-  margin-top: 10px;
+  margin: 10px 0;
 `
 
 export const FormSectionLabel = styled.div`
