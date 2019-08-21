@@ -1,6 +1,8 @@
+import { Params } from '../types'
+
 export const api = <T>(
   endpoint: string,
-  { electionId, ...options }: any
+  { electionId, ...options }: Params & RequestInit
 ): Promise<T> => {
   const apiBaseURL = electionId ? `/election/${electionId}` : ''
   return fetch(apiBaseURL + endpoint, options).then(res => {

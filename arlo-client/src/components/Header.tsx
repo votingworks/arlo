@@ -38,7 +38,7 @@ interface LocalProps {
 
 const Header = ({ isHome, match }: LocalProps) => {
   const reset = async () => {
-    const electionId = match ? match.params.electionId : null
+    const electionId = match ? match.params.electionId : ''
     await api(`/audit/reset`, { electionId, method: 'POST' })
 
     // ugly but works

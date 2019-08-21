@@ -19,7 +19,10 @@ const CreateAudit = ({ history }: RouteComponentProps<Params>) => {
   const [loading, setLoading] = useState(false)
   const onClick = async () => {
     setLoading(true)
-    const { electionId } = await api('/election/new', { method: 'POST' })
+    const { electionId } = await api('/election/new', {
+      electionId: '',
+      method: 'POST',
+    })
     history.push(`/election/${electionId}`)
   }
   return (
