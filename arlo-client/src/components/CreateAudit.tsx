@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { RouteComponentProps } from 'react-router-dom'
 import FormButton from './Form/FormButton'
 import api from './utilities'
+import { Params } from '../types'
 
 const Button = styled(FormButton)`
   position: absolute;
@@ -13,7 +15,7 @@ const Button = styled(FormButton)`
   font-size: 1.5rem;
 `
 
-const CreateAudit = ({ history }: any) => {
+const CreateAudit = ({ history }: RouteComponentProps<Params>) => {
   const [loading, setLoading] = useState(false)
   const onClick = async () => {
     setLoading(true)
