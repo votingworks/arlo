@@ -227,7 +227,7 @@ class Sampler:
         return samples
 
 
-    def draw_sample(self, manifest, sample_size, num_sampled):
+    def draw_sample(self, manifest, sample_size, num_sampled=0):
         """
         Draws uniform random sample with replacement of size <sample_size> from the
         provided ballot manifest.
