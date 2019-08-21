@@ -13,6 +13,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()

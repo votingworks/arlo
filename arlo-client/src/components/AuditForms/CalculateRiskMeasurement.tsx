@@ -38,6 +38,7 @@ interface Props {
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
+  electionId: string
 }
 
 interface CalculateRiskMeasurementValues {
@@ -61,7 +62,7 @@ const testNumber = (value: any) =>
 type AggregateContest = Contest & RoundContest
 
 const CalculateRiskMeasurmeent = (props: Props) => {
-  const { audit, isLoading, setIsLoading, updateAudit } = props
+  const { audit, isLoading, setIsLoading, updateAudit, electionId } = props
 
   const downloadBallotRetrievalList = (id: number, e: any) => {
     e.preventDefault()
@@ -95,6 +96,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
 
       setIsLoading(true)
       await api(`/jurisdiction/${jurisdictionID}/${values.round}/results`, {
+        electionId,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

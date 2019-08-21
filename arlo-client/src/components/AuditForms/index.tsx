@@ -1,20 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { RouteComponentProps } from 'react-router-dom'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
-import { Audit } from '../../types'
+import { Audit, Params } from '../../types'
 import { statusStates } from './_mocks'
 
-const AuditForms = () => {
+const AuditForms = ({
+  match: {
+    params: { electionId },
+  },
+}: RouteComponentProps<Params>) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [audit, setAudit] = useState<Audit>(statusStates[0])
 
   const getStatus = useCallback(async (): Promise<Audit> => {
-    const audit: any = await api('/audit/status', {})
+    const audit: any = await api('/audit/status', { electionId })
     return audit
-  }, [])
+  }, [electionId])
 
   const updateAudit = useCallback(async () => {
     const audit = await getStatus()
@@ -34,6 +39,7 @@ const AuditForms = () => {
         isLoading={isLoading}
         setIsLoading={setIsLoading}
         updateAudit={updateAudit}
+        electionId={electionId}
       />
 
       {!!audit.contests.length && (
@@ -43,6 +49,7 @@ const AuditForms = () => {
           setIsLoading={setIsLoading}
           updateAudit={updateAudit}
           getStatus={getStatus}
+          electionId={electionId}
         />
       )}
 
@@ -52,6 +59,7 @@ const AuditForms = () => {
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           updateAudit={updateAudit}
+          electionId={electionId}
         />
       )}
     </React.Fragment>

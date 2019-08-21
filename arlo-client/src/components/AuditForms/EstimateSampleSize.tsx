@@ -75,6 +75,7 @@ interface Props {
   isLoading?: any
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
+  electionId: string
 }
 
 interface ChoiceValues {
@@ -140,6 +141,7 @@ const EstimateSampleSize = ({
   isLoading,
   setIsLoading,
   updateAudit,
+  electionId,
 }: Props) => {
   const canEstimateSampleSize = !audit.contests.length
 
@@ -162,6 +164,7 @@ const EstimateSampleSize = ({
     try {
       setIsLoading(true)
       await api(`/audit/basic`, {
+        electionId,
         method: 'POST',
         body: JSON.stringify(data),
         headers: {

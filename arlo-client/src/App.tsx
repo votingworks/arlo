@@ -26,10 +26,10 @@ const App: React.FC = () => {
         <Route
           exact
           path="/"
-          children={({ match }) => <Header isHome={!!match} />}
+          children={({ match }) => <Header isHome={!!match} match={match} />}
         />
         <Route exact path="/" component={CreateAudit} />
-        <Route path="/election/:id" component={AuditForms} />
+        <Route path="/election/:electionId" component={AuditForms} />
       </Main>
     </Router>
   )

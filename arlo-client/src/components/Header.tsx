@@ -1,6 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+import { match } from 'react-router-dom'
 import { api } from './utilities'
+import { Params } from '../types'
 
 const HeaderContainer = styled.div`
   padding: 20px;
@@ -29,9 +31,15 @@ const HomeImg = styled.img`
   transform: translateX(-50%);
 `
 
-const Header = (props: any) => {
+interface LocalProps {
+  isHome?: boolean
+  match: match<Params> | null
+}
+
+const Header = ({ isHome, match }: LocalProps) => {
   const reset = async () => {
-    await api(`/audit/reset`, { method: 'POST' })
+    const electionId = match ? match.params.electionId : null
+    await api(`/audit/reset`, { electionId, method: 'POST' })
 
     // ugly but works
     window.location.reload()
@@ -39,12 +47,12 @@ const Header = (props: any) => {
 
   return (
     <HeaderContainer>
-      {props.isHome ? (
+      {isHome ? (
         <HomeImg height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
       ) : (
         <img height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
       )}
-      {!props.isHome && (
+      {!isHome && (
         <ButtonBar>
           <Button onClick={reset}>Clear & Restart</Button>
         </ButtonBar>

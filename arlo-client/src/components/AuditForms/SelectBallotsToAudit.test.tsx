@@ -11,6 +11,7 @@ it('renders correctly', () => {
       setIsLoading={jest.fn()}
       updateAudit={jest.fn()}
       getStatus={jest.fn()}
+      electionId="1"
     />
   )
   expect(container).toMatchSnapshot()
@@ -24,6 +25,7 @@ it('has radio for selecting sampleSize', () => {
       setIsLoading={jest.fn()}
       updateAudit={jest.fn()}
       getStatus={jest.fn()}
+      electionId="1"
     />
   )
 
@@ -54,6 +56,7 @@ it('does not display duplicate sampleSize options', () => {
       setIsLoading={jest.fn()}
       updateAudit={jest.fn()}
       getStatus={jest.fn()}
+      electionId="1"
     />
   )
 
@@ -73,6 +76,7 @@ it('uses the highest prob value from duplicate sampleSizes', () => {
       setIsLoading={jest.fn()}
       updateAudit={jest.fn()}
       getStatus={jest.fn()}
+      electionId="1"
     />
   )
 
@@ -91,6 +95,7 @@ it('changes sampleSize based on audit.rounds.contests.sampleSize', () => {
       setIsLoading={jest.fn()}
       updateAudit={jest.fn()}
       getStatus={jest.fn()}
+      electionId="1"
     />
   )
 

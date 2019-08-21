@@ -26,6 +26,7 @@ interface Props {
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
   getStatus: () => Promise<Audit>
+  electionId: string
 }
 
 interface SelectBallotsToAuditValues {
@@ -52,7 +53,14 @@ const schema = Yup.object().shape({
 })
 
 const SelectBallotsToAudit = (props: Props) => {
-  const { audit, isLoading, setIsLoading, updateAudit, getStatus } = props
+  const {
+    audit,
+    isLoading,
+    setIsLoading,
+    updateAudit,
+    getStatus,
+    electionId,
+  } = props
   const manifestUploaded =
     audit.jurisdictions.length &&
     audit.jurisdictions[0].ballotManifest &&
@@ -87,6 +95,7 @@ const SelectBallotsToAudit = (props: Props) => {
           size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
         }
         await api('/audit/sample-size', {
+          electionId,
           method: 'POST',
           body: JSON.stringify(body),
           headers: {
@@ -95,6 +104,7 @@ const SelectBallotsToAudit = (props: Props) => {
         })
       }
       await api('/audit/jurisdictions', {
+        electionId,
         method: 'POST',
         body: JSON.stringify({ jurisdictions: data }),
         headers: {
@@ -113,6 +123,7 @@ const SelectBallotsToAudit = (props: Props) => {
           const formData: FormData = new FormData()
           formData.append('manifest', values.manifest, values.manifest.name)
           await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+            electionId,
             method: 'POST',
             body: formData,
           })
