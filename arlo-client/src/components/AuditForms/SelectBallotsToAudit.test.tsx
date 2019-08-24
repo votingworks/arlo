@@ -137,9 +137,12 @@ describe('SelectBallotsToAudit', () => {
       />
     )
 
-    const auditBoardInput: any = getByTestId('audit-boards')
-    fireEvent.change(auditBoardInput, { target: { selected: 3 } })
-    expect(auditBoardInput.selected).toBe(3)
+    const auditBoardInput = getByTestId('audit-boards')
+    expect(auditBoardInput).toBeInstanceOf(HTMLSelectElement)
+    if (auditBoardInput instanceof HTMLSelectElement) {
+      fireEvent.change(auditBoardInput, { target: { selectedIndex: 2 } })
+      expect(auditBoardInput.selectedOptions[0].innerHTML).toBe('3')
+    }
   })
 
   it('submits sample size, ballot manifest, and number of audits', async () => {
@@ -169,8 +172,11 @@ describe('SelectBallotsToAudit', () => {
     })
     fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
 
-    const auditBoardInput: any = getByTestId('audit-boards')
-    fireEvent.change(auditBoardInput, { target: { selected: 1 } })
+    const auditBoardInput = getByTestId('audit-boards')
+    expect(auditBoardInput).toBeInstanceOf(HTMLSelectElement)
+    if (auditBoardInput instanceof HTMLSelectElement) {
+      fireEvent.change(auditBoardInput, { target: { selectedIndex: 0 } })
+    }
 
     const sampleSizeInput = getByLabelText(
       '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
@@ -245,8 +251,11 @@ describe('SelectBallotsToAudit', () => {
     const manifestInput = getByTestId('ballot-manifest')
     fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
 
-    const auditBoardInput: any = getByTestId('audit-boards')
-    fireEvent.change(auditBoardInput, { target: { selected: 1 } })
+    const auditBoardInput = getByTestId('audit-boards')
+    expect(auditBoardInput).toBeInstanceOf(HTMLSelectElement)
+    if (auditBoardInput instanceof HTMLSelectElement) {
+      fireEvent.change(auditBoardInput, { target: { selectedIndex: 0 } })
+    }
 
     const sampleSizeInput = getByLabelText(
       '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
@@ -290,8 +299,11 @@ describe('SelectBallotsToAudit', () => {
     const manifestInput = getByTestId('ballot-manifest')
     fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
 
-    const auditBoardInput: any = getByTestId('audit-boards')
-    fireEvent.change(auditBoardInput, { target: { selected: 1 } })
+    const auditBoardInput = getByTestId('audit-boards')
+    expect(auditBoardInput).toBeInstanceOf(HTMLSelectElement)
+    if (auditBoardInput instanceof HTMLSelectElement) {
+      fireEvent.change(auditBoardInput, { target: { selectedIndex: 0 } })
+    }
 
     const sampleSizeInput = getByLabelText(
       '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
@@ -335,8 +347,11 @@ describe('SelectBallotsToAudit', () => {
     const manifestInput = getByTestId('ballot-manifest')
     fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
 
-    const auditBoardInput: any = getByTestId('audit-boards')
-    fireEvent.change(auditBoardInput, { target: { selected: 1 } })
+    const auditBoardInput = getByTestId('audit-boards')
+    expect(auditBoardInput).toBeInstanceOf(HTMLSelectElement)
+    if (auditBoardInput instanceof HTMLSelectElement) {
+      fireEvent.change(auditBoardInput, { target: { selectedIndex: 0 } })
+    }
 
     const sampleSizeInput = getByLabelText(
       '379 samples (80% chance of reaching risk limit and completing the audit in one round)'

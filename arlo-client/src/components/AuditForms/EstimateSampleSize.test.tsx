@@ -349,7 +349,7 @@ describe('EstimateSampleSize', () => {
     )
 
     estimateSampleSizeMocks.inputs.forEach(inputData => {
-      const input: any = getByTestId(inputData.key)
+      const input = getByTestId(inputData.key) as HTMLInputElement
       fireEvent.change(input, { target: { value: inputData.value } })
       expect(input.value).toBe(inputData.value)
     })
@@ -378,7 +378,7 @@ describe('EstimateSampleSize', () => {
 
     await asyncForEach(estimateSampleSizeMocks.errorInputs, async inputData => {
       const { key, value, error } = inputData
-      const input: any = getByTestId(key)
+      const input = getByTestId(key) as HTMLInputElement
       const errorID = input.name + '-error'
       fireEvent.change(input, { target: { value: value } })
       fireEvent.blur(input)
@@ -419,7 +419,7 @@ describe('EstimateSampleSize', () => {
     )
 
     estimateSampleSizeMocks.inputs.forEach(inputData => {
-      const input: any = getByTestId(inputData.key)
+      const input = getByTestId(inputData.key) as HTMLInputElement
       fireEvent.change(input, { target: { value: inputData.value } })
       expect(input.value).toBe(inputData.value)
     })
