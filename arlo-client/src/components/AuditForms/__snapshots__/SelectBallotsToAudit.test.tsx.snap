@@ -1,11 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly 1`] = `
+exports[`SelectBallotsToAudit handles not having sample size options 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
       <form
+        data-testid="form-two"
         id="formTwo"
       >
         <div
@@ -20,85 +21,6 @@ Object {
             <div
               class="sc-htpNat gYCOid"
             >
-              Estimated Sample Size
-            </div>
-            <div
-              class="sc-bwzfXH xctbO"
-            >
-              Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
-            </div>
-            <div
-              class="sc-bwzfXH xctbO"
-            >
-              <p>
-                <span
-                  style="white-space: nowrap;"
-                >
-                  <input
-                    checked=""
-                    id="contest-1-269"
-                    name="sampleSize[contest-1]"
-                    type="radio"
-                    value="269"
-                  />
-                  <label
-                    class="sc-iwsKbI xkrrd"
-                    for="contest-1-269"
-                  >
-                    BRAVO Average Sample Number: 
-                    269 samples
-                    
-                  </label>
-                </span>
-              </p>
-              <p>
-                <span
-                  style="white-space: nowrap;"
-                >
-                  <input
-                    id="contest-1-379"
-                    name="sampleSize[contest-1]"
-                    type="radio"
-                    value="379"
-                  />
-                  <label
-                    class="sc-iwsKbI xkrrd"
-                    for="contest-1-379"
-                  >
-                    
-                    379 samples
-                     (80% chance of reaching risk limit and completing the audit in one round)
-                  </label>
-                </span>
-              </p>
-              <p>
-                <span
-                  style="white-space: nowrap;"
-                >
-                  <input
-                    id="contest-1-78"
-                    name="sampleSize[contest-1]"
-                    type="radio"
-                    value="78"
-                  />
-                  <label
-                    class="sc-iwsKbI xkrrd"
-                    for="contest-1-78"
-                  >
-                    
-                    78 samples
-                    
-                  </label>
-                </span>
-              </p>
-            </div>
-          </div>
-          <div
-            class="sc-bdVaJa fdbLH"
-          >
-            <div
-              class="sc-htpNat gYCOid"
-            >
               Number of Audit Boards
             </div>
             <div
@@ -107,6 +29,7 @@ Object {
               Set the number of audit boards you with to use.
             </div>
             <select
+              data-testid="audit-boards"
               id="auditBoards"
               name="auditBoards"
             >
@@ -172,6 +95,7 @@ Object {
             </div>
             <input
               accept=".csv"
+              data-testid="ballot-manifest"
               name="manifest"
               type="file"
             />
@@ -192,6 +116,7 @@ Object {
   </body>,
   "container": <div>
     <form
+      data-testid="form-two"
       id="formTwo"
     >
       <div
@@ -206,85 +131,6 @@ Object {
           <div
             class="sc-htpNat gYCOid"
           >
-            Estimated Sample Size
-          </div>
-          <div
-            class="sc-bwzfXH xctbO"
-          >
-            Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
-          </div>
-          <div
-            class="sc-bwzfXH xctbO"
-          >
-            <p>
-              <span
-                style="white-space: nowrap;"
-              >
-                <input
-                  checked=""
-                  id="contest-1-269"
-                  name="sampleSize[contest-1]"
-                  type="radio"
-                  value="269"
-                />
-                <label
-                  class="sc-iwsKbI xkrrd"
-                  for="contest-1-269"
-                >
-                  BRAVO Average Sample Number: 
-                  269 samples
-                  
-                </label>
-              </span>
-            </p>
-            <p>
-              <span
-                style="white-space: nowrap;"
-              >
-                <input
-                  id="contest-1-379"
-                  name="sampleSize[contest-1]"
-                  type="radio"
-                  value="379"
-                />
-                <label
-                  class="sc-iwsKbI xkrrd"
-                  for="contest-1-379"
-                >
-                  
-                  379 samples
-                   (80% chance of reaching risk limit and completing the audit in one round)
-                </label>
-              </span>
-            </p>
-            <p>
-              <span
-                style="white-space: nowrap;"
-              >
-                <input
-                  id="contest-1-78"
-                  name="sampleSize[contest-1]"
-                  type="radio"
-                  value="78"
-                />
-                <label
-                  class="sc-iwsKbI xkrrd"
-                  for="contest-1-78"
-                >
-                  
-                  78 samples
-                  
-                </label>
-              </span>
-            </p>
-          </div>
-        </div>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
-          <div
-            class="sc-htpNat gYCOid"
-          >
             Number of Audit Boards
           </div>
           <div
@@ -293,6 +139,7 @@ Object {
             Set the number of audit boards you with to use.
           </div>
           <select
+            data-testid="audit-boards"
             id="auditBoards"
             name="auditBoards"
           >
@@ -358,6 +205,7 @@ Object {
           </div>
           <input
             accept=".csv"
+            data-testid="ballot-manifest"
             name="manifest"
             type="file"
           />
@@ -427,4 +275,379 @@ Object {
   "rerender": [Function],
   "unmount": [Function],
 }
+`;
+
+exports[`SelectBallotsToAudit renders correctly 1`] = `
+<div>
+  <form
+    data-testid="form-two"
+    id="formTwo"
+  >
+    <div
+      class="sc-ifAKCX jXnARC"
+    >
+      <div
+        class="sc-bxivhb doxbWk"
+      />
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Estimated Sample Size
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                checked=""
+                id="sample-size-contest-1-269-"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="269"
+              />
+              <label
+                class="sc-iwsKbI xkrrd"
+                for="sample-size-contest-1-269-"
+              >
+                BRAVO Average Sample Number: 
+                269 samples
+                
+              </label>
+            </span>
+          </p>
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                id="sample-size-contest-1-379-0.8"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="379"
+              />
+              <label
+                class="sc-iwsKbI xkrrd"
+                for="sample-size-contest-1-379-0.8"
+              >
+                
+                379 samples
+                 (80% chance of reaching risk limit and completing the audit in one round)
+              </label>
+            </span>
+          </p>
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                id="sample-size-contest-1-78-"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="78"
+              />
+              <label
+                class="sc-iwsKbI xkrrd"
+                for="sample-size-contest-1-78-"
+              >
+                
+                78 samples
+                
+              </label>
+            </span>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Number of Audit Boards
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Set the number of audit boards you with to use.
+        </div>
+        <select
+          data-testid="audit-boards"
+          id="auditBoards"
+          name="auditBoards"
+        >
+          <option>
+            1
+          </option>
+          <option>
+            2
+          </option>
+          <option>
+            3
+          </option>
+          <option>
+            4
+          </option>
+          <option>
+            5
+          </option>
+          <option>
+            6
+          </option>
+          <option>
+            7
+          </option>
+          <option>
+            8
+          </option>
+          <option>
+            9
+          </option>
+          <option>
+            10
+          </option>
+          <option>
+            11
+          </option>
+          <option>
+            12
+          </option>
+          <option>
+            13
+          </option>
+          <option>
+            14
+          </option>
+          <option>
+            15
+          </option>
+        </select>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Ballot Manifest
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Click "Browse" to choose the appropriate Ballot Manifest file from your computer
+        </div>
+        <input
+          accept=".csv"
+          data-testid="ballot-manifest"
+          name="manifest"
+          type="file"
+        />
+      </div>
+    </div>
+    <div
+      class="sc-htoDjs jIiQXG"
+    >
+      <button
+        class="sc-EHOje iYzqVS"
+        type="button"
+      >
+        Select Ballots To Audit
+      </button>
+    </div>
+  </form>
+</div>
+`;
+
+exports[`SelectBallotsToAudit renders correctly 2`] = `
+<div>
+  <form
+    data-testid="form-two"
+    id="formTwo"
+  >
+    <div
+      class="sc-ifAKCX jXnARC"
+    >
+      <div
+        class="sc-bxivhb doxbWk"
+      />
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Estimated Sample Size
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                checked=""
+                id="sample-size-contest-1-269-"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="269"
+              />
+              <label
+                class="sc-iwsKbI xkrrd"
+                for="sample-size-contest-1-269-"
+              >
+                BRAVO Average Sample Number: 
+                269 samples
+                
+              </label>
+            </span>
+          </p>
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                id="sample-size-contest-1-379-0.8"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="379"
+              />
+              <label
+                class="sc-iwsKbI xkrrd"
+                for="sample-size-contest-1-379-0.8"
+              >
+                
+                379 samples
+                 (80% chance of reaching risk limit and completing the audit in one round)
+              </label>
+            </span>
+          </p>
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                id="sample-size-contest-1-78-"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="78"
+              />
+              <label
+                class="sc-iwsKbI xkrrd"
+                for="sample-size-contest-1-78-"
+              >
+                
+                78 samples
+                
+              </label>
+            </span>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Number of Audit Boards
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Set the number of audit boards you with to use.
+        </div>
+        <select
+          data-testid="audit-boards"
+          id="auditBoards"
+          name="auditBoards"
+        >
+          <option>
+            1
+          </option>
+          <option>
+            2
+          </option>
+          <option>
+            3
+          </option>
+          <option>
+            4
+          </option>
+          <option>
+            5
+          </option>
+          <option>
+            6
+          </option>
+          <option>
+            7
+          </option>
+          <option>
+            8
+          </option>
+          <option>
+            9
+          </option>
+          <option>
+            10
+          </option>
+          <option>
+            11
+          </option>
+          <option>
+            12
+          </option>
+          <option>
+            13
+          </option>
+          <option>
+            14
+          </option>
+          <option>
+            15
+          </option>
+        </select>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Ballot Manifest
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Click "Browse" to choose the appropriate Ballot Manifest file from your computer
+        </div>
+        <input
+          accept=".csv"
+          data-testid="ballot-manifest"
+          name="manifest"
+          type="file"
+        />
+      </div>
+    </div>
+    <p>
+      Loading...
+    </p>
+  </form>
+</div>
 `;

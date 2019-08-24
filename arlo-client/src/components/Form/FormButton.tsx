@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 
 const Button = styled.button`
@@ -34,13 +34,13 @@ const SmallInlineButton = styled.button`
 
 interface Props {
   disabled?: boolean
-  onClick?: any
-  children?: any
+  onClick?: (e: React.FormEvent<any>) => void
+  children?: ReactNode
   inline?: boolean
   size?: string
   type?: string
 }
-const FormButton = ({
+const FormButton: React.FC<Props> = ({
   disabled,
   onClick,
   size,

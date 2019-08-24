@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 
 const StyledFormTitle = styled.div`
@@ -8,12 +8,11 @@ const StyledFormTitle = styled.div`
 `
 
 interface Props {
-  children: any
+  children: ReactNode
 }
 
-const FormTitle = (props: Props) => {
-  const { children } = props
-  return <StyledFormTitle>{children}</StyledFormTitle>
-}
+const FormTitle: React.FC<Props> = ({ children }: Props) => (
+  <StyledFormTitle>{children}</StyledFormTitle>
+)
 
 export default FormTitle

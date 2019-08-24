@@ -4,15 +4,24 @@ import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
 import { Audit } from '../../types'
-import { statusStates } from './_mocks'
+import ResetButton from './ResetButton'
 
-const AuditForms = () => {
+const initialData: Audit = {
+  name: '',
+  riskLimit: '',
+  randomSeed: '',
+  contests: [],
+  jurisdictions: [],
+  rounds: [],
+}
+
+const AuditForms: React.FC<{}> = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [audit, setAudit] = useState<Audit>(statusStates[0])
+  const [audit, setAudit] = useState(initialData)
 
   const getStatus = useCallback(async (): Promise<Audit> => {
-    const audit: any = await api('/audit/status', {})
+    const audit: Audit = await api('/audit/status', {})
     return audit
   }, [])
 
@@ -29,6 +38,8 @@ const AuditForms = () => {
 
   return (
     <React.Fragment>
+      <ResetButton updateAudit={updateAudit} />
+
       <EstimateSampleSize
         audit={audit}
         isLoading={isLoading}
