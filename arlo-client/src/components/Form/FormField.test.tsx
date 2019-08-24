@@ -11,10 +11,10 @@ describe('FormField', () => {
       onChange: jest.fn(),
       onBlur: jest.fn(),
     }
-    const form = {
+    const form = ({
       errors: {},
       touched: {},
-    } as FormikProps<any> // eslint-disable-line @typescript-eslint/no-object-literal-type-assertion
+    } as any) as FormikProps<any> // eslint-disable-line @typescript-eslint/no-object-literal-type-assertion
     const { container } = render(
       <FormField field={field} form={form} type="text" />
     )
@@ -36,7 +36,7 @@ describe('FormField', () => {
       touched: {
         'field-name': true,
       },
-    } as any) as FormikProps<any>
+    } as any) as FormikProps<any> // eslint-disable-line @typescript-eslint/no-object-literal-type-assertion
     const { container } = render(
       <FormField field={field} form={form} type="text" />
     )
