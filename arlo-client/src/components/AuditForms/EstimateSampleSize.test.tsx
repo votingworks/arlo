@@ -162,7 +162,7 @@ describe('EstimateSampleSize', () => {
   })
 
   it('renders empty state correctly', () => {
-    const container = render(
+    const { container, rerender } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
@@ -171,10 +171,20 @@ describe('EstimateSampleSize', () => {
       />
     )
     expect(container).toMatchSnapshot()
+
+    rerender(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
+    expect(container).toMatchSnapshot()
   })
 
   it('renders after contests creation correctly', () => {
-    const container = render(
+    const { container, rerender } = render(
       <EstimateSampleSize
         audit={statusStates[1]}
         isLoading={false}
@@ -183,10 +193,20 @@ describe('EstimateSampleSize', () => {
       />
     )
     expect(container).toMatchSnapshot()
+
+    rerender(
+      <EstimateSampleSize
+        audit={statusStates[1]}
+        isLoading
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
+    expect(container).toMatchSnapshot()
   })
 
   it('renders after sample size is estimated correctly', () => {
-    const container = render(
+    const { container, rerender } = render(
       <EstimateSampleSize
         audit={statusStates[2]}
         isLoading={false}
@@ -195,10 +215,20 @@ describe('EstimateSampleSize', () => {
       />
     )
     expect(container).toMatchSnapshot()
+
+    rerender(
+      <EstimateSampleSize
+        audit={statusStates[2]}
+        isLoading
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
+    expect(container).toMatchSnapshot()
   })
 
   it('renders after manifest is uploaded correctly', () => {
-    const container = render(
+    const { container, rerender } = render(
       <EstimateSampleSize
         audit={statusStates[3]}
         isLoading={false}
@@ -207,13 +237,33 @@ describe('EstimateSampleSize', () => {
       />
     )
     expect(container).toMatchSnapshot()
+
+    rerender(
+      <EstimateSampleSize
+        audit={statusStates[3]}
+        isLoading
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
+    expect(container).toMatchSnapshot()
   })
 
   it('renders during rounds stage correctly', () => {
-    const container = render(
+    const { container, rerender } = render(
       <EstimateSampleSize
         audit={statusStates[4]}
         isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+      />
+    )
+    expect(container).toMatchSnapshot()
+
+    rerender(
+      <EstimateSampleSize
+        audit={statusStates[4]}
+        isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
       />

@@ -17,10 +17,21 @@ beforeEach(() => {
 
 describe('SelectBallotsToAudit', () => {
   it('renders correctly', () => {
-    const container = render(
+    const { container, rerender } = render(
       <SelectBallotsToAudit
         audit={statusStates[1]}
         isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+        getStatus={jest.fn()}
+      />
+    )
+    expect(container).toMatchSnapshot()
+
+    rerender(
+      <SelectBallotsToAudit
+        audit={statusStates[1]}
+        isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}

@@ -2,12 +2,15 @@
 
 exports[`CalculateRiskMeasurement handles inputs 1`] = `
 <div>
-  <form>
+  <form
+    data-testid="form-three-1"
+  >
+    <hr />
     <div
-      class="sc-ifAKCX jXnARC"
+      class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb dxnZc"
+        class="bp3-heading sc-bxivhb blucNT"
       >
         Round 1
       </h2>
@@ -19,7 +22,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
          Total Ballots
       </div>
       <div
-        class="sc-bwzfXH jQNUeE"
+        class="sc-bwzfXH izcbHX"
       >
         <p>
           Contest 
@@ -59,7 +62,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
           INCOMPLETE
         </div>
         <div
-          class="sc-bwzfXH jQNUeE"
+          class="sc-bwzfXH izcbHX"
         >
           Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
           1
@@ -276,12 +279,15 @@ Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <form>
+      <form
+        data-testid="form-three-1"
+      >
+        <hr />
         <div
-          class="sc-ifAKCX jXnARC"
+          class="sc-ifAKCX dUfgxM"
         >
           <h2
-            class="bp3-heading sc-bxivhb dxnZc"
+            class="bp3-heading sc-bxivhb blucNT"
           >
             Round 1
           </h2>
@@ -293,7 +299,7 @@ Object {
              Total Ballots
           </div>
           <div
-            class="sc-bwzfXH jQNUeE"
+            class="sc-bwzfXH izcbHX"
           >
             <p>
               Contest 
@@ -571,12 +577,15 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <form>
+    <form
+      data-testid="form-three-1"
+    >
+      <hr />
       <div
-        class="sc-ifAKCX jXnARC"
+        class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb dxnZc"
+          class="bp3-heading sc-bxivhb blucNT"
         >
           Round 1
         </h2>
@@ -588,7 +597,7 @@ Object {
            Total Ballots
         </div>
         <div
-          class="sc-bwzfXH jQNUeE"
+          class="sc-bwzfXH izcbHX"
         >
           <p>
             Contest 
@@ -918,17 +927,20 @@ Object {
 }
 `;
 
-exports[`CalculateRiskMeasurement renders first round correctly 1`] = `
+exports[`CalculateRiskMeasurement renders completion in first round with loading correctly 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
-      <form>
+      <form
+        data-testid="form-three-1"
+      >
+        <hr />
         <div
-          class="sc-ifAKCX jXnARC"
+          class="sc-ifAKCX dUfgxM"
         >
           <h2
-            class="bp3-heading sc-bxivhb dxnZc"
+            class="bp3-heading sc-bxivhb blucNT"
           >
             Round 1
           </h2>
@@ -940,7 +952,666 @@ Object {
              Total Ballots
           </div>
           <div
-            class="sc-bwzfXH jQNUeE"
+            class="sc-bwzfXH izcbHX"
+          >
+            <p>
+              Contest 
+              1
+              : 
+              379
+               ballots
+            </p>
+          </div>
+          <button
+            class="bp3-button"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Aggregated Ballot Retrieval List for Round 
+              1
+            </span>
+          </button>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat fnydiw"
+            >
+              Contest 1: contest name
+            </div>
+            <div
+              class="sc-htpNat fnydiw"
+            >
+              Audited Results: Round 
+              1
+              , Contest 
+              1
+               
+              COMPLETE
+            </div>
+            <div
+              class="sc-iwsKbI hmbaiI"
+            >
+              <div
+                class="sc-gqjmRU glEOTJ"
+              >
+                <label
+                  class="sc-gZMcBi VIFGE"
+                >
+                  Risk Limit: 
+                </label>
+                1
+                %
+              </div>
+              <div
+                class="sc-gqjmRU glEOTJ"
+              >
+                <label
+                  class="sc-gZMcBi VIFGE"
+                >
+                  P-value: 
+                </label>
+                 
+                0.00020431431380638307
+              </div>
+            </div>
+            <div
+              class="sc-iwsKbI hmbaiI"
+            >
+              <div
+                class="sc-gqjmRU glEOTJ"
+              >
+                <label
+                  class="sc-gZMcBi VIFGE"
+                >
+                  choice one
+                </label>
+                <div
+                  class="sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  >
+                    <div
+                      class="bp3-input-group bp3-disabled"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="round-0-contest-0-choice-choice-1"
+                        disabled=""
+                        name="contests[0][choice-1]"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value="100"
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="sc-gqjmRU glEOTJ"
+              >
+                <label
+                  class="sc-gZMcBi VIFGE"
+                >
+                  choice two
+                </label>
+                <div
+                  class="sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  >
+                    <div
+                      class="bp3-input-group bp3-disabled"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="round-0-contest-0-choice-choice-2"
+                        disabled=""
+                        name="contests[0][choice-2]"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value="167"
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p>
+            Loading...
+          </p>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat fnydiw"
+            >
+              Audit Progress: 
+              1
+               of 
+              1
+               
+              complete
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <button
+              class="bp3-button bp3-intent-success"
+              data-testid="submit-form-three"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Download Audit Report
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>,
+  "container": <div>
+    <form
+      data-testid="form-three-1"
+    >
+      <hr />
+      <div
+        class="sc-ifAKCX dUfgxM"
+      >
+        <h2
+          class="bp3-heading sc-bxivhb blucNT"
+        >
+          Round 1
+        </h2>
+        <div
+          class="sc-htpNat fnydiw"
+        >
+          Ballot Retrieval List: 
+          379
+           Total Ballots
+        </div>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          <p>
+            Contest 
+            1
+            : 
+            379
+             ballots
+          </p>
+        </div>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Aggregated Ballot Retrieval List for Round 
+            1
+          </span>
+        </button>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat fnydiw"
+          >
+            Contest 1: contest name
+          </div>
+          <div
+            class="sc-htpNat fnydiw"
+          >
+            Audited Results: Round 
+            1
+            , Contest 
+            1
+             
+            COMPLETE
+          </div>
+          <div
+            class="sc-iwsKbI hmbaiI"
+          >
+            <div
+              class="sc-gqjmRU glEOTJ"
+            >
+              <label
+                class="sc-gZMcBi VIFGE"
+              >
+                Risk Limit: 
+              </label>
+              1
+              %
+            </div>
+            <div
+              class="sc-gqjmRU glEOTJ"
+            >
+              <label
+                class="sc-gZMcBi VIFGE"
+              >
+                P-value: 
+              </label>
+               
+              0.00020431431380638307
+            </div>
+          </div>
+          <div
+            class="sc-iwsKbI hmbaiI"
+          >
+            <div
+              class="sc-gqjmRU glEOTJ"
+            >
+              <label
+                class="sc-gZMcBi VIFGE"
+              >
+                choice one
+              </label>
+              <div
+                class="sc-EHOje bXavad"
+              >
+                <div
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled"
+                  >
+                    <input
+                      autocomplete="off"
+                      class="bp3-input"
+                      data-testid="round-0-contest-0-choice-choice-1"
+                      disabled=""
+                      name="contests[0][choice-1]"
+                      style="padding-right: 10px;"
+                      type="number"
+                      value="100"
+                    />
+                  </div>
+                  <div
+                    class="bp3-button-group bp3-vertical bp3-fixed"
+                  >
+                    <button
+                      class="bp3-button bp3-disabled"
+                      disabled=""
+                      tabindex="-1"
+                      type="button"
+                    >
+                      <span
+                        class="bp3-icon bp3-icon-chevron-up"
+                        icon="chevron-up"
+                      >
+                        <svg
+                          data-icon="chevron-up"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          width="16"
+                        >
+                          <desc>
+                            chevron-up
+                          </desc>
+                          <path
+                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                            fill-rule="evenodd"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                    <button
+                      class="bp3-button bp3-disabled"
+                      disabled=""
+                      tabindex="-1"
+                      type="button"
+                    >
+                      <span
+                        class="bp3-icon bp3-icon-chevron-down"
+                        icon="chevron-down"
+                      >
+                        <svg
+                          data-icon="chevron-down"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          width="16"
+                        >
+                          <desc>
+                            chevron-down
+                          </desc>
+                          <path
+                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                            fill-rule="evenodd"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="sc-gqjmRU glEOTJ"
+            >
+              <label
+                class="sc-gZMcBi VIFGE"
+              >
+                choice two
+              </label>
+              <div
+                class="sc-EHOje bXavad"
+              >
+                <div
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled"
+                  >
+                    <input
+                      autocomplete="off"
+                      class="bp3-input"
+                      data-testid="round-0-contest-0-choice-choice-2"
+                      disabled=""
+                      name="contests[0][choice-2]"
+                      style="padding-right: 10px;"
+                      type="number"
+                      value="167"
+                    />
+                  </div>
+                  <div
+                    class="bp3-button-group bp3-vertical bp3-fixed"
+                  >
+                    <button
+                      class="bp3-button bp3-disabled"
+                      disabled=""
+                      tabindex="-1"
+                      type="button"
+                    >
+                      <span
+                        class="bp3-icon bp3-icon-chevron-up"
+                        icon="chevron-up"
+                      >
+                        <svg
+                          data-icon="chevron-up"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          width="16"
+                        >
+                          <desc>
+                            chevron-up
+                          </desc>
+                          <path
+                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                            fill-rule="evenodd"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                    <button
+                      class="bp3-button bp3-disabled"
+                      disabled=""
+                      tabindex="-1"
+                      type="button"
+                    >
+                      <span
+                        class="bp3-icon bp3-icon-chevron-down"
+                        icon="chevron-down"
+                      >
+                        <svg
+                          data-icon="chevron-down"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          width="16"
+                        >
+                          <desc>
+                            chevron-down
+                          </desc>
+                          <path
+                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                            fill-rule="evenodd"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p>
+          Loading...
+        </p>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat fnydiw"
+          >
+            Audit Progress: 
+            1
+             of 
+            1
+             
+            complete
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <button
+            class="bp3-button bp3-intent-success"
+            data-testid="submit-form-three"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Audit Report
+            </span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`CalculateRiskMeasurement renders first round correctly 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <form
+        data-testid="form-three-1"
+      >
+        <hr />
+        <div
+          class="sc-ifAKCX dUfgxM"
+        >
+          <h2
+            class="bp3-heading sc-bxivhb blucNT"
+          >
+            Round 1
+          </h2>
+          <div
+            class="sc-htpNat fnydiw"
+          >
+            Ballot Retrieval List: 
+            379
+             Total Ballots
+          </div>
+          <div
+            class="sc-bwzfXH izcbHX"
           >
             <p>
               Contest 
@@ -980,7 +1651,7 @@ Object {
               INCOMPLETE
             </div>
             <div
-              class="sc-bwzfXH jQNUeE"
+              class="sc-bwzfXH izcbHX"
             >
               Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
               1
@@ -1192,12 +1863,15 @@ Object {
     </div>
   </body>,
   "container": <div>
-    <form>
+    <form
+      data-testid="form-three-1"
+    >
+      <hr />
       <div
-        class="sc-ifAKCX jXnARC"
+        class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb dxnZc"
+          class="bp3-heading sc-bxivhb blucNT"
         >
           Round 1
         </h2>
@@ -1209,7 +1883,7 @@ Object {
            Total Ballots
         </div>
         <div
-          class="sc-bwzfXH jQNUeE"
+          class="sc-bwzfXH izcbHX"
         >
           <p>
             Contest 
@@ -1249,7 +1923,7 @@ Object {
             INCOMPLETE
           </div>
           <div
-            class="sc-bwzfXH jQNUeE"
+            class="sc-bwzfXH izcbHX"
           >
             Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
             1
@@ -1452,6 +2126,585 @@ Object {
               Calculate Risk Measurement
             </span>
           </button>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        />
+      </div>
+    </form>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`CalculateRiskMeasurement renders first round with loading correctly 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <form
+        data-testid="form-three-1"
+      >
+        <hr />
+        <div
+          class="sc-ifAKCX dUfgxM"
+        >
+          <h2
+            class="bp3-heading sc-bxivhb blucNT"
+          >
+            Round 1
+          </h2>
+          <div
+            class="sc-htpNat fnydiw"
+          >
+            Ballot Retrieval List: 
+            379
+             Total Ballots
+          </div>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            <p>
+              Contest 
+              1
+              : 
+              379
+               ballots
+            </p>
+          </div>
+          <button
+            class="bp3-button"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Aggregated Ballot Retrieval List for Round 
+              1
+            </span>
+          </button>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat fnydiw"
+            >
+              Contest 1: contest name
+            </div>
+            <div
+              class="sc-htpNat fnydiw"
+            >
+              Audited Results: Round 
+              1
+              , Contest 
+              1
+               
+              INCOMPLETE
+            </div>
+            <div
+              class="sc-bwzfXH izcbHX"
+            >
+              Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
+              1
+              , Contest 
+              1
+            </div>
+            <div
+              class="sc-iwsKbI hmbaiI"
+            >
+              <div
+                class="sc-gqjmRU glEOTJ"
+              >
+                <label
+                  class="sc-gZMcBi VIFGE"
+                >
+                  choice one
+                </label>
+                <div
+                  class="sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  >
+                    <div
+                      class="bp3-input-group"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="round-0-contest-0-choice-choice-1"
+                        name="contests[0][choice-1]"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value="0"
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="sc-gqjmRU glEOTJ"
+              >
+                <label
+                  class="sc-gZMcBi VIFGE"
+                >
+                  choice two
+                </label>
+                <div
+                  class="sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  >
+                    <div
+                      class="bp3-input-group"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="round-0-contest-0-choice-choice-2"
+                        name="contests[0][choice-2]"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value="0"
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p>
+            Loading...
+          </p>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-htpNat fnydiw"
+            >
+              Audit Progress: 
+              0
+               of 
+              1
+               
+              complete
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          />
+        </div>
+      </form>
+    </div>
+  </body>,
+  "container": <div>
+    <form
+      data-testid="form-three-1"
+    >
+      <hr />
+      <div
+        class="sc-ifAKCX dUfgxM"
+      >
+        <h2
+          class="bp3-heading sc-bxivhb blucNT"
+        >
+          Round 1
+        </h2>
+        <div
+          class="sc-htpNat fnydiw"
+        >
+          Ballot Retrieval List: 
+          379
+           Total Ballots
+        </div>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          <p>
+            Contest 
+            1
+            : 
+            379
+             ballots
+          </p>
+        </div>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Aggregated Ballot Retrieval List for Round 
+            1
+          </span>
+        </button>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat fnydiw"
+          >
+            Contest 1: contest name
+          </div>
+          <div
+            class="sc-htpNat fnydiw"
+          >
+            Audited Results: Round 
+            1
+            , Contest 
+            1
+             
+            INCOMPLETE
+          </div>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
+            1
+            , Contest 
+            1
+          </div>
+          <div
+            class="sc-iwsKbI hmbaiI"
+          >
+            <div
+              class="sc-gqjmRU glEOTJ"
+            >
+              <label
+                class="sc-gZMcBi VIFGE"
+              >
+                choice one
+              </label>
+              <div
+                class="sc-EHOje bXavad"
+              >
+                <div
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                >
+                  <div
+                    class="bp3-input-group"
+                  >
+                    <input
+                      autocomplete="off"
+                      class="bp3-input"
+                      data-testid="round-0-contest-0-choice-choice-1"
+                      name="contests[0][choice-1]"
+                      style="padding-right: 10px;"
+                      type="number"
+                      value="0"
+                    />
+                  </div>
+                  <div
+                    class="bp3-button-group bp3-vertical bp3-fixed"
+                  >
+                    <button
+                      class="bp3-button"
+                      type="button"
+                    >
+                      <span
+                        class="bp3-icon bp3-icon-chevron-up"
+                        icon="chevron-up"
+                      >
+                        <svg
+                          data-icon="chevron-up"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          width="16"
+                        >
+                          <desc>
+                            chevron-up
+                          </desc>
+                          <path
+                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                            fill-rule="evenodd"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                    <button
+                      class="bp3-button"
+                      type="button"
+                    >
+                      <span
+                        class="bp3-icon bp3-icon-chevron-down"
+                        icon="chevron-down"
+                      >
+                        <svg
+                          data-icon="chevron-down"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          width="16"
+                        >
+                          <desc>
+                            chevron-down
+                          </desc>
+                          <path
+                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                            fill-rule="evenodd"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="sc-gqjmRU glEOTJ"
+            >
+              <label
+                class="sc-gZMcBi VIFGE"
+              >
+                choice two
+              </label>
+              <div
+                class="sc-EHOje bXavad"
+              >
+                <div
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                >
+                  <div
+                    class="bp3-input-group"
+                  >
+                    <input
+                      autocomplete="off"
+                      class="bp3-input"
+                      data-testid="round-0-contest-0-choice-choice-2"
+                      name="contests[0][choice-2]"
+                      style="padding-right: 10px;"
+                      type="number"
+                      value="0"
+                    />
+                  </div>
+                  <div
+                    class="bp3-button-group bp3-vertical bp3-fixed"
+                  >
+                    <button
+                      class="bp3-button"
+                      type="button"
+                    >
+                      <span
+                        class="bp3-icon bp3-icon-chevron-up"
+                        icon="chevron-up"
+                      >
+                        <svg
+                          data-icon="chevron-up"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          width="16"
+                        >
+                          <desc>
+                            chevron-up
+                          </desc>
+                          <path
+                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                            fill-rule="evenodd"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                    <button
+                      class="bp3-button"
+                      type="button"
+                    >
+                      <span
+                        class="bp3-icon bp3-icon-chevron-down"
+                        icon="chevron-down"
+                      >
+                        <svg
+                          data-icon="chevron-down"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          width="16"
+                        >
+                          <desc>
+                            chevron-down
+                          </desc>
+                          <path
+                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                            fill-rule="evenodd"
+                          />
+                        </svg>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p>
+          Loading...
+        </p>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <div
+            class="sc-htpNat fnydiw"
+          >
+            Audit Progress: 
+            0
+             of 
+            1
+             
+            complete
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"

@@ -6,14 +6,21 @@ Object {
   "baseElement": <body>
     <div>
       <form
+        data-testid="form-two"
         id="formTwo"
       >
+        <hr />
         <div
-          class="sc-ifAKCX jXnARC"
+          class="sc-ifAKCX dUfgxM"
         >
           <h2
-            class="bp3-heading sc-bxivhb dxnZc"
+            class="bp3-heading sc-bxivhb blucNT"
           />
+          <h2
+            class="bp3-heading sc-bxivhb blucNT"
+          >
+            Select Ballots to Audit
+          </h2>
           <div
             class="sc-bdVaJa fdbLH"
           >
@@ -23,7 +30,7 @@ Object {
               Number of Audit Boards
             </div>
             <div
-              class="sc-bwzfXH jQNUeE"
+              class="sc-bwzfXH izcbHX"
             >
               Set the number of audit boards you with to use.
             </div>
@@ -112,7 +119,7 @@ Object {
               Ballot Manifest
             </div>
             <div
-              class="sc-bwzfXH jQNUeE"
+              class="sc-bwzfXH izcbHX"
             >
               Click "Browse" to choose the appropriate Ballot Manifest file from your computer
             </div>
@@ -151,14 +158,21 @@ Object {
   </body>,
   "container": <div>
     <form
+      data-testid="form-two"
       id="formTwo"
     >
+      <hr />
       <div
-        class="sc-ifAKCX jXnARC"
+        class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb dxnZc"
+          class="bp3-heading sc-bxivhb blucNT"
         />
+        <h2
+          class="bp3-heading sc-bxivhb blucNT"
+        >
+          Select Ballots to Audit
+        </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
@@ -168,7 +182,7 @@ Object {
             Number of Audit Boards
           </div>
           <div
-            class="sc-bwzfXH jQNUeE"
+            class="sc-bwzfXH izcbHX"
           >
             Set the number of audit boards you with to use.
           </div>
@@ -257,7 +271,7 @@ Object {
             Ballot Manifest
           </div>
           <div
-            class="sc-bwzfXH jQNUeE"
+            class="sc-bwzfXH izcbHX"
           >
             Click "Browse" to choose the appropriate Ballot Manifest file from your computer
           </div>
@@ -348,480 +362,430 @@ Object {
 `;
 
 exports[`SelectBallotsToAudit renders correctly 1`] = `
-Object {
-  "asFragment": [Function],
-  "baseElement": <body>
-    <div>
-      <form
-        id="formTwo"
+<div>
+  <form
+    data-testid="form-two"
+    id="formTwo"
+  >
+    <hr />
+    <div
+      class="sc-ifAKCX dUfgxM"
+    >
+      <h2
+        class="bp3-heading sc-bxivhb blucNT"
+      />
+      <h2
+        class="bp3-heading sc-bxivhb blucNT"
+      >
+        Select Ballots to Audit
+      </h2>
+      <div
+        class="sc-bdVaJa fdbLH"
       >
         <div
-          class="sc-ifAKCX jXnARC"
+          class="sc-htpNat fnydiw"
         >
-          <h2
-            class="bp3-heading sc-bxivhb dxnZc"
-          />
-          <div
-            class="sc-bdVaJa fdbLH"
-          >
-            <div
-              class="sc-htpNat fnydiw"
-            >
-              Estimated Sample Size
-            </div>
-            <div
-              class="sc-bwzfXH jQNUeE"
-            >
-              Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
-            </div>
-            <div
-              class="sc-bwzfXH jQNUeE"
-            >
-              <div>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    checked=""
-                    name="sampleSize[contest-1]"
-                    type="radio"
-                    value="269"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  BRAVO Average Sample Number: 
-                  269 samples
-                  
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="sampleSize[contest-1]"
-                    type="radio"
-                    value="379"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  
-                  379 samples
-                   (80% chance of reaching risk limit and completing the audit in one round)
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="sampleSize[contest-1]"
-                    type="radio"
-                    value="78"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  
-                  78 samples
-                  
-                </label>
-              </div>
-            </div>
-          </div>
-          <div
-            class="sc-bdVaJa fdbLH"
-          >
-            <div
-              class="sc-htpNat fnydiw"
-            >
-              Number of Audit Boards
-            </div>
-            <div
-              class="sc-bwzfXH jQNUeE"
-            >
-              Set the number of audit boards you with to use.
-            </div>
-            <div
-              class="bp3-html-select"
-            >
-              <select
-                data-testid="audit-boards"
-                field="[object Object]"
-                form="[object Object]"
-                id="auditBoards"
-              >
-                <option>
-                  1
-                </option>
-                <option>
-                  2
-                </option>
-                <option>
-                  3
-                </option>
-                <option>
-                  4
-                </option>
-                <option>
-                  5
-                </option>
-                <option>
-                  6
-                </option>
-                <option>
-                  7
-                </option>
-                <option>
-                  8
-                </option>
-                <option>
-                  9
-                </option>
-                <option>
-                  10
-                </option>
-                <option>
-                  11
-                </option>
-                <option>
-                  12
-                </option>
-                <option>
-                  13
-                </option>
-                <option>
-                  14
-                </option>
-                <option>
-                  15
-                </option>
-              </select>
-              <span
-                class="bp3-icon bp3-icon-double-caret-vertical"
-                icon="double-caret-vertical"
-              >
-                <svg
-                  data-icon="double-caret-vertical"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    double-caret-vertical
-                  </desc>
-                  <path
-                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-            </div>
-          </div>
-          <div
-            class="sc-bdVaJa fdbLH"
-          >
-            <div
-              class="sc-htpNat fnydiw"
-            >
-              Ballot Manifest
-            </div>
-            <div
-              class="sc-bwzfXH jQNUeE"
-            >
-              Click "Browse" to choose the appropriate Ballot Manifest file from your computer
-            </div>
+          Estimated Sample Size
+        </div>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+        </div>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          <div>
             <label
-              class="bp3-file-input"
+              class="bp3-control bp3-radio"
             >
               <input
-                accept=".csv"
-                name="manifest"
-                type="file"
+                checked=""
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="269"
               />
               <span
-                class="bp3-file-upload-input"
-              >
-                Select manifest...
-              </span>
+                class="bp3-control-indicator"
+              />
+              BRAVO Average Sample Number: 
+              269 samples
+              
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="379"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              
+              379 samples
+               (80% chance of reaching risk limit and completing the audit in one round)
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="78"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              
+              78 samples
+              
             </label>
           </div>
         </div>
-        <div
-          class="sc-EHOje kPsGPf"
-        >
-          <button
-            class="bp3-button bp3-intent-primary"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Select Ballots To Audit
-            </span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </body>,
-  "container": <div>
-    <form
-      id="formTwo"
-    >
-      <div
-        class="sc-ifAKCX jXnARC"
-      >
-        <h2
-          class="bp3-heading sc-bxivhb dxnZc"
-        />
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
-          <div
-            class="sc-htpNat fnydiw"
-          >
-            Estimated Sample Size
-          </div>
-          <div
-            class="sc-bwzfXH jQNUeE"
-          >
-            Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
-          </div>
-          <div
-            class="sc-bwzfXH jQNUeE"
-          >
-            <div>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="sampleSize[contest-1]"
-                  type="radio"
-                  value="269"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                BRAVO Average Sample Number: 
-                269 samples
-                
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="sampleSize[contest-1]"
-                  type="radio"
-                  value="379"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                
-                379 samples
-                 (80% chance of reaching risk limit and completing the audit in one round)
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="sampleSize[contest-1]"
-                  type="radio"
-                  value="78"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                
-                78 samples
-                
-              </label>
-            </div>
-          </div>
-        </div>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
-          <div
-            class="sc-htpNat fnydiw"
-          >
-            Number of Audit Boards
-          </div>
-          <div
-            class="sc-bwzfXH jQNUeE"
-          >
-            Set the number of audit boards you with to use.
-          </div>
-          <div
-            class="bp3-html-select"
-          >
-            <select
-              data-testid="audit-boards"
-              field="[object Object]"
-              form="[object Object]"
-              id="auditBoards"
-            >
-              <option>
-                1
-              </option>
-              <option>
-                2
-              </option>
-              <option>
-                3
-              </option>
-              <option>
-                4
-              </option>
-              <option>
-                5
-              </option>
-              <option>
-                6
-              </option>
-              <option>
-                7
-              </option>
-              <option>
-                8
-              </option>
-              <option>
-                9
-              </option>
-              <option>
-                10
-              </option>
-              <option>
-                11
-              </option>
-              <option>
-                12
-              </option>
-              <option>
-                13
-              </option>
-              <option>
-                14
-              </option>
-              <option>
-                15
-              </option>
-            </select>
-            <span
-              class="bp3-icon bp3-icon-double-caret-vertical"
-              icon="double-caret-vertical"
-            >
-              <svg
-                data-icon="double-caret-vertical"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
-              >
-                <desc>
-                  double-caret-vertical
-                </desc>
-                <path
-                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </div>
-        </div>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
-          <div
-            class="sc-htpNat fnydiw"
-          >
-            Ballot Manifest
-          </div>
-          <div
-            class="sc-bwzfXH jQNUeE"
-          >
-            Click "Browse" to choose the appropriate Ballot Manifest file from your computer
-          </div>
-          <label
-            class="bp3-file-input"
-          >
-            <input
-              accept=".csv"
-              name="manifest"
-              type="file"
-            />
-            <span
-              class="bp3-file-upload-input"
-            >
-              Select manifest...
-            </span>
-          </label>
-        </div>
       </div>
       <div
-        class="sc-EHOje kPsGPf"
+        class="sc-bdVaJa fdbLH"
       >
-        <button
-          class="bp3-button bp3-intent-primary"
-          type="button"
+        <div
+          class="sc-htpNat fnydiw"
         >
+          Number of Audit Boards
+        </div>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Set the number of audit boards you with to use.
+        </div>
+        <div
+          class="bp3-html-select"
+        >
+          <select
+            data-testid="audit-boards"
+            field="[object Object]"
+            form="[object Object]"
+            id="auditBoards"
+          >
+            <option>
+              1
+            </option>
+            <option>
+              2
+            </option>
+            <option>
+              3
+            </option>
+            <option>
+              4
+            </option>
+            <option>
+              5
+            </option>
+            <option>
+              6
+            </option>
+            <option>
+              7
+            </option>
+            <option>
+              8
+            </option>
+            <option>
+              9
+            </option>
+            <option>
+              10
+            </option>
+            <option>
+              11
+            </option>
+            <option>
+              12
+            </option>
+            <option>
+              13
+            </option>
+            <option>
+              14
+            </option>
+            <option>
+              15
+            </option>
+          </select>
           <span
-            class="bp3-button-text"
+            class="bp3-icon bp3-icon-double-caret-vertical"
+            icon="double-caret-vertical"
           >
-            Select Ballots To Audit
+            <svg
+              data-icon="double-caret-vertical"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                double-caret-vertical
+              </desc>
+              <path
+                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                fill-rule="evenodd"
+              />
+            </svg>
           </span>
-        </button>
+        </div>
       </div>
-    </form>
-  </div>,
-  "debug": [Function],
-  "findAllByAltText": [Function],
-  "findAllByDisplayValue": [Function],
-  "findAllByLabelText": [Function],
-  "findAllByPlaceholderText": [Function],
-  "findAllByRole": [Function],
-  "findAllByTestId": [Function],
-  "findAllByText": [Function],
-  "findAllByTitle": [Function],
-  "findByAltText": [Function],
-  "findByDisplayValue": [Function],
-  "findByLabelText": [Function],
-  "findByPlaceholderText": [Function],
-  "findByRole": [Function],
-  "findByTestId": [Function],
-  "findByText": [Function],
-  "findByTitle": [Function],
-  "getAllByAltText": [Function],
-  "getAllByDisplayValue": [Function],
-  "getAllByLabelText": [Function],
-  "getAllByPlaceholderText": [Function],
-  "getAllByRole": [Function],
-  "getAllByTestId": [Function],
-  "getAllByText": [Function],
-  "getAllByTitle": [Function],
-  "getByAltText": [Function],
-  "getByDisplayValue": [Function],
-  "getByLabelText": [Function],
-  "getByPlaceholderText": [Function],
-  "getByRole": [Function],
-  "getByTestId": [Function],
-  "getByText": [Function],
-  "getByTitle": [Function],
-  "queryAllByAltText": [Function],
-  "queryAllByDisplayValue": [Function],
-  "queryAllByLabelText": [Function],
-  "queryAllByPlaceholderText": [Function],
-  "queryAllByRole": [Function],
-  "queryAllByTestId": [Function],
-  "queryAllByText": [Function],
-  "queryAllByTitle": [Function],
-  "queryByAltText": [Function],
-  "queryByDisplayValue": [Function],
-  "queryByLabelText": [Function],
-  "queryByPlaceholderText": [Function],
-  "queryByRole": [Function],
-  "queryByTestId": [Function],
-  "queryByText": [Function],
-  "queryByTitle": [Function],
-  "rerender": [Function],
-  "unmount": [Function],
-}
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat fnydiw"
+        >
+          Ballot Manifest
+        </div>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Click "Browse" to choose the appropriate Ballot Manifest file from your computer
+        </div>
+        <label
+          class="bp3-file-input"
+        >
+          <input
+            accept=".csv"
+            name="manifest"
+            type="file"
+          />
+          <span
+            class="bp3-file-upload-input"
+          >
+            Select manifest...
+          </span>
+        </label>
+      </div>
+    </div>
+    <div
+      class="sc-EHOje kPsGPf"
+    >
+      <button
+        class="bp3-button bp3-intent-primary"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Select Ballots To Audit
+        </span>
+      </button>
+    </div>
+  </form>
+</div>
+`;
+
+exports[`SelectBallotsToAudit renders correctly 2`] = `
+<div>
+  <form
+    data-testid="form-two"
+    id="formTwo"
+  >
+    <hr />
+    <div
+      class="sc-ifAKCX dUfgxM"
+    >
+      <h2
+        class="bp3-heading sc-bxivhb blucNT"
+      />
+      <h2
+        class="bp3-heading sc-bxivhb blucNT"
+      >
+        Select Ballots to Audit
+      </h2>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat fnydiw"
+        >
+          Estimated Sample Size
+        </div>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+        </div>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          <div>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                checked=""
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="269"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              BRAVO Average Sample Number: 
+              269 samples
+              
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="379"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              
+              379 samples
+               (80% chance of reaching risk limit and completing the audit in one round)
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="78"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              
+              78 samples
+              
+            </label>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat fnydiw"
+        >
+          Number of Audit Boards
+        </div>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Set the number of audit boards you with to use.
+        </div>
+        <div
+          class="bp3-html-select"
+        >
+          <select
+            data-testid="audit-boards"
+            field="[object Object]"
+            form="[object Object]"
+            id="auditBoards"
+          >
+            <option>
+              1
+            </option>
+            <option>
+              2
+            </option>
+            <option>
+              3
+            </option>
+            <option>
+              4
+            </option>
+            <option>
+              5
+            </option>
+            <option>
+              6
+            </option>
+            <option>
+              7
+            </option>
+            <option>
+              8
+            </option>
+            <option>
+              9
+            </option>
+            <option>
+              10
+            </option>
+            <option>
+              11
+            </option>
+            <option>
+              12
+            </option>
+            <option>
+              13
+            </option>
+            <option>
+              14
+            </option>
+            <option>
+              15
+            </option>
+          </select>
+          <span
+            class="bp3-icon bp3-icon-double-caret-vertical"
+            icon="double-caret-vertical"
+          >
+            <svg
+              data-icon="double-caret-vertical"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                double-caret-vertical
+              </desc>
+              <path
+                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat fnydiw"
+        >
+          Ballot Manifest
+        </div>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Click "Browse" to choose the appropriate Ballot Manifest file from your computer
+        </div>
+        <label
+          class="bp3-file-input"
+        >
+          <input
+            accept=".csv"
+            name="manifest"
+            type="file"
+          />
+          <span
+            class="bp3-file-upload-input"
+          >
+            Select manifest...
+          </span>
+        </label>
+      </div>
+    </div>
+    <p>
+      Loading...
+    </p>
+  </form>
+</div>
 `;

@@ -192,7 +192,7 @@ const SelectBallotsToAudit = (props: Props) => {
         touched,
         setFieldValue,
       }: FormikProps<SelectBallotsToAuditValues>) => (
-        <form onSubmit={handleSubmit} id="formTwo">
+        <form onSubmit={handleSubmit} id="formTwo" data-testid="form-two">
           <hr />
           <FormWrapper>
             <FormTitle>Select Ballots to Audit</FormTitle>

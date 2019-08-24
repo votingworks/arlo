@@ -149,7 +149,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
           values,
           handleSubmit,
         }: FormikProps<CalculateRiskMeasurementValues>) => (
-          <Form>
+          <Form data-testid={`form-three-${i + 1}`}>
             <hr />
             <FormWrapper title={`Round ${i + 1}`}>
               <FormSectionLabel>

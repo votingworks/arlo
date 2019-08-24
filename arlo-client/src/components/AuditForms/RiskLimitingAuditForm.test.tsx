@@ -1,5 +1,11 @@
 import React from 'react'
-import { render, act, RenderResult } from '@testing-library/react'
+import {
+  render,
+  act,
+  RenderResult,
+  waitForElement,
+  wait,
+} from '@testing-library/react'
 import AuditForms from './RiskLimitingAuditForm'
 import statusStates from './_mocks'
 import api from '../utilities'
@@ -7,14 +13,14 @@ import api from '../utilities'
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
 jest.mock('../utilities')
-apiMock
-  .mockImplementationOnce(() => Promise.resolve(statusStates[0]))
-  .mockImplementationOnce(() => Promise.resolve(statusStates[1]))
-  .mockImplementationOnce(() => Promise.resolve(statusStates[2]))
-  .mockImplementationOnce(() => Promise.resolve(statusStates[3]))
+
+afterEach(() => {
+  apiMock.mockClear()
+})
 
 describe('RiskLimitingAuditForm', () => {
-  it('renders correctly and fetches initial state from api', () => {
+  it('fetches initial state from api', async () => {
+    apiMock.mockImplementation(() => Promise.resolve(statusStates[0]))
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms />)
@@ -22,43 +28,83 @@ describe('RiskLimitingAuditForm', () => {
     const { container } = utils!
 
     expect(container).toMatchSnapshot()
-    expect(apiMock).toBeCalledTimes(1)
-    expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[0])
+    })
   })
 
-  it('renders SelectBallotsToAudit when /audit/status returns contest data', () => {
+  it('renders correctly with initialData', () => {
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms />)
     })
     const { container } = utils!
-
     expect(container).toMatchSnapshot()
-    expect(apiMock).toBeCalledTimes(2)
-    expect(apiMock.mock.calls[1][0]).toBe('/audit/status')
   })
 
-  it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', () => {
+  it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
+    apiMock.mockImplementation(() => Promise.resolve(statusStates[1]))
+    let utils: RenderResult
+    act(() => {
+      utils = render(<AuditForms />)
+    })
+    const { container, getByTestId } = utils!
+
+    const formTwo = await waitForElement(() => getByTestId('form-two'), {
+      container,
+    })
+
+    expect(formTwo).toBeTruthy()
+    expect(container).toMatchSnapshot()
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[1])
+    })
+  })
+
+  it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
+    apiMock.mockImplementation(() => Promise.resolve(statusStates[2]))
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms />) // this one will not have the first empty round
     })
-    const { container } = utils!
+    const { container, getByTestId, queryByTestId } = utils!
 
-    expect(apiMock).toBeCalledTimes(3)
-    expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+    const formTwo = await waitForElement(() => getByTestId('form-two'), {
+      container,
+    })
+
+    expect(formTwo).toBeTruthy()
+    expect(queryByTestId('form-three-1')).toBeNull()
     expect(container).toMatchSnapshot()
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[2])
+    })
   })
 
-  it('renders CalculateRiskMeasurement when /audit/status returns round data', () => {
+  it('renders CalculateRiskMeasurement when /audit/status returns round data', async () => {
+    apiMock.mockImplementation(() => Promise.resolve(statusStates[3]))
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms />) // this one will not have the first empty round
     })
-    const { container } = utils!
+    const { container, getByTestId } = utils!
 
-    expect(apiMock).toBeCalledTimes(4)
-    expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+    const formThree = await waitForElement(() => getByTestId('form-three-1'), {
+      container,
+    })
+
+    expect(formThree).toBeTruthy()
     expect(container).toMatchSnapshot()
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[3])
+    })
   })
 })
