@@ -26,7 +26,7 @@ export const statusStates: Audit[] = [
         ],
         id: 'contest-1',
         name: 'contest name',
-        totalBallotsCast: 2123,
+        totalBallotsCast: '2123',
         sampleSizeOptions: [
           { size: 269, type: 'ASN', prob: null },
           { size: 379, prob: 0.8, type: null },
@@ -38,7 +38,7 @@ export const statusStates: Audit[] = [
     rounds: [],
     name: 'contest name',
     randomSeed: '123456789',
-    riskLimit: 1,
+    riskLimit: '1',
   },
   {
     contests: [
@@ -57,7 +57,7 @@ export const statusStates: Audit[] = [
         ],
         id: 'contest-1',
         name: 'contest name',
-        totalBallotsCast: 2123,
+        totalBallotsCast: '2123',
         sampleSizeOptions: [
           { size: 269, type: 'ASN', prob: null },
           { size: 379, prob: 0.8, type: null },
@@ -88,7 +88,7 @@ export const statusStates: Audit[] = [
     rounds: [],
     name: 'contest name',
     randomSeed: '123456789',
-    riskLimit: 1,
+    riskLimit: '1',
   },
   {
     contests: [
@@ -107,7 +107,7 @@ export const statusStates: Audit[] = [
         ],
         id: 'contest-1',
         name: 'contest name',
-        totalBallotsCast: 2123,
+        totalBallotsCast: '2123',
         sampleSizeOptions: [
           { size: 269, type: 'ASN', prob: null },
           { size: 379, prob: 0.8, type: null },
@@ -154,7 +154,7 @@ export const statusStates: Audit[] = [
     ],
     name: 'contest name',
     randomSeed: '123456789',
-    riskLimit: 1,
+    riskLimit: '1',
   },
   {
     contests: [
@@ -173,7 +173,7 @@ export const statusStates: Audit[] = [
         ],
         id: 'contest-1',
         name: 'contest name',
-        totalBallotsCast: 2123,
+        totalBallotsCast: '2123',
         sampleSizeOptions: [
           { size: 269, type: 'ASN', prob: null },
           { size: 379, prob: 0.8, type: null },
@@ -223,7 +223,7 @@ export const statusStates: Audit[] = [
     ],
     name: 'contest name',
     randomSeed: '123456789',
-    riskLimit: 1,
+    riskLimit: '1',
   },
 ]
 

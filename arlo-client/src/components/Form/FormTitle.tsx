@@ -7,12 +7,11 @@ const StyledFormTitle = styled(H2)`
 `
 
 interface Props {
-  children: any
+  children: React.ReactNode
 }
 
-const FormTitle = (props: Props) => {
-  const { children } = props
-  return <StyledFormTitle>{children}</StyledFormTitle>
-}
+const FormTitle: React.FC<Props> = ({ children }: Props) => (
+  <StyledFormTitle>{children}</StyledFormTitle>
+)
 
 export default FormTitle

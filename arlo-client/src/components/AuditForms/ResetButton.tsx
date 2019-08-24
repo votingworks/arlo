@@ -3,16 +3,16 @@ import ReactDOM from 'react-dom'
 import { Button } from '@blueprintjs/core'
 import { api } from '../utilities'
 
-interface OwnProps {
+interface Props {
   updateAudit: () => void
 }
 
-const ResetButton = (props: OwnProps) => {
+const ResetButton: React.FC<Props> = ({ updateAudit }: Props) => {
   const resetButtonWrapper = document.getElementById('reset-button-wrapper')
   const reset = async () => {
     await api(`/audit/reset`, { method: 'POST' })
 
-    props.updateAudit()
+    updateAudit()
   }
   if (resetButtonWrapper) {
     return ReactDOM.createPortal(

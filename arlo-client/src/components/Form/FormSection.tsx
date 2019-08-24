@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 
 export const Section = styled.div`
@@ -19,11 +19,14 @@ export const FormSectionLabel = styled.div`
 interface Props {
   label?: string
   description?: string
-  children: any
+  children: ReactNode
 }
 
-const FormSection = (props: Props) => {
-  const { label, description, children } = props
+const FormSection: React.FC<Props> = ({
+  label,
+  description,
+  children,
+}: Props) => {
   return (
     <Section>
       {label ? <FormSectionLabel>{label}</FormSectionLabel> : undefined}

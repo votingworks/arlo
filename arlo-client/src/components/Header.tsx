@@ -11,13 +11,11 @@ const ButtonBar = styled.div`
   float: right;
 `
 
-const Header = () => {
-  return (
-    <HeaderContainer>
-      <img height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      <ButtonBar id="reset-button-wrapper" />
-    </HeaderContainer>
-  )
-}
+const Header: React.FC<{}> = () => (
+  <HeaderContainer>
+    <img height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
+    <ButtonBar id="reset-button-wrapper" />
+  </HeaderContainer>
+)
 
 export default Header

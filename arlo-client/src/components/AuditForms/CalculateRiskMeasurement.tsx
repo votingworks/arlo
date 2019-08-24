@@ -13,7 +13,7 @@ import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api } from '../utilities'
-import { Contest, Round, Candidate, RoundContest } from '../../types'
+import { Contest, Round, Candidate, RoundContest, Audit } from '../../types'
 
 const InputSection = styled.div`
   display: block;
@@ -34,7 +34,7 @@ const InlineWrapper = styled.div`
 `
 
 interface Props {
-  audit: any
+  audit: Audit
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
@@ -44,6 +44,15 @@ interface CalculateRiskMeasurementValues {
   round: number
   contests: {
     [key: string]: number | ''
+  }[]
+}
+
+interface RoundPost {
+  contests: {
+    id: string
+    results: {
+      [key: string]: number | ''
+    }
   }[]
 }
 
@@ -60,16 +69,19 @@ const testNumber = (value: any) =>
 
 type AggregateContest = Contest & RoundContest
 
-const CalculateRiskMeasurmeent = (props: Props) => {
-  const { audit, isLoading, setIsLoading, updateAudit } = props
-
-  const downloadBallotRetrievalList = (id: number, e: any) => {
+const CalculateRiskMeasurement: React.FC<Props> = ({
+  audit,
+  isLoading,
+  setIsLoading,
+  updateAudit,
+}: Props) => {
+  const downloadBallotRetrievalList = (id: number, e: React.FormEvent) => {
     e.preventDefault()
     const jurisdictionID: string = audit.jurisdictions[0].id
     window.open(`/jurisdiction/${jurisdictionID}/${id}/retrieval-list`)
   }
 
-  const downloadAuditReport = async (e: React.MouseEvent) => {
+  const downloadAuditReport = async (e: React.FormEvent) => {
     e.preventDefault()
     window.open(`/audit/report`)
     updateAudit()
@@ -79,7 +91,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
     values: CalculateRiskMeasurementValues
   ) => {
     const jurisdictionID: string = audit.jurisdictions[0].id
-    const body: any = {
+    const body: RoundPost = {
       contests: audit.contests.map((contest: Contest, i: number) => ({
         id: contest.id,
         results: {
@@ -103,10 +115,12 @@ const CalculateRiskMeasurmeent = (props: Props) => {
     }
   }
 
-  return audit.rounds.map((round: Round, i: number) => {
+  const roundForms = audit.rounds.map((round: Round, i: number) => {
     const aggregateContests: AggregateContest[] = audit.contests.reduce(
-      (acc: any[], contest: Contest) => {
-        const roundContest = round.contests.find(v => v.id === contest.id)
+      (acc: AggregateContest[], contest: Contest) => {
+        const roundContest = round.contests.find(
+          v => v.id === contest.id
+        ) as RoundContest
         acc.push({ ...contest, ...roundContest })
         return acc
       },
@@ -165,7 +179,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
                 )}
               </FormSectionDescription>
               <FormButton
-                onClick={(e: React.MouseEvent) =>
+                onClick={(e: React.FormEvent) =>
                   downloadBallotRetrievalList(i + 1, e)
                 }
                 inline
@@ -274,7 +288,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
               <FormSection>
                 {completeContests === audit.contests.length && (
                   <FormButton
-                    onClick={(e: React.MouseEvent) => downloadAuditReport(e)}
+                    onClick={downloadAuditReport}
                     data-testid="submit-form-three"
                     intent="success"
                   >
@@ -288,6 +302,7 @@ const CalculateRiskMeasurmeent = (props: Props) => {
       />
     )
   })
+  return <>{roundForms}</>
 }
 
-export default React.memo(CalculateRiskMeasurmeent)
+export default React.memo(CalculateRiskMeasurement)

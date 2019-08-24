@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { InputGroup, NumericInput } from '@blueprintjs/core'
-import { getIn } from 'formik'
+import { getIn, FieldProps } from 'formik'
 
 const Wrapper = styled.div`
   width: 45%;
@@ -21,12 +21,12 @@ const ErrorLabel = styled.p`
 `
 
 interface Props {
-  field?: any
-  form?: any
+  field: FieldProps['field']
+  form: FieldProps['form']
   disabled?: boolean
   value?: string | number
-  onChange?: (e: React.ChangeEvent<any>) => void
-  onBlur?: (e: any) => void
+  onChange?: (e: React.ChangeEvent) => void
+  onBlur?: (e: React.FocusEvent) => void
   name?: string
   type?: string
   error?: string
@@ -34,7 +34,7 @@ interface Props {
   className?: string
 }
 
-const FormField = ({
+const FormField: React.FC<Props> = ({
   field,
   form: { touched, errors, setFieldTouched, setFieldValue },
   disabled,
@@ -53,7 +53,12 @@ const FormField = ({
         {...rest}
       />
     ) : (
-      <Field disabled={disabled} {...field} {...rest} />
+      <Field
+        disabled={disabled}
+        {...field}
+        {...rest}
+        onChange={field.onChange}
+      />
     )}
     {getIn(errors, field.name) && getIn(touched, field.name) && (
       <ErrorLabel data-testid={`${field.name}-error`}>

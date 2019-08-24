@@ -201,18 +201,28 @@ describe('CalculateRiskMeasurement', () => {
       />
     )
 
-    const choiceOne: any = getByTestId(`round-0-contest-0-choice-choice-1`)
-    const choiceTwo: any = getByTestId(`round-0-contest-0-choice-choice-2`)
+    const choiceOne = getByTestId(`round-0-contest-0-choice-choice-1`)
+    const choiceTwo = getByTestId(`round-0-contest-0-choice-choice-2`)
 
-    fireEvent.change(choiceOne, { target: { value: '5' } })
-    fireEvent.change(choiceTwo, { target: { value: '5' } })
-    fireEvent.click(getByText('Calculate Risk Measurement'), { bubbles: true })
+    expect(choiceOne).toBeInstanceOf(HTMLInputElement)
+    expect(choiceTwo).toBeInstanceOf(HTMLInputElement)
 
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
-      expect(setIsLoadingMock).toBeCalledTimes(1)
-      expect(updateAuditMock).toBeCalledTimes(0)
-      expect(toastSpy).toBeCalledTimes(1)
-    })
+    if (
+      choiceOne instanceof HTMLInputElement &&
+      choiceTwo instanceof HTMLInputElement
+    ) {
+      fireEvent.change(choiceOne, { target: { value: '5' } })
+      fireEvent.change(choiceTwo, { target: { value: '5' } })
+      fireEvent.click(getByText('Calculate Risk Measurement'), {
+        bubbles: true,
+      })
+
+      await wait(() => {
+        expect(apiMock).toBeCalledTimes(1)
+        expect(setIsLoadingMock).toBeCalledTimes(1)
+        expect(updateAuditMock).toBeCalledTimes(0)
+        expect(toastSpy).toBeCalledTimes(1)
+      })
+    }
   })
 })

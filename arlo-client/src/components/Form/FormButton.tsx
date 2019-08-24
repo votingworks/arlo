@@ -3,14 +3,14 @@ import { Button } from '@blueprintjs/core'
 
 interface Props {
   disabled?: boolean
-  onClick?: any
-  children?: any
+  onClick?: (e: React.FormEvent<any>) => void
+  children?: React.ReactNode
   inline?: boolean
   size?: string
   type?: 'button' | 'submit' | 'reset' | undefined
   intent?: 'none' | 'primary' | 'success' | 'warning' | 'danger' | undefined
 }
-const FormButton = ({
+const FormButton: React.FC<Props> = ({
   disabled,
   onClick,
   size,

@@ -20,6 +20,7 @@ import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
+import { Audit } from '../../types'
 
 export const TwoColumnSection = styled.div`
   display: block;
@@ -70,28 +71,28 @@ export const Action = styled.p`
 `
 
 interface Props {
-  audit?: any
-  isLoading?: any
+  audit: Audit
+  isLoading?: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
 }
 
 interface ChoiceValues {
-  id: number
+  id?: string
   name: string
-  numVotes: number
+  numVotes: string | number
 }
 
 interface ContestValues {
-  name?: string
-  totalBallotsCast?: number
+  name: string
+  totalBallotsCast: string
   choices: ChoiceValues[]
 }
 
 interface EstimateSampleSizeValues {
   name: string
   randomSeed: string
-  riskLimit: number
+  riskLimit: string
   contests: ContestValues[]
 }
 
@@ -134,7 +135,7 @@ const schema = Yup.object().shape({
   contests: contestsSchema,
 })
 
-const EstimateSampleSize = ({
+const EstimateSampleSize: React.FC<Props> = ({
   audit,
   isLoading,
   setIsLoading,
@@ -194,7 +195,7 @@ const EstimateSampleSize = ({
 
   const initialValues = {
     randomSeed: audit.randomSeed || '',
-    riskLimit: audit.riskLimit || 10,
+    riskLimit: audit.riskLimit || '10',
     name: audit.name || '',
     contests: audit.contests.length ? audit.contests : contestValues,
   }
