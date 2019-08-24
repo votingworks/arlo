@@ -4,13 +4,13 @@ import {
   act,
   RenderResult,
   waitForElement,
+  wait,
 } from '@testing-library/react'
 import AuditForms from './RiskLimitingAuditForm'
 import statusStates from './_mocks'
 import api from '../utilities'
 
-//const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
-const apiMock = api as any
+const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
 jest.mock('../utilities')
 
@@ -19,78 +19,92 @@ afterEach(() => {
 })
 
 describe('RiskLimitingAuditForm', () => {
-  it('renders correctly and fetches initial state from api', () => {
-    apiMock.mockReturnValue(statusStates[0])
+  it('fetches initial state from api', async () => {
+    apiMock.mockImplementation(() => Promise.resolve(statusStates[0]))
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms />)
     })
     const { container } = utils!
 
-    expect(apiMock.mock.results[0].value).toBe(statusStates[0])
     expect(container).toMatchSnapshot()
-    expect(apiMock).toBeCalledTimes(1)
-    expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[0])
+    })
+  })
+
+  it('renders correctly with initialData', () => {
+    let utils: RenderResult
+    act(() => {
+      utils = render(<AuditForms />)
+    })
+    const { container } = utils!
+    expect(container).toMatchSnapshot()
   })
 
   it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
-    apiMock.mockReturnValue(statusStates[1])
+    apiMock.mockImplementation(() => Promise.resolve(statusStates[1]))
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms />)
     })
     const { container, getByTestId } = utils!
 
-    expect(apiMock.mock.results[0].value).toBe(statusStates[1])
-
-    const formTwo = await waitForElement(() => {
-      getByTestId('form-two')
+    const formTwo = await waitForElement(() => getByTestId('form-two'), {
+      container,
     })
 
     expect(formTwo).toBeTruthy()
     expect(container).toMatchSnapshot()
-    expect(apiMock).toBeCalledTimes(1)
-    expect(apiMock.mock.calls[1][0]).toBe('/audit/status')
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[1])
+    })
   })
 
   it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
-    apiMock.mockReturnValue(statusStates[2])
+    apiMock.mockImplementation(() => Promise.resolve(statusStates[2]))
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms />) // this one will not have the first empty round
     })
     const { container, getByTestId, queryByTestId } = utils!
 
-    expect(apiMock.mock.results[0].value).toBe(statusStates[2])
-
-    const formTwo = await waitForElement(() => {
-      getByTestId('form-two')
+    const formTwo = await waitForElement(() => getByTestId('form-two'), {
+      container,
     })
 
-    expect(apiMock).toBeCalledTimes(1)
     expect(formTwo).toBeTruthy()
     expect(queryByTestId('form-three-1')).toBeNull()
-    expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
     expect(container).toMatchSnapshot()
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[2])
+    })
   })
 
   it('renders CalculateRiskMeasurement when /audit/status returns round data', async () => {
-    apiMock.mockReturnValue(statusStates[3])
+    apiMock.mockImplementation(() => Promise.resolve(statusStates[3]))
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms />) // this one will not have the first empty round
     })
     const { container, getByTestId } = utils!
 
-    expect(apiMock.mock.results[0].value).toBe(statusStates[3])
-
-    const formThree = await waitForElement(() => {
-      getByTestId('form-three-1')
+    const formThree = await waitForElement(() => getByTestId('form-three-1'), {
+      container,
     })
 
-    expect(apiMock).toBeCalledTimes(1)
     expect(formThree).toBeTruthy()
-    expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
     expect(container).toMatchSnapshot()
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[3])
+    })
   })
 })

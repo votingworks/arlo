@@ -27,6 +27,496 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           <input
             class="sc-dnqmqq dvJRiU"
             data-testid="audit-name"
+            disabled=""
+            name="name"
+            value="contest name"
+          />
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Contest  Name
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Enter the name of the contest that will drive the audit.
+        </div>
+        <div
+          class="sc-htoDjs jjofgS"
+        >
+          <input
+            class="sc-dnqmqq dvJRiU"
+            data-testid="contest-1-name"
+            disabled=""
+            name="contests[0].name"
+            value="contest name"
+          />
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Candidates/Choices & Vote Totals
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Enter the name of each candidate choice that appears on the ballot for this contest.
+        </div>
+        <div
+          class="sc-VigVT gSWWKv"
+        >
+          <div
+            class="sc-jTzLTM kHOUMK"
+          >
+            <label
+              class="sc-kAzzGY kQOXij"
+            >
+              Name of Candidate/Choice 
+              1
+            </label>
+            <label
+              class="sc-kAzzGY sc-chPdSV gzFJUu"
+            >
+              Votes for Candidate/Choice 
+              1
+            </label>
+          </div>
+          <div
+            class="sc-fjdhpX gYcVlS"
+          >
+            <div
+              class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                data-testid="contest-1-choice-1-name"
+                disabled=""
+                name="contests[0].choices[0].name"
+                value="choice one"
+              />
+            </div>
+            <div
+              class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                data-testid="contest-1-choice-1-votes"
+                disabled=""
+                name="contests[0].choices[0].numVotes"
+                type="number"
+                value="792"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-jTzLTM kHOUMK"
+          >
+            <label
+              class="sc-kAzzGY kQOXij"
+            >
+              Name of Candidate/Choice 
+              2
+            </label>
+            <label
+              class="sc-kAzzGY sc-chPdSV gzFJUu"
+            >
+              Votes for Candidate/Choice 
+              2
+            </label>
+          </div>
+          <div
+            class="sc-fjdhpX gYcVlS"
+          >
+            <div
+              class="sc-jzJRlG jxSbtE sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                data-testid="contest-1-choice-2-name"
+                disabled=""
+                name="contests[0].choices[1].name"
+                value="choice two"
+              />
+            </div>
+            <div
+              class="sc-jzJRlG sc-cSHVUG cDvPFF sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                data-testid="contest-1-choice-2-votes"
+                disabled=""
+                name="contests[0].choices[1].numVotes"
+                type="number"
+                value="1325"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Total Ballots Cast
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+        </div>
+        <div
+          class="sc-htoDjs jjofgS"
+        >
+          <input
+            class="sc-dnqmqq dvJRiU"
+            data-testid="contest-1-total-ballots"
+            disabled=""
+            name="contests[0].totalBallotsCast"
+            type="number"
+            value="2123"
+          />
+        </div>
+      </div>
+      <div
+        class="sc-bxivhb doxbWk"
+      >
+        Audit Settings
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Desired Risk Limit
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Set the risk for the audit as a percentage (e.g. "5" = 5%)
+        </div>
+        <select
+          data-testid="risk-limit"
+          disabled=""
+          name="riskLimit"
+        >
+          <option>
+            1
+          </option>
+          <option>
+            2
+          </option>
+          <option>
+            3
+          </option>
+          <option>
+            4
+          </option>
+          <option>
+            5
+          </option>
+          <option>
+            6
+          </option>
+          <option>
+            7
+          </option>
+          <option>
+            8
+          </option>
+          <option>
+            9
+          </option>
+          <option>
+            10
+          </option>
+          <option>
+            11
+          </option>
+          <option>
+            12
+          </option>
+          <option>
+            13
+          </option>
+          <option>
+            14
+          </option>
+          <option>
+            15
+          </option>
+          <option>
+            16
+          </option>
+          <option>
+            17
+          </option>
+          <option>
+            18
+          </option>
+          <option>
+            19
+          </option>
+          <option>
+            20
+          </option>
+        </select>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Random Seed
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Enter the random number to seed the pseudo-random number generator.
+        </div>
+        <div
+          class="sc-htoDjs jjofgS"
+        >
+          <input
+            class="sc-dnqmqq dvJRiU"
+            data-testid="random-seed"
+            disabled=""
+            name="randomSeed"
+            type="text"
+            value="123456789"
+          />
+        </div>
+      </div>
+    </div>
+  </form>
+  <form
+    data-testid="form-two"
+    id="formTwo"
+  >
+    <div
+      class="sc-ifAKCX jXnARC"
+    >
+      <div
+        class="sc-bxivhb doxbWk"
+      />
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Estimated Sample Size
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                checked=""
+                id="sample-size-contest-1-269-"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="269"
+              />
+              <label
+                class="sc-kGXeez cGxapO"
+                for="sample-size-contest-1-269-"
+              >
+                BRAVO Average Sample Number: 
+                269 samples
+                
+              </label>
+            </span>
+          </p>
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                id="sample-size-contest-1-379-0.8"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="379"
+              />
+              <label
+                class="sc-kGXeez cGxapO"
+                for="sample-size-contest-1-379-0.8"
+              >
+                
+                379 samples
+                 (80% chance of reaching risk limit and completing the audit in one round)
+              </label>
+            </span>
+          </p>
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                id="sample-size-contest-1-78-"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="78"
+              />
+              <label
+                class="sc-kGXeez cGxapO"
+                for="sample-size-contest-1-78-"
+              >
+                
+                78 samples
+                
+              </label>
+            </span>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Number of Audit Boards
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Set the number of audit boards you with to use.
+        </div>
+        <select
+          data-testid="audit-boards"
+          id="auditBoards"
+          name="auditBoards"
+        >
+          <option>
+            1
+          </option>
+          <option>
+            2
+          </option>
+          <option>
+            3
+          </option>
+          <option>
+            4
+          </option>
+          <option>
+            5
+          </option>
+          <option>
+            6
+          </option>
+          <option>
+            7
+          </option>
+          <option>
+            8
+          </option>
+          <option>
+            9
+          </option>
+          <option>
+            10
+          </option>
+          <option>
+            11
+          </option>
+          <option>
+            12
+          </option>
+          <option>
+            13
+          </option>
+          <option>
+            14
+          </option>
+          <option>
+            15
+          </option>
+        </select>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Ballot Manifest
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Click "Browse" to choose the appropriate Ballot Manifest file from your computer
+        </div>
+        <input
+          accept=".csv"
+          data-testid="ballot-manifest"
+          name="manifest"
+          type="file"
+        />
+      </div>
+    </div>
+    <div
+      class="sc-gZMcBi DmELe"
+    >
+      <button
+        class="sc-EHOje iYzqVS"
+        type="button"
+      >
+        Select Ballots To Audit
+      </button>
+    </div>
+  </form>
+</div>
+`;
+
+exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
+<div>
+  <form
+    data-testid="form-one"
+  >
+    <div
+      class="sc-ifAKCX jXnARC"
+    >
+      <div
+        class="sc-bxivhb doxbWk"
+      >
+        Contest Information
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Election Name
+        </div>
+        <div
+          class="sc-htoDjs jjofgS"
+        >
+          <input
+            class="sc-dnqmqq dvJRiU"
+            data-testid="audit-name"
             name="name"
             value=""
           />
@@ -338,8 +828,9 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           <input
             class="sc-dnqmqq dvJRiU"
             data-testid="audit-name"
+            disabled=""
             name="name"
-            value=""
+            value="contest name"
           />
         </div>
       </div>
@@ -362,8 +853,9 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           <input
             class="sc-dnqmqq dvJRiU"
             data-testid="contest-1-name"
+            disabled=""
             name="contests[0].name"
-            value=""
+            value="contest name"
           />
         </div>
       </div>
@@ -408,8 +900,9 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="contest-1-choice-1-name"
+                disabled=""
                 name="contests[0].choices[0].name"
-                value=""
+                value="choice one"
               />
             </div>
             <div
@@ -418,9 +911,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="contest-1-choice-1-votes"
+                disabled=""
                 name="contests[0].choices[0].numVotes"
                 type="number"
-                value=""
+                value="792"
               />
             </div>
           </div>
@@ -449,8 +943,9 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="contest-1-choice-2-name"
+                disabled=""
                 name="contests[0].choices[1].name"
-                value=""
+                value="choice two"
               />
             </div>
             <div
@@ -459,17 +954,13 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="contest-1-choice-2-votes"
+                disabled=""
                 name="contests[0].choices[1].numVotes"
                 type="number"
-                value=""
+                value="1325"
               />
             </div>
           </div>
-          <p
-            class="sc-kgoBCf ehqtTc"
-          >
-            Add a new candidate/choice
-          </p>
         </div>
       </div>
       <div
@@ -491,9 +982,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           <input
             class="sc-dnqmqq dvJRiU"
             data-testid="contest-1-total-ballots"
+            disabled=""
             name="contests[0].totalBallotsCast"
             type="number"
-            value=""
+            value="2123"
           />
         </div>
       </div>
@@ -517,6 +1009,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         </div>
         <select
           data-testid="risk-limit"
+          disabled=""
           name="riskLimit"
         >
           <option>
@@ -600,23 +1093,344 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           <input
             class="sc-dnqmqq dvJRiU"
             data-testid="random-seed"
+            disabled=""
             name="randomSeed"
             type="text"
-            value=""
+            value="123456789"
           />
         </div>
       </div>
     </div>
+  </form>
+  <form
+    data-testid="form-two"
+    id="formTwo"
+  >
     <div
-      class="sc-gZMcBi DmELe"
+      class="sc-ifAKCX jXnARC"
     >
-      <button
-        class="sc-EHOje iYzqVS"
-        data-testid="submit-form-one"
-        type="submit"
+      <div
+        class="sc-bxivhb doxbWk"
+      />
+      <div
+        class="sc-bdVaJa fdbLH"
       >
-        Estimate Sample Size
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Estimated Sample Size
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                disabled=""
+                id="sample-size-contest-1-269-"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="269"
+              />
+              <label
+                class="sc-kGXeez cGxapO"
+                for="sample-size-contest-1-269-"
+              >
+                BRAVO Average Sample Number: 
+                269 samples
+                
+              </label>
+            </span>
+          </p>
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                checked=""
+                disabled=""
+                id="sample-size-contest-1-379-0.8"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="379"
+              />
+              <label
+                class="sc-kGXeez cGxapO"
+                for="sample-size-contest-1-379-0.8"
+              >
+                
+                379 samples
+                 (80% chance of reaching risk limit and completing the audit in one round)
+              </label>
+            </span>
+          </p>
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                disabled=""
+                id="sample-size-contest-1-78-"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="78"
+              />
+              <label
+                class="sc-kGXeez cGxapO"
+                for="sample-size-contest-1-78-"
+              >
+                
+                78 samples
+                
+              </label>
+            </span>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Number of Audit Boards
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Set the number of audit boards you with to use.
+        </div>
+        <select
+          data-testid="audit-boards"
+          disabled=""
+          id="auditBoards"
+          name="auditBoards"
+        >
+          <option>
+            1
+          </option>
+          <option>
+            2
+          </option>
+          <option>
+            3
+          </option>
+          <option>
+            4
+          </option>
+          <option>
+            5
+          </option>
+          <option>
+            6
+          </option>
+          <option>
+            7
+          </option>
+          <option>
+            8
+          </option>
+          <option>
+            9
+          </option>
+          <option>
+            10
+          </option>
+          <option>
+            11
+          </option>
+          <option>
+            12
+          </option>
+          <option>
+            13
+          </option>
+          <option>
+            14
+          </option>
+          <option>
+            15
+          </option>
+        </select>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Ballot Manifest
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <b>
+            Filename:
+          </b>
+           
+          Ballot Manifest May 2019 Election - WYNADOTTE.csv
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <b>
+            Ballots:
+          </b>
+           
+          2117
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <b>
+            Batches:
+          </b>
+           
+          10
+        </div>
+      </div>
+    </div>
+  </form>
+  <form
+    data-testid="form-three-1"
+  >
+    <div
+      class="sc-ifAKCX jXnARC"
+    >
+      <div
+        class="sc-bxivhb doxbWk"
+      >
+        Round 1
+      </div>
+      <div
+        class="sc-htpNat gYCOid"
+      >
+        Ballot Retrieval List: 
+        379
+         Total Ballots
+      </div>
+      <div
+        class="sc-bwzfXH xctbO"
+      >
+        <p>
+          Contest 
+          1
+          : 
+          379
+           ballots
+        </p>
+      </div>
+      <button
+        class="sc-bZQynM cjVqOQ"
+      >
+        Download Aggregated Ballot Retrieval List for Round 
+        1
       </button>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Contest 1: contest name
+        </div>
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Audited Results: Round 
+          1
+          , Contest 
+          1
+           
+          INCOMPLETE
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
+          1
+          , Contest 
+          1
+        </div>
+        <div
+          class="sc-kpOJdX hosVDr"
+        >
+          <div
+            class="sc-ckVGcZ egdUOn"
+          >
+            <label
+              class="sc-dxgOiQ ezbjuq"
+            >
+              choice one
+            </label>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                data-testid="round-0-contest-0-choice-choice-1"
+                name="contests[0][choice-1]"
+                type="number"
+                value="0"
+              />
+            </div>
+          </div>
+          <div
+            class="sc-ckVGcZ egdUOn"
+          >
+            <label
+              class="sc-dxgOiQ ezbjuq"
+            >
+              choice two
+            </label>
+            <div
+              class="sc-htoDjs jjofgS"
+            >
+              <input
+                class="sc-dnqmqq dvJRiU"
+                data-testid="round-0-contest-0-choice-choice-2"
+                name="contests[0][choice-2]"
+                type="number"
+                value="0"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Audit Progress: 
+          0
+           of 
+          1
+           
+          complete
+        </div>
+      </div>
+      <div
+        class="sc-gZMcBi DmELe"
+      >
+        <button
+          class="sc-EHOje iYzqVS"
+          type="button"
+        >
+          Calculate Risk Measurement
+        </button>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      />
     </div>
   </form>
 </div>
@@ -649,8 +1463,9 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           <input
             class="sc-dnqmqq dvJRiU"
             data-testid="audit-name"
+            disabled=""
             name="name"
-            value=""
+            value="contest name"
           />
         </div>
       </div>
@@ -673,8 +1488,9 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           <input
             class="sc-dnqmqq dvJRiU"
             data-testid="contest-1-name"
+            disabled=""
             name="contests[0].name"
-            value=""
+            value="contest name"
           />
         </div>
       </div>
@@ -719,8 +1535,9 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="contest-1-choice-1-name"
+                disabled=""
                 name="contests[0].choices[0].name"
-                value=""
+                value="choice one"
               />
             </div>
             <div
@@ -729,9 +1546,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="contest-1-choice-1-votes"
+                disabled=""
                 name="contests[0].choices[0].numVotes"
                 type="number"
-                value=""
+                value="792"
               />
             </div>
           </div>
@@ -760,8 +1578,9 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="contest-1-choice-2-name"
+                disabled=""
                 name="contests[0].choices[1].name"
-                value=""
+                value="choice two"
               />
             </div>
             <div
@@ -770,17 +1589,13 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               <input
                 class="sc-dnqmqq dvJRiU"
                 data-testid="contest-1-choice-2-votes"
+                disabled=""
                 name="contests[0].choices[1].numVotes"
                 type="number"
-                value=""
+                value="1325"
               />
             </div>
           </div>
-          <p
-            class="sc-kgoBCf ehqtTc"
-          >
-            Add a new candidate/choice
-          </p>
         </div>
       </div>
       <div
@@ -802,9 +1617,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           <input
             class="sc-dnqmqq dvJRiU"
             data-testid="contest-1-total-ballots"
+            disabled=""
             name="contests[0].totalBallotsCast"
             type="number"
-            value=""
+            value="2123"
           />
         </div>
       </div>
@@ -828,6 +1644,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         </div>
         <select
           data-testid="risk-limit"
+          disabled=""
           name="riskLimit"
         >
           <option>
@@ -911,11 +1728,188 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           <input
             class="sc-dnqmqq dvJRiU"
             data-testid="random-seed"
+            disabled=""
             name="randomSeed"
             type="text"
-            value=""
+            value="123456789"
           />
         </div>
+      </div>
+    </div>
+  </form>
+  <form
+    data-testid="form-two"
+    id="formTwo"
+  >
+    <div
+      class="sc-ifAKCX jXnARC"
+    >
+      <div
+        class="sc-bxivhb doxbWk"
+      />
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Estimated Sample Size
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                checked=""
+                id="sample-size-contest-1-269-"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="269"
+              />
+              <label
+                class="sc-kGXeez cGxapO"
+                for="sample-size-contest-1-269-"
+              >
+                BRAVO Average Sample Number: 
+                269 samples
+                
+              </label>
+            </span>
+          </p>
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                id="sample-size-contest-1-379-0.8"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="379"
+              />
+              <label
+                class="sc-kGXeez cGxapO"
+                for="sample-size-contest-1-379-0.8"
+              >
+                
+                379 samples
+                 (80% chance of reaching risk limit and completing the audit in one round)
+              </label>
+            </span>
+          </p>
+          <p>
+            <span
+              style="white-space: nowrap;"
+            >
+              <input
+                id="sample-size-contest-1-78-"
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="78"
+              />
+              <label
+                class="sc-kGXeez cGxapO"
+                for="sample-size-contest-1-78-"
+              >
+                
+                78 samples
+                
+              </label>
+            </span>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Number of Audit Boards
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Set the number of audit boards you with to use.
+        </div>
+        <select
+          data-testid="audit-boards"
+          id="auditBoards"
+          name="auditBoards"
+        >
+          <option>
+            1
+          </option>
+          <option>
+            2
+          </option>
+          <option>
+            3
+          </option>
+          <option>
+            4
+          </option>
+          <option>
+            5
+          </option>
+          <option>
+            6
+          </option>
+          <option>
+            7
+          </option>
+          <option>
+            8
+          </option>
+          <option>
+            9
+          </option>
+          <option>
+            10
+          </option>
+          <option>
+            11
+          </option>
+          <option>
+            12
+          </option>
+          <option>
+            13
+          </option>
+          <option>
+            14
+          </option>
+          <option>
+            15
+          </option>
+        </select>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div
+          class="sc-htpNat gYCOid"
+        >
+          Ballot Manifest
+        </div>
+        <div
+          class="sc-bwzfXH xctbO"
+        >
+          Click "Browse" to choose the appropriate Ballot Manifest file from your computer
+        </div>
+        <input
+          accept=".csv"
+          data-testid="ballot-manifest"
+          name="manifest"
+          type="file"
+        />
       </div>
     </div>
     <div
@@ -923,17 +1917,16 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
     >
       <button
         class="sc-EHOje iYzqVS"
-        data-testid="submit-form-one"
-        type="submit"
+        type="button"
       >
-        Estimate Sample Size
+        Select Ballots To Audit
       </button>
     </div>
   </form>
 </div>
 `;
 
-exports[`RiskLimitingAuditForm renders correctly and fetches initial state from api 1`] = `
+exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
 <div>
   <form
     data-testid="form-one"
