@@ -15,7 +15,7 @@ const initialData: Audit = {
   rounds: [],
 }
 
-const AuditForms = () => {
+const AuditForms: React.FC<{}> = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [audit, setAudit] = useState(initialData)

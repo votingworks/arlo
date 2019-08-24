@@ -1,5 +1,6 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
+import { FormikProps } from 'formik'
 import FormField from './FormField'
 
 describe('FormField', () => {
@@ -13,7 +14,7 @@ describe('FormField', () => {
     const form = {
       errors: {},
       touched: {},
-    }
+    } as FormikProps<any> // eslint-disable-line @typescript-eslint/no-object-literal-type-assertion
     const { container } = render(
       <FormField field={field} form={form} type="text" />
     )
@@ -28,14 +29,14 @@ describe('FormField', () => {
       onChange: jest.fn(),
       onBlur: jest.fn(),
     }
-    const form = {
+    const form = ({
       errors: {
         'field-name': 'Required',
       },
       touched: {
         'field-name': true,
       },
-    }
+    } as any) as FormikProps<any>
     const { container } = render(
       <FormField field={field} form={form} type="text" />
     )
@@ -50,10 +51,10 @@ describe('FormField', () => {
       onChange: jest.fn(),
       onBlur: jest.fn(),
     }
-    const form = {
+    const form = ({
       errors: {},
       touched: {},
-    }
+    } as any) as FormikProps<any>
     const { getByTestId } = render(
       <FormField field={field} form={form} type="text" data-testid="testid" />
     )

@@ -91,17 +91,17 @@ describe('SelectBallotsToAudit', () => {
             {
               id: 'choice-1',
               name: 'choice one',
-              numVotes: 792,
+              numVotes: '792',
             },
             {
               id: 'choice-2',
               name: 'choice two',
-              numVotes: 1325,
+              numVotes: '1325',
             },
           ],
           id: 'contest-1',
           name: 'contest name',
-          totalBallotsCast: 2123,
+          totalBallotsCast: '2123',
           sampleSizeOptions: [],
         },
       ],
@@ -109,7 +109,7 @@ describe('SelectBallotsToAudit', () => {
       rounds: [],
       name: 'contest name',
       randomSeed: '123456789',
-      riskLimit: 1,
+      riskLimit: '1',
     }
     const container = render(
       <SelectBallotsToAudit

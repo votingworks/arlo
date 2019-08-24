@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 import FormTitle from './FormTitle'
 
@@ -13,17 +13,14 @@ const StyledFormWrapper = styled.div`
 
 interface Props {
   title?: string
-  children?: any
+  children?: ReactNode
 }
 
-const FormWrapper = (props: Props) => {
-  const { title, children } = props
-  return (
-    <StyledFormWrapper>
-      <FormTitle>{title}</FormTitle>
-      {children}
-    </StyledFormWrapper>
-  )
-}
+const FormWrapper: React.FC<Props> = ({ children, title }: Props) => (
+  <StyledFormWrapper>
+    <FormTitle>{title}</FormTitle>
+    {children}
+  </StyledFormWrapper>
+)
 
 export default React.memo(FormWrapper)

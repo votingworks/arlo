@@ -37,7 +37,7 @@ interface SelectBallotsToAuditValues {
   auditBoards: string
   manifest: File | null
   sampleSize: {
-    [key: string]: number | ''
+    [key: string]: string
   }
 }
 
@@ -56,8 +56,13 @@ const schema = Yup.object().shape({
     ),
 })
 
-const SelectBallotsToAudit = (props: Props) => {
-  const { audit, isLoading, setIsLoading, updateAudit, getStatus } = props
+const SelectBallotsToAudit: React.FC<Props> = ({
+  audit,
+  isLoading,
+  setIsLoading,
+  updateAudit,
+  getStatus,
+}: Props) => {
   const manifestUploaded =
     audit.jurisdictions.length &&
     audit.jurisdictions[0].ballotManifest &&
@@ -133,17 +138,20 @@ const SelectBallotsToAudit = (props: Props) => {
         audit.jurisdictions[0].auditBoards.length) ||
         1),
     manifest: null,
-    sampleSize: [...audit.contests].reduce((a: any, c) => {
-      a[c.id] =
-        c.sampleSizeOptions && c.sampleSizeOptions.length
-          ? c.sampleSizeOptions[0].size.toString()
-          : ''
-      if (audit.rounds[0]) {
-        const rc = audit.rounds[0].contests.find(v => v.id === c.id)
-        a[c.id] = rc!.sampleSize.toString()
-      }
-      return a
-    }, {}),
+    sampleSize: [...audit.contests].reduce(
+      (a: { [key: string]: string }, c) => {
+        a[c.id] =
+          c.sampleSizeOptions && c.sampleSizeOptions.length
+            ? c.sampleSizeOptions[0].size.toString()
+            : ''
+        if (audit.rounds[0]) {
+          const rc = audit.rounds[0].contests.find(v => v.id === c.id)
+          a[c.id] = rc!.sampleSize.toString()
+        }
+        return a
+      },
+      {}
+    ),
   }
 
   const sampleSizeOptions = [...audit.contests].reduce<
