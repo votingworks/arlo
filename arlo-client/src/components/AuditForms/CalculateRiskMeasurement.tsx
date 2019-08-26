@@ -67,13 +67,15 @@ const CalculateRiskMeasurmeent = (props: Props) => {
   const downloadBallotRetrievalList = (id: number, e: any) => {
     e.preventDefault()
     const jurisdictionID: string = audit.jurisdictions[0].id
-    window.open(`/jurisdiction/${jurisdictionID}/${id}/retrieval-list`)
+    window.open(
+      `/election/${electionId}/jurisdiction/${jurisdictionID}/${id}/retrieval-list`
+    )
   }
 
   const downloadAuditReport = async (e: React.MouseEvent) => {
     e.preventDefault()
     try {
-      window.open(`/audit/report`)
+      window.open(`/election/${electionId}/audit/report`)
       updateAudit()
     } catch (err) {
       toast.error(err.message)
