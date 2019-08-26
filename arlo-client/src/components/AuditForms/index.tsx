@@ -47,7 +47,6 @@ const AuditForms: React.FC<any> = ({
   return (
     <React.Fragment>
       <ResetButton
-        updateAudit={updateAudit}
         electionId={electionId}
         disabled={!audit.contests.length}
         history={history}

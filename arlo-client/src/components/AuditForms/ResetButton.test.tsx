@@ -16,35 +16,25 @@ apiMock.mockImplementationOnce(() => Promise.resolve({}))
 describe('ResetButton', () => {
   it('renders', () => {
     const { container } = render(
-      <ResetButton updateAudit={jest.fn()} electionId="1" history={history} />
+      <ResetButton electionId="1" history={history} />
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders disabled', () => {
     const { container } = render(
-      <ResetButton
-        updateAudit={jest.fn()}
-        electionId="1"
-        disabled
-        history={history}
-      />
+      <ResetButton electionId="1" disabled history={history} />
     )
     expect(container).toMatchSnapshot()
   })
 
   it('posts to /audit/reset and calls updateAudit', async () => {
+    const historySpy = jest.spyOn(history, 'push').mockImplementation()
     const wrapper = document.createElement('div')
     wrapper.setAttribute('id', 'reset-button-wrapper')
 
-    const updateAuditMock = jest.fn()
-
     const { getByText } = render(
-      <ResetButton
-        updateAudit={updateAuditMock}
-        electionId="1"
-        history={history}
-      />,
+      <ResetButton electionId="1" history={history} />,
       { container: document.body.appendChild(wrapper) }
     )
 
@@ -52,7 +42,7 @@ describe('ResetButton', () => {
 
     await wait(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
-      expect(updateAuditMock).toHaveBeenCalledTimes(1)
+      expect(historySpy).toHaveBeenCalledTimes(1)
     })
   })
 })

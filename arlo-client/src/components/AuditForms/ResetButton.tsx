@@ -15,14 +15,12 @@ const Button = styled.button`
 `
 
 interface Props {
-  updateAudit: () => void
   electionId: string
   disabled?: boolean
   history: any
 }
 
 const ResetButton: React.FC<Props> = ({
-  updateAudit,
   electionId,
   disabled,
   history,
