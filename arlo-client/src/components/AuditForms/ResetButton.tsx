@@ -17,18 +17,27 @@ const Button = styled.button`
 interface Props {
   updateAudit: () => void
   electionId: string
+  disabled?: boolean
+  history: any
 }
 
-const ResetButton: React.FC<Props> = ({ updateAudit, electionId }: Props) => {
+const ResetButton: React.FC<Props> = ({
+  updateAudit,
+  electionId,
+  disabled,
+  history,
+}: Props) => {
   const resetButtonWrapper = document.getElementById('reset-button-wrapper')
   const reset = async () => {
     await api(`/audit/reset`, { electionId, method: 'POST' })
 
-    updateAudit()
+    history.push('/')
   }
   if (resetButtonWrapper) {
     return ReactDOM.createPortal(
-      <Button onClick={reset}>Clear &amp; Restart</Button>,
+      <Button onClick={reset} disabled={disabled}>
+        Clear &amp; Restart
+      </Button>,
       resetButtonWrapper
     )
   }

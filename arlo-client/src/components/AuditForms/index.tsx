@@ -19,8 +19,10 @@ const AuditForms: React.FC<any> = ({
   match: {
     params: { electionId },
   },
+  history,
 }: {
   match: { params: Params }
+  history: any
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -44,7 +46,12 @@ const AuditForms: React.FC<any> = ({
 
   return (
     <React.Fragment>
-      <ResetButton updateAudit={updateAudit} electionId={electionId} />
+      <ResetButton
+        updateAudit={updateAudit}
+        electionId={electionId}
+        disabled={!audit.contests.length}
+        history={history}
+      />
 
       <EstimateSampleSize
         audit={audit}
