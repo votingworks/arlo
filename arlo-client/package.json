@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@testing-library/jest-dom": "^4.0.0",
     "@types/node": "12.0.7",
     "@types/react": "16.8.19",
     "@types/react-dom": "16.8.4",
@@ -75,6 +76,11 @@
     "extends": "react-app"
   },
   "jest": {
+    "coverageReporters": [
+      "text",
+      "text-summary",
+      "html"
+    ],
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/**/*.d.ts",
@@ -84,14 +90,8 @@
     ],
     "coverageThreshold": {
       "global": {
-        "statements": 25,
-        "branches": 0,
-        "lines": 10,
-        "functions": 25
-      },
-      "./src/components/Form": {
         "statements": 100,
-        "branches": 0,
+        "branches": 100,
         "lines": 100,
         "functions": 100
       }
@@ -111,11 +111,8 @@
   },
   "devDependencies": {
     "@testing-library/react": "^8.0.1",
-    "@types/enzyme": "^3.10.1",
     "@types/jest": "^24.0.15",
     "babel-jest": "^24.8.0",
-    "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
     "husky": "^2.3.0",
     "is-ci-cli": "^1.1.1",
     "jest-fetch-mock": "^2.1.2",

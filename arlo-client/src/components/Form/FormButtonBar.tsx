@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 
 const ButtonBar = styled.div`
@@ -7,11 +7,11 @@ const ButtonBar = styled.div`
 `
 
 interface Props {
-  children: any
+  children: ReactNode
 }
 
-const FormButtonBar = (props: Props) => {
-  return <ButtonBar>{props.children}</ButtonBar>
+const FormButtonBar: React.FC<Props> = ({ children }: Props) => {
+  return <ButtonBar>{children}</ButtonBar>
 }
 
 export default FormButtonBar

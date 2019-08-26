@@ -1,85 +1,5 @@
 import { Audit } from '../../types'
 
-export const mockAudit: Audit = {
-  name: 'Primary 2019',
-  riskLimit: 10,
-  randomSeed: '123123123',
-
-  contests: [
-    {
-      id: 'contest-1',
-      name: 'Contest 1',
-
-      choices: [
-        {
-          id: 'candidate-1',
-          name: 'Candidate 1',
-          numVotes: 42,
-        },
-        {
-          id: 'candidate-2',
-          name: 'Candidate 2',
-          numVotes: 72,
-        },
-      ],
-
-      totalBallotsCast: 4200,
-    },
-  ],
-
-  jurisdictions: [
-    {
-      id: 'adams-county',
-      name: 'Adams County',
-      contests: ['contest-1'],
-      auditBoards: [
-        {
-          id: 'audit-board-1',
-          name: 'Audit Board #1',
-          members: [],
-        },
-        {
-          id: 'audit-board-2',
-          name: 'Audit Board #2',
-          members: [],
-        },
-      ],
-      ballotManifest: {
-        filename: 'Adams_County_Manifest.csv',
-        numBallots: 123456,
-        numBatches: 560,
-        uploadedAt: '2019-06-17 11:45:00',
-      },
-    },
-  ],
-
-  rounds: [
-    {
-      startedAt: '2019-06-17 11:45:00',
-      endedAt: '2019-06-17 11:55:00',
-      contests: [
-        {
-          id: 'contest-1',
-          endMeasurements: {
-            pvalue: 0.085,
-            isComplete: false,
-          },
-          results: {
-            'candidate-1': 55,
-            'candidate-2': 35,
-          },
-          sampleSize: 25,
-        },
-      ],
-      jurisdictions: {
-        'adams-county': {
-          numBallots: 15,
-        },
-      },
-    },
-  ],
-}
-
 export const statusStates: Audit[] = [
   {
     name: '',
@@ -106,11 +26,11 @@ export const statusStates: Audit[] = [
         ],
         id: 'contest-1',
         name: 'contest name',
-        totalBallotsCast: 2123,
+        totalBallotsCast: '2123',
         sampleSizeOptions: [
-          { size: 269, type: 'ASN' },
-          { size: 379, prob: 0.8 },
-          { size: 78 },
+          { size: 269, type: 'ASN', prob: null },
+          { size: 379, prob: 0.8, type: null },
+          { size: 78, prob: null, type: null },
         ],
       },
     ],
@@ -118,7 +38,7 @@ export const statusStates: Audit[] = [
     rounds: [],
     name: 'contest name',
     randomSeed: '123456789',
-    riskLimit: 1,
+    riskLimit: '1',
   },
   {
     contests: [
@@ -137,11 +57,11 @@ export const statusStates: Audit[] = [
         ],
         id: 'contest-1',
         name: 'contest name',
-        totalBallotsCast: 2123,
+        totalBallotsCast: '2123',
         sampleSizeOptions: [
-          { size: 269, type: 'ASN' },
-          { size: 379, prob: 0.8 },
-          { size: 78 },
+          { size: 269, type: 'ASN', prob: null },
+          { size: 379, prob: 0.8, type: null },
+          { size: 78, prob: null, type: null },
         ],
       },
     ],
@@ -168,7 +88,7 @@ export const statusStates: Audit[] = [
     rounds: [],
     name: 'contest name',
     randomSeed: '123456789',
-    riskLimit: 1,
+    riskLimit: '1',
   },
   {
     contests: [
@@ -187,11 +107,11 @@ export const statusStates: Audit[] = [
         ],
         id: 'contest-1',
         name: 'contest name',
-        totalBallotsCast: 2123,
+        totalBallotsCast: '2123',
         sampleSizeOptions: [
-          { size: 269, type: 'ASN' },
-          { size: 379, prob: 0.8 },
-          { size: 78 },
+          { size: 269, type: 'ASN', prob: null },
+          { size: 379, prob: 0.8, type: null },
+          { size: 78, prob: null, type: null },
         ],
       },
     ],
@@ -234,7 +154,7 @@ export const statusStates: Audit[] = [
     ],
     name: 'contest name',
     randomSeed: '123456789',
-    riskLimit: 1,
+    riskLimit: '1',
   },
   {
     contests: [
@@ -253,11 +173,11 @@ export const statusStates: Audit[] = [
         ],
         id: 'contest-1',
         name: 'contest name',
-        totalBallotsCast: 2123,
+        totalBallotsCast: '2123',
         sampleSizeOptions: [
-          { size: 269, type: 'ASN' },
-          { size: 379, prob: 0.8 },
-          { size: 78 },
+          { size: 269, type: 'ASN', prob: null },
+          { size: 379, prob: 0.8, type: null },
+          { size: 78, prob: null, type: null },
         ],
       },
     ],
@@ -303,8 +223,14 @@ export const statusStates: Audit[] = [
     ],
     name: 'contest name',
     randomSeed: '123456789',
-    riskLimit: 1,
+    riskLimit: '1',
   },
 ]
 
-export default mockAudit
+export const ballotManifest = new File(
+  ['ballot manifest'],
+  'ballotManifest.csv',
+  { type: 'text/csv' }
+)
+
+export default statusStates

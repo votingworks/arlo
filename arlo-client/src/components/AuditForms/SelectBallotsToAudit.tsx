@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { Formik, FormikProps, Field } from 'formik'
 import * as Yup from 'yup'
+import uuidv4 from 'uuidv4'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -12,13 +13,17 @@ import FormSection, {
 import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
-import { Jurisdiction, Audit, Contest, SampleSizeOption } from '../../types'
+import { Jurisdiction, Audit, SampleSizeOption } from '../../types'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 
 const InputLabel = styled.label`
   display: inline-block;
 `
+
+interface SampleSizeOptionsByContest {
+  [key: string]: SampleSizeOption[]
+}
 
 interface Props {
   audit: Audit
@@ -33,7 +38,7 @@ interface SelectBallotsToAuditValues {
   auditBoards: string
   manifest: File | null
   sampleSize: {
-    [key: string]: number | ''
+    [key: string]: string
   }
 }
 
@@ -52,15 +57,14 @@ const schema = Yup.object().shape({
     ),
 })
 
-const SelectBallotsToAudit = (props: Props) => {
-  const {
-    audit,
-    isLoading,
-    setIsLoading,
-    updateAudit,
-    getStatus,
-    electionId,
-  } = props
+const SelectBallotsToAudit: React.FC<Props> = ({
+  audit,
+  isLoading,
+  setIsLoading,
+  updateAudit,
+  getStatus,
+  electionId,
+}: Props) => {
   const manifestUploaded =
     audit.jurisdictions.length &&
     audit.jurisdictions[0].ballotManifest &&
@@ -69,27 +73,28 @@ const SelectBallotsToAudit = (props: Props) => {
     audit.jurisdictions[0].ballotManifest.numBatches
 
   const handlePost = async (values: SelectBallotsToAuditValues) => {
-    const auditBoards = Array.from(
-      Array(parseInt(values.auditBoards)).keys()
-    ).map(i => {
-      return {
-        id: `audit-board-${i + 1}`,
-        name: `Audit Board #${i + 1}`,
-        members: [],
-      }
-    })
-
     try {
+      const auditBoards = Array.from(
+        Array(parseInt(values.auditBoards)).keys()
+      ).map(i => {
+        return {
+          id: `audit-board-${i + 1}`,
+          name: `Audit Board #${i + 1}`,
+          members: [],
+        }
+      })
+
       // upload jurisdictions
       const data: Jurisdiction[] = [
         {
-          id: 'jurisdiction-1',
+          id: uuidv4(),
           name: 'Jurisdiction 1',
           contests: [...audit.contests].map(contest => contest.id),
           auditBoards: auditBoards,
         },
       ]
       setIsLoading(true)
+      /* istanbul ignore else */
       if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
         const body = {
           size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
@@ -110,31 +115,22 @@ const SelectBallotsToAudit = (props: Props) => {
         headers: {
           'Content-Type': 'application/json',
         },
-      }).then(
-        async success => {
-          const newStatus = await getStatus()
-          const jurisdictionID: string = newStatus.jurisdictions[0].id
+      })
+      const newStatus = await getStatus()
+      const jurisdictionID: string = newStatus.jurisdictions[0].id
 
-          // upload form data
-          if (!values.manifest) {
-            updateAudit()
-            return
-          }
-          const formData: FormData = new FormData()
-          formData.append('manifest', values.manifest, values.manifest.name)
-          await api(`/jurisdiction/${jurisdictionID}/manifest`, {
-            electionId,
-            method: 'POST',
-            body: formData,
-          })
+      /* istanbul ignore else */
+      if (values.manifest) {
+        const formData: FormData = new FormData()
+        formData.append('manifest', values.manifest, values.manifest.name)
+        await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+          electionId,
+          method: 'POST',
+          body: formData,
+        })
+      }
 
-          updateAudit()
-        },
-        error => {
-          toast.error(error.message)
-          return
-        }
-      )
+      updateAudit()
     } catch (err) {
       toast.error(err.message)
     }
@@ -147,25 +143,31 @@ const SelectBallotsToAudit = (props: Props) => {
         audit.jurisdictions[0].auditBoards.length) ||
         1),
     manifest: null,
-    sampleSize: [...audit.contests].reduce((a: any, c) => {
-      a[c.id] = c.sampleSizeOptions
-        ? c.sampleSizeOptions[0].size.toString()
-        : ''
-      if (audit.rounds[0]) {
-        const rc = audit.rounds[0].contests.find(v => v.id === c.id)
-        a[c.id] = rc!.sampleSize.toString()
-      }
-      return a
-    }, {}),
+    sampleSize: [...audit.contests].reduce(
+      (a: { [key: string]: string }, c) => {
+        a[c.id] =
+          c.sampleSizeOptions && c.sampleSizeOptions.length
+            ? c.sampleSizeOptions[0].size.toString()
+            : ''
+        if (audit.rounds[0]) {
+          const rc = audit.rounds[0].contests.find(v => v.id === c.id)
+          a[c.id] = rc!.sampleSize.toString()
+        }
+        return a
+      },
+      {}
+    ),
   }
 
-  const sampleSizeOptions = [...audit.contests].reduce(
-    (acc: any, contest: Contest) => {
-      acc[contest.id] = contest.sampleSizeOptions
-        ? contest.sampleSizeOptions.reduce(
-            (acc: SampleSizeOption[], option: SampleSizeOption) => {
+  const sampleSizeOptions = [...audit.contests].reduce<
+    SampleSizeOptionsByContest
+  >((acc, contest) => {
+    acc[contest.id] =
+      contest.sampleSizeOptions && contest.sampleSizeOptions.length
+        ? contest.sampleSizeOptions.reduce<SampleSizeOption[]>(
+            (acc, option) => {
               const duplicateOptionIndex: number = acc.findIndex(
-                (v: any) => Number(v.size) === option.size
+                v => Number(v.size) === option.size
               )
               const duplicateOption =
                 duplicateOptionIndex > -1 ? acc[duplicateOptionIndex] : false
@@ -188,10 +190,8 @@ const SelectBallotsToAudit = (props: Props) => {
             []
           )
         : []
-      return acc
-    },
-    {}
-  )
+    return acc
+  }, {})
 
   return (
     <Formik
@@ -208,71 +208,76 @@ const SelectBallotsToAudit = (props: Props) => {
         touched,
         setFieldValue,
       }: FormikProps<SelectBallotsToAuditValues>) => (
-        <form onSubmit={handleSubmit} id="formTwo">
+        <form onSubmit={handleSubmit} id="formTwo" data-testid="form-two">
           <FormWrapper>
-            {Object.keys(sampleSizeOptions).length && (
-              <FormSection>
-                <FormSectionLabel>Estimated Sample Size</FormSectionLabel>
-                <FormSectionDescription>
-                  Choose the initial sample size for each contest you would like
-                  to use for Round 1 of the audit from the options below.
-                </FormSectionDescription>
-                {Object.keys(sampleSizeOptions).map((key: any, i: number) => (
-                  <React.Fragment key={key}>
-                    {Object.keys(sampleSizeOptions).length > 1 && (
-                      <FormSectionLabel>
-                        Contest {i + 1} sample size
-                      </FormSectionLabel>
-                    )}
-                    <FormSectionDescription>
-                      {/* eslint-disable react/no-array-index-key */}
-                      {sampleSizeOptions[key].map((option: any, j: number) => (
-                        <p key={key + j}>
-                          <span style={{ whiteSpace: 'nowrap' }}>
-                            <Field
-                              id={`${key}-${option.size}`}
-                              name={`sampleSize[${key}]`}
-                              component="input"
-                              value={option.size}
-                              checked={values.sampleSize[key] === option.size}
-                              disabled={!!audit.rounds.length}
-                              type="radio"
-                            />
-                            <InputLabel htmlFor={`${key}-${option.size}`}>
-                              {option.type
-                                ? 'BRAVO Average Sample Number: '
-                                : ''}
-                              {`${option.size} samples`}
-                              {option.prob
-                                ? ` (${option.prob *
-                                    100}% chance of reaching risk limit and completing the audit in one round)`
-                                : ''}
-                            </InputLabel>
-                          </span>
-                        </p>
-                      ))}
-                    </FormSectionDescription>
-                  </React.Fragment>
-                ))}
-              </FormSection>
-            )}
+            {Object.keys(sampleSizeOptions).length &&
+              Object.values(sampleSizeOptions).some(v => !!v.length) && (
+                <FormSection>
+                  <FormSectionLabel>Estimated Sample Size</FormSectionLabel>
+                  <FormSectionDescription>
+                    Choose the initial sample size for each contest you would
+                    like to use for Round 1 of the audit from the options below.
+                  </FormSectionDescription>
+                  {Object.keys(sampleSizeOptions).map((key, i) => (
+                    <React.Fragment key={key}>
+                      {Object.keys(sampleSizeOptions).length > 1 && (
+                        /* istanbul ignore next */
+                        <FormSectionLabel>
+                          Contest {i + 1} sample size
+                        </FormSectionLabel>
+                      )}
+                      <FormSectionDescription>
+                        {/* eslint-disable react/no-array-index-key */}
+                        {sampleSizeOptions[key].map((option, j) => {
+                          const id = `sample-size-${key}-${
+                            option.size
+                          }-${option.prob || ''}`
+                          return (
+                            <p key={key + j}>
+                              <span style={{ whiteSpace: 'nowrap' }}>
+                                <Field
+                                  id={id}
+                                  name={`sampleSize[${key}]`}
+                                  component="input"
+                                  value={option.size}
+                                  checked={
+                                    values.sampleSize[key] === option.size
+                                  }
+                                  disabled={!!audit.rounds.length}
+                                  type="radio"
+                                />
+                                <InputLabel htmlFor={id}>
+                                  {option.type
+                                    ? 'BRAVO Average Sample Number: '
+                                    : ''}
+                                  {`${option.size} samples`}
+                                  {option.prob
+                                    ? ` (${option.prob *
+                                        100}% chance of reaching risk limit and completing the audit in one round)`
+                                    : ''}
+                                </InputLabel>
+                              </span>
+                            </p>
+                          )
+                        })}
+                      </FormSectionDescription>
+                    </React.Fragment>
+                  ))}
+                </FormSection>
+              )}
             <FormSection
               label="Number of Audit Boards"
               description="Set the number of audit boards you with to use."
             >
-              <select
+              <Field
+                component="select"
                 id="auditBoards"
+                data-testid="audit-boards"
                 name="auditBoards"
-                value={values.auditBoards}
-                onChange={handleChange}
-                onBlur={handleBlur}
                 disabled={!!audit.rounds.length}
               >
                 {generateOptions(15)}
-              </select>
-              {errors.auditBoards && touched.auditBoards && (
-                <ErrorLabel>{errors.auditBoards}</ErrorLabel>
-              )}
+              </Field>
             </FormSection>
             <FormSection label="Ballot Manifest">
               {manifestUploaded && audit.jurisdictions[0].ballotManifest ? ( // duplicating effect of manifestUploaded for TS
@@ -298,6 +303,7 @@ const SelectBallotsToAudit = (props: Props) => {
                   </FormSectionDescription>
                   <input
                     type="file"
+                    data-testid="ballot-manifest"
                     accept=".csv"
                     name="manifest"
                     onChange={e => {

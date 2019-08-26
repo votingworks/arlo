@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly at /election 1`] = `
+exports[`renders correctly 1`] = `
 <div>
   <div
     class="sc-bdVaJa cdOnQX"
@@ -12,65 +12,7 @@ exports[`renders correctly at /election 1`] = `
     />
     <div
       class="sc-bwzfXH iHMWje"
-    >
-      <button
-        class="sc-htpNat fQFApV"
-      >
-        Clear & Restart
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`renders correctly at /election 2`] = `
-<div>
-  <div
-    class="sc-bdVaJa cdOnQX"
-  >
-    <img
-      alt="Arlo, by VotingWorks"
-      height="60px"
-      src="/arlo.png"
-    />
-    <div
-      class="sc-bwzfXH iHMWje"
-    >
-      <button
-        class="sc-htpNat fQFApV"
-      >
-        Clear & Restart
-      </button>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`renders correctly at /home 1`] = `
-<div>
-  <div
-    class="sc-bdVaJa cdOnQX"
-  >
-    <img
-      alt="Arlo, by VotingWorks"
-      class="sc-bxivhb fJGUgW"
-      height="60px"
-      src="/arlo.png"
-    />
-  </div>
-</div>
-`;
-
-exports[`renders correctly at /home 2`] = `
-<div>
-  <div
-    class="sc-bdVaJa cdOnQX"
-  >
-    <img
-      alt="Arlo, by VotingWorks"
-      class="sc-bxivhb fJGUgW"
-      height="60px"
-      src="/arlo.png"
+      id="reset-button-wrapper"
     />
   </div>
 </div>
