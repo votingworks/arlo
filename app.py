@@ -499,11 +499,12 @@ def audit_report(election_id=None):
 @app.route('/audit/reset', methods=["POST"])
 def audit_reset(election_id=None):
     # deleting the election cascades to all the data structures
-    Election.query.delete()
+    Election.query.filter_by(id = (election_id or '1')).delete()
     db.session.commit()
 
-    create_election(election_id='1')
-    db.session.commit()   
+    create_election(election_id or '1')
+    db.session.commit()
+    
     return jsonify(status="ok")
 
 

@@ -105,6 +105,9 @@ def test_create_separate_election(client):
             ]
         })
 
+    # reset the first election and make sure the second election is unaltered
+    client.post('/election/{}/audit/reset'.format(election_id_1))
+
     rv = client.get('/election/{}/audit/status'.format(election_id_2))
     result2 = json.loads(rv.data)
 
@@ -280,7 +283,7 @@ def test_whole_audit_flow(client):
     assert math.floor(round_contest["endMeasurements"]["pvalue"] * 100) <= 5
 
     # reset
-    rv = client.post('/audit/reset')
+    client.post('/audit/reset')
     rv = client.get('/audit/status')
     status = json.loads(rv.data)
 
