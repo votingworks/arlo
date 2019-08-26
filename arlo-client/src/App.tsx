@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import './App.css'
 import styled from 'styled-components'
 import { ToastContainer } from 'react-toastify'
@@ -23,8 +23,11 @@ const App: React.FC = () => {
       <ToastContainer />
       <Main>
         <Header />
-        <Route exact path="/" component={CreateAudit} />
-        <Route path="/election/:electionId" component={AuditForms} />
+        <Switch>
+          <Route exact path="/" component={CreateAudit} />
+          <Route path="/election/:electionId" component={AuditForms} />
+          <Route>404</Route>
+        </Switch>
       </Main>
     </Router>
   )
