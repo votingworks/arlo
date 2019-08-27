@@ -29,7 +29,7 @@ async function inputAndSubmitForm() {
     />
   )
 
-  const manifestInput = getByTestId('ballot-manifest')
+  const manifestInput = getByLabelText('Select manifest...')
   fireEvent.change(manifestInput, { target: { files: [] } })
   fireEvent.blur(manifestInput)
   await wait(() => {
@@ -37,11 +37,8 @@ async function inputAndSubmitForm() {
   })
   fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
 
-  const auditBoardInput = getByTestId('audit-boards')
-  expect(auditBoardInput).toBeInstanceOf(HTMLSelectElement)
-  if (auditBoardInput instanceof HTMLSelectElement) {
-    fireEvent.change(auditBoardInput, { target: { selectedIndex: 0 } })
-  }
+  const auditBoardInput: any = getByTestId('audit-boards')
+  fireEvent.change(auditBoardInput, { target: { selected: 1 } })
 
   const sampleSizeInput = getByLabelText(
     '379 samples (80% chance of reaching risk limit and completing the audit in one round)'

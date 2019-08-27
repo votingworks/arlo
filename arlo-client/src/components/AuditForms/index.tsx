@@ -1,10 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import styled from 'styled-components'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
 import { Audit, Params } from '../../types'
 import ResetButton from './ResetButton'
+
+const Wrapper = styled.div`
+  flex-grow: 1;
+  margin-top: 20px;
+  margin-right: auto;
+  margin-left: auto;
+  width: 100%;
+  max-width: 1020px;
+  padding-right: 15px;
+  padding-left: 15px;
+`
 
 const initialData: Audit = {
   name: '',
@@ -47,7 +59,7 @@ const AuditForms: React.FC<Props> = ({
   }, [updateAudit])
 
   return (
-    <React.Fragment>
+    <Wrapper>
       <ResetButton
         electionId={electionId}
         disabled={!audit.contests.length}
@@ -82,7 +94,7 @@ const AuditForms: React.FC<Props> = ({
           electionId={electionId}
         />
       )}
-    </React.Fragment>
+    </Wrapper>
   )
 }
 

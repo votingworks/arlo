@@ -9,12 +9,11 @@ import CreateAudit from './components/CreateAudit'
 import 'react-toastify/dist/ReactToastify.css'
 
 const Main = styled.div`
-  display: block;
-  margin: auto;
-  height: 100%;
-  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
   padding: 40px;
-  font-size: 1.25rem;
 `
 
 const App: React.FC = () => {
@@ -22,7 +21,7 @@ const App: React.FC = () => {
     <Router>
       <ToastContainer />
       <Main>
-        <Header />
+        <Route path="/election" component={Header} />
         <Switch>
           <Route exact path="/" component={CreateAudit} />
           <Route path="/election/:electionId" component={AuditForms} />

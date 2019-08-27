@@ -5,12 +5,17 @@ exports[`FormField renders a Field 1`] = `
   <div
     class="sc-bdVaJa NQGah"
   >
-    <input
-      class="sc-bwzfXH jwfMIB"
-      name="field-name"
-      type="text"
-      value="text value"
-    />
+    <div
+      class="bp3-input-group sc-bwzfXH jwfMIB"
+    >
+      <input
+        class="bp3-input"
+        name="field-name"
+        style="padding-right: 10px;"
+        type="text"
+        value="text value"
+      />
+    </div>
   </div>
 </div>
 `;
@@ -20,14 +25,19 @@ exports[`FormField renders a Field with errors 1`] = `
   <div
     class="sc-bdVaJa NQGah"
   >
-    <input
-      class="sc-bwzfXH jwfMIB"
-      name="field-name"
-      type="text"
-      value=""
-    />
+    <div
+      class="bp3-input-group sc-bwzfXH jwfMIB"
+    >
+      <input
+        class="bp3-input"
+        name="field-name"
+        style="padding-right: 10px;"
+        type="text"
+        value=""
+      />
+    </div>
     <p
-      class="sc-htpNat bhgSmC"
+      class="sc-bxivhb hSbDWx"
       data-testid="field-name-error"
     >
       Required

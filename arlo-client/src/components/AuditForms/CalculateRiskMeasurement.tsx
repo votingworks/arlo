@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 /* istanbul ignore next */
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
 import * as Yup from 'yup'
+import { Spinner } from '@blueprintjs/core'
 import FormSection, {
   FormSectionLabel,
   FormSectionDescription,
@@ -19,14 +20,13 @@ const InputSection = styled.div`
   display: block;
   margin-top: 25px;
   width: 100%;
-  font-size: 0.4em;
 `
 
 const InputLabel = styled.label`
   display: inline-block;
 `
 
-const InlineInput = styled.div`
+const InlineWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -170,6 +170,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
           handleSubmit,
         }: FormikProps<CalculateRiskMeasurementValues>) => (
           <Form data-testid={`form-three-${i + 1}`}>
+            <hr />
             <FormWrapper title={`Round ${i + 1}`}>
               <FormSectionLabel>
                 Ballot Retrieval List: {aggregatedBallots} Total Ballots
@@ -214,17 +215,17 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                               {aggregateContests[j].endMeasurements
                                 .isComplete && (
                                 <InputSection>
-                                  <InlineInput>
+                                  <InlineWrapper>
                                     <InputLabel>Risk Limit: </InputLabel>
                                     {audit.riskLimit}%
-                                  </InlineInput>
-                                  <InlineInput>
+                                  </InlineWrapper>
+                                  <InlineWrapper>
                                     <InputLabel>P-value: </InputLabel>{' '}
                                     {
                                       aggregateContests[j].endMeasurements
                                         .pvalue
                                     }
-                                  </InlineInput>
+                                  </InlineWrapper>
                                 </InputSection>
                               )}
                               {!isSubmitted && (
@@ -244,7 +245,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                                   )!.name
                                   return (
                                     <React.Fragment key={choiceId}>
-                                      <InlineInput>
+                                      <InlineWrapper>
                                         <InputLabel>{name}</InputLabel>
                                         <Field
                                           name={`contests[${j}][${choiceId}]`}
@@ -254,7 +255,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                                           component={FormField}
                                           disabled={isSubmitted}
                                         />
-                                      </InlineInput>
+                                      </InlineWrapper>
                                     </React.Fragment>
                                   )
                                 })}
@@ -267,7 +268,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                   )
                 }}
               />
-              {isLoading && <p>Loading...</p>}
+              {isLoading && <Spinner />}
               <FormSection>
                 <FormSectionLabel>
                   Audit Progress: {completeContests} of {audit.contests.length}{' '}
@@ -281,7 +282,11 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                 ) &&
                 !isLoading && (
                   <FormButtonBar>
-                    <FormButton type="button" onClick={handleSubmit}>
+                    <FormButton
+                      type="button"
+                      intent="primary"
+                      onClick={handleSubmit}
+                    >
                       Calculate Risk Measurement
                     </FormButton>
                   </FormButtonBar>
@@ -291,8 +296,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                   <FormButton
                     onClick={downloadAuditReport}
                     data-testid="submit-form-three"
-                    size="sm"
-                    inline
+                    intent="success"
                   >
                     Download Audit Report
                   </FormButton>

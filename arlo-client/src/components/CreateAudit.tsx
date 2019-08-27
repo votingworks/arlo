@@ -6,13 +6,16 @@ import api from './utilities'
 import { Params } from '../types'
 
 const Button = styled(FormButton)`
+  margin: 65px 0;
+`
+
+const Wrapper = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: 2.5rem;
-  padding: 0 30px;
-  font-size: 1.5rem;
+  width: 400px;
+  text-align: center;
 `
 
 const CreateAudit = ({ history }: RouteComponentProps<Params>) => {
@@ -26,9 +29,20 @@ const CreateAudit = ({ history }: RouteComponentProps<Params>) => {
     history.push(`/election/${electionId}`)
   }
   return (
-    <Button type="button" onClick={onClick} disabled={loading}>
-      {loading ? 'Wait a moment...' : 'Create a New Audit'}
-    </Button>
+    <Wrapper>
+      <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
+      <Button
+        type="button"
+        intent="primary"
+        fill
+        large
+        onClick={onClick}
+        loading={loading}
+        disabled={loading}
+      >
+        Create a New Audit
+      </Button>
+    </Wrapper>
   )
 }
 

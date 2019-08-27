@@ -122,10 +122,10 @@ describe('CalculateRiskMeasurement', () => {
       fireEvent.change(choiceTwo, { target: { value: '' } })
       fireEvent.blur(choiceOne)
       fireEvent.blur(choiceTwo)
-      expect(choiceOne.value).toBe('')
-      expect(choiceTwo.value).toBe('')
+      expect(choiceOne.value).toBe('0')
+      expect(choiceTwo.value).toBe('0')
       await wait(() => {
-        expect(queryAllByText('Must be a number').length).toBe(2)
+        expect(queryAllByText('Must be a number').length).toBe(0)
       })
 
       fireEvent.change(choiceOne, { target: { value: '5' } })
