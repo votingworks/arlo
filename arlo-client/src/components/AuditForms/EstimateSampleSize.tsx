@@ -11,6 +11,7 @@ import {
 } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
+import { HTMLSelect, Label, Spinner } from '@blueprintjs/core'
 import FormSection from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormTitle from '../Form/FormTitle'
@@ -25,7 +26,6 @@ export const TwoColumnSection = styled.div`
   display: block;
   margin-top: 25px;
   width: 100%;
-  font-size: 0.4em;
 `
 
 export const InputLabelRow = styled.div`
@@ -51,7 +51,7 @@ export const FieldRight = styled(FieldLeft)`
   margin-left: 50px;
 `
 
-export const InputLabel = styled.label`
+export const InputLabel = styled(Label)`
   display: inline-block;
   flex-grow: 2;
   width: unset;
@@ -65,7 +65,6 @@ export const Action = styled.p`
   margin: 5px 0 0 0;
   width: 100%;
   color: #000088;
-  font-size: 14px;
   &:hover {
     cursor: pointer;
   }
@@ -76,6 +75,7 @@ interface Props {
   isLoading?: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
+  electionId: string
 }
 
 interface ChoiceValues {
@@ -141,6 +141,7 @@ const EstimateSampleSize: React.FC<Props> = ({
   isLoading,
   setIsLoading,
   updateAudit,
+  electionId,
 }: Props) => {
   const canEstimateSampleSize = !audit.contests.length
 
@@ -163,6 +164,7 @@ const EstimateSampleSize: React.FC<Props> = ({
     try {
       setIsLoading(true)
       await api(`/audit/basic`, {
+        electionId,
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -209,7 +211,11 @@ const EstimateSampleSize: React.FC<Props> = ({
         onSubmit={handlePost}
         enableReinitialize
       >
-        {({ values, handleSubmit }: FormikProps<EstimateSampleSizeValues>) => (
+        {({
+          values,
+          handleSubmit,
+          setFieldValue,
+        }: FormikProps<EstimateSampleSizeValues>) => (
           <Form data-testid="form-one">
             <FormWrapper title="Contest Information">
               <FormSection label="Election Name">
@@ -360,8 +366,12 @@ const EstimateSampleSize: React.FC<Props> = ({
                 <Field
                   name="riskLimit"
                   disabled={!canEstimateSampleSize}
-                  component="select"
+                  component={HTMLSelect}
                   data-testid="risk-limit"
+                  defaultValue={values.riskLimit}
+                  onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                    setFieldValue('riskLimit', e.currentTarget.value)
+                  }
                 >
                   {generateOptions(20)}
                 </Field>
@@ -380,11 +390,12 @@ const EstimateSampleSize: React.FC<Props> = ({
                 />
               </FormSection>
             </FormWrapper>
-            {!audit.contests.length && isLoading && <p>Loading...</p>}
+            {!audit.contests.length && isLoading && <Spinner />}
             {!audit.contests.length && !isLoading && (
               <FormButtonBar>
                 <FormButton
                   type="submit"
+                  intent="primary"
                   data-testid="submit-form-one"
                   disabled={!canEstimateSampleSize}
                   onClick={handleSubmit}

@@ -1,11 +1,17 @@
 /* eslint-disable no-null */
 
 import React from 'react'
-import styled from 'styled-components'
 import { toast } from 'react-toastify'
-import { Formik, FormikProps, Field } from 'formik'
+import { Formik, FormikProps, Field, getIn } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
+import {
+  RadioGroup,
+  Radio,
+  HTMLSelect,
+  FileInput,
+  Spinner,
+} from '@blueprintjs/core'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -16,10 +22,7 @@ import FormButtonBar from '../Form/FormButtonBar'
 import { Jurisdiction, Audit, SampleSizeOption } from '../../types'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
-
-const InputLabel = styled.label`
-  display: inline-block;
-`
+import FormTitle from '../Form/FormTitle'
 
 interface SampleSizeOptionsByContest {
   [key: string]: SampleSizeOption[]
@@ -31,6 +34,7 @@ interface Props {
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
   getStatus: () => Promise<Audit>
+  electionId: string
 }
 
 interface SelectBallotsToAuditValues {
@@ -62,6 +66,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
   setIsLoading,
   updateAudit,
   getStatus,
+  electionId,
 }: Props) => {
   const manifestUploaded =
     audit.jurisdictions.length &&
@@ -98,6 +103,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
           size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
         }
         await api('/audit/sample-size', {
+          electionId,
           method: 'POST',
           body: JSON.stringify(body),
           headers: {
@@ -106,6 +112,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         })
       }
       await api('/audit/jurisdictions', {
+        electionId,
         method: 'POST',
         body: JSON.stringify({ jurisdictions: data }),
         headers: {
@@ -120,6 +127,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         const formData: FormData = new FormData()
         formData.append('manifest', values.manifest, values.manifest.name)
         await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+          electionId,
           method: 'POST',
           body: formData,
         })
@@ -204,7 +212,9 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         setFieldValue,
       }: FormikProps<SelectBallotsToAuditValues>) => (
         <form onSubmit={handleSubmit} id="formTwo" data-testid="form-two">
+          <hr />
           <FormWrapper>
+            <FormTitle>Select Ballots to Audit</FormTitle>
             {Object.keys(sampleSizeOptions).length &&
               Object.values(sampleSizeOptions).some(v => !!v.length) && (
                 <FormSection>
@@ -222,39 +232,32 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                         </FormSectionLabel>
                       )}
                       <FormSectionDescription>
-                        {/* eslint-disable react/no-array-index-key */}
-                        {sampleSizeOptions[key].map((option, j) => {
-                          const id = `sample-size-${key}-${
-                            option.size
-                          }-${option.prob || ''}`
-                          return (
-                            <p key={key + j}>
-                              <span style={{ whiteSpace: 'nowrap' }}>
-                                <Field
-                                  id={id}
-                                  name={`sampleSize[${key}]`}
-                                  component="input"
-                                  value={option.size}
-                                  checked={
-                                    values.sampleSize[key] === option.size
-                                  }
-                                  disabled={!!audit.rounds.length}
-                                  type="radio"
-                                />
-                                <InputLabel htmlFor={id}>
-                                  {option.type
-                                    ? 'BRAVO Average Sample Number: '
-                                    : ''}
-                                  {`${option.size} samples`}
-                                  {option.prob
-                                    ? ` (${option.prob *
-                                        100}% chance of reaching risk limit and completing the audit in one round)`
-                                    : ''}
-                                </InputLabel>
-                              </span>
-                            </p>
-                          )
-                        })}
+                        <RadioGroup
+                          name={`sampleSize[${key}]`}
+                          onChange={e =>
+                            setFieldValue(
+                              `sampleSize[${key}]`,
+                              e.currentTarget.value
+                            )
+                          }
+                          selectedValue={getIn(values, `sampleSize[${key}]`)}
+                          disabled={!!audit.rounds.length}
+                        >
+                          {sampleSizeOptions[key].map((option, j) => {
+                            return (
+                              <Radio value={option.size} key={option.size}>
+                                {option.type
+                                  ? 'BRAVO Average Sample Number: '
+                                  : ''}
+                                {`${option.size} samples`}
+                                {option.prob
+                                  ? ` (${option.prob *
+                                      100}% chance of reaching risk limit and completing the audit in one round)`
+                                  : ''}
+                              </Radio>
+                            )
+                          })}
+                        </RadioGroup>
                       </FormSectionDescription>
                     </React.Fragment>
                   ))}
@@ -265,10 +268,13 @@ const SelectBallotsToAudit: React.FC<Props> = ({
               description="Set the number of audit boards you with to use."
             >
               <Field
-                component="select"
+                component={HTMLSelect}
                 id="auditBoards"
                 data-testid="audit-boards"
                 name="auditBoards"
+                onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                  setFieldValue('auditBoards', e.currentTarget.value)
+                }
                 disabled={!!audit.rounds.length}
               >
                 {generateOptions(15)}
@@ -296,18 +302,24 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                     Click &quot;Browse&quot; to choose the appropriate Ballot
                     Manifest file from your computer
                   </FormSectionDescription>
-                  <input
-                    type="file"
-                    data-testid="ballot-manifest"
-                    accept=".csv"
-                    name="manifest"
-                    onChange={e => {
+                  <FileInput
+                    inputProps={{
+                      accept: '.csv',
+                      name: 'manifest',
+                    }}
+                    onInputChange={e => {
                       setFieldValue(
                         'manifest',
                         (e.currentTarget.files && e.currentTarget.files[0]) ||
                           null
                       )
                     }}
+                    hasSelection={!!values.manifest}
+                    text={
+                      values.manifest
+                        ? values.manifest.name
+                        : 'Select manifest...'
+                    }
                     onBlur={handleBlur}
                   />
                   {errors.manifest && touched.manifest && (
@@ -317,10 +329,10 @@ const SelectBallotsToAudit: React.FC<Props> = ({
               )}
             </FormSection>
           </FormWrapper>
-          {!audit.rounds.length && isLoading && <p>Loading...</p>}
+          {!audit.rounds.length && isLoading && <Spinner />}
           {!audit.rounds.length && !isLoading && (
             <FormButtonBar>
-              <FormButton type="button" onClick={handleSubmit}>
+              <FormButton intent="primary" type="button" onClick={handleSubmit}>
                 Select Ballots To Audit
               </FormButton>
             </FormButtonBar>

@@ -6,22 +6,32 @@ import api from '../utilities'
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
 jest.mock('../utilities')
-apiMock.mockImplementationOnce(() => Promise.resolve({}))
+apiMock.mockImplementationOnce(async () => ({}))
 
 describe('ResetButton', () => {
   it('renders', () => {
-    const { container } = render(<ResetButton updateAudit={jest.fn()} />)
+    const updateAuditMock = jest.fn()
+    const { container } = render(
+      <ResetButton electionId="1" updateAudit={updateAuditMock} />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders disabled', () => {
+    const updateAuditMock = jest.fn()
+    const { container } = render(
+      <ResetButton electionId="1" updateAudit={updateAuditMock} />
+    )
     expect(container).toMatchSnapshot()
   })
 
   it('posts to /audit/reset and calls updateAudit', async () => {
+    const updateAuditMock = jest.fn()
     const wrapper = document.createElement('div')
     wrapper.setAttribute('id', 'reset-button-wrapper')
 
-    const updateAuditMock = jest.fn()
-
     const { getByText } = render(
-      <ResetButton updateAudit={updateAuditMock} />,
+      <ResetButton electionId="1" updateAudit={updateAuditMock} />,
       { container: document.body.appendChild(wrapper) }
     )
 

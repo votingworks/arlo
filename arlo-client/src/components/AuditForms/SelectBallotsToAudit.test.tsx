@@ -13,10 +13,10 @@ const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 async function inputAndSubmitForm() {
   const getStatusMock = jest
     .fn()
-    .mockImplementationOnce(() => Promise.resolve(statusStates[2])) // the POST to /audit/status after jurisdictions
+    .mockImplementationOnce(async () => statusStates[2]) // the POST to /audit/status after jurisdictions
   const updateAuditMock = jest
     .fn()
-    .mockImplementationOnce(() => Promise.resolve(statusStates[3])) // the POST to /audit/status after manifest
+    .mockImplementationOnce(async () => statusStates[3]) // the POST to /audit/status after manifest
 
   const { getByTestId, getByLabelText, getByText } = render(
     <SelectBallotsToAudit
@@ -25,10 +25,11 @@ async function inputAndSubmitForm() {
       setIsLoading={jest.fn()}
       updateAudit={updateAuditMock}
       getStatus={getStatusMock}
+      electionId="1"
     />
   )
 
-  const manifestInput = getByTestId('ballot-manifest')
+  const manifestInput = getByLabelText('Select manifest...')
   fireEvent.change(manifestInput, { target: { files: [] } })
   fireEvent.blur(manifestInput)
   await wait(() => {
@@ -36,11 +37,8 @@ async function inputAndSubmitForm() {
   })
   fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
 
-  const auditBoardInput = getByTestId('audit-boards')
-  expect(auditBoardInput).toBeInstanceOf(HTMLSelectElement)
-  if (auditBoardInput instanceof HTMLSelectElement) {
-    fireEvent.change(auditBoardInput, { target: { selectedIndex: 0 } })
-  }
+  const auditBoardInput: any = getByTestId('audit-boards')
+  fireEvent.change(auditBoardInput, { target: { selected: 1 } })
 
   const sampleSizeInput = getByLabelText(
     '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
@@ -67,6 +65,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -78,6 +77,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -118,6 +118,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -131,6 +132,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -159,6 +161,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -177,6 +180,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -189,7 +193,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('submits sample size, ballot manifest, and number of audits', async () => {
-    apiMock.mockImplementation(() => Promise.resolve({}))
+    apiMock.mockImplementation(async () => ({}))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -208,22 +212,25 @@ describe('SelectBallotsToAudit', () => {
       })
 
       expect(apiMock.mock.calls[1][0]).toBe('/audit/jurisdictions')
-      expect(JSON.parse(apiMock.mock.calls[1][1].body)).toMatchObject({
-        jurisdictions: [
-          {
-            id: expect.stringMatching(/^[-0-9a-z]+$/),
-            name: 'Jurisdiction 1',
-            contests: ['contest-1'],
-            auditBoards: [
-              {
-                id: 'audit-board-1',
-                name: 'Audit Board #1',
-                members: [],
-              },
-            ],
-          },
-        ],
-      })
+      expect(JSON.parse(apiMock.mock.calls[1][1].body as string)).toMatchObject(
+        {
+          // TODO fix type
+          jurisdictions: [
+            {
+              id: expect.stringMatching(/^[-0-9a-z]+$/),
+              name: 'Jurisdiction 1',
+              contests: ['contest-1'],
+              auditBoards: [
+                {
+                  id: 'audit-board-1',
+                  name: 'Audit Board #1',
+                  members: [],
+                },
+              ],
+            },
+          ],
+        }
+      )
 
       expect(apiMock.mock.calls[2][0]).toBe(
         '/jurisdiction/jurisdiction-1/manifest'
@@ -237,7 +244,7 @@ describe('SelectBallotsToAudit', () => {
   it('handles api error on /audit/sample-size', async () => {
     apiMock
       .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
-      .mockImplementation(() => Promise.resolve({}))
+      .mockImplementation(async () => ({}))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -252,9 +259,9 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles api error on /audit/jurisdictions', async () => {
     apiMock
-      .mockImplementationOnce(() => Promise.resolve({}))
+      .mockImplementationOnce(async () => ({}))
       .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
-      .mockImplementation(() => Promise.resolve({}))
+      .mockImplementation(async () => ({}))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -269,8 +276,8 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles api error on /audit/jurisdiction/:id/manifest', async () => {
     apiMock
-      .mockImplementationOnce(() => Promise.resolve({}))
-      .mockImplementationOnce(() => Promise.resolve({}))
+      .mockImplementationOnce(async () => ({}))
+      .mockImplementationOnce(async () => ({}))
       .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
@@ -296,6 +303,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -319,6 +327,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
 

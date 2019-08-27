@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react'
+import { H3 } from '@blueprintjs/core'
 import styled from 'styled-components'
 
 export const Section = styled.div`
@@ -6,17 +7,17 @@ export const Section = styled.div`
 `
 
 export const FormSectionDescription = styled.div`
-  margin-top: 10px;
-  font-size: 0.4em;
+  margin: 10px 0;
 `
 
-export const FormSectionLabel = styled.div`
-  font-size: 0.5em;
-  font-weight: 700;
+/* stylelint-disable declaration-no-important */
+export const FormSectionLabel = styled(H3)`
+  font-size: 18px !important;
   & + & {
     margin-top: 10px;
   }
 `
+/* stylelint-enable */
 
 interface Props {
   label?: string

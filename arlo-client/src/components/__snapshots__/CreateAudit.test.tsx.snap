@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CreateAudit renders correctly 1`] = `
+<div>
+  <div
+    class="sc-bwzfXH SDMFF"
+  >
+    <img
+      alt="Arlo, by VotingWorks"
+      height="50px"
+      src="/arlo.png"
+    />
+    <button
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bdVaJa iOdBoI"
+      type="button"
+    >
+      <span
+        class="bp3-button-text"
+      >
+        Create a New Audit
+      </span>
+    </button>
+  </div>
+</div>
+`;

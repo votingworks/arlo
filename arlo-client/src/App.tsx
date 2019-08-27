@@ -1,27 +1,34 @@
 import React from 'react'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import './App.css'
 import styled from 'styled-components'
 import { ToastContainer } from 'react-toastify'
-import AuditSetupPage from './pages/AuditSetupPage'
+import Header from './components/Header'
+import AuditForms from './components/AuditForms'
+import CreateAudit from './components/CreateAudit'
 import 'react-toastify/dist/ReactToastify.css'
 
 const Main = styled.div`
-  display: block;
-  margin: auto;
-  height: 100%;
-  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
   padding: 40px;
-  font-size: 1.25rem;
 `
 
 const App: React.FC = () => {
   return (
-    <>
+    <Router>
       <ToastContainer />
       <Main>
-        <AuditSetupPage></AuditSetupPage>
+        <Route path="/election" component={Header} />
+        <Switch>
+          <Route exact path="/" component={CreateAudit} />
+          <Route path="/election/:electionId" component={AuditForms} />
+          <Route>404</Route>
+        </Switch>
       </Main>
-    </>
+    </Router>
   )
 }
 

@@ -25,6 +25,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -37,6 +38,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -49,6 +51,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -61,6 +64,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -68,18 +72,17 @@ describe('CalculateRiskMeasurement', () => {
 
   it(`handles inputs`, async () => {
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
-    apiMock.mockImplementation(() =>
-      Promise.resolve({
-        message: 'success',
-        ok: true,
-      })
-    )
+    apiMock.mockImplementation(async () => ({
+      message: 'success',
+      ok: true,
+    }))
     const { container, getByTestId, queryAllByText, getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates[3]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
 
@@ -119,10 +122,10 @@ describe('CalculateRiskMeasurement', () => {
       fireEvent.change(choiceTwo, { target: { value: '' } })
       fireEvent.blur(choiceOne)
       fireEvent.blur(choiceTwo)
-      expect(choiceOne.value).toBe('')
-      expect(choiceTwo.value).toBe('')
+      expect(choiceOne.value).toBe('0')
+      expect(choiceTwo.value).toBe('0')
       await wait(() => {
-        expect(queryAllByText('Must be a number').length).toBe(2)
+        expect(queryAllByText('Must be a number').length).toBe(0)
       })
 
       fireEvent.change(choiceOne, { target: { value: '5' } })
@@ -152,6 +155,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
 
@@ -162,7 +166,7 @@ describe('CalculateRiskMeasurement', () => {
 
     expect(window.open).toHaveBeenCalledTimes(1)
     expect(window.open).toHaveBeenCalledWith(
-      `/jurisdiction/jurisdiction-1/1/retrieval-list`
+      `/election/1/jurisdiction/jurisdiction-1/1/retrieval-list`
     )
   })
 
@@ -174,13 +178,14 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
 
     fireEvent.click(getByText('Download Audit Report'), { bubbles: true })
 
     expect(window.open).toHaveBeenCalledTimes(1)
-    expect(window.open).toHaveBeenCalledWith(`/audit/report`)
+    expect(window.open).toHaveBeenCalledWith(`/election/1/audit/report`)
   })
 
   it('handles errors from api', async () => {
@@ -198,6 +203,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
 

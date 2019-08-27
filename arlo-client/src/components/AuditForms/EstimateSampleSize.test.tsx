@@ -11,7 +11,7 @@ import EstimateSampleSize, {
   InputLabelRight,
   Action,
 } from './EstimateSampleSize'
-import asyncForEach from '../testUtilities'
+import { asyncForEach } from '../testUtilities'
 import statusStates from './_mocks'
 import api from '../utilities'
 
@@ -168,6 +168,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -178,6 +179,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -190,6 +192,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -200,6 +203,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -212,6 +216,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -222,6 +227,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -234,6 +240,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -244,6 +251,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -256,6 +264,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -266,6 +275,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -279,6 +289,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -311,6 +322,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -330,12 +342,10 @@ describe('EstimateSampleSize', () => {
   })
 
   it('is able to submit the form successfully', async () => {
-    apiMock.mockImplementation(() =>
-      Promise.resolve({
-        message: 'success',
-        ok: true,
-      })
-    )
+    apiMock.mockImplementation(async () => ({
+      message: 'success',
+      ok: true,
+    }))
     const updateAuditMock = jest.fn()
     const setIsLoadingMock = jest.fn()
 
@@ -345,6 +355,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
 
@@ -356,7 +367,7 @@ describe('EstimateSampleSize', () => {
 
     fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
     await wait(() => {
-      const { body } = apiMock.mock.calls[0][1]
+      const { body } = apiMock.mock.calls[0][1] as { body: string }
       expect(setIsLoadingMock).toHaveBeenCalledTimes(2)
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
@@ -373,6 +384,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -415,6 +427,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
 

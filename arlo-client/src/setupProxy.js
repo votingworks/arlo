@@ -10,7 +10,8 @@
 const proxy = require('http-proxy-middleware')
 
 module.exports = function(app) {
-  app.use(proxy('/admin', { target: 'http://localhost:3001/' }))
-  app.use(proxy('/audit', { target: 'http://localhost:3001/' }))
-  app.use(proxy('/jurisdiction', { target: 'http://localhost:3001/' }))
+  app.use(proxy('/election/new', { target: 'http://localhost:3001/' }))
+  app.use(proxy('/election/*/audit/**', { target: 'http://localhost:3001/' }))
+  app.use(proxy('/election/*/jurisdiction/**', { target: 'http://localhost:3001/' }))
+  app.use(proxy('/election/*/admin/**', { target: 'http://localhost:3001/' }))
 }

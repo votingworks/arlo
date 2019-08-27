@@ -3,17 +3,28 @@
 exports[`renders correctly 1`] = `
 <div>
   <div
-    class="sc-bdVaJa cdOnQX"
+    class="bp3-navbar bp3-fixed-top sc-bwzfXH rpDk"
   >
-    <img
-      alt="Arlo, by VotingWorks"
-      height="60px"
-      src="/arlo.png"
-    />
     <div
-      class="sc-bwzfXH iHMWje"
-      id="reset-button-wrapper"
-    />
+      class="bp3-navbar-group bp3-align-left"
+    >
+      <div
+        class="bp3-navbar-heading"
+      >
+        <img
+          alt="Arlo, by VotingWorks"
+          src="/arlo.png"
+        />
+      </div>
+    </div>
+    <div
+      class="bp3-navbar-group bp3-align-right"
+    >
+      <div
+        class="sc-bdVaJa bKktsd"
+        id="reset-button-wrapper"
+      />
+    </div>
   </div>
 </div>
 `;
