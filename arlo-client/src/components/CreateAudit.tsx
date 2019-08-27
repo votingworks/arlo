@@ -26,7 +26,7 @@ const CreateAudit = ({ history }: RouteComponentProps<Params>) => {
     history.push(`/election/${electionId}`)
   }
   return (
-    <Button type="button" onClick={onClick}>
+    <Button type="button" onClick={onClick} disabled={loading}>
       {loading ? 'Wait a moment...' : 'Create a New Audit'}
     </Button>
   )

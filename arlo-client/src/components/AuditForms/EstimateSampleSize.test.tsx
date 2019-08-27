@@ -342,12 +342,10 @@ describe('EstimateSampleSize', () => {
   })
 
   it('is able to submit the form successfully', async () => {
-    apiMock.mockImplementation(() =>
-      Promise.resolve({
-        message: 'success',
-        ok: true,
-      })
-    )
+    apiMock.mockImplementation(async () => ({
+      message: 'success',
+      ok: true,
+    }))
     const updateAuditMock = jest.fn()
     const setIsLoadingMock = jest.fn()
 
@@ -369,7 +367,7 @@ describe('EstimateSampleSize', () => {
 
     fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
     await wait(() => {
-      const { body } = (apiMock.mock.calls[0][1] as any) as { body: string }
+      const { body } = apiMock.mock.calls[0][1] as { body: string }
       expect(setIsLoadingMock).toHaveBeenCalledTimes(2)
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')

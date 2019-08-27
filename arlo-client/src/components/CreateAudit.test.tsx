@@ -28,7 +28,7 @@ describe('CreateAudit', () => {
   })
 
   it('calls the /election/new endpoint', async () => {
-    apiMock.mockImplementation(() => Promise.resolve({ electionId: '1' }))
+    apiMock.mockImplementation(async () => ({ electionId: '1' }))
     const historySpy = jest
       .spyOn(routeProps.history, 'push')
       .mockImplementation()

@@ -72,12 +72,10 @@ describe('CalculateRiskMeasurement', () => {
 
   it(`handles inputs`, async () => {
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
-    apiMock.mockImplementation(() =>
-      Promise.resolve({
-        message: 'success',
-        ok: true,
-      })
-    )
+    apiMock.mockImplementation(async () => ({
+      message: 'success',
+      ok: true,
+    }))
     const { container, getByTestId, queryAllByText, getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates[3]}

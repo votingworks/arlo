@@ -6,7 +6,7 @@ import api from '../utilities'
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
 jest.mock('../utilities')
-apiMock.mockImplementationOnce(() => Promise.resolve({}))
+apiMock.mockImplementationOnce(async () => ({}))
 
 describe('ResetButton', () => {
   it('renders', () => {

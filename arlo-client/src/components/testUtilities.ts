@@ -24,19 +24,14 @@ const generateUrl = <Params extends MatchParameter<Params>>(
 
 export const routerTestProps = <Params extends MatchParameter<Params> = {}>(
   path: string,
-  params: Params,
-  extendMatch: Partial<routerMatch<any>> = {}
+  params: Params
 ) => {
-  const match: routerMatch<Params> = Object.assign(
-    {},
-    {
-      isExact: false,
-      path,
-      url: generateUrl(path, params),
-      params,
-    },
-    extendMatch
-  )
+  const match: routerMatch<Params> = {
+    isExact: false,
+    path,
+    url: generateUrl(path, params),
+    params,
+  }
   const history = createMemoryHistory()
   const location = createLocation(match.url)
 
