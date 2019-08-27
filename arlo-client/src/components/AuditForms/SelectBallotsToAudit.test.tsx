@@ -13,10 +13,10 @@ const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 async function inputAndSubmitForm() {
   const getStatusMock = jest
     .fn()
-    .mockImplementationOnce(() => Promise.resolve(statusStates[2])) // the POST to /audit/status after jurisdictions
+    .mockImplementationOnce(async () => statusStates[2]) // the POST to /audit/status after jurisdictions
   const updateAuditMock = jest
     .fn()
-    .mockImplementationOnce(() => Promise.resolve(statusStates[3])) // the POST to /audit/status after manifest
+    .mockImplementationOnce(async () => statusStates[3]) // the POST to /audit/status after manifest
 
   const { getByTestId, getByLabelText, getByText } = render(
     <SelectBallotsToAudit
@@ -193,7 +193,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('submits sample size, ballot manifest, and number of audits', async () => {
-    apiMock.mockImplementation(() => Promise.resolve({}))
+    apiMock.mockImplementation(async () => ({}))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -244,7 +244,7 @@ describe('SelectBallotsToAudit', () => {
   it('handles api error on /audit/sample-size', async () => {
     apiMock
       .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
-      .mockImplementation(() => Promise.resolve({}))
+      .mockImplementation(async () => ({}))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -259,9 +259,9 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles api error on /audit/jurisdictions', async () => {
     apiMock
-      .mockImplementationOnce(() => Promise.resolve({}))
+      .mockImplementationOnce(async () => ({}))
       .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
-      .mockImplementation(() => Promise.resolve({}))
+      .mockImplementation(async () => ({}))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -276,8 +276,8 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles api error on /audit/jurisdiction/:id/manifest', async () => {
     apiMock
-      .mockImplementationOnce(() => Promise.resolve({}))
-      .mockImplementationOnce(() => Promise.resolve({}))
+      .mockImplementationOnce(async () => ({}))
+      .mockImplementationOnce(async () => ({}))
       .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()

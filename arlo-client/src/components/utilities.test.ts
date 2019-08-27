@@ -16,10 +16,10 @@ afterEach(() => {
 
 describe('utilities.ts', () => {
   it('calls fetch with electionId', async () => {
-    fetchSpy.mockImplementationOnce(() => Promise.resolve(response()))
+    fetchSpy.mockImplementationOnce(async () => response())
     const result = await api('/test', { method: 'GET', electionId: '1' })
 
-    expect(result).toMatchObject({ success: true })
+    expect(result).toEqual({ success: true })
     expect(window.fetch).toHaveBeenCalledTimes(1)
     expect(window.fetch).toHaveBeenCalledWith('/election/1/test', {
       method: 'GET',
@@ -27,10 +27,10 @@ describe('utilities.ts', () => {
   })
 
   it('calls fetch without electionId', async () => {
-    fetchSpy.mockImplementationOnce(() => Promise.resolve(response()))
+    fetchSpy.mockImplementationOnce(async () => response())
     const result = await api('/test', { method: 'GET', electionId: '' })
 
-    expect(result).toMatchObject({ success: true })
+    expect(result).toEqual({ success: true })
     expect(window.fetch).toHaveBeenCalledTimes(1)
     expect(window.fetch).toHaveBeenCalledWith('/test', {
       method: 'GET',
@@ -38,7 +38,7 @@ describe('utilities.ts', () => {
   })
 
   it('throws an error', async () => {
-    fetchSpy.mockImplementationOnce(() => Promise.resolve(badResponse()))
+    fetchSpy.mockImplementationOnce(async () => badResponse())
     await expect(
       api('/test', { method: 'GET', electionId: '1' })
     ).rejects.toThrow('A test error')

@@ -23,7 +23,7 @@ afterEach(() => {
 
 describe('RiskLimitingAuditForm', () => {
   it('fetches initial state from api', async () => {
-    apiMock.mockImplementation(() => Promise.resolve(statusStates[0]))
+    apiMock.mockImplementation(async () => statusStates[0])
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms {...routeProps} />)
@@ -48,7 +48,7 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
-    apiMock.mockImplementation(() => Promise.resolve(statusStates[1]))
+    apiMock.mockImplementation(async () => statusStates[1])
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms {...routeProps} />)
@@ -69,7 +69,7 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
-    apiMock.mockImplementation(() => Promise.resolve(statusStates[2]))
+    apiMock.mockImplementation(async () => statusStates[2])
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms {...routeProps} />) // this one will not have the first empty round
@@ -91,7 +91,7 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('renders CalculateRiskMeasurement when /audit/status returns round data', async () => {
-    apiMock.mockImplementation(() => Promise.resolve(statusStates[3]))
+    apiMock.mockImplementation(async () => statusStates[3])
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms {...routeProps} />) // this one will not have the first empty round

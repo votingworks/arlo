@@ -27,13 +27,17 @@ const initialData: Audit = {
   rounds: [],
 }
 
-const AuditForms: React.FC<any> = ({
+interface Props {
+  match: {
+    params: Params
+  }
+}
+
+const AuditForms: React.FC<Props> = ({
   match: {
     params: { electionId },
   },
-}: {
-  match: { params: Params }
-}) => {
+}: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [audit, setAudit] = useState(initialData)

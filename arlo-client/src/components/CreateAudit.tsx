@@ -38,6 +38,7 @@ const CreateAudit = ({ history }: RouteComponentProps<Params>) => {
         large
         onClick={onClick}
         loading={loading}
+        disabled={loading}
       >
         Create a New Audit
       </Button>
