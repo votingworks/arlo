@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CreateAudit renders correctly 1`] = `
+<div>
+  <button
+    class="sc-bxivhb clMsfg sc-bdVaJa eMbDYF"
+    type="button"
+  >
+    Create a New Audit
+  </button>
+</div>
+`;

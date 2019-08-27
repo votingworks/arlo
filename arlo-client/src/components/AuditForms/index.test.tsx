@@ -6,13 +6,16 @@ import {
   waitForElement,
   wait,
 } from '@testing-library/react'
-import AuditForms from './RiskLimitingAuditForm'
+import AuditForms from './index'
 import statusStates from './_mocks'
 import api from '../utilities'
+import { routerTestProps } from '../testUtilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
 jest.mock('../utilities')
+
+const routeProps = routerTestProps('/election/:electionId', { electionId: '1' })
 
 afterEach(() => {
   apiMock.mockClear()
@@ -23,7 +26,7 @@ describe('RiskLimitingAuditForm', () => {
     apiMock.mockImplementation(() => Promise.resolve(statusStates[0]))
     let utils: RenderResult
     act(() => {
-      utils = render(<AuditForms />)
+      utils = render(<AuditForms {...routeProps} />)
     })
     const { container } = utils!
 
@@ -38,7 +41,7 @@ describe('RiskLimitingAuditForm', () => {
   it('renders correctly with initialData', () => {
     let utils: RenderResult
     act(() => {
-      utils = render(<AuditForms />)
+      utils = render(<AuditForms {...routeProps} />)
     })
     const { container } = utils!
     expect(container).toMatchSnapshot()
@@ -48,7 +51,7 @@ describe('RiskLimitingAuditForm', () => {
     apiMock.mockImplementation(() => Promise.resolve(statusStates[1]))
     let utils: RenderResult
     act(() => {
-      utils = render(<AuditForms />)
+      utils = render(<AuditForms {...routeProps} />)
     })
     const { container, getByTestId } = utils!
 
@@ -69,7 +72,7 @@ describe('RiskLimitingAuditForm', () => {
     apiMock.mockImplementation(() => Promise.resolve(statusStates[2]))
     let utils: RenderResult
     act(() => {
-      utils = render(<AuditForms />) // this one will not have the first empty round
+      utils = render(<AuditForms {...routeProps} />) // this one will not have the first empty round
     })
     const { container, getByTestId, queryByTestId } = utils!
 
@@ -91,7 +94,7 @@ describe('RiskLimitingAuditForm', () => {
     apiMock.mockImplementation(() => Promise.resolve(statusStates[3]))
     let utils: RenderResult
     act(() => {
-      utils = render(<AuditForms />) // this one will not have the first empty round
+      utils = render(<AuditForms {...routeProps} />) // this one will not have the first empty round
     })
     const { container, getByTestId } = utils!
 

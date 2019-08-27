@@ -1,3 +1,7 @@
+export interface Params {
+  electionId: string
+}
+
 export interface Candidate {
   id: string
   name: string

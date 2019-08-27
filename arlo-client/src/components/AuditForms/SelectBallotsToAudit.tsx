@@ -28,6 +28,7 @@ interface Props {
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
   getStatus: () => Promise<Audit>
+  electionId: string
 }
 
 interface SelectBallotsToAuditValues {
@@ -59,6 +60,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
   setIsLoading,
   updateAudit,
   getStatus,
+  electionId,
 }: Props) => {
   const manifestUploaded =
     audit.jurisdictions.length &&
@@ -95,6 +97,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
           size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
         }
         await api('/audit/sample-size', {
+          electionId,
           method: 'POST',
           body: JSON.stringify(body),
           headers: {
@@ -103,6 +106,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         })
       }
       await api('/audit/jurisdictions', {
+        electionId,
         method: 'POST',
         body: JSON.stringify({ jurisdictions: data }),
         headers: {
@@ -117,6 +121,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         const formData: FormData = new FormData()
         formData.append('manifest', values.manifest, values.manifest.name)
         await api(`/jurisdiction/${jurisdictionID}/manifest`, {
+          electionId,
           method: 'POST',
           body: formData,
         })

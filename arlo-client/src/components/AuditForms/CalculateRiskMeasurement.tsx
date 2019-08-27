@@ -38,6 +38,7 @@ interface Props {
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
+  electionId: string
 }
 
 interface CalculateRiskMeasurementValues {
@@ -74,16 +75,19 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
   isLoading,
   setIsLoading,
   updateAudit,
+  electionId,
 }: Props) => {
   const downloadBallotRetrievalList = (id: number, e: React.FormEvent) => {
     e.preventDefault()
     const jurisdictionID: string = audit.jurisdictions[0].id
-    window.open(`/jurisdiction/${jurisdictionID}/${id}/retrieval-list`)
+    window.open(
+      `/election/${electionId}/jurisdiction/${jurisdictionID}/${id}/retrieval-list`
+    )
   }
 
   const downloadAuditReport = async (e: React.FormEvent) => {
     e.preventDefault()
-    window.open(`/audit/report`)
+    window.open(`/election/${electionId}/audit/report`)
     updateAudit()
   }
 
@@ -103,6 +107,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
     try {
       setIsLoading(true)
       await api(`/jurisdiction/${jurisdictionID}/${values.round}/results`, {
+        electionId,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

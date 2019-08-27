@@ -4,7 +4,7 @@ import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
-import { Audit } from '../../types'
+import { Audit, Params } from '../../types'
 import ResetButton from './ResetButton'
 
 const Wrapper = styled.div`
@@ -27,15 +27,21 @@ const initialData: Audit = {
   rounds: [],
 }
 
-const AuditForms: React.FC<{}> = () => {
+const AuditForms: React.FC<any> = ({
+  match: {
+    params: { electionId },
+  },
+}: {
+  match: { params: Params }
+}) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [audit, setAudit] = useState(initialData)
 
   const getStatus = useCallback(async (): Promise<Audit> => {
-    const audit: Audit = await api('/audit/status', {})
+    const audit: Audit = await api('/audit/status', { electionId })
     return audit
-  }, [])
+  }, [electionId])
 
   const updateAudit = useCallback(async () => {
     const audit = await getStatus()
@@ -50,13 +56,18 @@ const AuditForms: React.FC<{}> = () => {
 
   return (
     <Wrapper>
-      <ResetButton updateAudit={updateAudit} />
+      <ResetButton
+        electionId={electionId}
+        disabled={!audit.contests.length}
+        updateAudit={updateAudit}
+      />
 
       <EstimateSampleSize
         audit={audit}
         isLoading={isLoading}
         setIsLoading={setIsLoading}
         updateAudit={updateAudit}
+        electionId={electionId}
       />
 
       {!!audit.contests.length && (
@@ -66,6 +77,7 @@ const AuditForms: React.FC<{}> = () => {
           setIsLoading={setIsLoading}
           updateAudit={updateAudit}
           getStatus={getStatus}
+          electionId={electionId}
         />
       )}
 
@@ -75,6 +87,7 @@ const AuditForms: React.FC<{}> = () => {
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           updateAudit={updateAudit}
+          electionId={electionId}
         />
       )}
     </Wrapper>

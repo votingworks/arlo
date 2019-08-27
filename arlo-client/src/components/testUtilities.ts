@@ -1,4 +1,51 @@
-const asyncForEach = async <T>(
+import { createLocation, createMemoryHistory } from 'history'
+import { match as routerMatch } from 'react-router-dom'
+
+type MatchParameter<Params> = { [K in keyof Params]?: string }
+
+const generateUrl = <Params extends MatchParameter<Params>>(
+  path: string,
+  params: Params
+): string => {
+  let tempPath = path
+
+  for (const param in params) {
+    /* istanbul ignore else */
+    if (params.hasOwnProperty(param)) {
+      const value = params[param]
+      tempPath = tempPath.replace(`:${param}`, value as NonNullable<
+        typeof value
+      >)
+    }
+  }
+
+  return tempPath
+}
+
+export const routerTestProps = <Params extends MatchParameter<Params> = {}>(
+  path: string,
+  params: Params,
+  extendMatch: Partial<routerMatch<any>> = {}
+) => {
+  const match: routerMatch<Params> = Object.assign(
+    {},
+    {
+      isExact: false,
+      path,
+      url: generateUrl(path, params),
+      params,
+    },
+    extendMatch
+  )
+  const history = createMemoryHistory()
+  const location = createLocation(match.url)
+
+  return { history, location, match }
+}
+
+/** Credit to https://stackoverflow.com/a/56452779 for solution to mocking React Router props */
+
+export const asyncForEach = async <T>(
   array: T[],
   callback: (value: T, index: number, array: T[]) => Promise<void>
 ) => {
@@ -7,4 +54,7 @@ const asyncForEach = async <T>(
   }
 }
 
-export default asyncForEach
+export default {
+  asyncForEach,
+  routerTestProps,
+}

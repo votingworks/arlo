@@ -25,6 +25,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -37,6 +38,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -49,6 +51,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -61,6 +64,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -80,6 +84,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
 
@@ -152,6 +157,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
 
@@ -162,7 +168,7 @@ describe('CalculateRiskMeasurement', () => {
 
     expect(window.open).toHaveBeenCalledTimes(1)
     expect(window.open).toHaveBeenCalledWith(
-      `/jurisdiction/jurisdiction-1/1/retrieval-list`
+      `/election/1/jurisdiction/jurisdiction-1/1/retrieval-list`
     )
   })
 
@@ -174,13 +180,14 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
 
     fireEvent.click(getByText('Download Audit Report'), { bubbles: true })
 
     expect(window.open).toHaveBeenCalledTimes(1)
-    expect(window.open).toHaveBeenCalledWith(`/audit/report`)
+    expect(window.open).toHaveBeenCalledWith(`/election/1/audit/report`)
   })
 
   it('handles errors from api', async () => {
@@ -198,6 +205,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        electionId="1"
       />
     )
 

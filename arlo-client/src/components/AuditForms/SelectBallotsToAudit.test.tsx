@@ -25,6 +25,7 @@ async function inputAndSubmitForm() {
       setIsLoading={jest.fn()}
       updateAudit={updateAuditMock}
       getStatus={getStatusMock}
+      electionId="1"
     />
   )
 
@@ -64,6 +65,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -75,6 +77,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -115,6 +118,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -128,6 +132,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -156,6 +161,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -174,6 +180,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -205,22 +212,25 @@ describe('SelectBallotsToAudit', () => {
       })
 
       expect(apiMock.mock.calls[1][0]).toBe('/audit/jurisdictions')
-      expect(JSON.parse(apiMock.mock.calls[1][1].body)).toMatchObject({
-        jurisdictions: [
-          {
-            id: expect.stringMatching(/^[-0-9a-z]+$/),
-            name: 'Jurisdiction 1',
-            contests: ['contest-1'],
-            auditBoards: [
-              {
-                id: 'audit-board-1',
-                name: 'Audit Board #1',
-                members: [],
-              },
-            ],
-          },
-        ],
-      })
+      expect(JSON.parse(apiMock.mock.calls[1][1].body as string)).toMatchObject(
+        {
+          // TODO fix type
+          jurisdictions: [
+            {
+              id: expect.stringMatching(/^[-0-9a-z]+$/),
+              name: 'Jurisdiction 1',
+              contests: ['contest-1'],
+              auditBoards: [
+                {
+                  id: 'audit-board-1',
+                  name: 'Audit Board #1',
+                  members: [],
+                },
+              ],
+            },
+          ],
+        }
+      )
 
       expect(apiMock.mock.calls[2][0]).toBe(
         '/jurisdiction/jurisdiction-1/manifest'
@@ -293,6 +303,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
 
@@ -316,6 +327,7 @@ describe('SelectBallotsToAudit', () => {
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
         getStatus={jest.fn()}
+        electionId="1"
       />
     )
 
