@@ -6,31 +6,27 @@ exports[`App renders properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-eNQAEJ ezOpXG"
+    class="sc-hMqMXs iJCTcb"
   >
     <div
-      class="sc-bdVaJa eLagRW"
+      class="sc-eNQAEJ jfqZrS"
     >
       <img
         alt="Arlo, by VotingWorks"
-        height="60px"
+        height="50px"
         src="/arlo.png"
       />
-      <div
-        class="sc-bwzfXH iHMWje"
-        id="reset-button-wrapper"
-      />
-    </div>
-    <button
-      class="bp3-button sc-jKJlTe cmjjMy"
-      type="button"
-    >
-      <span
-        class="bp3-button-text"
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-jKJlTe ZTZmk"
+        type="button"
       >
-        Create a New Audit
-      </span>
-    </button>
+        <span
+          class="bp3-button-text"
+        >
+          Create a New Audit
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 `;

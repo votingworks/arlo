@@ -2,11 +2,24 @@
 
 exports[`CreateAudit renders correctly 1`] = `
 <div>
-  <button
-    class="sc-bxivhb clMsfg sc-bdVaJa eMbDYF"
-    type="button"
+  <div
+    class="sc-bwzfXH eCERmB"
   >
-    Create a New Audit
-  </button>
+    <img
+      alt="Arlo, by VotingWorks"
+      height="50px"
+      src="/arlo.png"
+    />
+    <button
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bdVaJa iOdBoI"
+      type="button"
+    >
+      <span
+        class="bp3-button-text"
+      >
+        Create a New Audit
+      </span>
+    </button>
+  </div>
 </div>
 `;

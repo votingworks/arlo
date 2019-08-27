@@ -9,6 +9,9 @@ interface Props {
   size?: string
   type?: 'button' | 'submit' | 'reset' | undefined
   intent?: 'none' | 'primary' | 'success' | 'warning' | 'danger' | undefined
+  fill?: boolean
+  loading?: boolean
+  large?: boolean
 }
 const FormButton: React.FC<Props> = ({
   disabled,

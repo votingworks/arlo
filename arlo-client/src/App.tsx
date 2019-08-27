@@ -21,7 +21,7 @@ const App: React.FC = () => {
     <Router>
       <ToastContainer />
       <Main>
-        <Header />
+        <Route path="/election" component={Header} />
         <Switch>
           <Route exact path="/" component={CreateAudit} />
           <Route path="/election/:electionId" component={AuditForms} />

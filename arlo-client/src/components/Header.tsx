@@ -1,21 +1,37 @@
 import React from 'react'
 import styled from 'styled-components'
+import {
+  Navbar,
+  NavbarGroup,
+  NavbarHeading,
+  Alignment,
+} from '@blueprintjs/core'
 
-const HeaderContainer = styled.div`
-  width: 100%;
-  padding: 20px;
-  text-align: center;
-`
 const ButtonBar = styled.div`
   display: inline-block;
-  float: right;
+  margin-right: 10px;
+`
+
+const Nav = styled(Navbar)`
+  width: 100%;
+
+  .bp3-navbar-heading img {
+    height: 35px;
+    padding-top: 8px;
+  }
 `
 
 const Header: React.FC<{}> = () => (
-  <HeaderContainer>
-    <img height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-    <ButtonBar id="reset-button-wrapper" />
-  </HeaderContainer>
+  <Nav fixedToTop>
+    <NavbarGroup align={Alignment.LEFT}>
+      <NavbarHeading>
+        <img src="/arlo.png" alt="Arlo, by VotingWorks" />
+      </NavbarHeading>
+    </NavbarGroup>
+    <NavbarGroup align={Alignment.RIGHT}>
+      <ButtonBar id="reset-button-wrapper" />
+    </NavbarGroup>
+  </Nav>
 )
 
 export default Header
