@@ -25,18 +25,18 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Contest Information
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Election Name
-        </div>
+        </h3>
         <div
           class="sc-EHOje bXavad"
         >
@@ -58,11 +58,11 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest  Name
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -89,11 +89,11 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Candidates/Choices & Vote Totals
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -337,11 +337,11 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Total Ballots Cast
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -427,18 +427,18 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
         </div>
       </div>
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Audit Settings
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Desired Risk Limit
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -540,11 +540,11 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Random Seed
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -582,18 +582,18 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Contest Information
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Election Name
-        </div>
+        </h3>
         <div
           class="sc-EHOje bXavad"
         >
@@ -615,11 +615,11 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest  Name
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -646,11 +646,11 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Candidates/Choices & Vote Totals
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -894,11 +894,11 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Total Ballots Cast
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -984,18 +984,18 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
         </div>
       </div>
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Audit Settings
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Desired Risk Limit
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -1097,11 +1097,11 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Random Seed
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -1139,18 +1139,18 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Contest Information
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Election Name
-        </div>
+        </h3>
         <div
           class="sc-EHOje bXavad"
         >
@@ -1172,11 +1172,11 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest  Name
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -1203,11 +1203,11 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Candidates/Choices & Vote Totals
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -1451,11 +1451,11 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Total Ballots Cast
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -1541,18 +1541,18 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
         </div>
       </div>
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Audit Settings
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Desired Risk Limit
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -1654,11 +1654,11 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Random Seed
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -1696,18 +1696,18 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Contest Information
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Election Name
-        </div>
+        </h3>
         <div
           class="sc-EHOje bXavad"
         >
@@ -1729,11 +1729,11 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest  Name
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -1760,11 +1760,11 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Candidates/Choices & Vote Totals
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2008,11 +2008,11 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Total Ballots Cast
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2098,18 +2098,18 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
         </div>
       </div>
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Audit Settings
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Desired Risk Limit
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2211,11 +2211,11 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Random Seed
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2253,18 +2253,18 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Contest Information
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Election Name
-        </div>
+        </h3>
         <div
           class="sc-EHOje bXavad"
         >
@@ -2286,11 +2286,11 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest  Name
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2317,11 +2317,11 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Candidates/Choices & Vote Totals
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2565,11 +2565,11 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Total Ballots Cast
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2655,18 +2655,18 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
         </div>
       </div>
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Audit Settings
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Desired Risk Limit
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2768,11 +2768,11 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Random Seed
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2810,18 +2810,18 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Contest Information
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Election Name
-        </div>
+        </h3>
         <div
           class="sc-EHOje bXavad"
         >
@@ -2843,11 +2843,11 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest  Name
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2874,11 +2874,11 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Candidates/Choices & Vote Totals
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -3122,11 +3122,11 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Total Ballots Cast
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -3212,18 +3212,18 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
         </div>
       </div>
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Audit Settings
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Desired Risk Limit
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -3325,11 +3325,11 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Random Seed
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -3367,18 +3367,18 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Contest Information
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Election Name
-        </div>
+        </h3>
         <div
           class="sc-EHOje bXavad"
         >
@@ -3400,11 +3400,11 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest  Name
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -3431,11 +3431,11 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Candidates/Choices & Vote Totals
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -3679,11 +3679,11 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Total Ballots Cast
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -3769,18 +3769,18 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
         </div>
       </div>
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Audit Settings
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Desired Risk Limit
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -3882,11 +3882,11 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Random Seed
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -3924,18 +3924,18 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Contest Information
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Election Name
-        </div>
+        </h3>
         <div
           class="sc-EHOje bXavad"
         >
@@ -3957,11 +3957,11 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest  Name
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -3988,11 +3988,11 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Candidates/Choices & Vote Totals
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -4236,11 +4236,11 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Total Ballots Cast
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -4326,18 +4326,18 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
         </div>
       </div>
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Audit Settings
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Desired Risk Limit
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -4439,11 +4439,11 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Random Seed
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -4481,18 +4481,18 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Contest Information
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Election Name
-        </div>
+        </h3>
         <div
           class="sc-EHOje bXavad"
         >
@@ -4513,11 +4513,11 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest  Name
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -4543,11 +4543,11 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Candidates/Choices & Vote Totals
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -4784,11 +4784,11 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Total Ballots Cast
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -4869,18 +4869,18 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
         </div>
       </div>
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Audit Settings
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Desired Risk Limit
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -4981,11 +4981,11 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Random Seed
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -5037,18 +5037,18 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Contest Information
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Election Name
-        </div>
+        </h3>
         <div
           class="sc-EHOje bXavad"
         >
@@ -5069,11 +5069,11 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest  Name
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -5099,11 +5099,11 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Candidates/Choices & Vote Totals
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -5340,11 +5340,11 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Total Ballots Cast
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -5425,18 +5425,18 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
         </div>
       </div>
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Audit Settings
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Desired Risk Limit
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -5537,11 +5537,11 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Random Seed
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -5565,9 +5565,32 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
         </div>
       </div>
     </div>
-    <p>
-      Loading...
-    </p>
+    <div
+      class="bp3-spinner"
+    >
+      <div
+        class="bp3-spinner-animation"
+      >
+        <svg
+          height="50"
+          stroke-width="8.00"
+          viewBox="1.00 1.00 98.00 98.00"
+          width="50"
+        >
+          <path
+            class="bp3-spinner-track"
+            d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+          />
+          <path
+            class="bp3-spinner-head"
+            d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+            pathLength="280"
+            stroke-dasharray="280 280"
+            stroke-dashoffset="210"
+          />
+        </svg>
+      </div>
+    </div>
   </form>
 </div>
 `;

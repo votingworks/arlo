@@ -10,17 +10,17 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
       class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-bxivhb blucNT"
+        class="bp3-heading sc-bxivhb jFEWwS"
       >
         Round 1
       </h2>
-      <div
-        class="sc-htpNat fnydiw"
+      <h3
+        class="bp3-heading sc-htpNat cNFUHJ"
       >
         Ballot Retrieval List: 
         379
          Total Ballots
-      </div>
+      </h3>
       <div
         class="sc-bwzfXH izcbHX"
       >
@@ -46,13 +46,13 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Contest 1: contest name
-        </div>
-        <div
-          class="sc-htpNat fnydiw"
+        </h3>
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Audited Results: Round 
           1
@@ -60,7 +60,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
           1
            
           INCOMPLETE
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -241,8 +241,8 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Audit Progress: 
           0
@@ -250,7 +250,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
           1
            
           complete
-        </div>
+        </h3>
       </div>
       <div
         class="sc-dnqmqq itqjch"
@@ -287,17 +287,17 @@ Object {
           class="sc-ifAKCX dUfgxM"
         >
           <h2
-            class="bp3-heading sc-bxivhb blucNT"
+            class="bp3-heading sc-bxivhb jFEWwS"
           >
             Round 1
           </h2>
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Ballot Retrieval List: 
             379
              Total Ballots
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -323,13 +323,13 @@ Object {
           <div
             class="sc-bdVaJa fdbLH"
           >
-            <div
-              class="sc-htpNat fnydiw"
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Contest 1: contest name
-            </div>
-            <div
-              class="sc-htpNat fnydiw"
+            </h3>
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Audited Results: Round 
               1
@@ -337,7 +337,7 @@ Object {
               1
                
               COMPLETE
-            </div>
+            </h3>
             <div
               class="sc-iwsKbI hmbaiI"
             >
@@ -546,8 +546,8 @@ Object {
           <div
             class="sc-bdVaJa fdbLH"
           >
-            <div
-              class="sc-htpNat fnydiw"
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Audit Progress: 
               1
@@ -555,7 +555,7 @@ Object {
               1
                
               complete
-            </div>
+            </h3>
           </div>
           <div
             class="sc-bdVaJa fdbLH"
@@ -585,17 +585,17 @@ Object {
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Round 1
         </h2>
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Ballot Retrieval List: 
           379
            Total Ballots
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -621,13 +621,13 @@ Object {
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Contest 1: contest name
-          </div>
-          <div
-            class="sc-htpNat fnydiw"
+          </h3>
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Audited Results: Round 
             1
@@ -635,7 +635,7 @@ Object {
             1
              
             COMPLETE
-          </div>
+          </h3>
           <div
             class="sc-iwsKbI hmbaiI"
           >
@@ -844,8 +844,8 @@ Object {
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Audit Progress: 
             1
@@ -853,7 +853,7 @@ Object {
             1
              
             complete
-          </div>
+          </h3>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -940,17 +940,17 @@ Object {
           class="sc-ifAKCX dUfgxM"
         >
           <h2
-            class="bp3-heading sc-bxivhb blucNT"
+            class="bp3-heading sc-bxivhb jFEWwS"
           >
             Round 1
           </h2>
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Ballot Retrieval List: 
             379
              Total Ballots
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -976,13 +976,13 @@ Object {
           <div
             class="sc-bdVaJa fdbLH"
           >
-            <div
-              class="sc-htpNat fnydiw"
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Contest 1: contest name
-            </div>
-            <div
-              class="sc-htpNat fnydiw"
+            </h3>
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Audited Results: Round 
               1
@@ -990,7 +990,7 @@ Object {
               1
                
               COMPLETE
-            </div>
+            </h3>
             <div
               class="sc-iwsKbI hmbaiI"
             >
@@ -1196,14 +1196,37 @@ Object {
               </div>
             </div>
           </div>
-          <p>
-            Loading...
-          </p>
+          <div
+            class="bp3-spinner"
+          >
+            <div
+              class="bp3-spinner-animation"
+            >
+              <svg
+                height="50"
+                stroke-width="8.00"
+                viewBox="1.00 1.00 98.00 98.00"
+                width="50"
+              >
+                <path
+                  class="bp3-spinner-track"
+                  d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                />
+                <path
+                  class="bp3-spinner-head"
+                  d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                  pathLength="280"
+                  stroke-dasharray="280 280"
+                  stroke-dashoffset="210"
+                />
+              </svg>
+            </div>
+          </div>
           <div
             class="sc-bdVaJa fdbLH"
           >
-            <div
-              class="sc-htpNat fnydiw"
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Audit Progress: 
               1
@@ -1211,7 +1234,7 @@ Object {
               1
                
               complete
-            </div>
+            </h3>
           </div>
           <div
             class="sc-bdVaJa fdbLH"
@@ -1241,17 +1264,17 @@ Object {
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Round 1
         </h2>
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Ballot Retrieval List: 
           379
            Total Ballots
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -1277,13 +1300,13 @@ Object {
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Contest 1: contest name
-          </div>
-          <div
-            class="sc-htpNat fnydiw"
+          </h3>
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Audited Results: Round 
             1
@@ -1291,7 +1314,7 @@ Object {
             1
              
             COMPLETE
-          </div>
+          </h3>
           <div
             class="sc-iwsKbI hmbaiI"
           >
@@ -1497,14 +1520,37 @@ Object {
             </div>
           </div>
         </div>
-        <p>
-          Loading...
-        </p>
+        <div
+          class="bp3-spinner"
+        >
+          <div
+            class="bp3-spinner-animation"
+          >
+            <svg
+              height="50"
+              stroke-width="8.00"
+              viewBox="1.00 1.00 98.00 98.00"
+              width="50"
+            >
+              <path
+                class="bp3-spinner-track"
+                d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+              />
+              <path
+                class="bp3-spinner-head"
+                d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                pathLength="280"
+                stroke-dasharray="280 280"
+                stroke-dashoffset="210"
+              />
+            </svg>
+          </div>
+        </div>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Audit Progress: 
             1
@@ -1512,7 +1558,7 @@ Object {
             1
              
             complete
-          </div>
+          </h3>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -1599,17 +1645,17 @@ Object {
           class="sc-ifAKCX dUfgxM"
         >
           <h2
-            class="bp3-heading sc-bxivhb blucNT"
+            class="bp3-heading sc-bxivhb jFEWwS"
           >
             Round 1
           </h2>
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Ballot Retrieval List: 
             379
              Total Ballots
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1635,13 +1681,13 @@ Object {
           <div
             class="sc-bdVaJa fdbLH"
           >
-            <div
-              class="sc-htpNat fnydiw"
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Contest 1: contest name
-            </div>
-            <div
-              class="sc-htpNat fnydiw"
+            </h3>
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Audited Results: Round 
               1
@@ -1649,7 +1695,7 @@ Object {
               1
                
               INCOMPLETE
-            </div>
+            </h3>
             <div
               class="sc-bwzfXH izcbHX"
             >
@@ -1830,8 +1876,8 @@ Object {
           <div
             class="sc-bdVaJa fdbLH"
           >
-            <div
-              class="sc-htpNat fnydiw"
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Audit Progress: 
               0
@@ -1839,7 +1885,7 @@ Object {
               1
                
               complete
-            </div>
+            </h3>
           </div>
           <div
             class="sc-dnqmqq itqjch"
@@ -1871,17 +1917,17 @@ Object {
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Round 1
         </h2>
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Ballot Retrieval List: 
           379
            Total Ballots
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -1907,13 +1953,13 @@ Object {
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Contest 1: contest name
-          </div>
-          <div
-            class="sc-htpNat fnydiw"
+          </h3>
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Audited Results: Round 
             1
@@ -1921,7 +1967,7 @@ Object {
             1
              
             INCOMPLETE
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2102,8 +2148,8 @@ Object {
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Audit Progress: 
             0
@@ -2111,7 +2157,7 @@ Object {
             1
              
             complete
-          </div>
+          </h3>
         </div>
         <div
           class="sc-dnqmqq itqjch"
@@ -2200,17 +2246,17 @@ Object {
           class="sc-ifAKCX dUfgxM"
         >
           <h2
-            class="bp3-heading sc-bxivhb blucNT"
+            class="bp3-heading sc-bxivhb jFEWwS"
           >
             Round 1
           </h2>
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Ballot Retrieval List: 
             379
              Total Ballots
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2236,13 +2282,13 @@ Object {
           <div
             class="sc-bdVaJa fdbLH"
           >
-            <div
-              class="sc-htpNat fnydiw"
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Contest 1: contest name
-            </div>
-            <div
-              class="sc-htpNat fnydiw"
+            </h3>
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Audited Results: Round 
               1
@@ -2250,7 +2296,7 @@ Object {
               1
                
               INCOMPLETE
-            </div>
+            </h3>
             <div
               class="sc-bwzfXH izcbHX"
             >
@@ -2428,14 +2474,37 @@ Object {
               </div>
             </div>
           </div>
-          <p>
-            Loading...
-          </p>
+          <div
+            class="bp3-spinner"
+          >
+            <div
+              class="bp3-spinner-animation"
+            >
+              <svg
+                height="50"
+                stroke-width="8.00"
+                viewBox="1.00 1.00 98.00 98.00"
+                width="50"
+              >
+                <path
+                  class="bp3-spinner-track"
+                  d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                />
+                <path
+                  class="bp3-spinner-head"
+                  d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                  pathLength="280"
+                  stroke-dasharray="280 280"
+                  stroke-dashoffset="210"
+                />
+              </svg>
+            </div>
+          </div>
           <div
             class="sc-bdVaJa fdbLH"
           >
-            <div
-              class="sc-htpNat fnydiw"
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
             >
               Audit Progress: 
               0
@@ -2443,7 +2512,7 @@ Object {
               1
                
               complete
-            </div>
+            </h3>
           </div>
           <div
             class="sc-bdVaJa fdbLH"
@@ -2461,17 +2530,17 @@ Object {
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Round 1
         </h2>
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Ballot Retrieval List: 
           379
            Total Ballots
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2497,13 +2566,13 @@ Object {
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Contest 1: contest name
-          </div>
-          <div
-            class="sc-htpNat fnydiw"
+          </h3>
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Audited Results: Round 
             1
@@ -2511,7 +2580,7 @@ Object {
             1
              
             INCOMPLETE
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2689,14 +2758,37 @@ Object {
             </div>
           </div>
         </div>
-        <p>
-          Loading...
-        </p>
+        <div
+          class="bp3-spinner"
+        >
+          <div
+            class="bp3-spinner-animation"
+          >
+            <svg
+              height="50"
+              stroke-width="8.00"
+              viewBox="1.00 1.00 98.00 98.00"
+              width="50"
+            >
+              <path
+                class="bp3-spinner-track"
+                d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+              />
+              <path
+                class="bp3-spinner-head"
+                d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+                pathLength="280"
+                stroke-dasharray="280 280"
+                stroke-dashoffset="210"
+              />
+            </svg>
+          </div>
+        </div>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Audit Progress: 
             0
@@ -2704,7 +2796,7 @@ Object {
             1
              
             complete
-          </div>
+          </h3>
         </div>
         <div
           class="sc-bdVaJa fdbLH"

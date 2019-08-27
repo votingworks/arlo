@@ -11,7 +11,7 @@ import {
 } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
-import { HTMLSelect, Label } from '@blueprintjs/core'
+import { HTMLSelect, Label, Spinner } from '@blueprintjs/core'
 import FormSection from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormTitle from '../Form/FormTitle'
@@ -390,7 +390,7 @@ const EstimateSampleSize: React.FC<Props> = ({
                 />
               </FormSection>
             </FormWrapper>
-            {!audit.contests.length && isLoading && <p>Loading...</p>}
+            {!audit.contests.length && isLoading && <Spinner />}
             {!audit.contests.length && !isLoading && (
               <FormButtonBar>
                 <FormButton

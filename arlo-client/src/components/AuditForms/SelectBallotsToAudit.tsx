@@ -5,7 +5,13 @@ import { toast } from 'react-toastify'
 import { Formik, FormikProps, Field, getIn } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
-import { RadioGroup, Radio, HTMLSelect, FileInput } from '@blueprintjs/core'
+import {
+  RadioGroup,
+  Radio,
+  HTMLSelect,
+  FileInput,
+  Spinner,
+} from '@blueprintjs/core'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -323,7 +329,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
               )}
             </FormSection>
           </FormWrapper>
-          {!audit.rounds.length && isLoading && <p>Loading...</p>}
+          {!audit.rounds.length && isLoading && <Spinner />}
           {!audit.rounds.length && !isLoading && (
             <FormButtonBar>
               <FormButton intent="primary" type="button" onClick={handleSubmit}>

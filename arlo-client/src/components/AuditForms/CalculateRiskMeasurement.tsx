@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 /* istanbul ignore next */
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
 import * as Yup from 'yup'
+import { Spinner } from '@blueprintjs/core'
 import FormSection, {
   FormSectionLabel,
   FormSectionDescription,
@@ -267,7 +268,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                   )
                 }}
               />
-              {isLoading && <p>Loading...</p>}
+              {isLoading && <Spinner />}
               <FormSection>
                 <FormSectionLabel>
                   Audit Progress: {completeContests} of {audit.contests.length}{' '}

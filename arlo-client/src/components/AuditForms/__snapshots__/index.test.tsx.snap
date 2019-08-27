@@ -12,18 +12,18 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Contest Information
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Election Name
-          </div>
+          </h3>
           <div
             class="sc-EHOje bXavad"
           >
@@ -45,11 +45,11 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Contest  Name
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -76,11 +76,11 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Candidates/Choices & Vote Totals
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -324,11 +324,11 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Total Ballots Cast
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -414,18 +414,18 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           </div>
         </div>
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Audit Settings
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Desired Risk Limit
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -527,11 +527,11 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Random Seed
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -566,21 +566,21 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         />
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Select Ballots to Audit
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Estimated Sample Size
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -642,11 +642,11 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Number of Audit Boards
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -731,11 +731,11 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Ballot Manifest
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -788,18 +788,18 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Contest Information
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Election Name
-          </div>
+          </h3>
           <div
             class="sc-EHOje bXavad"
           >
@@ -820,11 +820,11 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Contest  Name
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -850,11 +850,11 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Candidates/Choices & Vote Totals
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1091,11 +1091,11 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Total Ballots Cast
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1176,18 +1176,18 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
           </div>
         </div>
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Audit Settings
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Desired Risk Limit
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1288,11 +1288,11 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Random Seed
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1348,18 +1348,18 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Contest Information
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Election Name
-          </div>
+          </h3>
           <div
             class="sc-EHOje bXavad"
           >
@@ -1381,11 +1381,11 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Contest  Name
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1412,11 +1412,11 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Candidates/Choices & Vote Totals
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1660,11 +1660,11 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Total Ballots Cast
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1750,18 +1750,18 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           </div>
         </div>
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Audit Settings
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Desired Risk Limit
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1863,11 +1863,11 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Random Seed
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1902,21 +1902,21 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         />
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Select Ballots to Audit
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Estimated Sample Size
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -1981,11 +1981,11 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Number of Audit Boards
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2071,11 +2071,11 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Ballot Manifest
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2114,17 +2114,17 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Round 1
         </h2>
-        <div
-          class="sc-htpNat fnydiw"
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Ballot Retrieval List: 
           379
            Total Ballots
-        </div>
+        </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
@@ -2150,13 +2150,13 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Contest 1: contest name
-          </div>
-          <div
-            class="sc-htpNat fnydiw"
+          </h3>
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Audited Results: Round 
             1
@@ -2164,7 +2164,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             1
              
             INCOMPLETE
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2345,8 +2345,8 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Audit Progress: 
             0
@@ -2354,7 +2354,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             1
              
             complete
-          </div>
+          </h3>
         </div>
         <div
           class="sc-dnqmqq itqjch"
@@ -2391,18 +2391,18 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Contest Information
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Election Name
-          </div>
+          </h3>
           <div
             class="sc-EHOje bXavad"
           >
@@ -2424,11 +2424,11 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Contest  Name
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2455,11 +2455,11 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Candidates/Choices & Vote Totals
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2703,11 +2703,11 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Total Ballots Cast
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2793,18 +2793,18 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           </div>
         </div>
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Audit Settings
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Desired Risk Limit
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2906,11 +2906,11 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Random Seed
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -2945,21 +2945,21 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         />
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Select Ballots to Audit
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Estimated Sample Size
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -3021,11 +3021,11 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Number of Audit Boards
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -3110,11 +3110,11 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Ballot Manifest
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -3167,18 +3167,18 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
         class="sc-ifAKCX dUfgxM"
       >
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Contest Information
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Election Name
-          </div>
+          </h3>
           <div
             class="sc-EHOje bXavad"
           >
@@ -3199,11 +3199,11 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Contest  Name
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -3229,11 +3229,11 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Candidates/Choices & Vote Totals
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -3470,11 +3470,11 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Total Ballots Cast
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -3555,18 +3555,18 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
           </div>
         </div>
         <h2
-          class="bp3-heading sc-bxivhb blucNT"
+          class="bp3-heading sc-bxivhb jFEWwS"
         >
           Audit Settings
         </h2>
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Desired Risk Limit
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
@@ -3667,11 +3667,11 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div
-            class="sc-htpNat fnydiw"
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
           >
             Random Seed
-          </div>
+          </h3>
           <div
             class="sc-bwzfXH izcbHX"
           >
