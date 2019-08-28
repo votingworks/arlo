@@ -6,10 +6,10 @@ exports[`App renders properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-jKJlTe cEYtix"
+    class="sc-hMqMXs iJCTcb"
   >
     <div
-      class="sc-ckVGcZ ddqPmx"
+      class="sc-eNQAEJ eXJSGr"
     >
       <img
         alt="Arlo, by VotingWorks"
@@ -17,7 +17,7 @@ exports[`App renders properly 1`] = `
         src="/arlo.png"
       />
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-dxgOiQ iDojWn"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-jKJlTe ZTZmk"
         type="button"
       >
         <span

@@ -12,6 +12,7 @@ import {
   FileInput,
   Spinner,
 } from '@blueprintjs/core'
+import styled from 'styled-components'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -23,6 +24,10 @@ import { Jurisdiction, Audit, SampleSizeOption } from '../../types'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
+
+export const Select = styled(HTMLSelect)`
+  margin-left: 5px;
+`
 
 interface SampleSizeOptionsByContest {
   [key: string]: SampleSizeOption[]
@@ -267,7 +272,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
               <label htmlFor="auditBoards">
                 Set the number of audit boards you wish to use.
                 <Field
-                  component={HTMLSelect}
+                  component={Select}
                   id="auditBoards"
                   name="auditBoards"
                   onChange={(e: React.FormEvent<HTMLSelectElement>) =>

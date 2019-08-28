@@ -22,6 +22,10 @@ import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import { Audit } from '../../types'
 
+export const Select = styled(HTMLSelect)`
+  margin-left: 5px;
+`
+
 export const TwoColumnSection = styled.div`
   display: flex;
   flex-direction: column;
@@ -371,7 +375,7 @@ const EstimateSampleSize: React.FC<Props> = ({
                     id="risk-limit"
                     name="riskLimit"
                     disabled={!canEstimateSampleSize}
-                    component={HTMLSelect}
+                    component={Select}
                     defaultValue={values.riskLimit}
                     onChange={(e: React.FormEvent<HTMLSelectElement>) =>
                       setFieldValue('riskLimit', e.currentTarget.value)

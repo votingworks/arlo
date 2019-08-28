@@ -3,7 +3,7 @@
 exports[`EstimateSampleSize renders Styled(Component) correctly 1`] = `
 <div>
   <label
-    class="bp3-label sc-fjdhpX fbZKEd"
+    class="bp3-label sc-jzJRlG kILPnr"
   />
 </div>
 `;
@@ -103,18 +103,18 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gZMcBi knllut"
+          class="sc-gqjmRU eFzMzy"
         >
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -131,12 +131,12 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -215,15 +215,15 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
             </label>
           </div>
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -240,12 +240,12 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -442,7 +442,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select bp3-disabled"
+            class="bp3-html-select bp3-disabled sc-gZMcBi fvQasU"
           >
             <select
               disabled=""
@@ -668,18 +668,18 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gZMcBi knllut"
+          class="sc-gqjmRU eFzMzy"
         >
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -696,12 +696,12 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -780,15 +780,15 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
             </label>
           </div>
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -805,12 +805,12 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -1007,7 +1007,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select bp3-disabled"
+            class="bp3-html-select bp3-disabled sc-gZMcBi fvQasU"
           >
             <select
               disabled=""
@@ -1233,18 +1233,18 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gZMcBi knllut"
+          class="sc-gqjmRU eFzMzy"
         >
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -1261,12 +1261,12 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -1345,15 +1345,15 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
             </label>
           </div>
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -1370,12 +1370,12 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -1572,7 +1572,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select bp3-disabled"
+            class="bp3-html-select bp3-disabled sc-gZMcBi fvQasU"
           >
             <select
               disabled=""
@@ -1798,18 +1798,18 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gZMcBi knllut"
+          class="sc-gqjmRU eFzMzy"
         >
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -1826,12 +1826,12 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -1910,15 +1910,15 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
             </label>
           </div>
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -1935,12 +1935,12 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -2137,7 +2137,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select bp3-disabled"
+            class="bp3-html-select bp3-disabled sc-gZMcBi fvQasU"
           >
             <select
               disabled=""
@@ -2363,18 +2363,18 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gZMcBi knllut"
+          class="sc-gqjmRU eFzMzy"
         >
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -2391,12 +2391,12 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -2475,15 +2475,15 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
             </label>
           </div>
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -2500,12 +2500,12 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -2702,7 +2702,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select bp3-disabled"
+            class="bp3-html-select bp3-disabled sc-gZMcBi fvQasU"
           >
             <select
               disabled=""
@@ -2928,18 +2928,18 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gZMcBi knllut"
+          class="sc-gqjmRU eFzMzy"
         >
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -2956,12 +2956,12 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -3040,15 +3040,15 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
             </label>
           </div>
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -3065,12 +3065,12 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -3267,7 +3267,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select bp3-disabled"
+            class="bp3-html-select bp3-disabled sc-gZMcBi fvQasU"
           >
             <select
               disabled=""
@@ -3493,18 +3493,18 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gZMcBi knllut"
+          class="sc-gqjmRU eFzMzy"
         >
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -3521,12 +3521,12 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -3605,15 +3605,15 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
             </label>
           </div>
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -3630,12 +3630,12 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -3832,7 +3832,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select bp3-disabled"
+            class="bp3-html-select bp3-disabled sc-gZMcBi fvQasU"
           >
             <select
               disabled=""
@@ -4058,18 +4058,18 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gZMcBi knllut"
+          class="sc-gqjmRU eFzMzy"
         >
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -4086,12 +4086,12 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -4170,15 +4170,15 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
             </label>
           </div>
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
@@ -4195,12 +4195,12 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -4397,7 +4397,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select bp3-disabled"
+            class="bp3-html-select bp3-disabled sc-gZMcBi fvQasU"
           >
             <select
               disabled=""
@@ -4621,18 +4621,18 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gZMcBi knllut"
+          class="sc-gqjmRU eFzMzy"
         >
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group sc-bZQynM fFGKEg"
@@ -4648,12 +4648,12 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -4727,15 +4727,15 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
             </label>
           </div>
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group sc-bZQynM fFGKEg"
@@ -4751,12 +4751,12 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -4830,7 +4830,7 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
             </label>
           </div>
           <p
-            class="sc-jzJRlG gKJHEf"
+            class="sc-cSHVUG dbDVnz"
           >
             Add a new candidate/choice
           </p>
@@ -4948,7 +4948,7 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select"
+            class="bp3-html-select sc-gZMcBi fvQasU"
           >
             <select
               field="[object Object]"
@@ -5184,18 +5184,18 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
           Enter the name of each candidate choice that appears on the ballot for this contest.
         </div>
         <div
-          class="sc-gZMcBi knllut"
+          class="sc-gqjmRU eFzMzy"
         >
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group sc-bZQynM fFGKEg"
@@ -5211,12 +5211,12 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               1
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -5290,15 +5290,15 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
             </label>
           </div>
           <div
-            class="sc-VigVT grTkFz"
+            class="sc-jTzLTM crWWNL"
           >
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Name of Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-input-group sc-bZQynM fFGKEg"
@@ -5314,12 +5314,12 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
               </div>
             </label>
             <label
-              class="bp3-label sc-fjdhpX fbZKEd"
+              class="bp3-label sc-jzJRlG kILPnr"
             >
               Votes for Candidate/Choice 
               2
               <div
-                class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                class="sc-fjdhpX biCjXe sc-EHOje bXavad"
               >
                 <div
                   class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
@@ -5393,7 +5393,7 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
             </label>
           </div>
           <p
-            class="sc-jzJRlG gKJHEf"
+            class="sc-cSHVUG dbDVnz"
           >
             Add a new candidate/choice
           </p>
@@ -5511,7 +5511,7 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select"
+            class="bp3-html-select sc-gZMcBi fvQasU"
           >
             <select
               field="[object Object]"
@@ -5669,7 +5669,7 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
 exports[`EstimateSampleSize renders styled.div correctly 1`] = `
 <div>
   <div
-    class="sc-gZMcBi knllut"
+    class="sc-gqjmRU eFzMzy"
   />
 </div>
 `;
@@ -5677,7 +5677,7 @@ exports[`EstimateSampleSize renders styled.div correctly 1`] = `
 exports[`EstimateSampleSize renders styled.div correctly 2`] = `
 <div>
   <div
-    class="sc-gqjmRU cRqxXY"
+    class="sc-VigVT glHfV"
   />
 </div>
 `;
@@ -5685,7 +5685,7 @@ exports[`EstimateSampleSize renders styled.div correctly 2`] = `
 exports[`EstimateSampleSize renders styled.div correctly 3`] = `
 <div>
   <div
-    class="sc-VigVT grTkFz"
+    class="sc-jTzLTM crWWNL"
   />
 </div>
 `;
@@ -5693,7 +5693,7 @@ exports[`EstimateSampleSize renders styled.div correctly 3`] = `
 exports[`EstimateSampleSize renders styled.p correctly 1`] = `
 <div>
   <p
-    class="sc-jzJRlG gKJHEf"
+    class="sc-cSHVUG dbDVnz"
   />
 </div>
 `;
