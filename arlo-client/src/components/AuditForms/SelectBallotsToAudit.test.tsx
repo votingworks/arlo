@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import { statusStates, ballotManifest } from './_mocks'
 import api from '../utilities'
+import { regexpEscape } from '../testUtilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
@@ -18,7 +19,7 @@ async function inputAndSubmitForm() {
     .fn()
     .mockImplementationOnce(async () => statusStates[3]) // the POST to /audit/status after manifest
 
-  const { getByTestId, getByLabelText, getByText } = render(
+  const { getByLabelText, getByText } = render(
     <SelectBallotsToAudit
       audit={statusStates[1]}
       isLoading={false}
@@ -37,7 +38,10 @@ async function inputAndSubmitForm() {
   })
   fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
 
-  const auditBoardInput: any = getByTestId('audit-boards')
+  const auditBoardInput: HTMLElement = getByLabelText(
+    new RegExp(regexpEscape('Set the number of audit boards you wish to use.')),
+    { selector: 'select' }
+  )
   fireEvent.change(auditBoardInput, { target: { selected: 1 } })
 
   const sampleSizeInput = getByLabelText(
@@ -173,7 +177,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('changes number of audits', () => {
-    const { getByTestId } = render(
+    const { getByLabelText } = render(
       <SelectBallotsToAudit
         audit={statusStates[1]}
         isLoading={false}
@@ -184,7 +188,12 @@ describe('SelectBallotsToAudit', () => {
       />
     )
 
-    const auditBoardInput = getByTestId('audit-boards')
+    const auditBoardInput = getByLabelText(
+      new RegExp(
+        regexpEscape('Set the number of audit boards you wish to use.')
+      ),
+      { selector: 'select' }
+    )
     expect(auditBoardInput).toBeInstanceOf(HTMLSelectElement)
     if (auditBoardInput instanceof HTMLSelectElement) {
       fireEvent.change(auditBoardInput, { target: { selectedIndex: 2 } })
