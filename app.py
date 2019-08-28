@@ -128,9 +128,9 @@ def setup_next_round(election):
     db.session.add(round_contest)
         
 
-    num_sampled = 0
-    for board in jurisdiction.audit_boards:
-        num_sampled += sum([x.times_sampled for x in board.sampled_ballots])
+    num_sampled = db.session.query(db.func.sum(SampledBallot.times_sampled)).filter_by(jurisdiction_id=jurisdiction.id).one()[0]
+    if not num_sampled:
+        num_sampled = 0
 
     chosen_sample_size = round_contest.sample_size
     sampler = get_sampler(election)
