@@ -5,6 +5,7 @@ import json
 import pytest
 
 import app
+import bgcompute
 
 manifest_file_path = os.path.join(os.path.dirname(__file__), "manifest.csv")
 small_manifest_file_path = os.path.join(os.path.dirname(__file__), "small-manifest.csv")
@@ -73,9 +74,6 @@ def test_create_separate_election(client):
             ]
         })
 
-    rv = client.get("/election/{}/audit/status".format(election_id_1))
-    result1 = json.loads(rv.data)
-
     rv = post_json(
         client, '/election/{}/audit/basic'.format(election_id_2),
         {
@@ -104,6 +102,12 @@ def test_create_separate_election(client):
                 }
             ]
         })
+
+    # do the background compute
+    bgcompute.bgcompute()
+    
+    rv = client.get("/election/{}/audit/status".format(election_id_1))
+    result1 = json.loads(rv.data)
 
     # reset the first election and make sure the second election is unaltered
     client.post('/election/{}/audit/reset'.format(election_id_1))
@@ -148,10 +152,15 @@ def test_whole_audit_flow(client):
     
     assert json.loads(rv.data)['status'] == "ok"
 
+    # before background compute, should be null sample size options
     rv = client.get('/audit/status')
     status = json.loads(rv.data)
+    assert status["contests"][0]["sampleSizeOptions"] is None
 
-    # sample size options
+    # after background compute
+    bgcompute.bgcompute()
+    rv = client.get('/audit/status')
+    status = json.loads(rv.data)
     assert len(status["contests"][0]["sampleSizeOptions"]) == 4
     
     assert status["randomSeed"] == "12345678901234567890"
@@ -326,6 +335,7 @@ def test_small_election(client):
     
     assert json.loads(rv.data)['status'] == "ok"
 
+    bgcompute.bgcompute()
     rv = client.get('/audit/status')
     status = json.loads(rv.data)
 

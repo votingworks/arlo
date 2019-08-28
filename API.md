@@ -9,6 +9,10 @@
 
 - `GET /election/{electionId}/audit/status` -- get the whole data structure for the whole audit
 
+`sampleSizeOptions` may be null, in which case this is an indication
+that the server is still computing these values and the client should
+poll until those values are filled.
+
 ```
 {
 	name: "Primary 2019",
