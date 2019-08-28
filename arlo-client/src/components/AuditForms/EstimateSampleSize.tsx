@@ -23,7 +23,8 @@ import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import { Audit } from '../../types'
 
 export const TwoColumnSection = styled.div`
-  display: block;
+  display: flex;
+  flex-direction: column;
   margin-top: 25px;
   width: 100%;
 `
@@ -42,23 +43,16 @@ export const InputFieldRow = styled.div`
   width: 100%;
 `
 
-export const FieldLeft = styled(FormField)`
+export const FlexField = styled(FormField)`
   flex-grow: 2;
   width: unset;
-`
-
-export const FieldRight = styled(FieldLeft)`
-  margin-left: 50px;
+  padding-right: 60px;
 `
 
 export const InputLabel = styled(Label)`
   display: inline-block;
   flex-grow: 2;
   width: unset;
-`
-
-export const InputLabelRight = styled(InputLabel)`
-  margin-left: 60px;
 `
 
 export const Action = styled.p`
@@ -274,30 +268,28 @@ const EstimateSampleSize: React.FC<Props> = ({
                                     (choice: ChoiceValues, j: number) => (
                                       /* eslint-disable react/no-array-index-key */
                                       <React.Fragment key={j}>
-                                        <InputLabelRow>
+                                        <InputFieldRow>
                                           <InputLabel>
                                             Name of Candidate/Choice {j + 1}
+                                            <Field
+                                              name={`contests[${i}].choices[${j}].name`}
+                                              disabled={!canEstimateSampleSize}
+                                              component={FlexField}
+                                              data-testid={`contest-${i +
+                                                1}-choice-${j + 1}-name`}
+                                            />
                                           </InputLabel>
-                                          <InputLabelRight>
+                                          <InputLabel>
                                             Votes for Candidate/Choice {j + 1}
-                                          </InputLabelRight>
-                                        </InputLabelRow>
-                                        <InputFieldRow>
-                                          <Field
-                                            name={`contests[${i}].choices[${j}].name`}
-                                            disabled={!canEstimateSampleSize}
-                                            component={FieldLeft}
-                                            data-testid={`contest-${i +
-                                              1}-choice-${j + 1}-name`}
-                                          />
-                                          <Field
-                                            name={`contests[${i}].choices[${j}].numVotes`}
-                                            type="number"
-                                            disabled={!canEstimateSampleSize}
-                                            component={FieldRight}
-                                            data-testid={`contest-${i +
-                                              1}-choice-${j + 1}-votes`}
-                                          />
+                                            <Field
+                                              name={`contests[${i}].choices[${j}].numVotes`}
+                                              type="number"
+                                              disabled={!canEstimateSampleSize}
+                                              component={FlexField}
+                                              data-testid={`contest-${i +
+                                                1}-choice-${j + 1}-votes`}
+                                            />
+                                          </InputLabel>
                                           {contest.choices.length > 2 &&
                                             !audit.contests.length && (
                                               <Action

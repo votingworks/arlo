@@ -24,6 +24,7 @@ const InputSection = styled.div`
 
 const InputLabel = styled.label`
   display: inline-block;
+  margin-top: 5px;
 `
 
 const InlineWrapper = styled.div`

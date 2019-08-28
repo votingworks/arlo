@@ -12,7 +12,21 @@ const Field = styled(InputGroup)`
 `
 
 const NumberField = styled(NumericInput)`
+  margin-top: 5px;
   width: 100%;
+
+  .bp3-input-group {
+    width: 100%;
+  }
+
+  input.bp3-input {
+    margin-top: 0;
+  }
+
+  .bp3-button-group.bp3-vertical.bp3-fixed {
+    transform: translateX(-100%);
+    z-index: 15;
+  }
 `
 
 const ErrorLabel = styled.p`

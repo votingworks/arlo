@@ -3,7 +3,7 @@
 exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not 1`] = `
 <div>
   <div
-    class="sc-kpOJdX bRfAfq"
+    class="sc-kgoBCf gTPPLS"
   >
     <form
       data-testid="form-one"
@@ -87,237 +87,229 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gZMcBi knllut"
           >
             <div
-              class="sc-gqjmRU cRqxXY"
+              class="sc-VigVT grTkFz"
             >
               <label
-                class="bp3-label sc-jzJRlG kILPnr"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Name of Candidate/Choice 
                 1
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  >
+                    <input
+                      class="bp3-input"
+                      data-testid="contest-1-choice-1-name"
+                      disabled=""
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value="choice one"
+                    />
+                  </div>
+                </div>
               </label>
               <label
-                class="bp3-label sc-jzJRlG sc-cSHVUG bOKdYI"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Votes for Candidate/Choice 
                 1
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+                  >
+                    <div
+                      class="bp3-input-group bp3-disabled"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="contest-1-choice-1-votes"
+                        disabled=""
+                        name="contests[0].choices[0].numVotes"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value="792"
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </label>
             </div>
             <div
               class="sc-VigVT grTkFz"
             >
-              <div
-                class="sc-jTzLTM iSArEf sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
-                >
-                  <input
-                    class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
-                    disabled=""
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    type="text"
-                    value="choice one"
-                  />
-                </div>
-              </div>
-              <div
-                class="sc-jTzLTM sc-fjdhpX fBjAIn sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
-                >
-                  <div
-                    class="bp3-input-group bp3-disabled"
-                  >
-                    <input
-                      autocomplete="off"
-                      class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
-                      disabled=""
-                      name="contests[0].choices[0].numVotes"
-                      style="padding-right: 10px;"
-                      type="number"
-                      value="792"
-                    />
-                  </div>
-                  <div
-                    class="bp3-button-group bp3-vertical bp3-fixed"
-                  >
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-up"
-                        icon="chevron-up"
-                      >
-                        <svg
-                          data-icon="chevron-up"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-up
-                          </desc>
-                          <path
-                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-down"
-                        icon="chevron-down"
-                      >
-                        <svg
-                          data-icon="chevron-down"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-down
-                          </desc>
-                          <path
-                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="sc-gqjmRU cRqxXY"
-            >
               <label
-                class="bp3-label sc-jzJRlG kILPnr"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Name of Candidate/Choice 
                 2
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  >
+                    <input
+                      class="bp3-input"
+                      data-testid="contest-1-choice-2-name"
+                      disabled=""
+                      name="contests[0].choices[1].name"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value="choice two"
+                    />
+                  </div>
+                </div>
               </label>
               <label
-                class="bp3-label sc-jzJRlG sc-cSHVUG bOKdYI"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Votes for Candidate/Choice 
                 2
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+                  >
+                    <div
+                      class="bp3-input-group bp3-disabled"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="contest-1-choice-2-votes"
+                        disabled=""
+                        name="contests[0].choices[1].numVotes"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value="1325"
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </label>
-            </div>
-            <div
-              class="sc-VigVT grTkFz"
-            >
-              <div
-                class="sc-jTzLTM iSArEf sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
-                >
-                  <input
-                    class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
-                    disabled=""
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    type="text"
-                    value="choice two"
-                  />
-                </div>
-              </div>
-              <div
-                class="sc-jTzLTM sc-fjdhpX fBjAIn sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
-                >
-                  <div
-                    class="bp3-input-group bp3-disabled"
-                  >
-                    <input
-                      autocomplete="off"
-                      class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
-                      disabled=""
-                      name="contests[0].choices[1].numVotes"
-                      style="padding-right: 10px;"
-                      type="number"
-                      value="1325"
-                    />
-                  </div>
-                  <div
-                    class="bp3-button-group bp3-vertical bp3-fixed"
-                  >
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-up"
-                        icon="chevron-up"
-                      >
-                        <svg
-                          data-icon="chevron-up"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-up
-                          </desc>
-                          <path
-                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-down"
-                        icon="chevron-down"
-                      >
-                        <svg
-                          data-icon="chevron-down"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-down
-                          </desc>
-                          <path
-                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -338,7 +330,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
             class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
               <div
                 class="bp3-input-group bp3-disabled"
@@ -779,7 +771,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
 exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-kpOJdX bRfAfq"
+    class="sc-kgoBCf gTPPLS"
   >
     <form
       data-testid="form-one"
@@ -861,228 +853,220 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gZMcBi knllut"
           >
             <div
-              class="sc-gqjmRU cRqxXY"
+              class="sc-VigVT grTkFz"
             >
               <label
-                class="bp3-label sc-jzJRlG kILPnr"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Name of Candidate/Choice 
                 1
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group sc-bZQynM EvJhB"
+                  >
+                    <input
+                      class="bp3-input"
+                      data-testid="contest-1-choice-1-name"
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
               </label>
               <label
-                class="bp3-label sc-jzJRlG sc-cSHVUG bOKdYI"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Votes for Candidate/Choice 
                 1
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+                  >
+                    <div
+                      class="bp3-input-group"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="contest-1-choice-1-votes"
+                        name="contests[0].choices[0].numVotes"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </label>
             </div>
             <div
               class="sc-VigVT grTkFz"
             >
-              <div
-                class="sc-jTzLTM iSArEf sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-input-group sc-bZQynM EvJhB"
-                >
-                  <input
-                    class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    type="text"
-                    value=""
-                  />
-                </div>
-              </div>
-              <div
-                class="sc-jTzLTM sc-fjdhpX fBjAIn sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
-                >
-                  <div
-                    class="bp3-input-group"
-                  >
-                    <input
-                      autocomplete="off"
-                      class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
-                      name="contests[0].choices[0].numVotes"
-                      style="padding-right: 10px;"
-                      type="number"
-                      value=""
-                    />
-                  </div>
-                  <div
-                    class="bp3-button-group bp3-vertical bp3-fixed"
-                  >
-                    <button
-                      class="bp3-button"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-up"
-                        icon="chevron-up"
-                      >
-                        <svg
-                          data-icon="chevron-up"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-up
-                          </desc>
-                          <path
-                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-down"
-                        icon="chevron-down"
-                      >
-                        <svg
-                          data-icon="chevron-down"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-down
-                          </desc>
-                          <path
-                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="sc-gqjmRU cRqxXY"
-            >
               <label
-                class="bp3-label sc-jzJRlG kILPnr"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Name of Candidate/Choice 
                 2
-              </label>
-              <label
-                class="bp3-label sc-jzJRlG sc-cSHVUG bOKdYI"
-              >
-                Votes for Candidate/Choice 
-                2
-              </label>
-            </div>
-            <div
-              class="sc-VigVT grTkFz"
-            >
-              <div
-                class="sc-jTzLTM iSArEf sc-EHOje bXavad"
-              >
                 <div
-                  class="bp3-input-group sc-bZQynM EvJhB"
-                >
-                  <input
-                    class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    type="text"
-                    value=""
-                  />
-                </div>
-              </div>
-              <div
-                class="sc-jTzLTM sc-fjdhpX fBjAIn sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
                 >
                   <div
-                    class="bp3-input-group"
+                    class="bp3-input-group sc-bZQynM EvJhB"
                   >
                     <input
-                      autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
-                      name="contests[0].choices[1].numVotes"
+                      data-testid="contest-1-choice-2-name"
+                      name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      type="number"
+                      type="text"
                       value=""
                     />
                   </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-fjdhpX fbZKEd"
+              >
+                Votes for Candidate/Choice 
+                2
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
                   <div
-                    class="bp3-button-group bp3-vertical bp3-fixed"
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                   >
-                    <button
-                      class="bp3-button"
-                      type="button"
+                    <div
+                      class="bp3-input-group"
                     >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-up"
-                        icon="chevron-up"
-                      >
-                        <svg
-                          data-icon="chevron-up"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-up
-                          </desc>
-                          <path
-                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button"
-                      type="button"
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="contest-1-choice-2-votes"
+                        name="contests[0].choices[1].numVotes"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
                     >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-down"
-                        icon="chevron-down"
+                      <button
+                        class="bp3-button"
+                        type="button"
                       >
-                        <svg
-                          data-icon="chevron-down"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
                         >
-                          <desc>
-                            chevron-down
-                          </desc>
-                          <path
-                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </label>
             </div>
             <p
-              class="sc-kAzzGY eebgUX"
+              class="sc-jzJRlG gKJHEf"
             >
               Add a new candidate/choice
             </p>
@@ -1105,7 +1089,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
             class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
               <div
                 class="bp3-input-group"
@@ -1339,7 +1323,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `
 <div>
   <div
-    class="sc-kpOJdX bRfAfq"
+    class="sc-kgoBCf gTPPLS"
   >
     <form
       data-testid="form-one"
@@ -1423,237 +1407,229 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gZMcBi knllut"
           >
             <div
-              class="sc-gqjmRU cRqxXY"
+              class="sc-VigVT grTkFz"
             >
               <label
-                class="bp3-label sc-jzJRlG kILPnr"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Name of Candidate/Choice 
                 1
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  >
+                    <input
+                      class="bp3-input"
+                      data-testid="contest-1-choice-1-name"
+                      disabled=""
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value="choice one"
+                    />
+                  </div>
+                </div>
               </label>
               <label
-                class="bp3-label sc-jzJRlG sc-cSHVUG bOKdYI"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Votes for Candidate/Choice 
                 1
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+                  >
+                    <div
+                      class="bp3-input-group bp3-disabled"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="contest-1-choice-1-votes"
+                        disabled=""
+                        name="contests[0].choices[0].numVotes"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value="792"
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </label>
             </div>
             <div
               class="sc-VigVT grTkFz"
             >
-              <div
-                class="sc-jTzLTM iSArEf sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
-                >
-                  <input
-                    class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
-                    disabled=""
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    type="text"
-                    value="choice one"
-                  />
-                </div>
-              </div>
-              <div
-                class="sc-jTzLTM sc-fjdhpX fBjAIn sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
-                >
-                  <div
-                    class="bp3-input-group bp3-disabled"
-                  >
-                    <input
-                      autocomplete="off"
-                      class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
-                      disabled=""
-                      name="contests[0].choices[0].numVotes"
-                      style="padding-right: 10px;"
-                      type="number"
-                      value="792"
-                    />
-                  </div>
-                  <div
-                    class="bp3-button-group bp3-vertical bp3-fixed"
-                  >
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-up"
-                        icon="chevron-up"
-                      >
-                        <svg
-                          data-icon="chevron-up"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-up
-                          </desc>
-                          <path
-                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-down"
-                        icon="chevron-down"
-                      >
-                        <svg
-                          data-icon="chevron-down"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-down
-                          </desc>
-                          <path
-                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="sc-gqjmRU cRqxXY"
-            >
               <label
-                class="bp3-label sc-jzJRlG kILPnr"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Name of Candidate/Choice 
                 2
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  >
+                    <input
+                      class="bp3-input"
+                      data-testid="contest-1-choice-2-name"
+                      disabled=""
+                      name="contests[0].choices[1].name"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value="choice two"
+                    />
+                  </div>
+                </div>
               </label>
               <label
-                class="bp3-label sc-jzJRlG sc-cSHVUG bOKdYI"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Votes for Candidate/Choice 
                 2
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+                  >
+                    <div
+                      class="bp3-input-group bp3-disabled"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="contest-1-choice-2-votes"
+                        disabled=""
+                        name="contests[0].choices[1].numVotes"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value="1325"
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </label>
-            </div>
-            <div
-              class="sc-VigVT grTkFz"
-            >
-              <div
-                class="sc-jTzLTM iSArEf sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
-                >
-                  <input
-                    class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
-                    disabled=""
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    type="text"
-                    value="choice two"
-                  />
-                </div>
-              </div>
-              <div
-                class="sc-jTzLTM sc-fjdhpX fBjAIn sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
-                >
-                  <div
-                    class="bp3-input-group bp3-disabled"
-                  >
-                    <input
-                      autocomplete="off"
-                      class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
-                      disabled=""
-                      name="contests[0].choices[1].numVotes"
-                      style="padding-right: 10px;"
-                      type="number"
-                      value="1325"
-                    />
-                  </div>
-                  <div
-                    class="bp3-button-group bp3-vertical bp3-fixed"
-                  >
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-up"
-                        icon="chevron-up"
-                      >
-                        <svg
-                          data-icon="chevron-up"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-up
-                          </desc>
-                          <path
-                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-down"
-                        icon="chevron-down"
-                      >
-                        <svg
-                          data-icon="chevron-down"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-down
-                          </desc>
-                          <path
-                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -1674,7 +1650,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
               <div
                 class="bp3-input-group bp3-disabled"
@@ -2174,13 +2150,13 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             1
           </div>
           <div
-            class="sc-chPdSV ejtxOf"
+            class="sc-cSHVUG eeESkE"
           >
             <div
-              class="sc-kGXeez jbjIBf"
+              class="sc-chPdSV hXAmBL"
             >
               <label
-                class="sc-kgoBCf kvyvll"
+                class="sc-kAzzGY kGWBgF"
               >
                 choice one
               </label>
@@ -2188,7 +2164,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                 class="sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                 >
                   <div
                     class="bp3-input-group"
@@ -2259,10 +2235,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               </div>
             </div>
             <div
-              class="sc-kGXeez jbjIBf"
+              class="sc-chPdSV hXAmBL"
             >
               <label
-                class="sc-kgoBCf kvyvll"
+                class="sc-kAzzGY kGWBgF"
               >
                 choice two
               </label>
@@ -2270,7 +2246,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                 class="sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                 >
                   <div
                     class="bp3-input-group"
@@ -2382,7 +2358,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
 exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status returns contest data 1`] = `
 <div>
   <div
-    class="sc-kpOJdX bRfAfq"
+    class="sc-kgoBCf gTPPLS"
   >
     <form
       data-testid="form-one"
@@ -2466,237 +2442,229 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gZMcBi knllut"
           >
             <div
-              class="sc-gqjmRU cRqxXY"
+              class="sc-VigVT grTkFz"
             >
               <label
-                class="bp3-label sc-jzJRlG kILPnr"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Name of Candidate/Choice 
                 1
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  >
+                    <input
+                      class="bp3-input"
+                      data-testid="contest-1-choice-1-name"
+                      disabled=""
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value="choice one"
+                    />
+                  </div>
+                </div>
               </label>
               <label
-                class="bp3-label sc-jzJRlG sc-cSHVUG bOKdYI"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Votes for Candidate/Choice 
                 1
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+                  >
+                    <div
+                      class="bp3-input-group bp3-disabled"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="contest-1-choice-1-votes"
+                        disabled=""
+                        name="contests[0].choices[0].numVotes"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value="792"
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </label>
             </div>
             <div
               class="sc-VigVT grTkFz"
             >
-              <div
-                class="sc-jTzLTM iSArEf sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
-                >
-                  <input
-                    class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
-                    disabled=""
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    type="text"
-                    value="choice one"
-                  />
-                </div>
-              </div>
-              <div
-                class="sc-jTzLTM sc-fjdhpX fBjAIn sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
-                >
-                  <div
-                    class="bp3-input-group bp3-disabled"
-                  >
-                    <input
-                      autocomplete="off"
-                      class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
-                      disabled=""
-                      name="contests[0].choices[0].numVotes"
-                      style="padding-right: 10px;"
-                      type="number"
-                      value="792"
-                    />
-                  </div>
-                  <div
-                    class="bp3-button-group bp3-vertical bp3-fixed"
-                  >
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-up"
-                        icon="chevron-up"
-                      >
-                        <svg
-                          data-icon="chevron-up"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-up
-                          </desc>
-                          <path
-                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-down"
-                        icon="chevron-down"
-                      >
-                        <svg
-                          data-icon="chevron-down"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-down
-                          </desc>
-                          <path
-                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="sc-gqjmRU cRqxXY"
-            >
               <label
-                class="bp3-label sc-jzJRlG kILPnr"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Name of Candidate/Choice 
                 2
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  >
+                    <input
+                      class="bp3-input"
+                      data-testid="contest-1-choice-2-name"
+                      disabled=""
+                      name="contests[0].choices[1].name"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value="choice two"
+                    />
+                  </div>
+                </div>
               </label>
               <label
-                class="bp3-label sc-jzJRlG sc-cSHVUG bOKdYI"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Votes for Candidate/Choice 
                 2
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+                  >
+                    <div
+                      class="bp3-input-group bp3-disabled"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="contest-1-choice-2-votes"
+                        disabled=""
+                        name="contests[0].choices[1].numVotes"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value="1325"
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button bp3-disabled"
+                        disabled=""
+                        tabindex="-1"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </label>
-            </div>
-            <div
-              class="sc-VigVT grTkFz"
-            >
-              <div
-                class="sc-jTzLTM iSArEf sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
-                >
-                  <input
-                    class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
-                    disabled=""
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    type="text"
-                    value="choice two"
-                  />
-                </div>
-              </div>
-              <div
-                class="sc-jTzLTM sc-fjdhpX fBjAIn sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
-                >
-                  <div
-                    class="bp3-input-group bp3-disabled"
-                  >
-                    <input
-                      autocomplete="off"
-                      class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
-                      disabled=""
-                      name="contests[0].choices[1].numVotes"
-                      style="padding-right: 10px;"
-                      type="number"
-                      value="1325"
-                    />
-                  </div>
-                  <div
-                    class="bp3-button-group bp3-vertical bp3-fixed"
-                  >
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-up"
-                        icon="chevron-up"
-                      >
-                        <svg
-                          data-icon="chevron-up"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-up
-                          </desc>
-                          <path
-                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button bp3-disabled"
-                      disabled=""
-                      tabindex="-1"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-down"
-                        icon="chevron-down"
-                      >
-                        <svg
-                          data-icon="chevron-down"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-down
-                          </desc>
-                          <path
-                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -2717,7 +2685,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
               <div
                 class="bp3-input-group bp3-disabled"
@@ -3158,7 +3126,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
 exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
 <div>
   <div
-    class="sc-kpOJdX bRfAfq"
+    class="sc-kgoBCf gTPPLS"
   >
     <form
       data-testid="form-one"
@@ -3240,228 +3208,220 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gZMcBi knllut"
           >
             <div
-              class="sc-gqjmRU cRqxXY"
+              class="sc-VigVT grTkFz"
             >
               <label
-                class="bp3-label sc-jzJRlG kILPnr"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Name of Candidate/Choice 
                 1
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group sc-bZQynM EvJhB"
+                  >
+                    <input
+                      class="bp3-input"
+                      data-testid="contest-1-choice-1-name"
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
               </label>
               <label
-                class="bp3-label sc-jzJRlG sc-cSHVUG bOKdYI"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Votes for Candidate/Choice 
                 1
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+                  >
+                    <div
+                      class="bp3-input-group"
+                    >
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="contest-1-choice-1-votes"
+                        name="contests[0].choices[0].numVotes"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
+                    >
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
+                        >
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </label>
             </div>
             <div
               class="sc-VigVT grTkFz"
             >
-              <div
-                class="sc-jTzLTM iSArEf sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-input-group sc-bZQynM EvJhB"
-                >
-                  <input
-                    class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    type="text"
-                    value=""
-                  />
-                </div>
-              </div>
-              <div
-                class="sc-jTzLTM sc-fjdhpX fBjAIn sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
-                >
-                  <div
-                    class="bp3-input-group"
-                  >
-                    <input
-                      autocomplete="off"
-                      class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
-                      name="contests[0].choices[0].numVotes"
-                      style="padding-right: 10px;"
-                      type="number"
-                      value=""
-                    />
-                  </div>
-                  <div
-                    class="bp3-button-group bp3-vertical bp3-fixed"
-                  >
-                    <button
-                      class="bp3-button"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-up"
-                        icon="chevron-up"
-                      >
-                        <svg
-                          data-icon="chevron-up"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-up
-                          </desc>
-                          <path
-                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button"
-                      type="button"
-                    >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-down"
-                        icon="chevron-down"
-                      >
-                        <svg
-                          data-icon="chevron-down"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-down
-                          </desc>
-                          <path
-                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div
-              class="sc-gqjmRU cRqxXY"
-            >
               <label
-                class="bp3-label sc-jzJRlG kILPnr"
+                class="bp3-label sc-fjdhpX fbZKEd"
               >
                 Name of Candidate/Choice 
                 2
-              </label>
-              <label
-                class="bp3-label sc-jzJRlG sc-cSHVUG bOKdYI"
-              >
-                Votes for Candidate/Choice 
-                2
-              </label>
-            </div>
-            <div
-              class="sc-VigVT grTkFz"
-            >
-              <div
-                class="sc-jTzLTM iSArEf sc-EHOje bXavad"
-              >
                 <div
-                  class="bp3-input-group sc-bZQynM EvJhB"
-                >
-                  <input
-                    class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    type="text"
-                    value=""
-                  />
-                </div>
-              </div>
-              <div
-                class="sc-jTzLTM sc-fjdhpX fBjAIn sc-EHOje bXavad"
-              >
-                <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
                 >
                   <div
-                    class="bp3-input-group"
+                    class="bp3-input-group sc-bZQynM EvJhB"
                   >
                     <input
-                      autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
-                      name="contests[0].choices[1].numVotes"
+                      data-testid="contest-1-choice-2-name"
+                      name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      type="number"
+                      type="text"
                       value=""
                     />
                   </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-fjdhpX fbZKEd"
+              >
+                Votes for Candidate/Choice 
+                2
+                <div
+                  class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
+                >
                   <div
-                    class="bp3-button-group bp3-vertical bp3-fixed"
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                   >
-                    <button
-                      class="bp3-button"
-                      type="button"
+                    <div
+                      class="bp3-input-group"
                     >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-up"
-                        icon="chevron-up"
-                      >
-                        <svg
-                          data-icon="chevron-up"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
-                        >
-                          <desc>
-                            chevron-up
-                          </desc>
-                          <path
-                            d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
-                    <button
-                      class="bp3-button"
-                      type="button"
+                      <input
+                        autocomplete="off"
+                        class="bp3-input"
+                        data-testid="contest-1-choice-2-votes"
+                        name="contests[0].choices[1].numVotes"
+                        style="padding-right: 10px;"
+                        type="number"
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="bp3-button-group bp3-vertical bp3-fixed"
                     >
-                      <span
-                        class="bp3-icon bp3-icon-chevron-down"
-                        icon="chevron-down"
+                      <button
+                        class="bp3-button"
+                        type="button"
                       >
-                        <svg
-                          data-icon="chevron-down"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          width="16"
+                        <span
+                          class="bp3-icon bp3-icon-chevron-up"
+                          icon="chevron-up"
                         >
-                          <desc>
-                            chevron-down
-                          </desc>
-                          <path
-                            d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                            fill-rule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    </button>
+                          <svg
+                            data-icon="chevron-up"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-up
+                            </desc>
+                            <path
+                              d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                      <button
+                        class="bp3-button"
+                        type="button"
+                      >
+                        <span
+                          class="bp3-icon bp3-icon-chevron-down"
+                          icon="chevron-down"
+                        >
+                          <svg
+                            data-icon="chevron-down"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                          >
+                            <desc>
+                              chevron-down
+                            </desc>
+                            <path
+                              d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                              fill-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </label>
             </div>
             <p
-              class="sc-kAzzGY eebgUX"
+              class="sc-jzJRlG gKJHEf"
             >
               Add a new candidate/choice
             </p>
@@ -3484,7 +3444,7 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
             class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
               <div
                 class="bp3-input-group"

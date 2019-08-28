@@ -76,7 +76,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
             class="sc-gqjmRU glEOTJ"
           >
             <label
-              class="sc-gZMcBi VIFGE"
+              class="sc-gZMcBi gnyAIo"
             >
               choice one
             </label>
@@ -84,7 +84,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
               class="sc-EHOje bXavad"
             >
               <div
-                class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
               >
                 <div
                   class="bp3-input-group"
@@ -158,7 +158,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
             class="sc-gqjmRU glEOTJ"
           >
             <label
-              class="sc-gZMcBi VIFGE"
+              class="sc-gZMcBi gnyAIo"
             >
               choice two
             </label>
@@ -166,7 +166,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
               class="sc-EHOje bXavad"
             >
               <div
-                class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
               >
                 <div
                   class="bp3-input-group"
@@ -345,7 +345,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   Risk Limit: 
                 </label>
@@ -356,7 +356,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   P-value: 
                 </label>
@@ -371,7 +371,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   choice one
                 </label>
@@ -379,7 +379,7 @@ Object {
                   class="sc-EHOje bXavad"
                 >
                   <div
-                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                   >
                     <div
                       class="bp3-input-group bp3-disabled"
@@ -458,7 +458,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   choice two
                 </label>
@@ -466,7 +466,7 @@ Object {
                   class="sc-EHOje bXavad"
                 >
                   <div
-                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                   >
                     <div
                       class="bp3-input-group bp3-disabled"
@@ -643,7 +643,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 Risk Limit: 
               </label>
@@ -654,7 +654,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 P-value: 
               </label>
@@ -669,7 +669,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 choice one
               </label>
@@ -677,7 +677,7 @@ Object {
                 class="sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                 >
                   <div
                     class="bp3-input-group bp3-disabled"
@@ -756,7 +756,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 choice two
               </label>
@@ -764,7 +764,7 @@ Object {
                 class="sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                 >
                   <div
                     class="bp3-input-group bp3-disabled"
@@ -998,7 +998,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   Risk Limit: 
                 </label>
@@ -1009,7 +1009,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   P-value: 
                 </label>
@@ -1024,7 +1024,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   choice one
                 </label>
@@ -1032,7 +1032,7 @@ Object {
                   class="sc-EHOje bXavad"
                 >
                   <div
-                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                   >
                     <div
                       class="bp3-input-group bp3-disabled"
@@ -1111,7 +1111,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   choice two
                 </label>
@@ -1119,7 +1119,7 @@ Object {
                   class="sc-EHOje bXavad"
                 >
                   <div
-                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                   >
                     <div
                       class="bp3-input-group bp3-disabled"
@@ -1322,7 +1322,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 Risk Limit: 
               </label>
@@ -1333,7 +1333,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 P-value: 
               </label>
@@ -1348,7 +1348,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 choice one
               </label>
@@ -1356,7 +1356,7 @@ Object {
                 class="sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                 >
                   <div
                     class="bp3-input-group bp3-disabled"
@@ -1435,7 +1435,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 choice two
               </label>
@@ -1443,7 +1443,7 @@ Object {
                 class="sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                 >
                   <div
                     class="bp3-input-group bp3-disabled"
@@ -1711,7 +1711,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   choice one
                 </label>
@@ -1719,7 +1719,7 @@ Object {
                   class="sc-EHOje bXavad"
                 >
                   <div
-                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                   >
                     <div
                       class="bp3-input-group"
@@ -1793,7 +1793,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   choice two
                 </label>
@@ -1801,7 +1801,7 @@ Object {
                   class="sc-EHOje bXavad"
                 >
                   <div
-                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                   >
                     <div
                       class="bp3-input-group"
@@ -1983,7 +1983,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 choice one
               </label>
@@ -1991,7 +1991,7 @@ Object {
                 class="sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                 >
                   <div
                     class="bp3-input-group"
@@ -2065,7 +2065,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 choice two
               </label>
@@ -2073,7 +2073,7 @@ Object {
                 class="sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                 >
                   <div
                     class="bp3-input-group"
@@ -2312,7 +2312,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   choice one
                 </label>
@@ -2320,7 +2320,7 @@ Object {
                   class="sc-EHOje bXavad"
                 >
                   <div
-                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                   >
                     <div
                       class="bp3-input-group"
@@ -2394,7 +2394,7 @@ Object {
                 class="sc-gqjmRU glEOTJ"
               >
                 <label
-                  class="sc-gZMcBi VIFGE"
+                  class="sc-gZMcBi gnyAIo"
                 >
                   choice two
                 </label>
@@ -2402,7 +2402,7 @@ Object {
                   class="sc-EHOje bXavad"
                 >
                   <div
-                    class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                    class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                   >
                     <div
                       class="bp3-input-group"
@@ -2596,7 +2596,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 choice one
               </label>
@@ -2604,7 +2604,7 @@ Object {
                 class="sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                 >
                   <div
                     class="bp3-input-group"
@@ -2678,7 +2678,7 @@ Object {
               class="sc-gqjmRU glEOTJ"
             >
               <label
-                class="sc-gZMcBi VIFGE"
+                class="sc-gZMcBi gnyAIo"
               >
                 choice two
               </label>
@@ -2686,7 +2686,7 @@ Object {
                 class="sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-control-group bp3-numeric-input sc-gzVnrw lfdfns"
+                  class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
                 >
                   <div
                     class="bp3-input-group"

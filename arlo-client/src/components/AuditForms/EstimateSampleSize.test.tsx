@@ -8,7 +8,6 @@ import EstimateSampleSize, {
   //FieldLeft, TODO: need to mock Formik Field to test these like this
   //FieldRight,
   InputLabel,
-  InputLabelRight,
   Action,
 } from './EstimateSampleSize'
 import { asyncForEach } from '../testUtilities'
@@ -152,7 +151,6 @@ describe('EstimateSampleSize', () => {
     //FieldLeft, TODO: need to mock Formik Field to test these like this
     //FieldRight,
     InputLabel,
-    InputLabelRight,
     Action,
   ].forEach((Component: any) => {
     it(`renders ${getDisplayName(Component)} correctly`, () => {
