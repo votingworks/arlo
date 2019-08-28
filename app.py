@@ -200,6 +200,7 @@ def check_round(election, jurisdiction_id, round_id):
     db.session.commit()
     
     if not is_complete:
+        compute_and_store_sample_sizes(election)
         setup_next_round(election)
 
 @app.route('/election/new', methods=["POST"])
