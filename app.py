@@ -512,8 +512,9 @@ def audit_reset(election_id=None):
 
 # React App
 @app.route('/', defaults={'path': ''})
+@app.route('/election/<election_id>', defaults={'path': ''})
 @app.route('/<path:path>')
-def serve(path):
+def serve(path, election_id=None):
     if path != "" and os.path.exists(app.static_folder + path):
         return send_from_directory(app.static_folder, path)
     else:
