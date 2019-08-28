@@ -77,6 +77,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
           >
             <label
               class="sc-gZMcBi gnyAIo"
+              for="round-0-contest-0-choice-choice-1"
             >
               choice one
             </label>
@@ -92,7 +93,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
                   <input
                     autocomplete="off"
                     class="bp3-input"
-                    data-testid="round-0-contest-0-choice-choice-1"
+                    id="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     style="padding-right: 10px;"
                     type="number"
@@ -159,6 +160,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
           >
             <label
               class="sc-gZMcBi gnyAIo"
+              for="round-0-contest-0-choice-choice-2"
             >
               choice two
             </label>
@@ -174,7 +176,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
                   <input
                     autocomplete="off"
                     class="bp3-input"
-                    data-testid="round-0-contest-0-choice-choice-2"
+                    id="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     style="padding-right: 10px;"
                     type="number"
@@ -372,6 +374,7 @@ Object {
               >
                 <label
                   class="sc-gZMcBi gnyAIo"
+                  for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
                 </label>
@@ -387,8 +390,8 @@ Object {
                       <input
                         autocomplete="off"
                         class="bp3-input"
-                        data-testid="round-0-contest-0-choice-choice-1"
                         disabled=""
+                        id="round-0-contest-0-choice-choice-1"
                         name="contests[0][choice-1]"
                         style="padding-right: 10px;"
                         type="number"
@@ -459,6 +462,7 @@ Object {
               >
                 <label
                   class="sc-gZMcBi gnyAIo"
+                  for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
                 </label>
@@ -474,8 +478,8 @@ Object {
                       <input
                         autocomplete="off"
                         class="bp3-input"
-                        data-testid="round-0-contest-0-choice-choice-2"
                         disabled=""
+                        id="round-0-contest-0-choice-choice-2"
                         name="contests[0][choice-2]"
                         style="padding-right: 10px;"
                         type="number"
@@ -670,6 +674,7 @@ Object {
             >
               <label
                 class="sc-gZMcBi gnyAIo"
+                for="round-0-contest-0-choice-choice-1"
               >
                 choice one
               </label>
@@ -685,8 +690,8 @@ Object {
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="round-0-contest-0-choice-choice-1"
                       disabled=""
+                      id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
                       type="number"
@@ -757,6 +762,7 @@ Object {
             >
               <label
                 class="sc-gZMcBi gnyAIo"
+                for="round-0-contest-0-choice-choice-2"
               >
                 choice two
               </label>
@@ -772,8 +778,8 @@ Object {
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="round-0-contest-0-choice-choice-2"
                       disabled=""
+                      id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
                       type="number"
@@ -1025,6 +1031,7 @@ Object {
               >
                 <label
                   class="sc-gZMcBi gnyAIo"
+                  for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
                 </label>
@@ -1040,8 +1047,8 @@ Object {
                       <input
                         autocomplete="off"
                         class="bp3-input"
-                        data-testid="round-0-contest-0-choice-choice-1"
                         disabled=""
+                        id="round-0-contest-0-choice-choice-1"
                         name="contests[0][choice-1]"
                         style="padding-right: 10px;"
                         type="number"
@@ -1112,6 +1119,7 @@ Object {
               >
                 <label
                   class="sc-gZMcBi gnyAIo"
+                  for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
                 </label>
@@ -1127,8 +1135,8 @@ Object {
                       <input
                         autocomplete="off"
                         class="bp3-input"
-                        data-testid="round-0-contest-0-choice-choice-2"
                         disabled=""
+                        id="round-0-contest-0-choice-choice-2"
                         name="contests[0][choice-2]"
                         style="padding-right: 10px;"
                         type="number"
@@ -1349,6 +1357,7 @@ Object {
             >
               <label
                 class="sc-gZMcBi gnyAIo"
+                for="round-0-contest-0-choice-choice-1"
               >
                 choice one
               </label>
@@ -1364,8 +1373,8 @@ Object {
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="round-0-contest-0-choice-choice-1"
                       disabled=""
+                      id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
                       type="number"
@@ -1436,6 +1445,7 @@ Object {
             >
               <label
                 class="sc-gZMcBi gnyAIo"
+                for="round-0-contest-0-choice-choice-2"
               >
                 choice two
               </label>
@@ -1451,8 +1461,8 @@ Object {
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="round-0-contest-0-choice-choice-2"
                       disabled=""
+                      id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
                       type="number"
@@ -1712,6 +1722,7 @@ Object {
               >
                 <label
                   class="sc-gZMcBi gnyAIo"
+                  for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
                 </label>
@@ -1727,7 +1738,7 @@ Object {
                       <input
                         autocomplete="off"
                         class="bp3-input"
-                        data-testid="round-0-contest-0-choice-choice-1"
+                        id="round-0-contest-0-choice-choice-1"
                         name="contests[0][choice-1]"
                         style="padding-right: 10px;"
                         type="number"
@@ -1794,6 +1805,7 @@ Object {
               >
                 <label
                   class="sc-gZMcBi gnyAIo"
+                  for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
                 </label>
@@ -1809,7 +1821,7 @@ Object {
                       <input
                         autocomplete="off"
                         class="bp3-input"
-                        data-testid="round-0-contest-0-choice-choice-2"
+                        id="round-0-contest-0-choice-choice-2"
                         name="contests[0][choice-2]"
                         style="padding-right: 10px;"
                         type="number"
@@ -1984,6 +1996,7 @@ Object {
             >
               <label
                 class="sc-gZMcBi gnyAIo"
+                for="round-0-contest-0-choice-choice-1"
               >
                 choice one
               </label>
@@ -1999,7 +2012,7 @@ Object {
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="round-0-contest-0-choice-choice-1"
+                      id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
                       type="number"
@@ -2066,6 +2079,7 @@ Object {
             >
               <label
                 class="sc-gZMcBi gnyAIo"
+                for="round-0-contest-0-choice-choice-2"
               >
                 choice two
               </label>
@@ -2081,7 +2095,7 @@ Object {
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="round-0-contest-0-choice-choice-2"
+                      id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
                       type="number"
@@ -2313,6 +2327,7 @@ Object {
               >
                 <label
                   class="sc-gZMcBi gnyAIo"
+                  for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
                 </label>
@@ -2328,7 +2343,7 @@ Object {
                       <input
                         autocomplete="off"
                         class="bp3-input"
-                        data-testid="round-0-contest-0-choice-choice-1"
+                        id="round-0-contest-0-choice-choice-1"
                         name="contests[0][choice-1]"
                         style="padding-right: 10px;"
                         type="number"
@@ -2395,6 +2410,7 @@ Object {
               >
                 <label
                   class="sc-gZMcBi gnyAIo"
+                  for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
                 </label>
@@ -2410,7 +2426,7 @@ Object {
                       <input
                         autocomplete="off"
                         class="bp3-input"
-                        data-testid="round-0-contest-0-choice-choice-2"
+                        id="round-0-contest-0-choice-choice-2"
                         name="contests[0][choice-2]"
                         style="padding-right: 10px;"
                         type="number"
@@ -2597,6 +2613,7 @@ Object {
             >
               <label
                 class="sc-gZMcBi gnyAIo"
+                for="round-0-contest-0-choice-choice-1"
               >
                 choice one
               </label>
@@ -2612,7 +2629,7 @@ Object {
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="round-0-contest-0-choice-choice-1"
+                      id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
                       type="number"
@@ -2679,6 +2696,7 @@ Object {
             >
               <label
                 class="sc-gZMcBi gnyAIo"
+                for="round-0-contest-0-choice-choice-2"
               >
                 choice two
               </label>
@@ -2694,7 +2712,7 @@ Object {
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="round-0-contest-0-choice-choice-2"
+                      id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
                       type="number"

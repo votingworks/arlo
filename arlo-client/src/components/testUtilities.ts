@@ -49,6 +49,11 @@ export const asyncForEach = async <T>(
   }
 }
 
+export const regexpEscape = (s: string) => {
+  /* eslint-disable no-useless-escape */
+  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+}
+
 export default {
   asyncForEach,
   routerTestProps,

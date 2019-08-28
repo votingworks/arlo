@@ -247,11 +247,15 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                                   return (
                                     <React.Fragment key={choiceId}>
                                       <InlineWrapper>
-                                        <InputLabel>{name}</InputLabel>
+                                        <InputLabel
+                                          htmlFor={`round-${i}-contest-${j}-choice-${choiceId}`}
+                                        >
+                                          {name}
+                                        </InputLabel>
                                         <Field
+                                          id={`round-${i}-contest-${j}-choice-${choiceId}`}
                                           name={`contests[${j}][${choiceId}]`}
                                           type="number"
-                                          data-testid={`round-${i}-contest-${j}-choice-${choiceId}`}
                                           validate={testNumber}
                                           component={FormField}
                                           disabled={isSubmitted}

@@ -8,6 +8,7 @@ const Wrapper = styled.div`
 `
 
 const Field = styled(InputGroup)`
+  margin-top: 5px;
   width: 100%;
 `
 

@@ -19,33 +19,35 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
       >
-        Contest Information
+        Administer an Audit
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <h3
-          class="bp3-heading sc-htpNat cNFUHJ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
           Election Name
-        </h3>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="audit-name"
-              disabled=""
-              name="name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                disabled=""
+                id="audit-name"
+                name="name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -53,30 +55,39 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Contest  Name
+          Contest  Info
         </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
           Enter the name of the contest that will drive the audit.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].name"
         >
+          Contest
+           
+          
+           
+          Name
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="contest-1-name"
-              disabled=""
-              name="contests[0].name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -106,11 +117,10 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
                     disabled=""
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
@@ -137,7 +147,6 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
@@ -217,11 +226,10 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
                     disabled=""
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
@@ -248,7 +256,6 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
@@ -331,84 +338,91 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
         >
           Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].totalBallotsCast"
         >
+          Total Ballots for Contest
+           
+          
           <div
-            class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+            class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-input-group bp3-disabled"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                data-testid="contest-1-total-ballots"
-                disabled=""
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                type="number"
-                value="2123"
-              />
-            </div>
-            <div
-              class="bp3-button-group bp3-vertical bp3-fixed"
-            >
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+              <div
+                class="bp3-input-group bp3-disabled"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-up"
-                  icon="chevron-up"
-                >
-                  <svg
-                    data-icon="chevron-up"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      chevron-up
-                    </desc>
-                    <path
-                      d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+                <input
+                  autocomplete="off"
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="number"
+                  value="2123"
+                />
+              </div>
+              <div
+                class="bp3-button-group bp3-vertical bp3-fixed"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-down"
-                  icon="chevron-down"
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
                 >
-                  <svg
-                    data-icon="chevron-down"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
+                  <span
+                    class="bp3-icon bp3-icon-chevron-up"
+                    icon="chevron-up"
                   >
-                    <desc>
-                      chevron-down
-                    </desc>
-                    <path
-                      d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
+                    <svg
+                      data-icon="chevron-up"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-up
+                      </desc>
+                      <path
+                        d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-chevron-down"
+                    icon="chevron-down"
+                  >
+                    <svg
+                      data-icon="chevron-down"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-down
+                      </desc>
+                      <path
+                        d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -423,103 +437,103 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
         >
           Desired Risk Limit
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="risk-limit"
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
-        </div>
-        <div
-          class="bp3-html-select bp3-disabled"
-        >
-          <select
-            data-testid="risk-limit"
-            disabled=""
-            field="[object Object]"
-            form="[object Object]"
+          <div
+            class="bp3-html-select bp3-disabled"
           >
-            <option
-              selected=""
+            <select
+              disabled=""
+              field="[object Object]"
+              form="[object Object]"
+              id="risk-limit"
             >
-              1
-            </option>
-            <option>
-              2
-            </option>
-            <option>
-              3
-            </option>
-            <option>
-              4
-            </option>
-            <option>
-              5
-            </option>
-            <option>
-              6
-            </option>
-            <option>
-              7
-            </option>
-            <option>
-              8
-            </option>
-            <option>
-              9
-            </option>
-            <option>
-              10
-            </option>
-            <option>
-              11
-            </option>
-            <option>
-              12
-            </option>
-            <option>
-              13
-            </option>
-            <option>
-              14
-            </option>
-            <option>
-              15
-            </option>
-            <option>
-              16
-            </option>
-            <option>
-              17
-            </option>
-            <option>
-              18
-            </option>
-            <option>
-              19
-            </option>
-            <option>
-              20
-            </option>
-          </select>
-          <span
-            class="bp3-icon bp3-icon-double-caret-vertical"
-            icon="double-caret-vertical"
-          >
-            <svg
-              data-icon="double-caret-vertical"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
+              <option
+                selected=""
+              >
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
             >
-              <desc>
-                double-caret-vertical
-              </desc>
-              <path
-                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-        </div>
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -529,28 +543,30 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
         >
           Random Seed
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="random-seed"
+          id="random-seed-label"
         >
           Enter the random number to seed the pseudo-random number generator.
-        </div>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="random-seed"
-              disabled=""
-              name="randomSeed"
-              style="padding-right: 10px;"
-              type="text"
-              value="123456789"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="random-seed-label"
+                class="bp3-input"
+                disabled=""
+                id="random-seed"
+                name="randomSeed"
+                style="padding-right: 10px;"
+                type="text"
+                value="123456789"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
     </div>
   </form>
@@ -568,33 +584,35 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
       >
-        Contest Information
+        Administer an Audit
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <h3
-          class="bp3-heading sc-htpNat cNFUHJ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
           Election Name
-        </h3>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="audit-name"
-              disabled=""
-              name="name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                disabled=""
+                id="audit-name"
+                name="name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -602,30 +620,39 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Contest  Name
+          Contest  Info
         </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
           Enter the name of the contest that will drive the audit.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].name"
         >
+          Contest
+           
+          
+           
+          Name
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="contest-1-name"
-              disabled=""
-              name="contests[0].name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -655,11 +682,10 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
                     disabled=""
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
@@ -686,7 +712,6 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
@@ -766,11 +791,10 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
                     disabled=""
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
@@ -797,7 +821,6 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
@@ -880,84 +903,91 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
         >
           Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].totalBallotsCast"
         >
+          Total Ballots for Contest
+           
+          
           <div
-            class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+            class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-input-group bp3-disabled"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                data-testid="contest-1-total-ballots"
-                disabled=""
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                type="number"
-                value="2123"
-              />
-            </div>
-            <div
-              class="bp3-button-group bp3-vertical bp3-fixed"
-            >
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+              <div
+                class="bp3-input-group bp3-disabled"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-up"
-                  icon="chevron-up"
-                >
-                  <svg
-                    data-icon="chevron-up"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      chevron-up
-                    </desc>
-                    <path
-                      d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+                <input
+                  autocomplete="off"
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="number"
+                  value="2123"
+                />
+              </div>
+              <div
+                class="bp3-button-group bp3-vertical bp3-fixed"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-down"
-                  icon="chevron-down"
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
                 >
-                  <svg
-                    data-icon="chevron-down"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
+                  <span
+                    class="bp3-icon bp3-icon-chevron-up"
+                    icon="chevron-up"
                   >
-                    <desc>
-                      chevron-down
-                    </desc>
-                    <path
-                      d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
+                    <svg
+                      data-icon="chevron-up"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-up
+                      </desc>
+                      <path
+                        d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-chevron-down"
+                    icon="chevron-down"
+                  >
+                    <svg
+                      data-icon="chevron-down"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-down
+                      </desc>
+                      <path
+                        d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -972,103 +1002,103 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
         >
           Desired Risk Limit
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="risk-limit"
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
-        </div>
-        <div
-          class="bp3-html-select bp3-disabled"
-        >
-          <select
-            data-testid="risk-limit"
-            disabled=""
-            field="[object Object]"
-            form="[object Object]"
+          <div
+            class="bp3-html-select bp3-disabled"
           >
-            <option
-              selected=""
+            <select
+              disabled=""
+              field="[object Object]"
+              form="[object Object]"
+              id="risk-limit"
             >
-              1
-            </option>
-            <option>
-              2
-            </option>
-            <option>
-              3
-            </option>
-            <option>
-              4
-            </option>
-            <option>
-              5
-            </option>
-            <option>
-              6
-            </option>
-            <option>
-              7
-            </option>
-            <option>
-              8
-            </option>
-            <option>
-              9
-            </option>
-            <option>
-              10
-            </option>
-            <option>
-              11
-            </option>
-            <option>
-              12
-            </option>
-            <option>
-              13
-            </option>
-            <option>
-              14
-            </option>
-            <option>
-              15
-            </option>
-            <option>
-              16
-            </option>
-            <option>
-              17
-            </option>
-            <option>
-              18
-            </option>
-            <option>
-              19
-            </option>
-            <option>
-              20
-            </option>
-          </select>
-          <span
-            class="bp3-icon bp3-icon-double-caret-vertical"
-            icon="double-caret-vertical"
-          >
-            <svg
-              data-icon="double-caret-vertical"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
+              <option
+                selected=""
+              >
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
             >
-              <desc>
-                double-caret-vertical
-              </desc>
-              <path
-                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-        </div>
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -1078,28 +1108,30 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
         >
           Random Seed
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="random-seed"
+          id="random-seed-label"
         >
           Enter the random number to seed the pseudo-random number generator.
-        </div>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="random-seed"
-              disabled=""
-              name="randomSeed"
-              style="padding-right: 10px;"
-              type="text"
-              value="123456789"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="random-seed-label"
+                class="bp3-input"
+                disabled=""
+                id="random-seed"
+                name="randomSeed"
+                style="padding-right: 10px;"
+                type="text"
+                value="123456789"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
     </div>
   </form>
@@ -1117,33 +1149,35 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
       >
-        Contest Information
+        Administer an Audit
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <h3
-          class="bp3-heading sc-htpNat cNFUHJ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
           Election Name
-        </h3>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="audit-name"
-              disabled=""
-              name="name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                disabled=""
+                id="audit-name"
+                name="name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -1151,30 +1185,39 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Contest  Name
+          Contest  Info
         </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
           Enter the name of the contest that will drive the audit.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].name"
         >
+          Contest
+           
+          
+           
+          Name
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="contest-1-name"
-              disabled=""
-              name="contests[0].name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -1204,11 +1247,10 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
                     disabled=""
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
@@ -1235,7 +1277,6 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
@@ -1315,11 +1356,10 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
                     disabled=""
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
@@ -1346,7 +1386,6 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
@@ -1429,84 +1468,91 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
         >
           Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].totalBallotsCast"
         >
+          Total Ballots for Contest
+           
+          
           <div
-            class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+            class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-input-group bp3-disabled"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                data-testid="contest-1-total-ballots"
-                disabled=""
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                type="number"
-                value="2123"
-              />
-            </div>
-            <div
-              class="bp3-button-group bp3-vertical bp3-fixed"
-            >
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+              <div
+                class="bp3-input-group bp3-disabled"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-up"
-                  icon="chevron-up"
-                >
-                  <svg
-                    data-icon="chevron-up"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      chevron-up
-                    </desc>
-                    <path
-                      d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+                <input
+                  autocomplete="off"
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="number"
+                  value="2123"
+                />
+              </div>
+              <div
+                class="bp3-button-group bp3-vertical bp3-fixed"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-down"
-                  icon="chevron-down"
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
                 >
-                  <svg
-                    data-icon="chevron-down"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
+                  <span
+                    class="bp3-icon bp3-icon-chevron-up"
+                    icon="chevron-up"
                   >
-                    <desc>
-                      chevron-down
-                    </desc>
-                    <path
-                      d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
+                    <svg
+                      data-icon="chevron-up"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-up
+                      </desc>
+                      <path
+                        d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-chevron-down"
+                    icon="chevron-down"
+                  >
+                    <svg
+                      data-icon="chevron-down"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-down
+                      </desc>
+                      <path
+                        d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -1521,103 +1567,103 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
         >
           Desired Risk Limit
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="risk-limit"
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
-        </div>
-        <div
-          class="bp3-html-select bp3-disabled"
-        >
-          <select
-            data-testid="risk-limit"
-            disabled=""
-            field="[object Object]"
-            form="[object Object]"
+          <div
+            class="bp3-html-select bp3-disabled"
           >
-            <option
-              selected=""
+            <select
+              disabled=""
+              field="[object Object]"
+              form="[object Object]"
+              id="risk-limit"
             >
-              1
-            </option>
-            <option>
-              2
-            </option>
-            <option>
-              3
-            </option>
-            <option>
-              4
-            </option>
-            <option>
-              5
-            </option>
-            <option>
-              6
-            </option>
-            <option>
-              7
-            </option>
-            <option>
-              8
-            </option>
-            <option>
-              9
-            </option>
-            <option>
-              10
-            </option>
-            <option>
-              11
-            </option>
-            <option>
-              12
-            </option>
-            <option>
-              13
-            </option>
-            <option>
-              14
-            </option>
-            <option>
-              15
-            </option>
-            <option>
-              16
-            </option>
-            <option>
-              17
-            </option>
-            <option>
-              18
-            </option>
-            <option>
-              19
-            </option>
-            <option>
-              20
-            </option>
-          </select>
-          <span
-            class="bp3-icon bp3-icon-double-caret-vertical"
-            icon="double-caret-vertical"
-          >
-            <svg
-              data-icon="double-caret-vertical"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
+              <option
+                selected=""
+              >
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
             >
-              <desc>
-                double-caret-vertical
-              </desc>
-              <path
-                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-        </div>
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -1627,28 +1673,30 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
         >
           Random Seed
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="random-seed"
+          id="random-seed-label"
         >
           Enter the random number to seed the pseudo-random number generator.
-        </div>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="random-seed"
-              disabled=""
-              name="randomSeed"
-              style="padding-right: 10px;"
-              type="text"
-              value="123456789"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="random-seed-label"
+                class="bp3-input"
+                disabled=""
+                id="random-seed"
+                name="randomSeed"
+                style="padding-right: 10px;"
+                type="text"
+                value="123456789"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
     </div>
   </form>
@@ -1666,33 +1714,35 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
       >
-        Contest Information
+        Administer an Audit
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <h3
-          class="bp3-heading sc-htpNat cNFUHJ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
           Election Name
-        </h3>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="audit-name"
-              disabled=""
-              name="name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                disabled=""
+                id="audit-name"
+                name="name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -1700,30 +1750,39 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Contest  Name
+          Contest  Info
         </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
           Enter the name of the contest that will drive the audit.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].name"
         >
+          Contest
+           
+          
+           
+          Name
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="contest-1-name"
-              disabled=""
-              name="contests[0].name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -1753,11 +1812,10 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
                     disabled=""
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
@@ -1784,7 +1842,6 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
@@ -1864,11 +1921,10 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
                     disabled=""
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
@@ -1895,7 +1951,6 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
@@ -1978,84 +2033,91 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
         >
           Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].totalBallotsCast"
         >
+          Total Ballots for Contest
+           
+          
           <div
-            class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+            class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-input-group bp3-disabled"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                data-testid="contest-1-total-ballots"
-                disabled=""
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                type="number"
-                value="2123"
-              />
-            </div>
-            <div
-              class="bp3-button-group bp3-vertical bp3-fixed"
-            >
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+              <div
+                class="bp3-input-group bp3-disabled"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-up"
-                  icon="chevron-up"
-                >
-                  <svg
-                    data-icon="chevron-up"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      chevron-up
-                    </desc>
-                    <path
-                      d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+                <input
+                  autocomplete="off"
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="number"
+                  value="2123"
+                />
+              </div>
+              <div
+                class="bp3-button-group bp3-vertical bp3-fixed"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-down"
-                  icon="chevron-down"
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
                 >
-                  <svg
-                    data-icon="chevron-down"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
+                  <span
+                    class="bp3-icon bp3-icon-chevron-up"
+                    icon="chevron-up"
                   >
-                    <desc>
-                      chevron-down
-                    </desc>
-                    <path
-                      d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
+                    <svg
+                      data-icon="chevron-up"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-up
+                      </desc>
+                      <path
+                        d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-chevron-down"
+                    icon="chevron-down"
+                  >
+                    <svg
+                      data-icon="chevron-down"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-down
+                      </desc>
+                      <path
+                        d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -2070,103 +2132,103 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
         >
           Desired Risk Limit
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="risk-limit"
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
-        </div>
-        <div
-          class="bp3-html-select bp3-disabled"
-        >
-          <select
-            data-testid="risk-limit"
-            disabled=""
-            field="[object Object]"
-            form="[object Object]"
+          <div
+            class="bp3-html-select bp3-disabled"
           >
-            <option
-              selected=""
+            <select
+              disabled=""
+              field="[object Object]"
+              form="[object Object]"
+              id="risk-limit"
             >
-              1
-            </option>
-            <option>
-              2
-            </option>
-            <option>
-              3
-            </option>
-            <option>
-              4
-            </option>
-            <option>
-              5
-            </option>
-            <option>
-              6
-            </option>
-            <option>
-              7
-            </option>
-            <option>
-              8
-            </option>
-            <option>
-              9
-            </option>
-            <option>
-              10
-            </option>
-            <option>
-              11
-            </option>
-            <option>
-              12
-            </option>
-            <option>
-              13
-            </option>
-            <option>
-              14
-            </option>
-            <option>
-              15
-            </option>
-            <option>
-              16
-            </option>
-            <option>
-              17
-            </option>
-            <option>
-              18
-            </option>
-            <option>
-              19
-            </option>
-            <option>
-              20
-            </option>
-          </select>
-          <span
-            class="bp3-icon bp3-icon-double-caret-vertical"
-            icon="double-caret-vertical"
-          >
-            <svg
-              data-icon="double-caret-vertical"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
+              <option
+                selected=""
+              >
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
             >
-              <desc>
-                double-caret-vertical
-              </desc>
-              <path
-                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-        </div>
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -2176,28 +2238,30 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
         >
           Random Seed
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="random-seed"
+          id="random-seed-label"
         >
           Enter the random number to seed the pseudo-random number generator.
-        </div>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="random-seed"
-              disabled=""
-              name="randomSeed"
-              style="padding-right: 10px;"
-              type="text"
-              value="123456789"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="random-seed-label"
+                class="bp3-input"
+                disabled=""
+                id="random-seed"
+                name="randomSeed"
+                style="padding-right: 10px;"
+                type="text"
+                value="123456789"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
     </div>
   </form>
@@ -2215,33 +2279,35 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
       >
-        Contest Information
+        Administer an Audit
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <h3
-          class="bp3-heading sc-htpNat cNFUHJ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
           Election Name
-        </h3>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="audit-name"
-              disabled=""
-              name="name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                disabled=""
+                id="audit-name"
+                name="name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -2249,30 +2315,39 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Contest  Name
+          Contest  Info
         </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
           Enter the name of the contest that will drive the audit.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].name"
         >
+          Contest
+           
+          
+           
+          Name
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="contest-1-name"
-              disabled=""
-              name="contests[0].name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -2302,11 +2377,10 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
                     disabled=""
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
@@ -2333,7 +2407,6 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
@@ -2413,11 +2486,10 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
                     disabled=""
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
@@ -2444,7 +2516,6 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
@@ -2527,84 +2598,91 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
         >
           Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].totalBallotsCast"
         >
+          Total Ballots for Contest
+           
+          
           <div
-            class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+            class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-input-group bp3-disabled"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                data-testid="contest-1-total-ballots"
-                disabled=""
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                type="number"
-                value="2123"
-              />
-            </div>
-            <div
-              class="bp3-button-group bp3-vertical bp3-fixed"
-            >
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+              <div
+                class="bp3-input-group bp3-disabled"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-up"
-                  icon="chevron-up"
-                >
-                  <svg
-                    data-icon="chevron-up"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      chevron-up
-                    </desc>
-                    <path
-                      d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+                <input
+                  autocomplete="off"
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="number"
+                  value="2123"
+                />
+              </div>
+              <div
+                class="bp3-button-group bp3-vertical bp3-fixed"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-down"
-                  icon="chevron-down"
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
                 >
-                  <svg
-                    data-icon="chevron-down"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
+                  <span
+                    class="bp3-icon bp3-icon-chevron-up"
+                    icon="chevron-up"
                   >
-                    <desc>
-                      chevron-down
-                    </desc>
-                    <path
-                      d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
+                    <svg
+                      data-icon="chevron-up"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-up
+                      </desc>
+                      <path
+                        d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-chevron-down"
+                    icon="chevron-down"
+                  >
+                    <svg
+                      data-icon="chevron-down"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-down
+                      </desc>
+                      <path
+                        d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -2619,103 +2697,103 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
         >
           Desired Risk Limit
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="risk-limit"
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
-        </div>
-        <div
-          class="bp3-html-select bp3-disabled"
-        >
-          <select
-            data-testid="risk-limit"
-            disabled=""
-            field="[object Object]"
-            form="[object Object]"
+          <div
+            class="bp3-html-select bp3-disabled"
           >
-            <option
-              selected=""
+            <select
+              disabled=""
+              field="[object Object]"
+              form="[object Object]"
+              id="risk-limit"
             >
-              1
-            </option>
-            <option>
-              2
-            </option>
-            <option>
-              3
-            </option>
-            <option>
-              4
-            </option>
-            <option>
-              5
-            </option>
-            <option>
-              6
-            </option>
-            <option>
-              7
-            </option>
-            <option>
-              8
-            </option>
-            <option>
-              9
-            </option>
-            <option>
-              10
-            </option>
-            <option>
-              11
-            </option>
-            <option>
-              12
-            </option>
-            <option>
-              13
-            </option>
-            <option>
-              14
-            </option>
-            <option>
-              15
-            </option>
-            <option>
-              16
-            </option>
-            <option>
-              17
-            </option>
-            <option>
-              18
-            </option>
-            <option>
-              19
-            </option>
-            <option>
-              20
-            </option>
-          </select>
-          <span
-            class="bp3-icon bp3-icon-double-caret-vertical"
-            icon="double-caret-vertical"
-          >
-            <svg
-              data-icon="double-caret-vertical"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
+              <option
+                selected=""
+              >
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
             >
-              <desc>
-                double-caret-vertical
-              </desc>
-              <path
-                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-        </div>
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -2725,28 +2803,30 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
         >
           Random Seed
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="random-seed"
+          id="random-seed-label"
         >
           Enter the random number to seed the pseudo-random number generator.
-        </div>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="random-seed"
-              disabled=""
-              name="randomSeed"
-              style="padding-right: 10px;"
-              type="text"
-              value="123456789"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="random-seed-label"
+                class="bp3-input"
+                disabled=""
+                id="random-seed"
+                name="randomSeed"
+                style="padding-right: 10px;"
+                type="text"
+                value="123456789"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
     </div>
   </form>
@@ -2764,33 +2844,35 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
       >
-        Contest Information
+        Administer an Audit
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <h3
-          class="bp3-heading sc-htpNat cNFUHJ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
           Election Name
-        </h3>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="audit-name"
-              disabled=""
-              name="name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                disabled=""
+                id="audit-name"
+                name="name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -2798,30 +2880,39 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Contest  Name
+          Contest  Info
         </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
           Enter the name of the contest that will drive the audit.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].name"
         >
+          Contest
+           
+          
+           
+          Name
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="contest-1-name"
-              disabled=""
-              name="contests[0].name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -2851,11 +2942,10 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
                     disabled=""
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
@@ -2882,7 +2972,6 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
@@ -2962,11 +3051,10 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
                     disabled=""
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
@@ -2993,7 +3081,6 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
@@ -3076,84 +3163,91 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
         >
           Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].totalBallotsCast"
         >
+          Total Ballots for Contest
+           
+          
           <div
-            class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+            class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-input-group bp3-disabled"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                data-testid="contest-1-total-ballots"
-                disabled=""
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                type="number"
-                value="2123"
-              />
-            </div>
-            <div
-              class="bp3-button-group bp3-vertical bp3-fixed"
-            >
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+              <div
+                class="bp3-input-group bp3-disabled"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-up"
-                  icon="chevron-up"
-                >
-                  <svg
-                    data-icon="chevron-up"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      chevron-up
-                    </desc>
-                    <path
-                      d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+                <input
+                  autocomplete="off"
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="number"
+                  value="2123"
+                />
+              </div>
+              <div
+                class="bp3-button-group bp3-vertical bp3-fixed"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-down"
-                  icon="chevron-down"
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
                 >
-                  <svg
-                    data-icon="chevron-down"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
+                  <span
+                    class="bp3-icon bp3-icon-chevron-up"
+                    icon="chevron-up"
                   >
-                    <desc>
-                      chevron-down
-                    </desc>
-                    <path
-                      d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
+                    <svg
+                      data-icon="chevron-up"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-up
+                      </desc>
+                      <path
+                        d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-chevron-down"
+                    icon="chevron-down"
+                  >
+                    <svg
+                      data-icon="chevron-down"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-down
+                      </desc>
+                      <path
+                        d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -3168,103 +3262,103 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
         >
           Desired Risk Limit
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="risk-limit"
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
-        </div>
-        <div
-          class="bp3-html-select bp3-disabled"
-        >
-          <select
-            data-testid="risk-limit"
-            disabled=""
-            field="[object Object]"
-            form="[object Object]"
+          <div
+            class="bp3-html-select bp3-disabled"
           >
-            <option
-              selected=""
+            <select
+              disabled=""
+              field="[object Object]"
+              form="[object Object]"
+              id="risk-limit"
             >
-              1
-            </option>
-            <option>
-              2
-            </option>
-            <option>
-              3
-            </option>
-            <option>
-              4
-            </option>
-            <option>
-              5
-            </option>
-            <option>
-              6
-            </option>
-            <option>
-              7
-            </option>
-            <option>
-              8
-            </option>
-            <option>
-              9
-            </option>
-            <option>
-              10
-            </option>
-            <option>
-              11
-            </option>
-            <option>
-              12
-            </option>
-            <option>
-              13
-            </option>
-            <option>
-              14
-            </option>
-            <option>
-              15
-            </option>
-            <option>
-              16
-            </option>
-            <option>
-              17
-            </option>
-            <option>
-              18
-            </option>
-            <option>
-              19
-            </option>
-            <option>
-              20
-            </option>
-          </select>
-          <span
-            class="bp3-icon bp3-icon-double-caret-vertical"
-            icon="double-caret-vertical"
-          >
-            <svg
-              data-icon="double-caret-vertical"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
+              <option
+                selected=""
+              >
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
             >
-              <desc>
-                double-caret-vertical
-              </desc>
-              <path
-                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-        </div>
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -3274,28 +3368,30 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
         >
           Random Seed
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="random-seed"
+          id="random-seed-label"
         >
           Enter the random number to seed the pseudo-random number generator.
-        </div>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="random-seed"
-              disabled=""
-              name="randomSeed"
-              style="padding-right: 10px;"
-              type="text"
-              value="123456789"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="random-seed-label"
+                class="bp3-input"
+                disabled=""
+                id="random-seed"
+                name="randomSeed"
+                style="padding-right: 10px;"
+                type="text"
+                value="123456789"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
     </div>
   </form>
@@ -3313,33 +3409,35 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
       >
-        Contest Information
+        Administer an Audit
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <h3
-          class="bp3-heading sc-htpNat cNFUHJ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
           Election Name
-        </h3>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="audit-name"
-              disabled=""
-              name="name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                disabled=""
+                id="audit-name"
+                name="name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -3347,30 +3445,39 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Contest  Name
+          Contest  Info
         </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
           Enter the name of the contest that will drive the audit.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].name"
         >
+          Contest
+           
+          
+           
+          Name
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="contest-1-name"
-              disabled=""
-              name="contests[0].name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -3400,11 +3507,10 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
                     disabled=""
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
@@ -3431,7 +3537,6 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
@@ -3511,11 +3616,10 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
                     disabled=""
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
@@ -3542,7 +3646,6 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
@@ -3625,84 +3728,91 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
         >
           Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].totalBallotsCast"
         >
+          Total Ballots for Contest
+           
+          
           <div
-            class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+            class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-input-group bp3-disabled"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                data-testid="contest-1-total-ballots"
-                disabled=""
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                type="number"
-                value="2123"
-              />
-            </div>
-            <div
-              class="bp3-button-group bp3-vertical bp3-fixed"
-            >
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+              <div
+                class="bp3-input-group bp3-disabled"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-up"
-                  icon="chevron-up"
-                >
-                  <svg
-                    data-icon="chevron-up"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      chevron-up
-                    </desc>
-                    <path
-                      d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+                <input
+                  autocomplete="off"
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="number"
+                  value="2123"
+                />
+              </div>
+              <div
+                class="bp3-button-group bp3-vertical bp3-fixed"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-down"
-                  icon="chevron-down"
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
                 >
-                  <svg
-                    data-icon="chevron-down"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
+                  <span
+                    class="bp3-icon bp3-icon-chevron-up"
+                    icon="chevron-up"
                   >
-                    <desc>
-                      chevron-down
-                    </desc>
-                    <path
-                      d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
+                    <svg
+                      data-icon="chevron-up"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-up
+                      </desc>
+                      <path
+                        d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-chevron-down"
+                    icon="chevron-down"
+                  >
+                    <svg
+                      data-icon="chevron-down"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-down
+                      </desc>
+                      <path
+                        d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -3717,103 +3827,103 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
         >
           Desired Risk Limit
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="risk-limit"
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
-        </div>
-        <div
-          class="bp3-html-select bp3-disabled"
-        >
-          <select
-            data-testid="risk-limit"
-            disabled=""
-            field="[object Object]"
-            form="[object Object]"
+          <div
+            class="bp3-html-select bp3-disabled"
           >
-            <option
-              selected=""
+            <select
+              disabled=""
+              field="[object Object]"
+              form="[object Object]"
+              id="risk-limit"
             >
-              1
-            </option>
-            <option>
-              2
-            </option>
-            <option>
-              3
-            </option>
-            <option>
-              4
-            </option>
-            <option>
-              5
-            </option>
-            <option>
-              6
-            </option>
-            <option>
-              7
-            </option>
-            <option>
-              8
-            </option>
-            <option>
-              9
-            </option>
-            <option>
-              10
-            </option>
-            <option>
-              11
-            </option>
-            <option>
-              12
-            </option>
-            <option>
-              13
-            </option>
-            <option>
-              14
-            </option>
-            <option>
-              15
-            </option>
-            <option>
-              16
-            </option>
-            <option>
-              17
-            </option>
-            <option>
-              18
-            </option>
-            <option>
-              19
-            </option>
-            <option>
-              20
-            </option>
-          </select>
-          <span
-            class="bp3-icon bp3-icon-double-caret-vertical"
-            icon="double-caret-vertical"
-          >
-            <svg
-              data-icon="double-caret-vertical"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
+              <option
+                selected=""
+              >
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
             >
-              <desc>
-                double-caret-vertical
-              </desc>
-              <path
-                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-        </div>
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -3823,28 +3933,30 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
         >
           Random Seed
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="random-seed"
+          id="random-seed-label"
         >
           Enter the random number to seed the pseudo-random number generator.
-        </div>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="random-seed"
-              disabled=""
-              name="randomSeed"
-              style="padding-right: 10px;"
-              type="text"
-              value="123456789"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="random-seed-label"
+                class="bp3-input"
+                disabled=""
+                id="random-seed"
+                name="randomSeed"
+                style="padding-right: 10px;"
+                type="text"
+                value="123456789"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
     </div>
   </form>
@@ -3862,33 +3974,35 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
       >
-        Contest Information
+        Administer an Audit
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <h3
-          class="bp3-heading sc-htpNat cNFUHJ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
           Election Name
-        </h3>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="audit-name"
-              disabled=""
-              name="name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                disabled=""
+                id="audit-name"
+                name="name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -3896,30 +4010,39 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Contest  Name
+          Contest  Info
         </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
           Enter the name of the contest that will drive the audit.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].name"
         >
+          Contest
+           
+          
+           
+          Name
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="contest-1-name"
-              disabled=""
-              name="contests[0].name"
-              style="padding-right: 10px;"
-              type="text"
-              value="contest name"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                type="text"
+                value="contest name"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -3949,11 +4072,10 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
                     disabled=""
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
@@ -3980,7 +4102,6 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
@@ -4060,11 +4181,10 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
                     disabled=""
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
@@ -4091,7 +4211,6 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
@@ -4174,84 +4293,91 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
         >
           Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].totalBallotsCast"
         >
+          Total Ballots for Contest
+           
+          
           <div
-            class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+            class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-input-group bp3-disabled"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                data-testid="contest-1-total-ballots"
-                disabled=""
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                type="number"
-                value="2123"
-              />
-            </div>
-            <div
-              class="bp3-button-group bp3-vertical bp3-fixed"
-            >
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+              <div
+                class="bp3-input-group bp3-disabled"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-up"
-                  icon="chevron-up"
-                >
-                  <svg
-                    data-icon="chevron-up"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      chevron-up
-                    </desc>
-                    <path
-                      d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <button
-                class="bp3-button bp3-disabled"
-                disabled=""
-                tabindex="-1"
-                type="button"
+                <input
+                  autocomplete="off"
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="number"
+                  value="2123"
+                />
+              </div>
+              <div
+                class="bp3-button-group bp3-vertical bp3-fixed"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-down"
-                  icon="chevron-down"
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
                 >
-                  <svg
-                    data-icon="chevron-down"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
+                  <span
+                    class="bp3-icon bp3-icon-chevron-up"
+                    icon="chevron-up"
                   >
-                    <desc>
-                      chevron-down
-                    </desc>
-                    <path
-                      d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
+                    <svg
+                      data-icon="chevron-up"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-up
+                      </desc>
+                      <path
+                        d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <button
+                  class="bp3-button bp3-disabled"
+                  disabled=""
+                  tabindex="-1"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-chevron-down"
+                    icon="chevron-down"
+                  >
+                    <svg
+                      data-icon="chevron-down"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-down
+                      </desc>
+                      <path
+                        d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -4266,103 +4392,103 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
         >
           Desired Risk Limit
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="risk-limit"
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
-        </div>
-        <div
-          class="bp3-html-select bp3-disabled"
-        >
-          <select
-            data-testid="risk-limit"
-            disabled=""
-            field="[object Object]"
-            form="[object Object]"
+          <div
+            class="bp3-html-select bp3-disabled"
           >
-            <option
-              selected=""
+            <select
+              disabled=""
+              field="[object Object]"
+              form="[object Object]"
+              id="risk-limit"
             >
-              1
-            </option>
-            <option>
-              2
-            </option>
-            <option>
-              3
-            </option>
-            <option>
-              4
-            </option>
-            <option>
-              5
-            </option>
-            <option>
-              6
-            </option>
-            <option>
-              7
-            </option>
-            <option>
-              8
-            </option>
-            <option>
-              9
-            </option>
-            <option>
-              10
-            </option>
-            <option>
-              11
-            </option>
-            <option>
-              12
-            </option>
-            <option>
-              13
-            </option>
-            <option>
-              14
-            </option>
-            <option>
-              15
-            </option>
-            <option>
-              16
-            </option>
-            <option>
-              17
-            </option>
-            <option>
-              18
-            </option>
-            <option>
-              19
-            </option>
-            <option>
-              20
-            </option>
-          </select>
-          <span
-            class="bp3-icon bp3-icon-double-caret-vertical"
-            icon="double-caret-vertical"
-          >
-            <svg
-              data-icon="double-caret-vertical"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
+              <option
+                selected=""
+              >
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
             >
-              <desc>
-                double-caret-vertical
-              </desc>
-              <path
-                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-        </div>
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -4372,28 +4498,30 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
         >
           Random Seed
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="random-seed"
+          id="random-seed-label"
         >
           Enter the random number to seed the pseudo-random number generator.
-        </div>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group bp3-disabled sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="random-seed"
-              disabled=""
-              name="randomSeed"
-              style="padding-right: 10px;"
-              type="text"
-              value="123456789"
-            />
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="random-seed-label"
+                class="bp3-input"
+                disabled=""
+                id="random-seed"
+                name="randomSeed"
+                style="padding-right: 10px;"
+                type="text"
+                value="123456789"
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
     </div>
   </form>
@@ -4411,32 +4539,34 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
       >
-        Contest Information
+        Administer an Audit
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <h3
-          class="bp3-heading sc-htpNat cNFUHJ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
           Election Name
-        </h3>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="audit-name"
-              name="name"
-              style="padding-right: 10px;"
-              type="text"
-              value=""
-            />
+            <div
+              class="bp3-input-group sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                id="audit-name"
+                name="name"
+                style="padding-right: 10px;"
+                type="text"
+                value=""
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -4444,29 +4574,38 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Contest  Name
+          Contest  Info
         </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
           Enter the name of the contest that will drive the audit.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].name"
         >
+          Contest
+           
+          
+           
+          Name
           <div
-            class="bp3-input-group sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="contest-1-name"
-              name="contests[0].name"
-              style="padding-right: 10px;"
-              type="text"
-              value=""
-            />
+            <div
+              class="bp3-input-group sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                type="text"
+                value=""
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -4496,11 +4635,10 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group sc-bZQynM EvJhB"
+                  class="bp3-input-group sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
                     type="text"
@@ -4526,7 +4664,6 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
                       type="number"
@@ -4601,11 +4738,10 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group sc-bZQynM EvJhB"
+                  class="bp3-input-group sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
                     type="text"
@@ -4631,7 +4767,6 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
                       type="number"
@@ -4714,79 +4849,86 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
         >
           Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].totalBallotsCast"
         >
+          Total Ballots for Contest
+           
+          
           <div
-            class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+            class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-input-group"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                data-testid="contest-1-total-ballots"
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                type="number"
-                value=""
-              />
-            </div>
-            <div
-              class="bp3-button-group bp3-vertical bp3-fixed"
-            >
-              <button
-                class="bp3-button"
-                type="button"
+              <div
+                class="bp3-input-group"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-up"
-                  icon="chevron-up"
-                >
-                  <svg
-                    data-icon="chevron-up"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      chevron-up
-                    </desc>
-                    <path
-                      d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <button
-                class="bp3-button"
-                type="button"
+                <input
+                  autocomplete="off"
+                  class="bp3-input"
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="number"
+                  value=""
+                />
+              </div>
+              <div
+                class="bp3-button-group bp3-vertical bp3-fixed"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-down"
-                  icon="chevron-down"
+                <button
+                  class="bp3-button"
+                  type="button"
                 >
-                  <svg
-                    data-icon="chevron-down"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
+                  <span
+                    class="bp3-icon bp3-icon-chevron-up"
+                    icon="chevron-up"
                   >
-                    <desc>
-                      chevron-down
-                    </desc>
-                    <path
-                      d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
+                    <svg
+                      data-icon="chevron-up"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-up
+                      </desc>
+                      <path
+                        d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <button
+                  class="bp3-button"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-chevron-down"
+                    icon="chevron-down"
+                  >
+                    <svg
+                      data-icon="chevron-down"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-down
+                      </desc>
+                      <path
+                        d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -4801,102 +4943,102 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
         >
           Desired Risk Limit
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="risk-limit"
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
-        </div>
-        <div
-          class="bp3-html-select"
-        >
-          <select
-            data-testid="risk-limit"
-            field="[object Object]"
-            form="[object Object]"
+          <div
+            class="bp3-html-select"
           >
-            <option>
-              1
-            </option>
-            <option>
-              2
-            </option>
-            <option>
-              3
-            </option>
-            <option>
-              4
-            </option>
-            <option>
-              5
-            </option>
-            <option>
-              6
-            </option>
-            <option>
-              7
-            </option>
-            <option>
-              8
-            </option>
-            <option>
-              9
-            </option>
-            <option
-              selected=""
+            <select
+              field="[object Object]"
+              form="[object Object]"
+              id="risk-limit"
             >
-              10
-            </option>
-            <option>
-              11
-            </option>
-            <option>
-              12
-            </option>
-            <option>
-              13
-            </option>
-            <option>
-              14
-            </option>
-            <option>
-              15
-            </option>
-            <option>
-              16
-            </option>
-            <option>
-              17
-            </option>
-            <option>
-              18
-            </option>
-            <option>
-              19
-            </option>
-            <option>
-              20
-            </option>
-          </select>
-          <span
-            class="bp3-icon bp3-icon-double-caret-vertical"
-            icon="double-caret-vertical"
-          >
-            <svg
-              data-icon="double-caret-vertical"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
+              <option>
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option
+                selected=""
+              >
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
             >
-              <desc>
-                double-caret-vertical
-              </desc>
-              <path
-                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-        </div>
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -4906,27 +5048,29 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
         >
           Random Seed
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="random-seed"
+          id="random-seed-label"
         >
           Enter the random number to seed the pseudo-random number generator.
-        </div>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="random-seed"
-              name="randomSeed"
-              style="padding-right: 10px;"
-              type="text"
-              value=""
-            />
+            <div
+              class="bp3-input-group sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="random-seed-label"
+                class="bp3-input"
+                id="random-seed"
+                name="randomSeed"
+                style="padding-right: 10px;"
+                type="text"
+                value=""
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
     </div>
     <div
@@ -4934,7 +5078,6 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
     >
       <button
         class="bp3-button bp3-intent-primary"
-        data-testid="submit-form-one"
         type="submit"
       >
         <span
@@ -4959,32 +5102,34 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
       >
-        Contest Information
+        Administer an Audit
       </h2>
       <div
         class="sc-bdVaJa fdbLH"
       >
-        <h3
-          class="bp3-heading sc-htpNat cNFUHJ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
           Election Name
-        </h3>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="audit-name"
-              name="name"
-              style="padding-right: 10px;"
-              type="text"
-              value=""
-            />
+            <div
+              class="bp3-input-group sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                id="audit-name"
+                name="name"
+                style="padding-right: 10px;"
+                type="text"
+                value=""
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -4992,29 +5137,38 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Contest  Name
+          Contest  Info
         </h3>
         <div
           class="sc-bwzfXH izcbHX"
         >
           Enter the name of the contest that will drive the audit.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].name"
         >
+          Contest
+           
+          
+           
+          Name
           <div
-            class="bp3-input-group sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="contest-1-name"
-              name="contests[0].name"
-              style="padding-right: 10px;"
-              type="text"
-              value=""
-            />
+            <div
+              class="bp3-input-group sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                type="text"
+                value=""
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -5044,11 +5198,10 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group sc-bZQynM EvJhB"
+                  class="bp3-input-group sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-1-name"
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
                     type="text"
@@ -5074,7 +5227,6 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-1-votes"
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
                       type="number"
@@ -5149,11 +5301,10 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
                 class="sc-jTzLTM gYXDQG sc-EHOje bXavad"
               >
                 <div
-                  class="bp3-input-group sc-bZQynM EvJhB"
+                  class="bp3-input-group sc-bZQynM fFGKEg"
                 >
                   <input
                     class="bp3-input"
-                    data-testid="contest-1-choice-2-name"
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
                     type="text"
@@ -5179,7 +5330,6 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
                     <input
                       autocomplete="off"
                       class="bp3-input"
-                      data-testid="contest-1-choice-2-votes"
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
                       type="number"
@@ -5262,79 +5412,86 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
         >
           Enter the overall number of ballot cards cast in jurisdictions containing this contest.
         </div>
-        <div
-          class="sc-EHOje bXavad"
+        <label
+          for="contests[0].totalBallotsCast"
         >
+          Total Ballots for Contest
+           
+          
           <div
-            class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+            class="sc-EHOje bXavad"
           >
             <div
-              class="bp3-input-group"
+              class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
             >
-              <input
-                autocomplete="off"
-                class="bp3-input"
-                data-testid="contest-1-total-ballots"
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                type="number"
-                value=""
-              />
-            </div>
-            <div
-              class="bp3-button-group bp3-vertical bp3-fixed"
-            >
-              <button
-                class="bp3-button"
-                type="button"
+              <div
+                class="bp3-input-group"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-up"
-                  icon="chevron-up"
-                >
-                  <svg
-                    data-icon="chevron-up"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      chevron-up
-                    </desc>
-                    <path
-                      d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <button
-                class="bp3-button"
-                type="button"
+                <input
+                  autocomplete="off"
+                  class="bp3-input"
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="number"
+                  value=""
+                />
+              </div>
+              <div
+                class="bp3-button-group bp3-vertical bp3-fixed"
               >
-                <span
-                  class="bp3-icon bp3-icon-chevron-down"
-                  icon="chevron-down"
+                <button
+                  class="bp3-button"
+                  type="button"
                 >
-                  <svg
-                    data-icon="chevron-down"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
+                  <span
+                    class="bp3-icon bp3-icon-chevron-up"
+                    icon="chevron-up"
                   >
-                    <desc>
-                      chevron-down
-                    </desc>
-                    <path
-                      d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </button>
+                    <svg
+                      data-icon="chevron-up"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-up
+                      </desc>
+                      <path
+                        d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <button
+                  class="bp3-button"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-chevron-down"
+                    icon="chevron-down"
+                  >
+                    <svg
+                      data-icon="chevron-down"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        chevron-down
+                      </desc>
+                      <path
+                        d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -5349,102 +5506,102 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
         >
           Desired Risk Limit
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="risk-limit"
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
-        </div>
-        <div
-          class="bp3-html-select"
-        >
-          <select
-            data-testid="risk-limit"
-            field="[object Object]"
-            form="[object Object]"
+          <div
+            class="bp3-html-select"
           >
-            <option>
-              1
-            </option>
-            <option>
-              2
-            </option>
-            <option>
-              3
-            </option>
-            <option>
-              4
-            </option>
-            <option>
-              5
-            </option>
-            <option>
-              6
-            </option>
-            <option>
-              7
-            </option>
-            <option>
-              8
-            </option>
-            <option>
-              9
-            </option>
-            <option
-              selected=""
+            <select
+              field="[object Object]"
+              form="[object Object]"
+              id="risk-limit"
             >
-              10
-            </option>
-            <option>
-              11
-            </option>
-            <option>
-              12
-            </option>
-            <option>
-              13
-            </option>
-            <option>
-              14
-            </option>
-            <option>
-              15
-            </option>
-            <option>
-              16
-            </option>
-            <option>
-              17
-            </option>
-            <option>
-              18
-            </option>
-            <option>
-              19
-            </option>
-            <option>
-              20
-            </option>
-          </select>
-          <span
-            class="bp3-icon bp3-icon-double-caret-vertical"
-            icon="double-caret-vertical"
-          >
-            <svg
-              data-icon="double-caret-vertical"
-              height="16"
-              viewBox="0 0 16 16"
-              width="16"
+              <option>
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option
+                selected=""
+              >
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+              <option>
+                16
+              </option>
+              <option>
+                17
+              </option>
+              <option>
+                18
+              </option>
+              <option>
+                19
+              </option>
+              <option>
+                20
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
             >
-              <desc>
-                double-caret-vertical
-              </desc>
-              <path
-                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                fill-rule="evenodd"
-              />
-            </svg>
-          </span>
-        </div>
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -5454,27 +5611,29 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
         >
           Random Seed
         </h3>
-        <div
-          class="sc-bwzfXH izcbHX"
+        <label
+          for="random-seed"
+          id="random-seed-label"
         >
           Enter the random number to seed the pseudo-random number generator.
-        </div>
-        <div
-          class="sc-EHOje bXavad"
-        >
           <div
-            class="bp3-input-group sc-bZQynM EvJhB"
+            class="sc-EHOje bXavad"
           >
-            <input
-              class="bp3-input"
-              data-testid="random-seed"
-              name="randomSeed"
-              style="padding-right: 10px;"
-              type="text"
-              value=""
-            />
+            <div
+              class="bp3-input-group sc-bZQynM fFGKEg"
+            >
+              <input
+                aria-labelledby="random-seed-label"
+                class="bp3-input"
+                id="random-seed"
+                name="randomSeed"
+                style="padding-right: 10px;"
+                type="text"
+                value=""
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
     </div>
     <div

@@ -10,7 +10,7 @@ import EstimateSampleSize, {
   InputLabel,
   Action,
 } from './EstimateSampleSize'
-import { asyncForEach } from '../testUtilities'
+import { asyncForEach, regexpEscape } from '../testUtilities'
 import statusStates from './_mocks'
 import api from '../utilities'
 
@@ -20,89 +20,103 @@ jest.mock('../utilities')
 
 const estimateSampleSizeMocks = {
   inputs: [
-    { key: 'audit-name', value: 'Election Name' },
-    { key: 'contest-1-name', value: 'Contest Name' },
-    { key: 'contest-1-choice-1-name', value: 'Choice One' },
-    { key: 'contest-1-choice-2-name', value: 'Choice Two' },
-    { key: 'contest-1-choice-1-votes', value: '10' },
-    { key: 'contest-1-choice-2-votes', value: '20' },
-    { key: 'contest-1-total-ballots', value: '30' },
-    { key: 'risk-limit', value: '2' },
-    { key: 'random-seed', value: '12345678901234512345' },
+    { key: 'Election Name', value: 'Election Name' },
+    { key: 'Contest Name', value: 'Contest Name' },
+    { key: 'Name of Candidate/Choice 1', value: 'Choice One' },
+    { key: 'Name of Candidate/Choice 2', value: 'Choice Two' },
+    { key: 'Votes for Candidate/Choice 1', value: '10' },
+    { key: 'Votes for Candidate/Choice 2', value: '20' },
+    { key: 'Total Ballots for Contest', value: '30' },
+    {
+      key: 'Set the risk for the audit as a percentage (e.g. "5" = 5%)',
+      value: '2',
+    },
+    {
+      key:
+        'Enter the random number to seed the pseudo-random number generator.',
+      value: '12345678901234512345',
+    },
   ],
   errorInputs: [
-    { key: 'audit-name', value: '', error: 'Required' },
-    { key: 'contest-1-name', value: '', error: 'Required' },
-    { key: 'contest-1-choice-1-name', value: '', error: 'Required' },
-    { key: 'contest-1-choice-2-name', value: '', error: 'Required' },
+    { key: 'Election Name', value: '', error: 'Required' },
+    { key: 'Contest Name', value: '', error: 'Required' },
+    { key: 'Name of Candidate/Choice 1', value: '', error: 'Required' },
+    { key: 'Name of Candidate/Choice 2', value: '', error: 'Required' },
     {
-      key: 'contest-1-choice-1-votes',
+      key: 'Votes for Candidate/Choice 1',
       value: '',
       error: 'Must be a number',
     },
     {
-      key: 'contest-1-choice-1-votes',
+      key: 'Votes for Candidate/Choice 1',
       value: 'test',
       error: 'Must be a number',
     },
     {
-      key: 'contest-1-choice-1-votes',
+      key: 'Votes for Candidate/Choice 1',
       value: '-1',
       error: 'Must be a positive number',
     },
     {
-      key: 'contest-1-choice-1-votes',
+      key: 'Votes for Candidate/Choice 1',
       value: '0.5',
       error: 'Must be an integer',
     },
     {
-      key: 'contest-1-choice-2-votes',
+      key: 'Votes for Candidate/Choice 2',
       value: '',
       error: 'Must be a number',
     },
     {
-      key: 'contest-1-choice-2-votes',
+      key: 'Votes for Candidate/Choice 2',
       value: 'test',
       error: 'Must be a number',
     },
     {
-      key: 'contest-1-choice-2-votes',
+      key: 'Votes for Candidate/Choice 2',
       value: '-1',
       error: 'Must be a positive number',
     },
     {
-      key: 'contest-1-choice-2-votes',
+      key: 'Votes for Candidate/Choice 2',
       value: '0.5',
       error: 'Must be an integer',
     },
     {
-      key: 'contest-1-total-ballots',
+      key: 'Total Ballots for Contest',
       value: '',
       error: 'Must be a number',
     },
     {
-      key: 'contest-1-total-ballots',
+      key: 'Total Ballots for Contest',
       value: 'test',
       error: 'Must be a number',
     },
     {
-      key: 'contest-1-total-ballots',
+      key: 'Total Ballots for Contest',
       value: '-1',
       error: 'Must be a positive number',
     },
     {
-      key: 'contest-1-total-ballots',
+      key: 'Total Ballots for Contest',
       value: '0.5',
       error: 'Must be an integer',
     },
-    { key: 'random-seed', value: '', error: 'Required' },
     {
-      key: 'random-seed',
+      key:
+        'Enter the random number to seed the pseudo-random number generator.',
+      value: '',
+      error: 'Required',
+    },
+    {
+      key:
+        'Enter the random number to seed the pseudo-random number generator.',
       value: 'test',
       error: 'Must be only numbers',
     },
     {
-      key: 'random-seed',
+      key:
+        'Enter the random number to seed the pseudo-random number generator.',
       value: '123451234512345123451',
       error: 'Must be 20 digits or less',
     },
@@ -347,7 +361,7 @@ describe('EstimateSampleSize', () => {
     const updateAuditMock = jest.fn()
     const setIsLoadingMock = jest.fn()
 
-    const { getByTestId } = render(
+    const { getByLabelText, getByText } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
@@ -358,12 +372,14 @@ describe('EstimateSampleSize', () => {
     )
 
     estimateSampleSizeMocks.inputs.forEach(inputData => {
-      const input = getByTestId(inputData.key) as HTMLInputElement
+      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
+        selector: 'input',
+      }) as HTMLInputElement
       fireEvent.change(input, { target: { value: inputData.value } })
       expect(input.value).toBe(inputData.value)
     })
 
-    fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
+    fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
     await wait(() => {
       const { body } = apiMock.mock.calls[0][1] as { body: string }
       expect(setIsLoadingMock).toHaveBeenCalledTimes(2)
@@ -376,7 +392,7 @@ describe('EstimateSampleSize', () => {
 
   it('displays errors', async () => {
     apiMock.mockReset()
-    const { getByTestId } = render(
+    const { getByLabelText, getByTestId, getByText } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
@@ -388,7 +404,9 @@ describe('EstimateSampleSize', () => {
 
     await asyncForEach(estimateSampleSizeMocks.errorInputs, async inputData => {
       const { key, value, error } = inputData
-      const input = getByTestId(key) as HTMLInputElement
+      const input = getByLabelText(new RegExp(regexpEscape(key)), {
+        selector: 'input',
+      }) as HTMLInputElement
       const errorID = input.name + '-error'
       fireEvent.change(input, { target: { value: value } })
       fireEvent.blur(input)
@@ -403,7 +421,7 @@ describe('EstimateSampleSize', () => {
       })
     })
 
-    fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
+    fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
     await wait(() => {
       expect(apiMock.mock.calls.length).toBe(0) // doesn't post because of errors
     })
@@ -419,7 +437,7 @@ describe('EstimateSampleSize', () => {
     )
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const updateAuditMock = jest.fn()
-    const { getByTestId } = render(
+    const { getByLabelText, getByText } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
@@ -430,12 +448,14 @@ describe('EstimateSampleSize', () => {
     )
 
     estimateSampleSizeMocks.inputs.forEach(inputData => {
-      const input = getByTestId(inputData.key) as HTMLInputElement
+      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
+        selector: 'input',
+      }) as HTMLInputElement
       fireEvent.change(input, { target: { value: inputData.value } })
       expect(input.value).toBe(inputData.value)
     })
 
-    fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
+    fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
 
     await wait(() => {
       expect(apiMock.mock.calls.length).toBe(1)
