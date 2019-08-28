@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormField renders a Field 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa NQGah"
+  >
+    <div
+      class="bp3-input-group sc-bwzfXH jwfMIB"
+    >
+      <input
+        class="bp3-input"
+        name="field-name"
+        style="padding-right: 10px;"
+        type="text"
+        value="text value"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FormField renders a Field with errors 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa NQGah"
+  >
+    <div
+      class="bp3-input-group sc-bwzfXH jwfMIB"
+    >
+      <input
+        class="bp3-input"
+        name="field-name"
+        style="padding-right: 10px;"
+        type="text"
+        value=""
+      />
+    </div>
+    <p
+      class="sc-bxivhb hSbDWx"
+      data-testid="field-name-error"
+    >
+      Required
+    </p>
+  </div>
+</div>
+`;

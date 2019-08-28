@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App renders properly 1`] = `
+<div>
+  <div
+    class="Toastify"
+  />
+  <div
+    class="sc-hMqMXs iJCTcb"
+  >
+    <div
+      class="sc-eNQAEJ eXJSGr"
+    >
+      <img
+        alt="Arlo, by VotingWorks"
+        height="50px"
+        src="/arlo.png"
+      />
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-jKJlTe ZTZmk"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Create a New Audit
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;

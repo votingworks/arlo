@@ -13,6 +13,7 @@ cryptorandom = "*"
 psycopg2 = "*"
 consistent_sampler = "*"
 joblib = "*"
+uuid = "*"
 
 [requires]
 python_version = "3.7"

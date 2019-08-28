@@ -11,6 +11,7 @@ import {
 } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
+import { HTMLSelect, Label, Spinner } from '@blueprintjs/core'
 import FormSection from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormTitle from '../Form/FormTitle'
@@ -19,21 +20,21 @@ import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
+import { Audit } from '../../types'
 
-const TwoColumnSection = styled.div`
+export const TwoColumnSection = styled.div`
   display: block;
   margin-top: 25px;
   width: 100%;
-  font-size: 0.4em;
 `
 
-const InputLabelRow = styled.div`
+export const InputLabelRow = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 10px;
   width: 100%;
 `
-const InputFieldRow = styled.div`
+export const InputFieldRow = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -41,58 +42,58 @@ const InputFieldRow = styled.div`
   width: 100%;
 `
 
-const FieldLeft = styled(FormField)`
+export const FieldLeft = styled(FormField)`
   flex-grow: 2;
   width: unset;
 `
 
-const FieldRight = styled(FieldLeft)`
+export const FieldRight = styled(FieldLeft)`
   margin-left: 50px;
 `
 
-const InputLabel = styled.label`
+export const InputLabel = styled(Label)`
   display: inline-block;
   flex-grow: 2;
   width: unset;
 `
 
-const InputLabelRight = styled(InputLabel)`
+export const InputLabelRight = styled(InputLabel)`
   margin-left: 60px;
 `
 
-const Action = styled.p`
+export const Action = styled.p`
   margin: 5px 0 0 0;
   width: 100%;
   color: #000088;
-  font-size: 14px;
   &:hover {
     cursor: pointer;
   }
 `
 
 interface Props {
-  audit?: any
-  isLoading?: any
+  audit: Audit
+  isLoading?: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
+  electionId: string
 }
 
 interface ChoiceValues {
-  id: number
+  id?: string
   name: string
-  numVotes: number
+  numVotes: string | number
 }
 
 interface ContestValues {
-  name?: string
-  totalBallotsCast?: number
+  name: string
+  totalBallotsCast: string
   choices: ChoiceValues[]
 }
 
 interface EstimateSampleSizeValues {
   name: string
   randomSeed: string
-  riskLimit: number
+  riskLimit: string
   contests: ContestValues[]
 }
 
@@ -135,11 +136,12 @@ const schema = Yup.object().shape({
   contests: contestsSchema,
 })
 
-const EstimateSampleSize = ({
+const EstimateSampleSize: React.FC<Props> = ({
   audit,
   isLoading,
   setIsLoading,
   updateAudit,
+  electionId,
 }: Props) => {
   const canEstimateSampleSize = !audit.contests.length
 
@@ -162,6 +164,7 @@ const EstimateSampleSize = ({
     try {
       setIsLoading(true)
       await api(`/audit/basic`, {
+        electionId,
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -195,7 +198,7 @@ const EstimateSampleSize = ({
 
   const initialValues = {
     randomSeed: audit.randomSeed || '',
-    riskLimit: audit.riskLimit || 10,
+    riskLimit: audit.riskLimit || '10',
     name: audit.name || '',
     contests: audit.contests.length ? audit.contests : contestValues,
   }
@@ -208,12 +211,17 @@ const EstimateSampleSize = ({
         onSubmit={handlePost}
         enableReinitialize
       >
-        {({ values, handleSubmit }: FormikProps<EstimateSampleSizeValues>) => (
-          <Form>
+        {({
+          values,
+          handleSubmit,
+          setFieldValue,
+        }: FormikProps<EstimateSampleSizeValues>) => (
+          <Form data-testid="form-one">
             <FormWrapper title="Contest Information">
               <FormSection label="Election Name">
                 <Field
                   name="name"
+                  data-testid="audit-name"
                   disabled={audit.contests.length}
                   component={FormField}
                 />
@@ -227,12 +235,14 @@ const EstimateSampleSize = ({
                         /* eslint-disable react/no-array-index-key */
                         <React.Fragment key={i}>
                           {i > 0 && (
+                            /* istanbul ignore next */
                             <FormSection>
                               <hr />
                             </FormSection>
                           )}
                           <FormSection
                             label={`Contest ${
+                              /* istanbul ignore next */
                               values.contests.length > 1 ? i + 1 : ''
                             } Name`}
                             description="Enter the name of the contest that will drive the audit."
@@ -241,15 +251,16 @@ const EstimateSampleSize = ({
                               name={`contests[${i}].name`}
                               disabled={!canEstimateSampleSize}
                               component={FormField}
+                              data-testid={`contest-${i + 1}-name`}
                             />
-                            {values.contests.length > 1 &&
+                            {/*values.contests.length > 1 &&
                               !audit.contests.length && (
                                 <Action
                                   onClick={() => contestsArrayHelpers.remove(i)}
                                 >
                                   Remove Contest {i + 1}
                                 </Action>
-                              )}
+                              )*/}
                           </FormSection>
                           <FieldArray
                             name={`contests[${i}].choices`}
@@ -276,12 +287,16 @@ const EstimateSampleSize = ({
                                             name={`contests[${i}].choices[${j}].name`}
                                             disabled={!canEstimateSampleSize}
                                             component={FieldLeft}
+                                            data-testid={`contest-${i +
+                                              1}-choice-${j + 1}-name`}
                                           />
                                           <Field
                                             name={`contests[${i}].choices[${j}].numVotes`}
                                             type="number"
                                             disabled={!canEstimateSampleSize}
                                             component={FieldRight}
+                                            data-testid={`contest-${i +
+                                              1}-choice-${j + 1}-votes`}
                                           />
                                           {contest.choices.length > 2 &&
                                             !audit.contests.length && (
@@ -322,6 +337,7 @@ const EstimateSampleSize = ({
                               name={`contests[${i}].totalBallotsCast`}
                               disabled={!canEstimateSampleSize}
                               component={FormField}
+                              data-testid={`contest-${i + 1}-total-ballots`}
                             />
                           </FormSection>
                         </React.Fragment>
@@ -350,7 +366,12 @@ const EstimateSampleSize = ({
                 <Field
                   name="riskLimit"
                   disabled={!canEstimateSampleSize}
-                  component="select"
+                  component={HTMLSelect}
+                  data-testid="risk-limit"
+                  defaultValue={values.riskLimit}
+                  onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                    setFieldValue('riskLimit', e.currentTarget.value)
+                  }
                 >
                   {generateOptions(20)}
                 </Field>
@@ -365,14 +386,17 @@ const EstimateSampleSize = ({
                   name="randomSeed"
                   disabled={!canEstimateSampleSize}
                   component={FormField}
+                  data-testid="random-seed"
                 />
               </FormSection>
             </FormWrapper>
-            {!audit.contests.length && isLoading && <p>Loading...</p>}
+            {!audit.contests.length && isLoading && <Spinner />}
             {!audit.contests.length && !isLoading && (
               <FormButtonBar>
                 <FormButton
                   type="submit"
+                  intent="primary"
+                  data-testid="submit-form-one"
                   disabled={!canEstimateSampleSize}
                   onClick={handleSubmit}
                 >

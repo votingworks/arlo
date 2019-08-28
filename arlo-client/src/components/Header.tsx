@@ -1,43 +1,37 @@
 import React from 'react'
 import styled from 'styled-components'
-import { api } from './utilities'
+import {
+  Navbar,
+  NavbarGroup,
+  NavbarHeading,
+  Alignment,
+} from '@blueprintjs/core'
 
-const HeaderContainer = styled.div`
-  padding: 20px;
-  text-align: center;
-`
 const ButtonBar = styled.div`
   display: inline-block;
-  float: right;
+  margin-right: 10px;
 `
 
-const Button = styled.button`
-  margin: 0 auto;
-  border-radius: 5px;
-  background: rgb(211, 211, 211);
-  width: 155px;
-  height: 30px;
-  color: #000000;
-  font-size: 0.4em;
-  font-weight: 500;
-`
+const Nav = styled(Navbar)`
+  width: 100%;
 
-const Header = () => {
-  const reset = async () => {
-    await api(`/audit/reset`, { method: 'POST' })
-
-    // ugly but works
-    window.location.reload()
+  .bp3-navbar-heading img {
+    height: 35px;
+    padding-top: 8px;
   }
+`
 
-  return (
-    <HeaderContainer>
-      <img height="60px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      <ButtonBar>
-        <Button onClick={reset}>Clear & Restart</Button>
-      </ButtonBar>
-    </HeaderContainer>
-  )
-}
+const Header: React.FC<{}> = () => (
+  <Nav fixedToTop>
+    <NavbarGroup align={Alignment.LEFT}>
+      <NavbarHeading>
+        <img src="/arlo.png" alt="Arlo, by VotingWorks" />
+      </NavbarHeading>
+    </NavbarGroup>
+    <NavbarGroup align={Alignment.RIGHT}>
+      <ButtonBar id="reset-button-wrapper" />
+    </NavbarGroup>
+  </Nav>
+)
 
 export default Header
