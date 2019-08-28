@@ -142,9 +142,14 @@ def setup_next_round(election):
                 
     db.session.add(round_contest)
         
+
+    num_sampled = db.session.query(db.func.sum(SampledBallot.times_sampled)).filter_by(jurisdiction_id=jurisdiction.id).one()[0]
+    if not num_sampled:
+        num_sampled = 0
+
     chosen_sample_size = round_contest.sample_size
     sampler = get_sampler(election)
-    sample = sampler.draw_sample(manifest_summary(jurisdiction), chosen_sample_size)
+    sample = sampler.draw_sample(manifest_summary(jurisdiction), chosen_sample_size, num_sampled=num_sampled)
 
     audit_boards = jurisdiction.audit_boards
     
