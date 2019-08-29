@@ -75,6 +75,7 @@ interface Props {
   isLoading?: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
+  getStatus: () => Promise<Audit>
   electionId: string
 }
 
@@ -141,6 +142,7 @@ const EstimateSampleSize: React.FC<Props> = ({
   isLoading,
   setIsLoading,
   updateAudit,
+  getStatus,
   electionId,
 }: Props) => {
   const canEstimateSampleSize = !audit.contests.length
@@ -171,16 +173,21 @@ const EstimateSampleSize: React.FC<Props> = ({
           'Content-Type': 'application/json',
         },
       })
-      const condition = () => !!audit.contests[0].sampleSizeOptions
-      poll(
+      const condition = async () => {
+        const { contests } = await getStatus()
+        return contests[0] && !!contests[0].sampleSizeOptions
+      }
+      const complete = () => {
+        updateAudit()
+        setIsLoading(false)
+      }
+      await poll(
         condition,
-        updateAudit,
-        () => setIsLoading(false),
+        complete,
         (err: Error) => toast.error(err.message),
-        10000,
+        60000,
         1000
       )
-      updateAudit()
     } catch (err) {
       toast.error(err.message)
     }
@@ -397,7 +404,7 @@ const EstimateSampleSize: React.FC<Props> = ({
                 />
               </FormSection>
             </FormWrapper>
-            {!audit.contests.length && isLoading && <Spinner />}
+            {isLoading && <Spinner />}
             {!audit.contests.length && !isLoading && (
               <FormButtonBar>
                 <FormButton

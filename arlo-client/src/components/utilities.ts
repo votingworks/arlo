@@ -14,22 +14,21 @@ export const api = <T>(
 }
 
 export const poll = (
-  condition: () => boolean,
-  action: () => void,
+  condition: () => Promise<boolean>,
   callback: () => any,
   errback: (arg0: Error) => void,
   timeout: number = 2000,
   interval: number = 100
 ) => {
   const endTime = Number(new Date()) + timeout
-  ;(function p() {
-    action()
-    if (condition()) {
+  ;(async function p() {
+    const done = await condition()
+    if (done) {
       callback()
     } else if (Number(new Date()) < endTime) {
       setTimeout(p, interval)
     } else {
-      errback(new Error(`Timed out for ${condition}: ${arguments}`))
+      errback(new Error(`Timed out`))
     }
   })()
 }

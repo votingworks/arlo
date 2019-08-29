@@ -168,6 +168,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -179,6 +180,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -192,6 +194,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -203,6 +206,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -216,6 +220,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -227,6 +232,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -240,6 +246,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -251,6 +258,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -264,6 +272,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -275,6 +284,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -289,6 +299,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -322,6 +333,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -355,6 +367,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -384,6 +397,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -427,6 +441,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )

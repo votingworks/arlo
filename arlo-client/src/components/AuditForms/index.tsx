@@ -71,10 +71,11 @@ const AuditForms: React.FC<Props> = ({
         isLoading={isLoading}
         setIsLoading={setIsLoading}
         updateAudit={updateAudit}
+        getStatus={getStatus}
         electionId={electionId}
       />
 
-      {!!audit.contests.length && (
+      {!!audit.contests.length && !!audit.contests[0].sampleSizeOptions && (
         <SelectBallotsToAudit
           audit={audit}
           isLoading={isLoading}
