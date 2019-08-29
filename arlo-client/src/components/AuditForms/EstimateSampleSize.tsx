@@ -18,7 +18,7 @@ import FormTitle from '../Form/FormTitle'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api } from '../utilities'
+import { api, poll } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import { Audit } from '../../types'
 
@@ -171,11 +171,18 @@ const EstimateSampleSize: React.FC<Props> = ({
           'Content-Type': 'application/json',
         },
       })
+      const condition = () => !!audit.contests[0].sampleSizeOptions
+      poll(
+        condition,
+        updateAudit,
+        () => setIsLoading(false),
+        (err: Error) => toast.error(err.message),
+        10000,
+        1000
+      )
       updateAudit()
     } catch (err) {
       toast.error(err.message)
-    } finally {
-      setIsLoading(false)
     }
   }
 

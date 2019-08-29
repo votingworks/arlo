@@ -13,4 +13,25 @@ export const api = <T>(
   })
 }
 
+export const poll = (
+  condition: () => boolean,
+  action: () => void,
+  callback: () => any,
+  errback: (arg0: Error) => void,
+  timeout: number = 2000,
+  interval: number = 100
+) => {
+  const endTime = Number(new Date()) + timeout
+  ;(function p() {
+    action()
+    if (condition()) {
+      callback()
+    } else if (Number(new Date()) < endTime) {
+      setTimeout(p, interval)
+    } else {
+      errback(new Error(`Timed out for ${condition}: ${arguments}`))
+    }
+  })()
+}
+
 export default api
