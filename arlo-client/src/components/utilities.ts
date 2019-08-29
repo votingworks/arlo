@@ -17,15 +17,15 @@ export const poll = (
   condition: () => Promise<boolean>,
   callback: () => any,
   errback: (arg0: Error) => void,
-  timeout: number = 2000,
-  interval: number = 100
+  timeout: number = 60000,
+  interval: number = 1000
 ) => {
-  const endTime = Number(new Date()) + timeout
+  const endTime = Date.now() + timeout
   ;(async function p() {
     const done = await condition()
     if (done) {
       callback()
-    } else if (Number(new Date()) < endTime) {
+    } else if (Date.now() < endTime) {
       setTimeout(p, interval)
     } else {
       errback(new Error(`Timed out`))
