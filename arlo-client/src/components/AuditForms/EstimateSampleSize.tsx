@@ -175,7 +175,7 @@ const EstimateSampleSize: React.FC<Props> = ({
       })
       const condition = async () => {
         const { contests } = await getStatus()
-        return contests[0] && !!contests[0].sampleSizeOptions
+        return !!contests.length && contests.every(c => !!c.sampleSizeOptions)
       }
       const complete = () => {
         updateAudit()
