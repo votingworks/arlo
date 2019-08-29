@@ -19,7 +19,7 @@ export interface Contest {
   name: string
   choices: Candidate[]
   totalBallotsCast: string
-  sampleSizeOptions?: SampleSizeOption[]
+  sampleSizeOptions?: SampleSizeOption[] | null
 }
 
 export interface AuditBoard {
