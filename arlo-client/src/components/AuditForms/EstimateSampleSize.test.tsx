@@ -13,11 +13,19 @@ import EstimateSampleSize, {
 } from './EstimateSampleSize'
 import { asyncForEach } from '../testUtilities'
 import statusStates from './_mocks'
-import api from '../utilities'
+import * as utilities from '../utilities'
 
-const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
+const apiMock: jest.SpyInstance<
+  ReturnType<typeof utilities.api>,
+  Parameters<typeof utilities.api>
+> = jest.spyOn(utilities, 'api').mockImplementation()
 
-jest.mock('../utilities')
+const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
+
+afterEach(() => {
+  apiMock.mockClear()
+  toastSpy.mockClear()
+})
 
 const estimateSampleSizeMocks = {
   inputs: [
@@ -168,6 +176,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -179,6 +188,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -192,6 +202,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -203,6 +214,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -216,6 +228,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -227,6 +240,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -240,6 +254,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -251,6 +266,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -264,6 +280,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -275,6 +292,7 @@ describe('EstimateSampleSize', () => {
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -289,6 +307,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -322,6 +341,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -348,6 +368,10 @@ describe('EstimateSampleSize', () => {
     }))
     const updateAuditMock = jest.fn()
     const setIsLoadingMock = jest.fn()
+    const getStatusMock = jest
+      .fn()
+      .mockImplementationOnce(async () => statusStates[0])
+      .mockImplementationOnce(async () => statusStates[1])
 
     const { getByTestId } = render(
       <EstimateSampleSize
@@ -355,6 +379,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -372,7 +397,56 @@ describe('EstimateSampleSize', () => {
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
+      expect(getStatusMock).toHaveBeenCalledTimes(2)
       expect(updateAuditMock).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('handles background process timeout', async () => {
+    const startDate: number = Date.now()
+    const lateDate: number = startDate + 120000
+    const dateSpy = jest
+      .spyOn(Date, 'now')
+      .mockReturnValueOnce(startDate)
+      .mockReturnValueOnce(lateDate)
+    apiMock.mockImplementation(async () => ({
+      message: 'success',
+      ok: true,
+    }))
+    const updateAuditMock = jest.fn()
+    const setIsLoadingMock = jest.fn()
+    const getStatusMock = jest
+      .fn()
+      .mockImplementation(async () => statusStates[0])
+
+    const { getByTestId } = render(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    estimateSampleSizeMocks.inputs.forEach(inputData => {
+      const input = getByTestId(inputData.key) as HTMLInputElement
+      fireEvent.change(input, { target: { value: inputData.value } })
+      expect(input.value).toBe(inputData.value)
+    })
+
+    fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
+    await wait(() => {
+      expect(apiMock).toHaveBeenCalled()
+      const { body } = apiMock.mock.calls[0][1] as { body: string }
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
+      expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
+      expect(getStatusMock).toHaveBeenCalled()
+      expect(dateSpy).toHaveBeenCalledTimes(2)
+      expect(toastSpy).toHaveBeenCalledTimes(1)
+      expect(updateAuditMock).toHaveBeenCalledTimes(0)
+      expect(setIsLoadingMock).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -384,6 +458,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )
@@ -419,7 +494,6 @@ describe('EstimateSampleSize', () => {
         ok: false,
       })
     )
-    const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const updateAuditMock = jest.fn()
     const { getByTestId } = render(
       <EstimateSampleSize
@@ -427,6 +501,7 @@ describe('EstimateSampleSize', () => {
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}
+        getStatus={jest.fn()}
         electionId="1"
       />
     )

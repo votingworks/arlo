@@ -101,9 +101,7 @@ def compute_and_store_sample_sizes(election):
             "size": int(math.ceil(size))
         })
     
-    election.sample_size_options = json.dumps(sample_size_options)
-
-    db.session.commit()
+    return sample_size_options
     
 def setup_next_round(election):
     if len(election.contests) > 1:
@@ -211,6 +209,10 @@ def election_new():
 def audit_status(election_id = None):
     election = get_election(election_id)
 
+    sample_size_options = None
+    if election.sample_size_options:
+        sample_size_options = json.loads(election.sample_size_options)
+    
     return jsonify(
         name = election.name,
         riskLimit = election.risk_limit,
@@ -227,7 +229,7 @@ def audit_status(election_id = None):
                     }
                     for choice in contest.choices],
                 "totalBallotsCast": contest.total_ballots_cast,
-                "sampleSizeOptions": json.loads(election.sample_size_options)
+                "sampleSizeOptions": sample_size_options
             }
             for contest in election.contests],
         jurisdictions=[
@@ -298,7 +300,7 @@ def audit_basic_update(election_id=None):
                                                num_votes = choice['numVotes'])
             db.session.add(choice_obj)
 
-    compute_and_store_sample_sizes(election)
+    # compute_and_store_sample_sizes(election)
             
     db.session.commit()
 
@@ -515,8 +517,9 @@ def audit_reset(election_id=None):
 
 # React App
 @app.route('/', defaults={'path': ''})
+@app.route('/election/<election_id>', defaults={'path': ''})
 @app.route('/<path:path>')
-def serve(path):
+def serve(path, election_id=None):
     if path != "" and os.path.exists(app.static_folder + path):
         return send_from_directory(app.static_folder, path)
     else:
