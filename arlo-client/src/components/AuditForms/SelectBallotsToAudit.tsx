@@ -12,6 +12,7 @@ import {
   FileInput,
   Spinner,
 } from '@blueprintjs/core'
+import styled from 'styled-components'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -23,6 +24,10 @@ import { Jurisdiction, Audit, SampleSizeOption } from '../../types'
 import { api } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
+
+export const Select = styled(HTMLSelect)`
+  margin-left: 5px;
+`
 
 interface SampleSizeOptionsByContest {
   [key: string]: SampleSizeOption[]
@@ -263,22 +268,21 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                   ))}
                 </FormSection>
               )}
-            <FormSection
-              label="Number of Audit Boards"
-              description="Set the number of audit boards you with to use."
-            >
-              <Field
-                component={HTMLSelect}
-                id="auditBoards"
-                data-testid="audit-boards"
-                name="auditBoards"
-                onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-                  setFieldValue('auditBoards', e.currentTarget.value)
-                }
-                disabled={!!audit.rounds.length}
-              >
-                {generateOptions(15)}
-              </Field>
+            <FormSection label="Number of Audit Boards">
+              <label htmlFor="auditBoards">
+                Set the number of audit boards you wish to use.
+                <Field
+                  component={Select}
+                  id="auditBoards"
+                  name="auditBoards"
+                  onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                    setFieldValue('auditBoards', e.currentTarget.value)
+                  }
+                  disabled={!!audit.rounds.length}
+                >
+                  {generateOptions(15)}
+                </Field>
+              </label>
             </FormSection>
             <FormSection label="Ballot Manifest">
               {manifestUploaded && audit.jurisdictions[0].ballotManifest ? ( // duplicating effect of manifestUploaded for TS

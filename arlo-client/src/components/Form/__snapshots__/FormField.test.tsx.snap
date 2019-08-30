@@ -6,7 +6,7 @@ exports[`FormField renders a Field 1`] = `
     class="sc-bdVaJa NQGah"
   >
     <div
-      class="bp3-input-group sc-bwzfXH jwfMIB"
+      class="bp3-input-group sc-bwzfXH hmTEuO"
     >
       <input
         class="bp3-input"
@@ -26,7 +26,7 @@ exports[`FormField renders a Field with errors 1`] = `
     class="sc-bdVaJa NQGah"
   >
     <div
-      class="bp3-input-group sc-bwzfXH jwfMIB"
+      class="bp3-input-group sc-bwzfXH hmTEuO"
     >
       <input
         class="bp3-input"

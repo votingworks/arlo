@@ -76,7 +76,7 @@ describe('CalculateRiskMeasurement', () => {
       message: 'success',
       ok: true,
     }))
-    const { container, getByTestId, queryAllByText, getByText } = render(
+    const { container, getByLabelText, queryAllByText, getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates[3]}
         isLoading={false}
@@ -88,8 +88,8 @@ describe('CalculateRiskMeasurement', () => {
 
     expect(container).toMatchSnapshot()
 
-    const choiceOne = getByTestId(`round-0-contest-0-choice-choice-1`)
-    const choiceTwo = getByTestId(`round-0-contest-0-choice-choice-2`)
+    const choiceOne = getByLabelText('choice one')
+    const choiceTwo = getByLabelText('choice two')
 
     expect(choiceOne).toBeInstanceOf(HTMLInputElement)
     expect(choiceTwo).toBeInstanceOf(HTMLInputElement)
@@ -197,7 +197,7 @@ describe('CalculateRiskMeasurement', () => {
       })
     )
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
-    const { getByTestId, getByText } = render(
+    const { getByLabelText, getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates[3]}
         isLoading={false}
@@ -207,8 +207,8 @@ describe('CalculateRiskMeasurement', () => {
       />
     )
 
-    const choiceOne = getByTestId(`round-0-contest-0-choice-choice-1`)
-    const choiceTwo = getByTestId(`round-0-contest-0-choice-choice-2`)
+    const choiceOne = getByLabelText('choice one')
+    const choiceTwo = getByLabelText('choice two')
 
     expect(choiceOne).toBeInstanceOf(HTMLInputElement)
     expect(choiceTwo).toBeInstanceOf(HTMLInputElement)

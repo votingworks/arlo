@@ -22,8 +22,13 @@ import { api, poll } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import { Audit } from '../../types'
 
+export const Select = styled(HTMLSelect)`
+  margin-left: 5px;
+`
+
 export const TwoColumnSection = styled.div`
-  display: block;
+  display: flex;
+  flex-direction: column;
   margin-top: 25px;
   width: 100%;
 `
@@ -42,23 +47,16 @@ export const InputFieldRow = styled.div`
   width: 100%;
 `
 
-export const FieldLeft = styled(FormField)`
+export const FlexField = styled(FormField)`
   flex-grow: 2;
   width: unset;
-`
-
-export const FieldRight = styled(FieldLeft)`
-  margin-left: 50px;
+  padding-right: 60px;
 `
 
 export const InputLabel = styled(Label)`
   display: inline-block;
   flex-grow: 2;
   width: unset;
-`
-
-export const InputLabelRight = styled(InputLabel)`
-  margin-left: 60px;
 `
 
 export const Action = styled.p`
@@ -225,14 +223,19 @@ const EstimateSampleSize: React.FC<Props> = ({
           setFieldValue,
         }: FormikProps<EstimateSampleSizeValues>) => (
           <Form data-testid="form-one">
-            <FormWrapper title="Contest Information">
-              <FormSection label="Election Name">
-                <Field
-                  name="name"
-                  data-testid="audit-name"
-                  disabled={audit.contests.length}
-                  component={FormField}
-                />
+            <FormWrapper title="Administer an Audit">
+              <FormSection>
+                {/* eslint-disable jsx-a11y/label-has-associated-control */}
+                <label htmlFor="audit-name" id="audit-name-label">
+                  Election Name
+                  <Field
+                    id="audit-name"
+                    aria-labelledby="audit-name-label"
+                    name="name"
+                    disabled={audit.contests.length}
+                    component={FormField}
+                  />
+                </label>
               </FormSection>
               <FieldArray
                 name="contests"
@@ -252,15 +255,21 @@ const EstimateSampleSize: React.FC<Props> = ({
                             label={`Contest ${
                               /* istanbul ignore next */
                               values.contests.length > 1 ? i + 1 : ''
-                            } Name`}
+                            } Info`}
                             description="Enter the name of the contest that will drive the audit."
                           >
-                            <Field
-                              name={`contests[${i}].name`}
-                              disabled={!canEstimateSampleSize}
-                              component={FormField}
-                              data-testid={`contest-${i + 1}-name`}
-                            />
+                            <label htmlFor={`contests[${i}].name`}>
+                              Contest{' '}
+                              {/* istanbul ignore next */
+                              values.contests.length > 1 ? i + 1 : ''}{' '}
+                              Name
+                              <Field
+                                id={`contests[${i}].name`}
+                                name={`contests[${i}].name`}
+                                disabled={!canEstimateSampleSize}
+                                component={FormField}
+                              />
+                            </label>
                             {/*values.contests.length > 1 &&
                               !audit.contests.length && (
                                 <Action
@@ -282,30 +291,24 @@ const EstimateSampleSize: React.FC<Props> = ({
                                     (choice: ChoiceValues, j: number) => (
                                       /* eslint-disable react/no-array-index-key */
                                       <React.Fragment key={j}>
-                                        <InputLabelRow>
+                                        <InputFieldRow>
                                           <InputLabel>
                                             Name of Candidate/Choice {j + 1}
+                                            <Field
+                                              name={`contests[${i}].choices[${j}].name`}
+                                              disabled={!canEstimateSampleSize}
+                                              component={FlexField}
+                                            />
                                           </InputLabel>
-                                          <InputLabelRight>
+                                          <InputLabel>
                                             Votes for Candidate/Choice {j + 1}
-                                          </InputLabelRight>
-                                        </InputLabelRow>
-                                        <InputFieldRow>
-                                          <Field
-                                            name={`contests[${i}].choices[${j}].name`}
-                                            disabled={!canEstimateSampleSize}
-                                            component={FieldLeft}
-                                            data-testid={`contest-${i +
-                                              1}-choice-${j + 1}-name`}
-                                          />
-                                          <Field
-                                            name={`contests[${i}].choices[${j}].numVotes`}
-                                            type="number"
-                                            disabled={!canEstimateSampleSize}
-                                            component={FieldRight}
-                                            data-testid={`contest-${i +
-                                              1}-choice-${j + 1}-votes`}
-                                          />
+                                            <Field
+                                              name={`contests[${i}].choices[${j}].numVotes`}
+                                              type="number"
+                                              disabled={!canEstimateSampleSize}
+                                              component={FlexField}
+                                            />
+                                          </InputLabel>
                                           {contest.choices.length > 2 &&
                                             !audit.contests.length && (
                                               <Action
@@ -340,13 +343,18 @@ const EstimateSampleSize: React.FC<Props> = ({
                             label="Total Ballots Cast"
                             description="Enter the overall number of ballot cards cast in jurisdictions containing this contest."
                           >
-                            <Field
-                              type="number"
-                              name={`contests[${i}].totalBallotsCast`}
-                              disabled={!canEstimateSampleSize}
-                              component={FormField}
-                              data-testid={`contest-${i + 1}-total-ballots`}
-                            />
+                            <label htmlFor={`contests[${i}].totalBallotsCast`}>
+                              Total Ballots for Contest{' '}
+                              {/* istanbul ignore next */
+                              values.contests.length > 1 ? i + 1 : ''}
+                              <Field
+                                id={`contests[${i}].totalBallotsCast`}
+                                type="number"
+                                name={`contests[${i}].totalBallotsCast`}
+                                disabled={!canEstimateSampleSize}
+                                component={FormField}
+                              />
+                            </label>
                           </FormSection>
                         </React.Fragment>
                       )
@@ -367,35 +375,39 @@ const EstimateSampleSize: React.FC<Props> = ({
                 )}
               />
               <FormTitle>Audit Settings</FormTitle>
-              <FormSection
-                label="Desired Risk Limit"
-                description='Set the risk for the audit as a percentage (e.g. "5" = 5%)'
-              >
-                <Field
-                  name="riskLimit"
-                  disabled={!canEstimateSampleSize}
-                  component={HTMLSelect}
-                  data-testid="risk-limit"
-                  defaultValue={values.riskLimit}
-                  onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-                    setFieldValue('riskLimit', e.currentTarget.value)
-                  }
-                >
-                  {generateOptions(20)}
-                </Field>
-                <ErrorMessage name="riskLimit" component={ErrorLabel} />
+              <FormSection label="Desired Risk Limit">
+                <label htmlFor="risk-limit">
+                  Set the risk for the audit as a percentage (e.g. &quot;5&quot;
+                  = 5%)
+                  <Field
+                    id="risk-limit"
+                    name="riskLimit"
+                    disabled={!canEstimateSampleSize}
+                    component={Select}
+                    defaultValue={values.riskLimit}
+                    onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                      setFieldValue('riskLimit', e.currentTarget.value)
+                    }
+                  >
+                    {generateOptions(20)}
+                  </Field>
+                  <ErrorMessage name="riskLimit" component={ErrorLabel} />
+                </label>
               </FormSection>
-              <FormSection
-                label="Random Seed"
-                description="Enter the random number to seed the pseudo-random number generator."
-              >
-                <Field
-                  type="text"
-                  name="randomSeed"
-                  disabled={!canEstimateSampleSize}
-                  component={FormField}
-                  data-testid="random-seed"
-                />
+              <FormSection label="Random Seed">
+                {/* eslint-disable jsx-a11y/label-has-associated-control */}
+                <label htmlFor="random-seed" id="random-seed-label">
+                  Enter the random number to seed the pseudo-random number
+                  generator.
+                  <Field
+                    id="random-seed"
+                    aria-labelledby="random-seed-label"
+                    type="text"
+                    name="randomSeed"
+                    disabled={!canEstimateSampleSize}
+                    component={FormField}
+                  />
+                </label>
               </FormSection>
             </FormWrapper>
             {isLoading && <Spinner />}
@@ -404,7 +416,6 @@ const EstimateSampleSize: React.FC<Props> = ({
                 <FormButton
                   type="submit"
                   intent="primary"
-                  data-testid="submit-form-one"
                   disabled={!canEstimateSampleSize}
                   onClick={handleSubmit}
                 >
