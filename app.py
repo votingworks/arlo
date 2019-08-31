@@ -112,13 +112,14 @@ def setup_next_round(election):
     
 
     jurisdiction = election.jurisdictions[0]
-    rounds = Round.query.filter_by(election_id = election.id).order_by('id').all()
+    rounds = Round.query.filter_by(election_id = election.id).order_by('round_num').all()
 
     is_first_round = (len(rounds) == 0)
 
     round = Round(
-        id = len(rounds) + 1,
+        id = str(uuid.uuid4()),
         election_id = election.id,
+        round_num = len(rounds) + 1,
         started_at = datetime.datetime.utcnow())
 
     db.session.add(round)
@@ -383,13 +384,12 @@ def jurisdiction_manifest(jurisdiction_id, election_id=None):
     jurisdiction.manifest_filename = manifest.filename
     jurisdiction.manifest_uploaded_at = datetime.datetime.utcnow()
 
-    # TODO: factor out manifest processing for more intensive testing and background processing
     manifest_csv = csv.DictReader(io.StringIO(manifest_string))
     num_batches = 0
     num_ballots = 0
     for row in manifest_csv:
         batch = Batch(
-            id = row['Batch Name'],
+            id = str(uuid.uuid4()),
             name = row['Batch Name'],
             jurisdiction_id = jurisdiction.id,
             num_ballots = int(row['Number of Ballots']),
@@ -409,42 +409,43 @@ def jurisdiction_manifest(jurisdiction_id, election_id=None):
     
     return jsonify(status="ok")
 
-@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_id>/retrieval-list', methods=["GET"])
-@app.route('/jurisdiction/<jurisdiction_id>/<round_id>/retrieval-list', methods=["GET"])
-def jurisdiction_retrieval_list(jurisdiction_id, round_id, election_id=None):
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list', methods=["GET"])
+@app.route('/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list', methods=["GET"])
+def jurisdiction_retrieval_list(jurisdiction_id, round_num, election_id=None):
     election = get_election(election_id)
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)
     retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Times Selected","Audit Board"])
 
-    # check the jurisdiction
-    jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).all()[0]
+    # check the jurisdiction and round
+    jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).one()
+    round = Round.query.filter_by(election_id = election.id, round_num = round_num).one()
     
-    ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = int(round_id)).order_by('batch_id', 'ballot_position').all()
+    ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = round.id).order_by('batch_id', 'ballot_position').all()
 
     for ballot in ballots:
         retrieval_list_writer.writerow([ballot.batch_id, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board.name])
 
     response = Response(csv_io.getvalue())
-    response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-{:s}-{:s}.csv"'.format(jurisdiction_id, round_id)
+    response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-{:s}-{:s}.csv"'.format(jurisdiction_id, round_num)
     return response
 
-@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_id>/results', methods=["POST"])
-@app.route('/jurisdiction/<jurisdiction_id>/<round_id>/results', methods=["POST"])
-def jurisdiction_results(jurisdiction_id, round_id, election_id=None):
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/results', methods=["POST"])
+@app.route('/jurisdiction/<jurisdiction_id>/<round_num>/results', methods=["POST"])
+def jurisdiction_results(jurisdiction_id, round_num, election_id=None):
     election = get_election(election_id)
     results = request.get_json()
 
     # check the round ownership
-    round = Round.query.filter_by(election_id = election.id, id = round_id).all()[0]
+    round = Round.query.filter_by(election_id = election.id, round_num = round_num).one()
     
     for contest in results["contests"]:
-        round_contest = RoundContest.query.filter_by(contest_id = contest["id"], round_id = round_id).one()
-        RoundContestResult.query.filter_by(contest_id = contest["id"], round_id = round_id).delete()
+        round_contest = RoundContest.query.filter_by(contest_id = contest["id"], round_id = round.id).one()
+        RoundContestResult.query.filter_by(contest_id = contest["id"], round_id = round.id).delete()
 
         for choice_id, result in contest["results"].items():
             contest_result = RoundContestResult(
-                round_id = round_id,
+                round_id = round.id,
                 contest_id = contest["id"],
                 targeted_contest_choice_id = choice_id,
                 result = result)
@@ -452,7 +453,7 @@ def jurisdiction_results(jurisdiction_id, round_id, election_id=None):
 
     db.session.commit()
 
-    check_round(election, jurisdiction_id, round_id)
+    check_round(election, jurisdiction_id, round.id)
 
     return jsonify(status="ok")
 
@@ -481,20 +482,20 @@ def audit_report(election_id=None):
         round_contest = round.round_contests[0]
         round_contest_results = round_contest.results
 
-        report_writer.writerow(["Round {:d} Sample Size".format(round.id), round_contest.sample_size])
+        report_writer.writerow(["Round {:d} Sample Size".format(round.round_num), round_contest.sample_size])
 
         for result in round_contest.results:
-            report_writer.writerow(["Round {:d} Audited Votes for {:s}".format(round.id, result.targeted_contest_choice.name), result.result])
+            report_writer.writerow(["Round {:d} Audited Votes for {:s}".format(round.round_num, result.targeted_contest_choice.name), result.result])
 
-        report_writer.writerow(["Round {:d} P-Value".format(round.id), round_contest.end_p_value])
-        report_writer.writerow(["Round {:d} Risk Limit Met?".format(round.id), 'Yes' if round_contest.is_complete else 'No'])
+        report_writer.writerow(["Round {:d} P-Value".format(round.round_num), round_contest.end_p_value])
+        report_writer.writerow(["Round {:d} Risk Limit Met?".format(round.round_num), 'Yes' if round_contest.is_complete else 'No'])
 
-        report_writer.writerow(["Round {:d} Start".format(round.id), round.started_at])
-        report_writer.writerow(["Round {:d} End".format(round.id), round.ended_at])
+        report_writer.writerow(["Round {:d} Start".format(round.round_num), round.started_at])
+        report_writer.writerow(["Round {:d} End".format(round.round_num), round.ended_at])
 
         ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction.id, round_id = round.id).order_by('batch_id', 'ballot_position').all()
 
-        report_writer.writerow(["Round {:d} Samples".format(round.id), " ".join(["(Batch {:s}, #{:d})".format(b.batch_id, b.ballot_position) for b in ballots])])
+        report_writer.writerow(["Round {:d} Samples".format(round.round_num), " ".join(["(Batch {:s}, #{:d})".format(b.batch_id, b.ballot_position) for b in ballots])])
 
     
     response = Response(csv_io.getvalue())

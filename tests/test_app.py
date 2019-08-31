@@ -1,4 +1,4 @@
-import os, math
+import os, math, uuid
 import tempfile
 import json
 
@@ -33,8 +33,8 @@ def client():
 def test_index(client):
     rv = client.get('/')
     assert b'Arlo (by VotingWorks)' in rv.data
-
-def test_create_separate_election(client):
+    
+def test_whole_audit_flow(client):
     rv = post_json(client, '/election/new', {})
     election_id_1 = json.loads(rv.data)['electionId']
     assert election_id_1
@@ -43,103 +43,46 @@ def test_create_separate_election(client):
     election_id_2 = json.loads(rv.data)['electionId']
     assert election_id_2
 
-    assert election_id_1 != election_id_2
+    run_whole_audit_flow(client, election_id_1, "Primary 2019", 10, "12345678901234567890")
+    run_whole_audit_flow(client, election_id_2, "General 2019", 5, "12345678901234599999")
 
-    rv = post_json(
-        client, "/election/{}/audit/basic".format(election_id_1),
-        {
-            "name" : "Election #1",
-            "riskLimit" : 1,
-            "randomSeed": "12345",
-
-            "contests" : [
-                {
-                    "id": "contest-1-1",
-                    "name": "Contest 1-1",
-                    "choices": [
-                        {
-                            "id": "candidate-1-1",
-                            "name": "Candidate 1-1",
-                            "numVotes": 48121
-                        },
-                        {
-                            "id": "candidate-1-2",
-                            "name": "Candidate 1-2",
-                            "numVotes": 38026
-                        }                        
-                    ],
-
-                    "totalBallotsCast": 86148
-                }
-            ]
-        })
-
-    rv = post_json(
-        client, '/election/{}/audit/basic'.format(election_id_2),
-        {
-            "name" : "Election #2",
-            "riskLimit" : 2,
-            "randomSeed": "54321",
-
-            "contests" : [
-                {
-                    "id": "contest-2-1",
-                    "name": "Contest 2-1",
-                    "choices": [
-                        {
-                            "id": "candidate-2-1",
-                            "name": "Candidate 2-1",
-                            "numVotes": 48121
-                        },
-                        {
-                            "id": "candidate-2-2",
-                            "name": "Candidate 2-2",
-                            "numVotes": 38026
-                        }                        
-                    ],
-
-                    "totalBallotsCast": 86147
-                }
-            ]
-        })
-
-    # do the background compute
-    bgcompute.bgcompute()
-    
-    rv = client.get("/election/{}/audit/status".format(election_id_1))
-    result1 = json.loads(rv.data)
-
-    # reset the first election and make sure the second election is unaltered
-    client.post('/election/{}/audit/reset'.format(election_id_1))
+    # after resetting election 1, election 2 is still around
+    run_election_reset(client, election_id_1)
 
     rv = client.get('/election/{}/audit/status'.format(election_id_2))
     result2 = json.loads(rv.data)
-
-    assert result1["riskLimit"] == 1
-    assert result2["riskLimit"] == 2
-
+    assert result2["riskLimit"] == 5
     
+
+def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
+    contest_id = str(uuid.uuid4())
+    candidate_id_1 = str(uuid.uuid4())
+    candidate_id_2 = str(uuid.uuid4())
+    jurisdiction_id = str(uuid.uuid4())
+    audit_board_id_1 = str(uuid.uuid4())
+    audit_board_id_2 = str(uuid.uuid4())    
+
+    url_prefix = "/election/{}".format(election_id) if election_id else ""
     
-def test_whole_audit_flow(client):
     rv = post_json(
-        client, '/audit/basic',
+        client, '{}/audit/basic'.format(url_prefix),
         {
-            "name" : "Primary 2019",
-            "riskLimit" : 10,
-            "randomSeed": "12345678901234567890",
+            "name" : name,
+            "riskLimit" : risk_limit,
+            "randomSeed": random_seed,
 
             "contests" : [
                 {
-                    "id": "contest-1",
+                    "id": contest_id,
                     "name": "Contest 1",
                     "choices": [
                         {
-                            "id": "candidate-1",
+                            "id": candidate_id_1,
                             "name": "Candidate 1",
                             "numVotes": 48121
                         },
                         {
-                            "id": "candidate-2",
+                            "id": candidate_id_2,
                             "name": "Candidate 2",
                             "numVotes": 38026
                         }                        
@@ -153,39 +96,39 @@ def test_whole_audit_flow(client):
     assert json.loads(rv.data)['status'] == "ok"
 
     # before background compute, should be null sample size options
-    rv = client.get('/audit/status')
+    rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
     assert status["contests"][0]["sampleSizeOptions"] is None
 
     # after background compute
     bgcompute.bgcompute()
-    rv = client.get('/audit/status')
+    rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
     assert len(status["contests"][0]["sampleSizeOptions"]) == 4
     
-    assert status["randomSeed"] == "12345678901234567890"
+    assert status["randomSeed"] == random_seed
     assert len(status["contests"]) == 1
-    assert status["riskLimit"] == 10
-    assert status["name"] == "Primary 2019"
+    assert status["riskLimit"] == risk_limit
+    assert status["name"] == name
 
-    assert status["contests"][0]["choices"][0]["id"] == "candidate-1"
+    assert status["contests"][0]["choices"][0]["id"] == candidate_id_1
 
     rv = post_json(
-        client, '/audit/jurisdictions',
+        client, '{}/audit/jurisdictions'.format(url_prefix),
         {
 	    "jurisdictions": [
 		{
-		    "id": "adams-county",
+		    "id": jurisdiction_id,
 		    "name": "Adams County",
-		    "contests": ["contest-1"],
+		    "contests": [contest_id],
                     "auditBoards": [
 			{
-			    "id": "1a528034-acf1-11e9-bac5-2fee92515700",
+			    "id": audit_board_id_1,
                             "name": "Audit Board #1",
 			    "members": []
 			},
 			{
-			    "id": "22e68ce0-acf1-11e9-9e25-e38239fbbe6b",
+			    "id": audit_board_id_2,
                             "name": "Audit Board #2",
 			    "members": []
 			}
@@ -196,14 +139,14 @@ def test_whole_audit_flow(client):
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    rv = client.get('/audit/status')
+    rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
 
     assert len(status["jurisdictions"]) == 1
     jurisdiction = status["jurisdictions"][0]
     assert jurisdiction["name"] == "Adams County"
     assert jurisdiction["auditBoards"][1]["name"] == "Audit Board #2"
-    assert jurisdiction["contests"] == ["contest-1"]
+    assert jurisdiction["contests"] == [contest_id]
 
     # choose a sample size
     sample_size_90 = [option for option in status["contests"][0]["sampleSizeOptions"] if option["prob"] == 0.9]
@@ -211,7 +154,7 @@ def test_whole_audit_flow(client):
     sample_size = sample_size_90[0]["size"]
 
     # set the sample_size
-    rv = post_json(client, '/audit/sample-size', {
+    rv = post_json(client, '{}/audit/sample-size'.format(url_prefix), {
         "size": sample_size
     })
 
@@ -221,12 +164,12 @@ def test_whole_audit_flow(client):
     data = {}
     data['manifest'] = (open(manifest_file_path, "rb"), 'manifest.csv')
     rv = client.post(
-        '/jurisdiction/adams-county/manifest', data=data,
+        '{}/jurisdiction/{}/manifest'.format(url_prefix, jurisdiction_id), data=data,
         content_type='multipart/form-data')
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    rv = client.get('/audit/status')
+    rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
     manifest = status['jurisdictions'][0]['ballotManifest']
     
@@ -236,10 +179,10 @@ def test_whole_audit_flow(client):
     assert manifest['uploadedAt']
 
     # delete the manifest and make sure that works
-    rv = client.delete('/jurisdiction/adams-county/manifest')
+    rv = client.delete('{}/jurisdiction/{}/manifest'.format(url_prefix, jurisdiction_id))
     assert json.loads(rv.data)['status'] == "ok"
 
-    rv = client.get('/audit/status')
+    rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
     manifest = status['jurisdictions'][0]['ballotManifest']
 
@@ -250,13 +193,13 @@ def test_whole_audit_flow(client):
     data = {}
     data['manifest'] = (open(manifest_file_path, "rb"), 'manifest.csv')
     rv = client.post(
-        '/jurisdiction/adams-county/manifest', data=data,
+        '{}/jurisdiction/{}/manifest'.format(url_prefix, jurisdiction_id), data=data,
         content_type='multipart/form-data')
 
     assert json.loads(rv.data)['status'] == 'ok'
 
     # get the retrieval list for round 1
-    rv = client.get('/jurisdiction/adams-county/1/retrieval-list')
+    rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').split("\r\n")
     assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
     assert len(lines) > 5
@@ -267,14 +210,14 @@ def test_whole_audit_flow(client):
     # post results for round 1
     num_for_winner = int(num_ballots * 0.56)
     num_for_loser = num_ballots - num_for_winner
-    rv = post_json(client, '/jurisdiction/adams-county/1/results',
+    rv = post_json(client, '{}/jurisdiction/{}/1/results'.format(url_prefix, jurisdiction_id),
                    {
 	               "contests": [
 		           {
-			       "id": "contest-1",
+			       "id": contest_id,
    			       "results": {
-				   "candidate-1": num_for_winner,
-				   "candidate-2": num_for_loser
+				   candidate_id_1: num_for_winner,
+				   candidate_id_2: num_for_loser
 			       }
 		           }
 	               ]
@@ -282,18 +225,21 @@ def test_whole_audit_flow(client):
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    rv = client.get('/audit/status')
+    rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
     round_contest = status["rounds"][0]["contests"][0]
-    assert round_contest["id"] == "contest-1"
-    assert round_contest["results"]["candidate-1"] == num_for_winner
-    assert round_contest["results"]["candidate-2"] == num_for_loser
+    assert round_contest["id"] == contest_id
+    assert round_contest["results"][candidate_id_1] == num_for_winner
+    assert round_contest["results"][candidate_id_2] == num_for_loser
     assert round_contest["endMeasurements"]["isComplete"]
     assert math.floor(round_contest["endMeasurements"]["pvalue"] * 100) <= 5
 
+def run_election_reset(client, election_id):
+    url_prefix = "/election/{}".format(election_id) if election_id else ""
+
     # reset
-    client.post('/audit/reset')
-    rv = client.get('/audit/status')
+    client.post('{}/audit/reset'.format(url_prefix))
+    rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
 
     assert status["riskLimit"] == None

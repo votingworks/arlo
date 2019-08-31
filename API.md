@@ -165,7 +165,7 @@ straight file upload `multipart/form-data`
 
 - `DELETE /election/{electionId}/jurisdiction/<jurisdiction_id>/manifest` -- delete the ballot manifest
 
-- `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/<round_id>/results` -- the results for one round
+- `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/<round_num>/results` -- the results for one round
 
 ```
 {
@@ -181,7 +181,7 @@ straight file upload `multipart/form-data`
 }
 ```
 
-- `GET /election/{electionId}/jurisdiction/<jurisdiction_id>/<round_id>/retrieval-list` -- retrieval list as an attachment
+- `GET /election/{electionId}/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list` -- retrieval list as an attachment
 
 - `GET /election/{electionId}/audit/report` -- the audit report
 
