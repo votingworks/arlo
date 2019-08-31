@@ -27,7 +27,7 @@ class Election(db.Model):
 class Jurisdiction(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     election_id = db.Column(db.String(200), db.ForeignKey('election.id', ondelete='cascade'), nullable=False)
-    name = db.Column(db.String(200), unique=True, nullable=False)
+    name = db.Column(db.String(200), nullable=False)
     manifest = db.Column(db.Text, nullable=True)
     manifest_filename = db.Column(db.String(250), nullable=True)
     manifest_uploaded_at = db.Column(db.DateTime(timezone=False), nullable=True)
@@ -99,15 +99,20 @@ class AuditBoard(db.Model):
     sampled_ballots = relationship('SampledBallot', backref='audit_board', passive_deletes=True)
     
 class Round(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(200), primary_key=True)
     election_id = db.Column(db.String(200), db.ForeignKey('election.id', ondelete='cascade'), nullable=False)
+    round_num = db.Column(db.Integer, nullable = False)
     started_at = db.Column(db.DateTime, nullable=False)
     ended_at = db.Column(db.DateTime, nullable=True)
+
+    __table_args__ = (
+        db.UniqueConstraint('election_id', 'round_num'),
+    )        
     
     round_contests = relationship('RoundContest', backref='round', passive_deletes=True)
 
 class SampledBallot(db.Model):
-    round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
+    round_id = db.Column(db.String(200), db.ForeignKey('round.id'), nullable=False)
     jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
     batch_id = db.Column(db.String(200), db.ForeignKey('batch.id', ondelete='cascade'), nullable=False)
 
@@ -122,7 +127,7 @@ class SampledBallot(db.Model):
     audit_board_id = db.Column(db.String(200), db.ForeignKey('audit_board.id', ondelete='cascade'), nullable=False)
     
 class RoundContest(db.Model):
-    round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
+    round_id = db.Column(db.String(200), db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
 
     results = relationship('RoundContestResult', backref='round_contest', passive_deletes=True)
@@ -136,7 +141,7 @@ class RoundContest(db.Model):
     sample_size = db.Column(db.Integer)
 
 class RoundContestResult(db.Model):
-    round_id = db.Column(db.Integer, db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
+    round_id = db.Column(db.String(200), db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
     __table_args__ = (
         db.PrimaryKeyConstraint('round_id', 'targeted_contest_choice_id'),
