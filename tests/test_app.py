@@ -46,6 +46,9 @@ def test_whole_audit_flow(client):
     run_whole_audit_flow(client, election_id_1, "Primary 2019", 10, "12345678901234567890")
     run_whole_audit_flow(client, election_id_2, "General 2019", 5, "12345678901234599999")
 
+    # also the old flow with no URL prefix
+    run_whole_audit_flow(client, None, "Legacy", 5, "77777666665555544444")    
+
     # after resetting election 1, election 2 is still around
     run_election_reset(client, election_id_1)
 
