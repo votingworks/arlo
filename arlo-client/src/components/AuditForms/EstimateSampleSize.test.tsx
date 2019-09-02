@@ -433,7 +433,7 @@ describe('EstimateSampleSize', () => {
       .fn()
       .mockImplementation(async () => statusStates[0])
 
-    const { getByTestId } = render(
+    const { getByLabelText, getByText } = render(
       <EstimateSampleSize
         audit={statusStates[0]}
         isLoading={false}
@@ -445,12 +445,14 @@ describe('EstimateSampleSize', () => {
     )
 
     estimateSampleSizeMocks.inputs.forEach(inputData => {
-      const input = getByTestId(inputData.key) as HTMLInputElement
+      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
+        selector: 'input',
+      }) as HTMLInputElement
       fireEvent.change(input, { target: { value: inputData.value } })
       expect(input.value).toBe(inputData.value)
     })
 
-    fireEvent.click(getByTestId('submit-form-one'), { bubbles: true })
+    fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
     await wait(() => {
       expect(apiMock).toHaveBeenCalled()
       const { body } = apiMock.mock.calls[0][1] as { body: string }
