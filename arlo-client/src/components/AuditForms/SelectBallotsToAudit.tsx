@@ -86,7 +86,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         Array(parseInt(values.auditBoards)).keys()
       ).map(i => {
         return {
-          id: `audit-board-${i + 1}`,
+          id: uuidv4(),
           name: `Audit Board #${i + 1}`,
           members: [],
         }

@@ -231,7 +231,7 @@ describe('SelectBallotsToAudit', () => {
               contests: ['contest-1'],
               auditBoards: [
                 {
-                  id: 'audit-board-1',
+                  id: expect.stringMatching(/^[-0-9a-z]+$/),
                   name: 'Audit Board #1',
                   members: [],
                 },
