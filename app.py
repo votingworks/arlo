@@ -420,14 +420,16 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_num, election_id=None):
     # check the jurisdiction and round
     jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).one()
     round = Round.query.filter_by(election_id = election.id, round_num = round_num).one()
-    
-    ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = round.id).order_by('batch_id', 'ballot_position').all()
+
+    ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = round.id).join(Batch).join(AuditBoard).order_by(AuditBoard.name, Batch.name, 'ballot_position').all()
 
     for ballot in ballots:
-        retrieval_list_writer.writerow([ballot.batch_id, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board.name])
+        retrieval_list_writer.writerow([ballot.batch.name, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board.name])
 
+    clean_jurisdiction_name = jurisdiction.name.replace(" ","-")
+        
     response = Response(csv_io.getvalue())
-    response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-{:s}-{:s}.csv"'.format(jurisdiction_id, round_num)
+    response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-{:s}-{:s}.csv"'.format(clean_jurisdiction_name, round_num)
     return response
 
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/results', methods=["POST"])
