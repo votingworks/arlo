@@ -20,6 +20,7 @@ import {
   Spinner,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -36,9 +37,16 @@ import FormField from '../Form/FormField'
 export const Select = styled(HTMLSelect)`
   margin-left: 5px;
 `
+export const AuditBoardsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`
 
-export const NameField = styled(Field)`
-  margin-right: 5px;
+export const AuditBoard = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 5px 20px 5px 0;
+  width: 100px;
 `
 
 interface SampleSizeOptionsByContest {
@@ -338,15 +346,26 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                         {generateOptions(15)}
                       </Field>
                     </label>
-                    {values.auditNames.map((name, i) => (
-                      /* eslint-disable react/no-array-index-key */
-                      <NameField
-                        key={i}
-                        name={`auditNames[${i}]`}
-                        data-testid={`audit-name-${i}`}
-                        disabled={!!audit.rounds.length}
-                      />
-                    ))}
+                    <AuditBoardsWrapper>
+                      {values.auditNames.map((name, i) => (
+                        /* eslint-disable react/no-array-index-key */
+                        <AuditBoard key={i}>
+                          <Field
+                            name={`auditNames[${i}]`}
+                            data-testid={`audit-name-${i}`}
+                            disabled={!!audit.rounds.length}
+                          />
+                          {!!audit.rounds.length && (
+                            <Link
+                              to={`/board/${audit.jurisdictions[0].auditBoards[i].id}`}
+                              className="bp3-text-small"
+                            >
+                              {name}
+                            </Link>
+                          )}
+                        </AuditBoard>
+                      ))}
+                    </AuditBoardsWrapper>
                   </FormSection>
                 )
               }}
