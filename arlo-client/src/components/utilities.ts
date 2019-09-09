@@ -1,9 +1,9 @@
-import { Params } from '../types'
+import { ICreateAuditParams } from '../types'
 import number from '../utils/number-schema'
 
 export const api = async <T>(
   endpoint: string,
-  { electionId, ...options }: Params & RequestInit
+  { electionId, ...options }: ICreateAuditParams & RequestInit
 ): Promise<T> => {
   const apiBaseURL = electionId ? `/election/${electionId}` : ''
   const res = await fetch(apiBaseURL + endpoint, options)
