@@ -6,6 +6,7 @@ import {
   waitForElement,
   wait,
 } from '@testing-library/react'
+import { BrowserRouter as Router } from 'react-router-dom'
 import AuditForms from './index'
 import { statusStates } from './_mocks'
 import { api } from '../utilities'
@@ -119,7 +120,11 @@ describe('RiskLimitingAuditForm', () => {
     apiMock.mockImplementation(async () => statusStates[4])
     let utils: RenderResult
     await act(async () => {
-      utils = render(<AuditForms {...routeProps} />) // this one will not have the first empty round
+      utils = render(
+        <Router>
+          <AuditForms {...routeProps} />
+        </Router>
+      ) // this one will not have the first empty round
     })
     const { container, getByTestId } = utils!
 

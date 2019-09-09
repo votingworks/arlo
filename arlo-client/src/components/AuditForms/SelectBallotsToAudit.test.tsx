@@ -1,5 +1,6 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
+import { BrowserRouter as Router } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import { statusStates, ballotManifest } from './_mocks'
@@ -21,7 +22,7 @@ async function inputAndSubmitForm() {
     .fn()
     .mockImplementationOnce(async () => statusStates[5]) // the POST to /election/{electionId}/audit/status after manifest
 
-  const { getByLabelText, getByText } = render(
+  const { getByLabelText, getByText, getByTestId } = render(
     <SelectBallotsToAudit
       audit={statusStates[2]}
       isLoading={false}
@@ -44,7 +45,10 @@ async function inputAndSubmitForm() {
     new RegExp(regexpEscape('Set the number of audit boards you wish to use.')),
     { selector: 'select' }
   )
-  fireEvent.change(auditBoardInput, { target: { selected: 1 } })
+  fireEvent.change(auditBoardInput, { target: { selectedIndex: 1 } })
+
+  const boardOneNameInput: HTMLElement = getByTestId('audit-name-0')
+  fireEvent.change(boardOneNameInput, { target: { value: 'Board One' } })
 
   const sampleSizeInput = getByLabelText(
     '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
@@ -210,14 +214,16 @@ describe('SelectBallotsToAudit', () => {
 
   it('changes sampleSize based on audit.rounds.contests.sampleSize', () => {
     const { getByLabelText } = render(
-      <SelectBallotsToAudit
-        audit={statusStates[5]}
-        isLoading={false}
-        setIsLoading={jest.fn()}
-        updateAudit={jest.fn()}
-        getStatus={jest.fn()}
-        electionId="1"
-      />
+      <Router>
+        <SelectBallotsToAudit
+          audit={statusStates[5]}
+          isLoading={false}
+          setIsLoading={jest.fn()}
+          updateAudit={jest.fn()}
+          getStatus={jest.fn()}
+          electionId="1"
+        />
+      </Router>
     )
 
     expect(
@@ -228,7 +234,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('changes number of audits', () => {
-    const { getByLabelText } = render(
+    const { getByLabelText, container } = render(
       <SelectBallotsToAudit
         audit={statusStates[1]}
         isLoading={false}
@@ -249,10 +255,13 @@ describe('SelectBallotsToAudit', () => {
     if (auditBoardInput instanceof HTMLSelectElement) {
       fireEvent.change(auditBoardInput, { target: { selectedIndex: 2 } })
       expect(auditBoardInput.selectedOptions[0].innerHTML).toBe('3')
+      expect(container).toMatchSnapshot()
+      fireEvent.change(auditBoardInput, { target: { selectedIndex: 1 } })
+      expect(container).toMatchSnapshot()
     }
   })
 
-  it('submits sample size, ballot manifest, and number of audits', async () => {
+  it('submits sample size, ballot manifest, and audits', async () => {
     apiMock.mockImplementation(async () => ({}))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
@@ -288,7 +297,12 @@ describe('SelectBallotsToAudit', () => {
               auditBoards: [
                 {
                   id: expect.stringMatching(/^[-0-9a-z]+$/),
-                  name: 'Audit Board #1',
+                  name: 'Board One',
+                  members: [],
+                },
+                {
+                  id: expect.stringMatching(/^[-0-9a-z]+$/),
+                  name: 'Audit Board #2',
                   members: [],
                 },
               ],

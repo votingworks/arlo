@@ -3,7 +3,7 @@
 exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not 1`] = `
 <div>
   <div
-    class="sc-dxgOiQ bhYtUw"
+    class="sc-ckVGcZ eszSbn"
   >
     <form
       data-testid="form-one"
@@ -912,7 +912,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
-            Desired Risk Limit
+            Audit Boards
           </h3>
           <label
             for="risk-limit"
@@ -1009,6 +1009,19 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               </span>
             </div>
           </label>
+          <div
+            class="sc-chPdSV gtWHTz"
+          >
+            <div
+              class="sc-kgoBCf iQYtxk"
+            >
+              <input
+                data-testid="audit-name-0"
+                name="auditNames[0]"
+                value="Audit Board #1"
+              />
+            </div>
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -1052,7 +1065,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
 exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-dxgOiQ bhYtUw"
+    class="sc-ckVGcZ eszSbn"
   >
     <form
       data-testid="form-one"
@@ -1472,7 +1485,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `
 <div>
   <div
-    class="sc-dxgOiQ bhYtUw"
+    class="sc-ckVGcZ eszSbn"
   >
     <form
       data-testid="form-one"
@@ -1981,7 +1994,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
-            Number of Audit Boards
+            Audit Boards
           </h3>
           <label
             for="auditBoards"
@@ -2063,6 +2076,26 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               </span>
             </div>
           </label>
+          <div
+            class="sc-chPdSV gtWHTz"
+          >
+            <div
+              class="sc-kgoBCf iQYtxk"
+            >
+              <input
+                data-testid="audit-name-0"
+                disabled=""
+                name="auditNames[0]"
+                value="Audit Board #1"
+              />
+              <a
+                class="bp3-text-small"
+                href="/board/audit-board-1"
+              >
+                Audit Board #1
+              </a>
+            </div>
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -2192,13 +2225,13 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             1
           </div>
           <div
-            class="sc-kgoBCf fuaboP"
+            class="sc-kGXeez cKHYaP"
           >
             <div
-              class="sc-kpOJdX hKRPvv"
+              class="sc-dxgOiQ kGFUGt"
             >
               <label
-                class="sc-kGXeez jQgNtA"
+                class="sc-kpOJdX dKAXoN"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -2221,10 +2254,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               </div>
             </div>
             <div
-              class="sc-kpOJdX hKRPvv"
+              class="sc-dxgOiQ kGFUGt"
             >
               <label
-                class="sc-kGXeez jQgNtA"
+                class="sc-kpOJdX dKAXoN"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -2288,7 +2321,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
 exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status returns contest data 1`] = `
 <div>
   <div
-    class="sc-dxgOiQ bhYtUw"
+    class="sc-ckVGcZ eszSbn"
   >
     <form
       data-testid="form-one"
@@ -2656,6 +2689,19 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               </span>
             </div>
           </label>
+          <div
+            class="sc-chPdSV gtWHTz"
+          >
+            <div
+              class="sc-kgoBCf iQYtxk"
+            >
+              <input
+                data-testid="audit-name-0"
+                name="auditNames[0]"
+                value=""
+              />
+            </div>
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -2793,7 +2839,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
-            Number of Audit Boards
+            Audit Boards
           </h3>
           <label
             for="auditBoards"
@@ -2926,7 +2972,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
 exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
 <div>
   <div
-    class="sc-dxgOiQ bhYtUw"
+    class="sc-ckVGcZ eszSbn"
   >
     <form
       data-testid="form-one"
