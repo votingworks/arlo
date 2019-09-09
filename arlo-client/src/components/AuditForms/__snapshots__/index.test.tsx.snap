@@ -996,12 +996,19 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               </span>
             </div>
           </label>
-          <input
-            class="sc-chPdSV facZVB"
-            data-testid="audit-name-0"
-            name="auditNames[0]"
-            value="Audit Board #1"
-          />
+          <div
+            class="sc-chPdSV gtWHTz"
+          >
+            <div
+              class="sc-kgoBCf iQYtxk"
+            >
+              <input
+                data-testid="audit-name-0"
+                name="auditNames[0]"
+                value="Audit Board #1"
+              />
+            </div>
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -2662,12 +2669,19 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               </span>
             </div>
           </label>
-          <input
-            class="sc-chPdSV facZVB"
-            data-testid="audit-name-0"
-            name="auditNames[0]"
-            value=""
-          />
+          <div
+            class="sc-chPdSV gtWHTz"
+          >
+            <div
+              class="sc-kgoBCf iQYtxk"
+            >
+              <input
+                data-testid="audit-name-0"
+                name="auditNames[0]"
+                value=""
+              />
+            </div>
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
