@@ -65,10 +65,6 @@ export const QR = styled(QRCode)`
   padding: 3px;
 `
 
-export const NameField = styled(Field)`
-  margin-right: 5px;
-`
-
 interface ISampleSizeOptionsByContest {
   [key: string]: ISampleSizeOption[]
 }
