@@ -1,9 +1,9 @@
 import * as Yup from 'yup'
-import { Params } from '../types'
+import { CreateAuditParams } from '../types'
 
 export const api = <T>(
   endpoint: string,
-  { electionId, ...options }: Params & RequestInit
+  { electionId, ...options }: CreateAuditParams & RequestInit
 ): Promise<T> => {
   const apiBaseURL = electionId ? `/election/${electionId}` : ''
   return fetch(apiBaseURL + endpoint, options).then(res => {
