@@ -27,7 +27,7 @@ import FormSection, {
 import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
-import { Jurisdiction, Audit, SampleSizeOption } from '../../types'
+import { Jurisdiction, Audit, SampleSizeOption, IAuditBoard } from '../../types'
 import { api, testNumber } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
@@ -37,6 +37,10 @@ import { formattedUpTo } from '../../utils/indexes'
 
 export const Select = styled(HTMLSelect)`
   margin-left: 5px;
+`
+
+export const NameField = styled(Field)`
+  margin-right: 5px;
 `
 
 interface SampleSizeOptionsByContest {
@@ -160,9 +164,13 @@ const SelectBallotsToAudit: React.FC<Props> = ({
   const numberOfBoards =
     (audit.jurisdictions.length && audit.jurisdictions[0].auditBoards.length) ||
     1
+  const auditNames =
+    audit.jurisdictions.length && audit.jurisdictions[0].auditBoards.length
+      ? audit.jurisdictions[0].auditBoards.map((board: IAuditBoard) => board.name)
+      : Array(numberOfBoards).fill('')
   const initialState: SelectBallotsToAuditValues = {
     auditBoards: '' + numberOfBoards,
-    auditNames: Array(numberOfBoards).fill(''),
+    auditNames,
     manifest: null, // eslint-disable-line no-null/no-null
     sampleSize: [...audit.rounds[0].contests].reduce(
       (a: { [key: string]: string }, c) => {
@@ -318,7 +326,6 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                   if (n < num) {
                     Array.from(Array(num - n).keys()).forEach(i => utils.pop())
                   }
-                  console.log(num, n)
                 }
                 return (
                   <FormSection label="Audit Boards">
@@ -337,7 +344,12 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                       </Field>
                     </label>
                     {values.auditNames.map((name, i) => (
-                      <Field key={i} name={`auditNames[${i}]`} />
+                      /* eslint-disable react/no-array-index-key */
+                      <NameField
+                        key={i}
+                        name={`auditNames[${i}]`}
+                        disabled={!!audit.rounds.length}
+                      />
                     ))}
                   </FormSection>
                 )
