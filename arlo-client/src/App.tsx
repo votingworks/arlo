@@ -30,6 +30,7 @@ const App: React.FC = () => {
             component={AuditFlow}
           />
           <Route path="/election/:electionId" component={AuditForms} />
+          <Route path="/board/:token" component={AuditFlow} />
           <Route>404</Route>
         </Switch>
       </Main>
