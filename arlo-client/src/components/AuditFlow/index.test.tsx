@@ -1,4 +1,5 @@
 import React from 'react'
+<<<<<<< HEAD
 import { render, wait, fireEvent } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
 import { routerTestProps } from '../testUtilities'
@@ -184,4 +185,15 @@ describe('AuditFlow ballot interaction', () => {
       expect(apiMock).toBeCalledTimes(4)
     })
   })
+=======
+import { render } from '@testing-library/react'
+import { routerTestProps } from '../testUtilities'
+import AuditFlow from './index'
+
+const routeProps = routerTestProps('/board/:token', { token: '123' })
+
+it('renders correctly', () => {
+  const { container } = render(<AuditFlow {...routeProps} />)
+  expect(container).toMatchSnapshot()
+>>>>>>> updating tests
 })

@@ -22,7 +22,7 @@ async function inputAndSubmitForm() {
     .fn()
     .mockImplementationOnce(async () => statusStates[5]) // the POST to /audit/status after manifest
 
-  const { getByLabelText, getByText } = render(
+  const { getByLabelText, getByText, getByTestId } = render(
     <SelectBallotsToAudit
       audit={statusStates[2]}
       isLoading={false}
@@ -47,8 +47,13 @@ async function inputAndSubmitForm() {
   )
   fireEvent.change(auditBoardInput, { target: { selectedIndex: 1 } })
 
+<<<<<<< HEAD
   // const boardOneNameInput: HTMLElement = getByTestId('audit-name-0')
   // fireEvent.change(boardOneNameInput, { target: { value: 'Board One' } }) // removed until custom audit board name feature is added again
+=======
+  const boardOneNameInput: HTMLElement = getByTestId('audit-name-0')
+  fireEvent.change(boardOneNameInput, { target: { value: 'Board One' } })
+>>>>>>> updating tests
 
   const sampleSizeInput = getByLabelText(
     '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
@@ -290,7 +295,11 @@ describe('SelectBallotsToAudit', () => {
               auditBoards: [
                 {
                   id: expect.stringMatching(/^[-0-9a-z]+$/),
+<<<<<<< HEAD
                   name: 'Audit Board #1', // change to 'Board One' if custom audit board feature is added back again
+=======
+                  name: 'Board One',
+>>>>>>> updating tests
                   members: [],
                 },
                 {
