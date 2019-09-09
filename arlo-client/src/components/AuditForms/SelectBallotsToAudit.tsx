@@ -343,6 +343,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                       <NameField
                         key={i}
                         name={`auditNames[${i}]`}
+                        data-testid={`audit-name-${i}`}
                         disabled={!!audit.rounds.length}
                       />
                     ))}
