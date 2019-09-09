@@ -109,15 +109,12 @@ const contestsSchema = Yup.array()
           'is-sufficient',
           'Must be greater than or equal to the sum of votes for each candidate/choice',
           function(value?: any) {
-            if (value) {
-              const { choices } = this.parent
-              const totalVoters = choices.reduce(
-                (a: number, v: ChoiceValues) => a + (Number(v.numVotes) || 0),
-                0
-              )
-              return Number(value) >= totalVoters || this.createError()
-            }
-            return false
+            const { choices } = this.parent
+            const totalVoters = choices.reduce(
+              (a: number, v: ChoiceValues) => a + (Number(v.numVotes) || 0),
+              0
+            )
+            return Number(value) >= totalVoters || this.createError()
           }
         )
         .required('Required'),

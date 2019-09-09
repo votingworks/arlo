@@ -48,6 +48,27 @@ const estimateSampleSizeMocks = {
   errorInputs: [
     { key: 'Election Name', value: '', error: 'Required' },
     { key: 'Contest Name', value: '', error: 'Required' },
+    {
+      key: 'Total Ballots for Contest',
+      value: '',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Total Ballots for Contest',
+      value: 'test',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Total Ballots for Contest',
+      value: '-1',
+      error:
+        'Must be greater than or equal to the sum of votes for each candidate/choice',
+    },
+    {
+      key: 'Total Ballots for Contest',
+      value: '0.5',
+      error: 'Must be an integer',
+    },
     { key: 'Name of Candidate/Choice 1', value: '', error: 'Required' },
     { key: 'Name of Candidate/Choice 2', value: '', error: 'Required' },
     {
@@ -87,26 +108,6 @@ const estimateSampleSizeMocks = {
     },
     {
       key: 'Votes for Candidate/Choice 2',
-      value: '0.5',
-      error: 'Must be an integer',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: '',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: 'test',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: '-1',
-      error: 'Must be a positive number',
-    },
-    {
-      key: 'Total Ballots for Contest',
       value: '0.5',
       error: 'Must be an integer',
     },
