@@ -1000,7 +1000,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
             class="sc-chPdSV gtWHTz"
           >
             <div
-              class="sc-kgoBCf iQYtxk"
+              class="sc-kgoBCf khjmnC"
             >
               <input
                 data-testid="audit-name-0"
@@ -2673,7 +2673,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             class="sc-chPdSV gtWHTz"
           >
             <div
-              class="sc-kgoBCf iQYtxk"
+              class="sc-kgoBCf khjmnC"
             >
               <input
                 data-testid="audit-name-0"
