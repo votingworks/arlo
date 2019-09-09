@@ -12,6 +12,7 @@ import {
 } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
+import QRCode from 'qrcode.react'
 import {
   RadioGroup,
   Radio,
@@ -29,7 +30,7 @@ import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
 import { Jurisdiction, Audit, SampleSizeOption, IAuditBoard } from '../../types'
-import { api, testNumber } from '../utilities'
+import { api, testNumber, openQR } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
 import FormField from '../Form/FormField'
@@ -49,6 +50,19 @@ export const AuditBoard = styled.div`
   flex-direction: column;
   margin: 5px 20px 5px 0;
   width: 100px;
+  text-align: center;
+`
+
+// override size on QR element to display in grid
+export const QR = styled(QRCode)`
+  margin: 2px;
+  border: 1px solid #000000;
+  cursor: pointer;
+  /* stylelint-disable */
+  width: 90px !important;
+  height: 90px !important;
+  /* stylelint-enable */
+  padding: 3px;
 `
 
 interface SampleSizeOptionsByContest {
@@ -361,12 +375,31 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                             disabled={!!audit.rounds.length}
                           />
                           {!!audit.rounds.length && (
-                            <Link
-                              to={`/board/${audit.jurisdictions[0].auditBoards[i].id}`}
-                              className="bp3-text-small"
-                            >
-                              {name}
-                            </Link>
+                            <>
+                              <Link
+                                to={`/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}
+                                className="bp3-text-small"
+                              >
+                                {name}
+                              </Link>
+                              {/* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus */}
+                              <span
+                                id={`qr-${audit.jurisdictions[0].auditBoards[i].id}`}
+                                title="Click to print"
+                                role="button"
+                                onClick={() =>
+                                  openQR(
+                                    audit.jurisdictions[0].auditBoards[i].id,
+                                    name
+                                  )
+                                }
+                              >
+                                <QR
+                                  value={`http://localhost:3000/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}
+                                  size={250} // set size for printing so resolution is right
+                                />
+                              </span>
+                            </>
                           )}
                         </AuditBoard>
                       ))}

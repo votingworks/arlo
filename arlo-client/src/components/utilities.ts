@@ -65,3 +65,42 @@ export const asyncForEach = async <T>(
     await callback(array[index], index, array)
   }
 }
+
+export const openQR = (id: string, name: string) => {
+  const qr: HTMLCanvasElement | null = document.querySelector(
+    `#qr-${id} > canvas`
+  )
+  /* istanbul ignore else */
+  if (qr) {
+    const url = qr.toDataURL()
+    let windowContent = `<!DOCTYPE html>
+    <html>
+    <head><title>Print QR Code for Audit: ${name}</title></head>
+    <body>
+    <img src="${url}">
+    </body>
+    </html>`
+
+    const printWin = window.open(
+      '',
+      '',
+      'width=' +
+        window.screen.availWidth +
+        ',height=' +
+        window.screen.availHeight
+    ) as Window
+    printWin.document.open()
+    printWin.document.write(windowContent)
+
+    printWin.document.addEventListener(
+      'load',
+      () => {
+        printWin.focus()
+        printWin.print()
+        printWin.document.close()
+        printWin.close()
+      },
+      true
+    )
+  }
+}
