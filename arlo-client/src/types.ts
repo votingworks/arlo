@@ -2,7 +2,7 @@ export interface CreateAuditParams {
   electionId: string
 }
 
-export interface AuditFlowParams {
+export interface AuditFlowParams extends CreateAuditParams {
   token: string
 }
 

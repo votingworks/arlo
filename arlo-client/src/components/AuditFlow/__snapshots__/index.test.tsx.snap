@@ -2,7 +2,9 @@
 
 exports[`renders correctly 1`] = `
 <div>
-  <p>
+  <p
+    class="sc-bdVaJa dHwYGt"
+  >
     Audit: 
     123
   </p>

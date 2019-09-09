@@ -25,8 +25,11 @@ const App: React.FC = () => {
         <Route path="/election" component={Header} />
         <Switch>
           <Route exact path="/" component={CreateAudit} />
+          <Route
+            path="/election/:electionId/board/:token"
+            component={AuditFlow}
+          />
           <Route path="/election/:electionId" component={AuditForms} />
-          <Route path="/board/:token" component={AuditFlow} />
           <Route>404</Route>
         </Switch>
       </Main>

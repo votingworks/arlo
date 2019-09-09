@@ -3,7 +3,10 @@ import { render } from '@testing-library/react'
 import { routerTestProps } from '../testUtilities'
 import AuditFlow from './index'
 
-const routeProps = routerTestProps('/board/:token', { token: '123' })
+const routeProps = routerTestProps('/board/:token', {
+  electionId: '1',
+  token: '123',
+})
 
 it('renders correctly', () => {
   const { container } = render(<AuditFlow {...routeProps} />)
