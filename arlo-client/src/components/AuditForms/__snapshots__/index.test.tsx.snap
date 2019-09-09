@@ -3,7 +3,7 @@
 exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ eszSbn"
+    class="sc-jKJlTe fVUbzk"
   >
     <form
       data-testid="form-one"
@@ -1009,7 +1009,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
             class="sc-chPdSV gtWHTz"
           >
             <div
-              class="sc-kgoBCf iQYtxk"
+              class="sc-kgoBCf khjmnC"
             >
               <input
                 data-testid="audit-name-0"
@@ -1074,7 +1074,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
 exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ eszSbn"
+    class="sc-jKJlTe fVUbzk"
   >
     <form
       data-testid="form-one"
@@ -1494,7 +1494,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ eszSbn"
+    class="sc-jKJlTe fVUbzk"
   >
     <form
       data-testid="form-one"
@@ -2089,7 +2089,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             class="sc-chPdSV gtWHTz"
           >
             <div
-              class="sc-kgoBCf iQYtxk"
+              class="sc-kgoBCf khjmnC"
             >
               <input
                 data-testid="audit-name-0"
@@ -2099,10 +2099,16 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               />
               <a
                 class="bp3-text-small"
-                href="/board/audit-board-1"
+                href="/election/1/board/audit-board-1"
               >
                 Audit Board #1
               </a>
+              <canvas
+                class="sc-kGXeez fNlkfO"
+                height="90"
+                style="height: 90px; width: 90px;"
+                width="90"
+              />
             </div>
           </div>
         </div>
@@ -2212,13 +2218,13 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             1
           </div>
           <div
-            class="sc-kGXeez cKHYaP"
+            class="sc-kpOJdX bWluBY"
           >
             <div
-              class="sc-dxgOiQ kGFUGt"
+              class="sc-ckVGcZ egdUOn"
             >
               <label
-                class="sc-kpOJdX dKAXoN"
+                class="sc-dxgOiQ fdaIGu"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -2241,10 +2247,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               </div>
             </div>
             <div
-              class="sc-dxgOiQ kGFUGt"
+              class="sc-ckVGcZ egdUOn"
             >
               <label
-                class="sc-kpOJdX dKAXoN"
+                class="sc-dxgOiQ fdaIGu"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -2308,7 +2314,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
 exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status returns contest data 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ eszSbn"
+    class="sc-jKJlTe fVUbzk"
   >
     <form
       data-testid="form-one"
@@ -2680,7 +2686,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             class="sc-chPdSV gtWHTz"
           >
             <div
-              class="sc-kgoBCf iQYtxk"
+              class="sc-kgoBCf khjmnC"
             >
               <input
                 data-testid="audit-name-0"
@@ -2959,7 +2965,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
 exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
 <div>
   <div
-    class="sc-ckVGcZ eszSbn"
+    class="sc-jKJlTe fVUbzk"
   >
     <form
       data-testid="form-one"
