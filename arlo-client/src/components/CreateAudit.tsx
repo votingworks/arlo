@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router-dom'
 import FormButton from './Form/FormButton'
 import { api } from './utilities'
-import { Params } from '../types'
+import { CreateAuditParams } from '../types'
 
 const Button = styled(FormButton)`
   margin: 65px 0;
@@ -20,7 +20,7 @@ const Wrapper = styled.div`
   }
 `
 
-const CreateAudit = ({ history }: RouteComponentProps<Params>) => {
+const CreateAudit = ({ history }: RouteComponentProps<CreateAuditParams>) => {
   const [loading, setLoading] = useState(false)
   const onClick = async () => {
     setLoading(true)

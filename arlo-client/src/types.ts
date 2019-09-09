@@ -1,5 +1,9 @@
-export interface Params {
+export interface CreateAuditParams {
   electionId: string
+}
+
+export interface AuditFlowParams {
+  token: string
 }
 
 export interface Candidate {

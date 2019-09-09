@@ -4,7 +4,7 @@ import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
-import { Audit, Params } from '../../types'
+import { Audit, CreateAuditParams } from '../../types'
 import ResetButton from './ResetButton'
 
 const Wrapper = styled.div`
@@ -29,7 +29,7 @@ const initialData: Audit = {
 
 interface Props {
   match: {
-    params: Params
+    params: CreateAuditParams
   }
 }
 
