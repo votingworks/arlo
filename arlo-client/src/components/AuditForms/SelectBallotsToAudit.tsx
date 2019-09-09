@@ -12,6 +12,7 @@ import {
 } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
+import QRCode from 'qrcode.react'
 import {
   RadioGroup,
   Radio,
@@ -49,6 +50,13 @@ export const AuditBoard = styled.div`
   flex-direction: column;
   margin: 5px 20px 5px 0;
   width: 100px;
+  text-align: center;
+`
+
+export const QR = styled(QRCode)`
+  margin: 2px;
+  border: 1px solid #000000;
+  padding: 3px;
 `
 
 interface SampleSizeOptionsByContest {
@@ -361,12 +369,18 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                             disabled={!!audit.rounds.length}
                           />
                           {!!audit.rounds.length && (
-                            <Link
-                              to={`/board/${audit.jurisdictions[0].auditBoards[i].id}`}
-                              className="bp3-text-small"
-                            >
-                              {name}
-                            </Link>
+                            <>
+                              <Link
+                                to={`/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}
+                                className="bp3-text-small"
+                              >
+                                {name}
+                              </Link>
+                              <QR
+                                value={`http://localhost:3000/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}
+                                size={90}
+                              />
+                            </>
                           )}
                         </AuditBoard>
                       ))}
