@@ -171,24 +171,37 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
             </span>
           </div>
         </label>
-        <input
-          class="sc-htoDjs kwqcmB"
-          data-testid="audit-name-0"
-          name="auditNames[0]"
-          value=""
-        />
-        <input
-          class="sc-htoDjs kwqcmB"
-          data-testid="audit-name-1"
-          name="auditNames[1]"
-          value=""
-        />
-        <input
-          class="sc-htoDjs kwqcmB"
-          data-testid="audit-name-2"
-          name="auditNames[2]"
-          value=""
-        />
+        <div
+          class="sc-htoDjs btXLhN"
+        >
+          <div
+            class="sc-dnqmqq cUIJQu"
+          >
+            <input
+              data-testid="audit-name-0"
+              name="auditNames[0]"
+              value=""
+            />
+          </div>
+          <div
+            class="sc-dnqmqq cUIJQu"
+          >
+            <input
+              data-testid="audit-name-1"
+              name="auditNames[1]"
+              value=""
+            />
+          </div>
+          <div
+            class="sc-dnqmqq cUIJQu"
+          >
+            <input
+              data-testid="audit-name-2"
+              name="auditNames[2]"
+              value=""
+            />
+          </div>
+        </div>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -408,18 +421,28 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
             </span>
           </div>
         </label>
-        <input
-          class="sc-htoDjs kwqcmB"
-          data-testid="audit-name-0"
-          name="auditNames[0]"
-          value=""
-        />
-        <input
-          class="sc-htoDjs kwqcmB"
-          data-testid="audit-name-1"
-          name="auditNames[1]"
-          value=""
-        />
+        <div
+          class="sc-htoDjs btXLhN"
+        >
+          <div
+            class="sc-dnqmqq cUIJQu"
+          >
+            <input
+              data-testid="audit-name-0"
+              name="auditNames[0]"
+              value=""
+            />
+          </div>
+          <div
+            class="sc-dnqmqq cUIJQu"
+          >
+            <input
+              data-testid="audit-name-1"
+              name="auditNames[1]"
+              value=""
+            />
+          </div>
+        </div>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -576,12 +599,19 @@ Object {
                 </span>
               </div>
             </label>
-            <input
-              class="sc-htoDjs kwqcmB"
-              data-testid="audit-name-0"
-              name="auditNames[0]"
-              value=""
-            />
+            <div
+              class="sc-htoDjs btXLhN"
+            >
+              <div
+                class="sc-dnqmqq cUIJQu"
+              >
+                <input
+                  data-testid="audit-name-0"
+                  name="auditNames[0]"
+                  value=""
+                />
+              </div>
+            </div>
           </div>
           <div
             class="sc-bdVaJa fdbLH"
@@ -733,12 +763,19 @@ Object {
               </span>
             </div>
           </label>
-          <input
-            class="sc-htoDjs kwqcmB"
-            data-testid="audit-name-0"
-            name="auditNames[0]"
-            value=""
-          />
+          <div
+            class="sc-htoDjs btXLhN"
+          >
+            <div
+              class="sc-dnqmqq cUIJQu"
+            >
+              <input
+                data-testid="audit-name-0"
+                name="auditNames[0]"
+                value=""
+              />
+            </div>
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -1010,12 +1047,19 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
             </span>
           </div>
         </label>
-        <input
-          class="sc-htoDjs kwqcmB"
-          data-testid="audit-name-0"
-          name="auditNames[0]"
-          value=""
-        />
+        <div
+          class="sc-htoDjs btXLhN"
+        >
+          <div
+            class="sc-dnqmqq cUIJQu"
+          >
+            <input
+              data-testid="audit-name-0"
+              name="auditNames[0]"
+              value=""
+            />
+          </div>
+        </div>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -1235,12 +1279,19 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
             </span>
           </div>
         </label>
-        <input
-          class="sc-htoDjs kwqcmB"
-          data-testid="audit-name-0"
-          name="auditNames[0]"
-          value=""
-        />
+        <div
+          class="sc-htoDjs btXLhN"
+        >
+          <div
+            class="sc-dnqmqq cUIJQu"
+          >
+            <input
+              data-testid="audit-name-0"
+              name="auditNames[0]"
+              value=""
+            />
+          </div>
+        </div>
       </div>
       <div
         class="sc-bdVaJa fdbLH"

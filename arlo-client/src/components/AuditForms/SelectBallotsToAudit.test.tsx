@@ -1,5 +1,6 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
+import { BrowserRouter as Router } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import { statusStates, ballotManifest } from './_mocks'
@@ -211,14 +212,16 @@ describe('SelectBallotsToAudit', () => {
 
   it('changes sampleSize based on audit.rounds.contests.sampleSize', () => {
     const { getByLabelText } = render(
-      <SelectBallotsToAudit
-        audit={statusStates[5]}
-        isLoading={false}
-        setIsLoading={jest.fn()}
-        updateAudit={jest.fn()}
-        getStatus={jest.fn()}
-        electionId="1"
-      />
+      <Router>
+        <SelectBallotsToAudit
+          audit={statusStates[5]}
+          isLoading={false}
+          setIsLoading={jest.fn()}
+          updateAudit={jest.fn()}
+          getStatus={jest.fn()}
+          electionId="1"
+        />
+      </Router>
     )
 
     expect(
