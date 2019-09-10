@@ -14,8 +14,10 @@ const Wrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 400px;
   text-align: center;
+  @media (min-width: 500px) {
+    width: 400px;
+  }
 `
 
 const CreateAudit = ({ history }: RouteComponentProps<Params>) => {
