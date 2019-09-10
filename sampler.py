@@ -226,12 +226,12 @@ class Sampler:
                 if n > asns[contest]:
                     samples[contest]['asn'] = {
                         'size': asns[contest],
-                        'prob': str(int(100*float(i/len(trials))))+ '%'
+                        'prob': float(i)/len(trials)
                     }
                     break
-            #samples[contest]['asn'] = asns[contest]   
+
             for quant in quants: 
-                quant_str = str(int(100*quant)) + '%'
+                quant_str = quant
                 samples[contest][quant_str] = np.quantile(trials, quant)
 
         return samples
