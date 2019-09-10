@@ -384,7 +384,8 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                                 role="button"
                                 onClick={() =>
                                   openQR(
-                                    audit.jurisdictions[0].auditBoards[i].id
+                                    audit.jurisdictions[0].auditBoards[i].id,
+                                    name
                                   )
                                 }
                               >
