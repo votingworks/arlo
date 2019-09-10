@@ -118,7 +118,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
       const auditBoards = values.auditNames.map((name, i) => ({
         id: uuidv4(),
         name: name || `Audit Board #${i + 1}`,
-        members: [],
+        members: [] as [],
       }))
 
       // upload jurisdictions

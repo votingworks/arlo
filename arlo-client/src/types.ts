@@ -25,10 +25,24 @@ export interface Contest {
   totalBallotsCast: string
 }
 
+export interface AuditMember {
+  name: string
+  affiliation: 'DEM' | 'REP' | 'LIB' | 'IND' | ''
+}
+
+export interface Ballot {
+  tabulator: string
+  batch: string
+  record: string
+  status: boolean
+  vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
+}
+
 export interface AuditBoard {
   id: string
   name: string
-  members: any[]
+  members: [AuditMember, AuditMember] | []
+  ballots?: Ballot[]
 }
 
 export interface BallotManifest {
