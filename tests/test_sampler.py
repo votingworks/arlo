@@ -140,12 +140,21 @@ def test_simulate_bravo_round1_unconfirmed(sampler):
 def test_get_sample_sizes(sampler):
     # Test retrieving menu of sample sizes
     computed_samples = sampler.get_sample_sizes(round0_sample_results)
+    print(computed_samples)
     for contest in computed_samples:
         for key in true_sample_sizes[contest]:
-            if key != 'asn':
-                continue
-            expected =  true_sample_sizes[contest][key]
-            computed = computed_samples[contest][key]
+            if key == 'asn': 
+                # Check probs:
+                expected_prob = true_sample_sizes[contest][key]['prob']
+                computed_prob = computed_samples[contest][key]['prob']
+
+                assert expected_prob == computed_prob, '{} ASN probabability check for {} failed: got {}, expected {}'.format(key, contest, computed_prob, expected_prob)
+
+                expected = true_sample_sizes[contest][key]['size']
+                computed = computed_samples[contest][key]['size']
+            else:
+                expected =  true_sample_sizes[contest][key]
+                computed = computed_samples[contest][key]
             diff = expected - computed
             # TODO are these tolerances acceptable?
             assert not diff , '{} sample size for {} failed: got {}, expected {}'.format(key, contest, computed, expected)
@@ -310,25 +319,37 @@ expected_second_sample = [
 ]
 true_sample_sizes = {
     'test1': {
-        'asn': 119,
-        '70%': 130,
-        '80%': 170,
-        '90%': 243,
+        'asn': {
+            'size': 119,
+            'prob': '66%'
+        },
+        '70%': 129,
+        '80%': 169,
+        '90%': 242,
     }, 
     'test2': {
-        'asn': 22,
-        '70%': 19,
-        '80%': 24,
-        '90%': 38,
+        'asn': {
+            'size':22,
+            'prob': '75%'
+        },
+        '70%': 22,
+        '80%': 28,
+        '90%': 39,
     },
     'test3': {
-        'asn': 0,
+        'asn': {
+            'size': 0,
+            'prob': '0%'
+        },
         '70%': 0,
         '80%': 0,
         '90%': 0,
     },
     'test4': {
-        'asn': 0,
+        'asn': {
+            'size': 0,
+            'prob': '0%'
+        },
         '70%': 0,
         '80%': 0,
         '90%': 0,

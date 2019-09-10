@@ -203,7 +203,10 @@ class Sampler:
 
             # If we're in a single-candidate race, set sample to 0
             if not runner_up:
-                samples[contest]['asn'] = 0
+                samples[contest]['asn'] = {
+                    'size':0,
+                    'prob': '0%'
+                }
                 for quant in quants:
                     quant_str = str(int(100*quant)) + '%'
                     samples[contest][quant_str] = 0 
@@ -219,7 +222,14 @@ class Sampler:
             # TODO is there a way to do this that isn't simulation?
             trials = sorted(self.simulate_bravo(num_ballots, p_w, sample_w, sample_r))
             
-            samples[contest]['asn'] = asns[contest]   
+            for i, n in enumerate(trials):
+                if n > asns[contest]:
+                    samples[contest]['asn'] = {
+                        'size': asns[contest],
+                        'prob': str(int(100*float(i/len(trials))))+ '%'
+                    }
+                    break
+            #samples[contest]['asn'] = asns[contest]   
             for quant in quants: 
                 quant_str = str(int(100*quant)) + '%'
                 samples[contest][quant_str] = np.quantile(trials, quant)
