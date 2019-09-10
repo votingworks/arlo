@@ -90,13 +90,15 @@ def compute_and_store_sample_sizes(election):
         prob = None
         type = None
         if prob_or_asn == "asn":
-            type = "ASN"
-            prob = None
+            sample_size_options.append({
+            "type": "ASN",
+            "prob": round(size["prob"], 2), # round to the nearest hundreth 
+            "size": int(math.ceil(size["size"]))
+        })
         else:
-            type = None
-            prob = float(prob_or_asn.strip('%')) / 100
-        sample_size_options.append({
-            "type": type,
+            prob = prob_or_asn
+            sample_size_options.append({
+            "type": None,
             "prob": prob,
             "size": int(math.ceil(size))
         })
