@@ -146,7 +146,7 @@ def test_get_sample_sizes(sampler):
             if key == 'asn': 
                 # Check probs:
                 expected_prob = true_sample_sizes[contest][key]['prob']
-                computed_prob = computed_samples[contest][key]['prob']
+                computed_prob = round(computed_samples[contest][key]['prob'], 2)
 
                 assert expected_prob == computed_prob, '{} ASN probabability check for {} failed: got {}, expected {}'.format(key, contest, computed_prob, expected_prob)
 
@@ -321,37 +321,37 @@ true_sample_sizes = {
     'test1': {
         'asn': {
             'size': 119,
-            'prob': '66%'
+            'prob': .67
         },
-        '70%': 129,
-        '80%': 169,
-        '90%': 242,
+        .7: 129,
+        .8: 169,
+        .9: 242,
     }, 
     'test2': {
         'asn': {
             'size':22,
-            'prob': '75%'
+            'prob': .76
         },
-        '70%': 22,
-        '80%': 28,
-        '90%': 39,
+        .7: 22,
+        .8: 28,
+        .9: 39,
     },
     'test3': {
         'asn': {
             'size': 0,
-            'prob': '0%'
+            'prob': 0
         },
-        '70%': 0,
-        '80%': 0,
-        '90%': 0,
+        .7: 0,
+        .8: 0,
+        .9: 0,
     },
     'test4': {
         'asn': {
             'size': 0,
-            'prob': '0%'
+            'prob': 0
         },
-        '70%': 0,
-        '80%': 0,
-        '90%': 0,
+        .7: 0,
+        .8: 0,
+        .9: 0,
     },
 }

@@ -205,10 +205,10 @@ class Sampler:
             if not runner_up:
                 samples[contest]['asn'] = {
                     'size':0,
-                    'prob': '0%'
+                    'prob': 0
                 }
                 for quant in quants:
-                    quant_str = str(int(100*quant)) + '%'
+                    quant_str = quant
                     samples[contest][quant_str] = 0 
 
                 continue
