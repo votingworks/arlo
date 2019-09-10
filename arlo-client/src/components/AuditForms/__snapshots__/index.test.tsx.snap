@@ -1997,12 +1997,18 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               >
                 Audit Board #1
               </a>
-              <canvas
-                class="sc-kGXeez fNlkfO"
-                height="90"
-                style="height: 90px; width: 90px;"
-                width="90"
-              />
+              <span
+                id="qr-audit-board-1"
+                role="button"
+                title="Click to print"
+              >
+                <canvas
+                  class="sc-kGXeez eVVXdY"
+                  height="250"
+                  style="height: 250px; width: 250px;"
+                  width="250"
+                />
+              </span>
             </div>
           </div>
         </div>
