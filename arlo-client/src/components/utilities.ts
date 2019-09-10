@@ -62,7 +62,8 @@ export const testNumber = (max?: number, message?: string) => (value: any) =>
     },
     error => error.errors[0]
   )
-export const openQR = (id: string) => {
+
+export const openQR = (id: string, name: string) => {
   const qr: HTMLCanvasElement | null = document.querySelector(
     `#qr-${id} > canvas`
   )
@@ -71,7 +72,7 @@ export const openQR = (id: string) => {
     const url = qr.toDataURL()
     let windowContent = `<!DOCTYPE html>
     <html>
-    <head><title>Print Audit QR Code</title></head>
+    <head><title>Print QR Code for Audit: ${name}</title></head>
     <body>
     <img src="${url}">
     </body>
