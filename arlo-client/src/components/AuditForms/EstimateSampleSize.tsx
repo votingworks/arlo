@@ -384,7 +384,7 @@ const EstimateSampleSize: React.FC<Props> = ({
                     name="riskLimit"
                     disabled={!canEstimateSampleSize}
                     component={Select}
-                    defaultValue={values.riskLimit}
+                    value={values.riskLimit}
                     onChange={(e: React.FormEvent<HTMLSelectElement>) =>
                       setFieldValue('riskLimit', e.currentTarget.value)
                     }
