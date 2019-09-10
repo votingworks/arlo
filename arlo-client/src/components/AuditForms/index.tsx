@@ -58,6 +58,10 @@ const AuditForms: React.FC<Props> = ({
     updateAudit()
   }, [updateAudit])
 
+  const showSelectBallotsToAudit =
+    !!audit.contests.length && audit.contests.every(c => !!c.sampleSizeOptions)
+  const showCalculateRiskMeasurement = !!audit.rounds.length
+
   return (
     <Wrapper>
       <ResetButton
@@ -68,26 +72,25 @@ const AuditForms: React.FC<Props> = ({
 
       <EstimateSampleSize
         audit={audit}
-        isLoading={isLoading}
+        isLoading={isLoading && !showSelectBallotsToAudit}
         setIsLoading={setIsLoading}
         updateAudit={updateAudit}
         getStatus={getStatus}
         electionId={electionId}
       />
 
-      {!!audit.contests.length &&
-        audit.contests.every(c => !!c.sampleSizeOptions) && (
-          <SelectBallotsToAudit
-            audit={audit}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            updateAudit={updateAudit}
-            getStatus={getStatus}
-            electionId={electionId}
-          />
-        )}
+      {showSelectBallotsToAudit && (
+        <SelectBallotsToAudit
+          audit={audit}
+          isLoading={isLoading && !showCalculateRiskMeasurement}
+          setIsLoading={setIsLoading}
+          updateAudit={updateAudit}
+          getStatus={getStatus}
+          electionId={electionId}
+        />
+      )}
 
-      {!!audit.rounds.length && (
+      {showCalculateRiskMeasurement && (
         <CalculateRiskMeasurement
           audit={audit}
           isLoading={isLoading}
