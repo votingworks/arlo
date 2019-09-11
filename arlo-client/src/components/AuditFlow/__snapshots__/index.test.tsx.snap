@@ -3,7 +3,7 @@
 exports[`renders correctly 1`] = `
 <div>
   <div
-    class="sc-iwsKbI gaSDwX"
+    class="sc-gZMcBi jDzHEa"
   >
     <div
       class="board-table-container"
@@ -30,6 +30,32 @@ exports[`renders correctly 1`] = `
             Start Auditing
           </span>
         </button>
+      </div>
+      <div
+        class="sc-bxivhb gWFQzc"
+      >
+        <button
+          class="bp3-button bp3-intent-primary"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Ballot List as CSV
+          </span>
+        </button>
+        <label
+          class="bp3-control bp3-checkbox"
+        >
+          <input
+            checked=""
+            type="checkbox"
+          />
+          <span
+            class="bp3-control-indicator"
+          />
+          Use K-CUT
+        </label>
       </div>
       <div
         class="bp3-table-container bp3-table-selection-enabled"
@@ -301,7 +327,7 @@ exports[`renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            93
+                            15
                           </div>
                         </div>
                         <div
@@ -311,7 +337,7 @@ exports[`renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 86
+                            Precinct 10
                           </div>
                         </div>
                         <div
@@ -321,7 +347,7 @@ exports[`renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            1848
+                            1099
                           </div>
                         </div>
                         <div
@@ -352,7 +378,7 @@ exports[`renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            45
+                            12
                           </div>
                         </div>
                         <div
@@ -362,7 +388,7 @@ exports[`renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 14
+                            Precinct 70
                           </div>
                         </div>
                         <div
@@ -372,7 +398,7 @@ exports[`renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            844
+                            1474
                           </div>
                         </div>
                         <div
@@ -382,18 +408,8 @@ exports[`renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Audited
+                            Not Audited
                              
-                            <button
-                              class="bp3-button bp3-small sc-htpNat gEBfLP"
-                              type="button"
-                            >
-                              <span
-                                class="bp3-button-text"
-                              >
-                                Re-audit
-                              </span>
-                            </button>
                           </div>
                         </div>
                         <div
@@ -403,7 +419,7 @@ exports[`renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            89
+                            18
                           </div>
                         </div>
                         <div
@@ -413,7 +429,7 @@ exports[`renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 33
+                            Precinct 1
                           </div>
                         </div>
                         <div
@@ -423,12 +439,53 @@ exports[`renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            1194
+                            1025
                           </div>
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
                           style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            Not Audited
+                             
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            94
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            Precinct 99
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            1302
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -445,47 +502,6 @@ exports[`renders correctly 1`] = `
                                 Re-audit
                               </span>
                             </button>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            79
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Precinct 72
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            1425
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Not Audited
-                             
                           </div>
                         </div>
                       </div>
