@@ -10,6 +10,14 @@ const RightWrapper = styled.div`
   margin: 20px 0;
 `
 
+const PaddedCell = styled(Cell)`
+  padding: 3px 5px;
+`
+
+const RightButton = styled(Button)`
+  float: right;
+`
+
 interface Props {
   setIsLoading: (arg0: boolean) => void
   isLoading: boolean
@@ -23,7 +31,7 @@ const KEYS: ('tabulator' | 'batch' | 'record' | 'status')[] = [
   'status',
 ]
 
-const CONSTANTS: { [key: string]: string } = {
+const STATUSES: { [key: string]: string } = {
   AUDITED: 'Audited',
   NOT_AUDITED: 'Not Audited',
 }
@@ -33,18 +41,38 @@ const BoardTable: React.FC<Props> = ({ board }: Props) => {
     if (board.ballots) {
       const row: Ballot = board.ballots[rI]
       if (!KEYS[cI]) {
-        return <Cell>{board.name}</Cell>
-      } else if (CONSTANTS[row[KEYS[cI]]]) {
-        return <Cell>{CONSTANTS[row[KEYS[cI]]]}</Cell>
+        return <PaddedCell>{board.name}</PaddedCell>
+      } else if (STATUSES[row[KEYS[cI]]]) {
+        const action =
+          row[KEYS[cI]] === 'AUDITED' ? (
+            <RightButton small>Re-audit</RightButton>
+          ) : null
+        return (
+          <PaddedCell>
+            <>
+              {STATUSES[row[KEYS[cI]]]} {action}
+            </>
+          </PaddedCell>
+        )
+        // wrapping content in React.Fragment to avoid unexpected props being passed to dom elements and throwing warnings
       } else {
-        return <Cell>{row[KEYS[cI]]}</Cell>
+        return <PaddedCell>{row[KEYS[cI]]}</PaddedCell>
       }
     } else {
-      return <Cell loading />
+      return <PaddedCell loading />
     }
   }
+  const columnWidths = (): (number | null)[] => {
+    const container = document.getElementsByClassName(
+      'board-table-container'
+    )[0]
+    if (!container) return Array(5).fill(null)
+    const containerSize = container.clientWidth
+    const colWidth = (containerSize - 31) / 5
+    return Array(5).fill(colWidth)
+  }
   return (
-    <>
+    <div className="board-table-container">
       <H1>{board.name}: Ballot Cards to Audit</H1>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -58,14 +86,14 @@ const BoardTable: React.FC<Props> = ({ board }: Props) => {
       <RightWrapper>
         <Button intent="primary">Start Auditing</Button>
       </RightWrapper>
-      <Table numRows={10}>
+      <Table numRows={10} defaultRowHeight={30} columnWidths={columnWidths()}>
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="batch" name="Batch" cellRenderer={renderCell} />
         <Column key="record" name="Record/Position" cellRenderer={renderCell} />
         <Column key="status" name="Status" cellRenderer={renderCell} />
         <Column name="Audit Board" cellRenderer={renderCell} />
       </Table>
-    </>
+    </div>
   )
 }
 
