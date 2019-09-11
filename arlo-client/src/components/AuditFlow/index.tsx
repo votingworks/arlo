@@ -49,7 +49,9 @@ const dummyBoard: AuditBoard[] = [
         tabulator: '' + rand(),
         batch: `Precinct ${rand()}`,
         record: '' + rand(2000),
-        status: !!rand(1, 0),
+        status: ['AUDITED', 'NOT_AUDITED'][rand(1, 0)] as
+          | 'AUDITED'
+          | 'NOT_AUDITED',
         vote: ['YES', 'NO', 'NO_CONSENSUS', 'NO_VOTE', null][rand(3, 0)] as
           | 'YES'
           | 'NO'
@@ -95,7 +97,7 @@ const AuditFlow: React.FC<Props> = ({
     updateAudit()
   }, [updateAudit])
 
-  const [dummy, setDummy] = useState(0)
+  const [dummy, setDummy] = useState(2)
   const board = {
     ...audit.jurisdictions[0].auditBoards.find(v => v.id === token),
     ...dummyBoard[dummy],
@@ -113,7 +115,11 @@ const AuditFlow: React.FC<Props> = ({
   } else if (board.members.length) {
     return (
       <Wrapper>
-        <BoardTable isLoading={isLoading} setIsLoading={setIsLoading} />
+        <BoardTable
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          board={board}
+        />
       </Wrapper>
     )
   } else {
