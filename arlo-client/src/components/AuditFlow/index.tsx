@@ -49,10 +49,10 @@ const dummyBoard: AuditBoard[] = [
         tabulator: '' + rand(),
         batch: `Precinct ${rand()}`,
         record: '' + rand(2000),
-        status: ['AUDITED', 'NOT_AUDITED'][rand(1, 0)] as
+        status: ['AUDITED', 'NOT_AUDITED'][rand(2, 0)] as
           | 'AUDITED'
           | 'NOT_AUDITED',
-        vote: ['YES', 'NO', 'NO_CONSENSUS', 'NO_VOTE', null][rand(3, 0)] as
+        vote: ['YES', 'NO', 'NO_CONSENSUS', 'NO_VOTE', null][rand(5, 0)] as
           | 'YES'
           | 'NO'
           | 'NO_CONSENSUS'
