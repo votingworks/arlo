@@ -33,7 +33,7 @@ const MemberForm: React.FC<Props> = ({
       <H1>Member Sign in for Audit Board: {boardName}</H1>
       <p>
         Enter the information below for each member of {jurisdictionName}{' '}
-        {boardName} below, then click "Next" to proceed.
+        {boardName} below, then click &quot;Next&quot; to proceed.
       </p>
       <FormWrapper>
         <Formik
@@ -48,8 +48,8 @@ const MemberForm: React.FC<Props> = ({
             },
           ]}
           onSubmit={values => {
-            console.log(values)
             setDummy(1)
+            // TODO submit to api then refresh audit
           }}
           render={({
             setFieldValue,
@@ -58,11 +58,12 @@ const MemberForm: React.FC<Props> = ({
             <Form>
               {[0, 1].map(i => (
                 <FormSection label="Audit Board Member" key={i}>
-                  <label>
+                  {/* eslint-disable jsx-a11y/label-has-associated-control */}
+                  <label htmlFor={`[${i}]name`}>
                     <LabelText>Full Name</LabelText>
-                    <NameField name={`[${i}]name`} />
+                    <NameField name={`[${i}]name`} id={`[${i}]name`} />
                   </label>
-                  <label>
+                  <div>
                     <LabelText>
                       Party Affiliation <i>(optional)</i>
                     </LabelText>
@@ -82,7 +83,7 @@ const MemberForm: React.FC<Props> = ({
                       <Radio value="IND">Independent/Unaffiliated</Radio>
                       <Radio value="">None</Radio>
                     </RadioGroup>
-                  </label>
+                  </div>
                 </FormSection>
               ))}
               <Button intent="primary" type="submit">
