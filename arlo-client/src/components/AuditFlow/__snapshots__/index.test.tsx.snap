@@ -42,6 +42,32 @@ exports[`AuditFlow fetches initial state from api 1`] = `
         </button>
       </div>
       <div
+        class="sc-bxivhb gWFQzc"
+      >
+        <button
+          class="bp3-button bp3-intent-primary"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Ballot List as CSV
+          </span>
+        </button>
+        <label
+          class="bp3-control bp3-checkbox"
+        >
+          <input
+            checked=""
+            type="checkbox"
+          />
+          <span
+            class="bp3-control-indicator"
+          />
+          Use K-CUT
+        </label>
+      </div>
+      <div
         class="bp3-table-container bp3-table-selection-enabled"
         tabindex="0"
       >
