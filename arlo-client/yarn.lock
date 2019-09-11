@@ -989,6 +989,16 @@
     react-lifecycles-compat "^3.0.4"
     tslib "~1.9.0"
 
+"@blueprintjs/table@^3.7.1":
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/table/-/table-3.7.1.tgz#3e3e876a2f0b8bebfc26d4bf8350a120614c88aa"
+  integrity sha512-NSdwjBhhsSTq1lgdRWwsDGavhAbG3j/CH86kmtBaH3msHz3ENjowjeuw1JBryJZLl0raGDV0Ln3kbQ93AKuPXw==
+  dependencies:
+    "@blueprintjs/core" "^3.18.1"
+    classnames "^2.2"
+    prop-types "^15.6.0"
+    tslib "~1.9.0"
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"
