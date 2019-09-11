@@ -472,9 +472,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                 <option>
                   9
                 </option>
-                <option
-                  selected=""
-                >
+                <option>
                   10
                 </option>
                 <option>
@@ -1240,9 +1238,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                 <option>
                   9
                 </option>
-                <option
-                  selected=""
-                >
+                <option>
                   10
                 </option>
                 <option>
@@ -1822,9 +1818,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                 <option>
                   9
                 </option>
-                <option
-                  selected=""
-                >
+                <option>
                   10
                 </option>
                 <option>
@@ -2874,9 +2868,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                 <option>
                   9
                 </option>
-                <option
-                  selected=""
-                >
+                <option>
                   10
                 </option>
                 <option>
@@ -3642,9 +3634,7 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                 <option>
                   9
                 </option>
-                <option
-                  selected=""
-                >
+                <option>
                   10
                 </option>
                 <option>

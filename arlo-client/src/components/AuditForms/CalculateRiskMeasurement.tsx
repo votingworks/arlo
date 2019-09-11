@@ -273,7 +273,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                   )
                 }}
               />
-              {isLoading && <Spinner />}
+              {i + 1 === audit.rounds.length && isLoading && <Spinner />}
               <FormSection>
                 <FormSectionLabel>
                   Audit Progress: {completeContests} of {audit.contests.length}{' '}

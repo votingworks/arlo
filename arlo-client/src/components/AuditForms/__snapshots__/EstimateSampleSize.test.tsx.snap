@@ -450,9 +450,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
               form="[object Object]"
               id="risk-limit"
             >
-              <option
-                selected=""
-              >
+              <option>
                 1
               </option>
               <option>
@@ -1015,9 +1013,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
               form="[object Object]"
               id="risk-limit"
             >
-              <option
-                selected=""
-              >
+              <option>
                 1
               </option>
               <option>
@@ -1606,9 +1602,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
               form="[object Object]"
               id="risk-limit"
             >
-              <option
-                selected=""
-              >
+              <option>
                 1
               </option>
               <option>
@@ -2171,9 +2165,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
               form="[object Object]"
               id="risk-limit"
             >
-              <option
-                selected=""
-              >
+              <option>
                 1
               </option>
               <option>
@@ -2762,9 +2754,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
               form="[object Object]"
               id="risk-limit"
             >
-              <option
-                selected=""
-              >
+              <option>
                 1
               </option>
               <option>
@@ -3327,9 +3317,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
               form="[object Object]"
               id="risk-limit"
             >
-              <option
-                selected=""
-              >
+              <option>
                 1
               </option>
               <option>
@@ -3918,9 +3906,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
               form="[object Object]"
               id="risk-limit"
             >
-              <option
-                selected=""
-              >
+              <option>
                 1
               </option>
               <option>
@@ -4483,9 +4469,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
               form="[object Object]"
               id="risk-limit"
             >
-              <option
-                selected=""
-              >
+              <option>
                 1
               </option>
               <option>
@@ -5086,9 +5070,7 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
               <option>
                 9
               </option>
-              <option
-                selected=""
-              >
+              <option>
                 10
               </option>
               <option>
@@ -5649,9 +5631,7 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
               <option>
                 9
               </option>
-              <option
-                selected=""
-              >
+              <option>
                 10
               </option>
               <option>
