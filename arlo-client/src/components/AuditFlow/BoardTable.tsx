@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
-import { H1, Button } from '@blueprintjs/core'
+import { H1, Button, Checkbox } from '@blueprintjs/core'
 import { AuditBoard, Ballot } from '../../types'
 
 const RightWrapper = styled.div`
@@ -16,6 +16,14 @@ const PaddedCell = styled(Cell)`
 
 const RightButton = styled(Button)`
   float: right;
+`
+
+const ActionWrapper = styled.div`
+  margin-bottom: 20px;
+  .bp3-checkbox {
+    display: inline-block;
+    margin-left: 20px;
+  }
 `
 
 interface Props {
@@ -62,6 +70,7 @@ const BoardTable: React.FC<Props> = ({ board }: Props) => {
       return <PaddedCell loading />
     }
   }
+
   const columnWidths = (): (number | null)[] => {
     const container = document.getElementsByClassName(
       'board-table-container'
@@ -71,6 +80,14 @@ const BoardTable: React.FC<Props> = ({ board }: Props) => {
     const colWidth = (containerSize - 31) / 5
     return Array(5).fill(colWidth)
   }
+
+  const [kcut, setKcut] = useState(true)
+  const handleKcut = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setKcut(e.target.checked)
+
+  const roundComplete =
+    board.ballots && board.ballots.every(b => b.status === 'AUDITED')
+
   return (
     <div className="board-table-container">
       <H1>{board.name}: Ballot Cards to Audit</H1>
@@ -84,8 +101,20 @@ const BoardTable: React.FC<Props> = ({ board }: Props) => {
         mollit anim id est laborum.
       </p>
       <RightWrapper>
-        <Button intent="primary">Start Auditing</Button>
+        {roundComplete ? (
+          <Button intent="primary">Review Complete - Finish Round</Button>
+        ) : (
+          <Button intent="primary">Start Auditing</Button>
+        )}
       </RightWrapper>
+      <ActionWrapper>
+        {!roundComplete && (
+          <>
+            <Button intent="primary">Download Ballot List as CSV</Button>
+            <Checkbox checked={kcut} label="Use K-CUT" onChange={handleKcut} />
+          </>
+        )}
+      </ActionWrapper>
       <Table numRows={10} defaultRowHeight={30} columnWidths={columnWidths()}>
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="batch" name="Batch" cellRenderer={renderCell} />
