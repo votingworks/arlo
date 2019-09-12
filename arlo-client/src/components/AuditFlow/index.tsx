@@ -7,6 +7,7 @@ import { api } from '../utilities'
 import { statusStates } from '../AuditForms/_mocks'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
+import Ballot from './Ballot'
 
 const rand = (max: number = 100, min: number = 1) =>
   Math.floor(Math.random() * (+max - +min)) + +min
@@ -137,11 +138,7 @@ const AuditFlow: React.FC<Props> = ({
               match: {
                 params: { round, ballot },
               },
-            }) => (
-              <p>
-                round: {round}, ballot: {ballot}
-              </p>
-            )}
+            }) => <Ballot round={round} ballot={ballot} />}
           />
         </Switch>
       </Wrapper>
