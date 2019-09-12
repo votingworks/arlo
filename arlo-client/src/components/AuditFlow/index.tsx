@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
 import { H1 } from '@blueprintjs/core'
+import { Route, Switch } from 'react-router-dom'
 import { AuditFlowParams, Audit, AuditBoard } from '../../types'
 import { api } from '../utilities'
 import { statusStates } from '../AuditForms/_mocks'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
+import Ballot from './Ballot'
 
 const rand = (max: number = 100, min: number = 1) =>
   Math.floor(Math.random() * (+max - +min)) + +min
@@ -69,12 +71,14 @@ const Wrapper = styled.div`
 interface Props {
   match: {
     params: AuditFlowParams
+    url: string
   }
 }
 
 const AuditFlow: React.FC<Props> = ({
   match: {
     params: { electionId, token },
+    url,
   },
 }: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -115,11 +119,30 @@ const AuditFlow: React.FC<Props> = ({
   } else if (board.members.length) {
     return (
       <Wrapper>
-        <BoardTable
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-          board={board}
-        />
+        <Switch>
+          <Route
+            exact
+            path="/election/:electionId/board/:token"
+            render={({ match: { url } }) => (
+              <BoardTable
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
+                board={board}
+                url={url}
+              />
+            )}
+          />
+          <Route
+            path={url + '/round/:roundId/ballot/:ballotId'}
+            render={({
+              match: {
+                params: { roundId, ballotId },
+              },
+            }) => (
+              <Ballot roundId={roundId} ballotId={ballotId} board={board} />
+            )}
+          />
+        </Switch>
       </Wrapper>
     )
   } else {

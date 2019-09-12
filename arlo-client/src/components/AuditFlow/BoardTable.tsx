@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
 import { H1, Button, Checkbox } from '@blueprintjs/core'
+import { Link } from 'react-router-dom'
 import { AuditBoard, Ballot } from '../../types'
 
 const RightWrapper = styled.div`
@@ -30,6 +31,7 @@ interface Props {
   setIsLoading: (arg0: boolean) => void
   isLoading: boolean
   board: AuditBoard
+  url: string
 }
 
 const KEYS: ('tabulator' | 'batch' | 'record' | 'status')[] = [
@@ -44,7 +46,7 @@ const STATUSES: { [key: string]: string } = {
   NOT_AUDITED: 'Not Audited',
 }
 
-const BoardTable: React.FC<Props> = ({ board }: Props) => {
+const BoardTable: React.FC<Props> = ({ board, url }: Props) => {
   const renderCell = (rI: number, cI: number) => {
     if (board.ballots) {
       const row: Ballot = board.ballots[rI]
@@ -104,7 +106,12 @@ const BoardTable: React.FC<Props> = ({ board }: Props) => {
         {roundComplete ? (
           <Button intent="primary">Review Complete - Finish Round</Button>
         ) : (
-          <Button intent="primary">Start Auditing</Button>
+          <Link
+            to={url + '/round/1/ballot/1'}
+            className="bp3-button bp3-intent-primary"
+          >
+            Start Auditing
+          </Link>
         )}
       </RightWrapper>
       <ActionWrapper>
