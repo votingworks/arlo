@@ -61,7 +61,9 @@ const schema = Yup.object().shape({
     .test(
       'fileType',
       'You must upload a CSV file',
-      value => value && value.type === 'text/csv'
+      value =>
+        value &&
+        (value.type === 'text/csv' || value.type === 'application/vnd.ms-excel')
     ),
 })
 
