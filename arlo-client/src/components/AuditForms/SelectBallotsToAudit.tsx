@@ -324,6 +324,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                       name: 'manifest',
                     }}
                     onInputChange={e => {
+                      console.log(e.currentTarget.files ? e.currentTarget.files[0].type : 'nada')
                       setFieldValue(
                         'manifest',
                         (e.currentTarget.files && e.currentTarget.files[0]) ||
