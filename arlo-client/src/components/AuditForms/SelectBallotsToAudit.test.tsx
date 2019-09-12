@@ -2,7 +2,7 @@ import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
-import { statusStates, ballotManifest } from './_mocks'
+import { statusStates, ballotManifest, windowsBallotManifest } from './_mocks'
 import api from '../utilities'
 import { regexpEscape } from '../testUtilities'
 
@@ -85,6 +85,44 @@ describe('SelectBallotsToAudit', () => {
       />
     )
     expect(container).toMatchSnapshot()
+  })
+
+  it('handles windows mime types', async () => {
+    const { getByLabelText, getByText } = render(
+      <SelectBallotsToAudit
+        audit={statusStates[1]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+        getStatus={jest.fn()}
+        electionId="1"
+      />
+    )
+
+    const manifestInput = getByLabelText('Select manifest...')
+    fireEvent.change(manifestInput, { target: { files: [] } })
+    fireEvent.blur(manifestInput)
+    await wait(() => {
+      expect(getByText('You must upload a manifest')).toBeTruthy()
+    })
+    fireEvent.change(manifestInput, {
+      target: { files: [windowsBallotManifest] },
+    })
+
+    const auditBoardInput: HTMLElement = getByLabelText(
+      new RegExp(
+        regexpEscape('Set the number of audit boards you wish to use.')
+      ),
+      { selector: 'select' }
+    )
+    fireEvent.change(auditBoardInput, { target: { selected: 1 } })
+
+    const submitButton = getByText('Select Ballots To Audit')
+    fireEvent.click(submitButton, { bubbles: true })
+
+    await wait(() => {
+      expect(apiMock).toHaveBeenCalled()
+    })
   })
 
   it('handles not having sample size options', () => {

@@ -63,7 +63,17 @@ const schema = Yup.object().shape({
       'You must upload a CSV file',
       value =>
         value &&
-        (value.type === 'text/csv' || value.type === 'application/vnd.ms-excel')
+        [
+          'text/plain',
+          'text/x-csv',
+          'application/vnd.ms-excel',
+          'application/csv',
+          'application/x-csv',
+          'text/csv',
+          'text/comma-separated-values',
+          'text/x-comma-separated-values',
+          'text/tab-separated-values',
+        ].indexOf(value.type) > -1
     ),
 })
 

@@ -233,4 +233,10 @@ export const ballotManifest = new File(
   { type: 'text/csv' }
 )
 
+export const windowsBallotManifest = new File(
+  ['ballot manifest'],
+  'ballotManifest.csv',
+  { type: 'application/vnd.ms-excel' }
+)
+
 export default statusStates
