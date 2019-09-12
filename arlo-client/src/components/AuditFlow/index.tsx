@@ -133,12 +133,14 @@ const AuditFlow: React.FC<Props> = ({
             )}
           />
           <Route
-            path={url + '/round/:round/ballot/:ballot'}
+            path={url + '/round/:roundId/ballot/:ballotId'}
             render={({
               match: {
-                params: { round, ballot },
+                params: { roundId, ballotId },
               },
-            }) => <Ballot round={round} ballot={ballot} />}
+            }) => (
+              <Ballot roundId={roundId} ballotId={ballotId} board={board} />
+            )}
           />
         </Switch>
       </Wrapper>

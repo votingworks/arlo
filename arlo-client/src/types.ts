@@ -4,8 +4,8 @@ export interface CreateAuditParams {
 
 export interface AuditFlowParams extends CreateAuditParams {
   token: string
-  round?: string
-  ballot?: string
+  roundId?: string
+  ballotId?: string
 }
 
 export interface Candidate {
