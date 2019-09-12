@@ -70,14 +70,14 @@ const Wrapper = styled.div`
 interface Props {
   match: {
     params: AuditFlowParams
-    path: string
+    url: string
   }
 }
 
 const AuditFlow: React.FC<Props> = ({
   match: {
     params: { electionId, token },
-    path,
+    url,
   },
 }: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -122,17 +122,26 @@ const AuditFlow: React.FC<Props> = ({
           <Route
             exact
             path="/election/:electionId/board/:token"
-            render={() => (
+            render={({ match: { url } }) => (
               <BoardTable
                 isLoading={isLoading}
                 setIsLoading={setIsLoading}
                 board={board}
+                url={url}
               />
             )}
           />
           <Route
-            path={path + '/round/:round/ballot/:ballot'}
-            render={() => <p>ballot</p>}
+            path={url + '/round/:round/ballot/:ballot'}
+            render={({
+              match: {
+                params: { round, ballot },
+              },
+            }) => (
+              <p>
+                round: {round}, ballot: {ballot}
+              </p>
+            )}
           />
         </Switch>
       </Wrapper>
