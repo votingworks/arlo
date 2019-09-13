@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { H1, H3, Callout, H4, Divider } from '@blueprintjs/core'
 import styled from 'styled-components'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
-import { AuditBoard } from '../../types'
+import { AuditBoard, Ballot as IBallot } from '../../types'
+import BallotRow from './BallotRow'
 
 const Wrapper = styled.div`
   display: flex;
@@ -11,23 +12,10 @@ const Wrapper = styled.div`
 `
 
 const MainCallout = styled(Callout)`
+  background-color: #137cbd;
   width: 400px;
+  color: #f5f8fa;
   font-weight: 700;
-`
-
-const Info = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  margin: 20px 0;
-
-  .ballot-info {
-    width: 200px;
-    padding: 20px 0;
-  }
-  .description {
-    width: 50%;
-    padding: 20px;
-  }
 `
 
 interface Props {
@@ -38,27 +26,29 @@ interface Props {
 
 const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
   const [auditing, setAuditing] = useState(true)
+  const [vote, setVote] = useState(null as IBallot['vote'])
 
-  if (!board.ballots) return null // TODO handle informatively
-  const ballot = board.ballots[Number(ballotId) - 1]
-  if (!ballot) return null // TODO handle informatively
+  const ballot = board.ballots ? board.ballots[Number(ballotId) - 1] : null
+  useEffect(() => {
+    ballot && setVote(ballot.vote)
+  }, [ballot])
 
-  return (
+  return !board.ballots || !ballot ? null : (
     <Wrapper>
       <H1>{board.name}: Ballot Card Data Entry</H1>
       <H3>Enter Ballot Information</H3>
-      <MainCallout icon={null} intent="primary">
+      <MainCallout icon={null}>
         Round {roundId}: auditing ballot {ballotId} of {board.ballots.length}
       </MainCallout>
-      <Info>
-        <div className="ballot-info">
+      <BallotRow>
+        <div className="ballot-side">
           <H4>Current ballot:</H4>
           <div>Tabulator: {ballot.tabulator}</div>
           <div>Batch: {ballot.batch}</div>
-          <div>Record/Position: {ballot.record}</div>
+          <div>Record/Position: {ballot.position}</div>
         </div>
         <Divider />
-        <div className="description">
+        <div className="ballot-main">
           <H4>Are you looking at the correct ballot?</H4>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
@@ -70,11 +60,15 @@ const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
             culpa qui officia deserunt mollit anim id est laborum.
           </p>
         </div>
-      </Info>
+      </BallotRow>
       {auditing ? (
-        <BallotAudit review={() => setAuditing(false)} />
+        <BallotAudit
+          vote={vote}
+          setVote={setVote}
+          review={() => setAuditing(false)}
+        />
       ) : (
-        <BallotReview audit={() => setAuditing(true)} />
+        <BallotReview vote={vote} audit={() => setAuditing(true)} />
       )}
     </Wrapper>
   )
