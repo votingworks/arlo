@@ -34,10 +34,10 @@ interface Props {
   url: string
 }
 
-const KEYS: ('tabulator' | 'batch' | 'record' | 'status')[] = [
+const KEYS: ('tabulator' | 'batch' | 'position' | 'status')[] = [
   'tabulator',
   'batch',
-  'record',
+  'position',
   'status',
 ]
 
@@ -125,7 +125,7 @@ const BoardTable: React.FC<Props> = ({ board, url }: Props) => {
       <Table numRows={10} defaultRowHeight={30} columnWidths={columnWidths()}>
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="batch" name="Batch" cellRenderer={renderCell} />
-        <Column key="record" name="Record/Position" cellRenderer={renderCell} />
+        <Column key="position" name="Record/Position" cellRenderer={renderCell} />
         <Column key="status" name="Status" cellRenderer={renderCell} />
         <Column name="Audit Board" cellRenderer={renderCell} />
       </Table>

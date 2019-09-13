@@ -36,7 +36,7 @@ export interface AuditMember {
 export interface Ballot {
   tabulator: string
   batch: string
-  record: string
+  position: string
   status: 'AUDITED' | 'NOT_AUDITED'
   vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
 }

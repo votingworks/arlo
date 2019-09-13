@@ -3,7 +3,7 @@ import { H1, H3, Callout, H4, Divider } from '@blueprintjs/core'
 import styled from 'styled-components'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
-import { AuditBoard } from '../../types'
+import { AuditBoard, Ballot } from '../../types'
 
 const Wrapper = styled.div`
   display: flex;
@@ -13,18 +13,20 @@ const Wrapper = styled.div`
 const MainCallout = styled(Callout)`
   width: 400px;
   font-weight: 700;
+  background-color: #202B33;
+  color: #F5F8FA;
 `
 
-const Info = styled.div`
+export const BallotRow = styled.div`
   display: flex;
   justify-content: flex-start;
   margin: 20px 0;
 
-  .ballot-info {
+  .ballot-side {
     width: 200px;
     padding: 20px 0;
   }
-  .description {
+  .ballot-main {
     width: 50%;
     padding: 20px;
   }
@@ -38,10 +40,12 @@ interface Props {
 
 const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
   const [auditing, setAuditing] = useState(true)
+  const [vote, setVote] = useState(null as Ballot["vote"])
 
   if (!board.ballots) return null // TODO handle informatively
   const ballot = board.ballots[Number(ballotId) - 1]
   if (!ballot) return null // TODO handle informatively
+  setVote(ballot.vote)
 
   return (
     <Wrapper>
@@ -50,15 +54,15 @@ const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
       <MainCallout icon={null} intent="primary">
         Round {roundId}: auditing ballot {ballotId} of {board.ballots.length}
       </MainCallout>
-      <Info>
-        <div className="ballot-info">
+      <BallotRow>
+        <div className="ballot-side">
           <H4>Current ballot:</H4>
           <div>Tabulator: {ballot.tabulator}</div>
           <div>Batch: {ballot.batch}</div>
-          <div>Record/Position: {ballot.record}</div>
+          <div>Record/Position: {ballot.position}</div>
         </div>
         <Divider />
-        <div className="description">
+        <div className="ballot-main">
           <H4>Are you looking at the correct ballot?</H4>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
@@ -70,11 +74,11 @@ const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
             culpa qui officia deserunt mollit anim id est laborum.
           </p>
         </div>
-      </Info>
+      </BallotRow>
       {auditing ? (
-        <BallotAudit review={() => setAuditing(false)} />
+        <BallotAudit vote={vote} setVote={setVote} review={() => setAuditing(false)} />
       ) : (
-        <BallotReview audit={() => setAuditing(true)} />
+        <BallotReview vote={vote} audit={() => setAuditing(true)} />
       )}
     </Wrapper>
   )
