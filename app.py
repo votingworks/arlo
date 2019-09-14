@@ -499,7 +499,7 @@ def audit_report(election_id=None):
 
         ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction.id, round_id = round.id).order_by('batch_id', 'ballot_position').all()
 
-        report_writer.writerow(["Round {:d} Samples".format(round.round_num), " ".join(["(Batch {:s}, #{:d})".format(b.batch_id, b.ballot_position) for b in ballots])])
+        report_writer.writerow(["Round {:d} Samples".format(round.round_num), " ".join(["(Batch {:s}, #{:d})".format(b.batch.name, b.ballot_position) for b in ballots])])
 
     
     response = Response(csv_io.getvalue())
