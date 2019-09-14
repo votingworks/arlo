@@ -28,6 +28,11 @@ def sampler():
             'cand1': 100,
             'ballots': 100
         },
+        'test5': {
+            'cand1' : 500,
+            'cand2': 500,
+            'ballots': 1000
+        }
     }
 
 
@@ -56,6 +61,11 @@ def test_compute_margins(sampler):
             'p_w' : 1,
             'p_r' : 0,
             's_w' : 1
+        },
+        'test5': {
+            'p_w': .5,
+            'p_r': .5,
+            's_w': .5
         }
     }
 
@@ -82,6 +92,7 @@ def test_asn(sampler):
         'test2': 22,
         'test3': 0,
         'test4': 0,
+        'test5': 1000,
     }
 
     computed_asns = sampler.get_asns()
@@ -210,6 +221,7 @@ def test_compute_risk(sampler):
         'test2': 1.11,
         'test3': 1,
         'test4': 0,
+        'test5': 1,
     }
 
     expected_decisions = {
@@ -217,6 +229,7 @@ def test_compute_risk(sampler):
         'test2': False,
         'test3': False,
         'test4': True,
+        'test5': False,
     }
 
     for contest, sample in round1_sample_results.items():
@@ -247,6 +260,10 @@ round0_sample_results = {
     'test4': {
         'cand1': 0,
     },
+    'test5': {
+        'cand1': 0,
+        'cand2': 0,
+    }
 }
 
 
@@ -265,6 +282,10 @@ round1_sample_results = {
     },
     'test4': {
         'cand1': 100
+    },
+    'test5': {
+        'cand1': 500,
+        'cand2': 500,
     }
 }
 
@@ -354,4 +375,13 @@ true_sample_sizes = {
         .8: 0,
         .9: 0,
     },
+    'test5': {
+        'asn': {
+            'size': 1000,
+            'prob': 1
+        },
+        .7: 1000,
+        .8: 1000,
+        .9: 1000
+    }
 }
