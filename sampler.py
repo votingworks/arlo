@@ -132,6 +132,8 @@ class Sampler:
             if p_w == 1:
                 # Handle single-candidate or crazy landslides
                 asns[contest] = 0
+            elif p_w == p_r:
+                asns[contest] = self.contests[contest]['ballots']
             else: 
                 z_w = math.log(2 * s_w)
                 z_l = math.log(2 - 2 * s_w)
@@ -158,7 +160,6 @@ class Sampler:
             trials      - an array of sample sizes
         """
         # TODO We should probably be using more like 10**7 iterations
-
 
         return Parallel(n_jobs=self.num_cores)(delayed(run_bravo_trial)(self.prng.randint(0, 2**32, 1)[0], p_w, num_ballots, sample_w, sample_r, self.risk_limit) \
                     for i in range(iterations))
@@ -204,17 +205,29 @@ class Sampler:
             # If we're in a single-candidate race, set sample to 0
             if not runner_up:
                 samples[contest]['asn'] = {
-                    'size':0,
+                    'size': 0,
                     'prob': 0
                 }
                 for quant in quants:
-                    quant_str = quant
-                    samples[contest][quant_str] = 0 
+                    samples[contest][quant] = 0 
 
                 continue
 
             p_w = self.margins[contest]['p_w']
+            p_r = self.margins[contest]['p_r']
             num_ballots = self.contests[contest]['ballots']
+            
+            # Handles ties
+            if p_w == p_r:
+                samples[contest]['asn'] = {
+                    'size': num_ballots,
+                    'prob': 1,
+                }
+
+                for quant in quants:
+                    samples[contest][quant] = num_ballots
+                continue
+
 
             sample_w = sample_results[contest][winner]
             sample_r = sample_results[contest][runner_up]
