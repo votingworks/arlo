@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { H1, H3, Callout, H4, Divider } from '@blueprintjs/core'
 import styled from 'styled-components'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
-import { AuditBoard, Ballot } from '../../types'
+import { AuditBoard, Ballot as IBallot } from '../../types'
+import BallotRow from './BallotRow'
 
 const Wrapper = styled.div`
   display: flex;
@@ -11,25 +12,10 @@ const Wrapper = styled.div`
 `
 
 const MainCallout = styled(Callout)`
+  background-color: #202b33;
   width: 400px;
+  color: #f5f8fa;
   font-weight: 700;
-  background-color: #202B33;
-  color: #F5F8FA;
-`
-
-export const BallotRow = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  margin: 20px 0;
-
-  .ballot-side {
-    width: 200px;
-    padding: 20px 0;
-  }
-  .ballot-main {
-    width: 50%;
-    padding: 20px;
-  }
 `
 
 interface Props {
@@ -40,14 +26,14 @@ interface Props {
 
 const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
   const [auditing, setAuditing] = useState(true)
-  const [vote, setVote] = useState(null as Ballot["vote"])
+  const [vote, setVote] = useState(null as IBallot['vote'])
 
-  if (!board.ballots) return null // TODO handle informatively
-  const ballot = board.ballots[Number(ballotId) - 1]
-  if (!ballot) return null // TODO handle informatively
-  setVote(ballot.vote)
+  const ballot = board.ballots ? board.ballots[Number(ballotId) - 1] : null
+  useEffect(() => {
+    ballot && setVote(ballot.vote)
+  }, [ballot])
 
-  return (
+  return !board.ballots || !ballot ? null : (
     <Wrapper>
       <H1>{board.name}: Ballot Card Data Entry</H1>
       <H3>Enter Ballot Information</H3>
@@ -76,7 +62,11 @@ const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
         </div>
       </BallotRow>
       {auditing ? (
-        <BallotAudit vote={vote} setVote={setVote} review={() => setAuditing(false)} />
+        <BallotAudit
+          vote={vote}
+          setVote={setVote}
+          review={() => setAuditing(false)}
+        />
       ) : (
         <BallotReview vote={vote} audit={() => setAuditing(true)} />
       )}
