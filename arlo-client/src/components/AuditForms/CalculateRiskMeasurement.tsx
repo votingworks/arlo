@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { toast } from 'react-toastify'
 /* istanbul ignore next */
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
-import * as Yup from 'yup'
 import { Spinner } from '@blueprintjs/core'
 import FormSection, {
   FormSectionLabel,
@@ -13,7 +12,7 @@ import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api } from '../utilities'
+import { api, testNumber } from '../utilities'
 import { Contest, Round, Candidate, RoundContest, Audit } from '../../types'
 
 const InputSection = styled.div`
@@ -58,17 +57,6 @@ interface RoundPost {
     }
   }[]
 }
-
-const numberSchema = Yup.number()
-  .typeError('Must be a number')
-  .integer('Must be an integer')
-  .min(0, 'Must be a positive number')
-  .required('Required')
-
-const testNumber = (value: any) =>
-  numberSchema
-    .validate(value)
-    .then(success => undefined, error => error.errors[0])
 
 type AggregateContest = Contest & RoundContest
 

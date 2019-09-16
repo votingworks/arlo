@@ -34,7 +34,7 @@ Object {
             >
               Set the number of audit boards you wish to use.
               <div
-                class="bp3-html-select sc-gzVnrw YGYds"
+                class="bp3-html-select sc-gZMcBi fvQasU"
               >
                 <select
                   field="[object Object]"
@@ -185,7 +185,7 @@ Object {
           >
             Set the number of audit boards you wish to use.
             <div
-              class="bp3-html-select sc-gzVnrw YGYds"
+              class="bp3-html-select sc-gZMcBi fvQasU"
             >
               <select
                 field="[object Object]"
@@ -440,6 +440,19 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
               78 samples
               
             </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="custom"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Enter your own sample size (not recommended)
+            </label>
           </div>
         </div>
       </div>
@@ -456,7 +469,7 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gzVnrw YGYds"
+            class="bp3-html-select sc-gZMcBi fvQasU"
           >
             <select
               field="[object Object]"
@@ -659,6 +672,19 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
               78 samples
               
             </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize[contest-1]"
+                type="radio"
+                value="custom"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Enter your own sample size (not recommended)
+            </label>
           </div>
         </div>
       </div>
@@ -675,7 +701,7 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gzVnrw YGYds"
+            class="bp3-html-select sc-gZMcBi fvQasU"
           >
             <select
               field="[object Object]"

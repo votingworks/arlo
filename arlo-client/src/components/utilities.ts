@@ -1,3 +1,4 @@
+import * as Yup from 'yup'
 import { Params } from '../types'
 
 export const api = <T>(
@@ -32,5 +33,16 @@ export const poll = (
     }
   })()
 }
+
+const numberSchema = Yup.number()
+  .typeError('Must be a number')
+  .integer('Must be an integer')
+  .min(0, 'Must be a positive number')
+  .required('Required')
+
+export const testNumber = (value: any) =>
+  numberSchema
+    .validate(value)
+    .then(success => undefined, error => error.errors[0])
 
 export default api

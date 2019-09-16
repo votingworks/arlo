@@ -21,9 +21,10 @@ import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
 import { Jurisdiction, Audit, SampleSizeOption } from '../../types'
-import { api } from '../utilities'
+import { api, testNumber } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
+import FormField from '../Form/FormField'
 
 export const Select = styled(HTMLSelect)`
   margin-left: 5px;
@@ -46,6 +47,9 @@ interface SelectBallotsToAuditValues {
   auditBoards: string
   manifest: File | null
   sampleSize: {
+    [key: string]: string
+  }
+  customSampleSize: {
     [key: string]: string
   }
 }
@@ -104,8 +108,12 @@ const SelectBallotsToAudit: React.FC<Props> = ({
       setIsLoading(true)
       /* istanbul ignore else */
       if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
+        const size =
+          values.sampleSize[audit.contests[0].id] === 'custom'
+            ? values.customSampleSize[audit.contests[0].id]
+            : values.sampleSize[audit.contests[0].id]
         const body = {
-          size: values.sampleSize[audit.contests[0].id], // until multiple contests are supported
+          size, // until multiple contests are supported
         }
         await api('/audit/sample-size', {
           electionId,
@@ -157,6 +165,17 @@ const SelectBallotsToAudit: React.FC<Props> = ({
           c.sampleSizeOptions && c.sampleSizeOptions.length
             ? c.sampleSizeOptions[0].size.toString()
             : ''
+        if (audit.rounds[0]) {
+          const rc = audit.rounds[0].contests.find(v => v.id === c.id)
+          a[c.id] = rc!.sampleSize.toString()
+        }
+        return a
+      },
+      {}
+    ),
+    customSampleSize: [...audit.contests].reduce(
+      (a: { [key: string]: string }, c) => {
+        a[c.id] = ''
         if (audit.rounds[0]) {
           const rc = audit.rounds[0].contests.find(v => v.id === c.id)
           a[c.id] = rc!.sampleSize.toString()
@@ -262,6 +281,16 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                               </Radio>
                             )
                           })}
+                          <Radio value="custom">
+                            Enter your own sample size (not recommended)
+                          </Radio>
+                          {getIn(values, `sampleSize[${key}]`) === 'custom' && (
+                            <Field
+                              component={FormField}
+                              name={`customSampleSize[${key}]`}
+                              validate={testNumber}
+                            />
+                          )}
                         </RadioGroup>
                       </FormSectionDescription>
                     </React.Fragment>
