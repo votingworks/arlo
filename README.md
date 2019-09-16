@@ -1,4 +1,4 @@
-# Arlo: Open-source risk-limiting software by [Voting Works](voting.works)
+# Arlo: Open-source risk-limiting audit software by [Voting Works](voting.works)
 
 ## Setting up the dev environment
 
