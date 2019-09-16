@@ -88,6 +88,33 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
             </div>
           </div>
         </label>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of winners for the contest
+        </div>
+        <label
+          for="contests[0].winners"
+        >
+          Winners
+          <div
+            class="sc-EHOje bXavad"
+          >
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].winners"
+                name="contests[0].winners"
+                style="padding-right: 10px;"
+                type="text"
+                value="1"
+              />
+            </div>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -464,6 +491,33 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
                 style="padding-right: 10px;"
                 type="text"
                 value="contest name"
+              />
+            </div>
+          </div>
+        </label>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of winners for the contest
+        </div>
+        <label
+          for="contests[0].winners"
+        >
+          Winners
+          <div
+            class="sc-EHOje bXavad"
+          >
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].winners"
+                name="contests[0].winners"
+                style="padding-right: 10px;"
+                type="text"
+                value="1"
               />
             </div>
           </div>
@@ -874,6 +928,33 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
             </div>
           </div>
         </label>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of winners for the contest
+        </div>
+        <label
+          for="contests[0].winners"
+        >
+          Winners
+          <div
+            class="sc-EHOje bXavad"
+          >
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].winners"
+                name="contests[0].winners"
+                style="padding-right: 10px;"
+                type="text"
+                value="1"
+              />
+            </div>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -1250,6 +1331,33 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
                 style="padding-right: 10px;"
                 type="text"
                 value="contest name"
+              />
+            </div>
+          </div>
+        </label>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of winners for the contest
+        </div>
+        <label
+          for="contests[0].winners"
+        >
+          Winners
+          <div
+            class="sc-EHOje bXavad"
+          >
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].winners"
+                name="contests[0].winners"
+                style="padding-right: 10px;"
+                type="text"
+                value="1"
               />
             </div>
           </div>
@@ -1660,6 +1768,33 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
             </div>
           </div>
         </label>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of winners for the contest
+        </div>
+        <label
+          for="contests[0].winners"
+        >
+          Winners
+          <div
+            class="sc-EHOje bXavad"
+          >
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].winners"
+                name="contests[0].winners"
+                style="padding-right: 10px;"
+                type="text"
+                value="1"
+              />
+            </div>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -2036,6 +2171,33 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
                 style="padding-right: 10px;"
                 type="text"
                 value="contest name"
+              />
+            </div>
+          </div>
+        </label>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of winners for the contest
+        </div>
+        <label
+          for="contests[0].winners"
+        >
+          Winners
+          <div
+            class="sc-EHOje bXavad"
+          >
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].winners"
+                name="contests[0].winners"
+                style="padding-right: 10px;"
+                type="text"
+                value="1"
               />
             </div>
           </div>
@@ -2446,6 +2608,33 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
             </div>
           </div>
         </label>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of winners for the contest
+        </div>
+        <label
+          for="contests[0].winners"
+        >
+          Winners
+          <div
+            class="sc-EHOje bXavad"
+          >
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].winners"
+                name="contests[0].winners"
+                style="padding-right: 10px;"
+                type="text"
+                value="1"
+              />
+            </div>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -2822,6 +3011,33 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
                 style="padding-right: 10px;"
                 type="text"
                 value="contest name"
+              />
+            </div>
+          </div>
+        </label>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of winners for the contest
+        </div>
+        <label
+          for="contests[0].winners"
+        >
+          Winners
+          <div
+            class="sc-EHOje bXavad"
+          >
+            <div
+              class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                disabled=""
+                id="contests[0].winners"
+                name="contests[0].winners"
+                style="padding-right: 10px;"
+                type="text"
+                value="1"
               />
             </div>
           </div>
@@ -3230,6 +3446,32 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
             </div>
           </div>
         </label>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of winners for the contest
+        </div>
+        <label
+          for="contests[0].winners"
+        >
+          Winners
+          <div
+            class="sc-EHOje bXavad"
+          >
+            <div
+              class="bp3-input-group sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].winners"
+                name="contests[0].winners"
+                style="padding-right: 10px;"
+                type="text"
+                value="1"
+              />
+            </div>
+          </div>
+        </label>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -3616,6 +3858,32 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
                 style="padding-right: 10px;"
                 type="text"
                 value=""
+              />
+            </div>
+          </div>
+        </label>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of winners for the contest
+        </div>
+        <label
+          for="contests[0].winners"
+        >
+          Winners
+          <div
+            class="sc-EHOje bXavad"
+          >
+            <div
+              class="bp3-input-group sc-bZQynM fFGKEg"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].winners"
+                name="contests[0].winners"
+                style="padding-right: 10px;"
+                type="text"
+                value="1"
               />
             </div>
           </div>

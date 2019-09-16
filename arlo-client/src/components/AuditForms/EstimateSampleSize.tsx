@@ -12,7 +12,7 @@ import {
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
 import { HTMLSelect, Label, Spinner } from '@blueprintjs/core'
-import FormSection from '../Form/FormSection'
+import FormSection, { FormSectionDescription } from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormTitle from '../Form/FormTitle'
 import FormButton from '../Form/FormButton'
@@ -86,6 +86,7 @@ interface ChoiceValues {
 interface ContestValues {
   name: string
   totalBallotsCast: string
+  winners: string
   choices: ChoiceValues[]
 }
 
@@ -101,6 +102,11 @@ const contestsSchema = Yup.array()
   .of(
     Yup.object().shape({
       name: Yup.string().required('Required'),
+      winners: Yup.number()
+        .typeError('Must be a number')
+        .integer('Must be an integer')
+        .min(0, 'Must be a positive number')
+        .required('Required'),
       totalBallotsCast: Yup.number()
         .typeError('Must be a number')
         .integer('Must be an integer')
@@ -205,6 +211,7 @@ const EstimateSampleSize: React.FC<Props> = ({
     {
       name: '',
       totalBallotsCast: '',
+      winners: '1',
       choices: [
         {
           name: '',
@@ -283,6 +290,18 @@ const EstimateSampleSize: React.FC<Props> = ({
                               <Field
                                 id={`contests[${i}].name`}
                                 name={`contests[${i}].name`}
+                                disabled={!canEstimateSampleSize}
+                                component={FormField}
+                              />
+                            </label>
+                            <FormSectionDescription>
+                              Enter the number of winners for the contest
+                            </FormSectionDescription>
+                            <label htmlFor={`contests[${i}].winners`}>
+                              Winners
+                              <Field
+                                id={`contests[${i}].winners`}
+                                name={`contests[${i}].winners`}
                                 disabled={!canEstimateSampleSize}
                                 component={FormField}
                               />
