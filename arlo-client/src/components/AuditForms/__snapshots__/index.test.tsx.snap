@@ -83,6 +83,33 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
               </div>
             </div>
           </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Enter the number of winners for the contest
+          </div>
+          <label
+            for="contests[0].winners"
+          >
+            Winners
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].winners"
+                  name="contests[0].winners"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -1086,6 +1113,32 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
               </div>
             </div>
           </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Enter the number of winners for the contest
+          </div>
+          <label
+            for="contests[0].winners"
+          >
+            Winners
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-input-group sc-bZQynM fFGKEg"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].winners"
+                  name="contests[0].winners"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -1478,6 +1531,33 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                   style="padding-right: 10px;"
                   type="text"
                   value="contest name"
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Enter the number of winners for the contest
+          </div>
+          <label
+            for="contests[0].winners"
+          >
+            Winners
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].winners"
+                  name="contests[0].winners"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
                 />
               </div>
             </div>
@@ -2249,6 +2329,33 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               </div>
             </div>
           </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Enter the number of winners for the contest
+          </div>
+          <label
+            for="contests[0].winners"
+          >
+            Winners
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].winners"
+                  name="contests[0].winners"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -2854,6 +2961,32 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                   style="padding-right: 10px;"
                   type="text"
                   value=""
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Enter the number of winners for the contest
+          </div>
+          <label
+            for="contests[0].winners"
+          >
+            Winners
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-input-group sc-bZQynM fFGKEg"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].winners"
+                  name="contests[0].winners"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
                 />
               </div>
             </div>

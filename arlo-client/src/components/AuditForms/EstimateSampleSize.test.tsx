@@ -112,6 +112,26 @@ const estimateSampleSizeMocks = {
       error: 'Must be an integer',
     },
     {
+      key: 'Winners',
+      value: '',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Winners',
+      value: 'test',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Winners',
+      value: '-1',
+      error: 'Must be a positive number',
+    },
+    {
+      key: 'Winners',
+      value: '0.5',
+      error: 'Must be an integer',
+    },
+    {
       key:
         'Enter the random number to seed the pseudo-random number generator.',
       value: '',

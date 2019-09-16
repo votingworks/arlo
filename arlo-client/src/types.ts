@@ -17,6 +17,7 @@ export interface SampleSizeOption {
 export interface Contest {
   id: string
   name: string
+  winners: string
   choices: Candidate[]
   totalBallotsCast: string
 }
