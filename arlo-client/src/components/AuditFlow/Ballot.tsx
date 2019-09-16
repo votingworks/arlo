@@ -12,7 +12,7 @@ const Wrapper = styled.div`
 `
 
 const MainCallout = styled(Callout)`
-  background-color: #202b33;
+  background-color: #137cbd;
   width: 400px;
   color: #f5f8fa;
   font-weight: 700;
@@ -37,7 +37,7 @@ const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
     <Wrapper>
       <H1>{board.name}: Ballot Card Data Entry</H1>
       <H3>Enter Ballot Information</H3>
-      <MainCallout icon={null} intent="primary">
+      <MainCallout icon={null}>
         Round {roundId}: auditing ballot {ballotId} of {board.ballots.length}
       </MainCallout>
       <BallotRow>
