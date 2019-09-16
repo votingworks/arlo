@@ -289,6 +289,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                               component={FormField}
                               name={`customSampleSize[${key}]`}
                               validate={testNumber}
+                              data-testid={`customSampleSize[${key}]`}
                             />
                           )}
                         </RadioGroup>
