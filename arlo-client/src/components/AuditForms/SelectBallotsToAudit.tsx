@@ -56,25 +56,7 @@ const schema = Yup.object().shape({
     .min(1, 'Too few Audit Boards')
     .max(15, 'Too many Audit Boards')
     .required('Required'),
-  manifest: Yup.mixed()
-    .required('You must upload a manifest')
-    .test(
-      'fileType',
-      'You must upload a CSV file',
-      value =>
-        value &&
-        [
-          'text/plain',
-          'text/x-csv',
-          'application/vnd.ms-excel',
-          'application/csv',
-          'application/x-csv',
-          'text/csv',
-          'text/comma-separated-values',
-          'text/x-comma-separated-values',
-          'text/tab-separated-values',
-        ].indexOf(value.type) > -1
-    ),
+  manifest: Yup.mixed().required('You must upload a manifest'),
 })
 
 const SelectBallotsToAudit: React.FC<Props> = ({
@@ -324,7 +306,6 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                       name: 'manifest',
                     }}
                     onInputChange={e => {
-                      console.log(e.currentTarget.files ? e.currentTarget.files[0].type : 'nada')
                       setFieldValue(
                         'manifest',
                         (e.currentTarget.files && e.currentTarget.files[0]) ||
