@@ -207,6 +207,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
       validationSchema={schema}
       onSubmit={handlePost}
       enableReinitialize
+      validateOnChange={false}
       render={({
         handleBlur,
         handleChange,

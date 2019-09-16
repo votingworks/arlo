@@ -228,6 +228,7 @@ const EstimateSampleSize: React.FC<Props> = ({
         validationSchema={schema}
         onSubmit={handlePost}
         enableReinitialize
+        validateOnChange={false}
       >
         {({
           values,
