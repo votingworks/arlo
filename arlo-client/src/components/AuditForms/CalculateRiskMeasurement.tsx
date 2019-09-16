@@ -244,7 +244,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                                           id={`round-${i}-contest-${j}-choice-${choiceId}`}
                                           name={`contests[${j}][${choiceId}]`}
                                           type="number"
-                                          validate={testNumber}
+                                          validate={testNumber()}
                                           component={FormField}
                                           disabled={isSubmitted}
                                         />

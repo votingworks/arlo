@@ -170,7 +170,13 @@ describe('SelectBallotsToAudit', () => {
       .fn()
       .mockImplementationOnce(async () => statusStates[3]) // the POST to /audit/status after manifest
 
-    const { getByText, queryAllByTestId, getByTestId, getByLabelText } = render(
+    const {
+      getByText,
+      queryAllByTestId,
+      getByTestId,
+      getByLabelText,
+      queryAllByText,
+    } = render(
       <SelectBallotsToAudit
         audit={statusStates[1]}
         isLoading={false}
@@ -198,7 +204,22 @@ describe('SelectBallotsToAudit', () => {
     fireEvent.click(customRadio, { bubbles: true })
     await wait(async () => {
       const customInput = getByTestId('customSampleSize[contest-1]')
+      fireEvent.change(customInput, { target: { value: '3000' } })
+      fireEvent.blur(customInput)
+      await wait(() => {
+        expect(
+          getByText('Must be less than or equal to the total number of ballots')
+        ).toBeTruthy()
+      })
       fireEvent.change(customInput, { target: { value: '11' } })
+      fireEvent.blur(customInput)
+      await wait(() => {
+        expect(
+          queryAllByText(
+            'Must be less than or equal to the total number of ballots'
+          ).length
+        ).toBe(0)
+      })
 
       const manifestInput = getByLabelText('Select manifest...')
       fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })

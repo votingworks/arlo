@@ -288,7 +288,10 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                             <Field
                               component={FormField}
                               name={`customSampleSize[${key}]`}
-                              validate={testNumber}
+                              validate={testNumber(
+                                Number(audit.contests[i].totalBallotsCast),
+                                'Must be less than or equal to the total number of ballots'
+                              )}
                               data-testid={`customSampleSize[${key}]`}
                             />
                           )}

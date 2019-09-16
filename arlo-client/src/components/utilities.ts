@@ -40,9 +40,27 @@ const numberSchema = Yup.number()
   .min(0, 'Must be a positive number')
   .required('Required')
 
-export const testNumber = (value: any) =>
-  numberSchema
-    .validate(value)
-    .then(success => undefined, error => error.errors[0])
+export const testNumber = (max?: number, message?: string) => (value: any) =>
+  numberSchema.validate(value).then(
+    success => {
+      if (max) {
+        const schema = Yup.number().test(
+          'cap',
+          message || `Must be smaller than ${max}`,
+          function(v) {
+            /* istanbul ignore else */
+            if (this.options.context) {
+              const { max } = this.options.context as { max: number }
+              return v <= max
+            } else return true
+          }
+        )
+        return schema
+          .validate(value, { context: { max } })
+          .then(success => undefined, error => error.errors[0])
+      } else return undefined
+    },
+    error => error.errors[0]
+  )
 
 export default api
