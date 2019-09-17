@@ -304,7 +304,6 @@ const EstimateSampleSize: React.FC<Props> = ({
                                             Votes for Candidate/Choice {j + 1}
                                             <Field
                                               name={`contests[${i}].choices[${j}].numVotes`}
-                                              type="number"
                                               disabled={!canEstimateSampleSize}
                                               component={FlexField}
                                             />
@@ -349,7 +348,6 @@ const EstimateSampleSize: React.FC<Props> = ({
                               values.contests.length > 1 ? i + 1 : ''}
                               <Field
                                 id={`contests[${i}].totalBallotsCast`}
-                                type="number"
                                 name={`contests[${i}].totalBallotsCast`}
                                 disabled={!canEstimateSampleSize}
                                 component={FormField}
