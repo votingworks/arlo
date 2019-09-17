@@ -60,13 +60,7 @@ const schema = Yup.object().shape({
     .min(1, 'Too few Audit Boards')
     .max(15, 'Too many Audit Boards')
     .required('Required'),
-  manifest: Yup.mixed()
-    .required('You must upload a manifest')
-    .test(
-      'fileType',
-      'You must upload a CSV file',
-      value => value && value.type === 'text/csv'
-    ),
+  manifest: Yup.mixed().required('You must upload a manifest'),
 })
 
 const SelectBallotsToAudit: React.FC<Props> = ({
