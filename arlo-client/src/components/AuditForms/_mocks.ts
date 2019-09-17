@@ -201,6 +201,7 @@ export const statusStates: Audit[] = [
             id: 'audit-board-1',
             name: 'Audit Board #1',
             members: [],
+            ballots: [],
           },
         ],
         ballotManifest: {

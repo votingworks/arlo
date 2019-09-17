@@ -1,13 +1,22 @@
 import React from 'react'
 import styled from 'styled-components'
-import { InputGroup, NumericInput } from '@blueprintjs/core'
+import { InputGroup, NumericInput, TextArea } from '@blueprintjs/core'
 import { getIn, FieldProps } from 'formik'
 
-const Wrapper = styled.div`
-  width: 45%;
+interface WrapperProps {
+  wide: boolean
+}
+
+const Wrapper = styled.div<WrapperProps>`
+  width: ${p => (p.wide ? '100%' : '45%')};
 `
 
 const Field = styled(InputGroup)`
+  margin-top: 5px;
+  width: 100%;
+`
+
+const Area = styled(TextArea)`
   margin-top: 5px;
   width: 100%;
 `
@@ -57,20 +66,30 @@ const FormField: React.FC<Props> = ({
   form: { touched, errors, setFieldTouched, setFieldValue },
   disabled,
   className,
+  type,
   ...rest
 }: Props) => (
-  <Wrapper className={className}>
-    {rest.type === 'number' ? (
+  <Wrapper className={className} wide={type === 'textarea'}>
+    {type === 'number' ? (
       <NumberField
         disabled={disabled}
-        onValueChange={n => setFieldValue(field.name, n)}
+        onValueChange={(n) => setFieldValue(field.name, n)}
+        type={type}
         {...field}
         {...rest}
         onBlur={() => setFieldTouched(field.name)}
       />
+    ) : type === 'textarea' ? (
+      <Area
+        disabled={disabled}
+        {...field}
+        {...rest}
+        onChange={field.onChange}
+      />
     ) : (
       <Field
         disabled={disabled}
+        type={type}
         {...field}
         {...rest}
         onChange={field.onChange}
