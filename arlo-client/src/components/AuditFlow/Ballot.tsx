@@ -71,7 +71,7 @@ const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
       {auditing ? (
         <BallotAudit
           review={review}
-          setVote={setReview}
+          setReview={setReview}
           goReview={() => setAuditing(false)}
         />
       ) : (
