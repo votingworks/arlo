@@ -4,7 +4,7 @@ import { H1, RadioGroup, Radio, Button } from '@blueprintjs/core'
 import { Formik, FormikProps, Form, Field, getIn } from 'formik'
 import FormWrapper from '../Form/FormWrapper'
 import FormSection from '../Form/FormSection'
-import { AuditBoardMember } from '../../types'
+import { IAuditBoardMember } from '../../types'
 
 const LabelText = styled.span`
   display: block;
@@ -15,7 +15,7 @@ const NameField = styled(Field)`
   margin-bottom: 20px;
 `
 
-interface Props {
+interface IProps {
   setIsLoading: (arg0: boolean) => void
   isLoading: boolean
   setDummy: (arg0: number) => void
@@ -23,11 +23,11 @@ interface Props {
   jurisdictionName: string
 }
 
-const MemberForm: React.FC<Props> = ({
+const MemberForm: React.FC<IProps> = ({
   boardName,
   jurisdictionName,
   setDummy,
-}: Props) => {
+}: IProps) => {
   return (
     <>
       <H1>Member Sign in for Audit Board: {boardName}</H1>
@@ -54,7 +54,7 @@ const MemberForm: React.FC<Props> = ({
           render={({
             setFieldValue,
             values,
-          }: FormikProps<[AuditBoardMember, AuditBoardMember]>) => (
+          }: FormikProps<[IAuditBoardMember, IAuditBoardMember]>) => (
             <Form>
               {[0, 1].map(i => (
                 <FormSection label="Audit Board Member" key={i}>

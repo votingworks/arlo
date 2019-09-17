@@ -1,36 +1,41 @@
-export interface CreateAuditParams {
+export interface ICreateAuditParams {
   electionId: string
 }
 
-export interface AuditFlowParams extends CreateAuditParams {
+export interface IAuditFlowParams extends ICreateAuditParams {
   token: string
   roundId?: string
   ballotId?: string
 }
 
-export interface Candidate {
+export interface ICandidate {
   id: string
   name: string
   numVotes: number | string
 }
 
-export interface SampleSizeOption {
+export interface ISampleSizeOption {
   size: number | string
   prob: number | null
   type: string | null
 }
 
-export interface Contest {
+export interface IContest {
   id: string
   name: string
   winners: string
-  choices: Candidate[]
+  choices: ICandidate[]
   totalBallotsCast: string
 }
 
-export interface Ballot {
+export interface IAuditMember {
+  name: string
+  affiliation: 'DEM' | 'REP' | 'LIB' | 'IND' | ''
+}
+
+export interface IBallot {
   timesSampled: number
-  auditBoard?: Pick<AuditBoard, 'id' | 'name'>
+  auditBoard?: Pick<IAuditBoard, 'id' | 'name'>
   status: 'AUDITED' | null
   vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
   comment: string
@@ -42,24 +47,24 @@ export interface Ballot {
   }
 }
 
-export interface AuditBoardMember {
+export interface IAuditBoardMember {
   name: string
   affiliation: string
 }
 
-export interface Review {
-  vote: Ballot['vote']
-  comment: Ballot['comment']
+export interface IReview {
+  vote: IBallot['vote']
+  comment: IBallot['comment']
 }
 
-export interface AuditBoard {
+export interface IAuditBoard {
   id: string
   name: string
-  members: AuditBoardMember[]
-  ballots?: Ballot[] // TODO remove
+  members: IAuditBoardMember[]
+  ballots?: IBallot[] // TODO remove
 }
 
-export interface BallotManifest {
+export interface IBallotManifest {
   filename: string | null
   numBallots: number | '' | null
   numBatches: number | '' | null
@@ -74,21 +79,21 @@ export interface Batch {
   tabulator: null | string
 }
 
-export interface Jurisdiction {
+export interface IJurisdiction {
   id: string
   name: string
   contests: string[]
-  auditBoards: AuditBoard[]
-  ballotManifest?: BallotManifest
   batches?: Batch[] // TODO make not optional
+  auditBoards: IAuditBoard[]
+  ballotManifest?: IBallotManifest
 }
 
-export interface RoundContest {
+export interface IRoundContest {
   id: string
   results: {
     [key: string]: number
   }
-  sampleSizeOptions: SampleSizeOption[] | null
+  sampleSizeOptions: ISampleSizeOption[] | null
   sampleSize: number | null
   endMeasurements: {
     isComplete: null | boolean
@@ -96,12 +101,12 @@ export interface RoundContest {
   }
 }
 
-export interface Round {
+export interface IRound {
   id: string
   name?: string
   randomSeed?: string
   riskLimit?: number
-  contests: RoundContest[]
+  contests: IRoundContest[]
   startedAt: string
   endedAt: string | null
   jurisdictions?: {
@@ -111,11 +116,11 @@ export interface Round {
   }
 }
 
-export interface Audit {
+export interface IAudit {
   name: string
   riskLimit: string
   randomSeed: string
-  contests: Contest[]
-  jurisdictions: Jurisdiction[]
-  rounds: Round[]
+  contests: IContest[]
+  jurisdictions: IJurisdiction[]
+  rounds: IRound[]
 }

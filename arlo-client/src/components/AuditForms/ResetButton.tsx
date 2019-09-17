@@ -3,17 +3,17 @@ import ReactDOM from 'react-dom'
 import { Button } from '@blueprintjs/core'
 import { api } from '../utilities'
 
-interface Props {
+interface IProps {
   updateAudit: () => void
   electionId: string
   disabled?: boolean
 }
 
-const ResetButton: React.FC<Props> = ({
+const ResetButton: React.FC<IProps> = ({
   electionId,
   disabled,
   updateAudit,
-}: Props) => {
+}: IProps) => {
   const resetButtonWrapper = document.getElementById('reset-button-wrapper')
   const reset = async () => {
     await api(`/election/${electionId}/audit/reset`, { method: 'POST' })

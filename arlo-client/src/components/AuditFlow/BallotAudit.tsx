@@ -4,27 +4,27 @@ import { H4, H3, Divider, Button } from '@blueprintjs/core'
 import { BallotRow, FormBlock, RadioGroupFlex, ProgressActions } from './Atoms'
 import BlockRadio from './BlockRadio'
 import FormButton from '../Form/FormButton'
-import { Ballot, Review } from '../../types'
+import { IBallot, IReview } from '../../types'
 import FormField from '../Form/FormField'
 
-interface Props {
+interface IProps {
   goReview: () => void
-  review: Review
+  review: IReview
   setReview: (arg0: {
-    vote: Ballot['vote']
-    comment: Ballot['comment']
+    vote: IBallot['vote']
+    comment: IBallot['comment']
   }) => void
 }
 
-interface Options {
-  vote: Ballot['vote']
+interface IOptions {
+  vote: IBallot['vote']
 }
 
-const BallotAudit: React.FC<Props> = ({
+const BallotAudit: React.FC<IProps> = ({
   review,
   goReview,
   setReview,
-}: Props) => {
+}: IProps) => {
   const [commenting, setCommenting] = useState(!!review.comment)
   return (
     <BallotRow>
@@ -50,7 +50,7 @@ const BallotAudit: React.FC<Props> = ({
             handleSubmit,
             values,
             setFieldValue,
-          }: FormikProps<Options>) => {
+          }: FormikProps<IOptions>) => {
             const radioProps = {
               name: 'vote',
               handleChange: (e: React.ChangeEvent<HTMLInputElement>) =>

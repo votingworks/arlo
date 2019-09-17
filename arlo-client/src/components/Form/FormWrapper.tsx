@@ -9,12 +9,12 @@ const StyledFormWrapper = styled.div`
   text-align: left;
 `
 
-interface Props {
+interface IProps {
   title?: string
   children?: ReactNode
 }
 
-const FormWrapper: React.FC<Props> = ({ children, title }: Props) => (
+const FormWrapper: React.FC<IProps> = ({ children, title }: IProps) => (
   <StyledFormWrapper>
     <FormTitle>{title}</FormTitle>
     {children}

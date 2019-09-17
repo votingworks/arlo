@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Ballot } from '../../types'
+import { IBallot } from '../../types'
 
 const Block = styled.label`
   &.bp3-control.bp3-radio {
@@ -28,9 +28,9 @@ const Block = styled.label`
   }
 `
 
-interface Props {
+interface IProps {
   name?: string
-  value: Ballot['vote']
+  value: IBallot['vote']
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   locked?: boolean
   className?: string
@@ -51,7 +51,7 @@ const BlockRadio = ({
   locked,
   className,
   checked,
-}: Props) => (
+}: IProps) => (
   <Block className={`${className} bp3-control bp3-radio`}>
     {locked ? (
       <input

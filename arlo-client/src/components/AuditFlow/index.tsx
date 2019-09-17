@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { H1 } from '@blueprintjs/core'
 import { Route, Switch } from 'react-router-dom'
-import { AuditFlowParams, Audit, AuditBoard } from '../../types'
+import { IAuditFlowParams, IAudit, IAuditBoard } from '../../types'
 import { api } from '../utilities'
 import { statusStates } from '../AuditForms/_mocks'
 import BoardTable from './BoardTable'
@@ -12,7 +12,7 @@ import Wrapper from '../Atoms/Wrapper'
 const rand = (max: number = 100, min: number = 1) =>
   Math.floor(Math.random() * (+max - +min)) + +min
 
-const dummyBoard: AuditBoard[] = [
+const dummyBoard: IAuditBoard[] = [
   {
     id: '123',
     name: 'Audit Board #1',
@@ -60,25 +60,25 @@ const dummyBoard: AuditBoard[] = [
   },
 ]
 
-interface Props {
+interface IProps {
   match: {
-    params: AuditFlowParams
+    params: IAuditFlowParams
     url: string
   }
 }
 
-const AuditFlow: React.FC<Props> = ({
+const AuditFlow: React.FC<IProps> = ({
   match: {
     params: { electionId, token },
     url,
   },
-}: Props) => {
+}: IProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [audit, setAudit] = useState(statusStates[3])
 
-  const getStatus = useCallback(async (): Promise<Audit> => {
-    const audit: Audit = await api('/audit/status', { electionId })
+  const getStatus = useCallback(async (): Promise<IAudit> => {
+    const audit: IAudit = await api('/audit/status', { electionId })
     return audit
   }, [electionId])
 
@@ -95,7 +95,9 @@ const AuditFlow: React.FC<Props> = ({
 
   const [dummy, setDummy] = useState(2)
   const board = {
-    ...audit.jurisdictions[0].auditBoards.find(v => v.id === token),
+    ...audit.jurisdictions[0].auditBoards.find(
+      (v: IAuditBoard) => v.id === token
+    ),
     ...dummyBoard[dummy],
   }
 

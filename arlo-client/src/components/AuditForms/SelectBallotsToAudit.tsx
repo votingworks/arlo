@@ -29,7 +29,7 @@ import FormSection, {
 import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
-import { Jurisdiction, Audit, SampleSizeOption, IAuditBoard } from '../../types'
+import { IJurisdiction, IAudit, ISampleSizeOption, IAuditBoard } from '../../types'
 import { api, testNumber, openQR } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
@@ -65,20 +65,20 @@ export const QR = styled(QRCode)`
   padding: 3px;
 `
 
-interface SampleSizeOptionsByContest {
-  [key: string]: SampleSizeOption[]
+interface ISampleSizeOptionsByContest {
+  [key: string]: ISampleSizeOption[]
 }
 
-interface Props {
-  audit: Audit
+interface IProps {
+  audit: IAudit
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
-  getStatus: () => Promise<Audit>
+  getStatus: () => Promise<IAudit>
   electionId: string
 }
 
-interface SelectBallotsToAuditValues {
+interface ISelectBallotsToAuditValues {
   auditBoards: string
   auditNames: string[]
   manifest: File | null
@@ -99,14 +99,14 @@ const schema = Yup.object().shape({
   manifest: Yup.mixed().required('You must upload a manifest'),
 })
 
-const SelectBallotsToAudit: React.FC<Props> = ({
+const SelectBallotsToAudit: React.FC<IProps> = ({
   audit,
   isLoading,
   setIsLoading,
   updateAudit,
   getStatus,
   electionId,
-}: Props) => {
+}: IProps) => {
   const manifestUploaded =
     audit.jurisdictions.length &&
     audit.jurisdictions[0].ballotManifest &&
@@ -115,7 +115,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
     audit.jurisdictions[0].ballotManifest.numBatches
   const sampleSizeSelected = audit.rounds[0].contests.every(c => !!c.sampleSize)
 
-  const handlePost = async (values: SelectBallotsToAuditValues) => {
+  const handlePost = async (values: ISelectBallotsToAuditValues) => {
     try {
       const auditBoards = [
         ...formattedUpTo(parseNumber(values.auditBoards)),
@@ -128,7 +128,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
       })
 
       // upload jurisdictions
-      const data: Jurisdiction[] = [
+      const data: IJurisdiction[] = [
         {
           id: uuidv4(),
           name: 'Jurisdiction 1',
@@ -190,7 +190,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
     audit.jurisdictions.length && audit.jurisdictions[0].auditBoards.length
       ? audit.jurisdictions[0].auditBoards.map((board: IAuditBoard) => board.name)
       : Array(numberOfBoards).fill('')
-  const initialState: SelectBallotsToAuditValues = {
+  const initialState: ISelectBallotsToAuditValues = {
     auditBoards: '' + numberOfBoards,
     auditNames,
     manifest: null, // eslint-disable-line no-null/no-null
@@ -220,11 +220,11 @@ const SelectBallotsToAudit: React.FC<Props> = ({
   }
 
   const sampleSizeOptions = [...audit.rounds[0].contests].reduce<
-    SampleSizeOptionsByContest
+    ISampleSizeOptionsByContest
   >((acc, contest) => {
     acc[contest.id] =
       contest.sampleSizeOptions && contest.sampleSizeOptions.length
-        ? contest.sampleSizeOptions.reduce<SampleSizeOption[]>(
+        ? contest.sampleSizeOptions.reduce<ISampleSizeOption[]>(
             (acc, option) => {
               const duplicateOptionIndex: number = acc.findIndex(
                 v => Number(v.size) === option.size
@@ -267,7 +267,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         errors,
         touched,
         setFieldValue,
-      }: FormikProps<SelectBallotsToAuditValues>) => (
+      }: FormikProps<ISelectBallotsToAuditValues>) => (
         <form onSubmit={handleSubmit} id="formTwo" data-testid="form-two">
           <hr />
           <FormWrapper>

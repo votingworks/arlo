@@ -19,17 +19,17 @@ export const FormSectionLabel = styled(H3)`
 `
 /* stylelint-enable */
 
-interface Props {
+interface IProps {
   label?: string
   description?: string
   children: ReactNode
 }
 
-const FormSection: React.FC<Props> = ({
+const FormSection: React.FC<IProps> = ({
   label,
   description,
   children,
-}: Props) => {
+}: IProps) => {
   return (
     <Section>
       {label ? <FormSectionLabel>{label}</FormSectionLabel> : undefined}
