@@ -55,6 +55,7 @@ const dummyBoard: AuditBoard[] = [
           | 'AUDITED'
           | 'NOT_AUDITED',
         vote: null,
+        comment: '',
       })),
   },
 ]

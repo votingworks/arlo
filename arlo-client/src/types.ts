@@ -39,6 +39,12 @@ export interface Ballot {
   position: string
   status: 'AUDITED' | 'NOT_AUDITED'
   vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
+  comment: string
+}
+
+export interface Review {
+  vote: Ballot['vote']
+  comment: Ballot['comment']
 }
 
 export interface AuditBoard {
