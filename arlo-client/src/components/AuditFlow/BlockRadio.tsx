@@ -34,6 +34,7 @@ interface Props {
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   locked?: boolean
   className?: string
+  checked?: boolean
 }
 
 const TEXT = {
@@ -49,6 +50,7 @@ const BlockRadio = ({
   handleChange = () => {},
   locked,
   className,
+  checked,
 }: Props) => (
   <Block className={`${className} bp3-control bp3-radio`}>
     {locked ? (
@@ -66,6 +68,7 @@ const BlockRadio = ({
         name={name}
         value={value || undefined}
         onChange={handleChange}
+        checked={checked}
       />
     )}
     <span className="bp3-control-indicator">

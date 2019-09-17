@@ -28,7 +28,7 @@ const BallotReview: React.FC<Props> = ({
   review: { vote, comment },
 }: Props) => {
   /* eslint-disable no-console */
-  const handleSubmit = () => console.log(vote)
+  const handleSubmit = () => console.log(vote, comment)
   return (
     <BallotRow>
       <div className="ballot-side"></div>
