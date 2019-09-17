@@ -13,7 +13,13 @@ import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api, testNumber, poll } from '../utilities'
-import { Contest, Round, Candidate, RoundContest, Audit } from '../../types'
+import {
+  IContest,
+  IRound,
+  ICandidate,
+  IRoundContest,
+  IAudit,
+} from '../../types'
 
 const InputSection = styled.div`
   display: block;
@@ -34,23 +40,23 @@ const InlineWrapper = styled.div`
   width: 50%;
 `
 
-interface Props {
-  audit: Audit
+interface IProps {
+  audit: IAudit
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
-  getStatus: () => Promise<Audit>
+  getStatus: () => Promise<IAudit>
   electionId: string
 }
 
-interface CalculateRiskMeasurementValues {
+interface ICalculateRiskMeasurementValues {
   round: number
   contests: {
     [key: string]: number | ''
   }[]
 }
 
-interface RoundPost {
+interface IRoundPost {
   contests: {
     id: string
     results: {
@@ -59,16 +65,16 @@ interface RoundPost {
   }[]
 }
 
-type AggregateContest = Contest & RoundContest
+type AggregateContest = IContest & IRoundContest
 
-const CalculateRiskMeasurement: React.FC<Props> = ({
+const CalculateRiskMeasurement: React.FC<IProps> = ({
   audit,
   isLoading,
   setIsLoading,
   updateAudit,
   getStatus,
   electionId,
-}: Props) => {
+}: IProps) => {
   const downloadBallotRetrievalList = (id: number, e: React.FormEvent) => {
     e.preventDefault()
     const jurisdictionID: string = audit.jurisdictions[0].id
@@ -84,11 +90,11 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
   }
 
   const calculateRiskMeasurement = async (
-    values: CalculateRiskMeasurementValues
+    values: ICalculateRiskMeasurementValues
   ) => {
     const jurisdictionID: string = audit.jurisdictions[0].id
-    const body: RoundPost = {
-      contests: audit.contests.map((contest: Contest, i: number) => ({
+    const body: IRoundPost = {
+      contests: audit.contests.map((contest: IContest, i: number) => ({
         id: contest.id,
         results: Object.keys(values.contests[i]).reduce(
           (a, k) => {
@@ -125,12 +131,12 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
     }
   }
 
-  const roundForms = audit.rounds.map((round: Round, i: number) => {
+  const roundForms = audit.rounds.map((round: IRound, i: number) => {
     const aggregateContests: AggregateContest[] = audit.contests.reduce(
-      (acc: AggregateContest[], contest: Contest) => {
+      (acc: AggregateContest[], contest: IContest) => {
         const roundContest = round.contests.find(
           v => v.id === contest.id
-        ) as RoundContest
+        ) as IRoundContest
         acc.push({ ...contest, ...roundContest })
         return acc
       },
@@ -174,7 +180,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
         render={({
           values,
           handleSubmit,
-        }: FormikProps<CalculateRiskMeasurementValues>) => (
+        }: FormikProps<ICalculateRiskMeasurementValues>) => (
           <Form data-testid={`form-three-${i + 1}`}>
             <hr />
             <FormWrapper title={`Round ${i + 1}`}>
@@ -246,7 +252,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                                   const name = aggregateContests[
                                     j
                                   ].choices.find(
-                                    (candidate: Candidate) =>
+                                    (candidate: ICandidate) =>
                                       candidate.id === choiceId
                                   )!.name
                                   return (

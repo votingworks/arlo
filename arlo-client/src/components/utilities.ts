@@ -1,9 +1,9 @@
 import * as Yup from 'yup'
-import { CreateAuditParams } from '../types'
+import { ICreateAuditParams } from '../types'
 
 export const api = async <T>(
   endpoint: string,
-  { electionId, ...options }: CreateAuditParams & RequestInit
+  { electionId, ...options }: ICreateAuditParams & RequestInit
 ): Promise<T> => {
   const apiBaseURL = electionId ? `/election/${electionId}` : ''
   const res = await fetch(apiBaseURL + endpoint, options)

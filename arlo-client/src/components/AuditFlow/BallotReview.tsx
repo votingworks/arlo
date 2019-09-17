@@ -1,7 +1,7 @@
 import React from 'react'
 import { H3, Divider, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
-import { Review } from '../../types'
+import { IReview } from '../../types'
 import { BallotRow, FormBlock, ProgressActions } from './Atoms'
 import FormButton from '../Form/FormButton'
 import BlockRadio from './BlockRadio'
@@ -18,15 +18,15 @@ const SingleBlockRadio = styled(BlockRadio)`
   }
 `
 
-interface Props {
+interface IProps {
   goAudit: () => void
-  review: Review
+  review: IReview
 }
 
-const BallotReview: React.FC<Props> = ({
+const BallotReview: React.FC<IProps> = ({
   goAudit,
   review: { vote, comment },
-}: Props) => {
+}: IProps) => {
   /* eslint-disable no-console */
   const handleSubmit = () => console.log(vote, comment)
   return (

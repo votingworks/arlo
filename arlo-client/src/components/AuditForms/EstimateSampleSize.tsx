@@ -20,7 +20,7 @@ import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api, poll } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
-import { Audit } from '../../types'
+import { IAudit } from '../../types'
 
 export const Select = styled(HTMLSelect)`
   margin-left: 5px;
@@ -68,33 +68,33 @@ export const Action = styled.p`
   }
 `
 
-interface Props {
-  audit: Audit
+interface IProps {
+  audit: IAudit
   isLoading?: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
-  getStatus: () => Promise<Audit>
+  getStatus: () => Promise<IAudit>
   electionId: string
 }
 
-interface ChoiceValues {
+interface IChoiceValues {
   id?: string
   name: string
   numVotes: string | number
 }
 
-interface ContestValues {
+interface IContestValues {
   name: string
   totalBallotsCast: string
   winners: string
-  choices: ChoiceValues[]
+  choices: IChoiceValues[]
 }
 
-interface EstimateSampleSizeValues {
+interface IEstimateSampleSizeValues {
   name: string
   randomSeed: string
   riskLimit: string
-  contests: ContestValues[]
+  contests: IContestValues[]
 }
 
 const contestsSchema = Yup.array()
@@ -117,7 +117,7 @@ const contestsSchema = Yup.array()
           function(value?: any) {
             const { choices } = this.parent
             const totalVoters = choices.reduce(
-              (a: number, v: ChoiceValues) => a + (Number(v.numVotes) || 0),
+              (a: number, v: IChoiceValues) => a + (Number(v.numVotes) || 0),
               0
             )
             return Number(value) >= totalVoters || this.createError()
@@ -153,17 +153,17 @@ const schema = Yup.object().shape({
   contests: contestsSchema,
 })
 
-const EstimateSampleSize: React.FC<Props> = ({
+const EstimateSampleSize: React.FC<IProps> = ({
   audit,
   isLoading,
   setIsLoading,
   updateAudit,
   getStatus,
   electionId,
-}: Props) => {
+}: IProps) => {
   const canEstimateSampleSize = !audit.contests.length
 
-  const handlePost = async (values: EstimateSampleSizeValues) => {
+  const handlePost = async (values: IEstimateSampleSizeValues) => {
     const data = {
       name: values.name,
       randomSeed: values.randomSeed,
@@ -246,7 +246,7 @@ const EstimateSampleSize: React.FC<Props> = ({
           values,
           handleSubmit,
           setFieldValue,
-        }: FormikProps<EstimateSampleSizeValues>) => (
+        }: FormikProps<IEstimateSampleSizeValues>) => (
           <Form data-testid="form-one">
             <FormWrapper title="Administer an Audit">
               <FormSection>
@@ -267,7 +267,7 @@ const EstimateSampleSize: React.FC<Props> = ({
                 render={contestsArrayHelpers => (
                   <>
                     {values.contests.map(
-                      (contest: ContestValues, i: number) => (
+                      (contest: IContestValues, i: number) => (
                         /* eslint-disable react/no-array-index-key */
                         <React.Fragment key={i}>
                           {i > 0 && (
@@ -325,7 +325,7 @@ const EstimateSampleSize: React.FC<Props> = ({
                               >
                                 <TwoColumnSection>
                                   {contest.choices.map(
-                                    (choice: ChoiceValues, j: number) => (
+                                    (choice: IChoiceValues, j: number) => (
                                       /* eslint-disable react/no-array-index-key */
                                       <React.Fragment key={j}>
                                         <InputFieldRow>
