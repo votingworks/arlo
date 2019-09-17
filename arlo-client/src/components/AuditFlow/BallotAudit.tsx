@@ -1,29 +1,10 @@
 import React from 'react'
-import { Formik, FormikProps, Form, getIn } from 'formik'
-import { H4, H3, Divider, RadioGroup } from '@blueprintjs/core'
-import styled from 'styled-components'
-import BallotRow from './BallotRow'
+import { Formik, FormikProps, getIn } from 'formik'
+import { H4, H3, Divider } from '@blueprintjs/core'
+import { BallotRow, FormBlock, RadioGroupFlex, ProgressActions } from './Atoms'
 import BlockRadio from './BlockRadio'
 import FormButton from '../Form/FormButton'
 import { Ballot } from '../../types'
-
-const FormBlock = styled(Form)`
-  background-color: #ced9e0;
-  padding: 20px;
-`
-
-const RadioGroupFlex = styled(RadioGroup)`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  padding-top: 20px;
-`
-
-const ProgressActions = styled.div`
-  display: flex;
-  flex-direction: row-reverse;
-  margin-top: 20px;
-`
 
 interface Props {
   review: () => void

@@ -4,7 +4,11 @@ import styled from 'styled-components'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
 import { AuditBoard, Ballot as IBallot } from '../../types'
-import BallotRow from './BallotRow'
+import { BallotRow } from './Atoms'
+
+const TopH1 = styled(H1)`
+  margin: 40px 0 25px 0;
+`
 
 const Wrapper = styled.div`
   display: flex;
@@ -35,7 +39,7 @@ const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
 
   return !board.ballots || !ballot ? null : (
     <Wrapper>
-      <H1>{board.name}: Ballot Card Data Entry</H1>
+      <TopH1>{board.name}: Ballot Card Data Entry</TopH1>
       <H3>Enter Ballot Information</H3>
       <MainCallout icon={null}>
         Round {roundId}: auditing ballot {ballotId} of {board.ballots.length}
