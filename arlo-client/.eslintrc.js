@@ -63,6 +63,7 @@ module.exports = {
     },
   },
   rules: {
+    '@typescript-eslint/interface-name-prefix': 0,
     'react-hooks/rules-of-hooks': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off', // Want to use it, but it requires return types for all built-in React lifecycle methods.
     '@typescript-eslint/no-non-null-assertion': 'off',

@@ -1,8 +1,8 @@
 /* eslint-disable no-null/no-null */
 
-import { Audit, Ballot } from '../../types'
+import { IAudit, IBallot } from '../../types'
 
-export const statusStates: Audit[] = [
+export const statusStates: IAudit[] = [
   {
     name: '',
     riskLimit: '',
@@ -385,7 +385,7 @@ export const ballotManifest = new File(
   { type: 'text/csv' }
 )
 
-export const dummyBallots: { ballots: Ballot[] } = {
+export const dummyBallots: { ballots: IBallot[] } = {
   ballots: [
     {
       batch: {

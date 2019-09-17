@@ -3,11 +3,11 @@ import styled from 'styled-components'
 import { InputGroup, NumericInput, TextArea } from '@blueprintjs/core'
 import { getIn, FieldProps } from 'formik'
 
-interface WrapperProps {
+interface IWrapperProps {
   wide: boolean
 }
 
-const Wrapper = styled.div<WrapperProps>`
+const Wrapper = styled.div<IWrapperProps>`
   width: ${p => (p.wide ? '100%' : '45%')};
 `
 
@@ -44,7 +44,7 @@ const ErrorLabel = styled.p`
   color: #ff0000;
 `
 
-export interface Props {
+export interface IProps {
   field: FieldProps['field']
   form: Pick<
     FieldProps['form'],
@@ -61,14 +61,14 @@ export interface Props {
   className?: string
 }
 
-const FormField: React.FC<Props> = ({
+const FormField: React.FC<IProps> = ({
   field,
   form: { touched, errors, setFieldTouched, setFieldValue },
   disabled,
   className,
   type,
   ...rest
-}: Props) => (
+}: IProps) => (
   <Wrapper className={className} wide={type === 'textarea'}>
     {type === 'number' ? (
       <NumberField

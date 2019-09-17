@@ -2,7 +2,7 @@ import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import { RouteComponentProps } from 'react-router-dom'
 import CreateAudit from './CreateAudit'
-import { CreateAuditParams } from '../types'
+import { ICreateAuditParams } from '../types'
 import { routerTestProps } from './testUtilities'
 import { api } from './utilities'
 
@@ -10,7 +10,7 @@ const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
 jest.mock('./utilities')
 
-const routeProps: RouteComponentProps<CreateAuditParams> = routerTestProps(
+const routeProps: RouteComponentProps<ICreateAuditParams> = routerTestProps(
   '/election/:electionId',
   {
     electionId: '1',
