@@ -1,6 +1,6 @@
-import { Audit } from '../../types'
+import { IAudit } from '../../types'
 
-export const statusStates: Audit[] = [
+export const statusStates: IAudit[] = [
   {
     name: '',
     riskLimit: '',

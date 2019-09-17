@@ -6,11 +6,11 @@ const ButtonBar = styled.div`
   text-align: center;
 `
 
-interface Props {
+interface IProps {
   children: ReactNode
 }
 
-const FormButtonBar: React.FC<Props> = ({ children }: Props) => {
+const FormButtonBar: React.FC<IProps> = ({ children }: IProps) => {
   return <ButtonBar>{children}</ButtonBar>
 }
 

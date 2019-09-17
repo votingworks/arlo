@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from '@blueprintjs/core'
 
-interface Props {
+interface IProps {
   disabled?: boolean
   onClick?: (e: React.FormEvent<any>) => void
   children?: React.ReactNode
@@ -13,14 +13,14 @@ interface Props {
   loading?: boolean
   large?: boolean
 }
-const FormButton: React.FC<Props> = ({
+const FormButton: React.FC<IProps> = ({
   disabled,
   onClick,
   size,
   inline, // should we use this?
   children,
   ...rest
-}: Props) => (
+}: IProps) => (
   <Button onClick={onClick} disabled={disabled} small={size === 'sm'} {...rest}>
     {children}
   </Button>

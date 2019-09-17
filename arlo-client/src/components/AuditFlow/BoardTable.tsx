@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
 import { H1, Button, Checkbox } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
-import { AuditBoard, Ballot } from '../../types'
+import { IAuditBoard, IBallot } from '../../types'
 
 const RightWrapper = styled.div`
   display: flex;
@@ -27,10 +27,10 @@ const ActionWrapper = styled.div`
   }
 `
 
-interface Props {
+interface IProps {
   setIsLoading: (arg0: boolean) => void
   isLoading: boolean
-  board: AuditBoard
+  board: IAuditBoard
   url: string
 }
 
@@ -46,10 +46,10 @@ const STATUSES: { [key: string]: string } = {
   NOT_AUDITED: 'Not Audited',
 }
 
-const BoardTable: React.FC<Props> = ({ board, url }: Props) => {
+const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
   const renderCell = (rI: number, cI: number) => {
     if (board.ballots) {
-      const row: Ballot = board.ballots[rI]
+      const row: IBallot = board.ballots[rI]
       if (!KEYS[cI]) {
         return <PaddedCell>{board.name}</PaddedCell>
       } else if (STATUSES[row[KEYS[cI]]]) {
@@ -125,7 +125,11 @@ const BoardTable: React.FC<Props> = ({ board, url }: Props) => {
       <Table numRows={10} defaultRowHeight={30} columnWidths={columnWidths()}>
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="batch" name="Batch" cellRenderer={renderCell} />
-        <Column key="position" name="Record/Position" cellRenderer={renderCell} />
+        <Column
+          key="position"
+          name="Record/Position"
+          cellRenderer={renderCell}
+        />
         <Column key="status" name="Status" cellRenderer={renderCell} />
         <Column name="Audit Board" cellRenderer={renderCell} />
       </Table>

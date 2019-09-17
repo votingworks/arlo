@@ -3,7 +3,7 @@ import { H1, H3, Callout, H4, Divider } from '@blueprintjs/core'
 import styled from 'styled-components'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
-import { AuditBoard, Review } from '../../types'
+import { IAuditBoard, IReview } from '../../types'
 import { BallotRow } from './Atoms'
 
 const TopH1 = styled(H1)`
@@ -22,15 +22,15 @@ const MainCallout = styled(Callout)`
   font-weight: 700;
 `
 
-interface Props {
+interface IProps {
   roundId: string
   ballotId: string
-  board: AuditBoard
+  board: IAuditBoard
 }
 
-const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
+const Ballot: React.FC<IProps> = ({ roundId, ballotId, board }: IProps) => {
   const [auditing, setAuditing] = useState(true)
-  const [review, setReview] = useState<Review>({ vote: null, comment: '' })
+  const [review, setReview] = useState<IReview>({ vote: null, comment: '' })
 
   const ballot = board.ballots ? board.ballots[Number(ballotId) - 1] : null
   useEffect(() => {
