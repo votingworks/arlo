@@ -4,6 +4,7 @@ import { InputGroup, NumericInput, TextArea } from '@blueprintjs/core'
 import { getIn, FieldProps } from 'formik'
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 interface IWrapperProps {
   wide: boolean
 }
@@ -16,6 +17,13 @@ interface WrapperProps {
 
 const Wrapper = styled.div<WrapperProps>`
 >>>>>>> styling audit review
+=======
+interface IWrapperProps {
+  wide: boolean
+}
+
+const Wrapper = styled.div<IWrapperProps>`
+>>>>>>> changing to use I prefix for interfaces
   width: ${p => (p.wide ? '100%' : '45%')};
 `
 
@@ -52,7 +60,11 @@ const ErrorLabel = styled.p`
   color: #ff0000;
 `
 
+<<<<<<< HEAD
 export interface IProps {
+=======
+interface IProps {
+>>>>>>> changing to use I prefix for interfaces
   field: FieldProps['field']
   form: Pick<
     FieldProps['form'],
@@ -77,10 +89,14 @@ const FormField: React.FC<IProps> = ({
   type,
   ...rest
 <<<<<<< HEAD
+<<<<<<< HEAD
 }: IProps) => (
 =======
 }: Props) => (
 >>>>>>> styling audit review
+=======
+}: IProps) => (
+>>>>>>> changing to use I prefix for interfaces
   <Wrapper className={className} wide={type === 'textarea'}>
     {type === 'number' ? (
       <NumberField
