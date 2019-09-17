@@ -47,6 +47,11 @@ export interface AuditBoardMember {
   affiliation: string
 }
 
+export interface Review {
+  vote: Ballot['vote']
+  comment: Ballot['comment']
+}
+
 export interface AuditBoard {
   id: string
   name: string

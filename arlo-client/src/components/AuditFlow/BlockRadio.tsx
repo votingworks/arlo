@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Ballot } from '../../types'
 
 const Block = styled.label`
   &.bp3-control.bp3-radio {
@@ -28,17 +29,50 @@ const Block = styled.label`
 `
 
 interface Props {
-  name: string
-  value: string
-  children: React.ReactNode
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  name?: string
+  value: Ballot['vote']
+  handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  locked?: boolean
+  className?: string
+  checked?: boolean
 }
 
-const BlockRadio = ({ name, value, children, handleChange }: Props) => (
-  <Block className="bp3-control bp3-radio">
-    <input type="radio" name={name} value={value} onChange={handleChange} />
+const TEXT = {
+  YES: 'Yes/For',
+  NO: 'No/Against',
+  NO_CONSENSUS: 'No audit board consensus',
+  NO_VOTE: 'Blank vote/no mark',
+}
+
+const BlockRadio = ({
+  name = '',
+  value,
+  handleChange = () => {},
+  locked,
+  className,
+  checked,
+}: Props) => (
+  <Block className={`${className} bp3-control bp3-radio`}>
+    {locked ? (
+      <input
+        type="radio"
+        name={name}
+        value={value || undefined}
+        onChange={handleChange}
+        disabled
+        checked
+      />
+    ) : (
+      <input
+        type="radio"
+        name={name}
+        value={value || undefined}
+        onChange={handleChange}
+        checked={checked}
+      />
+    )}
     <span className="bp3-control-indicator">
-      <span className="radio-text">{children}</span>
+      <span className="radio-text">{value ? TEXT[value] : ''}</span>
     </span>
   </Block>
 )

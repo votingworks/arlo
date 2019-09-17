@@ -1,41 +1,31 @@
-import React from 'react'
-import { Formik, FormikProps, Form, getIn } from 'formik'
-import { H4, H3, Divider, RadioGroup } from '@blueprintjs/core'
-import styled from 'styled-components'
-import BallotRow from './BallotRow'
+import React, { useState } from 'react'
+import { Formik, FormikProps, getIn, Field } from 'formik'
+import { H4, H3, Divider, Button } from '@blueprintjs/core'
+import { BallotRow, FormBlock, RadioGroupFlex, ProgressActions } from './Atoms'
 import BlockRadio from './BlockRadio'
 import FormButton from '../Form/FormButton'
-import { Ballot } from '../../types'
-
-const FormBlock = styled(Form)`
-  background-color: #ced9e0;
-  padding: 20px;
-`
-
-const RadioGroupFlex = styled(RadioGroup)`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  padding-top: 20px;
-`
-
-const ProgressActions = styled.div`
-  display: flex;
-  flex-direction: row-reverse;
-  margin-top: 20px;
-`
+import { Ballot, Review } from '../../types'
+import FormField from '../Form/FormField'
 
 interface Props {
-  review: () => void
-  vote: Ballot['vote']
-  setVote: (arg0: Ballot['vote']) => void
+  goReview: () => void
+  review: Review
+  setReview: (arg0: {
+    vote: Ballot['vote']
+    comment: Ballot['comment']
+  }) => void
 }
 
 interface Options {
   vote: Ballot['vote']
 }
 
-const BallotAudit: React.FC<Props> = ({ review, vote, setVote }: Props) => {
+const BallotAudit: React.FC<Props> = ({
+  review,
+  goReview,
+  setReview,
+}: Props) => {
+  const [commenting, setCommenting] = useState(!!review.comment)
   return (
     <BallotRow>
       <div className="ballot-side"></div>
@@ -50,10 +40,11 @@ const BallotAudit: React.FC<Props> = ({ review, vote, setVote }: Props) => {
           do eiusmod tempor incididunt ut labore et dolore magna aliqua.
         </p>
         <Formik
-          initialValues={{ vote }}
-          onSubmit={({ vote }) => {
-            setVote(vote)
-            review()
+          initialValues={review}
+          enableReinitialize
+          onSubmit={values => {
+            setReview(values)
+            goReview()
           }}
           render={({
             handleSubmit,
@@ -65,6 +56,10 @@ const BallotAudit: React.FC<Props> = ({ review, vote, setVote }: Props) => {
               handleChange: (e: React.ChangeEvent<HTMLInputElement>) =>
                 setFieldValue('vote', e.currentTarget.value),
             }
+            const toggleCommenting = () => {
+              setCommenting(!commenting)
+              setFieldValue('comment', '')
+            }
             return (
               <>
                 <FormBlock>
@@ -75,19 +70,37 @@ const BallotAudit: React.FC<Props> = ({ review, vote, setVote }: Props) => {
                     onChange={() => null} // required by blueprintjs but we're implementing on BlockRadio instead
                     selectedValue={getIn(values, 'vote')}
                   >
-                    <BlockRadio {...radioProps} value="YES">
-                      Yes/For
-                    </BlockRadio>
-                    <BlockRadio {...radioProps} value="NO">
-                      No/Against
-                    </BlockRadio>
-                    <BlockRadio {...radioProps} value="NO_CONSENSUS">
-                      No audit board consensus
-                    </BlockRadio>
-                    <BlockRadio {...radioProps} value="NO_VOTE">
-                      Blank vote/no mark
-                    </BlockRadio>
+                    <BlockRadio
+                      {...radioProps}
+                      checked={getIn(values, 'vote') === 'YES'}
+                      value="YES"
+                    />
+                    <BlockRadio
+                      {...radioProps}
+                      checked={getIn(values, 'vote') === 'NO'}
+                      value="NO"
+                    />
+                    <BlockRadio
+                      {...radioProps}
+                      checked={getIn(values, 'vote') === 'NO_CONSENSUS'}
+                      value="NO_CONSENSUS"
+                    />
+                    <BlockRadio
+                      {...radioProps}
+                      checked={getIn(values, 'vote') === 'NO_VOTE'}
+                      value="NO_VOTE"
+                    />
                   </RadioGroupFlex>
+                  <Button minimal icon="edit" onClick={toggleCommenting}>
+                    {commenting ? 'Remove comment' : 'Add comment'}
+                  </Button>
+                  {commenting && (
+                    <Field
+                      name="comment"
+                      type="textarea"
+                      component={FormField}
+                    />
+                  )}
                 </FormBlock>
                 <ProgressActions>
                   <FormButton

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import styled from 'styled-components'
 import { H1 } from '@blueprintjs/core'
 import { Route, Switch } from 'react-router-dom'
 import { AuditFlowParams, Audit, AuditBoard } from '../../types'
@@ -8,6 +7,7 @@ import { statusStates } from '../AuditForms/_mocks'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
 import Ballot from './Ballot'
+import Wrapper from '../Atoms/Wrapper'
 
 const rand = (max: number = 100, min: number = 1) =>
   Math.floor(Math.random() * (+max - +min)) + +min
@@ -54,14 +54,11 @@ const dummyBoard: AuditBoard[] = [
         status: ['AUDITED', 'NOT_AUDITED'][rand(2, 0)] as
           | 'AUDITED'
           | 'NOT_AUDITED',
-        vote: null
+        vote: null,
+        comment: '',
       })),
   },
 ]
-
-const Wrapper = styled.div`
-  margin-top: 100px;
-`
 
 interface Props {
   match: {

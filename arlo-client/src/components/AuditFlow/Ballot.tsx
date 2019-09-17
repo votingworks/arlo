@@ -3,8 +3,12 @@ import { H1, H3, Callout, H4, Divider } from '@blueprintjs/core'
 import styled from 'styled-components'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
-import { AuditBoard, Ballot as IBallot } from '../../types'
-import BallotRow from './BallotRow'
+import { AuditBoard, Review } from '../../types'
+import { BallotRow } from './Atoms'
+
+const TopH1 = styled(H1)`
+  margin: 40px 0 25px 0;
+`
 
 const Wrapper = styled.div`
   display: flex;
@@ -26,16 +30,19 @@ interface Props {
 
 const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
   const [auditing, setAuditing] = useState(true)
-  const [vote, setVote] = useState(null as IBallot['vote'])
+  const [review, setReview] = useState<Review>({ vote: null, comment: '' })
 
   const ballot = board.ballots ? board.ballots[Number(ballotId) - 1] : null
   useEffect(() => {
-    ballot && setVote(ballot.vote)
+    if (ballot) {
+      const { vote, comment } = ballot
+      setReview({ vote, comment })
+    }
   }, [ballot])
 
   return !board.ballots || !ballot ? null : (
     <Wrapper>
-      <H1>{board.name}: Ballot Card Data Entry</H1>
+      <TopH1>{board.name}: Ballot Card Data Entry</TopH1>
       <H3>Enter Ballot Information</H3>
       <MainCallout icon={null}>
         Round {roundId}: auditing ballot {ballotId} of {board.ballots.length}
@@ -63,12 +70,12 @@ const Ballot: React.FC<Props> = ({ roundId, ballotId, board }: Props) => {
       </BallotRow>
       {auditing ? (
         <BallotAudit
-          vote={vote}
-          setVote={setVote}
-          review={() => setAuditing(false)}
+          review={review}
+          setReview={setReview}
+          goReview={() => setAuditing(false)}
         />
       ) : (
-        <BallotReview vote={vote} audit={() => setAuditing(true)} />
+        <BallotReview review={review} goAudit={() => setAuditing(true)} />
       )}
     </Wrapper>
   )
