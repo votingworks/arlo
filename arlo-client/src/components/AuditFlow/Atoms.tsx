@@ -33,4 +33,8 @@ export const ProgressActions = styled.div`
   display: flex;
   flex-direction: row-reverse;
   margin-top: 20px;
+
+  button {
+    margin-left: 20px;
+  }
 `
