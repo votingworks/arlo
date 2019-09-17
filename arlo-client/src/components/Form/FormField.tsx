@@ -3,11 +3,19 @@ import styled from 'styled-components'
 import { InputGroup, NumericInput, TextArea } from '@blueprintjs/core'
 import { getIn, FieldProps } from 'formik'
 
+<<<<<<< HEAD
 interface IWrapperProps {
   wide: boolean
 }
 
 const Wrapper = styled.div<IWrapperProps>`
+=======
+interface WrapperProps {
+  wide: boolean
+}
+
+const Wrapper = styled.div<WrapperProps>`
+>>>>>>> styling audit review
   width: ${p => (p.wide ? '100%' : '45%')};
 `
 
@@ -68,12 +76,20 @@ const FormField: React.FC<IProps> = ({
   className,
   type,
   ...rest
+<<<<<<< HEAD
 }: IProps) => (
+=======
+}: Props) => (
+>>>>>>> styling audit review
   <Wrapper className={className} wide={type === 'textarea'}>
     {type === 'number' ? (
       <NumberField
         disabled={disabled}
+<<<<<<< HEAD
         onValueChange={n => setFieldValue(field.name, n)}
+=======
+        onValueChange={(n, s) => setFieldValue(field.name, n)}
+>>>>>>> styling audit review
         type={type}
         {...field}
         {...rest}
