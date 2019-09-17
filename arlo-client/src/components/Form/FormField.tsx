@@ -60,12 +60,10 @@ const FormField: React.FC<Props> = ({
     {rest.type === 'number' ? (
       <NumberField
         disabled={disabled}
-        onValueChange={(n, s) => {
-          setFieldValue(field.name, n)
-          setFieldTouched(field.name)
-        }}
+        onValueChange={(n, s) => setFieldValue(field.name, n)}
         {...field}
         {...rest}
+        onBlur={() => setFieldTouched(field.name)}
       />
     ) : (
       <Field

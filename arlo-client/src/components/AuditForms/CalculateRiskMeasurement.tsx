@@ -154,6 +154,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
         onSubmit={calculateRiskMeasurement}
         initialValues={roundValues}
         enableReinitialize
+        validateOnChange={false}
         render={({
           values,
           handleSubmit,
