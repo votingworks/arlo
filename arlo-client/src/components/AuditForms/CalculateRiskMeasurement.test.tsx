@@ -3,11 +3,12 @@ import { render, fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { statusStates } from './_mocks'
-import api from '../utilities'
+import * as utilities from '../utilities'
 
-const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
-
-jest.mock('../utilities')
+const apiMock: jest.SpyInstance<
+  ReturnType<typeof utilities.api>,
+  Parameters<typeof utilities.api>
+> = jest.spyOn(utilities, 'api').mockImplementation()
 
 const setIsLoadingMock = jest.fn()
 const updateAuditMock = jest.fn()
@@ -15,6 +16,10 @@ const updateAuditMock = jest.fn()
 beforeEach(() => {
   setIsLoadingMock.mockReset()
   updateAuditMock.mockReset()
+})
+
+afterEach(() => {
+  apiMock.mockClear()
 })
 
 describe('CalculateRiskMeasurement', () => {

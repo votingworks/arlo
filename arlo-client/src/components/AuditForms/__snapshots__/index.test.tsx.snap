@@ -459,6 +459,19 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                 78 samples
                 
               </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="sampleSize[contest-1]"
+                  type="radio"
+                  value="custom"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Enter your own sample size (not recommended)
+              </label>
             </div>
           </div>
         </div>
@@ -1454,6 +1467,20 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                 78 samples
                 
               </label>
+              <label
+                class="bp3-control bp3-radio bp3-disabled"
+              >
+                <input
+                  disabled=""
+                  name="sampleSize[contest-1]"
+                  type="radio"
+                  value="custom"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Enter your own sample size (not recommended)
+              </label>
             </div>
           </div>
         </div>
@@ -2203,6 +2230,19 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                 
                 78 samples
                 
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="sampleSize[contest-1]"
+                  type="radio"
+                  value="custom"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Enter your own sample size (not recommended)
               </label>
             </div>
           </div>
