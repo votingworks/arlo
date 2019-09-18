@@ -33,11 +33,6 @@ poll until those values are filled.
 			],
 			
 			totalBallotsCast: 4200,
-
-			sampleSizeOptions: [
-                {"prob": 0.5, "size": 143},
-				{"type": "ASN", "size": 157},
-            ]
 		}
 	],
 	
@@ -82,7 +77,32 @@ poll until those values are filled.
 						"candidate-1": 55,
 						"candidate-2": 35
 					},
-					sampleSize: 25,
+					
+					sampleSizeOptions: [
+						{"prob": 0.5, "size": 143},
+						{"type": "ASN", "prob": 0.6, "size": 157},
+					],
+					
+					sampleSize: 152,
+				}
+			],
+			jurisdictions: {
+				"adams-county": {
+					numBallots: 15,
+				}
+			}
+		},
+		
+		{
+			startedAt: "2019-06-17 11:56:00",
+			// no endedAt
+			contests: [
+				{
+					id: "contest-1",
+					
+					// no results yet
+					
+					// no sample size options yet, they're being computed
 				}
 			],
 			jurisdictions: {
