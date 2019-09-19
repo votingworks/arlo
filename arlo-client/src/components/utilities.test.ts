@@ -21,8 +21,8 @@ describe('utilities.ts', () => {
       const result = await api('/test', { method: 'GET', electionId: '1' })
 
       expect(result).toEqual({ success: true })
-      expect(window.fetch).toHaveBeenCalledTimes(1)
-      expect(window.fetch).toHaveBeenCalledWith('/election/1/test', {
+      expect(window.fetch).toBeCalledTimes(1)
+      expect(window.fetch).toBeCalledWith('/election/1/test', {
         method: 'GET',
       })
     })
@@ -32,8 +32,8 @@ describe('utilities.ts', () => {
       const result = await api('/test', { method: 'GET', electionId: '' })
 
       expect(result).toEqual({ success: true })
-      expect(window.fetch).toHaveBeenCalledTimes(1)
-      expect(window.fetch).toHaveBeenCalledWith('/test', {
+      expect(window.fetch).toBeCalledTimes(1)
+      expect(window.fetch).toBeCalledWith('/test', {
         method: 'GET',
       })
     })
@@ -43,9 +43,9 @@ describe('utilities.ts', () => {
       await expect(
         api('/test', { method: 'GET', electionId: '1' })
       ).rejects.toThrow('A test error')
-      expect(window.fetch).toHaveBeenCalledTimes(1)
+      expect(window.fetch).toBeCalledTimes(1)
 
-      expect(window.fetch).toHaveBeenCalledWith('/election/1/test', {
+      expect(window.fetch).toBeCalledWith('/election/1/test', {
         method: 'GET',
       })
     })

@@ -45,9 +45,9 @@ describe('FormField', () => {
     fireEvent.change(input, { target: { value: 'new value' } })
     fireEvent.blur(input)
 
-    expect(field.onChange).toHaveBeenCalledTimes(0)
-    expect(form.setFieldTouched).toHaveBeenCalledTimes(1)
-    expect(form.setFieldValue).toHaveBeenCalledTimes(1)
+    expect(field.onChange).toBeCalledTimes(0)
+    expect(form.setFieldTouched).toBeCalledTimes(1)
+    expect(form.setFieldValue).toBeCalledTimes(1)
   })
 
   it('renders a Field with errors', () => {
