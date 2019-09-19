@@ -167,12 +167,11 @@ const SelectBallotsToAudit: React.FC<Props> = ({
       },
       {}
     ),
-    customSampleSize: [...audit.contests].reduce(
+    customSampleSize: [...audit.rounds[0].contests].reduce(
       (a: { [key: string]: string }, c) => {
         a[c.id] = ''
-        if (audit.rounds[0]) {
-          const rc = audit.rounds[0].contests.find(v => v.id === c.id)
-          a[c.id] = rc!.sampleSize.toString()
+        if (c.sampleSize) {
+          a[c.id] = c.sampleSize.toString()
         }
         return a
       },

@@ -124,10 +124,10 @@ describe('SelectBallotsToAudit', () => {
   it('conditionally shows custom text input and submits', async () => {
     const getStatusMock = jest
       .fn()
-      .mockImplementationOnce(async () => statusStates[2]) // the POST to /audit/status after jurisdictions
+      .mockImplementationOnce(async () => statusStates[3]) // the POST to /audit/status after jurisdictions
     const updateAuditMock = jest
       .fn()
-      .mockImplementationOnce(async () => statusStates[3]) // the POST to /audit/status after manifest
+      .mockImplementationOnce(async () => statusStates[4]) // the POST to /audit/status after manifest
 
     const {
       getByText,
@@ -137,7 +137,7 @@ describe('SelectBallotsToAudit', () => {
       queryAllByText,
     } = render(
       <SelectBallotsToAudit
-        audit={statusStates[1]}
+        audit={statusStates[2]}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}

@@ -20,9 +20,6 @@ beforeEach(() => {
   updateAuditMock.mockClear()
   getStatusMock.mockClear()
   toastSpy.mockClear()
-})
-
-afterEach(() => {
   apiMock.mockClear()
 })
 

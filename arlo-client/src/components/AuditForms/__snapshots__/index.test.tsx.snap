@@ -1399,9 +1399,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 </div>
 `;
 
-exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `<div />`;
-
-exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 2`] = `
+exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `
 <div>
   <div
     class="sc-kpOJdX bRfAfq"
