@@ -1,5 +1,281 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CalculateRiskMeasurement handles background process timeout 1`] = `
+<div>
+  <form
+    data-testid="form-three-1"
+  >
+    <hr />
+    <div
+      class="sc-ifAKCX dUfgxM"
+    >
+      <h2
+        class="bp3-heading sc-bxivhb jFEWwS"
+      >
+        Round 1
+      </h2>
+      <h3
+        class="bp3-heading sc-htpNat cNFUHJ"
+      >
+        Ballot Retrieval List: 
+        379
+         Total Ballots
+      </h3>
+      <div
+        class="sc-bwzfXH izcbHX"
+      >
+        <p>
+          Contest 
+          1
+          : 
+          379
+           ballots
+        </p>
+      </div>
+      <button
+        class="bp3-button"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Aggregated Ballot Retrieval List for Round 
+          1
+        </span>
+      </button>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
+        >
+          Contest 1: contest name
+        </h3>
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
+        >
+          Audited Results: Round 
+          1
+          , Contest 
+          1
+           
+          INCOMPLETE
+        </h3>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Enter the number of votes recorded for each candidate/choice in the audited ballots for Round 
+          1
+          , Contest 
+          1
+        </div>
+        <div
+          class="sc-iwsKbI hmbaiI"
+        >
+          <div
+            class="sc-gqjmRU glEOTJ"
+          >
+            <label
+              class="sc-gZMcBi gnyAIo"
+              for="round-0-contest-0-choice-choice-1"
+            >
+              choice one
+            </label>
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+              >
+                <div
+                  class="bp3-input-group"
+                >
+                  <input
+                    autocomplete="off"
+                    class="bp3-input"
+                    id="round-0-contest-0-choice-choice-1"
+                    name="contests[0][choice-1]"
+                    style="padding-right: 10px;"
+                    type="number"
+                    value="0"
+                  />
+                </div>
+                <div
+                  class="bp3-button-group bp3-vertical bp3-fixed"
+                >
+                  <button
+                    class="bp3-button"
+                    type="button"
+                  >
+                    <span
+                      class="bp3-icon bp3-icon-chevron-up"
+                      icon="chevron-up"
+                    >
+                      <svg
+                        data-icon="chevron-up"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        width="16"
+                      >
+                        <desc>
+                          chevron-up
+                        </desc>
+                        <path
+                          d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                          fill-rule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <button
+                    class="bp3-button"
+                    type="button"
+                  >
+                    <span
+                      class="bp3-icon bp3-icon-chevron-down"
+                      icon="chevron-down"
+                    >
+                      <svg
+                        data-icon="chevron-down"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        width="16"
+                      >
+                        <desc>
+                          chevron-down
+                        </desc>
+                        <path
+                          d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                          fill-rule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="sc-gqjmRU glEOTJ"
+          >
+            <label
+              class="sc-gZMcBi gnyAIo"
+              for="round-0-contest-0-choice-choice-2"
+            >
+              choice two
+            </label>
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-control-group bp3-numeric-input sc-gzVnrw fWIqyW"
+              >
+                <div
+                  class="bp3-input-group"
+                >
+                  <input
+                    autocomplete="off"
+                    class="bp3-input"
+                    id="round-0-contest-0-choice-choice-2"
+                    name="contests[0][choice-2]"
+                    style="padding-right: 10px;"
+                    type="number"
+                    value="0"
+                  />
+                </div>
+                <div
+                  class="bp3-button-group bp3-vertical bp3-fixed"
+                >
+                  <button
+                    class="bp3-button"
+                    type="button"
+                  >
+                    <span
+                      class="bp3-icon bp3-icon-chevron-up"
+                      icon="chevron-up"
+                    >
+                      <svg
+                        data-icon="chevron-up"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        width="16"
+                      >
+                        <desc>
+                          chevron-up
+                        </desc>
+                        <path
+                          d="M12.71 9.29l-4-4C8.53 5.11 8.28 5 8 5s-.53.11-.71.29l-4 4a1.003 1.003 0 001.42 1.42L8 7.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71z"
+                          fill-rule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <button
+                    class="bp3-button"
+                    type="button"
+                  >
+                    <span
+                      class="bp3-icon bp3-icon-chevron-down"
+                      icon="chevron-down"
+                    >
+                      <svg
+                        data-icon="chevron-down"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        width="16"
+                      >
+                        <desc>
+                          chevron-down
+                        </desc>
+                        <path
+                          d="M12 5c-.28 0-.53.11-.71.29L8 8.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42l4 4c.18.18.43.29.71.29s.53-.11.71-.29l4-4A1.003 1.003 0 0012 5z"
+                          fill-rule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
+        >
+          Audit Progress: 
+          0
+           of 
+          1
+           
+          complete
+        </h3>
+      </div>
+      <div
+        class="sc-dnqmqq itqjch"
+      >
+        <button
+          class="bp3-button bp3-intent-primary"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Calculate Risk Measurement
+          </span>
+        </button>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      />
+    </div>
+  </form>
+</div>
+`;
+
 exports[`CalculateRiskMeasurement handles inputs 1`] = `
 <div>
   <form

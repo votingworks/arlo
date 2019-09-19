@@ -37,9 +37,9 @@ describe('CreateAudit', () => {
     fireEvent.click(getByText('Create a New Audit'), { bubbles: true })
 
     await wait(() => {
-      expect(apiMock).toHaveBeenCalledTimes(1)
+      expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/election/new')
-      expect(historySpy).toHaveBeenCalledTimes(1)
+      expect(historySpy).toBeCalledTimes(1)
       expect(historySpy.mock.calls[0][0]).toBe('/election/1')
     })
   })

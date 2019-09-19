@@ -300,6 +300,68 @@ export const statusStates: Audit[] = [
     randomSeed: '123456789',
     riskLimit: '1',
   },
+  {
+    contests: [
+      {
+        choices: [
+          {
+            id: 'choice-1',
+            name: 'choice one',
+            numVotes: 792,
+          },
+          {
+            id: 'choice-2',
+            name: 'choice two',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-1',
+        name: 'contest name',
+        totalBallotsCast: '2123',
+      },
+    ],
+    jurisdictions: [
+      {
+        auditBoards: [
+          {
+            id: 'audit-board-1',
+            name: 'Audit Board #1',
+            members: [],
+          },
+        ],
+        ballotManifest: {
+          filename: 'Ballot Manifest May 2019 Election - WYNADOTTE.csv',
+          numBallots: 2117,
+          numBatches: 10,
+          uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+        },
+        contests: ['contest-1'],
+        id: 'jurisdiction-1',
+        name: 'Jurisdiction 1',
+      },
+    ],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: null,
+              pvalue: null,
+            },
+            id: 'contest-1',
+            results: {},
+            sampleSize: null,
+            sampleSizeOptions: null,
+          },
+        ],
+        endedAt: null,
+        startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+      },
+    ],
+    name: 'contest name',
+    randomSeed: '123456789',
+    riskLimit: '1',
+  },
 ]
 
 export const ballotManifest = new File(

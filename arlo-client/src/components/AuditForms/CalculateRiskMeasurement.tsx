@@ -153,6 +153,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
     }, 0)
     const aggregatedBallots = aggregateContests.reduce(
       (acc: number, contest: AggregateContest) => {
+        /* istanbul ignore next */
         acc += contest.sampleSize || 0
         return acc
       },
