@@ -408,12 +408,12 @@ describe('EstimateSampleSize', () => {
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
     await wait(() => {
       const { body } = apiMock.mock.calls[0][1] as { body: string }
-      expect(setIsLoadingMock).toHaveBeenCalledTimes(2)
-      expect(apiMock).toHaveBeenCalledTimes(1)
+      expect(setIsLoadingMock).toBeCalledTimes(2)
+      expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
-      expect(getStatusMock).toHaveBeenCalledTimes(3)
-      expect(updateAuditMock).toHaveBeenCalledTimes(1)
+      expect(getStatusMock).toBeCalledTimes(3)
+      expect(updateAuditMock).toBeCalledTimes(1)
     })
   })
 
@@ -455,15 +455,15 @@ describe('EstimateSampleSize', () => {
 
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
     await wait(() => {
-      expect(apiMock).toHaveBeenCalled()
+      expect(apiMock).toBeCalled()
       const { body } = apiMock.mock.calls[0][1] as { body: string }
       expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
-      expect(getStatusMock).toHaveBeenCalled()
-      expect(dateSpy).toHaveBeenCalledTimes(2)
-      expect(toastSpy).toHaveBeenCalledTimes(1)
-      expect(updateAuditMock).toHaveBeenCalledTimes(0)
-      expect(setIsLoadingMock).toHaveBeenCalledTimes(1)
+      expect(getStatusMock).toBeCalled()
+      expect(dateSpy).toBeCalledTimes(2)
+      expect(toastSpy).toBeCalledTimes(1)
+      expect(updateAuditMock).toBeCalledTimes(0)
+      expect(setIsLoadingMock).toBeCalledTimes(1)
     })
   })
 
@@ -537,9 +537,9 @@ describe('EstimateSampleSize', () => {
 
     await wait(() => {
       expect(apiMock.mock.calls.length).toBe(1)
-      expect(toastSpy).toHaveBeenCalledTimes(1)
-      expect(toastSpy).toHaveBeenCalledWith('A test error')
-      expect(updateAuditMock).toHaveBeenCalledTimes(0)
+      expect(toastSpy).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledWith('A test error')
+      expect(updateAuditMock).toBeCalledTimes(0)
     })
   })
 })

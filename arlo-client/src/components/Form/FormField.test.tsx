@@ -61,6 +61,6 @@ describe('FormField', () => {
 
     fireEvent.change(getByTestId('testid'), { target: { value: 'new value' } })
 
-    expect(field.onChange).toHaveBeenCalledTimes(1)
+    expect(field.onChange).toBeCalledTimes(1)
   })
 })
