@@ -237,7 +237,7 @@ describe('EstimateSampleSize', () => {
   it('renders after sample size is estimated correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[2]}
+        audit={statusStates[3]}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -249,7 +249,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[2]}
+        audit={statusStates[3]}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -263,7 +263,7 @@ describe('EstimateSampleSize', () => {
   it('renders after manifest is uploaded correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -275,7 +275,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -289,7 +289,7 @@ describe('EstimateSampleSize', () => {
   it('renders during rounds stage correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -301,7 +301,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -385,6 +385,7 @@ describe('EstimateSampleSize', () => {
       .fn()
       .mockImplementationOnce(async () => statusStates[0])
       .mockImplementationOnce(async () => statusStates[1])
+      .mockImplementationOnce(async () => statusStates[2])
 
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
@@ -412,7 +413,7 @@ describe('EstimateSampleSize', () => {
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
-      expect(getStatusMock).toHaveBeenCalledTimes(2)
+      expect(getStatusMock).toHaveBeenCalledTimes(3)
       expect(updateAuditMock).toHaveBeenCalledTimes(1)
     })
   })

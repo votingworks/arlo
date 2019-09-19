@@ -16,14 +16,14 @@ const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 async function inputAndSubmitForm() {
   const getStatusMock = jest
     .fn()
-    .mockImplementationOnce(async () => statusStates[2]) // the POST to /audit/status after jurisdictions
+    .mockImplementationOnce(async () => statusStates[4]) // the POST to /audit/status after jurisdictions
   const updateAuditMock = jest
     .fn()
-    .mockImplementationOnce(async () => statusStates[3]) // the POST to /audit/status after manifest
+    .mockImplementationOnce(async () => statusStates[5]) // the POST to /audit/status after manifest
 
   const { getByLabelText, getByText } = render(
     <SelectBallotsToAudit
-      audit={statusStates[1]}
+      audit={statusStates[2]}
       isLoading={false}
       setIsLoading={jest.fn()}
       updateAudit={updateAuditMock}
@@ -89,51 +89,10 @@ describe('SelectBallotsToAudit', () => {
     expect(container).toMatchSnapshot()
   })
 
-  it('handles not having sample size options', () => {
-    const statusState = {
-      contests: [
-        {
-          choices: [
-            {
-              id: 'choice-1',
-              name: 'choice one',
-              numVotes: '792',
-            },
-            {
-              id: 'choice-2',
-              name: 'choice two',
-              numVotes: '1325',
-            },
-          ],
-          id: 'contest-1',
-          name: 'contest name',
-          totalBallotsCast: '2123',
-          sampleSizeOptions: [],
-        },
-      ],
-      jurisdictions: [],
-      rounds: [],
-      name: 'contest name',
-      randomSeed: '123456789',
-      riskLimit: '1',
-    }
-    const container = render(
-      <SelectBallotsToAudit
-        audit={statusState}
-        isLoading={false}
-        setIsLoading={jest.fn()}
-        updateAudit={jest.fn()}
-        getStatus={jest.fn()}
-        electionId="1"
-      />
-    )
-    expect(container).toMatchSnapshot()
-  })
-
   it('has radio for selecting sampleSize', () => {
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
-        audit={statusStates[1]}
+        audit={statusStates[2]}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -250,7 +209,7 @@ describe('SelectBallotsToAudit', () => {
   it('changes sampleSize based on audit.rounds.contests.sampleSize', () => {
     const { getByLabelText } = render(
       <SelectBallotsToAudit
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}

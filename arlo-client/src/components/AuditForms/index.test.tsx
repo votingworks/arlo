@@ -47,8 +47,25 @@ describe('RiskLimitingAuditForm', () => {
     expect(container).toMatchSnapshot()
   })
 
-  it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
+  it('does not render SelectBallotsToAudit when /audit/status is processing samplesizes', async () => {
     apiMock.mockImplementation(async () => statusStates[1])
+    let utils: RenderResult
+    act(() => {
+      utils = render(<AuditForms {...routeProps} />)
+    })
+    const { container, queryByTestId } = utils!
+
+    expect(queryByTestId('form-two')).toBeNull()
+    expect(container).toMatchSnapshot()
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[1])
+    })
+  })
+
+  it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
+    apiMock.mockImplementation(async () => statusStates[2])
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms {...routeProps} />)
@@ -64,12 +81,12 @@ describe('RiskLimitingAuditForm', () => {
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
-      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[1])
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[2])
     })
   })
 
   it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
-    apiMock.mockImplementation(async () => statusStates[2])
+    apiMock.mockImplementation(async () => statusStates[3])
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms {...routeProps} />) // this one will not have the first empty round
@@ -86,12 +103,12 @@ describe('RiskLimitingAuditForm', () => {
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
-      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[2])
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[3])
     })
   })
 
   it('renders CalculateRiskMeasurement when /audit/status returns round data', async () => {
-    apiMock.mockImplementation(async () => statusStates[3])
+    apiMock.mockImplementation(async () => statusStates[4])
     let utils: RenderResult
     act(() => {
       utils = render(<AuditForms {...routeProps} />) // this one will not have the first empty round
@@ -107,7 +124,7 @@ describe('RiskLimitingAuditForm', () => {
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
-      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[3])
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[4])
     })
   })
 })

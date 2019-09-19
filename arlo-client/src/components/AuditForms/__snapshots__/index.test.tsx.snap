@@ -611,6 +611,400 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
 </div>
 `;
 
+exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/status is processing samplesizes 1`] = `
+<div>
+  <div
+    class="sc-kpOJdX bRfAfq"
+  >
+    <form
+      data-testid="form-one"
+    >
+      <div
+        class="sc-ifAKCX dUfgxM"
+      >
+        <h2
+          class="bp3-heading sc-bxivhb jFEWwS"
+        >
+          Administer an Audit
+        </h2>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <label
+            for="audit-name"
+            id="audit-name-label"
+          >
+            Election Name
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-input-group sc-bZQynM fFGKEg"
+              >
+                <input
+                  aria-labelledby="audit-name-label"
+                  class="bp3-input"
+                  id="audit-name"
+                  name="name"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
+          >
+            Contest  Info
+          </h3>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <label
+            for="contests[0].name"
+          >
+            Contest
+             
+            
+             
+            Name
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-input-group sc-bZQynM fFGKEg"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].name"
+                  name="contests[0].name"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
+          >
+            Candidates/Choices & Vote Totals
+          </h3>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-gqjmRU eFzMzy"
+          >
+            <div
+              class="sc-jTzLTM crWWNL"
+            >
+              <label
+                class="bp3-label sc-jzJRlG kILPnr"
+              >
+                Name of Candidate/Choice 
+                1
+                <div
+                  class="sc-fjdhpX biCjXe sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group sc-bZQynM fFGKEg"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-jzJRlG kILPnr"
+              >
+                Votes for Candidate/Choice 
+                1
+                <div
+                  class="sc-fjdhpX biCjXe sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group sc-bZQynM fFGKEg"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[0].numVotes"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+            </div>
+            <div
+              class="sc-jTzLTM crWWNL"
+            >
+              <label
+                class="bp3-label sc-jzJRlG kILPnr"
+              >
+                Name of Candidate/Choice 
+                2
+                <div
+                  class="sc-fjdhpX biCjXe sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group sc-bZQynM fFGKEg"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[1].name"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-jzJRlG kILPnr"
+              >
+                Votes for Candidate/Choice 
+                2
+                <div
+                  class="sc-fjdhpX biCjXe sc-EHOje bXavad"
+                >
+                  <div
+                    class="bp3-input-group sc-bZQynM fFGKEg"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[1].numVotes"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+            </div>
+            <p
+              class="sc-cSHVUG dbDVnz"
+            >
+              Add a new candidate/choice
+            </p>
+          </div>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
+          >
+            Total Ballots Cast
+          </h3>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <label
+            for="contests[0].totalBallotsCast"
+          >
+            Total Ballots for Contest
+             
+            
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-input-group sc-bZQynM fFGKEg"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <h2
+          class="bp3-heading sc-bxivhb jFEWwS"
+        >
+          Audit Settings
+        </h2>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
+          >
+            Desired Risk Limit
+          </h3>
+          <label
+            for="risk-limit"
+          >
+            Set the risk for the audit as a percentage (e.g. "5" = 5%)
+            <div
+              class="bp3-html-select sc-gZMcBi fvQasU"
+            >
+              <select
+                field="[object Object]"
+                form="[object Object]"
+                id="risk-limit"
+              >
+                <option>
+                  1
+                </option>
+                <option>
+                  2
+                </option>
+                <option>
+                  3
+                </option>
+                <option>
+                  4
+                </option>
+                <option>
+                  5
+                </option>
+                <option>
+                  6
+                </option>
+                <option>
+                  7
+                </option>
+                <option>
+                  8
+                </option>
+                <option>
+                  9
+                </option>
+                <option>
+                  10
+                </option>
+                <option>
+                  11
+                </option>
+                <option>
+                  12
+                </option>
+                <option>
+                  13
+                </option>
+                <option>
+                  14
+                </option>
+                <option>
+                  15
+                </option>
+                <option>
+                  16
+                </option>
+                <option>
+                  17
+                </option>
+                <option>
+                  18
+                </option>
+                <option>
+                  19
+                </option>
+                <option>
+                  20
+                </option>
+              </select>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
+          </label>
+        </div>
+        <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
+          >
+            Random Seed
+          </h3>
+          <label
+            for="random-seed"
+            id="random-seed-label"
+          >
+            Enter the random number to seed the pseudo-random number generator.
+            <div
+              class="sc-EHOje bXavad"
+            >
+              <div
+                class="bp3-input-group sc-bZQynM fFGKEg"
+              >
+                <input
+                  aria-labelledby="random-seed-label"
+                  class="bp3-input"
+                  id="random-seed"
+                  name="randomSeed"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div
+        class="sc-dnqmqq itqjch"
+      >
+        <button
+          class="bp3-button bp3-intent-primary"
+          type="submit"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Estimate Sample Size
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
 exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 <div>
   <div
@@ -1005,7 +1399,9 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 </div>
 `;
 
-exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `
+exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `<div />`;
+
+exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 2`] = `
 <div>
   <div
     class="sc-kpOJdX bRfAfq"

@@ -725,6 +725,20 @@ Object {
             </div>
           </div>
           <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
+            >
+              Audit Progress: 
+              1
+               of 
+              1
+               
+              complete
+            </h3>
+          </div>
+          <div
             class="bp3-spinner"
           >
             <div
@@ -749,20 +763,6 @@ Object {
                 />
               </svg>
             </div>
-          </div>
-          <div
-            class="sc-bdVaJa fdbLH"
-          >
-            <h3
-              class="bp3-heading sc-htpNat cNFUHJ"
-            >
-              Audit Progress: 
-              1
-               of 
-              1
-               
-              complete
-            </h3>
           </div>
           <div
             class="sc-bdVaJa fdbLH"
@@ -929,6 +929,20 @@ Object {
           </div>
         </div>
         <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
+          >
+            Audit Progress: 
+            1
+             of 
+            1
+             
+            complete
+          </h3>
+        </div>
+        <div
           class="bp3-spinner"
         >
           <div
@@ -953,20 +967,6 @@ Object {
               />
             </svg>
           </div>
-        </div>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
-          <h3
-            class="bp3-heading sc-htpNat cNFUHJ"
-          >
-            Audit Progress: 
-            1
-             of 
-            1
-             
-            complete
-          </h3>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -1547,6 +1547,20 @@ Object {
             </div>
           </div>
           <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <h3
+              class="bp3-heading sc-htpNat cNFUHJ"
+            >
+              Audit Progress: 
+              0
+               of 
+              1
+               
+              complete
+            </h3>
+          </div>
+          <div
             class="bp3-spinner"
           >
             <div
@@ -1571,20 +1585,6 @@ Object {
                 />
               </svg>
             </div>
-          </div>
-          <div
-            class="sc-bdVaJa fdbLH"
-          >
-            <h3
-              class="bp3-heading sc-htpNat cNFUHJ"
-            >
-              Audit Progress: 
-              0
-               of 
-              1
-               
-              complete
-            </h3>
           </div>
           <div
             class="sc-bdVaJa fdbLH"
@@ -1719,6 +1719,20 @@ Object {
           </div>
         </div>
         <div
+          class="sc-bdVaJa fdbLH"
+        >
+          <h3
+            class="bp3-heading sc-htpNat cNFUHJ"
+          >
+            Audit Progress: 
+            0
+             of 
+            1
+             
+            complete
+          </h3>
+        </div>
+        <div
           class="bp3-spinner"
         >
           <div
@@ -1743,20 +1757,6 @@ Object {
               />
             </svg>
           </div>
-        </div>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
-          <h3
-            class="bp3-heading sc-htpNat cNFUHJ"
-          >
-            Audit Progress: 
-            0
-             of 
-            1
-             
-            complete
-          </h3>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
