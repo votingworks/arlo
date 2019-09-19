@@ -12,10 +12,12 @@ const apiMock: jest.SpyInstance<
 
 const setIsLoadingMock = jest.fn()
 const updateAuditMock = jest.fn()
+const getStatusMock = jest.fn()
 
 beforeEach(() => {
   setIsLoadingMock.mockReset()
   updateAuditMock.mockReset()
+  getStatusMock.mockReset()
 })
 
 afterEach(() => {
@@ -30,6 +32,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -43,6 +46,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -56,6 +60,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -69,6 +74,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -87,6 +93,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -160,6 +167,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -183,6 +191,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -208,6 +217,7 @@ describe('CalculateRiskMeasurement', () => {
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )

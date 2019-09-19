@@ -391,7 +391,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('uses the highest prob value from duplicate sampleSizes', () => {
-    statusStates[1].contests[0].sampleSizeOptions = [
+    statusStates[1].rounds[0].contests[0].sampleSizeOptions = [
       { size: 30, prob: 0.8, type: null },
       { size: 30, prob: 0.9, type: null },
     ]
@@ -415,7 +415,7 @@ describe('SelectBallotsToAudit', () => {
 
   it('does not display duplicate sampleSize options', () => {
     const statusState = { ...statusStates[1] }
-    statusState.contests[0].sampleSizeOptions = [
+    statusState.rounds[0].contests[0].sampleSizeOptions = [
       { size: 30, prob: null, type: null },
       { size: 30, prob: null, type: null },
     ]
