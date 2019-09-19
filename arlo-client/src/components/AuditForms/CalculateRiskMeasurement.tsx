@@ -90,9 +90,13 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
     const body: RoundPost = {
       contests: audit.contests.map((contest: Contest, i: number) => ({
         id: contest.id,
-        results: {
-          ...values.contests[i],
-        },
+        results: Object.keys(values.contests[i]).reduce(
+          (a, k) => {
+            a[k] = Number(values.contests[i][k])
+            return a
+          },
+          {} as any
+        ),
       })),
     }
 
