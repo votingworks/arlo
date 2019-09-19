@@ -3,27 +3,28 @@ import { render, fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { statusStates } from './_mocks'
-import api from '../utilities'
+import * as utilities from '../utilities'
 
-const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
-
-jest.mock('../utilities')
+const apiMock: jest.SpyInstance<
+  ReturnType<typeof utilities.api>,
+  Parameters<typeof utilities.api>
+> = jest.spyOn(utilities, 'api').mockImplementation()
 
 const setIsLoadingMock = jest.fn()
 const updateAuditMock = jest.fn()
-const getStatusMock = jest.fn()
+const getStatusMock = jest.fn().mockImplementation(async () => statusStates[5])
 
 beforeEach(() => {
-  setIsLoadingMock.mockReset()
-  updateAuditMock.mockReset()
-  getStatusMock.mockReset()
+  setIsLoadingMock.mockClear()
+  updateAuditMock.mockClear()
+  getStatusMock.mockClear()
 })
 
 describe('CalculateRiskMeasurement', () => {
   it('renders first round correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
@@ -37,7 +38,7 @@ describe('CalculateRiskMeasurement', () => {
   it('renders completion in first round correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
@@ -51,7 +52,7 @@ describe('CalculateRiskMeasurement', () => {
   it('renders first round with loading correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
@@ -65,7 +66,7 @@ describe('CalculateRiskMeasurement', () => {
   it('renders completion in first round with loading correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
@@ -84,7 +85,7 @@ describe('CalculateRiskMeasurement', () => {
     }))
     const { container, getByLabelText, queryAllByText, getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
@@ -147,7 +148,8 @@ describe('CalculateRiskMeasurement', () => {
 
       await wait(() => {
         expect(apiMock).toBeCalledTimes(1)
-        expect(setIsLoadingMock).toBeCalledTimes(1)
+        expect(setIsLoadingMock).toBeCalledTimes(2)
+        expect(getStatusMock).toBeCalledTimes(1)
         expect(updateAuditMock).toBeCalledTimes(1)
         expect(toastSpy).toBeCalledTimes(0)
       })
@@ -158,7 +160,7 @@ describe('CalculateRiskMeasurement', () => {
     window.open = jest.fn()
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
@@ -182,7 +184,7 @@ describe('CalculateRiskMeasurement', () => {
     window.open = jest.fn()
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
@@ -208,7 +210,7 @@ describe('CalculateRiskMeasurement', () => {
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const { getByLabelText, getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
