@@ -59,8 +59,10 @@ const AuditForms: React.FC<Props> = ({
   }, [updateAudit])
 
   const showSelectBallotsToAudit =
-    !!audit.contests.length && audit.contests.every(c => !!c.sampleSizeOptions)
-  const showCalculateRiskMeasurement = !!audit.rounds.length
+    !!audit.contests.length &&
+    audit.rounds[0].contests.every(c => !!c.sampleSizeOptions)
+  const showCalculateRiskMeasurement =
+    !!audit.rounds.length && audit.rounds[0].contests.every(c => !!c.sampleSize)
 
   return (
     <Wrapper>
@@ -96,6 +98,7 @@ const AuditForms: React.FC<Props> = ({
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           updateAudit={updateAudit}
+          getStatus={getStatus}
           electionId={electionId}
         />
       )}

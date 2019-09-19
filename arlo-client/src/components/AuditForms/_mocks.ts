@@ -27,11 +27,6 @@ export const statusStates: Audit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
-        sampleSizeOptions: [
-          { size: 269, type: 'ASN', prob: null },
-          { size: 379, prob: 0.8, type: null },
-          { size: 78, prob: null, type: null },
-        ],
       },
     ],
     jurisdictions: [],
@@ -58,11 +53,6 @@ export const statusStates: Audit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
-        sampleSizeOptions: [
-          { size: 269, type: 'ASN', prob: null },
-          { size: 379, prob: 0.8, type: null },
-          { size: 78, prob: null, type: null },
-        ],
       },
     ],
     jurisdictions: [
@@ -85,7 +75,28 @@ export const statusStates: Audit[] = [
         name: 'Jurisdiction 1',
       },
     ],
-    rounds: [],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: null,
+              pvalue: null,
+            },
+            id: 'contest-1',
+            results: {},
+            sampleSize: null,
+            sampleSizeOptions: [
+              { size: 269, type: 'ASN', prob: null },
+              { size: 379, prob: 0.8, type: null },
+              { size: 78, prob: null, type: null },
+            ],
+          },
+        ],
+        endedAt: null,
+        startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+      },
+    ],
     name: 'contest name',
     randomSeed: '123456789',
     riskLimit: '1',
@@ -108,11 +119,6 @@ export const statusStates: Audit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
-        sampleSizeOptions: [
-          { size: 269, type: 'ASN', prob: null },
-          { size: 379, prob: 0.8, type: null },
-          { size: 78, prob: null, type: null },
-        ],
       },
     ],
     jurisdictions: [
@@ -146,6 +152,11 @@ export const statusStates: Audit[] = [
             id: 'contest-1',
             results: {},
             sampleSize: 379,
+            sampleSizeOptions: [
+              { size: 269, type: 'ASN', prob: null },
+              { size: 379, prob: 0.8, type: null },
+              { size: 78, prob: null, type: null },
+            ],
           },
         ],
         endedAt: null,
@@ -174,11 +185,6 @@ export const statusStates: Audit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
-        sampleSizeOptions: [
-          { size: 269, type: 'ASN', prob: null },
-          { size: 379, prob: 0.8, type: null },
-          { size: 78, prob: null, type: null },
-        ],
       },
     ],
     jurisdictions: [
@@ -215,6 +221,11 @@ export const statusStates: Audit[] = [
               'choice-2': 167,
             },
             sampleSize: 379,
+            sampleSizeOptions: [
+              { size: 269, type: 'ASN', prob: null },
+              { size: 379, prob: 0.8, type: null },
+              { size: 78, prob: null, type: null },
+            ],
           },
         ],
         endedAt: 'Thu, 18 Jul 2019 16:59:34 GMT',

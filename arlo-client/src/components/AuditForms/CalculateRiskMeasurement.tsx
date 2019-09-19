@@ -13,7 +13,7 @@ import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api } from '../utilities'
+import { api, poll } from '../utilities'
 import { Contest, Round, Candidate, RoundContest, Audit } from '../../types'
 
 const InputSection = styled.div`
@@ -40,6 +40,7 @@ interface Props {
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
+  getStatus: () => Promise<Audit>
   electionId: string
 }
 
@@ -77,6 +78,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
   isLoading,
   setIsLoading,
   updateAudit,
+  getStatus,
   electionId,
 }: Props) => {
   const downloadBallotRetrievalList = (id: number, e: React.FormEvent) => {
@@ -116,7 +118,16 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
         },
         body: JSON.stringify(body),
       })
-      updateAudit()
+      const condition = async () => {
+        const { rounds } = await getStatus()
+        const { contests } = rounds[rounds.length - 1]
+        return !!contests.length && contests.every(c => !!c.sampleSize)
+      }
+      const complete = () => {
+        updateAudit()
+        setIsLoading(false)
+      }
+      await poll(condition, complete, (err: Error) => toast.error(err.message))
     } catch (err) {
       toast.error(err.message)
     }
@@ -154,7 +165,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
     }, 0)
     const aggregatedBallots = aggregateContests.reduce(
       (acc: number, contest: AggregateContest) => {
-        acc += contest.sampleSize
+        acc += contest.sampleSize || 0
         return acc
       },
       0
@@ -273,13 +284,13 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                   )
                 }}
               />
-              {i + 1 === audit.rounds.length && isLoading && <Spinner />}
               <FormSection>
                 <FormSectionLabel>
                   Audit Progress: {completeContests} of {audit.contests.length}{' '}
                   complete
                 </FormSectionLabel>
               </FormSection>
+              {i + 1 === audit.rounds.length && isLoading && <Spinner />}
               {i + 1 === audit.rounds.length &&
                 aggregateContests.some(
                   (contest: AggregateContest) =>
