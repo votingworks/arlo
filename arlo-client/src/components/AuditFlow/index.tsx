@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { H1 } from '@blueprintjs/core'
 import { Route, Switch } from 'react-router-dom'
+import { History } from 'history'
 import { IAuditFlowParams, IAudit, IAuditBoard } from '../../types'
 import { api } from '../utilities'
 import { statusStates } from '../AuditForms/_mocks'
@@ -65,6 +66,7 @@ interface IProps {
     params: IAuditFlowParams
     url: string
   }
+  history: History
 }
 
 const AuditFlow: React.FC<IProps> = ({
@@ -72,6 +74,7 @@ const AuditFlow: React.FC<IProps> = ({
     params: { electionId, token },
     url,
   },
+  history,
 }: IProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -99,6 +102,14 @@ const AuditFlow: React.FC<IProps> = ({
       (v: IAuditBoard) => v.id === token
     ),
     ...dummyBoard[dummy],
+  }
+
+  const nextBallot = (r: string, b: string) => () => {
+    history.push(`${url}/round/${r}/ballot/${Number(b) + 1}`)
+  }
+
+  const previousBallot = (r: string, b: string) => () => {
+    history.push(`${url}/round/${r}/ballot/${Number(b) - 1}`)
   }
 
   if (!board) {
@@ -134,6 +145,9 @@ const AuditFlow: React.FC<IProps> = ({
               },
             }) => (
               <Ballot
+                home={url}
+                previousBallot={previousBallot(roundId, ballotId)}
+                nextBallot={nextBallot(roundId, ballotId)}
                 contest={audit.contests[0].name}
                 roundId={roundId}
                 ballotId={ballotId}

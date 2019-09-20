@@ -15,6 +15,7 @@ interface IProps {
     vote: IBallot['vote']
     comment: IBallot['comment']
   }) => void
+  previousBallot: () => void
 }
 
 interface IOptions {
@@ -26,6 +27,7 @@ const BallotAudit: React.FC<IProps> = ({
   review,
   goReview,
   setReview,
+  previousBallot,
 }: IProps) => {
   const [commenting, setCommenting] = useState(!!review.comment)
   return (
@@ -113,6 +115,9 @@ const BallotAudit: React.FC<IProps> = ({
                   >
                     Review
                   </FormButton>
+                  <Button onClick={previousBallot} minimal>
+                    Back
+                  </Button>
                 </ProgressActions>
               </>
             )
