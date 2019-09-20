@@ -17,8 +17,6 @@ const NameField = styled(Field)`
 `
 
 interface IProps {
-  setIsLoading: (arg0: boolean) => void
-  isLoading: boolean
   setDummy: (arg0: number) => void
   boardName: string
   jurisdictionName: string
