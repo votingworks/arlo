@@ -8,6 +8,7 @@ import { IBallot, IReview } from '../../types'
 import FormField from '../Form/FormField'
 
 interface IProps {
+  contest: string
   goReview: () => void
   review: IReview
   setReview: (arg0: {
@@ -21,6 +22,7 @@ interface IOptions {
 }
 
 const BallotAudit: React.FC<IProps> = ({
+  contest,
   review,
   goReview,
   setReview,
@@ -63,7 +65,7 @@ const BallotAudit: React.FC<IProps> = ({
             return (
               <>
                 <FormBlock>
-                  <H3>[insert name of choice here]</H3>
+                  <H3>{contest}</H3>
                   <Divider />
                   <RadioGroupFlex
                     name="vote"
