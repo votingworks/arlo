@@ -133,7 +133,12 @@ const AuditFlow: React.FC<IProps> = ({
                 params: { roundId, ballotId },
               },
             }) => (
-              <Ballot roundId={roundId} ballotId={ballotId} board={board} />
+              <Ballot
+                contest={audit.contests[0].name}
+                roundId={roundId}
+                ballotId={ballotId}
+                board={board}
+              />
             )}
           />
         </Switch>
