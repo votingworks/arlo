@@ -1,8 +1,5 @@
 import { IAuditBoard } from '../../types'
 
-const rand = (max: number = 100, min: number = 1) =>
-  Math.floor(Math.random() * (+max - +min)) + +min
-
 export const dummyBoard: IAuditBoard[] = [
   {
     id: '123',
@@ -36,18 +33,48 @@ export const dummyBoard: IAuditBoard[] = [
         affiliation: 'LIB',
       },
     ],
-    ballots: Array(10)
-      .fill('')
-      .map(() => ({
-        tabulator: '' + rand(),
-        batch: `Precinct ${rand()}`,
-        position: '' + rand(2000),
-        status: ['AUDITED', 'NOT_AUDITED'][rand(2, 0)] as
-          | 'AUDITED'
-          | 'NOT_AUDITED',
+    ballots: [
+      {
+        tabulator: '11',
+        batch: 'Precinct 13',
+        position: '313',
+        status: 'NOT_AUDITED',
         vote: null,
         comment: '',
-      })),
+      },
+      {
+        tabulator: '17',
+        batch: 'Precinct 19',
+        position: '2112',
+        status: 'NOT_AUDITED',
+        vote: null,
+        comment: '',
+      },
+      {
+        tabulator: '23',
+        batch: 'Precinct 29',
+        position: '1789',
+        status: 'NOT_AUDITED',
+        vote: null,
+        comment: '',
+      },
+      {
+        tabulator: '17',
+        batch: 'Precinct 19',
+        position: '2112',
+        status: 'NOT_AUDITED',
+        vote: null,
+        comment: '',
+      },
+      {
+        tabulator: '23',
+        batch: 'Precinct 29',
+        position: '1789',
+        status: 'AUDITED',
+        vote: null,
+        comment: '',
+      },
+    ],
   },
 ]
 
