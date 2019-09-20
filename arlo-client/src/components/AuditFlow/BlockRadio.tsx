@@ -30,7 +30,7 @@ const Block = styled.label`
 
 interface IProps {
   name?: string
-  value: IBallot['vote']
+  value: Exclude<IBallot['vote'], null>
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   locked?: boolean
   className?: string
@@ -47,32 +47,26 @@ const TEXT = {
 const BlockRadio = ({
   name = '',
   value,
-  handleChange = () => {},
+  handleChange,
   locked,
   className,
   checked,
 }: IProps) => (
   <Block className={`${className} bp3-control bp3-radio`}>
     {locked ? (
-      <input
-        type="radio"
-        name={name}
-        value={value || undefined}
-        onChange={handleChange}
-        disabled
-        checked
-      />
+      <input type="radio" name={name} value={value} disabled checked />
     ) : (
       <input
         type="radio"
         name={name}
-        value={value || undefined}
+        data-testid={value}
+        value={value}
         onChange={handleChange}
         checked={checked}
       />
     )}
     <span className="bp3-control-indicator">
-      <span className="radio-text">{value ? TEXT[value] : ''}</span>
+      <span className="radio-text">{TEXT[value]}</span>
     </span>
   </Block>
 )

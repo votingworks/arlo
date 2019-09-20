@@ -1,0 +1,623 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Ballot redirects if ballot does not exist 1`] = `<div />`;
+
+exports[`Ballot redirects if ballots array does not exist 1`] = `<div />`;
+
+exports[`Ballot renders correctly 1`] = `
+<div>
+  <div
+    class="sc-VigVT iIEVIh"
+  >
+    <h1
+      class="bp3-heading sc-gqjmRU inMEAv"
+    >
+      Audit Board #1
+      : Ballot Card Data Entry
+    </h1>
+    <h3
+      class="bp3-heading"
+    >
+      Enter Ballot Information
+    </h3>
+    <div
+      class="bp3-callout sc-jTzLTM cEsCFY"
+    >
+      Round 
+      1
+      : auditing ballot 
+      1
+       of 
+      5
+    </div>
+    <div
+      class="sc-bdVaJa rYMdX"
+    >
+      <div
+        class="ballot-side"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Current ballot:
+        </h4>
+        <div>
+          Tabulator: 
+          11
+        </div>
+        <div>
+          Batch: 
+          Precinct 13
+        </div>
+        <div>
+          Record/Position: 
+          313
+        </div>
+      </div>
+      <div
+        class="bp3-divider"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Are you looking at the correct ballot?
+        </h4>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+        <button
+          class="bp3-button bp3-intent-danger"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Ballot not found - move to next ballot
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      class="sc-bdVaJa rYMdX"
+    >
+      <div
+        class="ballot-side"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Are you looking at the right ballot?
+        </h4>
+        <p>
+          Step 1: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <p>
+          Step 2: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <form
+          class="sc-bwzfXH imPamb"
+        >
+          <h3
+            class="bp3-heading"
+          >
+            contest name
+          </h3>
+          <div
+            class="bp3-divider"
+          />
+          <div
+            class="sc-htpNat fisUI"
+          >
+            <label
+              class="undefined bp3-control bp3-radio sc-ifAKCX csvjng"
+            >
+              <input
+                data-testid="YES"
+                name="vote"
+                type="radio"
+                value="YES"
+              />
+              <span
+                class="bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  Yes/For
+                </span>
+              </span>
+            </label>
+            <label
+              class="undefined bp3-control bp3-radio sc-ifAKCX csvjng"
+            >
+              <input
+                data-testid="NO"
+                name="vote"
+                type="radio"
+                value="NO"
+              />
+              <span
+                class="bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  No/Against
+                </span>
+              </span>
+            </label>
+            <label
+              class="undefined bp3-control bp3-radio sc-ifAKCX csvjng"
+            >
+              <input
+                data-testid="NO_CONSENSUS"
+                name="vote"
+                type="radio"
+                value="NO_CONSENSUS"
+              />
+              <span
+                class="bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  No audit board consensus
+                </span>
+              </span>
+            </label>
+            <label
+              class="undefined bp3-control bp3-radio sc-ifAKCX csvjng"
+            >
+              <input
+                data-testid="NO_VOTE"
+                name="vote"
+                type="radio"
+                value="NO_VOTE"
+              />
+              <span
+                class="bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  Blank vote/no mark
+                </span>
+              </span>
+            </label>
+          </div>
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
+          >
+            <span
+              class="bp3-icon bp3-icon-edit"
+              icon="edit"
+            >
+              <svg
+                data-icon="edit"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  edit
+                </desc>
+                <path
+                  d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+            <span
+              class="bp3-button-text"
+            >
+              Add comment
+            </span>
+          </button>
+        </form>
+        <div
+          class="sc-bxivhb dewsOl"
+        >
+          <button
+            class="bp3-button bp3-disabled bp3-intent-success"
+            data-testid="disabled-review"
+            disabled=""
+            tabindex="-1"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Review
+            </span>
+          </button>
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Back
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Ballot switches audit and review views 1`] = `
+<div>
+  <div
+    class="sc-VigVT iIEVIh"
+  >
+    <h1
+      class="bp3-heading sc-gqjmRU inMEAv"
+    >
+      Audit Board #1
+      : Ballot Card Data Entry
+    </h1>
+    <h3
+      class="bp3-heading"
+    >
+      Enter Ballot Information
+    </h3>
+    <div
+      class="bp3-callout sc-jTzLTM cEsCFY"
+    >
+      Round 
+      1
+      : auditing ballot 
+      1
+       of 
+      5
+    </div>
+    <div
+      class="sc-bdVaJa rYMdX"
+    >
+      <div
+        class="ballot-side"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Current ballot:
+        </h4>
+        <div>
+          Tabulator: 
+          11
+        </div>
+        <div>
+          Batch: 
+          Precinct 13
+        </div>
+        <div>
+          Record/Position: 
+          313
+        </div>
+      </div>
+      <div
+        class="bp3-divider"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Are you looking at the correct ballot?
+        </h4>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+        <button
+          class="bp3-button bp3-intent-danger"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Ballot not found - move to next ballot
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      class="sc-bdVaJa rYMdX"
+    >
+      <div
+        class="ballot-side"
+      />
+      <div
+        class="ballot-main"
+      >
+        <form
+          class="sc-bwzfXH imPamb"
+        >
+          <h3
+            class="bp3-heading"
+          >
+            contest name
+          </h3>
+          <div
+            class="bp3-divider"
+          />
+          <div
+            class="sc-iwsKbI cxmxrr"
+          >
+            <label
+              class="sc-gZMcBi ckAluO bp3-control bp3-radio sc-ifAKCX csvjng"
+            >
+              <input
+                checked=""
+                disabled=""
+                name=""
+                type="radio"
+                value="YES"
+              />
+              <span
+                class="bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  Yes/For
+                </span>
+              </span>
+            </label>
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
+            >
+              <span
+                class="bp3-icon bp3-icon-edit"
+                icon="edit"
+              >
+                <svg
+                  data-icon="edit"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    edit
+                  </desc>
+                  <path
+                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+              <span
+                class="bp3-button-text"
+              >
+                Edit
+              </span>
+            </button>
+          </div>
+          <p>
+            COMMENT: 
+            
+          </p>
+        </form>
+        <div
+          class="sc-bxivhb dewsOl"
+        >
+          <button
+            class="bp3-button bp3-intent-success"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Submit & Next Ballot
+            </span>
+          </button>
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Back
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Ballot toggles and submits comment 1`] = `
+<div>
+  <div
+    class="sc-VigVT iIEVIh"
+  >
+    <h1
+      class="bp3-heading sc-gqjmRU inMEAv"
+    >
+      Audit Board #1
+      : Ballot Card Data Entry
+    </h1>
+    <h3
+      class="bp3-heading"
+    >
+      Enter Ballot Information
+    </h3>
+    <div
+      class="bp3-callout sc-jTzLTM cEsCFY"
+    >
+      Round 
+      1
+      : auditing ballot 
+      1
+       of 
+      5
+    </div>
+    <div
+      class="sc-bdVaJa rYMdX"
+    >
+      <div
+        class="ballot-side"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Current ballot:
+        </h4>
+        <div>
+          Tabulator: 
+          11
+        </div>
+        <div>
+          Batch: 
+          Precinct 13
+        </div>
+        <div>
+          Record/Position: 
+          313
+        </div>
+      </div>
+      <div
+        class="bp3-divider"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Are you looking at the correct ballot?
+        </h4>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+        <button
+          class="bp3-button bp3-intent-danger"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Ballot not found - move to next ballot
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      class="sc-bdVaJa rYMdX"
+    >
+      <div
+        class="ballot-side"
+      />
+      <div
+        class="ballot-main"
+      >
+        <form
+          class="sc-bwzfXH imPamb"
+        >
+          <h3
+            class="bp3-heading"
+          >
+            contest name
+          </h3>
+          <div
+            class="bp3-divider"
+          />
+          <div
+            class="sc-iwsKbI cxmxrr"
+          >
+            <label
+              class="sc-gZMcBi ckAluO bp3-control bp3-radio sc-ifAKCX csvjng"
+            >
+              <input
+                checked=""
+                disabled=""
+                name=""
+                type="radio"
+                value="YES"
+              />
+              <span
+                class="bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  Yes/For
+                </span>
+              </span>
+            </label>
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
+            >
+              <span
+                class="bp3-icon bp3-icon-edit"
+                icon="edit"
+              >
+                <svg
+                  data-icon="edit"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    edit
+                  </desc>
+                  <path
+                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+              <span
+                class="bp3-button-text"
+              >
+                Edit
+              </span>
+            </button>
+          </div>
+          <p>
+            COMMENT: 
+            a test comment
+          </p>
+        </form>
+        <div
+          class="sc-bxivhb dewsOl"
+        >
+          <button
+            class="bp3-button bp3-intent-success"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Submit & Next Ballot
+            </span>
+          </button>
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Back
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -3,7 +3,7 @@
 exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <form
       data-testid="form-one"
@@ -37,7 +37,6 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                   id="audit-name"
                   name="name"
                   style="padding-right: 10px;"
-                  type="text"
                   value="contest name"
                 />
               </div>
@@ -77,7 +76,6 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
-                  type="text"
                   value="contest name"
                 />
               </div>
@@ -146,7 +144,6 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                       disabled=""
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value="choice one"
                     />
                   </div>
@@ -168,7 +165,6 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value="792"
                     />
                   </div>
@@ -194,7 +190,6 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                       disabled=""
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value="choice two"
                     />
                   </div>
@@ -216,7 +211,6 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value="1325"
                     />
                   </div>
@@ -256,7 +250,6 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
-                  type="text"
                   value="2123"
                 />
               </div>
@@ -589,6 +582,19 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
               </span>
             </div>
           </label>
+          <div
+            class="sc-kgoBCf iTvLnm"
+          >
+            <div
+              class="sc-kGXeez dEUkfc"
+            >
+              <input
+                data-testid="audit-name-0"
+                name="auditNames[0]"
+                value="Audit Board #1"
+              />
+            </div>
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -1065,7 +1071,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
 exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <form
       data-testid="form-one"
@@ -1098,7 +1104,6 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                   id="audit-name"
                   name="name"
                   style="padding-right: 10px;"
-                  type="text"
                   value=""
                 />
               </div>
@@ -1137,7 +1142,6 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
-                  type="text"
                   value=""
                 />
               </div>
@@ -1204,7 +1208,6 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -1225,7 +1228,6 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -1250,7 +1252,6 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -1271,7 +1272,6 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -1315,7 +1315,6 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
-                  type="text"
                   value=""
                 />
               </div>
@@ -1485,7 +1484,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <form
       data-testid="form-one"
@@ -1519,7 +1518,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                   id="audit-name"
                   name="name"
                   style="padding-right: 10px;"
-                  type="text"
                   value="contest name"
                 />
               </div>
@@ -1559,7 +1557,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
-                  type="text"
                   value="contest name"
                 />
               </div>
@@ -1628,7 +1625,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                       disabled=""
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value="choice one"
                     />
                   </div>
@@ -1650,7 +1646,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value="792"
                     />
                   </div>
@@ -1676,7 +1671,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                       disabled=""
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value="choice two"
                     />
                   </div>
@@ -1698,7 +1692,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value="1325"
                     />
                   </div>
@@ -1738,7 +1731,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
-                  type="text"
                   value="2123"
                 />
               </div>
@@ -2077,10 +2069,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             </div>
           </label>
           <div
-            class="sc-chPdSV gtWHTz"
+            class="sc-kgoBCf iTvLnm"
           >
             <div
-              class="sc-kgoBCf khjmnC"
+              class="sc-kGXeez dEUkfc"
             >
               <input
                 data-testid="audit-name-0"
@@ -2100,7 +2092,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                 title="Click to print"
               >
                 <canvas
-                  class="sc-kGXeez eVVXdY"
+                  class="sc-kpOJdX gBZneu"
                   height="250"
                   style="height: 250px; width: 250px;"
                   width="250"
@@ -2237,13 +2229,13 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             1
           </div>
           <div
-            class="sc-kpOJdX bWluBY"
+            class="sc-dxgOiQ fYWcqN"
           >
             <div
-              class="sc-ckVGcZ egdUOn"
+              class="sc-jKJlTe kzXGOb"
             >
               <label
-                class="sc-dxgOiQ fdaIGu"
+                class="sc-ckVGcZ DOsGM"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -2259,17 +2251,16 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                     id="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="0"
                   />
                 </div>
               </div>
             </div>
             <div
-              class="sc-ckVGcZ egdUOn"
+              class="sc-jKJlTe kzXGOb"
             >
               <label
-                class="sc-dxgOiQ fdaIGu"
+                class="sc-ckVGcZ DOsGM"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -2285,7 +2276,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                     id="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="0"
                   />
                 </div>
@@ -2333,7 +2323,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
 exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status returns contest data 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <form
       data-testid="form-one"
@@ -2367,7 +2357,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                   id="audit-name"
                   name="name"
                   style="padding-right: 10px;"
-                  type="text"
                   value="contest name"
                 />
               </div>
@@ -2407,7 +2396,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
-                  type="text"
                   value="contest name"
                 />
               </div>
@@ -2476,7 +2464,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                       disabled=""
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value="choice one"
                     />
                   </div>
@@ -2498,7 +2485,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value="792"
                     />
                   </div>
@@ -2524,7 +2510,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                       disabled=""
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value="choice two"
                     />
                   </div>
@@ -2546,7 +2531,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value="1325"
                     />
                   </div>
@@ -2586,7 +2570,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
-                  type="text"
                   value="2123"
                 />
               </div>
@@ -2702,10 +2685,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             </div>
           </label>
           <div
-            class="sc-chPdSV gtWHTz"
+            class="sc-kgoBCf iTvLnm"
           >
             <div
-              class="sc-kgoBCf khjmnC"
+              class="sc-kGXeez dEUkfc"
             >
               <input
                 data-testid="audit-name-0"
@@ -2984,7 +2967,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
 exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <form
       data-testid="form-one"
@@ -3017,7 +3000,6 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                   id="audit-name"
                   name="name"
                   style="padding-right: 10px;"
-                  type="text"
                   value=""
                 />
               </div>
@@ -3056,7 +3038,6 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
-                  type="text"
                   value=""
                 />
               </div>
@@ -3123,7 +3104,6 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -3144,7 +3124,6 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -3169,7 +3148,6 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -3190,7 +3168,6 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                       class="bp3-input"
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -3234,7 +3211,6 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
-                  type="text"
                   value=""
                 />
               </div>

@@ -71,7 +71,10 @@ const BallotAudit: React.FC<IProps> = ({
                   <Divider />
                   <RadioGroupFlex
                     name="vote"
-                    onChange={() => null} // required by blueprintjs but we're implementing on BlockRadio instead
+                    onChange={
+                      /* istanbul ignore next */
+                      () => null
+                    } // required by blueprintjs but we're implementing on BlockRadio instead
                     selectedValue={getIn(values, 'vote')}
                   >
                     <BlockRadio
@@ -102,6 +105,7 @@ const BallotAudit: React.FC<IProps> = ({
                     <Field
                       name="comment"
                       type="textarea"
+                      data-testid="comment-textarea"
                       component={FormField}
                     />
                   )}
@@ -112,6 +116,9 @@ const BallotAudit: React.FC<IProps> = ({
                     onClick={handleSubmit}
                     disabled={!values.vote}
                     intent="success"
+                    data-testid={
+                      !values.vote ? 'disabled-review' : 'enabled-review'
+                    }
                   >
                     Review
                   </FormButton>

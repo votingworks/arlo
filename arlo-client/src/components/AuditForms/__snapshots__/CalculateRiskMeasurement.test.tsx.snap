@@ -114,7 +114,6 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
                   id="round-0-contest-0-choice-choice-1"
                   name="contests[0][choice-1]"
                   style="padding-right: 10px;"
-                  type="text"
                   value="0"
                 />
               </div>
@@ -140,7 +139,6 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
                   id="round-0-contest-0-choice-choice-2"
                   name="contests[0][choice-2]"
                   style="padding-right: 10px;"
-                  type="text"
                   value="0"
                 />
               </div>
@@ -320,7 +318,6 @@ Object {
                       id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="100"
                     />
                   </div>
@@ -347,7 +344,6 @@ Object {
                       id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="167"
                     />
                   </div>
@@ -520,7 +516,6 @@ Object {
                     id="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="100"
                   />
                 </div>
@@ -547,7 +542,6 @@ Object {
                     id="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="167"
                   />
                 </div>
@@ -777,7 +771,6 @@ Object {
                       id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="100"
                     />
                   </div>
@@ -804,7 +797,6 @@ Object {
                       id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="167"
                     />
                   </div>
@@ -1003,7 +995,6 @@ Object {
                     id="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="100"
                   />
                 </div>
@@ -1030,7 +1021,6 @@ Object {
                     id="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="167"
                   />
                 </div>
@@ -1267,7 +1257,6 @@ Object {
                       id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="0"
                     />
                   </div>
@@ -1293,7 +1282,6 @@ Object {
                       id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="0"
                     />
                   </div>
@@ -1449,7 +1437,6 @@ Object {
                     id="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="0"
                   />
                 </div>
@@ -1475,7 +1462,6 @@ Object {
                     id="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="0"
                   />
                 </div>
@@ -1688,7 +1674,6 @@ Object {
                       id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="0"
                     />
                   </div>
@@ -1714,7 +1699,6 @@ Object {
                       id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="0"
                     />
                   </div>
@@ -1882,7 +1866,6 @@ Object {
                     id="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="0"
                   />
                 </div>
@@ -1908,7 +1891,6 @@ Object {
                     id="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="0"
                   />
                 </div>

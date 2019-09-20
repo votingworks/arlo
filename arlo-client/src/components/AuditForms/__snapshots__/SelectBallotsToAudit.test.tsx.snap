@@ -97,7 +97,7 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gzVnrw YGYds"
+            class="bp3-html-select sc-gqjmRU fLDKDv"
           >
             <select
               field="[object Object]"
@@ -172,10 +172,10 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
           </div>
         </label>
         <div
-          class="sc-htoDjs btXLhN"
+          class="sc-VigVT UDKFG"
         >
           <div
-            class="sc-dnqmqq gJsDGH"
+            class="sc-jTzLTM iSsWST"
           >
             <input
               data-testid="audit-name-0"
@@ -184,7 +184,7 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
             />
           </div>
           <div
-            class="sc-dnqmqq gJsDGH"
+            class="sc-jTzLTM iSsWST"
           >
             <input
               data-testid="audit-name-1"
@@ -193,7 +193,7 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
             />
           </div>
           <div
-            class="sc-dnqmqq gJsDGH"
+            class="sc-jTzLTM iSsWST"
           >
             <input
               data-testid="audit-name-2"
@@ -347,7 +347,7 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gzVnrw YGYds"
+            class="bp3-html-select sc-gqjmRU fLDKDv"
           >
             <select
               field="[object Object]"
@@ -422,10 +422,10 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
           </div>
         </label>
         <div
-          class="sc-htoDjs btXLhN"
+          class="sc-VigVT UDKFG"
         >
           <div
-            class="sc-dnqmqq gJsDGH"
+            class="sc-jTzLTM iSsWST"
           >
             <input
               data-testid="audit-name-0"
@@ -434,7 +434,7 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
             />
           </div>
           <div
-            class="sc-dnqmqq gJsDGH"
+            class="sc-jTzLTM iSsWST"
           >
             <input
               data-testid="audit-name-1"
@@ -525,7 +525,7 @@ Object {
             >
               Set the number of audit boards you wish to use.
               <div
-                class="bp3-html-select sc-gzVnrw YGYds"
+                class="bp3-html-select sc-gqjmRU fLDKDv"
               >
                 <select
                   field="[object Object]"
@@ -600,10 +600,10 @@ Object {
               </div>
             </label>
             <div
-              class="sc-htoDjs btXLhN"
+              class="sc-VigVT UDKFG"
             >
               <div
-                class="sc-dnqmqq gJsDGH"
+                class="sc-jTzLTM iSsWST"
               >
                 <input
                   data-testid="audit-name-0"
@@ -689,7 +689,7 @@ Object {
           >
             Set the number of audit boards you wish to use.
             <div
-              class="bp3-html-select sc-gzVnrw YGYds"
+              class="bp3-html-select sc-gqjmRU fLDKDv"
             >
               <select
                 field="[object Object]"
@@ -764,10 +764,10 @@ Object {
             </div>
           </label>
           <div
-            class="sc-htoDjs btXLhN"
+            class="sc-VigVT UDKFG"
           >
             <div
-              class="sc-dnqmqq gJsDGH"
+              class="sc-jTzLTM iSsWST"
             >
               <input
                 data-testid="audit-name-0"
@@ -1048,10 +1048,10 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
           </div>
         </label>
         <div
-          class="sc-htoDjs btXLhN"
+          class="sc-VigVT UDKFG"
         >
           <div
-            class="sc-dnqmqq gJsDGH"
+            class="sc-jTzLTM iSsWST"
           >
             <input
               data-testid="audit-name-0"
@@ -1280,10 +1280,10 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
           </div>
         </label>
         <div
-          class="sc-htoDjs btXLhN"
+          class="sc-VigVT UDKFG"
         >
           <div
-            class="sc-dnqmqq gJsDGH"
+            class="sc-jTzLTM iSsWST"
           >
             <input
               data-testid="audit-name-0"
