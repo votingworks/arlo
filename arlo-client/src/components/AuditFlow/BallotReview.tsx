@@ -22,15 +22,21 @@ interface IProps {
   contest: string
   goAudit: () => void
   review: IReview
+  nextBallot: () => void
 }
 
 const BallotReview: React.FC<IProps> = ({
   contest,
   goAudit,
   review: { vote, comment },
+  nextBallot,
 }: IProps) => {
   /* eslint-disable no-console */
-  const handleSubmit = () => console.log(vote, comment)
+  const handleSubmit = () => {
+    console.log(vote, comment)
+    goAudit()
+    nextBallot()
+  }
   return (
     <BallotRow>
       <div className="ballot-side"></div>
