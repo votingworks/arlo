@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { H1, H3, Callout, H4, Divider } from '@blueprintjs/core'
+import { H1, H3, Callout, H4, Divider, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
+import { Redirect } from 'react-router-dom'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
 import { IAuditBoard, IReview } from '../../types'
@@ -23,17 +24,23 @@ const MainCallout = styled(Callout)`
 `
 
 interface IProps {
+  home: string
   roundId: string
   ballotId: string
   board: IAuditBoard
   contest: string
+  previousBallot: () => void
+  nextBallot: () => void
 }
 
 const Ballot: React.FC<IProps> = ({
+  home,
   roundId,
   ballotId,
   board,
   contest,
+  previousBallot,
+  nextBallot,
 }: IProps) => {
   const [auditing, setAuditing] = useState(true)
   const [review, setReview] = useState<IReview>({ vote: null, comment: '' })
@@ -46,7 +53,9 @@ const Ballot: React.FC<IProps> = ({
     }
   }, [ballot])
 
-  return !board.ballots || !ballot ? null : (
+  return !board.ballots || !ballot ? (
+    <Redirect to={home} />
+  ) : (
     <Wrapper>
       <TopH1>{board.name}: Ballot Card Data Entry</TopH1>
       <H3>Enter Ballot Information</H3>
@@ -72,6 +81,9 @@ const Ballot: React.FC<IProps> = ({
             pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
             culpa qui officia deserunt mollit anim id est laborum.
           </p>
+          <Button onClick={nextBallot} intent="danger">
+            Ballot not found - move to next ballot
+          </Button>
         </div>
       </BallotRow>
       {auditing ? (
@@ -79,6 +91,7 @@ const Ballot: React.FC<IProps> = ({
           contest={contest}
           review={review}
           setReview={setReview}
+          previousBallot={previousBallot}
           goReview={() => setAuditing(false)}
         />
       ) : (
@@ -86,6 +99,7 @@ const Ballot: React.FC<IProps> = ({
           contest={contest}
           review={review}
           goAudit={() => setAuditing(true)}
+          nextBallot={nextBallot}
         />
       )}
     </Wrapper>
