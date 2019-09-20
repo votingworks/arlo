@@ -1,10 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import { H1, RadioGroup, Radio, Button } from '@blueprintjs/core'
+import { H1, RadioGroup, Radio } from '@blueprintjs/core'
 import { Formik, FormikProps, Form, Field, getIn } from 'formik'
 import FormWrapper from '../Form/FormWrapper'
 import FormSection from '../Form/FormSection'
 import { IAuditMember } from '../../types'
+import FormButton from '../Form/FormButton'
 
 const LabelText = styled.span`
   display: block;
@@ -52,6 +53,7 @@ const MemberForm: React.FC<IProps> = ({
           render={({
             setFieldValue,
             values,
+            handleSubmit,
           }: FormikProps<[IAuditMember, IAuditMember]>) => (
             <Form>
               {[0, 1].map(i => (
@@ -84,9 +86,9 @@ const MemberForm: React.FC<IProps> = ({
                   </div>
                 </FormSection>
               ))}
-              <Button intent="primary" type="submit">
+              <FormButton intent="primary" type="button" onClick={handleSubmit}>
                 Next
-              </Button>
+              </FormButton>
             </Form>
           )}
         />
