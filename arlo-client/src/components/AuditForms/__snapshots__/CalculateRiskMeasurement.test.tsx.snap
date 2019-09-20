@@ -232,13 +232,13 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
           1
         </div>
         <div
-          class="sc-iwsKbI hmbaiI"
+          class="sc-gZMcBi cQokFm"
         >
           <div
-            class="sc-gqjmRU glEOTJ"
+            class="sc-VigVT kGjafq"
           >
             <label
-              class="sc-gZMcBi gnyAIo"
+              class="sc-gqjmRU cPrgYR"
               for="round-0-contest-0-choice-choice-1"
             >
               choice one
@@ -254,17 +254,16 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
                   id="round-0-contest-0-choice-choice-1"
                   name="contests[0][choice-1]"
                   style="padding-right: 10px;"
-                  type="text"
                   value="0"
                 />
               </div>
             </div>
           </div>
           <div
-            class="sc-gqjmRU glEOTJ"
+            class="sc-VigVT kGjafq"
           >
             <label
-              class="sc-gZMcBi gnyAIo"
+              class="sc-gqjmRU cPrgYR"
               for="round-0-contest-0-choice-choice-2"
             >
               choice two
@@ -280,7 +279,6 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
                   id="round-0-contest-0-choice-choice-2"
                   name="contests[0][choice-2]"
                   style="padding-right: 10px;"
-                  type="text"
                   value="0"
                 />
               </div>
@@ -303,7 +301,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
         </h3>
       </div>
       <div
-        class="sc-dnqmqq itqjch"
+        class="sc-iwsKbI iqpfIi"
       >
         <button
           class="bp3-button bp3-intent-primary"
@@ -389,13 +387,13 @@ Object {
               COMPLETE
             </h3>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                 >
                   Risk Limit: 
                 </label>
@@ -403,10 +401,10 @@ Object {
                 %
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                 >
                   P-value: 
                 </label>
@@ -415,13 +413,13 @@ Object {
               </div>
             </div>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -438,17 +436,16 @@ Object {
                       id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="100"
                     />
                   </div>
                 </div>
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -465,7 +462,6 @@ Object {
                       id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="167"
                     />
                   </div>
@@ -567,13 +563,13 @@ Object {
             COMPLETE
           </h3>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
               >
                 Risk Limit: 
               </label>
@@ -581,10 +577,10 @@ Object {
               %
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
               >
                 P-value: 
               </label>
@@ -593,13 +589,13 @@ Object {
             </div>
           </div>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -616,17 +612,16 @@ Object {
                     id="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="100"
                   />
                 </div>
               </div>
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -643,7 +638,6 @@ Object {
                     id="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="167"
                   />
                 </div>
@@ -802,13 +796,13 @@ Object {
               COMPLETE
             </h3>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                 >
                   Risk Limit: 
                 </label>
@@ -816,10 +810,10 @@ Object {
                 %
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                 >
                   P-value: 
                 </label>
@@ -828,13 +822,13 @@ Object {
               </div>
             </div>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -851,17 +845,16 @@ Object {
                       id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="100"
                     />
                   </div>
                 </div>
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -878,7 +871,6 @@ Object {
                       id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="167"
                     />
                   </div>
@@ -1006,13 +998,13 @@ Object {
             COMPLETE
           </h3>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
               >
                 Risk Limit: 
               </label>
@@ -1020,10 +1012,10 @@ Object {
               %
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
               >
                 P-value: 
               </label>
@@ -1032,13 +1024,13 @@ Object {
             </div>
           </div>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -1055,17 +1047,16 @@ Object {
                     id="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="100"
                   />
                 </div>
               </div>
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -1082,7 +1073,6 @@ Object {
                     id="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="167"
                   />
                 </div>
@@ -1275,13 +1265,13 @@ Object {
               1
             </div>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -1297,17 +1287,16 @@ Object {
                       id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="0"
                     />
                   </div>
                 </div>
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -1323,7 +1312,6 @@ Object {
                       id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="0"
                     />
                   </div>
@@ -1346,7 +1334,7 @@ Object {
             </h3>
           </div>
           <div
-            class="sc-dnqmqq itqjch"
+            class="sc-iwsKbI iqpfIi"
           >
             <button
               class="bp3-button bp3-intent-primary"
@@ -1435,13 +1423,13 @@ Object {
             1
           </div>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -1457,17 +1445,16 @@ Object {
                     id="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="0"
                   />
                 </div>
               </div>
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -1483,7 +1470,6 @@ Object {
                     id="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="0"
                   />
                 </div>
@@ -1506,7 +1492,7 @@ Object {
           </h3>
         </div>
         <div
-          class="sc-dnqmqq itqjch"
+          class="sc-iwsKbI iqpfIi"
         >
           <button
             class="bp3-button bp3-intent-primary"
@@ -1652,13 +1638,13 @@ Object {
               1
             </div>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -1674,17 +1660,16 @@ Object {
                       id="round-0-contest-0-choice-choice-1"
                       name="contests[0][choice-1]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="0"
                     />
                   </div>
                 </div>
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -1700,7 +1685,6 @@ Object {
                       id="round-0-contest-0-choice-choice-2"
                       name="contests[0][choice-2]"
                       style="padding-right: 10px;"
-                      type="text"
                       value="0"
                     />
                   </div>
@@ -1824,13 +1808,13 @@ Object {
             1
           </div>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -1846,17 +1830,16 @@ Object {
                     id="round-0-contest-0-choice-choice-1"
                     name="contests[0][choice-1]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="0"
                   />
                 </div>
               </div>
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -1872,7 +1855,6 @@ Object {
                     id="round-0-contest-0-choice-choice-2"
                     name="contests[0][choice-2]"
                     style="padding-right: 10px;"
-                    type="text"
                     value="0"
                   />
                 </div>
