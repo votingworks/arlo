@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
-import { H1, Button, Checkbox } from '@blueprintjs/core'
+import { H1, Button } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
 import { IAuditBoard, IBallot } from '../../types'
 
@@ -83,10 +83,6 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
     return Array(5).fill(colWidth)
   }
 
-  const [kcut, setKcut] = useState(true)
-  const handleKcut = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setKcut(e.target.checked)
-
   const roundComplete =
     board.ballots && board.ballots.every(b => b.status === 'AUDITED')
 
@@ -118,7 +114,6 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
         {!roundComplete && (
           <>
             <Button intent="primary">Download Ballot List as CSV</Button>
-            <Checkbox checked={kcut} label="Use K-CUT" onChange={handleKcut} />
           </>
         )}
       </ActionWrapper>
