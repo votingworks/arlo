@@ -37,7 +37,7 @@ exports[`FormField renders a Field with errors 1`] = `
       />
     </div>
     <p
-      class="sc-bxivhb hSbDWx"
+      class="sc-ifAKCX jFsqnc"
       data-testid="field-name-error"
     >
       Required
@@ -52,7 +52,7 @@ exports[`FormField renders a numeric Field 1`] = `
     class="sc-bdVaJa NQGah"
   >
     <div
-      class="bp3-control-group bp3-numeric-input sc-htpNat hYsyvT"
+      class="bp3-control-group bp3-numeric-input sc-bxivhb dCvGLi"
     >
       <div
         class="bp3-input-group"

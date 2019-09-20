@@ -39,15 +39,15 @@ exports[`Ballot renders correctly 1`] = `
         </h4>
         <div>
           Tabulator: 
-          8
+          51
         </div>
         <div>
           Batch: 
-          Precinct 37
+          Precinct 91
         </div>
         <div>
           Record/Position: 
-          617
+          25
         </div>
       </div>
       <div
