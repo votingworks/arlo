@@ -26,9 +26,15 @@ interface IProps {
   roundId: string
   ballotId: string
   board: IAuditBoard
+  contest: string
 }
 
-const Ballot: React.FC<IProps> = ({ roundId, ballotId, board }: IProps) => {
+const Ballot: React.FC<IProps> = ({
+  roundId,
+  ballotId,
+  board,
+  contest,
+}: IProps) => {
   const [auditing, setAuditing] = useState(true)
   const [review, setReview] = useState<IReview>({ vote: null, comment: '' })
 
@@ -70,12 +76,17 @@ const Ballot: React.FC<IProps> = ({ roundId, ballotId, board }: IProps) => {
       </BallotRow>
       {auditing ? (
         <BallotAudit
+          contest={contest}
           review={review}
           setReview={setReview}
           goReview={() => setAuditing(false)}
         />
       ) : (
-        <BallotReview review={review} goAudit={() => setAuditing(true)} />
+        <BallotReview
+          contest={contest}
+          review={review}
+          goAudit={() => setAuditing(true)}
+        />
       )}
     </Wrapper>
   )

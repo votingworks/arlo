@@ -19,11 +19,13 @@ const SingleBlockRadio = styled(BlockRadio)`
 `
 
 interface IProps {
+  contest: string
   goAudit: () => void
   review: IReview
 }
 
 const BallotReview: React.FC<IProps> = ({
+  contest,
   goAudit,
   review: { vote, comment },
 }: IProps) => {
@@ -34,7 +36,7 @@ const BallotReview: React.FC<IProps> = ({
       <div className="ballot-side"></div>
       <div className="ballot-main">
         <FormBlock>
-          <H3>[insert name of choice here]</H3>
+          <H3>{contest}</H3>
           <Divider />
           <Wrapper>
             <SingleBlockRadio value={vote} locked />
