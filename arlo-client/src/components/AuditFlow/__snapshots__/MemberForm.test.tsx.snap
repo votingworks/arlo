@@ -228,7 +228,7 @@ exports[`MemberForm renders correctly 1`] = `
       </div>
       <button
         class="bp3-button bp3-intent-primary"
-        type="submit"
+        type="button"
       >
         <span
           class="bp3-button-text"
