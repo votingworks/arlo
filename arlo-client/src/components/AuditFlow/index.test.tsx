@@ -9,11 +9,13 @@ const routeProps = routerTestProps('/board/:token', {
   token: '123',
 })
 
-it('renders correctly', () => {
-  const { container } = render(
-    <Router {...routeProps}>
-      <AuditFlow {...routeProps} />
-    </Router>
-  )
-  expect(container).toMatchSnapshot()
+describe('AuditFlow', () => {
+  it('renders correctly', () => {
+    const { container } = render(
+      <Router {...routeProps}>
+        <AuditFlow {...routeProps} />
+      </Router>
+    )
+    expect(container).toMatchSnapshot()
+  })
 })
