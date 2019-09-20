@@ -19,7 +19,6 @@ export interface Contest {
   name: string
   choices: Candidate[]
   totalBallotsCast: string
-  sampleSizeOptions?: SampleSizeOption[] | null
 }
 
 export interface AuditBoard {
@@ -48,7 +47,8 @@ export interface RoundContest {
   results: {
     [key: string]: number
   }
-  sampleSize: number
+  sampleSizeOptions: SampleSizeOption[] | null
+  sampleSize: number | null
   endMeasurements: {
     isComplete: null | boolean
     pvalue: null | number

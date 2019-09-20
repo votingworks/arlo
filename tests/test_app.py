@@ -43,10 +43,14 @@ def test_whole_audit_flow(client):
     election_id_2 = json.loads(rv.data)['electionId']
     assert election_id_2
 
+    print("running whole audit flow " + election_id_1)
     run_whole_audit_flow(client, election_id_1, "Primary 2019", 10, "12345678901234567890")
+
+    print("running whole audit flow " + election_id_2)    
     run_whole_audit_flow(client, election_id_2, "General 2019", 5, "12345678901234599999")
 
     # also the old flow with no URL prefix
+    print("running whole audit flow legacy")
     run_whole_audit_flow(client, None, "Legacy", 5, "77777666665555544444")    
 
     # after resetting election 1, election 2 is still around
@@ -55,9 +59,8 @@ def test_whole_audit_flow(client):
     rv = client.get('/election/{}/audit/status'.format(election_id_2))
     result2 = json.loads(rv.data)
     assert result2["riskLimit"] == 5
-    
 
-def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
+def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     contest_id = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
     candidate_id_2 = str(uuid.uuid4())
@@ -66,7 +69,7 @@ def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
     audit_board_id_2 = str(uuid.uuid4())    
 
     url_prefix = "/election/{}".format(election_id) if election_id else ""
-    
+
     rv = post_json(
         client, '{}/audit/basic'.format(url_prefix),
         {
@@ -101,13 +104,13 @@ def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
     # before background compute, should be null sample size options
     rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
-    assert status["contests"][0]["sampleSizeOptions"] is None
+    assert status["rounds"][0]["contests"][0]["sampleSizeOptions"] is None
 
     # after background compute
     bgcompute.bgcompute()
     rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
-    assert len(status["contests"][0]["sampleSizeOptions"]) == 4
+    assert len(status["rounds"][0]["contests"][0]["sampleSizeOptions"]) == 4
     
     assert status["randomSeed"] == random_seed
     assert len(status["contests"]) == 1
@@ -152,7 +155,7 @@ def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
     assert jurisdiction["contests"] == [contest_id]
 
     # choose a sample size
-    sample_size_90 = [option for option in status["contests"][0]["sampleSizeOptions"] if option["prob"] == 0.9]
+    sample_size_90 = [option for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"] if option["prob"] == 0.9]
     assert len(sample_size_90) == 1
     sample_size = sample_size_90[0]["size"]
 
@@ -210,6 +213,11 @@ def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
 
     num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
 
+    return url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
+    
+def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
+    url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_audit(client, election_id, name, risk_limit, random_seed)
+    
     # post results for round 1
     num_for_winner = int(num_ballots * 0.56)
     num_for_loser = num_ballots - num_for_winner
@@ -326,7 +334,7 @@ def test_small_election(client):
     assert jurisdiction["contests"] == ["contest-1"]
 
     # choose a sample size
-    sample_size_90 = [option for option in status["contests"][0]["sampleSizeOptions"] if option["prob"] == 0.9]
+    sample_size_90 = [option for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"] if option["prob"] == 0.9]
     assert len(sample_size_90) == 1
     sample_size = sample_size_90[0]["size"]
 
@@ -392,4 +400,57 @@ def test_small_election(client):
     lines = rv.data.decode('utf-8').split("\r\n")
     assert lines[0] == "Contest Name,Contest 1"
     assert 'attachment' in rv.headers['Content-Disposition']
+    
+
+def test_multi_round_audit(client):
+    rv = post_json(client, '/election/new', {})
+    election_id = json.loads(rv.data)['electionId']
+
+    url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_audit(client, election_id, 'Multi-Round Audit', 10, '32423432423432')
+
+    # post results for round 1 with 50/50 split, should not complete.
+    num_for_winner = int(num_ballots * 0.5)
+    num_for_loser = num_ballots - num_for_winner
+    rv = post_json(client, '{}/jurisdiction/{}/1/results'.format(url_prefix, jurisdiction_id),
+                   {
+	               "contests": [
+		           {
+			       "id": contest_id,
+   			       "results": {
+				   candidate_id_1: num_for_winner,
+				   candidate_id_2: num_for_loser
+			       }
+		           }
+	               ]
+                   })
+
+    assert json.loads(rv.data)['status'] == 'ok'
+
+    rv = client.get('{}/audit/status'.format(url_prefix))
+    status = json.loads(rv.data)
+    round_contest = status["rounds"][0]["contests"][0]
+    assert round_contest["id"] == contest_id
+    assert round_contest["results"][candidate_id_1] == num_for_winner
+    assert round_contest["results"][candidate_id_2] == num_for_loser
+
+    # should be incomplete
+    assert not round_contest["endMeasurements"]["isComplete"]
+
+    # next round is just set up
+    assert len(status["rounds"]) == 2
+    assert status["rounds"][1]["contests"][0]["sampleSizeOptions"] is None
+
+    # sample size
+    bgcompute.bgcompute()
+    rv = client.get('{}/audit/status'.format(url_prefix))
+    status = json.loads(rv.data)
+
+    assert status["rounds"][1]["contests"][0]["sampleSizeOptions"]
+    assert status["rounds"][1]["contests"][0]["sampleSize"]    
+
+    # round 2 retrieval list should be ready
+    rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
+    lines = rv.data.decode('utf-8').split("\r\n")
+    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
     

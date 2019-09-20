@@ -3,20 +3,20 @@ import time, json
 
 from flask import Flask
 
-from app import app, db, compute_and_store_sample_sizes
-from models import Election, TargetedContest
+from app import app, db, compute_sample_sizes
+from models import RoundContest
 
 def bgcompute():
-    # elections that have contests but no sample size
-    query = db.session.query(TargetedContest.election_id).group_by(TargetedContest.election_id).join(Election).filter(Election.sample_size_options.is_(None))
-    election_ids = [e[0] for e in query.all()]
+    # round contests that don't have sample_size_options
+    round_contests = RoundContest.query.filter_by(sample_size_options = None)
 
-    for election_id in election_ids:
-        print("computing sample size options for election ID {:s}".format(election_id))
-        election = Election.query.filter_by(id = election_id).one()
-        election.sample_size_options = json.dumps(compute_and_store_sample_sizes(election))
-        db.session.commit()
-        print("done computing sample size options for election ID {:s}".format(election_id))
+    for round_contest in round_contests:
+        print("computing sample size options for round {:d} of election ID {:s}".format(round_contest.round.round_num, round_contest.round.election_id))
+
+        compute_sample_sizes(round_contest)
+
+        print("done computing sample size options for round {:d} of election ID {:s}: {:s}".format(round_contest.round.round_num, round_contest.round.election_id, round_contest.sample_size_options))
+
 
 def bgcompute_forever():
     while True:

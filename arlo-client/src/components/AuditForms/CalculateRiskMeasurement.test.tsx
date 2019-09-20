@@ -12,13 +12,14 @@ const apiMock: jest.SpyInstance<
 
 const setIsLoadingMock = jest.fn()
 const updateAuditMock = jest.fn()
+const getStatusMock = jest.fn().mockImplementation(async () => statusStates[5])
+const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 beforeEach(() => {
-  setIsLoadingMock.mockReset()
-  updateAuditMock.mockReset()
-})
-
-afterEach(() => {
+  setIsLoadingMock.mockClear()
+  updateAuditMock.mockClear()
+  getStatusMock.mockClear()
+  toastSpy.mockClear()
   apiMock.mockClear()
 })
 
@@ -26,10 +27,11 @@ describe('CalculateRiskMeasurement', () => {
   it('renders first round correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -39,10 +41,11 @@ describe('CalculateRiskMeasurement', () => {
   it('renders completion in first round correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -52,10 +55,11 @@ describe('CalculateRiskMeasurement', () => {
   it('renders first round with loading correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -65,10 +69,11 @@ describe('CalculateRiskMeasurement', () => {
   it('renders completion in first round with loading correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -76,17 +81,17 @@ describe('CalculateRiskMeasurement', () => {
   })
 
   it(`handles inputs`, async () => {
-    const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     apiMock.mockImplementation(async () => ({
       message: 'success',
       ok: true,
     }))
     const { container, getByLabelText, queryAllByText, getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -145,9 +150,66 @@ describe('CalculateRiskMeasurement', () => {
 
       await wait(() => {
         expect(apiMock).toBeCalledTimes(1)
-        expect(setIsLoadingMock).toBeCalledTimes(1)
+        expect(setIsLoadingMock).toBeCalledTimes(2)
+        expect(getStatusMock).toBeCalledTimes(1)
         expect(updateAuditMock).toBeCalledTimes(1)
         expect(toastSpy).toBeCalledTimes(0)
+      })
+    }
+  })
+
+  it(`handles background process timeout`, async () => {
+    const startDate: number = Date.now()
+    const lateDate: number = startDate + 120000
+    const dateSpy = jest
+      .spyOn(Date, 'now')
+      .mockReturnValueOnce(startDate)
+      .mockReturnValueOnce(lateDate)
+    getStatusMock.mockImplementation(async () => statusStates[6])
+    apiMock.mockImplementation(async () => ({
+      message: 'success',
+      ok: true,
+    }))
+    const { container, getByLabelText, getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[4]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    expect(container).toMatchSnapshot()
+
+    const choiceOne = getByLabelText('choice one')
+    const choiceTwo = getByLabelText('choice two')
+
+    expect(choiceOne).toBeInstanceOf(HTMLInputElement)
+    expect(choiceTwo).toBeInstanceOf(HTMLInputElement)
+
+    if (
+      choiceOne instanceof HTMLInputElement &&
+      choiceTwo instanceof HTMLInputElement
+    ) {
+      fireEvent.change(choiceOne, { target: { value: '5' } })
+      fireEvent.change(choiceTwo, { target: { value: '5' } })
+      fireEvent.blur(choiceOne)
+      fireEvent.blur(choiceTwo)
+      expect(choiceOne.value).toBe('5')
+      expect(choiceTwo.value).toBe('5')
+      fireEvent.click(getByText('Calculate Risk Measurement'), {
+        bubbles: true,
+      })
+
+      await wait(() => {
+        expect(dateSpy).toBeCalledTimes(2)
+        expect(apiMock).toBeCalled()
+        expect(setIsLoadingMock).toBeCalledTimes(1)
+        expect(getStatusMock).toBeCalled()
+        expect(updateAuditMock).toBeCalledTimes(0)
+        expect(toastSpy).toBeCalledTimes(1)
       })
     }
   })
@@ -156,10 +218,11 @@ describe('CalculateRiskMeasurement', () => {
     window.open = jest.fn()
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
@@ -169,8 +232,8 @@ describe('CalculateRiskMeasurement', () => {
       { bubbles: true }
     )
 
-    expect(window.open).toHaveBeenCalledTimes(1)
-    expect(window.open).toHaveBeenCalledWith(
+    expect(window.open).toBeCalledTimes(1)
+    expect(window.open).toBeCalledWith(
       `/election/1/jurisdiction/jurisdiction-1/1/retrieval-list`
     )
   })
@@ -179,18 +242,19 @@ describe('CalculateRiskMeasurement', () => {
     window.open = jest.fn()
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )
 
     fireEvent.click(getByText('Download Audit Report'), { bubbles: true })
 
-    expect(window.open).toHaveBeenCalledTimes(1)
-    expect(window.open).toHaveBeenCalledWith(`/election/1/audit/report`)
+    expect(window.open).toBeCalledTimes(1)
+    expect(window.open).toBeCalledWith(`/election/1/audit/report`)
   })
 
   it('handles errors from api', async () => {
@@ -204,10 +268,11 @@ describe('CalculateRiskMeasurement', () => {
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const { getByLabelText, getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
         electionId="1"
       />
     )

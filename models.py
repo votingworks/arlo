@@ -16,8 +16,6 @@ class Election(db.Model):
     meeting_date = db.Column(db.Date, nullable=True)
     risk_limit = db.Column(db.Integer, nullable=True)
     random_seed = db.Column(db.String(100), nullable=True)
-    sample_size_options = db.Column(db.String(1000), nullable=True)
-    chosen_sample_size = db.Column(db.Integer, nullable=True)
     
     jurisdictions = relationship('Jurisdiction', backref='election', passive_deletes=True)
     contests = relationship('TargetedContest', backref='election', passive_deletes=True)
@@ -129,6 +127,8 @@ class SampledBallot(db.Model):
 class RoundContest(db.Model):
     round_id = db.Column(db.String(200), db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
+
+    sample_size_options = db.Column(db.String(1000), nullable=True)    
 
     results = relationship('RoundContestResult', backref='round_contest', passive_deletes=True)
 

@@ -237,7 +237,7 @@ describe('EstimateSampleSize', () => {
   it('renders after sample size is estimated correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[2]}
+        audit={statusStates[3]}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -249,7 +249,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[2]}
+        audit={statusStates[3]}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -263,7 +263,7 @@ describe('EstimateSampleSize', () => {
   it('renders after manifest is uploaded correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -275,7 +275,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[3]}
+        audit={statusStates[4]}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -289,7 +289,7 @@ describe('EstimateSampleSize', () => {
   it('renders during rounds stage correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -301,7 +301,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[4]}
+        audit={statusStates[5]}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -385,6 +385,7 @@ describe('EstimateSampleSize', () => {
       .fn()
       .mockImplementationOnce(async () => statusStates[0])
       .mockImplementationOnce(async () => statusStates[1])
+      .mockImplementationOnce(async () => statusStates[2])
 
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
@@ -408,12 +409,12 @@ describe('EstimateSampleSize', () => {
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
     await wait(() => {
       const { body } = apiMock.mock.calls[0][1] as { body: string }
-      expect(setIsLoadingMock).toHaveBeenCalledTimes(2)
-      expect(apiMock).toHaveBeenCalledTimes(1)
+      expect(setIsLoadingMock).toBeCalledTimes(2)
+      expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
-      expect(getStatusMock).toHaveBeenCalledTimes(2)
-      expect(updateAuditMock).toHaveBeenCalledTimes(1)
+      expect(getStatusMock).toBeCalledTimes(3)
+      expect(updateAuditMock).toBeCalledTimes(1)
     })
   })
 
@@ -455,15 +456,15 @@ describe('EstimateSampleSize', () => {
 
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
     await wait(() => {
-      expect(apiMock).toHaveBeenCalled()
+      expect(apiMock).toBeCalled()
       const { body } = apiMock.mock.calls[0][1] as { body: string }
       expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
-      expect(getStatusMock).toHaveBeenCalled()
-      expect(dateSpy).toHaveBeenCalledTimes(2)
-      expect(toastSpy).toHaveBeenCalledTimes(1)
-      expect(updateAuditMock).toHaveBeenCalledTimes(0)
-      expect(setIsLoadingMock).toHaveBeenCalledTimes(1)
+      expect(getStatusMock).toBeCalled()
+      expect(dateSpy).toBeCalledTimes(2)
+      expect(toastSpy).toBeCalledTimes(1)
+      expect(updateAuditMock).toBeCalledTimes(0)
+      expect(setIsLoadingMock).toBeCalledTimes(1)
     })
   })
 
@@ -537,9 +538,9 @@ describe('EstimateSampleSize', () => {
 
     await wait(() => {
       expect(apiMock.mock.calls.length).toBe(1)
-      expect(toastSpy).toHaveBeenCalledTimes(1)
-      expect(toastSpy).toHaveBeenCalledWith('A test error')
-      expect(updateAuditMock).toHaveBeenCalledTimes(0)
+      expect(toastSpy).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledWith('A test error')
+      expect(updateAuditMock).toBeCalledTimes(0)
     })
   })
 })

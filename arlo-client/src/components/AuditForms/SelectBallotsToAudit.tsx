@@ -77,6 +77,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
     audit.jurisdictions[0].ballotManifest.filename &&
     audit.jurisdictions[0].ballotManifest.numBallots &&
     audit.jurisdictions[0].ballotManifest.numBatches
+  const sampleSizeSelected = audit.rounds[0].contests.every(c => !!c.sampleSize)
 
   const handlePost = async (values: SelectBallotsToAuditValues) => {
     try {
@@ -153,26 +154,24 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         audit.jurisdictions[0].auditBoards.length) ||
         1),
     manifest: null,
-    sampleSize: [...audit.contests].reduce(
+    sampleSize: [...audit.rounds[0].contests].reduce(
       (a: { [key: string]: string }, c) => {
         a[c.id] =
           c.sampleSizeOptions && c.sampleSizeOptions.length
             ? c.sampleSizeOptions[0].size.toString()
             : ''
-        if (audit.rounds[0]) {
-          const rc = audit.rounds[0].contests.find(v => v.id === c.id)
-          a[c.id] = rc!.sampleSize.toString()
+        if (c.sampleSize) {
+          a[c.id] = c.sampleSize.toString()
         }
         return a
       },
       {}
     ),
-    customSampleSize: [...audit.contests].reduce(
+    customSampleSize: [...audit.rounds[0].contests].reduce(
       (a: { [key: string]: string }, c) => {
         a[c.id] = ''
-        if (audit.rounds[0]) {
-          const rc = audit.rounds[0].contests.find(v => v.id === c.id)
-          a[c.id] = rc!.sampleSize.toString()
+        if (c.sampleSize) {
+          a[c.id] = c.sampleSize.toString()
         }
         return a
       },
@@ -180,7 +179,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
     ),
   }
 
-  const sampleSizeOptions = [...audit.contests].reduce<
+  const sampleSizeOptions = [...audit.rounds[0].contests].reduce<
     SampleSizeOptionsByContest
   >((acc, contest) => {
     acc[contest.id] =
@@ -260,7 +259,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                             )
                           }
                           selectedValue={getIn(values, `sampleSize[${key}]`)}
-                          disabled={!!audit.rounds.length}
+                          disabled={sampleSizeSelected}
                         >
                           {sampleSizeOptions[key].map((option, j) => {
                             return (
@@ -306,7 +305,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                   onChange={(e: React.FormEvent<HTMLSelectElement>) =>
                     setFieldValue('auditBoards', e.currentTarget.value)
                   }
-                  disabled={!!audit.rounds.length}
+                  disabled={sampleSizeSelected}
                 >
                   {generateOptions(15)}
                 </Field>
@@ -361,8 +360,8 @@ const SelectBallotsToAudit: React.FC<Props> = ({
               )}
             </FormSection>
           </FormWrapper>
-          {!audit.rounds.length && isLoading && <Spinner />}
-          {!audit.rounds.length && !isLoading && (
+          {!sampleSizeSelected && isLoading && <Spinner />}
+          {!sampleSizeSelected && !isLoading && (
             <FormButtonBar>
               <FormButton intent="primary" type="button" onClick={handleSubmit}>
                 Select Ballots To Audit

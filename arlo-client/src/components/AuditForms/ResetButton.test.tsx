@@ -38,8 +38,8 @@ describe('ResetButton', () => {
     fireEvent.click(getByText('Clear & Restart'), { bubbles: true })
 
     await wait(() => {
-      expect(apiMock).toHaveBeenCalledTimes(1)
-      expect(updateAuditMock).toHaveBeenCalledTimes(1)
+      expect(apiMock).toBeCalledTimes(1)
+      expect(updateAuditMock).toBeCalledTimes(1)
     })
   })
 })

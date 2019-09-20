@@ -27,15 +27,27 @@ export const statusStates: Audit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
-        sampleSizeOptions: [
-          { size: 269, type: 'ASN', prob: null },
-          { size: 379, prob: 0.8, type: null },
-          { size: 78, prob: null, type: null },
-        ],
       },
     ],
     jurisdictions: [],
-    rounds: [],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: null,
+              pvalue: null,
+            },
+            id: 'contest-1',
+            results: {},
+            sampleSize: null,
+            sampleSizeOptions: null,
+          },
+        ],
+        endedAt: null,
+        startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+      },
+    ],
     name: 'contest name',
     randomSeed: '123456789',
     riskLimit: '1',
@@ -58,11 +70,53 @@ export const statusStates: Audit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
-        sampleSizeOptions: [
-          { size: 269, type: 'ASN', prob: null },
-          { size: 379, prob: 0.8, type: null },
-          { size: 78, prob: null, type: null },
+      },
+    ],
+    jurisdictions: [],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: null,
+              pvalue: null,
+            },
+            id: 'contest-1',
+            results: {},
+            sampleSize: null,
+            sampleSizeOptions: [
+              { size: 269, type: 'ASN', prob: null },
+              { size: 379, prob: 0.8, type: null },
+              { size: 78, prob: null, type: null },
+            ],
+          },
         ],
+        endedAt: null,
+        startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+      },
+    ],
+    name: 'contest name',
+    randomSeed: '123456789',
+    riskLimit: '1',
+  },
+  {
+    contests: [
+      {
+        choices: [
+          {
+            id: 'choice-1',
+            name: 'choice one',
+            numVotes: 792,
+          },
+          {
+            id: 'choice-2',
+            name: 'choice two',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-1',
+        name: 'contest name',
+        totalBallotsCast: '2123',
       },
     ],
     jurisdictions: [
@@ -85,7 +139,28 @@ export const statusStates: Audit[] = [
         name: 'Jurisdiction 1',
       },
     ],
-    rounds: [],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: null,
+              pvalue: null,
+            },
+            id: 'contest-1',
+            results: {},
+            sampleSize: null,
+            sampleSizeOptions: [
+              { size: 269, type: 'ASN', prob: null },
+              { size: 379, prob: 0.8, type: null },
+              { size: 78, prob: null, type: null },
+            ],
+          },
+        ],
+        endedAt: null,
+        startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+      },
+    ],
     name: 'contest name',
     randomSeed: '123456789',
     riskLimit: '1',
@@ -108,11 +183,6 @@ export const statusStates: Audit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
-        sampleSizeOptions: [
-          { size: 269, type: 'ASN', prob: null },
-          { size: 379, prob: 0.8, type: null },
-          { size: 78, prob: null, type: null },
-        ],
       },
     ],
     jurisdictions: [
@@ -146,6 +216,11 @@ export const statusStates: Audit[] = [
             id: 'contest-1',
             results: {},
             sampleSize: 379,
+            sampleSizeOptions: [
+              { size: 269, type: 'ASN', prob: null },
+              { size: 379, prob: 0.8, type: null },
+              { size: 78, prob: null, type: null },
+            ],
           },
         ],
         endedAt: null,
@@ -174,11 +249,6 @@ export const statusStates: Audit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
-        sampleSizeOptions: [
-          { size: 269, type: 'ASN', prob: null },
-          { size: 379, prob: 0.8, type: null },
-          { size: 78, prob: null, type: null },
-        ],
       },
     ],
     jurisdictions: [
@@ -215,9 +285,76 @@ export const statusStates: Audit[] = [
               'choice-2': 167,
             },
             sampleSize: 379,
+            sampleSizeOptions: [
+              { size: 269, type: 'ASN', prob: null },
+              { size: 379, prob: 0.8, type: null },
+              { size: 78, prob: null, type: null },
+            ],
           },
         ],
         endedAt: 'Thu, 18 Jul 2019 16:59:34 GMT',
+        startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+      },
+    ],
+    name: 'contest name',
+    randomSeed: '123456789',
+    riskLimit: '1',
+  },
+  {
+    contests: [
+      {
+        choices: [
+          {
+            id: 'choice-1',
+            name: 'choice one',
+            numVotes: 792,
+          },
+          {
+            id: 'choice-2',
+            name: 'choice two',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-1',
+        name: 'contest name',
+        totalBallotsCast: '2123',
+      },
+    ],
+    jurisdictions: [
+      {
+        auditBoards: [
+          {
+            id: 'audit-board-1',
+            name: 'Audit Board #1',
+            members: [],
+          },
+        ],
+        ballotManifest: {
+          filename: 'Ballot Manifest May 2019 Election - WYNADOTTE.csv',
+          numBallots: 2117,
+          numBatches: 10,
+          uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+        },
+        contests: ['contest-1'],
+        id: 'jurisdiction-1',
+        name: 'Jurisdiction 1',
+      },
+    ],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: null,
+              pvalue: null,
+            },
+            id: 'contest-1',
+            results: {},
+            sampleSize: null,
+            sampleSizeOptions: null,
+          },
+        ],
+        endedAt: null,
         startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
       },
     ],
