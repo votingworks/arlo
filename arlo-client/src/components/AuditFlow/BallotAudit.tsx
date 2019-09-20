@@ -102,6 +102,7 @@ const BallotAudit: React.FC<IProps> = ({
                     <Field
                       name="comment"
                       type="textarea"
+                      data-testid="comment-textarea"
                       component={FormField}
                     />
                   )}
@@ -112,6 +113,9 @@ const BallotAudit: React.FC<IProps> = ({
                     onClick={handleSubmit}
                     disabled={!values.vote}
                     intent="success"
+                    data-testid={
+                      !values.vote ? 'disabled-review' : 'enabled-review'
+                    }
                   >
                     Review
                   </FormButton>

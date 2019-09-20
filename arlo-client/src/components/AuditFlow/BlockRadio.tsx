@@ -66,6 +66,7 @@ const BlockRadio = ({
       <input
         type="radio"
         name={name}
+        data-testid={value}
         value={value || undefined}
         onChange={handleChange}
         checked={checked}
