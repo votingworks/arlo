@@ -9,8 +9,8 @@ import {
 import { BrowserRouter as Router } from 'react-router-dom'
 import AuditForms from './index'
 import statusStates from './_mocks'
-import api from '../utilities'
 import { routerTestProps } from '../testUtilities'
+import api from '../utilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 

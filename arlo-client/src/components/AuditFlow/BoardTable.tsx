@@ -86,6 +86,9 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
   const roundComplete =
     board.ballots && board.ballots.every(b => b.status === 'AUDITED')
 
+  let numRows = 10
+  if (board.ballots && board.ballots.length < 10) numRows = board.ballots.length
+
   return (
     <div className="board-table-container">
       <H1>{board.name}: Ballot Cards to Audit</H1>
@@ -102,12 +105,14 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
         {roundComplete ? (
           <Button intent="primary">Review Complete - Finish Round</Button>
         ) : (
-          <Link
-            to={url + '/round/1/ballot/1'}
-            className="bp3-button bp3-intent-primary"
-          >
-            Start Auditing
-          </Link>
+          board.ballots && (
+            <Link
+              to={url + '/round/1/ballot/1'}
+              className="bp3-button bp3-intent-primary"
+            >
+              Start Auditing
+            </Link>
+          )
         )}
       </RightWrapper>
       <ActionWrapper>
@@ -117,7 +122,11 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
           </>
         )}
       </ActionWrapper>
-      <Table numRows={10} defaultRowHeight={30} columnWidths={columnWidths()}>
+      <Table
+        numRows={numRows}
+        defaultRowHeight={30}
+        columnWidths={columnWidths()}
+      >
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="batch" name="Batch" cellRenderer={renderCell} />
         <Column
