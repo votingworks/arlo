@@ -17,6 +17,8 @@ interface IProps {
     url: string
   }
   history: History
+  dummyID?: number
+  testName?: string
 }
 
 const AuditFlow: React.FC<IProps> = ({
@@ -25,6 +27,8 @@ const AuditFlow: React.FC<IProps> = ({
     url,
   },
   history,
+  dummyID = 2,
+  testName = '',
 }: IProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -46,7 +50,7 @@ const AuditFlow: React.FC<IProps> = ({
     updateAudit()
   }, [updateAudit])
 
-  const [dummy, setDummy] = useState(2)
+  const [dummy, setDummy] = useState(dummyID)
   const board = {
     ...audit.jurisdictions[0].auditBoards.find(
       (v: IAuditBoard) => v.id === token
@@ -62,6 +66,7 @@ const AuditFlow: React.FC<IProps> = ({
     history.push(`${url}/round/${r}/ballot/${Number(b) - 1}`)
   }
 
+  /* istanbul ignore if */
   if (!board) {
     return (
       <Wrapper>
@@ -105,6 +110,7 @@ const AuditFlow: React.FC<IProps> = ({
               />
             )}
           />
+          <Route render={() => <p>empty</p>} />
         </Switch>
       </Wrapper>
     )

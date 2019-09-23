@@ -71,7 +71,10 @@ const BallotAudit: React.FC<IProps> = ({
                   <Divider />
                   <RadioGroupFlex
                     name="vote"
-                    onChange={() => null} // required by blueprintjs but we're implementing on BlockRadio instead
+                    onChange={
+                      /* istanbul ignore next */
+                      () => null
+                    } // required by blueprintjs but we're implementing on BlockRadio instead
                     selectedValue={getIn(values, 'vote')}
                   >
                     <BlockRadio

@@ -31,9 +31,10 @@ const BallotReview: React.FC<IProps> = ({
   review: { vote, comment },
   nextBallot,
 }: IProps) => {
+  const completeVote = vote as Exclude<IReview['vote'], null>
   /* eslint-disable no-console */
   const handleSubmit = () => {
-    console.log(vote, comment)
+    console.log(completeVote, comment)
     goAudit()
     nextBallot()
   }
@@ -45,7 +46,7 @@ const BallotReview: React.FC<IProps> = ({
           <H3>{contest}</H3>
           <Divider />
           <Wrapper>
-            <SingleBlockRadio value={vote} locked />
+            <SingleBlockRadio value={completeVote} locked />
             <Button onClick={goAudit} icon="edit" minimal>
               Edit
             </Button>
