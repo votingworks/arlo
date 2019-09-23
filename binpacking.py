@@ -87,7 +87,6 @@ class BucketList:
         return [s.name for s in self.buckets if s.size < self.avg_size]
 
     def balance(self):
-        print(self.biggest.size, self.avg_size)
         # Implements https://stackoverflow.com/questions/16588669/spread-objects-evenly-over-multiple-collections
 
         for bucket_name in sorted(self.get_too_big()):
@@ -115,9 +114,6 @@ class BucketList:
                         self.smallest = self.get_smallest()
                         self.biggest = self.get_biggest()
 
-
-                    
-        print(self.biggest.size, self.avg_size)
 
     def __gt__(self, other):
         return self.size > other.size
