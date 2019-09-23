@@ -6,6 +6,8 @@ from sampler import Sampler
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 
+from binpacking import Bucket, BucketList
+
 app = Flask(__name__, static_folder='arlo-client/build/')
 
 # database config
@@ -161,28 +163,64 @@ def sample_ballots(election, round):
     
     last_sample = None
     last_sampled_ballot = None
-    
-    for sample_number, (batch_id, ballot_position) in enumerate(sample):
-        if last_sample == (batch_id, ballot_position):
-            last_sampled_ballot.times_sampled += 1
+
+    batch_sizes = {}
+    batches_to_ballots = {}
+    seen_ballot_positions = set()
+    # Build batch - batch_size map
+    for batch_id, ballot_position in sample:
+
+        lookup = str(batch_id) + str(ballot_position)
+        # Only count ballots once here since it's only pulled once
+        if lookup in seen_ballot_positions:
+            batches_to_ballots[batch_id].append(ballot_position)
             continue
-        
-        audit_board_num = sample_number % len(audit_boards)
+
+        seen_ballot_positions.add(lookup)
+        if batch_id in batch_sizes:
+            batch_sizes[batch_id] += 1
+            batches_to_ballots[batch_id].append(ballot_position)
+        else:
+            batch_sizes[batch_id] = 1
+            batches_to_ballots[batch_id] = [ballot_position]
+
+    # Create the buckets and initially assign batches
+    buckets = []
+    for audit_board in audit_boards:
+        buckets.append(Bucket(audit_board.name))
+
+    for i, batch in enumerate(batch_sizes):
+        buckets[i%len(audit_boards)].add_batch(batch, batch_sizes[batch])
+
+    # Now assign batchest fairly
+    bl = BucketList(buckets)
+    bl.balance()
+
+    # read audit board and batch info out
+    for bucket in bl.buckets:
+        audit_board_num = bl.bucket_map[bucket.name]
         audit_board = audit_boards[audit_board_num]
-        sampled_ballot = SampledBallot(
-            round_id = round.id,
-            jurisdiction_id = jurisdiction.id,
-            batch_id = batch_id,
-            ballot_position = ballot_position + 1, # sampler is 0-indexed, we're 1-indexing here
-            times_sampled = 1,
-            audit_board_id = audit_board.id)
-        
-        # keep track for doubly-sampled ballots
-        last_sample = (batch_id, ballot_position)
-        last_sampled_ballot = sampled_ballot
+        for batch_id in bucket.batches:
 
-        db.session.add(sampled_ballot)
+            for ballot_position in batches_to_ballots[batch_id]:
+                if last_sample == (batch_id, ballot_position):
+                    last_sampled_ballot.times_sampled += 1
+                    continue
 
+                sampled_ballot = SampledBallot(
+                        round_id = round.id,
+                        jurisdiction_id = jurisdiction.id,
+                        batch_id = batch_id,
+                        ballot_position = ballot_position + 1, # sampler is 0-indexed, we're 1-indexing here
+                        times_sampled = 1,
+                        audit_board_id = audit_board.id)
+
+                # keep track for doubly-sampled ballots
+                last_sample = (batch_id, ballot_position)
+                last_sampled_ballot = sampled_ballot
+
+                db.session.add(sampled_ballot)
+    
     db.session.commit()
         
 
