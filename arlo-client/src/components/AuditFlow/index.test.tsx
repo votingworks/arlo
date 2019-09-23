@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, wait } from '@testing-library/react'
+import { render, wait, fireEvent } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
 import { routerTestProps } from '../testUtilities'
 import AuditFlow from './index'
@@ -7,16 +7,14 @@ import { dummyBoard } from './_mocks'
 import statusStates from '../AuditForms/_mocks'
 import api from '../utilities'
 
-const dummy = (i: number) => {
-  statusStates[3].jurisdictions[0].auditBoards = [dummyBoard[i]]
-  return statusStates[3]
-}
+const dummy = statusStates[3]
+dummy.jurisdictions[0].auditBoards = [dummyBoard[0]]
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
 jest.mock('../utilities')
 
-apiMock.mockImplementation(async () => dummy(0))
+apiMock.mockImplementation(async () => dummy)
 
 afterEach(() => {
   apiMock.mockClear()
@@ -50,14 +48,10 @@ describe('AuditFlow', () => {
   })
 
   it('renders member form', async () => {
-    apiMock.mockImplementationOnce(async () => dummy(0))
+    apiMock.mockImplementationOnce(async () => dummy)
     const { container, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow
-          {...routeProps}
-          dummyID={0}
-          testName="member form: dummy 0"
-        />
+        <AuditFlow {...routeProps} dummyID={0} />
       </StaticRouter>
     )
     await wait(() => {
@@ -70,14 +64,10 @@ describe('AuditFlow', () => {
   })
 
   it('renders board table with no ballots', async () => {
-    apiMock.mockImplementationOnce(async () => dummy(1))
+    apiMock.mockImplementationOnce(async () => dummy)
     const { queryByText, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow
-          {...routeProps}
-          dummyID={1}
-          testName="blank board table: dummy 1"
-        />
+        <AuditFlow {...routeProps} dummyID={1} />
       </StaticRouter>
     )
     await wait(() => {
@@ -88,14 +78,10 @@ describe('AuditFlow', () => {
   })
 
   it('renders board table with ballots', async () => {
-    apiMock.mockImplementationOnce(async () => dummy(2))
+    apiMock.mockImplementationOnce(async () => dummy)
     const { container, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow
-          {...routeProps}
-          dummyID={2}
-          testName="board table: dummy 1"
-        />
+        <AuditFlow {...routeProps} dummyID={2} />
       </StaticRouter>
     )
     await wait(() => {
@@ -104,5 +90,85 @@ describe('AuditFlow', () => {
       expect(getByText('Start Auditing')).toBeTruthy()
       expect(container).toMatchSnapshot()
     })
+  })
+
+  it('renders board table with completed ballots', async () => {
+    apiMock.mockImplementationOnce(async () => dummy)
+    const { container, getByText } = render(
+      <StaticRouter {...routeProps}>
+        <AuditFlow {...routeProps} dummyID={3} />
+      </StaticRouter>
+    )
+    await wait(() => {
+      expect(apiMock).toBeCalled()
+      expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
+      expect(getByText('Review Complete - Finish Round')).toBeTruthy()
+      expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('renders ballot route', async () => {
+    const ballotRouteProps = routerTestProps(
+      '/election/:electionId/board/:token/round/:roundId/ballot/:ballotId',
+      {
+        electionId: '1',
+        token: '123',
+        roundId: '1',
+        ballotId: '1',
+      }
+    )
+    apiMock.mockImplementationOnce(async () => dummy)
+    ballotRouteProps.match.url = '/election/1/board/123'
+    const { container, getByText } = render(
+      <StaticRouter {...ballotRouteProps}>
+        <AuditFlow {...ballotRouteProps} dummyID={2} />
+      </StaticRouter>
+    )
+    await wait(() => {
+      expect(apiMock).toBeCalled()
+      expect(getByText('Enter Ballot Information')).toBeTruthy()
+      expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('advances ballot forward and backward', async () => {
+    const ballotRouteProps = routerTestProps(
+      '/election/:electionId/board/:token/round/:roundId/ballot/:ballotId',
+      {
+        electionId: '1',
+        token: '123',
+        roundId: '1',
+        ballotId: '2',
+      }
+    )
+    const pushSpy = jest
+      .spyOn(ballotRouteProps.history, 'push')
+      .mockImplementation()
+    apiMock.mockImplementationOnce(async () => dummy)
+    ballotRouteProps.match.url = '/election/1/board/123'
+    const { getByText } = render(
+      <StaticRouter {...ballotRouteProps}>
+        <AuditFlow {...ballotRouteProps} dummyID={2} />
+      </StaticRouter>
+    )
+
+    fireEvent.click(getByText('Ballot not found - move to next ballot'), {
+      bubbles: true,
+    })
+    await wait(() => {
+      expect(pushSpy).toBeCalledTimes(1)
+    })
+
+    fireEvent.click(getByText('Back'), { bubbles: true })
+    await wait(() => {
+      expect(pushSpy).toBeCalledTimes(2)
+    })
+
+    expect(pushSpy.mock.calls[0][0]).toBe(
+      '/election/1/board/123/round/1/ballot/3'
+    )
+    expect(pushSpy.mock.calls[1][0]).toBe(
+      '/election/1/board/123/round/1/ballot/1'
+    )
   })
 })

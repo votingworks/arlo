@@ -47,21 +47,14 @@ const TEXT = {
 const BlockRadio = ({
   name = '',
   value,
-  handleChange = () => {},
+  handleChange,
   locked,
   className,
   checked,
 }: IProps) => (
   <Block className={`${className} bp3-control bp3-radio`}>
     {locked ? (
-      <input
-        type="radio"
-        name={name}
-        value={value}
-        onChange={handleChange}
-        disabled
-        checked
-      />
+      <input type="radio" name={name} value={value} disabled checked />
     ) : (
       <input
         type="radio"
