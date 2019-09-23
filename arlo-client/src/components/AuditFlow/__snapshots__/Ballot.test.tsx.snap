@@ -1,5 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Ballot redirects if ballot does not exist 1`] = `<div />`;
+
+exports[`Ballot redirects if ballots array does not exist 1`] = `<div />`;
+
 exports[`Ballot renders correctly 1`] = `
 <div>
   <div
