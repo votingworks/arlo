@@ -167,7 +167,7 @@ def sample_ballots(election, round):
             last_sampled_ballot.times_sampled += 1
             continue
         
-        audit_board_num = math.floor(len(audit_boards) * sample_number / len(sample))
+        audit_board_num = sample_number % len(audit_boards)
         audit_board = audit_boards[audit_board_num]
         sampled_ballot = SampledBallot(
             round_id = round.id,
