@@ -18,7 +18,6 @@ interface IProps {
   }
   history: History
   dummyID?: number
-  testName?: string
 }
 
 const AuditFlow: React.FC<IProps> = ({
@@ -28,7 +27,6 @@ const AuditFlow: React.FC<IProps> = ({
   },
   history,
   dummyID = 2,
-  testName = '',
 }: IProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -110,7 +108,6 @@ const AuditFlow: React.FC<IProps> = ({
               />
             )}
           />
-          <Route render={() => <p>empty</p>} />
         </Switch>
       </Wrapper>
     )
