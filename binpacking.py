@@ -51,7 +51,12 @@ class BucketList:
 
     def __init__(self, buckets):
 
-        self.buckets = buckets
+        self.bucket_map = {}
+        self.buckets = []
+        for i, bucket in enumerate(buckets):
+            self.bucket_map[bucket.name] = i
+            self.buckets.append(bucket)
+            
         self.avg_size = self.get_avg_size() 
         self.biggest = self.get_biggest()
         self.smallest = self.get_smallest()
@@ -86,7 +91,7 @@ class BucketList:
         # Implements https://stackoverflow.com/questions/16588669/spread-objects-evenly-over-multiple-collections
 
         for bucket_name in sorted(self.get_too_big()):
-            bucket = self.buckets[bucket_name]
+            bucket = self.buckets[self.bucket_map[bucket_name]]
 
             # Remove the biggest element from the biggest bucket
             if bucket.size - bucket.batches[bucket.largest_element] > self.avg_size:
@@ -99,14 +104,14 @@ class BucketList:
 
         for bucket in sorted(self.get_too_small()):
             for bigger_name in sorted(self.get_too_big(), reverse=True):
-                bigger = self.buckets[bigger_name]
+                bigger = self.buckets[self.bucket_map[bigger_name]]
 
                 for item in sorted(bigger.batches, reverse=True):
                     if bigger.size - bigger.batches[item] > self.avg_size:
                         rem = bigger.remove_batch(item)
                         r_name = next(iter(rem))
 
-                        self.buckets[bucket].add_batch(r_name, rem[r_name])
+                        self.buckets[self.bucket_map[bucket]].add_batch(r_name, rem[r_name])
                         self.smallest = self.get_smallest()
                         self.biggest = self.get_biggest()
 
