@@ -9,6 +9,11 @@ const RightWrapper = styled.div`
   display: flex;
   flex-direction: row-reverse;
   margin: 20px 0;
+  @media (max-width: 775px) {
+    .bp3-button {
+      width: 100%;
+    }
+  }
 `
 
 const PaddedCell = styled(Cell)`
@@ -20,6 +25,11 @@ const ActionWrapper = styled.div`
   .bp3-checkbox {
     display: inline-block;
     margin-left: 20px;
+  }
+  @media (max-width: 775px) {
+    .bp3-button {
+      width: 100%;
+    }
   }
 `
 

@@ -15,6 +15,16 @@ export const BallotRow = styled.div`
     width: 50%;
     padding: 20px;
   }
+
+  @media (max-width: 775px) {
+    flex-direction: column;
+    .ballot-side {
+      padding: 20px;
+    }
+    .ballot-main {
+      width: unset;
+    }
+  }
 `
 
 export const FormBlock = styled(Form)`
