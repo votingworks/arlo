@@ -163,6 +163,7 @@ export const dummyBoard: IAuditBoard[] = [
         status: 'AUDITED',
         vote: null,
         comment: '',
+        id: '1',
       },
       {
         tabulator: '17',
@@ -171,6 +172,7 @@ export const dummyBoard: IAuditBoard[] = [
         status: 'AUDITED',
         vote: null,
         comment: '',
+        id: '2',
       },
       {
         tabulator: '23',
@@ -179,6 +181,7 @@ export const dummyBoard: IAuditBoard[] = [
         status: 'AUDITED',
         vote: null,
         comment: '',
+        id: '3',
       },
       {
         tabulator: '17',
@@ -187,6 +190,7 @@ export const dummyBoard: IAuditBoard[] = [
         status: 'AUDITED',
         vote: null,
         comment: '',
+        id: '4',
       },
       {
         tabulator: '23',
@@ -195,6 +199,7 @@ export const dummyBoard: IAuditBoard[] = [
         status: 'AUDITED',
         vote: null,
         comment: '',
+        id: '5',
       },
     ],
   },

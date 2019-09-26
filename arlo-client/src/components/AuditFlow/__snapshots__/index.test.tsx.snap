@@ -3,7 +3,7 @@
 exports[`AuditFlow fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <div
       class="board-table-container"
@@ -849,7 +849,7 @@ exports[`AuditFlow renders ballot route 1`] = `
 exports[`AuditFlow renders ballot route 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <div
       class="sc-ckVGcZ bxAWbg"
@@ -2046,6 +2046,81 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
               </div>
             </div>
           </div>
+        </div>
+        <div
+          class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
+        />
+        <div
+          class="bp3-table-resize-guides bp3-table-overlay-layer"
+        />
+        <div
+          class="bp3-table-resize-sensor"
+          style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
+        >
+          <div
+            class="bp3-table-resize-sensor-expand"
+            style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+          >
+            <div
+              style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
+            />
+          </div>
+          <div
+            class="bp3-table-resize-sensor-shrink"
+            style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+          >
+            <div
+              style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AuditFlow renders board table with completed ballots 1`] = `
+<div>
+  <div
+    class="sc-jKJlTe fVUbzk"
+  >
+    <div
+      class="board-table-container"
+    >
+      <h1
+        class="bp3-heading"
+      >
+        Audit Board #1
+        : Ballot Cards to Audit
+      </h1>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+      <div
+        class="sc-bdVaJa cpRYMt"
+      >
+        <button
+          class="bp3-button bp3-intent-primary"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Review Complete - Finish Round
+          </span>
+        </button>
+      </div>
+      <div
+        class="sc-htpNat ehYsQA"
+      />
+      <div
+        class="bp3-table-container bp3-table-selection-enabled"
+        tabindex="0"
+      >
+        <div
+          class="bp3-table-quadrant-stack"
+        >
           <div
             class="bp3-table-quadrant bp3-table-quadrant-top"
             style="height: 30px; right: 0px;"
@@ -2808,7 +2883,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
 exports[`AuditFlow renders correctly 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <div
       class="board-table-container"
@@ -3372,7 +3447,7 @@ exports[`AuditFlow renders correctly 1`] = `
 exports[`AuditFlow renders member form 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <h1
       class="bp3-heading"
