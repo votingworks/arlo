@@ -21,7 +21,7 @@ exports[`Ballot renders correctly 1`] = `
       Enter Ballot Information
     </h3>
     <div
-      class="bp3-callout sc-jTzLTM cEsCFY"
+      class="bp3-callout sc-jTzLTM gCcJZe"
     >
       Round 
       1
@@ -31,7 +31,7 @@ exports[`Ballot renders correctly 1`] = `
       5
     </div>
     <div
-      class="sc-bdVaJa rYMdX"
+      class="sc-bdVaJa MHVhf"
     >
       <div
         class="ballot-side"
@@ -75,13 +75,15 @@ exports[`Ballot renders correctly 1`] = `
           <span
             class="bp3-button-text"
           >
-            Ballot not found - move to next ballot
+            Ballot 
+            1
+             not found - move to next ballot
           </span>
         </button>
       </div>
     </div>
     <div
-      class="sc-bdVaJa rYMdX"
+      class="sc-bdVaJa MHVhf"
     >
       <div
         class="ballot-side"
@@ -271,7 +273,7 @@ exports[`Ballot switches audit and review views 1`] = `
       Enter Ballot Information
     </h3>
     <div
-      class="bp3-callout sc-jTzLTM cEsCFY"
+      class="bp3-callout sc-jTzLTM gCcJZe"
     >
       Round 
       1
@@ -281,7 +283,7 @@ exports[`Ballot switches audit and review views 1`] = `
       5
     </div>
     <div
-      class="sc-bdVaJa rYMdX"
+      class="sc-bdVaJa MHVhf"
     >
       <div
         class="ballot-side"
@@ -325,13 +327,15 @@ exports[`Ballot switches audit and review views 1`] = `
           <span
             class="bp3-button-text"
           >
-            Ballot not found - move to next ballot
+            Ballot 
+            1
+             not found - move to next ballot
           </span>
         </button>
       </div>
     </div>
     <div
-      class="sc-bdVaJa rYMdX"
+      class="sc-bdVaJa MHVhf"
     >
       <div
         class="ballot-side"
@@ -351,7 +355,7 @@ exports[`Ballot switches audit and review views 1`] = `
             class="bp3-divider"
           />
           <div
-            class="sc-iwsKbI cxmxrr"
+            class="sc-iwsKbI kKHmVs"
           >
             <label
               class="sc-gZMcBi ckAluO bp3-control bp3-radio sc-ifAKCX csvjng"
@@ -455,7 +459,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       Enter Ballot Information
     </h3>
     <div
-      class="bp3-callout sc-jTzLTM cEsCFY"
+      class="bp3-callout sc-jTzLTM gCcJZe"
     >
       Round 
       1
@@ -465,7 +469,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       5
     </div>
     <div
-      class="sc-bdVaJa rYMdX"
+      class="sc-bdVaJa MHVhf"
     >
       <div
         class="ballot-side"
@@ -509,13 +513,15 @@ exports[`Ballot toggles and submits comment 1`] = `
           <span
             class="bp3-button-text"
           >
-            Ballot not found - move to next ballot
+            Ballot 
+            1
+             not found - move to next ballot
           </span>
         </button>
       </div>
     </div>
     <div
-      class="sc-bdVaJa rYMdX"
+      class="sc-bdVaJa MHVhf"
     >
       <div
         class="ballot-side"
@@ -535,7 +541,7 @@ exports[`Ballot toggles and submits comment 1`] = `
             class="bp3-divider"
           />
           <div
-            class="sc-iwsKbI cxmxrr"
+            class="sc-iwsKbI kKHmVs"
           >
             <label
               class="sc-gZMcBi ckAluO bp3-control bp3-radio sc-ifAKCX csvjng"
