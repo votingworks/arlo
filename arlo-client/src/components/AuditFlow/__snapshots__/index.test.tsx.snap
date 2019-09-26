@@ -248,7 +248,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
 exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <div
       class="board-table-container"
@@ -525,7 +525,7 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            1789
+                            17
                           </div>
                         </div>
                         <div
@@ -1378,7 +1378,7 @@ exports[`AuditFlow ballot interaction renders board table with large container s
 exports[`AuditFlow ballot interaction renders board table with no ballots 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <div
       class="bp3-spinner"
