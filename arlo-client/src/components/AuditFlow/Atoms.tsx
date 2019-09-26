@@ -38,6 +38,16 @@ export const BallotRow = styled.div`
       }
     }
   }
+
+  @media (max-width: 775px) {
+    flex-direction: column;
+    .ballot-side {
+      padding: 20px;
+    }
+    .ballot-main {
+      width: unset;
+    }
+  }
 `
 
 export const FormBlock = styled(Form)`
