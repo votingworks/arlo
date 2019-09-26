@@ -10,6 +10,9 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 20px 0;
+  @media (max-width: 775px) {
+    flex-direction: column;
+  }
 `
 
 const SingleBlockRadio = styled(BlockRadio)`
