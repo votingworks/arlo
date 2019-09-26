@@ -18,11 +18,20 @@ export const BallotRow = styled.div`
 
   @media (max-width: 775px) {
     flex-direction: column;
+    margin: 0;
+
     .ballot-side {
       padding: 20px;
     }
+
     .ballot-main {
       width: unset;
+    }
+
+    &:last-child {
+      .ballot-side {
+        display: none;
+      }
     }
   }
 `
