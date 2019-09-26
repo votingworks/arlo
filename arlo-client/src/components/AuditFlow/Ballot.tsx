@@ -21,6 +21,10 @@ const MainCallout = styled(Callout)`
   width: 400px;
   color: #f5f8fa;
   font-weight: 700;
+
+  @media (max-width: 775px) {
+    width: 100%;
+  }
 `
 
 interface IProps {
@@ -84,7 +88,7 @@ const Ballot: React.FC<IProps> = ({
             culpa qui officia deserunt mollit anim id est laborum.
           </p>
           <Button onClick={nextBallot} intent="danger">
-            Ballot not found - move to next ballot
+            Ballot {ballotId} not found - move to next ballot
           </Button>
         </div>
       </BallotRow>

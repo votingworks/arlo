@@ -152,7 +152,7 @@ describe('AuditFlow', () => {
       </StaticRouter>
     )
 
-    fireEvent.click(getByText('Ballot not found - move to next ballot'), {
+    fireEvent.click(getByText('Ballot 2 not found - move to next ballot'), {
       bubbles: true,
     })
     await wait(() => {

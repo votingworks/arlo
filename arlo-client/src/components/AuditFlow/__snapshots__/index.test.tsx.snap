@@ -18,7 +18,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
       </p>
       <div
-        class="sc-bdVaJa cpRYMt"
+        class="sc-bdVaJa cDShCX"
       >
         <a
           class="bp3-button bp3-intent-primary"
@@ -28,7 +28,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
         </a>
       </div>
       <div
-        class="sc-htpNat ehYsQA"
+        class="sc-htpNat bwRKsj"
       >
         <button
           class="bp3-button bp3-intent-primary"
@@ -584,7 +584,7 @@ exports[`AuditFlow renders ballot route 1`] = `
         Enter Ballot Information
       </h3>
       <div
-        class="bp3-callout sc-ckVGcZ cmaGSe"
+        class="bp3-callout sc-ckVGcZ fWvioO"
       >
         Round 
         1
@@ -594,7 +594,7 @@ exports[`AuditFlow renders ballot route 1`] = `
         5
       </div>
       <div
-        class="sc-iwsKbI jlKNzy"
+        class="sc-iwsKbI DZWJR"
       >
         <div
           class="ballot-side"
@@ -638,13 +638,15 @@ exports[`AuditFlow renders ballot route 1`] = `
             <span
               class="bp3-button-text"
             >
-              Ballot not found - move to next ballot
+              Ballot 
+              1
+               not found - move to next ballot
             </span>
           </button>
         </div>
       </div>
       <div
-        class="sc-iwsKbI jlKNzy"
+        class="sc-iwsKbI DZWJR"
       >
         <div
           class="ballot-side"
@@ -836,7 +838,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
       </p>
       <div
-        class="sc-bdVaJa cpRYMt"
+        class="sc-bdVaJa cDShCX"
       >
         <a
           class="bp3-button bp3-intent-primary"
@@ -846,7 +848,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
         </a>
       </div>
       <div
-        class="sc-htpNat ehYsQA"
+        class="sc-htpNat bwRKsj"
       >
         <button
           class="bp3-button bp3-intent-primary"
@@ -1400,7 +1402,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
       </p>
       <div
-        class="sc-bdVaJa cpRYMt"
+        class="sc-bdVaJa cDShCX"
       >
         <button
           class="bp3-button bp3-intent-primary"
@@ -1414,7 +1416,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
         </button>
       </div>
       <div
-        class="sc-htpNat ehYsQA"
+        class="sc-htpNat bwRKsj"
       />
       <div
         class="bp3-table-container bp3-table-selection-enabled"
@@ -1977,7 +1979,7 @@ exports[`AuditFlow renders correctly 1`] = `
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
       </p>
       <div
-        class="sc-bdVaJa cpRYMt"
+        class="sc-bdVaJa cDShCX"
       >
         <a
           class="bp3-button bp3-intent-primary"
@@ -1987,7 +1989,7 @@ exports[`AuditFlow renders correctly 1`] = `
         </a>
       </div>
       <div
-        class="sc-htpNat ehYsQA"
+        class="sc-htpNat bwRKsj"
       >
         <button
           class="bp3-button bp3-intent-primary"
