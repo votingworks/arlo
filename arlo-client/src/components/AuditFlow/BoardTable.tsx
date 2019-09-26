@@ -15,10 +15,6 @@ const PaddedCell = styled(Cell)`
   padding: 3px 5px;
 `
 
-const RightButton = styled(Button)`
-  float: right;
-`
-
 const ActionWrapper = styled.div`
   margin-bottom: 20px;
   .bp3-checkbox {
@@ -34,11 +30,12 @@ interface IProps {
   url: string
 }
 
-const KEYS: ('tabulator' | 'batch' | 'position' | 'status')[] = [
-  'tabulator',
+const KEYS: ('id' | 'tabulator' | 'batch' | 'position' | 'status')[] = [
+  'id',
   'batch',
-  'position',
   'status',
+  'tabulator',
+  'position',
 ]
 
 const STATUSES: { [key: string]: string } = {
@@ -53,15 +50,20 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
       if (!KEYS[cI]) {
         return <PaddedCell>{board.name}</PaddedCell>
       } else if (STATUSES[row[KEYS[cI]]]) {
-        const action =
+        const content =
           row[KEYS[cI]] === 'AUDITED' ? (
-            <RightButton small>Re-audit</RightButton>
-          ) : null
+            <Link
+              to={`${url}/round/1/ballot/${row.id}`}
+              className="bp3-button bp3-small"
+            >
+              Re-audit
+            </Link>
+          ) : (
+            STATUSES[row[KEYS[cI]]]
+          )
         return (
           <PaddedCell>
-            <>
-              {STATUSES[row[KEYS[cI]]]} {action}
-            </>
+            <>{content}</>
           </PaddedCell>
         )
         // wrapping content in React.Fragment to avoid unexpected props being passed to dom elements and throwing warnings
@@ -73,14 +75,14 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
     }
   }
 
-  const columnWidths = (): (number | null)[] => {
+  const columnWidths = (length: number): (number | null)[] => {
     const container = document.getElementsByClassName(
       'board-table-container'
     )[0]
-    if (!container) return Array(5).fill(null)
+    if (!container) return Array(length).fill(null)
     const containerSize = container.clientWidth
-    const colWidth = (containerSize - 31) / 5
-    return Array(5).fill(colWidth)
+    if (containerSize < 775) return Array(length).fill(80)
+    return Array(length).fill(containerSize / length)
   }
 
   const roundComplete =
@@ -125,16 +127,18 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
       <Table
         numRows={numRows}
         defaultRowHeight={30}
-        columnWidths={columnWidths()}
+        columnWidths={columnWidths(6)}
+        enableRowHeader={false}
       >
-        <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
+        <Column key="id" name="Ballot" cellRenderer={renderCell} />
         <Column key="batch" name="Batch" cellRenderer={renderCell} />
+        <Column key="status" name="Status" cellRenderer={renderCell} />
+        <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column
           key="position"
           name="Record/Position"
           cellRenderer={renderCell}
         />
-        <Column key="status" name="Status" cellRenderer={renderCell} />
         <Column name="Audit Board" cellRenderer={renderCell} />
       </Table>
     </div>
