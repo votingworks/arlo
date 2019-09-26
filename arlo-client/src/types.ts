@@ -33,6 +33,7 @@ export interface IAuditMember {
 }
 
 export interface IBallot {
+  id: string
   tabulator: string
   batch: string
   position: string
