@@ -3,7 +3,7 @@
 exports[`AuditFlow fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <div
       class="board-table-container"
@@ -28,7 +28,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
         </a>
       </div>
       <div
-        class="sc-bxivhb gWFQzc"
+        class="sc-htpNat ehYsQA"
       >
         <button
           class="bp3-button bp3-intent-primary"
@@ -58,22 +58,47 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                 class="bp3-table-top-container"
               >
                 <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
                   class="bp3-table-column-headers bp3-table-selection-enabled"
                 >
                   <div
-                    style="width: -31px;"
+                    style="width: 480px;"
                   >
                     <div
                       class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(-6.2px); width: -24.8px;"
+                      style="transform: translateX(0px); width: 480px;"
                     >
                       <div
+                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                      >
+                        <div
+                          class="bp3-table-column-name"
+                          title="Ballot"
+                        >
+                          <div
+                            class="bp3-table-column-name-text"
+                          >
+                            <div
+                              class="bp3-table-truncated-text"
+                            >
+                              Ballot
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header-content"
+                        />
+                        <div
+                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                        >
+                          <div
+                            class="bp3-table-resize-handle"
+                          />
+                        </div>
+                      </div>
+                      <div
                         class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -102,36 +127,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                       </div>
                       <div
                         class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Record/Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Record/Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -159,12 +155,12 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-4 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
-                          title="Audit Board"
+                          title="Tabulator"
                         >
                           <div
                             class="bp3-table-column-name-text"
@@ -172,7 +168,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                             <div
                               class="bp3-table-truncated-text"
                             >
-                              Audit Board
+                              Tabulator
                             </div>
                           </div>
                         </div>
@@ -193,120 +189,32 @@ exports[`AuditFlow fetches initial state from api 1`] = `
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
+                style="height: 150px; width: 480px;"
               >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-0"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-1"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            2
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-2"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            3
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-column bp3-table-cell-row-3"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            4
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div
                   class="bp3-table-quadrant-body-container"
                 >
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 150px; width: -31px;"
+                      style="height: 150px; width: 480px;"
                     >
                       <div
                         class="bp3-table-body-cells"
                       >
                         <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            1
+                          </div>
+                        </div>
+                        <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 0px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 0px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -316,28 +224,37 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 0px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            313
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 0px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 0px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
                             Not Audited
-                             
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            11
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 30px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            2
                           </div>
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 30px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 30px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -347,28 +264,37 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 30px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            2112
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 30px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 30px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
                             Not Audited
-                             
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 30px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            17
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 60px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            3
                           </div>
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 60px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 60px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -378,28 +304,37 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 60px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            1789
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 60px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 60px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
                             Not Audited
-                             
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 60px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            23
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 90px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            4
                           </div>
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 90px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 90px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -409,63 +344,22 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 90px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            2112
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 90px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 90px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
                             Not Audited
-                             
                           </div>
                         </div>
                         <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-4 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 0px; width: -6.2px;"
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 90px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Audit Board #1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-4 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 30px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audit Board #1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-4 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 60px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audit Board #1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-4 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 90px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audit Board #1
+                            17
                           </div>
                         </div>
                       </div>
@@ -486,22 +380,47 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                 class="bp3-table-top-container"
               >
                 <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
                   class="bp3-table-column-headers bp3-table-selection-enabled"
                 >
                   <div
-                    style="width: -31px;"
+                    style="width: 480px;"
                   >
                     <div
                       class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(-6.2px); width: -24.8px;"
+                      style="transform: translateX(0px); width: 480px;"
                     >
                       <div
+                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                      >
+                        <div
+                          class="bp3-table-column-name"
+                          title="Ballot"
+                        >
+                          <div
+                            class="bp3-table-column-name-text"
+                          >
+                            <div
+                              class="bp3-table-truncated-text"
+                            >
+                              Ballot
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header-content"
+                        />
+                        <div
+                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                        >
+                          <div
+                            class="bp3-table-resize-handle"
+                          />
+                        </div>
+                      </div>
+                      <div
                         class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -530,36 +449,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                       </div>
                       <div
                         class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Record/Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Record/Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -587,12 +477,12 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-4 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
-                          title="Audit Board"
+                          title="Tabulator"
                         >
                           <div
                             class="bp3-table-column-name-text"
@@ -600,7 +490,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                             <div
                               class="bp3-table-truncated-text"
                             >
-                              Audit Board
+                              Tabulator
                             </div>
                           </div>
                         </div>
@@ -621,234 +511,15 @@ exports[`AuditFlow fetches initial state from api 1`] = `
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
+                style="height: 150px; width: 480px;"
               >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    />
-                  </div>
-                </div>
                 <div
                   class="bp3-table-quadrant-body-container"
                 >
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="width: -31px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-left"
-            style="width: 1px; bottom: 0px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: -31px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: -31px;"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
-              >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-0"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-1"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            2
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-2"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            3
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-column bp3-table-cell-row-3"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            4
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 150px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-top-left"
-            style="width: 1px; height: 30px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: -31px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: -31px;"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
-              >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    />
-                  </div>
-                </div>
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
+                      style="width: 480px;"
                     >
                       <div
                         class="bp3-table-body-cells"
@@ -896,13 +567,13 @@ exports[`AuditFlow fetches initial state from api 1`] = `
 exports[`AuditFlow renders ballot route 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <div
-      class="sc-ckVGcZ bxAWbg"
+      class="sc-dxgOiQ cnAnsE"
     >
       <h1
-        class="bp3-heading sc-dxgOiQ huYUSL"
+        class="bp3-heading sc-kpOJdX dYIVuZ"
       >
         Audit Board #1
         : Ballot Card Data Entry
@@ -913,7 +584,7 @@ exports[`AuditFlow renders ballot route 1`] = `
         Enter Ballot Information
       </h3>
       <div
-        class="bp3-callout sc-jKJlTe dhDOys"
+        class="bp3-callout sc-ckVGcZ cmaGSe"
       >
         Round 
         1
@@ -923,7 +594,7 @@ exports[`AuditFlow renders ballot route 1`] = `
         5
       </div>
       <div
-        class="sc-gZMcBi ftUCSe"
+        class="sc-iwsKbI jlKNzy"
       >
         <div
           class="ballot-side"
@@ -973,7 +644,7 @@ exports[`AuditFlow renders ballot route 1`] = `
         </div>
       </div>
       <div
-        class="sc-gZMcBi ftUCSe"
+        class="sc-iwsKbI jlKNzy"
       >
         <div
           class="ballot-side"
@@ -993,7 +664,7 @@ exports[`AuditFlow renders ballot route 1`] = `
             Step 2: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </p>
           <form
-            class="sc-gqjmRU dBJbzz"
+            class="sc-gZMcBi eyQxfl"
           >
             <h3
               class="bp3-heading"
@@ -1004,10 +675,10 @@ exports[`AuditFlow renders ballot route 1`] = `
               class="bp3-divider"
             />
             <div
-              class="sc-VigVT fPsdeH"
+              class="sc-gqjmRU dmwuIO"
             >
               <label
-                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
+                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
               >
                 <input
                   data-testid="YES"
@@ -1026,7 +697,7 @@ exports[`AuditFlow renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
+                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
               >
                 <input
                   data-testid="NO"
@@ -1045,7 +716,7 @@ exports[`AuditFlow renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
+                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
               >
                 <input
                   data-testid="NO_CONSENSUS"
@@ -1064,7 +735,7 @@ exports[`AuditFlow renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
+                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
               >
                 <input
                   data-testid="NO_VOTE"
@@ -1114,7 +785,7 @@ exports[`AuditFlow renders ballot route 1`] = `
             </button>
           </form>
           <div
-            class="sc-jTzLTM wJgxM"
+            class="sc-VigVT cyKuXR"
           >
             <button
               class="bp3-button bp3-disabled bp3-intent-success"
@@ -1150,7 +821,7 @@ exports[`AuditFlow renders ballot route 1`] = `
 exports[`AuditFlow renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <div
       class="board-table-container"
@@ -1175,7 +846,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
         </a>
       </div>
       <div
-        class="sc-bxivhb gWFQzc"
+        class="sc-htpNat ehYsQA"
       >
         <button
           class="bp3-button bp3-intent-primary"
@@ -1205,22 +876,47 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                 class="bp3-table-top-container"
               >
                 <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
                   class="bp3-table-column-headers bp3-table-selection-enabled"
                 >
                   <div
-                    style="width: -31px;"
+                    style="width: 480px;"
                   >
                     <div
                       class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(-6.2px); width: -24.8px;"
+                      style="transform: translateX(0px); width: 480px;"
                     >
                       <div
+                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                      >
+                        <div
+                          class="bp3-table-column-name"
+                          title="Ballot"
+                        >
+                          <div
+                            class="bp3-table-column-name-text"
+                          >
+                            <div
+                              class="bp3-table-truncated-text"
+                            >
+                              Ballot
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header-content"
+                        />
+                        <div
+                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                        >
+                          <div
+                            class="bp3-table-resize-handle"
+                          />
+                        </div>
+                      </div>
+                      <div
                         class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -1249,36 +945,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                       </div>
                       <div
                         class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Record/Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Record/Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -1306,12 +973,12 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-4 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
-                          title="Audit Board"
+                          title="Tabulator"
                         >
                           <div
                             class="bp3-table-column-name-text"
@@ -1319,7 +986,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                             <div
                               class="bp3-table-truncated-text"
                             >
-                              Audit Board
+                              Tabulator
                             </div>
                           </div>
                         </div>
@@ -1340,120 +1007,32 @@ exports[`AuditFlow renders board table with ballots 1`] = `
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
+                style="height: 150px; width: 480px;"
               >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-0"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-1"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            2
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-2"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            3
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-column bp3-table-cell-row-3"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            4
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div
                   class="bp3-table-quadrant-body-container"
                 >
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 150px; width: -31px;"
+                      style="height: 150px; width: 480px;"
                     >
                       <div
                         class="bp3-table-body-cells"
                       >
                         <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            1
+                          </div>
+                        </div>
+                        <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 0px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 0px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1463,28 +1042,37 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 0px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            313
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 0px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 0px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
                             Not Audited
-                             
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            11
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 30px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            2
                           </div>
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 30px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 30px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1494,28 +1082,37 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 30px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            2112
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 30px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 30px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
                             Not Audited
-                             
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 30px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            17
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 60px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            3
                           </div>
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 60px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 60px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1525,28 +1122,37 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 60px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            1789
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 60px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 60px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
                             Not Audited
-                             
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 60px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            23
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 90px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            4
                           </div>
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 90px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 90px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1556,63 +1162,22 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 90px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            2112
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 90px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 90px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
                             Not Audited
-                             
                           </div>
                         </div>
                         <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-4 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 0px; width: -6.2px;"
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 90px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Audit Board #1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-4 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 30px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audit Board #1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-4 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 60px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audit Board #1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-4 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 90px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audit Board #1
+                            17
                           </div>
                         </div>
                       </div>
@@ -1633,22 +1198,47 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                 class="bp3-table-top-container"
               >
                 <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
                   class="bp3-table-column-headers bp3-table-selection-enabled"
                 >
                   <div
-                    style="width: -31px;"
+                    style="width: 480px;"
                   >
                     <div
                       class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(-6.2px); width: -24.8px;"
+                      style="transform: translateX(0px); width: 480px;"
                     >
                       <div
+                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                      >
+                        <div
+                          class="bp3-table-column-name"
+                          title="Ballot"
+                        >
+                          <div
+                            class="bp3-table-column-name-text"
+                          >
+                            <div
+                              class="bp3-table-truncated-text"
+                            >
+                              Ballot
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header-content"
+                        />
+                        <div
+                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                        >
+                          <div
+                            class="bp3-table-resize-handle"
+                          />
+                        </div>
+                      </div>
+                      <div
                         class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -1677,36 +1267,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                       </div>
                       <div
                         class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Record/Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Record/Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -1734,12 +1295,12 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-4 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
-                          title="Audit Board"
+                          title="Tabulator"
                         >
                           <div
                             class="bp3-table-column-name-text"
@@ -1747,7 +1308,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                             <div
                               class="bp3-table-truncated-text"
                             >
-                              Audit Board
+                              Tabulator
                             </div>
                           </div>
                         </div>
@@ -1768,234 +1329,15 @@ exports[`AuditFlow renders board table with ballots 1`] = `
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
+                style="height: 150px; width: 480px;"
               >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    />
-                  </div>
-                </div>
                 <div
                   class="bp3-table-quadrant-body-container"
                 >
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="width: -31px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-left"
-            style="width: 1px; bottom: 0px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: -31px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: -31px;"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
-              >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-0"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-1"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            2
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-2"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            3
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-column bp3-table-cell-row-3"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            4
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 150px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-top-left"
-            style="width: 1px; height: 30px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: -31px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: -31px;"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
-              >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    />
-                  </div>
-                </div>
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
+                      style="width: 480px;"
                     >
                       <div
                         class="bp3-table-body-cells"
@@ -2043,7 +1385,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
 exports[`AuditFlow renders board table with completed ballots 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <div
       class="board-table-container"
@@ -2072,7 +1414,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
         </button>
       </div>
       <div
-        class="sc-bxivhb gWFQzc"
+        class="sc-htpNat ehYsQA"
       />
       <div
         class="bp3-table-container bp3-table-selection-enabled"
@@ -2091,22 +1433,47 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                 class="bp3-table-top-container"
               >
                 <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
                   class="bp3-table-column-headers bp3-table-selection-enabled"
                 >
                   <div
-                    style="width: -31px;"
+                    style="width: 480px;"
                   >
                     <div
                       class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(-6.2px); width: -24.8px;"
+                      style="transform: translateX(0px); width: 480px;"
                     >
                       <div
+                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                      >
+                        <div
+                          class="bp3-table-column-name"
+                          title="Ballot"
+                        >
+                          <div
+                            class="bp3-table-column-name-text"
+                          >
+                            <div
+                              class="bp3-table-truncated-text"
+                            >
+                              Ballot
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header-content"
+                        />
+                        <div
+                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                        >
+                          <div
+                            class="bp3-table-resize-handle"
+                          />
+                        </div>
+                      </div>
+                      <div
                         class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -2135,36 +1502,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                       </div>
                       <div
                         class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Record/Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Record/Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -2192,12 +1530,12 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-4 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
-                          title="Audit Board"
+                          title="Tabulator"
                         >
                           <div
                             class="bp3-table-column-name-text"
@@ -2205,7 +1543,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                             <div
                               class="bp3-table-truncated-text"
                             >
-                              Audit Board
+                              Tabulator
                             </div>
                           </div>
                         </div>
@@ -2226,120 +1564,32 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
+                style="height: 150px; width: 480px;"
               >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-0"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-1"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            2
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-2"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            3
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-column bp3-table-cell-row-3"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            4
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div
                   class="bp3-table-quadrant-body-container"
                 >
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 150px; width: -31px;"
+                      style="height: 150px; width: 480px;"
                     >
                       <div
                         class="bp3-table-body-cells"
                       >
                         <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            1
+                          </div>
+                        </div>
+                        <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 0px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 0px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2349,38 +1599,42 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 0px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 0px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            313
+                            <a
+                              class="bp3-button bp3-small"
+                              href="/election/1/board/123/round/1/ballot/1"
+                            >
+                              Re-audit
+                            </a>
                           </div>
                         </div>
                         <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 0px; width: -6.2px;"
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 0px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Audited
-                             
-                            <button
-                              class="bp3-button bp3-small sc-htpNat gEBfLP"
-                              type="button"
-                            >
-                              <span
-                                class="bp3-button-text"
-                              >
-                                Re-audit
-                              </span>
-                            </button>
+                            11
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 30px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            2
                           </div>
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 30px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 30px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2390,38 +1644,42 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 30px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 30px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            2112
+                            <a
+                              class="bp3-button bp3-small"
+                              href="/election/1/board/123/round/1/ballot/2"
+                            >
+                              Re-audit
+                            </a>
                           </div>
                         </div>
                         <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 30px; width: -6.2px;"
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 30px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Audited
-                             
-                            <button
-                              class="bp3-button bp3-small sc-htpNat gEBfLP"
-                              type="button"
-                            >
-                              <span
-                                class="bp3-button-text"
-                              >
-                                Re-audit
-                              </span>
-                            </button>
+                            17
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 60px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            3
                           </div>
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 60px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 60px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2431,38 +1689,42 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 60px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 60px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            1789
+                            <a
+                              class="bp3-button bp3-small"
+                              href="/election/1/board/123/round/1/ballot/3"
+                            >
+                              Re-audit
+                            </a>
                           </div>
                         </div>
                         <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 60px; width: -6.2px;"
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 60px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Audited
-                             
-                            <button
-                              class="bp3-button bp3-small sc-htpNat gEBfLP"
-                              type="button"
-                            >
-                              <span
-                                class="bp3-button-text"
-                              >
-                                Re-audit
-                              </span>
-                            </button>
+                            23
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 0px; position: absolute; top: 90px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                          >
+                            4
                           </div>
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -6.2px; position: absolute; top: 90px; width: -6.2px;"
+                          style="height: 30px; left: 80px; position: absolute; top: 90px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2472,73 +1734,27 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                         </div>
                         <div
                           class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -12.400000000000002px; position: absolute; top: 90px; width: -6.2px;"
+                          style="height: 30px; left: 160px; position: absolute; top: 90px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            2112
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -18.6px; position: absolute; top: 90px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audited
-                             
-                            <button
-                              class="bp3-button bp3-small sc-htpNat gEBfLP"
-                              type="button"
+                            <a
+                              class="bp3-button bp3-small"
+                              href="/election/1/board/123/round/1/ballot/4"
                             >
-                              <span
-                                class="bp3-button-text"
-                              >
-                                Re-audit
-                              </span>
-                            </button>
+                              Re-audit
+                            </a>
                           </div>
                         </div>
                         <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-4 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 0px; width: -6.2px;"
+                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                          style="height: 30px; left: 240px; position: absolute; top: 90px; width: 80px;"
                         >
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Audit Board #1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-4 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 30px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audit Board #1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-4 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 60px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audit Board #1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-4 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: -24.8px; position: absolute; top: 90px; width: -6.2px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audit Board #1
+                            17
                           </div>
                         </div>
                       </div>
@@ -2559,22 +1775,47 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                 class="bp3-table-top-container"
               >
                 <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
                   class="bp3-table-column-headers bp3-table-selection-enabled"
                 >
                   <div
-                    style="width: -31px;"
+                    style="width: 480px;"
                   >
                     <div
                       class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(-6.2px); width: -24.8px;"
+                      style="transform: translateX(0px); width: 480px;"
                     >
                       <div
+                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                      >
+                        <div
+                          class="bp3-table-column-name"
+                          title="Ballot"
+                        >
+                          <div
+                            class="bp3-table-column-name-text"
+                          >
+                            <div
+                              class="bp3-table-truncated-text"
+                            >
+                              Ballot
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header-content"
+                        />
+                        <div
+                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                        >
+                          <div
+                            class="bp3-table-resize-handle"
+                          />
+                        </div>
+                      </div>
+                      <div
                         class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -2603,36 +1844,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                       </div>
                       <div
                         class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Record/Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Record/Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
@@ -2660,12 +1872,12 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-4 bp3-table-column-header-cell"
-                        style="flex-basis: -6.2px; min-width: 0px; width: -6.2px;"
+                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                        style="flex-basis: 80px; min-width: 0px; width: 80px;"
                       >
                         <div
                           class="bp3-table-column-name"
-                          title="Audit Board"
+                          title="Tabulator"
                         >
                           <div
                             class="bp3-table-column-name-text"
@@ -2673,7 +1885,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                             <div
                               class="bp3-table-truncated-text"
                             >
-                              Audit Board
+                              Tabulator
                             </div>
                           </div>
                         </div>
@@ -2694,234 +1906,15 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
+                style="height: 150px; width: 480px;"
               >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    />
-                  </div>
-                </div>
                 <div
                   class="bp3-table-quadrant-body-container"
                 >
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="width: -31px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-left"
-            style="width: 1px; bottom: 0px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: -31px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: -31px;"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
-              >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-0"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-1"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            2
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-2"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            3
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-column bp3-table-cell-row-3"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            4
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 150px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-top-left"
-            style="width: 1px; height: 30px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: -31px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: -31px;"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 150px; width: -31px;"
-              >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    />
-                  </div>
-                </div>
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
+                      style="width: 480px;"
                     >
                       <div
                         class="bp3-table-body-cells"
@@ -2969,7 +1962,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
 exports[`AuditFlow renders correctly 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <div
       class="board-table-container"
@@ -2994,7 +1987,7 @@ exports[`AuditFlow renders correctly 1`] = `
         </a>
       </div>
       <div
-        class="sc-bxivhb gWFQzc"
+        class="sc-htpNat ehYsQA"
       >
         <button
           class="bp3-button bp3-intent-primary"
@@ -3024,18 +2017,14 @@ exports[`AuditFlow renders correctly 1`] = `
                 class="bp3-table-top-container"
               >
                 <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
                   class="bp3-table-column-headers bp3-table-selection-enabled"
                 >
                   <div
-                    style="width: 750px;"
+                    style="width: 900px;"
                   >
                     <div
                       class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 750px;"
+                      style="transform: translateX(0px); width: 900px;"
                     >
                       <div
                         class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -3043,7 +2032,7 @@ exports[`AuditFlow renders correctly 1`] = `
                       >
                         <div
                           class="bp3-table-column-name"
-                          title="Tabulator"
+                          title="Ballot"
                         >
                           <div
                             class="bp3-table-column-name-text"
@@ -3051,7 +2040,7 @@ exports[`AuditFlow renders correctly 1`] = `
                             <div
                               class="bp3-table-truncated-text"
                             >
-                              Tabulator
+                              Ballot
                             </div>
                           </div>
                         </div>
@@ -3101,35 +2090,6 @@ exports[`AuditFlow renders correctly 1`] = `
                       >
                         <div
                           class="bp3-table-column-name"
-                          title="Record/Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Record/Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
                           title="Status"
                         >
                           <div
@@ -3153,119 +2113,50 @@ exports[`AuditFlow renders correctly 1`] = `
                           />
                         </div>
                       </div>
+                      <div
+                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                      >
+                        <div
+                          class="bp3-table-column-name"
+                          title="Tabulator"
+                        >
+                          <div
+                            class="bp3-table-column-name-text"
+                          >
+                            <div
+                              class="bp3-table-truncated-text"
+                            >
+                              Tabulator
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header-content"
+                        />
+                        <div
+                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                        >
+                          <div
+                            class="bp3-table-resize-handle"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 150px; width: 750px;"
+                style="height: 150px; width: 900px;"
               >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-0"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-1"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            2
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-2"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            3
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-column bp3-table-cell-row-3"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            4
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div
                   class="bp3-table-quadrant-body-container"
                 >
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 150px; width: 750px;"
+                      style="height: 150px; width: 900px;"
                     >
                       <div
                         class="bp3-table-body-cells"
@@ -3277,7 +2168,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            11
+                            1
                           </div>
                         </div>
                         <div
@@ -3297,7 +2188,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            313
+                            Not Audited
                           </div>
                         </div>
                         <div
@@ -3307,8 +2198,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Not Audited
-                             
+                            11
                           </div>
                         </div>
                         <div
@@ -3318,7 +2208,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            17
+                            2
                           </div>
                         </div>
                         <div
@@ -3338,7 +2228,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            2112
+                            Not Audited
                           </div>
                         </div>
                         <div
@@ -3348,8 +2238,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Not Audited
-                             
+                            17
                           </div>
                         </div>
                         <div
@@ -3359,7 +2248,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            23
+                            3
                           </div>
                         </div>
                         <div
@@ -3379,7 +2268,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            1789
+                            Not Audited
                           </div>
                         </div>
                         <div
@@ -3389,8 +2278,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Not Audited
-                             
+                            23
                           </div>
                         </div>
                         <div
@@ -3400,7 +2288,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            17
+                            4
                           </div>
                         </div>
                         <div
@@ -3420,7 +2308,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            2112
+                            Not Audited
                           </div>
                         </div>
                         <div
@@ -3430,8 +2318,7 @@ exports[`AuditFlow renders correctly 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Not Audited
-                             
+                            17
                           </div>
                         </div>
                       </div>
@@ -3452,18 +2339,14 @@ exports[`AuditFlow renders correctly 1`] = `
                 class="bp3-table-top-container"
               >
                 <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
                   class="bp3-table-column-headers bp3-table-selection-enabled"
                 >
                   <div
-                    style="width: 750px;"
+                    style="width: 900px;"
                   >
                     <div
                       class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 750px;"
+                      style="transform: translateX(0px); width: 900px;"
                     >
                       <div
                         class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -3471,7 +2354,7 @@ exports[`AuditFlow renders correctly 1`] = `
                       >
                         <div
                           class="bp3-table-column-name"
-                          title="Tabulator"
+                          title="Ballot"
                         >
                           <div
                             class="bp3-table-column-name-text"
@@ -3479,7 +2362,7 @@ exports[`AuditFlow renders correctly 1`] = `
                             <div
                               class="bp3-table-truncated-text"
                             >
-                              Tabulator
+                              Ballot
                             </div>
                           </div>
                         </div>
@@ -3529,35 +2412,6 @@ exports[`AuditFlow renders correctly 1`] = `
                       >
                         <div
                           class="bp3-table-column-name"
-                          title="Record/Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Record/Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
                           title="Status"
                         >
                           <div
@@ -3581,240 +2435,50 @@ exports[`AuditFlow renders correctly 1`] = `
                           />
                         </div>
                       </div>
+                      <div
+                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                      >
+                        <div
+                          class="bp3-table-column-name"
+                          title="Tabulator"
+                        >
+                          <div
+                            class="bp3-table-column-name-text"
+                          >
+                            <div
+                              class="bp3-table-truncated-text"
+                            >
+                              Tabulator
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header-content"
+                        />
+                        <div
+                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                        >
+                          <div
+                            class="bp3-table-resize-handle"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 150px; width: 750px;"
+                style="height: 150px; width: 900px;"
               >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    />
-                  </div>
-                </div>
                 <div
                   class="bp3-table-quadrant-body-container"
                 >
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="width: 750px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-left"
-            style="width: 1px; bottom: 0px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: 750px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 750px;"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 150px; width: 750px;"
-              >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-0"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            1
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-1"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            2
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-row-2"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            3
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-column bp3-table-cell-row-3"
-                        style="flex-basis: 30px; height: 30px; min-height: 0px;"
-                      >
-                        <div
-                          class="bp3-table-row-name"
-                        >
-                          <div
-                            class="bp3-table-row-name-text"
-                          >
-                            4
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-horizontal"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 150px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-top-left"
-            style="width: 1px; height: 30px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-menu bp3-table-selection-enabled"
-                  style="width: 0px; height: 30px;"
-                />
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: 750px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 750px;"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 150px; width: 750px;"
-              >
-                <div
-                  class="bp3-table-row-headers bp3-table-selection-enabled"
-                  style="width: 0px;"
-                >
-                  <div
-                    style="height: 150px;"
-                  >
-                    <div
-                      class="bp3-table-row-headers-cells-container"
-                      style="height: 150px; transform: translateY(0px);"
-                    />
-                  </div>
-                </div>
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
+                      style="width: 900px;"
                     >
                       <div
                         class="bp3-table-body-cells"
@@ -3862,7 +2526,7 @@ exports[`AuditFlow renders correctly 1`] = `
 exports[`AuditFlow renders member form 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-jKJlTe fVUbzk"
   >
     <h1
       class="bp3-heading"
@@ -3878,17 +2542,17 @@ exports[`AuditFlow renders member form 1`] = `
        below, then click "Next" to proceed.
     </p>
     <div
-      class="sc-EHOje bbbmwQ"
+      class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-ifAKCX cmZyyF"
+        class="bp3-heading sc-bxivhb jFEWwS"
       />
       <form>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-EHOje gNDuQv"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-gzVnrw hYCxik"
           >
             Audit Board Member
           </h3>
@@ -3896,12 +2560,12 @@ exports[`AuditFlow renders member form 1`] = `
             for="[0]name"
           >
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-htoDjs flCEIS"
             >
               Full Name
             </span>
             <input
-              class="sc-iwsKbI jnBmwk"
+              class="sc-dnqmqq jyHOFs"
               id="[0]name"
               name="[0]name"
               value=""
@@ -3909,7 +2573,7 @@ exports[`AuditFlow renders member form 1`] = `
           </label>
           <div>
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-htoDjs flCEIS"
             >
               Party Affiliation 
               <i>
@@ -3987,10 +2651,10 @@ exports[`AuditFlow renders member form 1`] = `
           </div>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-EHOje gNDuQv"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-gzVnrw hYCxik"
           >
             Audit Board Member
           </h3>
@@ -3998,12 +2662,12 @@ exports[`AuditFlow renders member form 1`] = `
             for="[1]name"
           >
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-htoDjs flCEIS"
             >
               Full Name
             </span>
             <input
-              class="sc-iwsKbI jnBmwk"
+              class="sc-dnqmqq jyHOFs"
               id="[1]name"
               name="[1]name"
               value=""
@@ -4011,7 +2675,7 @@ exports[`AuditFlow renders member form 1`] = `
           </label>
           <div>
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-htoDjs flCEIS"
             >
               Party Affiliation 
               <i>
