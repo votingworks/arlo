@@ -408,6 +408,8 @@ describe('SelectBallotsToAudit', () => {
 
   it('opens print window', async () => {
     const dom = new JSDOM()
+    dom.window.focus = jest.fn()
+    dom.window.print = jest.fn()
     const openSpy = jest.spyOn(window, 'open').mockReturnValue(dom.window)
     const { getAllByTitle } = render(
       <Router>
@@ -424,7 +426,9 @@ describe('SelectBallotsToAudit', () => {
 
     fireEvent.click(getAllByTitle('Click to print')[0], { bubbles: true })
     await wait(() => {
-      expect(openSpy).toHaveBeenCalled()
+      expect(openSpy).toBeCalled()
+      expect(dom.window.focus).toBeCalledTimes(1)
+      expect(dom.window.print).toBeCalledTimes(1)
     })
   })
 })
