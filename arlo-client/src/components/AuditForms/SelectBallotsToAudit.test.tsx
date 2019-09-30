@@ -414,7 +414,7 @@ describe('SelectBallotsToAudit', () => {
     const { getAllByTitle } = render(
       <Router>
         <SelectBallotsToAudit
-          audit={statusStates[3]}
+          audit={statusStates[4]}
           isLoading={false}
           setIsLoading={jest.fn()}
           updateAudit={jest.fn()}
