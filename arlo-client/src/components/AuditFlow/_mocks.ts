@@ -36,7 +36,7 @@ export const dummyBoard: IAuditBoard[] = [
     ballots: [
       {
         tabulator: '11',
-        batch: 'Precinct 13',
+        batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
         position: '313',
         status: 'NOT_AUDITED',
         vote: null,
@@ -45,7 +45,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'NOT_AUDITED',
         vote: null,
@@ -54,7 +54,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'NOT_AUDITED',
         vote: null,
@@ -63,7 +63,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'NOT_AUDITED',
         vote: null,
@@ -72,7 +72,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -97,7 +97,7 @@ export const dummyBoard: IAuditBoard[] = [
     ballots: [
       {
         tabulator: '11',
-        batch: 'Precinct 13',
+        batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
         position: '313',
         status: 'AUDITED',
         vote: null,
@@ -106,7 +106,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -115,7 +115,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -124,7 +124,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -133,7 +133,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -142,7 +142,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '11',
-        batch: 'Precinct 13',
+        batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
         position: '313',
         status: 'AUDITED',
         vote: null,
@@ -151,7 +151,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -160,7 +160,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -169,7 +169,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -178,7 +178,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -187,7 +187,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '11',
-        batch: 'Precinct 13',
+        batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
         position: '313',
         status: 'AUDITED',
         vote: null,
@@ -196,7 +196,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -205,7 +205,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -214,7 +214,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -223,7 +223,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -232,7 +232,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '11',
-        batch: 'Precinct 13',
+        batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
         position: '313',
         status: 'AUDITED',
         vote: null,
@@ -241,7 +241,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -250,7 +250,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -259,7 +259,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -268,7 +268,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -277,7 +277,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '11',
-        batch: 'Precinct 13',
+        batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
         position: '313',
         status: 'AUDITED',
         vote: null,
@@ -286,7 +286,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -295,7 +295,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -304,7 +304,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -313,7 +313,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -322,7 +322,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '11',
-        batch: 'Precinct 13',
+        batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
         position: '313',
         status: 'AUDITED',
         vote: null,
@@ -331,7 +331,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -340,7 +340,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -349,7 +349,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -358,7 +358,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -367,7 +367,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '11',
-        batch: 'Precinct 13',
+        batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
         position: '313',
         status: 'AUDITED',
         vote: null,
@@ -376,7 +376,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -385,7 +385,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -394,7 +394,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -403,7 +403,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -412,7 +412,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '11',
-        batch: 'Precinct 13',
+        batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
         position: '313',
         status: 'AUDITED',
         vote: null,
@@ -421,7 +421,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -430,7 +430,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,
@@ -439,7 +439,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '17',
-        batch: 'Precinct 19',
+        batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
         position: '2112',
         status: 'AUDITED',
         vote: null,
@@ -448,7 +448,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         tabulator: '23',
-        batch: 'Precinct 29',
+        batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
         position: '1789',
         status: 'AUDITED',
         vote: null,

@@ -47,7 +47,7 @@ exports[`Ballot renders correctly 1`] = `
         </div>
         <div>
           Batch: 
-          Precinct 13
+          0003-04-Precinct 13 (Jonesboro Fire Department)
         </div>
         <div>
           Record/Position: 
@@ -299,7 +299,7 @@ exports[`Ballot switches audit and review views 1`] = `
         </div>
         <div>
           Batch: 
-          Precinct 13
+          0003-04-Precinct 13 (Jonesboro Fire Department)
         </div>
         <div>
           Record/Position: 
@@ -485,7 +485,7 @@ exports[`Ballot toggles and submits comment 1`] = `
         </div>
         <div>
           Batch: 
-          Precinct 13
+          0003-04-Precinct 13 (Jonesboro Fire Department)
         </div>
         <div>
           Record/Position: 

@@ -219,7 +219,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 13
+                            0003-04-Precinct 13 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -259,7 +259,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 19
+                            0003-04-Precinct 19 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -299,7 +299,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 29
+                            0003-04-Precinct 29 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -339,7 +339,7 @@ exports[`AuditFlow fetches initial state from api 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 19
+                            0003-04-Precinct 19 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -610,7 +610,7 @@ exports[`AuditFlow renders ballot route 1`] = `
           </div>
           <div>
             Batch: 
-            Precinct 13
+            0003-04-Precinct 13 (Jonesboro Fire Department)
           </div>
           <div>
             Record/Position: 
@@ -1009,7 +1009,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 150px; width: 480px;"
+                style="height: 300px; width: 480px;"
               >
                 <div
                   class="bp3-table-quadrant-body-container"
@@ -1017,7 +1017,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 150px; width: 480px;"
+                      style="height: 300px; width: 480px;"
                     >
                       <div
                         class="bp3-table-body-cells"
@@ -1039,7 +1039,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 13
+                            0003-04-Precinct 13 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -1079,7 +1079,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 19
+                            0003-04-Precinct 19 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -1119,7 +1119,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 29
+                            0003-04-Precinct 29 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -1159,7 +1159,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 19
+                            0003-04-Precinct 19 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -1331,7 +1331,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 150px; width: 480px;"
+                style="height: 300px; width: 480px;"
               >
                 <div
                   class="bp3-table-quadrant-body-container"
@@ -1596,7 +1596,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 13
+                            0003-04-Precinct 13 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -1641,7 +1641,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 19
+                            0003-04-Precinct 19 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -1686,7 +1686,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 29
+                            0003-04-Precinct 29 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -1731,7 +1731,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 19
+                            0003-04-Precinct 19 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -2180,7 +2180,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 13
+                            0003-04-Precinct 13 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -2220,7 +2220,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 19
+                            0003-04-Precinct 19 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -2260,7 +2260,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 29
+                            0003-04-Precinct 29 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -2300,7 +2300,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Precinct 19
+                            0003-04-Precinct 19 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div

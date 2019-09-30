@@ -22,6 +22,7 @@ import {
   IAudit,
 } from '../../types'
 import { dummyBoard } from '../AuditFlow/_mocks'
+import { labelTemplate } from './_mocks'
 
 const InputSection = styled.div`
   display: block;
@@ -96,25 +97,31 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
       b => (b.ballots = dummyBoard[3].ballots)
     )
     if (audit.jurisdictions[0].auditBoards.every(b => !!b.ballots)) {
-      const getX = (l: number): number => (l % 3) * 60 + 10 * ((l % 3) + 1)
+      const getX = (l: number): number => (l % 3) * 60 + 9 * ((l % 3) + 1)
       const getY = (l: number): number[] => [
-        Math.floor(l / 3) * 30 + 16,
-        Math.floor(l / 3) * 30 + 20,
-        Math.floor(l / 3) * 30 + 28,
+        Math.floor(l / 3) * 25.5 + 20,
+        Math.floor(l / 3) * 25.5 + 25,
+        Math.floor(l / 3) * 25.5 + 34,
       ]
       const labels = new jsPDF({ format: 'letter' })
+      labels.addImage(labelTemplate, 'JPEG', 0, 0, 215, 280) // for testing alignment
       labels.setFontSize(9)
       let labelCount = 0
       audit.jurisdictions[0].auditBoards.forEach((board, i) =>
         board.ballots!.forEach(ballot => {
-          if (++labelCount > 30) {
+          board.name = 'Audit board with a really long name for multiple lines'
+          labelCount++
+          if (labelCount > 30) {
             labels.addPage('letter')
-            labelCount = 0
+            labelCount = 1
           }
           const x = getX(labelCount - 1)
           const y = getY(labelCount - 1)
           labels.text(
-            labels.splitTextToSize(`Audit Board #${i + 1}: ${board.name}`, 60),
+            labels.splitTextToSize(
+              `Audit Board #${i + 1}: ${board.name}`,
+              60
+            )[0],
             x,
             y[0]
           )
