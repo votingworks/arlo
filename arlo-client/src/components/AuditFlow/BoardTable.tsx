@@ -57,6 +57,7 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
   const renderCell = (rI: number, cI: number) => {
     if (board.ballots) {
       const row: IBallot = board.ballots[rI]
+      /* istanbul ignore if */
       if (!KEYS[cI]) {
         return <PaddedCell>{board.name}</PaddedCell>
       } else if (STATUSES[row[KEYS[cI]]]) {
@@ -149,7 +150,7 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
           name="Record/Position"
           cellRenderer={renderCell}
         />
-        <Column name="Audit Board" cellRenderer={renderCell} />
+        <Column key="board" name="Audit Board" cellRenderer={renderCell} />
       </Table>
     </div>
   )
