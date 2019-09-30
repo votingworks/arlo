@@ -56,4 +56,6 @@ describe('utilities.ts', () => {
       expect(testNumber(50)(100)).resolves.toBe('Must be smaller than 50')
     })
   })
+
+  describe('openQR', () => {})
 })
