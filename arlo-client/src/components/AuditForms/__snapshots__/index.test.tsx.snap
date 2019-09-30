@@ -501,7 +501,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
-            Number of Audit Boards
+            Audit Boards
           </h3>
           <label
             for="auditBoards"
@@ -680,7 +680,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   id="audit-name"
                   name="name"
                   style="padding-right: 10px;"
-                  type="text"
                   value=""
                 />
               </div>
@@ -719,7 +718,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
-                  type="text"
                   value=""
                 />
               </div>
@@ -786,7 +784,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                       class="bp3-input"
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -807,7 +804,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                       class="bp3-input"
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -832,7 +828,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                       class="bp3-input"
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -853,7 +848,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                       class="bp3-input"
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value=""
                     />
                   </div>
@@ -897,7 +891,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
-                  type="text"
                   value=""
                 />
               </div>
@@ -915,7 +908,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
-            Audit Boards
+            Desired Risk Limit
           </h3>
           <label
             for="risk-limit"
@@ -1011,19 +1004,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               </span>
             </div>
           </label>
-          <div
-            class="sc-chPdSV gtWHTz"
-          >
-            <div
-              class="sc-kgoBCf khjmnC"
-            >
-              <input
-                data-testid="audit-name-0"
-                name="auditNames[0]"
-                value="Audit Board #1"
-              />
-            </div>
-          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"

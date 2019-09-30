@@ -372,9 +372,9 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                           <Field
                             name={`auditNames[${i}]`}
                             data-testid={`audit-name-${i}`}
-                            disabled={!!audit.rounds.length}
+                            disabled={sampleSizeSelected}
                           />
-                          {!!audit.rounds.length && (
+                          {sampleSizeSelected && (
                             <>
                               <Link
                                 to={`/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}
