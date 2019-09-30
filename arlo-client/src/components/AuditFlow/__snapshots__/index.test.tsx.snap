@@ -1961,7 +1961,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
 </div>
 `;
 
-exports[`AuditFlow renders board table with different sizes 1`] = `
+exports[`AuditFlow renders board table with large container size 1`] = `
 <div>
   <div
     class="sc-jKJlTe fVUbzk"
