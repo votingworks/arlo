@@ -501,7 +501,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
-            Number of Audit Boards
+            Audit Boards
           </h3>
           <label
             for="auditBoards"
@@ -918,7 +918,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
-            Audit Boards
+            Desired Risk Limit
           </h3>
           <label
             for="risk-limit"
@@ -1015,19 +1015,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               </span>
             </div>
           </label>
-          <div
-            class="sc-chPdSV gtWHTz"
-          >
-            <div
-              class="sc-kgoBCf khjmnC"
-            >
-              <input
-                data-testid="audit-name-0"
-                name="auditNames[0]"
-                value="Audit Board #1"
-              />
-            </div>
-          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"

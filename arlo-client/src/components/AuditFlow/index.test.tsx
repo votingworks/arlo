@@ -92,6 +92,23 @@ describe('AuditFlow', () => {
     })
   })
 
+  it('renders board table with large container size', async () => {
+    apiMock.mockImplementationOnce(async () => dummy)
+    ;(jest
+      .spyOn(window.document, 'getElementsByClassName')
+      .mockReturnValue([
+        { clientWidth: 2000 },
+      ] as any) as any) as jest.SpyInstance<[{ clientWidth: number }]>
+    const { container } = render(
+      <StaticRouter {...routeProps}>
+        <AuditFlow {...routeProps} dummyID={2} />
+      </StaticRouter>
+    )
+    await wait(() => {
+      expect(container).toMatchSnapshot()
+    })
+  })
+
   it('renders board table with completed ballots', async () => {
     apiMock.mockImplementationOnce(async () => dummy)
     const { container, getByText } = render(
