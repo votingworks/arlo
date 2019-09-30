@@ -96,6 +96,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
     audit.jurisdictions[0].auditBoards.forEach(
       b => (b.ballots = dummyBoard[3].ballots)
     )
+    /* istanbul ignore else */
     if (audit.jurisdictions[0].auditBoards.every(b => !!b.ballots)) {
       const getX = (l: number): number => (l % 3) * 60 + 9 * ((l % 3) + 1)
       const getY = (l: number): number[] => [
@@ -142,6 +143,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
     audit.jurisdictions[0].auditBoards.forEach(
       b => (b.ballots = dummyBoard[3].ballots)
     )
+    /* istanbul ignore else */
     if (audit.jurisdictions[0].auditBoards.every(b => !!b.ballots)) {
       const placeholders = new jsPDF({ format: 'letter' })
       placeholders.setFontSize(20)
