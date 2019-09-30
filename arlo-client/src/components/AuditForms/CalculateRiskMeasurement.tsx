@@ -22,7 +22,7 @@ import {
   IAudit,
 } from '../../types'
 import { dummyBoard } from '../AuditFlow/_mocks'
-import { labelTemplate } from './_mocks'
+//import { labelTemplate } from './_mocks'
 
 const InputSection = styled.div`
   display: block;
@@ -105,7 +105,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
         Math.floor(l / 3) * 25.5 + 34,
       ]
       const labels = new jsPDF({ format: 'letter' })
-      labels.addImage(labelTemplate, 'JPEG', 0, 0, 215, 280) // for testing alignment
+      //labels.addImage(labelTemplate, 'JPEG', 0, 0, 215, 280) // for testing alignment
       labels.setFontSize(9)
       let labelCount = 0
       audit.jurisdictions[0].auditBoards.forEach((board, i) =>
@@ -134,7 +134,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
           labels.text(`Ballot Number: ${ballot.id}`, x, y[2])
         })
       )
-      //labels.autoPrint()
+      labels.autoPrint()
       labels.save(`Round ${r + 1} Placeholders.pdf`)
     }
   }
@@ -168,7 +168,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
           pageCount++
         })
       )
-      //placeholders.autoPrint()
+      placeholders.autoPrint()
       placeholders.save(`Round ${r + 1} Placeholders.pdf`)
     }
   }
