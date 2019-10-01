@@ -44,7 +44,7 @@ describe('Ballot', () => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
       expect(container).toMatchSnapshot()
     })
-    fireEvent.click(getByText('Back'), { bubbles: true })
+    fireEvent.click(getByText('Edit'), { bubbles: true })
     await wait(() => {
       expect(getByText('Review')).toBeTruthy()
     })
@@ -114,7 +114,7 @@ describe('Ballot', () => {
 
   it('navigates to previous ballot', async () => {
     const previousBallotMock = jest.fn()
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <Ballot
         home="/election/1/board/1"
         roundId="1"
@@ -128,7 +128,19 @@ describe('Ballot', () => {
     fireEvent.click(getByText('Back'), { bubbles: true })
 
     await wait(() => {
-      expect(previousBallotMock).toBeCalled()
+      expect(previousBallotMock).toBeCalledTimes(1)
+    })
+
+    fireEvent.click(getByTestId('YES'), { bubbles: true })
+    await wait(() =>
+      fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
+    )
+    await wait(() => {
+      expect(getByText('Submit & Next Ballot')).toBeTruthy()
+    })
+    fireEvent.click(getByText('Back'), { bubbles: true })
+    await wait(() => {
+      expect(previousBallotMock).toBeCalledTimes(2)
     })
   })
 
