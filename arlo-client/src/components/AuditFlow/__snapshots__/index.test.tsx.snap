@@ -3,7 +3,7 @@
 exports[`AuditFlow fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="board-table-container"
@@ -849,7 +849,7 @@ exports[`AuditFlow renders ballot route 1`] = `
 exports[`AuditFlow renders ballot route 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="sc-ckVGcZ bxAWbg"
@@ -2883,7 +2883,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
 exports[`AuditFlow renders correctly 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="board-table-container"
@@ -3447,7 +3447,7 @@ exports[`AuditFlow renders correctly 1`] = `
 exports[`AuditFlow renders member form 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <h1
       class="bp3-heading"
