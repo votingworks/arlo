@@ -106,6 +106,7 @@ const Ballot: React.FC<IProps> = ({
           review={review}
           goAudit={() => setAuditing(true)}
           nextBallot={nextBallot}
+          previousBallot={previousBallot}
         />
       )}
     </Wrapper>
