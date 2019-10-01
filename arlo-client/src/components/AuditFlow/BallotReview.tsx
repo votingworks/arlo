@@ -53,9 +53,7 @@ const BallotReview: React.FC<IProps> = ({
           <Wrapper>
             <ButtonGroup fill large vertical>
               <SingleBlockRadio value={completeVote} locked />
-              <Button onClick={goAudit} icon="edit">
-                Edit
-              </Button>
+              <Button onClick={goAudit}>Edit</Button>
             </ButtonGroup>
           </Wrapper>
           <p>COMMENT: {comment}</p>
