@@ -3,7 +3,7 @@
 exports[`AuditFlow fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="board-table-container"
@@ -567,13 +567,13 @@ exports[`AuditFlow fetches initial state from api 1`] = `
 exports[`AuditFlow renders ballot route 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
-      class="sc-dxgOiQ cnAnsE"
+      class="sc-ckVGcZ bxAWbg"
     >
       <h1
-        class="bp3-heading sc-kpOJdX dYIVuZ"
+        class="bp3-heading sc-dxgOiQ huYUSL"
       >
         Audit Board #1
         : Ballot Card Data Entry
@@ -584,7 +584,7 @@ exports[`AuditFlow renders ballot route 1`] = `
         Enter Ballot Information
       </h3>
       <div
-        class="bp3-callout sc-ckVGcZ fWvioO"
+        class="bp3-callout sc-jKJlTe hzNJni"
       >
         Round 
         1
@@ -594,7 +594,7 @@ exports[`AuditFlow renders ballot route 1`] = `
         5
       </div>
       <div
-        class="sc-iwsKbI FYwPY"
+        class="sc-iwsKbI eBYIfb"
       >
         <div
           class="ballot-side"
@@ -646,7 +646,7 @@ exports[`AuditFlow renders ballot route 1`] = `
         </div>
       </div>
       <div
-        class="sc-iwsKbI FYwPY"
+        class="sc-iwsKbI eBYIfb"
       >
         <div
           class="ballot-side"
@@ -823,7 +823,7 @@ exports[`AuditFlow renders ballot route 1`] = `
 exports[`AuditFlow renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="board-table-container"
@@ -1387,7 +1387,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
 exports[`AuditFlow renders board table with completed ballots 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="board-table-container"
@@ -1964,7 +1964,7 @@ exports[`AuditFlow renders board table with completed ballots 1`] = `
 exports[`AuditFlow renders board table with large container size 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="board-table-container"
@@ -2528,7 +2528,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
 exports[`AuditFlow renders correctly 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="board-table-container"
@@ -3092,7 +3092,7 @@ exports[`AuditFlow renders correctly 1`] = `
 exports[`AuditFlow renders member form 1`] = `
 <div>
   <div
-    class="sc-jKJlTe fVUbzk"
+    class="sc-eNQAEJ jDJHSN"
   >
     <h1
       class="bp3-heading"

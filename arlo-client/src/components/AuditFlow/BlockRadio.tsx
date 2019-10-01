@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { IBallot } from '../../types'
+import FormButton from '../Form/FormButton'
 
 const Block = styled.label`
   &.bp3-control.bp3-radio {
@@ -28,6 +29,10 @@ const Block = styled.label`
   }
 `
 
+const LockedButton = styled(FormButton)`
+  text-align: center;
+`
+
 interface IProps {
   name?: string
   value: Exclude<IBallot['vote'], null>
@@ -52,23 +57,27 @@ const BlockRadio = ({
   className,
   checked,
 }: IProps) => (
-  <Block className={`${className} bp3-control bp3-radio`}>
+  <>
     {locked ? (
-      <input type="radio" name={name} value={value} disabled checked />
+      <LockedButton disabled fill large intent="primary">
+        {TEXT[value]}
+      </LockedButton>
     ) : (
-      <input
-        type="radio"
-        name={name}
-        data-testid={value}
-        value={value}
-        onChange={handleChange}
-        checked={checked}
-      />
+      <Block className={`${className} bp3-control bp3-radio`}>
+        <input
+          type="radio"
+          name={name}
+          data-testid={value}
+          value={value}
+          onChange={handleChange}
+          checked={checked}
+        />
+        <span className="bp3-control-indicator">
+          <span className="radio-text">{TEXT[value]}</span>
+        </span>
+      </Block>
     )}
-    <span className="bp3-control-indicator">
-      <span className="radio-text">{TEXT[value]}</span>
-    </span>
-  </Block>
+  </>
 )
 
 export default BlockRadio
