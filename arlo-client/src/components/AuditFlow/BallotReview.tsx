@@ -1,5 +1,5 @@
 import React from 'react'
-import { H3, Divider, Button } from '@blueprintjs/core'
+import { H3, Divider, Button, ButtonGroup } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IReview } from '../../types'
 import { BallotRow, FormBlock, ProgressActions } from './Atoms'
@@ -8,7 +8,7 @@ import BlockRadio from './BlockRadio'
 
 const Wrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   padding: 20px 0;
   @media (max-width: 775px) {
     flex-direction: column;
@@ -51,10 +51,10 @@ const BallotReview: React.FC<IProps> = ({
           <H3>{contest}</H3>
           <Divider />
           <Wrapper>
-            <SingleBlockRadio value={completeVote} locked />
-            <Button onClick={goAudit} icon="edit" minimal>
-              Edit
-            </Button>
+            <ButtonGroup fill large vertical>
+              <SingleBlockRadio value={completeVote} locked />
+              <Button onClick={goAudit}>Edit</Button>
+            </ButtonGroup>
           </Wrapper>
           <p>COMMENT: {comment}</p>
         </FormBlock>

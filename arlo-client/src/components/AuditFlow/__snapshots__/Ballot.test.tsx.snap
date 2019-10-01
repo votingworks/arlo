@@ -7,10 +7,10 @@ exports[`Ballot redirects if ballots array does not exist 1`] = `<div />`;
 exports[`Ballot renders correctly 1`] = `
 <div>
   <div
-    class="sc-VigVT iIEVIh"
+    class="sc-jTzLTM iNxaQE"
   >
     <h1
-      class="bp3-heading sc-gqjmRU inMEAv"
+      class="bp3-heading sc-VigVT cWADhG"
     >
       Audit Board #1
       : Ballot Card Data Entry
@@ -21,7 +21,7 @@ exports[`Ballot renders correctly 1`] = `
       Enter Ballot Information
     </h3>
     <div
-      class="bp3-callout sc-jTzLTM gCcJZe"
+      class="bp3-callout sc-fjdhpX dwcRBj"
     >
       Round 
       1
@@ -31,7 +31,7 @@ exports[`Ballot renders correctly 1`] = `
       5
     </div>
     <div
-      class="sc-bdVaJa iLegcF"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -83,7 +83,7 @@ exports[`Ballot renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa iLegcF"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -259,10 +259,10 @@ exports[`Ballot renders correctly 1`] = `
 exports[`Ballot switches audit and review views 1`] = `
 <div>
   <div
-    class="sc-VigVT iIEVIh"
+    class="sc-jTzLTM iNxaQE"
   >
     <h1
-      class="bp3-heading sc-gqjmRU inMEAv"
+      class="bp3-heading sc-VigVT cWADhG"
     >
       Audit Board #1
       : Ballot Card Data Entry
@@ -273,7 +273,7 @@ exports[`Ballot switches audit and review views 1`] = `
       Enter Ballot Information
     </h3>
     <div
-      class="bp3-callout sc-jTzLTM gCcJZe"
+      class="bp3-callout sc-fjdhpX dwcRBj"
     >
       Round 
       1
@@ -283,7 +283,7 @@ exports[`Ballot switches audit and review views 1`] = `
       5
     </div>
     <div
-      class="sc-bdVaJa iLegcF"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -335,7 +335,7 @@ exports[`Ballot switches audit and review views 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa iLegcF"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -355,57 +355,34 @@ exports[`Ballot switches audit and review views 1`] = `
             class="bp3-divider"
           />
           <div
-            class="sc-iwsKbI kKHmVs"
+            class="sc-gZMcBi fxQdHw"
           >
-            <label
-              class="sc-gZMcBi ckAluO bp3-control bp3-radio sc-ifAKCX csvjng"
+            <div
+              class="bp3-button-group bp3-fill bp3-large bp3-vertical"
             >
-              <input
-                checked=""
+              <button
+                class="bp3-button bp3-disabled bp3-fill bp3-large bp3-intent-primary sc-EHOje fCNSzj"
                 disabled=""
-                name=""
-                type="radio"
-                value="YES"
-              />
-              <span
-                class="bp3-control-indicator"
+                tabindex="-1"
+                type="button"
               >
                 <span
-                  class="radio-text"
+                  class="bp3-button-text"
                 >
                   Yes/For
                 </span>
-              </span>
-            </label>
-            <button
-              class="bp3-button bp3-minimal"
-              type="button"
-            >
-              <span
-                class="bp3-icon bp3-icon-edit"
-                icon="edit"
+              </button>
+              <button
+                class="bp3-button"
+                type="button"
               >
-                <svg
-                  data-icon="edit"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
+                <span
+                  class="bp3-button-text"
                 >
-                  <desc>
-                    edit
-                  </desc>
-                  <path
-                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                Edit
-              </span>
-            </button>
+                  Edit
+                </span>
+              </button>
+            </div>
           </div>
           <p>
             COMMENT: 
@@ -445,10 +422,10 @@ exports[`Ballot switches audit and review views 1`] = `
 exports[`Ballot toggles and submits comment 1`] = `
 <div>
   <div
-    class="sc-VigVT iIEVIh"
+    class="sc-jTzLTM iNxaQE"
   >
     <h1
-      class="bp3-heading sc-gqjmRU inMEAv"
+      class="bp3-heading sc-VigVT cWADhG"
     >
       Audit Board #1
       : Ballot Card Data Entry
@@ -459,7 +436,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       Enter Ballot Information
     </h3>
     <div
-      class="bp3-callout sc-jTzLTM gCcJZe"
+      class="bp3-callout sc-fjdhpX dwcRBj"
     >
       Round 
       1
@@ -469,7 +446,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       5
     </div>
     <div
-      class="sc-bdVaJa iLegcF"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -521,7 +498,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa iLegcF"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -541,57 +518,34 @@ exports[`Ballot toggles and submits comment 1`] = `
             class="bp3-divider"
           />
           <div
-            class="sc-iwsKbI kKHmVs"
+            class="sc-gZMcBi fxQdHw"
           >
-            <label
-              class="sc-gZMcBi ckAluO bp3-control bp3-radio sc-ifAKCX csvjng"
+            <div
+              class="bp3-button-group bp3-fill bp3-large bp3-vertical"
             >
-              <input
-                checked=""
+              <button
+                class="bp3-button bp3-disabled bp3-fill bp3-large bp3-intent-primary sc-EHOje fCNSzj"
                 disabled=""
-                name=""
-                type="radio"
-                value="YES"
-              />
-              <span
-                class="bp3-control-indicator"
+                tabindex="-1"
+                type="button"
               >
                 <span
-                  class="radio-text"
+                  class="bp3-button-text"
                 >
                   Yes/For
                 </span>
-              </span>
-            </label>
-            <button
-              class="bp3-button bp3-minimal"
-              type="button"
-            >
-              <span
-                class="bp3-icon bp3-icon-edit"
-                icon="edit"
+              </button>
+              <button
+                class="bp3-button"
+                type="button"
               >
-                <svg
-                  data-icon="edit"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
+                <span
+                  class="bp3-button-text"
                 >
-                  <desc>
-                    edit
-                  </desc>
-                  <path
-                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                Edit
-              </span>
-            </button>
+                  Edit
+                </span>
+              </button>
+            </div>
           </div>
           <p>
             COMMENT: 

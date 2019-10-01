@@ -14,6 +14,10 @@ export const BallotRow = styled.div`
   .ballot-main {
     width: 50%;
     padding: 20px;
+
+    .bp3-button {
+      text-align: center;
+    }
   }
 
   @media (max-width: 775px) {
