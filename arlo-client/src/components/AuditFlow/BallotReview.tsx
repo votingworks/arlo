@@ -26,6 +26,7 @@ interface IProps {
   goAudit: () => void
   review: IReview
   nextBallot: () => void
+  previousBallot: () => void
 }
 
 const BallotReview: React.FC<IProps> = ({
@@ -33,6 +34,7 @@ const BallotReview: React.FC<IProps> = ({
   goAudit,
   review: { vote, comment },
   nextBallot,
+  previousBallot,
 }: IProps) => {
   const completeVote = vote as Exclude<IReview['vote'], null>
   /* eslint-disable no-console */
@@ -60,7 +62,7 @@ const BallotReview: React.FC<IProps> = ({
           <FormButton type="submit" onClick={handleSubmit} intent="success">
             Submit &amp; Next Ballot
           </FormButton>
-          <Button onClick={goAudit} minimal>
+          <Button onClick={previousBallot} minimal>
             Back
           </Button>
         </ProgressActions>
