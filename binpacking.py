@@ -86,34 +86,71 @@ class BucketList:
     def get_too_small(self):
         return [s.name for s in self.buckets if s.size < self.avg_size]
 
+    def deviation(self):
+        return sum([abs(self.avg_size - b.size) for b in self.buckets])/self.avg_size
+
     def balance(self):
-        # Implements https://stackoverflow.com/questions/16588669/spread-objects-evenly-over-multiple-collections
+        # first get all the batches in a list
+        batches = []
 
-        for bucket_name in sorted(self.get_too_big()):
-            bucket = self.buckets[self.bucket_map[bucket_name]]
+        # TODO maybe rework the whole thing so that we don't have to create a
+        # new list?
+        new_buckets = []
+        for bucket in self.buckets:
+            new_buckets.append(Bucket(bucket.name))
+            for batch_name in bucket.batches:
+                batches.append((batch_name, bucket.batches[batch_name]))
 
-            # Remove the biggest element from the biggest bucket
-            if bucket.size - bucket.batches[bucket.largest_element] > self.avg_size:
-                rem = bucket.remove_batch(bucket.largest_element)
-                r_name = next(iter(rem))
 
-                self.smallest.add_batch(r_name, rem[r_name])
-                self.smallest = self.get_smallest()
-                self.biggest = self.get_biggest()
+        # Sort the list of batches
+        batches = sorted(batches, key = operator.itemgetter(1), reverse = True)
 
-        for bucket in sorted(self.get_too_small()):
-            for bigger_name in sorted(self.get_too_big(), reverse=True):
-                bigger = self.buckets[self.bucket_map[bigger_name]]
+        
+        added = True
+        falses = [0]*len(new_buckets)
+        left_overs = []
+        # Now assign batches
 
-                for item in sorted(bigger.batches, reverse=True):
-                    if bigger.size - bigger.batches[item] > self.avg_size:
-                        rem = bigger.remove_batch(item)
-                        r_name = next(iter(rem))
+    
+        # Assign all the too-big batches first
+        for i, batch in enumerate(batches):
 
-                        self.buckets[self.bucket_map[bucket]].add_batch(r_name, rem[r_name])
-                        self.smallest = self.get_smallest()
-                        self.biggest = self.get_biggest()
+            # Find the least-full bucket and assign this batch
+            if batch[1] > self.avg_size:
+                min_del = 10**7
+                min_idx = -1
 
+                # Find the lest-bad bucket
+                for j, bucket in enumerate(new_buckets):
+                    if (bucket.size + batch[1]) - self.avg_size < min_del:
+                        min_idx = j
+                        min_del = (bucket.size + batch[1]) - self.avg_size 
+
+                # Now add to the least-bad bucket
+                new_buckets[min_idx].add_batch(batch[0], batch[1])
+
+            else:
+                left_overs = batches[i:]
+                break
+
+        
+        
+        # Now iterate through remaining batches and add them to the bucket
+        # that will be _least_ over the average
+        for batch in left_overs:
+            min_del = 10**7
+            min_idx = -1
+
+            # Find the lest-bad bucket
+            for i, bucket in enumerate(new_buckets):
+                if (bucket.size + batch[1]) - self.avg_size < min_del:
+                    min_idx = i
+                    min_del = (bucket.size + batch[1]) - self.avg_size 
+
+            # Now add to the least-bad bucket
+            new_buckets[min_idx].add_batch(batch[0], batch[1])
+
+        return BucketList(new_buckets)
 
     def __gt__(self, other):
         return self.size > other.size
