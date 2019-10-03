@@ -117,6 +117,24 @@ class TestBucketList:
     def test_get_too_small(self, bucketlist):
         assert bucketlist.get_too_small() == ['1', '3'], 'Got {} as too small list, expected {}'.format(bucketlist.get_too_small(), ['1', '3'])
 
+    def test_balance(self, bucketlist):
+        new_bl = bucketlist.balance()
+
+        assert bucketlist.deviation() >= new_bl.deviation(), 'Balanced list has higher deviation than original assignment! {} is greater than {}'.format(new_bl.deviation(), bucketlist.deviation())
+
+        num_batches = sum([len(b.batches) for b in bucketlist.buckets])
+        balanced_num_batches = sum([len(b.batches) for b in new_bl.buckets])
+        
+        assert num_batches == balanced_num_batches, 'New batch has different number of batches than expected! Got {}, expected {}'.format(balanced_num_batches, num_batches)
+
+        batches = set()
+        [batches.union(s) for s in[set(batch.keys()) for batch in [b.batches for b in bucketlist.buckets]]]
+        new_batches = set()
+        [new_batches.union(s) for s in [set(batch.keys()) for batch in [b.batches for b in new_bl.buckets]]]
+
+        assert batches == new_batches, 'Balanced batches were not the same as original batches!'
+
+
 
 
 # Test data
