@@ -7,6 +7,7 @@ from sampler import Sampler
 @pytest.fixture
 def sampler():
     seed = 12345678901234567890
+
     risk_limit = .1
     contests = {
         'test1': {
@@ -48,9 +49,9 @@ def test_compute_margins(sampler):
             's_w': .6
         },
         'test2' : {
-            'p_w' : .75,
-            'p_r' : .25,
-            's_w': 2/3,
+            'p_w' : 2.0/3,
+            'p_r' : 2/9,
+            's_w': .75,
         },
         'test3': {
             'p_w' : 1,
@@ -105,14 +106,15 @@ def test_asn(sampler):
 def test_simulate_bravo_round0(sampler):
     # Test bravo sample simulator
     # Test without sample
-    expected_mean1 = 118
+    expected_mean1 = 119
     r0_sample_win = round0_sample_results['test1']['cand1']
     r0_sample_rup = round0_sample_results['test1']['cand2']
 
     computed_mean1 = math.ceil(np.mean(sampler.simulate_bravo(10000, 
                                                        .6, 
                                     sample_w=r0_sample_win, 
-                                    sample_r=r0_sample_rup)))
+                                    sample_r=r0_sample_rup,
+                                    iterations=10**5)))
     delta = expected_mean1 - computed_mean1
 
     assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
@@ -218,7 +220,7 @@ def test_compute_risk(sampler):
     # Test computing sample
     expected_Ts = {
         'test1': .07,
-        'test2': 1.11,
+        'test2': 10.38,
         'test3': 1,
         'test4': 0,
         'test5': 1,
@@ -275,7 +277,7 @@ round1_sample_results = {
     'test2': {
         'cand1': 25,
         'cand2': 18,
-        'cand3': '5',
+        'cand3': 5,
     },
     'test3': {
         'cand1': 0
@@ -351,11 +353,11 @@ true_sample_sizes = {
     'test2': {
         'asn': {
             'size':22,
-            'prob': .76
+            'prob': .31
         },
-        .7: 22,
-        .8: 28,
-        .9: 39,
+        .7: 47,
+        .8: 62,
+        .9: 89,
     },
     'test3': {
         'asn': {
