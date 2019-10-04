@@ -1,4 +1,4 @@
-# Arlo: Open-source risk-limiting audit software by [Voting Works](voting.works)
+# Arlo: Open-source risk-limiting audit software by [VotingWorks](voting.works)
 
 ## Setting up the dev environment
 
@@ -6,7 +6,8 @@
 2. Download [`pip`](https://pypi.org/project/pip/)
 3. Install `pipenv` (note: run `python3 -m pip install pipenv` to get a version that's compatible with your python install if your system defaults to a python other than >3.7).
 4. Install [`yarn`](https://yarnpkg.com/en/docs/install).
-5. Run via `./run-dev.sh`
+5. Install dependencies with `make install`
+6. Run via `./run-dev.sh`
 
 ### Troubleshooting
 
