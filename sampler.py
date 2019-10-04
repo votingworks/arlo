@@ -97,9 +97,9 @@ class Sampler:
             # Find the diluted margins and margin of valid votes for winner
             v_wl = win_votes + rup_votes
             margins[contest] = {
-                'p_w': win_votes/v_wl,
-                'p_r': rup_votes/v_wl,
-                's_w': win_votes/ballots,
+                'p_w': win_votes/ballots,
+                'p_r': rup_votes/ballots,
+                's_w': win_votes/v_wl,
                 'winner': winner,
                 'runner_up': runner_up
             }
