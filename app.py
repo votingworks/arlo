@@ -6,7 +6,7 @@ from sampler import Sampler
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 
-from binpacking import Bucket, BucketList
+from binpacking import Bucket, BalancedBucketList
 
 app = Flask(__name__, static_folder='arlo-client/build/')
 
@@ -193,12 +193,11 @@ def sample_ballots(election, round):
         buckets[i%len(audit_boards)].add_batch(batch, batch_sizes[batch])
 
     # Now assign batchest fairly
-    bl = BucketList(buckets)
-    bl.balance()
+    bl = BalancedBucketList(buckets)
 
     # read audit board and batch info out
     for bucket in bl.buckets:
-        audit_board_num = bl.bucket_map[bucket.name]
+        audit_board_num = bl.buckets.index(bucket)
         audit_board = audit_boards[audit_board_num]
         for batch_id in bucket.batches:
 
