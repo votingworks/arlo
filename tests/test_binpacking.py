@@ -1,5 +1,5 @@
 import pytest
-from binpacking import Bucket, BucketList
+from binpacking import Bucket, BucketList, BalancedBucketList
 
 
 @pytest.fixture
@@ -31,6 +31,32 @@ def bucketlist():
     buckets.append(b)
 
     yield BucketList(buckets)
+
+@pytest.fixture
+def balancedbucketlist():
+    buckets = []
+
+    b = Bucket('1')
+    b.add_batch('1', 100)
+    b.add_batch('2', 50)
+    buckets.append(b)
+
+    b = Bucket('2')
+    b.add_batch('3', 100)
+    b.add_batch('4', 150)
+    buckets.append(b)
+
+    b = Bucket('3')
+    b.add_batch('5', 50)
+    b.add_batch('6', 50)
+    buckets.append(b)
+
+    b = Bucket('4')
+    b.add_batch('7', 100)
+    b.add_batch('8', 200)
+    buckets.append(b)
+
+    yield BalancedBucketList(buckets)
 
 class TestBucket:
     def test_init(self, bucket):
@@ -105,18 +131,6 @@ class TestBucketList:
     def test_init(self, bucketlist):
         assert bucketlist.avg_size == 200, 'Expected avg_size of {}, got {}'.format(200, bucketlist.avg_size)
 
-    def test_get_biggest(self, bucketlist):
-        assert bucketlist.biggest.name == '4', 'Expected {} as biggest, got {}'.format('4', bucketlist.biggest.name)
-
-    def test_get_smallest(self, bucketlist):
-        assert bucketlist.smallest.name == '3', 'Expected {} as smallest, got {}'.format('3', bucketlist.smallest.name)
-
-    def test_get_too_big(self, bucketlist):
-        assert bucketlist.get_too_big() == ['2', '4'], 'Got {} as too big list, expected {}'.format(bucketlist.get_too_big(), ['2', '4'])
-
-    def test_get_too_small(self, bucketlist):
-        assert bucketlist.get_too_small() == ['1', '3'], 'Got {} as too small list, expected {}'.format(bucketlist.get_too_small(), ['1', '3'])
-
     def test_balance(self, bucketlist):
         new_bl = bucketlist.balance()
 
@@ -134,8 +148,27 @@ class TestBucketList:
 
         assert batches == new_batches, 'Balanced batches were not the same as original batches!'
 
+class TestBalancedBucketList:
+    def test_init(self, balancedbucketlist):
+        assert balancedbucketlist.avg_size == 200, 'Expected avg_size of {}, got {}'.format(200, bucketlist.avg_size)
 
+    def test_is_balanced(self, bucketlist, balancedbucketlist):
+        new_bl = bucketlist.balance()
+        bbl = balancedbucketlist #for convenience
 
+        assert new_bl.avg_size == bbl.avg_size, 'BalancedBucketList average size not the same! got {}, expected {}'.format(bbl.avg_size, new_bl.avg_size)
 
-# Test data
+        assert new_bl.deviation() == bbl.deviation(), 'BalancedBucketList has a different deviation! got {}, expected {}'.format(bbl.deviation, new_bl.deviation)
+
+        num_batches = sum([len(b.batches) for b in bucketlist.buckets])
+        balanced_num_batches = sum([len(b.batches) for b in bbl.buckets])
+        
+        assert num_batches == balanced_num_batches, 'BalancedBucketList has different number of batches than expected! Got {}, expected {}'.format(balanced_num_batches, num_batches)
+
+        batches = set()
+        [batches.union(s) for s in[set(batch.keys()) for batch in [b.batches for b in bucketlist.buckets]]]
+        new_batches = set()
+        [new_batches.union(s) for s in [set(batch.keys()) for batch in [b.batches for b in bbl.buckets]]]
+
+        assert batches == new_batches, 'Balanced batches were not the same as original batches!'
 
