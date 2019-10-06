@@ -163,6 +163,131 @@ class Sampler:
 
         return Parallel(n_jobs=self.num_cores)(delayed(run_bravo_trial)(self.prng.randint(0, 2**32, 1)[0], s_w, num_ballots, sample_w, sample_r, self.risk_limit) \
                     for i in range(iterations))
+
+    def bravo_sample_size(self, p_w, p_r, sample_w, sample_l,  p_completion):
+        """
+        Analytic calculation for BRAVO round completion assuming the electoin
+        outcome is correct. Written by Mark Lindeman. 
+
+        Inputs:
+            p_completion    - the desired chance of completion in one round,
+                              if the outcome is correct
+            p_w             - the fraction of vote share for the winner 
+            p_r             - the fraction of vote share for the loser 
+            sample_w        - the number of votes for the winner that have already 
+                              been sampled
+            sample_r        - the number of votes for the runner-up that have 
+                              already been sampled
+
+        Outputs:
+            sample_size     - the expected sample size for the given chance
+                              of completion in one round
+
+        """
+
+        # calculate the "two-way" share of p_w
+        p_wr = p_w + p_r
+        p_w2 = p_w / p_wr
+        p_r2 = 1 - p_w2
+        
+        # set up the basic BRAVO math
+        plus = math.log(p_w2 / 0.5)
+        minus = math.log(p_r2 / 0.5)
+        threshold = math.log(1 / self.risk_limit)
+        
+        z = -stats.norm.ppf(p_completion)
+        
+        # The basic equation is E_x = R_x where 
+        # E_x: expected # of successes at the 1-p_completion quantile
+        # R_x: smallest x (given n) that attains the risk limit
+        
+        # E_x = n * p_w2 + z * sqrt(n * p_w2 * p_r2)
+        # R_x = (threshold - minus * n) / (plus - minus)
+        
+        # (Both sides are continuous approximations to discrete functions.)
+        # We set these equal, rewrite as a quadratic in n, and take the
+        # larger of the two zeros (roots).
+        
+        # These parameters are useful in simplifying the quadratic.
+        d = p_w2 * p_r2
+        f = threshold / (plus - minus)
+        g = minus / (plus - minus) + p_w2
+        
+        # The three coefficients of the quadratic:
+        q_a = g**2
+        q_b = -(z**2 * d + 2 * f * g)
+        q_c = f**2
+        
+        # Apply the quadratic formula.
+        radical = math.sqrt(q_b**2 - 4 * q_a * q_c)
+        size = math.floor((-q_b + radical) / (2 * q_a))
+        
+        # This is a reasonable estimate, but is not guaranteed.
+        # Get a guarantee. (Perhaps contrary to intuition, using 
+        # math.ceil instead of math.floor can lead to a 
+        # larger sample.)
+        searching = True
+        while searching:
+            x_c = stats.binom.ppf(1.0 - p_completion, size, p_w2)
+            test_stat = x_c * plus + (size - x_c) * minus
+            if test_stat > threshold:
+                searching = False
+            else:
+                size += 1
+                
+        # The preceding fussiness notwithstanding, we use a simple
+        # adjustment to account for "other" votes beyond p_w and p_r.
+
+        size_adj = math.ceil(size / p_wr)
+                
+        return(size_adj)
+
+    def bravo_asn_prob(self, p_w, p_r, asn):
+        """ 
+        Analytic calculation for BRAVO round completion of ASN, assuming
+        the election outcome is correct. Adapted Mark Lindeman. 
+
+        Inputs:
+            asn             - the ASN
+            p_w             - the fraction of vote share for the winner 
+            p_r             - the fraction of vote share for the loser 
+
+        Outputs:
+            sample_size     - the expected sample size for the given chance
+                              of completion in one round
+
+        """
+
+        # calculate the "two-way" share of p_w
+        p_wr = p_w + p_r
+        p_w2 = p_w / p_wr
+        p_r2 = 1 - p_w2
+        
+        # set up the basic BRAVO math
+        plus = math.log(p_w2 / 0.5)
+        minus = math.log(p_r2 / 0.5)
+        threshold = math.log(1 / self.risk_limit)
+        
+        n = asn 
+        # The basic equation is E_x = R_x where 
+        # E_x: expected # of successes at the 1-p_completion quantile
+        # R_x: smallest x (given n) that attains the risk limit
+        
+        # E_x = n * p_w2 + z * sqrt(n * p_w2 * p_r2)
+        # R_x = (threshold - minus * n) / (plus - minus)
+        
+        # (Both sides are continuous approximations to discrete functions.)
+        # We set these equal, and solve for z
+
+        R_x = (threshold - minus * n) / (plus - minus)
+
+        print('R_x: {}, n*p_w2: {}'.format(R_x, n*p_w2))
+
+
+        z =  (R_x - n*p_w2)/math.sqrt(n*p_w2*p_r2)
+
+        # Invert the PPF used to compute z from the sample prob
+        return stats.norm.cdf(-z)        
     
     def get_sample_sizes(self, sample_results):
         """
@@ -232,20 +357,31 @@ class Sampler:
             sample_w = sample_results[contest][winner]
             sample_r = sample_results[contest][runner_up]
            
-            # TODO is there a way to do this that isn't simulation?
-            trials = sorted(self.simulate_bravo(num_ballots, s_w, sample_w, sample_r))
-            
-            for i, n in enumerate(trials):
-                if n > asns[contest]:
-                    samples[contest]['asn'] = {
-                        'size': asns[contest],
-                        'prob': float(i)/len(trials)
+            if not sample_w and not sample_r:
+                samples[contest]['asn'] = {
+                    'size': asns[contest],
+                    'prob': self.bravo_asn_prob(p_w, p_r, asns[contest])
                     }
-                    break
 
-            for quant in quants: 
-                quant_str = quant
-                samples[contest][quant_str] = np.quantile(trials, quant)
+                for quant in quants:
+                    samples[contest][quant] = self.bravo_sample_size(p_w, p_r, 0, 0, quant)
+
+
+
+            else:
+                # TODO is there a way to do this that isn't simulation?
+                trials = sorted(self.simulate_bravo(num_ballots, s_w, sample_w, sample_r))
+                
+                for i, n in enumerate(trials):
+                    if n > asns[contest]:
+                        samples[contest]['asn'] = {
+                            'size': asns[contest],
+                            'prob': float(i)/len(trials)
+                        }
+                        break
+
+                for quant in quants: 
+                    samples[contest][quant] = np.quantile(trials, quant)
 
         return samples
 
