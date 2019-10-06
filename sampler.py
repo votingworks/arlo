@@ -142,7 +142,7 @@ class Sampler:
         return asns
 
 
-    def simulate_bravo(self, num_ballots, p_w, sample_w, sample_r, iterations=10000):
+    def simulate_bravo(self, num_ballots, s_w, sample_w, sample_r, iterations=10000):
         """
         Runs <iterations> trials of random elections with <num_ballots> ballots
         for contest with diluted margin p_w. Returns sample sizes of all trials.
@@ -161,8 +161,86 @@ class Sampler:
         """
         # TODO We should probably be using more like 10**7 iterations
 
-        return Parallel(n_jobs=self.num_cores)(delayed(run_bravo_trial)(self.prng.randint(0, 2**32, 1)[0], p_w, num_ballots, sample_w, sample_r, self.risk_limit) \
+        return Parallel(n_jobs=self.num_cores)(delayed(run_bravo_trial)(self.prng.randint(0, 2**32, 1)[0], s_w, num_ballots, sample_w, sample_r, self.risk_limit) \
                     for i in range(iterations))
+
+    def bravo_sample_size(p_w, p_l, sample_w, sample_l,  p_completion):
+        """
+        Analytic calculation for BRAVO round completion assuming the electoin
+        outcome is correct. Written by Mark Lindeman. 
+
+        Inputs:
+            p_completion    - the desired chance of completion in one round,
+                              if the outcome is correct
+            p_w             - the fraction of vote share for the winner 
+            p_r             - the fraction of vote share for the loser 
+            sample_w        - the number of votes for the winner that have already 
+                              been sampled
+            sample_r        - the number of votes for the runner-up that have 
+                              already been sampled
+
+        Outputs:
+            sample_size     - the expected sample size for the given chance
+                              of completion in one round
+
+        """
+
+        # calculate the "two-way" share of p_w
+        p_wl = p_w + p_l
+        p_w2 = p_w / p_wl
+        p_l2 = 1 - p_w2
+        
+        # set up the basic BRAVO math
+        plus = math.log(p_w2 / 0.5)
+        minus = math.log(p_l2 / 0.5)
+        threshold = math.log(1 / alpha)
+        
+        z = -norm.ppf(p_completion)
+        
+        # The basic equation is E_x = R_x where 
+        # E_x: expected # of successes at the 1-p_completion quantile
+        # R_x: smallest x (given n) that attains the risk limit
+        
+        # E_x = n * p_w2 + z * sqrt(n * p_w2 * p_l2)
+        # R_x = (threshold - minus * n) / (plus - minus)
+        
+        # (Both sides are continuous approximations to discrete functions.)
+        # We set these equal, rewrite as a quadratic in n, and take the
+        # larger of the two zeros (roots).
+        
+        # These parameters are useful in simplifying the quadratic.
+        d = p_w2 * p_l2
+        f = threshold / (plus - minus)
+        g = minus / (plus - minus) + p_w2
+        
+        # The three coefficients of the quadratic:
+        q_a = g**2
+        q_b = -(z**2 * d + 2 * f * g)
+        q_c = f**2
+        
+        # Apply the quadratic formula.
+        radical = math.sqrt(q_b**2 - 4 * q_a * q_c)
+        size = math.floor((-q_b + radical) / (2 * q_a))
+        
+        # This is a reasonable estimate, but is not guaranteed.
+        # Get a guarantee. (Perhaps contrary to intuition, using 
+        # math.ceil instead of math.floor can lead to a 
+        # larger sample.)
+        searching = True
+        while searching:
+            x_c = binom.ppf(1.0 - p_completion, size, p_w2)
+            test_stat = x_c * plus + (size - x_c) * minus
+            if test_stat > threshold:
+                searching = False
+            else:
+                size += 1
+                
+        # The preceding fussiness notwithstanding, we use a simple
+        # adjustment to account for "other" votes beyond p_w and p_l.
+
+        size_adj = math.ceil(size / p_wl)
+                
+        return(size_adj)
 
     
     def get_sample_sizes(self, sample_results):
@@ -215,6 +293,7 @@ class Sampler:
 
             p_w = self.margins[contest]['p_w']
             p_r = self.margins[contest]['p_r']
+            s_w = self.margins[contest]['s_w']
             num_ballots = self.contests[contest]['ballots']
             
             # Handles ties
@@ -233,7 +312,7 @@ class Sampler:
             sample_r = sample_results[contest][runner_up]
            
             # TODO is there a way to do this that isn't simulation?
-            trials = sorted(self.simulate_bravo(num_ballots, p_w, sample_w, sample_r))
+            trials = sorted(self.simulate_bravo(num_ballots, s_w, sample_w, sample_r))
             
             for i, n in enumerate(trials):
                 if n > asns[contest]:
@@ -325,7 +404,7 @@ class Sampler:
 
 
 
-def run_bravo_trial(seed, p_w, num_ballots, sample_w, sample_r, risk_limit):
+def run_bravo_trial(seed, s_w, num_ballots, sample_w, sample_r, risk_limit):
     """
     A paralellizable trial function for bravo simulations
     """
@@ -333,17 +412,17 @@ def run_bravo_trial(seed, p_w, num_ballots, sample_w, sample_r, risk_limit):
     np.random.seed(seed)
 
     # Start our test-statistic based on previously audited stuff
-    test = ((2*p_w)**sample_w)*((2 - 2*p_w)**sample_r)
+    test = ((2*s_w)**sample_w)*((2 - 2*s_w)**sample_r)
     c_samp = 0
-    votes = stats.binom.rvs(1, p_w, size=num_ballots)
+    votes = stats.binom.rvs(1, s_w, size=num_ballots)
 
     for vote in votes:
         if test >= 1/risk_limit:
             break
         if vote:
-            test = test*p_w/.5
+            test = test*s_w/.5
         else:
-            test = test*(1 - p_w)/.5
+            test = test*(1 - s_w)/.5
 
         c_samp += 1
 
