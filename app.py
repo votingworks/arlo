@@ -170,7 +170,7 @@ def sample_ballots(election, round):
     # Build batch - batch_size map
     for batch_id, ballot_position in sample:
 
-        lookup = str(batch_id) + str(ballot_position)
+        lookup = (batch_id, ballot_position)
         # Only count ballots once here since it's only pulled once
         if lookup in seen_ballot_positions:
             batches_to_ballots[batch_id].append(ballot_position)
