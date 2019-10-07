@@ -110,7 +110,6 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
       let labelCount = 0
       audit.jurisdictions[0].auditBoards.forEach((board, i) =>
         board.ballots!.forEach(ballot => {
-          board.name = 'Audit board with a really long name for multiple lines'
           labelCount++
           if (labelCount > 30) {
             labels.addPage('letter')
