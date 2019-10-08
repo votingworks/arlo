@@ -155,7 +155,6 @@ class Sampler:
         Outputs:
             sample_size     - the expected sample size for the given chance
                               of completion in one round
-
         """
 
         # calculate the "two-way" share of p_w
