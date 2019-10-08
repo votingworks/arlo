@@ -103,52 +103,106 @@ def test_asn(sampler):
 
         assert expected == computed, 'asn failed: got {}, expected {}'.format(computed, expected)
 
-def test_simulate_bravo_round0(sampler):
+def test_bravo_sample_size(sampler):
     # Test bravo sample simulator
     # Test without sample
-    expected_mean1 = 119
+    expected_size1 = 1599
+    r0_sample_win = 0    
+    r0_sample_rup = 0
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.4, 
+                                    p_r=.32,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.9))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+    
+    expected_size1 = 6067
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.36, 
+                                    p_r=.32,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.9))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+
+    expected_size1 = 2475
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.36, 
+                                    p_r=.32,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.6))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+
+    expected_size1 = 5657
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.52, 
+                                    p_r=.47,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.9))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+
+def test_bravo_sample_size_round1_finish(sampler):
+    # Guarantee that the audit should have finished
+    r0_sample_win = 10000
+    r0_sample_rup = 0
+    expected_size1 = 0
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.52, 
+                                    p_r=.47,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.9))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+
+def test_bravo_sample_size_round1_incomplete(sampler):
+    expected_size1 = 2636
+    r0_sample_win = 2923
+    r0_sample_rup = 2735
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.52, 
+                                    p_r=.47,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.9))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+def test_bravo_asn_prob(sampler):
+    # Test bravo sample simulator
+    # Test without sample
+    expected_prob1 = .52
     r0_sample_win = round0_sample_results['test1']['cand1']
     r0_sample_rup = round0_sample_results['test1']['cand2']
 
-    computed_mean1 = math.ceil(np.mean(sampler.simulate_bravo(10000, 
-                                                       .6, 
+    computed_prob1 = round(sampler.bravo_asn_prob(
+                                    p_w=.6, 
+                                    p_r=.4,
                                     sample_w=r0_sample_win, 
                                     sample_r=r0_sample_rup,
-                                    iterations=10**5)))
-    delta = expected_mean1 - computed_mean1
+                                    asn = 119), 2)
+    delta = expected_prob1 - computed_prob1
 
-    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
+    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_prob1, expected_prob1)
 
-
-def test_simulate_bravo_round1_confirmed(sampler):
-    # Test with round-one sample that already confirmed
-    expected_mean1 = 0 # Our sample already confirmed our results
-    r0_sample_win = round1_sample_results['test1']['cand1']
-    r0_sample_rup = round1_sample_results['test1']['cand2']
-
-    computed_mean1 = math.ceil(np.mean(sampler.simulate_bravo(10000, 
-                                                       .6, 
-                                    sample_w=r0_sample_win, 
-                                    sample_r=r0_sample_rup)))
-    delta = expected_mean1 - computed_mean1
-
-    # TODO are these tolerances acceptable?
-    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
-
-def test_simulate_bravo_round1_unconfirmed(sampler):
-    # Test with round-one sample that didn't confirm
-    expected_mean1 = 91 
-    r0_sample_win = round1_sample_results['test2']['cand1']
-    r0_sample_rup = round1_sample_results['test2']['cand2']
-
-    computed_mean1 = math.ceil(np.mean(sampler.simulate_bravo(10000, 
-                                                       .6, 
-                                    sample_w=r0_sample_win, 
-                                    sample_r=r0_sample_rup)))
-    delta = expected_mean1 - computed_mean1
-
-    # TODO are these tolerances acceptable?
-    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
 
 def test_get_sample_sizes(sampler):
     # Test retrieving menu of sample sizes
