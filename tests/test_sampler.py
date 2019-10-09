@@ -13,32 +13,38 @@ def sampler():
         'test1': {
             'cand1': 600,
             'cand2': 400,
-            'ballots': 1000
+            'ballots': 1000,
+            'winners': 1
         },
         'test2': {
             'cand1': 600,
             'cand2': 200,
             'cand3': 100,
-            'ballots': 900
+            'ballots': 900,
+            'winners': 1
         },
         'test3': {
             'cand1': 100,
-            'ballots': 100
+            'ballots': 100,
+            'winners': 1
         },
         'test4': {
             'cand1': 100,
-            'ballots': 100
+            'ballots': 100,
+            'winners': 1
         },
         'test5': {
             'cand1' : 500,
             'cand2': 500,
-            'ballots': 1000
+            'ballots': 1000,
+            'winners': 1
         },
         'test6': {
             'cand1': 300,
             'cand2': 200,
             'cand3': 200,
-            'ballots': 1000
+            'ballots': 1000,
+            'winners': 1
         }
     }
 
@@ -50,34 +56,103 @@ def test_compute_margins(sampler):
     # Test margins
     true_margins = {
         'test1': { 
-            'p_w': .6,
-            'p_r': .4,
-            's_w': .6
+            'winners': {
+                'cand1': {
+                    'p_w': .6,
+                    's_w': .6,
+                    'swl': {'cand2': .6}
+                }
+            },
+            'losers': {
+                'cand2': {
+                    'p_l': .4,
+                    's_l': .4
+                }
+            }
         },
         'test2' : {
-            'p_w' : 2.0/3,
-            'p_r' : 2/9,
-            's_w': .75,
+            'winners': {
+                'cand1': {
+                    'p_w': 2/3,
+                    's_w': 2/3,
+                    'swl': {
+                        'cand2': 6/8,
+                        'cand3': 6/7
+
+                    }
+                }
+            },
+            'losers': {
+                'cand2': {
+                    'p_l': 2/9,
+                    's_l': 2/9
+                },
+                'cand3': {
+                    'p_l': 1/9,
+                    's_l': 1/9
+                }
+                
+            }
         },
         'test3': {
-            'p_w' : 1,
-            'p_r' : 0,
-            's_w' : 1
+            'winners': {
+                'cand1': {
+                    'p_w': 1,
+                    's_w': 1,
+                    'swl': {}
+                }
+            },
+            'losers': {}
         },
         'test4': {
-            'p_w' : 1,
-            'p_r' : 0,
-            's_w' : 1
+            'winners': {
+                'cand1': {
+                    'p_w': 1,
+                    's_w': 1,
+                    'swl': {}
+                }
+            },
+            'losers': {}
         },
         'test5': {
-            'p_w': .5,
-            'p_r': .5,
-            's_w': .5
+            'winners': {
+                'cand1': {
+                    'p_w': .5,
+                    's_w': .5,
+                    'swl': {
+                        'cand2': .5
+                    }
+                }
+            },
+            'losers': {
+                'cand2': {
+                    'p_l': .5,
+                    's_l': .5
+                }
+            }
         },
         'test6': {
-            'p_w': .3,
-            'p_r': .2,
-            's_w': .6
+            'winners': {
+                'cand1': {
+                    'p_w': .3,
+                    's_w': 300/700,
+                    'swl': {
+                        'cand2': 300/(300+200),
+                        'cand3': 300/(300+200)
+                    }
+                }
+            },
+            'losers': {
+                'cand2': {
+                    'p_l': .2,
+                    's_l': 200/700
+                },
+                'cand3': {
+                    'p_l': .2,
+                    's_l': 200/700
+                }
+
+            }
         }
     }
 
@@ -86,15 +161,31 @@ def test_compute_margins(sampler):
         true_margins_for_contest = true_margins[contest]
         computed_margins_for_contest = margins[contest]
 
-        expected =  true_margins_for_contest['p_w']
-        computed = computed_margins_for_contest['p_w']
-        assert expected == computed, 'p_w failed: got {}, expected {}'.format(computed, expected)
-        expected =  true_margins_for_contest['p_r']
-        computed = computed_margins_for_contest['p_r']
-        assert expected == computed, 'p_r failed: got {}, expected {}'.format(computed, expected)
-        expected =  true_margins_for_contest['s_w']
-        computed = computed_margins_for_contest['s_w']
-        assert expected == computed, 's_w failed: got {}, expected {}'.format(computed, expected)
+        for winner in true_margins_for_contest['winners']:
+            expected = round(true_margins_for_contest['winners'][winner]['p_w'], 5)
+            computed = round(computed_margins_for_contest['winners'][winner]['p_w'], 5)
+            assert expected == computed, 'p_w failed: got {}, expected {}'.format(computed, expected)
+
+            expected = round(true_margins_for_contest['winners'][winner]['s_w'], 5)
+            computed = round(computed_margins_for_contest['winners'][winner]['s_w'], 5)
+            assert expected == computed, 's_w failed: got {}, expected {}'.format(computed, expected)
+
+            for cand in true_margins_for_contest['winners'][winner]['swl']:
+                expected = round(true_margins_for_contest['winners'][winner]['swl'][cand], 5)
+                computed = round(computed_margins_for_contest['winners'][winner]['swl'][cand], 5)
+                assert expected == computed, 'swl failed: got {}, expected {}'.format(computed, expected)
+
+
+        for loser in true_margins_for_contest['losers']:
+            expected = round(true_margins_for_contest['losers'][loser]['p_l'], 5)
+            computed = round(computed_margins_for_contest['losers'][loser]['p_l'], 5)
+            assert expected == computed, 'p_l failed: got {}, expected {}'.format(computed, expected)
+
+            expected = round(true_margins_for_contest['losers'][loser]['s_l'], 5)
+            computed = round(computed_margins_for_contest['losers'][loser]['s_l'], 5)
+            assert expected == computed, 's_l failed: got {}, expected {}'.format(computed, expected)
+         
+
 
 def test_asn(sampler):
     # Test ASN computation
