@@ -4,6 +4,7 @@ import math
 import numpy as np
 from scipy import stats
 import consistent_sampler
+import operator
 
 class Sampler:
     def __init__(self, seed, risk_limit, contests):
@@ -21,7 +22,8 @@ class Sampler:
                                 candidate1: votes,
                                 candidate2: votes,
                                 ...
-                                'ballots': ballots # total ballots cast
+                                'ballots': ballots, # total ballots cast
+                                'winners': winners # number of winners in this contest
                             }
                             ...
                         }
@@ -46,7 +48,8 @@ class Sampler:
                                 candidate1: votes,
                                 candidate2: votes,
                                 ...
-                                'ballots': ballots
+                                'ballots': ballots,
+                                'winners': winners
                             }
                             ...
                         }
@@ -54,11 +57,25 @@ class Sampler:
             margins - dictionary of diluted margin info:
                         {
                             contest: {
-                                'p_w': p_w # The proportion of votes for winner
-                                'p_r': p_r # proportion of votes for runner up
-                                's_w': s_w # the proportion of total ballots for the winner
-                                'winner': winner # the name of the winner
-                                'runner_up': runner_up # name of the runner up
+                                'winners': {
+                                    winner1: {
+                                              'p_w': p_w,     # Proportion of ballots for this winner
+                                              's_w': 's_w'    # proportion of votes for this winner 
+                                              'swl': {      # fraction of votes for w among (w, l)
+                                                    'loser1':  s_w/(s_w + s_l1),
+                                                    ...,
+                                                    'losern':  s_w/(s_w + s_ln)
+                                                }
+                                              }, 
+                                    ..., 
+                                    winnern: {...} ] 
+                                'losers': {
+                                    loser1: {
+                                              'p_l': p_l,     # Proportion of votes for this loser
+                                              's_l': s_l,     # Proportion of ballots for this loser
+                                              }, 
+                                    ..., 
+                                    losern: {...} ] 
                                 
                             }
                         }
@@ -67,38 +84,48 @@ class Sampler:
 
         margins = {}
         for contest in self.contests:
-            winner = ''
-            win_votes = 0
-            runner_up = ''
-            rup_votes = 0
+            margins[contest] = {'winners':{}, 'losers':{}}
+
+            cand_vec = sorted(
+                    [(cand, self.contests[contest][cand]) 
+                        for cand in self.contests[contest]
+                            if cand not in ['winners', 'ballots']
+                    ], 
+            key=operator.itemgetter(1), reverse = True)
+
+            num_winners = self.contests[contest]['winners']
+            winners = cand_vec[:num_winners]
+            losers = cand_vec[num_winners:]
 
             ballots = self.contests[contest]['ballots']
 
-            # Find the winner and runner up
-            for cand in self.contests[contest]:
-                if cand == 'ballots':
-                    continue
-                
-                votes = self.contests[contest][cand]
-                if votes > win_votes:
-                    runner_up = winner
-                    rup_votes = win_votes
+            v_wl = sum([c[1] for c in winners + losers])
 
-                    winner = cand
-                    win_votes = votes
-                elif votes > rup_votes:
-                    runner_up = cand
-                    rup_votes = votes
+            margins[contest]['winners']: {}
+            margins[contest]['losers']: {}
 
-            # Find the diluted margins and margin of valid votes for winner
-            v_wl = win_votes + rup_votes
-            margins[contest] = {
-                'p_w': win_votes/ballots,
-                'p_r': rup_votes/ballots,
-                's_w': win_votes/v_wl,
-                'winner': winner,
-                'runner_up': runner_up
-            }
+
+            for loser in losers:
+                margins[contest]['losers'][loser[0]] = {
+                    'p_l': loser[1]/ballots,
+                    's_l': loser[1]/v_wl
+
+                }
+
+            for winner in winners:
+                s_w = winner[1]/v_wl
+
+                swl = {}
+                for loser in margins[contest]['losers']:
+                    s_l = margins[contest]['losers'][loser]['s_l']
+                    swl[loser] = s_w/(s_w + s_l)
+
+                margins[contest]['winners'][winner[0]] = {
+                    'p_w': winner[1]/ballots,
+                    's_w': s_w,
+                    'swl' : swl
+
+                }
 
         return margins
 
