@@ -195,9 +195,19 @@ class Sampler:
         q_c = f**2
         
         # Apply the quadratic formula.
-        radical = math.sqrt(q_b**2 - 4 * q_a * q_c)
-        size = math.floor((-q_b + radical) / (2 * q_a))
+        # We want the larger root for p_completion > 0.5, the
+        # smaller root for p_completion < 0.5; they are equal
+        # when p_completion = 0.
+        # max here handles cases where, due to rounding error,
+        # the base (content) of the radical is trivially
+        # negative for p_completion very close to 0.5.
+        radical = math.sqrt(max(0, q_b**2 - 4 * q_a * q_c))
         
+        if p_completion > 0.5:
+            size = math.floor((-q_b + radical) / (2 * q_a))
+        else:
+            size = math.floor((-q_b - radical) / (2 * q_a)) 
+
         # This is a reasonable estimate, but is not guaranteed.
         # Get a guarantee. (Perhaps contrary to intuition, using 
         # math.ceil instead of math.floor can lead to a 

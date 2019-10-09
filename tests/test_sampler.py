@@ -33,6 +33,12 @@ def sampler():
             'cand1' : 500,
             'cand2': 500,
             'ballots': 1000
+        },
+        'test6': {
+            'cand1': 300,
+            'cand2': 200,
+            'cand3': 200,
+            'ballots': 1000
         }
     }
 
@@ -67,6 +73,11 @@ def test_compute_margins(sampler):
             'p_w': .5,
             'p_r': .5,
             's_w': .5
+        },
+        'test6': {
+            'p_w': .3,
+            'p_r': .2,
+            's_w': .6
         }
     }
 
@@ -94,6 +105,7 @@ def test_asn(sampler):
         'test3': 0,
         'test4': 0,
         'test5': 1000,
+        'test6': 238
     }
 
     computed_asns = sampler.get_asns()
@@ -257,8 +269,6 @@ def test_draw_more_samples(sampler):
     sample = sampler.draw_sample(manifest, 10)
     assert samp_size == len(sample), 'Received sample of size {}, expected {}'.format(samp_size, len(sample))
 
-    
-
     for i, item in enumerate(sample):
         expected = expected_first_sample[i]
         assert item == expected, 'Draw sample failed: got {}, expected {}'.format(item, expected)
@@ -278,6 +288,7 @@ def test_compute_risk(sampler):
         'test3': 1,
         'test4': 0,
         'test5': 1,
+        'test6': 0.08,
     }
 
     expected_decisions = {
@@ -286,6 +297,7 @@ def test_compute_risk(sampler):
         'test3': False,
         'test4': True,
         'test5': False,
+        'test6': True,
     }
 
     for contest, sample in round1_sample_results.items():
@@ -319,6 +331,11 @@ round0_sample_results = {
     'test5': {
         'cand1': 0,
         'cand2': 0,
+    },
+    'test6': {
+        'cand1': 0,
+        'cand2': 0,
+        'cand3': 0
     }
 }
 
@@ -342,6 +359,11 @@ round1_sample_results = {
     'test5': {
         'cand1': 500,
         'cand2': 500,
+    },
+    'test6': {
+        'cand1': 72,
+        'cand2': 48,
+        'cand3': 48
     }
 }
 
@@ -439,5 +461,16 @@ true_sample_sizes = {
         .7: 1000,
         .8: 1000,
         .9: 1000
+    },
+    'test6': {
+        'asn': {
+            'size': 238,
+            'prob': .79 # Note that this is an artifact of two-way math, and 
+                        # should change once we go to n-winner math
+        },
+        .7: 368,
+        .8: 488,
+        .9: 702
+        
     }
 }
