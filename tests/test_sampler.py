@@ -7,6 +7,7 @@ from sampler import Sampler
 @pytest.fixture
 def sampler():
     seed = 12345678901234567890
+
     risk_limit = .1
     contests = {
         'test1': {
@@ -32,6 +33,12 @@ def sampler():
             'cand1' : 500,
             'cand2': 500,
             'ballots': 1000
+        },
+        'test6': {
+            'cand1': 300,
+            'cand2': 200,
+            'cand3': 200,
+            'ballots': 1000
         }
     }
 
@@ -48,9 +55,9 @@ def test_compute_margins(sampler):
             's_w': .6
         },
         'test2' : {
-            'p_w' : .75,
-            'p_r' : .25,
-            's_w': 2/3,
+            'p_w' : 2.0/3,
+            'p_r' : 2/9,
+            's_w': .75,
         },
         'test3': {
             'p_w' : 1,
@@ -66,6 +73,11 @@ def test_compute_margins(sampler):
             'p_w': .5,
             'p_r': .5,
             's_w': .5
+        },
+        'test6': {
+            'p_w': .3,
+            'p_r': .2,
+            's_w': .6
         }
     }
 
@@ -93,6 +105,7 @@ def test_asn(sampler):
         'test3': 0,
         'test4': 0,
         'test5': 1000,
+        'test6': 238
     }
 
     computed_asns = sampler.get_asns()
@@ -102,51 +115,106 @@ def test_asn(sampler):
 
         assert expected == computed, 'asn failed: got {}, expected {}'.format(computed, expected)
 
-def test_simulate_bravo_round0(sampler):
+def test_bravo_sample_size(sampler):
     # Test bravo sample simulator
     # Test without sample
-    expected_mean1 = 118
+    expected_size1 = 1599
+    r0_sample_win = 0    
+    r0_sample_rup = 0
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.4, 
+                                    p_r=.32,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.9))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+    
+    expected_size1 = 6067
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.36, 
+                                    p_r=.32,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.9))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+
+    expected_size1 = 2475
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.36, 
+                                    p_r=.32,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.6))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+
+    expected_size1 = 5657
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.52, 
+                                    p_r=.47,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.9))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+
+def test_bravo_sample_size_round1_finish(sampler):
+    # Guarantee that the audit should have finished
+    r0_sample_win = 10000
+    r0_sample_rup = 0
+    expected_size1 = 0
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.52, 
+                                    p_r=.47,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.9))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+
+def test_bravo_sample_size_round1_incomplete(sampler):
+    expected_size1 = 2636
+    r0_sample_win = 2923
+    r0_sample_rup = 2735
+
+    computed_size1 = math.ceil(sampler.bravo_sample_size(
+                                    p_w=.52, 
+                                    p_r=.47,
+                                    sample_w=r0_sample_win, 
+                                    sample_r=r0_sample_rup,
+                                    p_completion=.9))
+    delta = expected_size1 - computed_size1
+
+    assert not delta, 'bravo_sample_size failed: got {}, expected {}'.format(computed_size1, expected_size1)
+def test_bravo_asn_prob(sampler):
+    # Test bravo sample simulator
+    # Test without sample
+    expected_prob1 = .52
     r0_sample_win = round0_sample_results['test1']['cand1']
     r0_sample_rup = round0_sample_results['test1']['cand2']
 
-    computed_mean1 = math.ceil(np.mean(sampler.simulate_bravo(10000, 
-                                                       .6, 
+    computed_prob1 = round(sampler.bravo_asn_prob(
+                                    p_w=.6, 
+                                    p_r=.4,
                                     sample_w=r0_sample_win, 
-                                    sample_r=r0_sample_rup)))
-    delta = expected_mean1 - computed_mean1
+                                    sample_r=r0_sample_rup,
+                                    asn = 119), 2)
+    delta = expected_prob1 - computed_prob1
 
-    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
+    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_prob1, expected_prob1)
 
-
-def test_simulate_bravo_round1_confirmed(sampler):
-    # Test with round-one sample that already confirmed
-    expected_mean1 = 0 # Our sample already confirmed our results
-    r0_sample_win = round1_sample_results['test1']['cand1']
-    r0_sample_rup = round1_sample_results['test1']['cand2']
-
-    computed_mean1 = math.ceil(np.mean(sampler.simulate_bravo(10000, 
-                                                       .6, 
-                                    sample_w=r0_sample_win, 
-                                    sample_r=r0_sample_rup)))
-    delta = expected_mean1 - computed_mean1
-
-    # TODO are these tolerances acceptable?
-    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
-
-def test_simulate_bravo_round1_unconfirmed(sampler):
-    # Test with round-one sample that didn't confirm
-    expected_mean1 = 91 
-    r0_sample_win = round1_sample_results['test2']['cand1']
-    r0_sample_rup = round1_sample_results['test2']['cand2']
-
-    computed_mean1 = math.ceil(np.mean(sampler.simulate_bravo(10000, 
-                                                       .6, 
-                                    sample_w=r0_sample_win, 
-                                    sample_r=r0_sample_rup)))
-    delta = expected_mean1 - computed_mean1
-
-    # TODO are these tolerances acceptable?
-    assert not delta, 'bravo_simulator failed: got {}, expected {}'.format(computed_mean1, expected_mean1)
 
 def test_get_sample_sizes(sampler):
     # Test retrieving menu of sample sizes
@@ -201,8 +269,6 @@ def test_draw_more_samples(sampler):
     sample = sampler.draw_sample(manifest, 10)
     assert samp_size == len(sample), 'Received sample of size {}, expected {}'.format(samp_size, len(sample))
 
-    
-
     for i, item in enumerate(sample):
         expected = expected_first_sample[i]
         assert item == expected, 'Draw sample failed: got {}, expected {}'.format(item, expected)
@@ -218,10 +284,11 @@ def test_compute_risk(sampler):
     # Test computing sample
     expected_Ts = {
         'test1': .07,
-        'test2': 1.11,
+        'test2': 10.38,
         'test3': 1,
         'test4': 0,
         'test5': 1,
+        'test6': 0.08,
     }
 
     expected_decisions = {
@@ -230,6 +297,7 @@ def test_compute_risk(sampler):
         'test3': False,
         'test4': True,
         'test5': False,
+        'test6': True,
     }
 
     for contest, sample in round1_sample_results.items():
@@ -263,6 +331,11 @@ round0_sample_results = {
     'test5': {
         'cand1': 0,
         'cand2': 0,
+    },
+    'test6': {
+        'cand1': 0,
+        'cand2': 0,
+        'cand3': 0
     }
 }
 
@@ -275,7 +348,7 @@ round1_sample_results = {
     'test2': {
         'cand1': 25,
         'cand2': 18,
-        'cand3': '5',
+        'cand3': 5,
     },
     'test3': {
         'cand1': 0
@@ -286,6 +359,11 @@ round1_sample_results = {
     'test5': {
         'cand1': 500,
         'cand2': 500,
+    },
+    'test6': {
+        'cand1': 72,
+        'cand2': 48,
+        'cand3': 48
     }
 }
 
@@ -342,20 +420,20 @@ true_sample_sizes = {
     'test1': {
         'asn': {
             'size': 119,
-            'prob': .67
+            'prob': .52
         },
-        .7: 129,
-        .8: 169,
-        .9: 242,
+        .7: 184,
+        .8: 244,
+        .9: 351,
     }, 
     'test2': {
         'asn': {
             'size':22,
-            'prob': .76
+            'prob': .60
         },
-        .7: 22,
-        .8: 28,
-        .9: 39,
+        .7: 32,
+        .8: 41,
+        .9: 57,
     },
     'test3': {
         'asn': {
@@ -383,5 +461,16 @@ true_sample_sizes = {
         .7: 1000,
         .8: 1000,
         .9: 1000
+    },
+    'test6': {
+        'asn': {
+            'size': 238,
+            'prob': .79 # Note that this is an artifact of two-way math, and 
+                        # should change once we go to n-winner math
+        },
+        .7: 368,
+        .8: 488,
+        .9: 702
+        
     }
 }
