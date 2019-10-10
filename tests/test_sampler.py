@@ -45,6 +45,22 @@ def sampler():
             'cand3': 200,
             'ballots': 1000,
             'winners': 1
+        },
+        'test7': {
+            'cand1': 300,
+            'cand2': 200,
+            'cand3': 100,
+            'ballots': 700,
+            'winners': 2
+
+        },
+        'test8': {
+            'cand1': 300,
+            'cand2': 300,
+            'cand3': 100,
+            'ballots': 700,
+            'winners': 2
+
         }
     }
 
@@ -150,6 +166,56 @@ def test_compute_margins(sampler):
                 'cand3': {
                     'p_l': .2,
                     's_l': 200/700
+                }
+
+            }
+        },
+        'test7': {
+            'winners': {
+                'cand1': {
+                    'p_w': 300/700,
+                    's_w': 300/600,
+                    'swl': {
+                        'cand3': 300/(300+100)
+                    }
+                },
+                'cand2': {
+                    'p_w': 200/700,
+                    's_w': 200/600,
+                    'swl': {
+                        'cand3': 200/(200+100)
+                    }
+                }
+            },
+            'losers': {
+                'cand3': {
+                    'p_l': 100/700,
+                    's_l': 100/600
+                }
+
+            }
+        },
+        'test8': {
+            'winners': {
+                'cand1': {
+                    'p_w': 300/700,
+                    's_w': 300/700,
+                    'swl': {
+                        'cand3': 300/(300+100)
+                    }
+                },
+                'cand2': {
+                    'p_w': 300/700,
+                    's_w': 300/700,
+                    'swl': {
+                        'cand3': 300/(300+100)
+                    }
+                }
+            },
+            'losers': {
+                'cand3': {
+                    'p_l': 100/700,
+                    's_l': 100/700
                 }
 
             }
