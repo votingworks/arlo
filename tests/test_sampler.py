@@ -427,8 +427,6 @@ def test_get_sample_sizes(sampler):
             # TODO are these tolerances acceptable?
             assert not diff , '{} sample size for {} failed: got {}, expected {}'.format(key, contest, computed, expected)
 
-
-
 def test_draw_sample(sampler):
     # Test getting a sample
     manifest = {
@@ -472,28 +470,50 @@ def test_draw_more_samples(sampler):
 def test_compute_risk(sampler):
     # Test computing sample
     expected_Ts = {
-        'test1': .07,
-        'test2': 10.38,
-        'test3': 1,
-        'test4': 0,
-        'test5': 1,
-        'test6': 0.08,
+            'test1': {('cand1', 'cand2'): .07},
+            'test2': {
+                        ('cand1', 'cand2'): 10.38,
+                        ('cand1', 'cand3'): 0, 
+                    },
+            'test3': {('cand1', ): 1},
+            'test4': {('cand1',): 1},
+            'test5': {('cand1', 'cand2'): 1},
+            'test6': {
+                        ('cand1', 'cand2'): 0.08,
+                        ('cand1', 'cand3'): 0.08,
+                    },
+            'test7': {
+                        ('cand1', 'cand3'): 0.01,
+                        ('cand2', 'cand3'): 0.04,
+                    },
+            'test8': {
+                        ('cand1', 'cand3'): 0.0,
+                        ('cand2', 'cand3'): 0.22,
+                    },
+            'test9': {
+                        ('cand1',): 1,
+                        ('cand2',): 1,
+                    },
     }
 
     expected_decisions = {
         'test1': True,
         'test2': False,
         'test3': False,
-        'test4': True,
+        'test4': False,
         'test5': False,
         'test6': True,
+        'test7': True,
+        'test8': False,
+        'test9': False,
     }
 
     for contest, sample in round1_sample_results.items():
         T, decision = sampler.compute_risk(contest, sample)
         expected_T = expected_Ts[contest]
-        diff = T - expected_T 
-        assert abs(diff) < .01, 'Risk compute for {} failed! Expected {}, got {}'.format(contest, expected_Ts[contest], T)
+        for pair in expected_T:
+            diff = T[pair] - expected_T[pair]
+            assert abs(diff) < .01, 'Risk compute for {} failed! Expected {}, got {}'.format(contest, expected_Ts[contest][pair], T[pair])
         
         expected_decision = expected_decisions[contest]
         assert decision == expected_decision, 'Risk decision for {} failed! Expected {}, got{}'.format(contest, expected_decision, decision)
@@ -568,7 +588,21 @@ round1_sample_results = {
         'cand1': 72,
         'cand2': 48,
         'cand3': 48
-    }
+    },
+    'test7': {
+        'cand1': 30,
+        'cand2': 25,
+        'cand3': 10
+    },
+    'test8': {
+        'cand1': 72,
+        'cand2': 55,
+        'cand3': 30
+    },
+    'test9': {
+        'cand1': 1,
+        'cand2': 1,
+    },
 }
 
 

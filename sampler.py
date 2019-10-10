@@ -485,8 +485,8 @@ class Sampler:
                     }
 
         Outputs:
-            risk            - the p-value of the hypotheses that the election
-                              result is correct based on the sample. 
+            measurements    - the p-value of the hypotheses that the election
+                              result is correct based on the sample, for each winner-loser pair. 
             confirmed       - a boolean indicating whether the audit can stop
         """
         
@@ -494,12 +494,38 @@ class Sampler:
 
         # TODO Do we assume sample_results is cumulative? 
         margins = self.margins[contest]
-        T = 1
-        for cand, votes in sample_results.items():
-            if cand == margins['winner']:
-                T *= (2*margins['s_w'])**(votes)
-            elif cand == margins['runner_up']:
-                T *= (2 - 2*margins['s_w'])**(votes)
 
-        return 1/T, 1/T < self.risk_limit
+        winners = margins['winners']
+        losers = margins['losers']
+
+        T = {}
+
+
+        # Setup pair-wise Ts:
+        for winner in winners:
+            for loser in losers:
+                T[(winner, loser)] = 1
+
+        # Handle the no-losers case
+        if not losers:
+            for winner in winners:
+                T[(winner,)] = 1
+
+        for cand, votes in sample_results.items():
+            if cand in winners:
+                for loser in losers:
+                    T[(cand, loser)] *= (winners[cand]['swl'][loser]/0.5)**votes
+            elif cand in losers:
+                for winner in winners:
+                    T[(winner, cand)] *= ((1 - winners[winner]['swl'][cand])/0.5)**votes
+
+        print(contest, T)
+
+        measurements = {}
+        finished = True
+        for pair in T:
+            measurements[pair] = 1/T[pair]
+            if measurements[pair] > self.risk_limit:
+                finished = False
+        return measurements, finished 
 
