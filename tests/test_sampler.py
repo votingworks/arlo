@@ -52,6 +52,13 @@ def sampler():
             'cand3': 100,
             'ballots': 700,
             'winners': 2
+        },
+        'test7': {
+            'cand1': 300,
+            'cand2': 200,
+            'cand3': 100,
+            'ballots': 700,
+            'winners': 2
 
         },
         'test8': {
@@ -61,7 +68,13 @@ def sampler():
             'ballots': 700,
             'winners': 2
 
-        }
+        },
+        'test9': {
+            'cand1': 300,
+            'cand2': 200,
+            'ballots': 700,
+            'winners': 2
+        },
     }
 
 
@@ -219,6 +232,21 @@ def test_compute_margins(sampler):
                 }
 
             }
+        },
+        'test9': {
+            'winners': {
+                'cand1': {
+                    'p_w': 300/700,
+                    's_w': 300/500,
+                    'swl': {}
+                },
+                'cand2': {
+                    'p_w': 200/700,
+                    's_w': 200/500,
+                    'swl': {}
+                }
+            },
+            'losers': {}
         }
     }
 
@@ -230,47 +258,50 @@ def test_compute_margins(sampler):
         for winner in true_margins_for_contest['winners']:
             expected = round(true_margins_for_contest['winners'][winner]['p_w'], 5)
             computed = round(computed_margins_for_contest['winners'][winner]['p_w'], 5)
-            assert expected == computed, 'p_w failed: got {}, expected {}'.format(computed, expected)
+            assert expected == computed, '{} p_w failed: got {}, expected {}'.format(contest, computed, expected)
 
             expected = round(true_margins_for_contest['winners'][winner]['s_w'], 5)
             computed = round(computed_margins_for_contest['winners'][winner]['s_w'], 5)
-            assert expected == computed, 's_w failed: got {}, expected {}'.format(computed, expected)
+            assert expected == computed, '{} s_w failed: got {}, expected {}'.format(contest, computed, expected)
 
             for cand in true_margins_for_contest['winners'][winner]['swl']:
                 expected = round(true_margins_for_contest['winners'][winner]['swl'][cand], 5)
                 computed = round(computed_margins_for_contest['winners'][winner]['swl'][cand], 5)
-                assert expected == computed, 'swl failed: got {}, expected {}'.format(computed, expected)
+                assert expected == computed, '{} swl failed: got {}, expected {}'.format(contest, computed, expected)
 
 
         for loser in true_margins_for_contest['losers']:
             expected = round(true_margins_for_contest['losers'][loser]['p_l'], 5)
             computed = round(computed_margins_for_contest['losers'][loser]['p_l'], 5)
-            assert expected == computed, 'p_l failed: got {}, expected {}'.format(computed, expected)
+            assert expected == computed, '{} p_l failed: got {}, expected {}'.format(contest, computed, expected)
 
             expected = round(true_margins_for_contest['losers'][loser]['s_l'], 5)
             computed = round(computed_margins_for_contest['losers'][loser]['s_l'], 5)
-            assert expected == computed, 's_l failed: got {}, expected {}'.format(computed, expected)
+            assert expected == computed, '{} s_l failed: got {}, expected {}'.format(contest, computed, expected)
          
 
 
-def test_asn(sampler):
-    # Test ASN computation
+def test_expected_sample_sizes(sampler):
+    # Test expected sample sizes computation
 
     true_asns = {
         'test1': 119,
-        'test2': 22,
-        'test3': 0,
-        'test4': 0,
+        'test2': 25,
+        'test3': -1,
+        'test4': -1,
         'test5': 1000,
-        'test6': 238
+        'test6': 476,
+        'test7': 236,
+        'test8': 59,
+        'test9': -1,
     }
 
-    computed_asns = sampler.get_asns()
+    computed_asns = sampler.get_expected_sample_sizes()
     for contest in true_asns:
         expected = true_asns[contest]
         computed = computed_asns[contest]
 
-        assert expected == computed, 'asn failed: got {}, expected {}'.format(computed, expected)
+        assert expected == computed, 'get_expected_sample_sizes failed in {}: got {}, expected {}'.format(contest, computed, expected)
 
 def test_bravo_sample_size(sampler):
     # Test bravo sample simulator
@@ -381,10 +412,11 @@ def test_get_sample_sizes(sampler):
         for key in true_sample_sizes[contest]:
             if key == 'asn': 
                 # Check probs:
-                expected_prob = true_sample_sizes[contest][key]['prob']
-                computed_prob = round(computed_samples[contest][key]['prob'], 2)
+                if sampler.contests[contest]['winners'] == 1:
+                    expected_prob = true_sample_sizes[contest][key]['prob']
+                    computed_prob = round(computed_samples[contest][key]['prob'], 2)
 
-                assert expected_prob == computed_prob, '{} ASN probabability check for {} failed: got {}, expected {}'.format(key, contest, computed_prob, expected_prob)
+                    assert expected_prob == computed_prob, '{} expected_sample_size probabability check for {} failed: got {}, expected {}'.format(key, contest, computed_prob, expected_prob)
 
                 expected = true_sample_sizes[contest][key]['size']
                 computed = computed_samples[contest][key]['size']
@@ -493,7 +525,22 @@ round0_sample_results = {
         'cand1': 0,
         'cand2': 0,
         'cand3': 0
-    }
+    },
+    'test7': {
+        'cand1': 0,
+        'cand2': 0,
+        'cand3': 0
+    },
+    'test8': {
+        'cand1': 0,
+        'cand2': 0,
+        'cand3': 0
+    },
+    'test9': {
+        'cand1': 0,
+        'cand2': 0,
+        'cand3': 0
+    },
 }
 
 
@@ -585,8 +632,8 @@ true_sample_sizes = {
     }, 
     'test2': {
         'asn': {
-            'size':22,
-            'prob': .60
+            'size':25,
+            'prob': .66
         },
         .7: 32,
         .8: 41,
@@ -594,21 +641,21 @@ true_sample_sizes = {
     },
     'test3': {
         'asn': {
-            'size': 0,
-            'prob': 0
+            'size': -1,
+            'prob': -1
         },
-        .7: 0,
-        .8: 0,
-        .9: 0,
+        .7: -1,
+        .8: -1,
+        .9: -1,
     },
     'test4': {
         'asn': {
-            'size': 0,
-            'prob': 0
+            'size': -1,
+            'prob': -1
         },
-        .7: 0,
-        .8: 0,
-        .9: 0,
+        .7: -1,
+        .8: -1,
+        .9: -1,
     },
     'test5': {
         'asn': {
@@ -621,13 +668,27 @@ true_sample_sizes = {
     },
     'test6': {
         'asn': {
-            'size': 238,
-            'prob': .79 # Note that this is an artifact of two-way math, and 
+            'size': 476,
+            'prob': .95 # Note that this is an artifact of two-way math, and 
                         # should change once we go to n-winner math
         },
         .7: 368,
         .8: 488,
         .9: 702
-        
-    }
+    },
+    'test7': {
+        'asn': {
+            'size': 236,
+        },
+    },
+    'test8': {
+        'asn': {
+            'size': 59,
+        },
+    },
+    'test9': {
+        'asn': {
+            'size': -1,
+        },
+    },
 }

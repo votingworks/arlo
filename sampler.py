@@ -130,15 +130,15 @@ class Sampler:
         return margins
 
 
-    def get_asns(self):
+    def get_expected_sample_sizes(self):
         """
-        Returns the ASN for a BRAVO audit of each contest in  self.contests.
+        Returns the expected sample size for a BRAVO audit of each contest in  self.contests.
 
         Input:
             None
 
         Output:
-            ASNs - dict of computed ASN for each contest:
+            expected sample sizes - dict of computed expected sample size for each contest:
                 {
                     contest1: asn1,
                     contest2: asn2,
@@ -148,19 +148,36 @@ class Sampler:
         asns = {}
         margins = self.margins
         for contest in self.contests:
-            p_w = margins[contest]['p_w']
-            p_r = margins[contest]['p_r']
-            s_w = margins[contest]['s_w']
+            margin = margins[contest]
+            p_w = 10**7
+            s_w = 0 
+            p_l = 0
+            # Get smallest p_w - p_l
+            for winner in margin['winners']:
+                if margin['winners'][winner]['p_w'] < p_w:
+                    p_w = margin['winners'][winner]['p_w']
+
+            if not margin['losers']:
+                asns[contest] = -1
+                continue
+
+            for loser in margin['losers']:
+                if margin['losers'][loser]['p_l'] > p_l:
+                    p_l = margin['losers'][loser]['p_l']
+
+            s_w = p_w/(p_w + p_l) 
+            s_l = 1 - s_w
+            print(p_w, p_l,  s_w)
 
             if p_w == 1:
                 # Handle single-candidate or crazy landslides
-                asns[contest] = 0
-            elif p_w == p_r:
+                asns[contest] = -1
+            elif p_w == p_l:
                 asns[contest] = self.contests[contest]['ballots']
             else: 
                 z_w = math.log(2 * s_w)
                 z_l = math.log(2 - 2 * s_w)
-                asns[contest] = math.ceil((math.log(1/self.risk_limit) + (z_w / 2)) / ((p_w * z_w) + (p_r * z_l)))
+                asns[contest] = math.ceil((math.log(1/self.risk_limit) + (z_w / 2)) / ((p_w + p_l)*((p_w * z_w) + (p_l * z_l)))) # TODO figure out why (p_w + p_l) is a factor?
 
         return asns
 
@@ -339,31 +356,56 @@ class Sampler:
 
         samples = {}
 
-        asns = self.get_asns()
+        asns = self.get_expected_sample_sizes()
         for contest in self.contests:
             samples[contest] = {}
 
-            winner = self.margins[contest]['winner']
-            runner_up = self.margins[contest]['runner_up']
+            p_w = 10**7
+            s_w = 0 
+            p_l = 0
+            best_loser = ''
+            worse_winner = ''
+
+
+            # For multi-winner, do nothing
+            if self.contests[contest]['winners'] != 1:
+                samples[contest] = {
+                    'asn': {
+                        'size': asns[contest]
+                    }
+
+                }
+
+            margin = self.margins[contest]
+            # Get smallest p_w - p_l
+            for winner in margin['winners']:
+                if margin['winners'][winner]['p_w'] < p_w:
+                    p_w = margin['winners'][winner]['p_w']
+                    worse_winner = winner
+
+            for loser in margin['losers']:
+                if margin['losers'][loser]['p_l'] > p_l:
+                    p_l = margin['losers'][loser]['p_l']
+                    best_loser = loser
 
             # If we're in a single-candidate race, set sample to 0
-            if not runner_up:
+            if not margin['losers']:
                 samples[contest]['asn'] = {
-                    'size': 0,
-                    'prob': 0
+                    'size': -1,
+                    'prob': -1
                 }
                 for quant in quants:
-                    samples[contest][quant] = 0 
+                    samples[contest][quant] = -1
 
                 continue
+            s_w = p_w/(p_w + p_l) 
+            s_l = 1 - s_w
 
-            p_w = self.margins[contest]['p_w']
-            p_r = self.margins[contest]['p_r']
-            s_w = self.margins[contest]['s_w']
+
             num_ballots = self.contests[contest]['ballots']
             
             # Handles ties
-            if p_w == p_r:
+            if p_w == p_l:
                 samples[contest]['asn'] = {
                     'size': num_ballots,
                     'prob': 1,
@@ -374,16 +416,16 @@ class Sampler:
                 continue
 
 
-            sample_w = sample_results[contest][winner]
-            sample_r = sample_results[contest][runner_up]
+            sample_w = sample_results[contest][worse_winner]
+            sample_l = sample_results[contest][best_loser]
            
             samples[contest]['asn'] = {
                 'size': asns[contest],
-                'prob': self.bravo_asn_prob(p_w, p_r, sample_w, sample_r, asns[contest])
+                'prob': self.bravo_asn_prob(p_w, p_l, sample_w, sample_l, asns[contest])
                 }
 
             for quant in quants:
-                samples[contest][quant] = self.bravo_sample_size(p_w, p_r, sample_w, sample_r, quant)
+                samples[contest][quant] = self.bravo_sample_size(p_w, p_l, sample_w, sample_l, quant)
 
         return samples
 
