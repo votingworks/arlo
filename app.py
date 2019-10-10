@@ -236,7 +236,8 @@ def check_round(election, jurisdiction_id, round_id):
     risk, is_complete = sampler.compute_risk(round_contest.contest_id, current_sample_results[round_contest.contest_id])
 
     round.ended_at = datetime.datetime.utcnow()
-    round_contest.end_p_value = risk
+    # TODO this is a hack, should we report pairwise p-values?
+    round_contest.end_p_value = max([risk[pair] for pair in risk])
     round_contest.is_complete = is_complete
 
     db.session.commit()
