@@ -172,6 +172,7 @@ const EstimateSampleSize: React.FC<Props> = ({
         id: uuidv4(),
         name: contest.name,
         totalBallotsCast: Number(contest.totalBallotsCast),
+        winners: Number(contest.winners),
         choices: contest.choices.map(choice => ({
           id: uuidv4(),
           name: choice.name,
