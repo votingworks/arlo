@@ -57,6 +57,7 @@
     "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage",
     "test:update": "react-scripts test -u  --watchAll=false",
     "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "test:wdio": "wdio wdio.conf.js",
     "lint": "eslint --ext ts --ext tsx src",
     "lint:fix": "yarn lint --fix"
   },
