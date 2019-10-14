@@ -1,7 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path')
 
-const filePath = path.join(__dirname, '../_mocks/ballotManifest.csv')
+const filePath = path.join(
+  __dirname,
+  '../_mocks/Ballot Manifest May 2019 Election - WYANDOTTE.csv'
+)
 
 const start = () => {
   browser.url('/')
@@ -27,9 +30,9 @@ const formOne = () => {
 const formTwo = () => {
   formOne()
   $('input[name="manifest"]').setValue(filePath)
-  $('.bp3-heading=Select Ballots to Audit').click()
+  $('.bp3-button-text=Select Ballots To Audit').click()
 
-  $('.bp3-heading=Round One').waitForExist(10000) // failing
+  $('.bp3-heading=Round 1').waitForExist(10000)
 }
 
 describe('create audit page', () => {
