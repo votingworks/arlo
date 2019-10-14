@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const assert = require('assert')
 
 describe('webdriver.io page', () => {
