@@ -89,48 +89,6 @@ describe('SelectBallotsToAudit', () => {
     expect(container).toMatchSnapshot()
   })
 
-  it('handles not having sample size options', () => {
-    const statusState = {
-      contests: [
-        {
-          choices: [
-            {
-              id: 'choice-1',
-              name: 'choice one',
-              numVotes: '792',
-            },
-            {
-              id: 'choice-2',
-              name: 'choice two',
-              numVotes: '1325',
-            },
-          ],
-          id: 'contest-1',
-          name: 'contest name',
-          winners: '1',
-          totalBallotsCast: '2123',
-          sampleSizeOptions: [],
-        },
-      ],
-      jurisdictions: [],
-      rounds: [],
-      name: 'contest name',
-      randomSeed: '123456789',
-      riskLimit: '1',
-    }
-    const container = render(
-      <SelectBallotsToAudit
-        audit={statusState}
-        isLoading={false}
-        setIsLoading={jest.fn()}
-        updateAudit={jest.fn()}
-        getStatus={jest.fn()}
-        electionId="1"
-      />
-    )
-    expect(container).toMatchSnapshot()
-  })
-
   it('has radio for selecting sampleSize', () => {
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit

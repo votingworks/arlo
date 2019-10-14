@@ -119,6 +119,7 @@ export const statusStates: Audit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
+        winners: '1',
       },
     ],
     jurisdictions: [
@@ -322,6 +323,7 @@ export const statusStates: Audit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
+        winners: '1',
       },
     ],
     jurisdictions: [
