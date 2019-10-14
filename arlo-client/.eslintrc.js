@@ -27,6 +27,8 @@ module.exports = {
   ],
   globals: {
     "browser": true,
+    "$": true,
+    "$$": true,
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
     // fetch: true, // required if using via 'jest-fetch-mock'
