@@ -44,4 +44,15 @@ describe('audit flow', () => {
     ballotNext('Blank vote/no mark')
     $('.bp3-callout*=Round 1: auditing ballot 5 of 5').waitForExist()
   })
+
+  it('enters a comment', () => {
+    $('a=Start Auditing').click()
+    $('.bp3-button-text=Add comment').click()
+    const comment = $('textarea[name="comment"]')
+    comment.waitForExist()
+    comment.addValue('Test comment text')
+    $(`.radio-text=Yes/For`).click()
+    $('.bp3-button-text=Review').click()
+    $('p=COMMENT: Test comment text').waitForExist()
+  })
 })
