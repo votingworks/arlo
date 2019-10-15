@@ -168,9 +168,11 @@ class Sampler:
                 if margin['losers'][loser]['p_l'] > p_l:
                     p_l = margin['losers'][loser]['p_l']
 
+
             s_w = p_w/(p_w + p_l) 
             s_l = 1 - s_w
-            print(p_w, p_l,  s_w)
+
+            print(p_w, p_l, s_w, s_l)
 
             if p_w == 1:
                 # Handle single-candidate or crazy landslides
@@ -180,8 +182,13 @@ class Sampler:
             else: 
                 z_w = math.log(2 * s_w)
                 z_l = math.log(2 - 2 * s_w)
-                asns[contest] = math.ceil((math.log(1/self.risk_limit) + (z_w / 2)) / ((p_w + p_l)*((p_w * z_w) + (p_l * z_l)))) # TODO figure out why (p_w + p_l) is a factor?
+                p = p_w + s_l
+                print(z_w, z_l, p, self.risk_limit)
+                asns[contest] = math.ceil((math.log(1.0/self.risk_limit) + (z_w / 2.0)) / (p_w*z_w + p_l*z_l))
+                print('Num: {}'.format((math.log(1.0/self.risk_limit) + z_w/2.0)))
+                print('Denom: {}'.format(((p_w*z_w) + (p_l*z_l))))
 
+        print(asns)
         return asns
 
     def bravo_sample_size(self, p_w, p_r, sample_w, sample_r, p_completion):
@@ -374,10 +381,11 @@ class Sampler:
             if 'winners' not in self.contests[contest] or self.contests[contest]['winners'] != 1:
                 samples[contest] = {
                     'asn': {
-                        'size': asns[contest]
+                        'size': asns[contest],
+                        'prob': None
                     }
-
                 }
+                return samples
 
             margin = self.margins[contest]
             # Get smallest p_w - p_l

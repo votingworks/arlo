@@ -53,6 +53,7 @@ def contest_status(election):
             [choice.id, choice.num_votes]
             for choice in contest.choices])
         contests[contest.id]['ballots'] = contest.total_ballots_cast
+        contests[contest.id]['winners'] = contest.winners
 
     return contests
 
@@ -96,9 +97,11 @@ def compute_sample_sizes(round_contest):
         type = None
 
         if prob_or_asn == "asn":
+            if size["prob"]:
+                prob = round(size["prob"], 2), # round to the nearest hundreth 
             sample_size_options.append({
                 "type": "ASN",
-                "prob": round(size["prob"], 2), # round to the nearest hundreth 
+                "prob": prob,
                 "size": int(math.ceil(size["size"]))
             })
         else:
@@ -269,7 +272,8 @@ def audit_status(election_id = None):
                         "numVotes": choice.num_votes
                     }
                     for choice in contest.choices],
-                "totalBallotsCast": contest.total_ballots_cast
+                "totalBallotsCast": contest.total_ballots_cast,
+                "winners": contest.winners
             }
             for contest in election.contests],
         jurisdictions=[
@@ -331,7 +335,8 @@ def audit_basic_update(election_id=None):
         contest_obj = TargetedContest(election_id = election.id,
                              id = contest['id'],
                              name = contest['name'],
-                             total_ballots_cast = contest['totalBallotsCast'])
+                             total_ballots_cast = contest['totalBallotsCast'],
+                             winners = contest['winners'])
         db.session.add(contest_obj)
 
         for choice in contest['choices']:
@@ -519,6 +524,7 @@ def audit_report(election_id=None):
     choices = contest.choices
     
     report_writer.writerow(["Contest Name", contest.name])
+    report_writer.writerow(["Winners", contest.winners])
     report_writer.writerow(["Total Ballots Cast", contest.total_ballots_cast])
 
     for choice in choices:
