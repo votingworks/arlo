@@ -75,6 +75,13 @@ def sampler():
             'ballots': 700,
             'winners': 2
         },
+        'test10': {
+            'cand1': 600,
+            'cand2': 300,
+            'cand3': 100,
+            'ballots': 1000,
+            'winners': 2
+        },
     }
 
 
@@ -247,6 +254,31 @@ def test_compute_margins(sampler):
                 }
             },
             'losers': {}
+        },
+        'test10': {
+            'winners': {
+                'cand1': {
+                    'p_w': 600/1000,
+                    's_w': 600/1000,
+                    'swl': {
+                        'cand3': 600/700
+                    }
+                },
+                'cand2': {
+                    'p_w': 300/1000,
+                    's_w': 300/1000,
+                    'swl': {
+                        'cand3': 300/400
+                    }
+                }
+            },
+            'losers': {
+                'cand3': {
+                    'p_l': 100/1000,
+                    's_l': 100/1000
+                    
+                }
+            }
         }
     }
 
@@ -286,14 +318,15 @@ def test_expected_sample_sizes(sampler):
 
     true_asns = {
         'test1': 119,
-        'test2': 25,
+        'test2': 22,
         'test3': -1,
         'test4': -1,
         'test5': 1000,
-        'test6': 476,
-        'test7': 236,
-        'test8': 59,
+        'test6': 238,
+        'test7': 101,
+        'test8': 34,
         'test9': -1,
+        'test10': 48,
     }
 
     computed_asns = sampler.get_expected_sample_sizes()
@@ -494,6 +527,10 @@ def test_compute_risk(sampler):
                         ('cand1',): 1,
                         ('cand2',): 1,
                     },
+            'test10': {
+                        ('cand1','cand3'): 0,
+                        ('cand2','cand3'): 0.01,
+                    },
     }
 
     expected_decisions = {
@@ -506,6 +543,7 @@ def test_compute_risk(sampler):
         'test7': True,
         'test8': False,
         'test9': False,
+        'test10': True,
     }
 
     for contest, sample in round1_sample_results.items():
@@ -603,6 +641,11 @@ round1_sample_results = {
         'cand1': 1,
         'cand2': 1,
     },
+    'test10': {
+        'cand1': 60,
+        'cand2': 30,
+        'cand3': 10
+    },
 }
 
 
@@ -666,8 +709,8 @@ true_sample_sizes = {
     }, 
     'test2': {
         'asn': {
-            'size':25,
-            'prob': .66
+            'size':22,
+            'prob': .6
         },
         .7: 32,
         .8: 41,
@@ -702,9 +745,9 @@ true_sample_sizes = {
     },
     'test6': {
         'asn': {
-            'size': 476,
-            'prob': .95 # Note that this is an artifact of two-way math, and 
-                        # should change once we go to n-winner math
+            'size': 238,
+            'prob': .79 
+                        
         },
         .7: 368,
         .8: 488,
@@ -712,17 +755,26 @@ true_sample_sizes = {
     },
     'test7': {
         'asn': {
-            'size': 236,
+            'size': 101,
+            'prob': None,
         },
     },
     'test8': {
         'asn': {
             'size': 59,
+            'prob': None,
         },
     },
     'test9': {
         'asn': {
             'size': -1,
+            'prob': None,
+        },
+    },
+    'test10': {
+        'asn': {
+            'size': 48,
+            'prob': None,
         },
     },
 }

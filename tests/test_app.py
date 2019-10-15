@@ -94,7 +94,8 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
                         }                        
                     ],
 
-                    "totalBallotsCast": 86147
+                    "totalBallotsCast": 86147,
+                    "winners": 1
                 }
             ]
         })
@@ -285,7 +286,8 @@ def test_small_election(client):
                         }                        
                     ],
 
-                    "totalBallotsCast": 2123
+                    "totalBallotsCast": 2123,
+                    "winners": 1,
                 }
             ]
         })
