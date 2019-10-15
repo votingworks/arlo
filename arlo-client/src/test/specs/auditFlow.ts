@@ -19,6 +19,32 @@ const ballotNext = (option: voteValue) => {
   }
 }
 
+const ballotPrev = () => {
+  const callout = $('.bp3-callout*=Round 1: auditing ballot')
+    .getText()
+    .split(' ')
+  const ballot = Number(callout[callout.length - 3])
+  $('.bp3-button-text=Back').click()
+  if (ballot === 1) {
+    return false
+  } else {
+    return true
+  }
+}
+
+const ballotSkip = () => {
+  const callout = $('.bp3-callout*=Round 1: auditing ballot')
+    .getText()
+    .split(' ')
+  const ballot = Number(callout[callout.length - 3])
+  $(`.bp3-button-text=Ballot ${ballot} not found - move to next ballot`).click()
+  if (ballot === 1) {
+    return false
+  } else {
+    return true
+  }
+}
+
 beforeEach(() => {
   formTwo()
   $('a=Audit Board #1').click()
@@ -54,5 +80,13 @@ describe('audit flow', () => {
     $(`.radio-text=Yes/For`).click()
     $('.bp3-button-text=Review').click()
     $('p=COMMENT: Test comment text').waitForExist()
+  })
+
+  it('skips forward and back', () => {
+    $('a=Start Auditing').click()
+    ;[1, 2, 3, 4].forEach(_ => ballotSkip())
+    while (ballotPrev())
+      $('.bp3-callout*=Round 1: auditing ballot').waitForExist()
+    $('h1*=Ballot Cards to Audit').waitForExist(10000)
   })
 })
