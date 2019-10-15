@@ -47,7 +47,10 @@ const TEXT = {
   NO: 'No/Against',
   NO_CONSENSUS: 'No audit board consensus',
   NO_VOTE: 'Blank vote/no mark',
-}
+} as const
+
+export type voteKey = keyof typeof TEXT
+export type voteValue = typeof TEXT[voteKey]
 
 const BlockRadio = ({
   name = '',
