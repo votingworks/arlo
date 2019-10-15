@@ -19,7 +19,7 @@ exports.config = {
   // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
-  specs: ['./test/specs/**/*.js'],
+  specs: ['./src/test/specs/**/*.ts'],
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
@@ -135,9 +135,9 @@ exports.config = {
     // The Jasmine framework allows interception of each assertion in order to log the state of the application
     // or website depending on the result. For example, it is pretty handy to take a screenshot every time
     // an assertion fails.
-    expectationResultHandler: function(passed, assertion) {
-      // do something
-    },
+    // expectationResultHandler: function(passed, assertion) {
+    //   do something
+    // },
   },
 
   //
@@ -162,7 +162,7 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {Array.<String>} specs List of spec file paths that are to be run
    */
-  // beforeSession: function (config, capabilities, specs) {
+  // beforeSession: function(config, capabilities, specs) {
   // },
   /**
    * Gets executed before test execution begins. At this point you can access to all global
@@ -172,6 +172,21 @@ exports.config = {
    */
   // before: function (capabilities, specs) {
   // },
+  before: function() {
+    require('@babel/register')({
+      extensions: ['.ts', '.es6', '.es', '.jsx', '.js', '.mjs'],
+      presets: [
+        [
+          '@babel/preset-env',
+          {
+            targets: {
+              node: 'current',
+            },
+          },
+        ],
+      ],
+    })
+  },
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {String} commandName hook command name

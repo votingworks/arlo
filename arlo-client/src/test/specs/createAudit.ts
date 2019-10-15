@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const path = require('path')
+import * as path from 'path'
 
 const filePath = path.join(
   __dirname,
