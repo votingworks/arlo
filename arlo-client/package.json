@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/register": "^7.6.2",
     "@blueprintjs/core": "^3.20.0",
     "@blueprintjs/table": "^3.8.1",
     "@testing-library/jest-dom": "^4.0.0",
