@@ -20,6 +20,10 @@ exports.config = {
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
   specs: ['./src/test/specs/**/*.ts'],
+  suites: {
+    audit: ['./src/test/specs/auditFlow.ts'],
+    createAudit: ['./src/test/specs/createAudit.ts'],
+  },
   // Patterns to exclude.
   exclude: [
     // 'path/to/excluded/files'
