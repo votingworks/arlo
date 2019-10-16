@@ -1,4 +1,10 @@
-import { formTwo } from './helpers'
+import {
+  fillFormTwo,
+  start,
+  fillFormOne,
+  submitFormOne,
+  submitFormTwo,
+} from './helpers'
 import { voteValue } from '../../components/AuditFlow/BlockRadio'
 
 const ballotNext = (option: voteValue) => {
@@ -46,7 +52,11 @@ const ballotSkip = () => {
 }
 
 beforeEach(() => {
-  formTwo()
+  start()
+  fillFormOne()
+  submitFormOne()
+  fillFormTwo()
+  submitFormTwo()
   $('a=Audit Board #1').click()
   $('h1*=Ballot Cards to Audit').waitForExist(10000)
 })

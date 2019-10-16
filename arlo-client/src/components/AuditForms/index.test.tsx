@@ -73,11 +73,11 @@ describe('RiskLimitingAuditForm', () => {
     })
     const { container, getByTestId } = utils!
 
-    const formTwo = await waitForElement(() => getByTestId('form-two'), {
+    const fillFormTwo = await waitForElement(() => getByTestId('form-two'), {
       container,
     })
 
-    expect(formTwo).toBeTruthy()
+    expect(fillFormTwo).toBeTruthy()
     expect(container).toMatchSnapshot()
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
@@ -94,11 +94,11 @@ describe('RiskLimitingAuditForm', () => {
     })
     const { container, getByTestId, queryByTestId } = utils!
 
-    const formTwo = await waitForElement(() => getByTestId('form-two'), {
+    const fillFormTwo = await waitForElement(() => getByTestId('form-two'), {
       container,
     })
 
-    expect(formTwo).toBeTruthy()
+    expect(fillFormTwo).toBeTruthy()
     expect(queryByTestId('form-three-1')).toBeNull()
     expect(container).toMatchSnapshot()
     await wait(() => {
