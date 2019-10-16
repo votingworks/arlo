@@ -99,4 +99,9 @@ describe('audit flow', () => {
       $('.bp3-callout*=Round 1: auditing ballot').waitForExist()
     $('h1*=Ballot Cards to Audit').waitForExist(10000)
   })
+
+  it('has the right name for the contest', () => {
+    $('a=Start Auditing').click()
+    expect($('h3=Contest Name')).toBeTruthy()
+  })
 })

@@ -38,6 +38,16 @@ describe('form two', () => {
     fillFormTwo()
     submitFormTwo()
   })
+
+  it('should accept custom audit board names', () => {
+    start()
+    fillFormOne()
+    submitFormOne()
+    fillFormTwo()
+    $('input[name="auditNames[0]"]').addValue('First Audit Board')
+    submitFormTwo()
+    expect($('a=First Audit Board')).toBeTruthy()
+  })
 })
 
 describe('form three', () => {
