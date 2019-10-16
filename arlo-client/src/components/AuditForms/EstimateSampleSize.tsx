@@ -296,7 +296,7 @@ const EstimateSampleSize: React.FC<Props> = ({
                               />
                             </label>
                             <FormSectionDescription>
-                              Enter the number of winners for the contest
+                              Enter the number of winners for the contest.
                             </FormSectionDescription>
                             <label htmlFor={`contests[${i}].winners`}>
                               Winners
