@@ -91,7 +91,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
         <div
           class="sc-bwzfXH izcbHX"
         >
-          Enter the number of winners for the contest
+          Enter the number of winners for the contest.
         </div>
         <label
           for="contests[0].winners"
@@ -498,7 +498,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
         <div
           class="sc-bwzfXH izcbHX"
         >
-          Enter the number of winners for the contest
+          Enter the number of winners for the contest.
         </div>
         <label
           for="contests[0].winners"
@@ -931,7 +931,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
         <div
           class="sc-bwzfXH izcbHX"
         >
-          Enter the number of winners for the contest
+          Enter the number of winners for the contest.
         </div>
         <label
           for="contests[0].winners"
@@ -1338,7 +1338,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
         <div
           class="sc-bwzfXH izcbHX"
         >
-          Enter the number of winners for the contest
+          Enter the number of winners for the contest.
         </div>
         <label
           for="contests[0].winners"
@@ -1771,7 +1771,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
         <div
           class="sc-bwzfXH izcbHX"
         >
-          Enter the number of winners for the contest
+          Enter the number of winners for the contest.
         </div>
         <label
           for="contests[0].winners"
@@ -2178,7 +2178,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
         <div
           class="sc-bwzfXH izcbHX"
         >
-          Enter the number of winners for the contest
+          Enter the number of winners for the contest.
         </div>
         <label
           for="contests[0].winners"
@@ -2611,7 +2611,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
         <div
           class="sc-bwzfXH izcbHX"
         >
-          Enter the number of winners for the contest
+          Enter the number of winners for the contest.
         </div>
         <label
           for="contests[0].winners"
@@ -3018,7 +3018,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
         <div
           class="sc-bwzfXH izcbHX"
         >
-          Enter the number of winners for the contest
+          Enter the number of winners for the contest.
         </div>
         <label
           for="contests[0].winners"
@@ -3449,7 +3449,7 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
         <div
           class="sc-bwzfXH izcbHX"
         >
-          Enter the number of winners for the contest
+          Enter the number of winners for the contest.
         </div>
         <label
           for="contests[0].winners"
@@ -3865,7 +3865,7 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
         <div
           class="sc-bwzfXH izcbHX"
         >
-          Enter the number of winners for the contest
+          Enter the number of winners for the contest.
         </div>
         <label
           for="contests[0].winners"
