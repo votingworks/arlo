@@ -401,7 +401,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
     </form>
     <form
       data-testid="form-two"
-      id="formTwo"
+      id="fillFormTwo"
     >
       <hr />
       <div
@@ -1885,7 +1885,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
     </form>
     <form
       data-testid="form-two"
-      id="formTwo"
+      id="fillFormTwo"
     >
       <hr />
       <div
@@ -2723,7 +2723,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
     </form>
     <form
       data-testid="form-two"
-      id="formTwo"
+      id="fillFormTwo"
     >
       <hr />
       <div

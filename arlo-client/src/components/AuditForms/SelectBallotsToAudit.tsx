@@ -275,7 +275,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
         touched,
         setFieldValue,
       }: FormikProps<ISelectBallotsToAuditValues>) => (
-        <form onSubmit={handleSubmit} id="formTwo" data-testid="form-two">
+        <form onSubmit={handleSubmit} id="fillFormTwo" data-testid="form-two">
           <hr />
           <FormWrapper>
             <FormTitle>Select Ballots to Audit</FormTitle>
