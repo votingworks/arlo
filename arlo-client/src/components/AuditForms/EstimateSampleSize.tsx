@@ -366,7 +366,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
                                       onClick={() =>
                                         choicesArrayHelpers.push({
                                           name: '',
-                                          numVotes: 0,
+                                          numVotes: '',
                                         })
                                       }
                                     >
