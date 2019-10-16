@@ -12,8 +12,8 @@ export const start = () => {
 }
 
 export const fillFormOne = () => {
-  $('#audit-name').addValue('Election')
-  $('input[name="contests[0].name"]').addValue('Contest')
+  $('#audit-name').addValue('Election Name')
+  $('input[name="contests[0].name"]').addValue('Contest Name')
   $('input[name="contests[0].choices[0].name"]').addValue('Choice One')
   $('input[name="contests[0].choices[0].numVotes"]').addValue('792')
   $('input[name="contests[0].choices[1].name"]').addValue('Choice Two')
