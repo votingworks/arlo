@@ -1,4 +1,11 @@
-import { start, formOne, formTwo, formThreeNext } from './helpers'
+import {
+  start,
+  fillFormOne,
+  fillFormTwo,
+  formThreeNext,
+  submitFormOne,
+  submitFormTwo,
+} from './helpers'
 
 describe('create audit page', () => {
   it('should have a button', () => {
@@ -17,31 +24,49 @@ describe('create audit page', () => {
 
 describe('form one', () => {
   it('should submit', () => {
-    formOne()
+    start()
+    fillFormOne()
+    submitFormOne()
   })
 })
 
 describe('form two', () => {
   it('should submit', () => {
-    formTwo()
+    start()
+    fillFormOne()
+    submitFormOne()
+    fillFormTwo()
+    submitFormTwo()
   })
 })
 
 describe('form three', () => {
   it('should go to the next round', () => {
-    formTwo()
+    start()
+    fillFormOne()
+    submitFormOne()
+    fillFormTwo()
+    submitFormTwo()
     formThreeNext()
   })
 
   it('should cycle through several rounds', () => {
-    formTwo()
+    start()
+    fillFormOne()
+    submitFormOne()
+    fillFormTwo()
+    submitFormTwo()
     formThreeNext()
     formThreeNext()
     formThreeNext()
   })
 
   it('should complete the audit', () => {
-    formTwo()
+    start()
+    fillFormOne()
+    submitFormOne()
+    fillFormTwo()
+    submitFormTwo()
     formThreeNext()
     const inputs = $$('.bp3-input')
     inputs[inputs.length - 2].addValue('100')

@@ -4,7 +4,7 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
 <div>
   <form
     data-testid="form-two"
-    id="formTwo"
+    id="fillFormTwo"
   >
     <hr />
     <div
@@ -170,7 +170,7 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
 <div>
   <form
     data-testid="form-two"
-    id="formTwo"
+    id="fillFormTwo"
   >
     <hr />
     <div
@@ -333,7 +333,7 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
 <div>
   <form
     data-testid="form-two"
-    id="formTwo"
+    id="fillFormTwo"
   >
     <hr />
     <div
@@ -493,7 +493,7 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
 <div>
   <form
     data-testid="form-two"
-    id="formTwo"
+    id="fillFormTwo"
   >
     <hr />
     <div

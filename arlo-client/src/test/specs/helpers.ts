@@ -11,8 +11,7 @@ export const start = () => {
   $('#audit-name').waitForExist(5000)
 }
 
-export const formOne = () => {
-  start()
+export const fillFormOne = () => {
   $('#audit-name').addValue('Election')
   $('input[name="contests[0].name"]').addValue('Contest')
   $('input[name="contests[0].choices[0].name"]').addValue('Choice One')
@@ -21,16 +20,19 @@ export const formOne = () => {
   $('input[name="contests[0].choices[1].numVotes"]').addValue('1325')
   $('input[name="contests[0].totalBallotsCast"]').addValue('2123')
   $('#random-seed').addValue('1234567890')
-  $('.bp3-button.bp3-intent-primary').click()
+}
 
+export const submitFormOne = () => {
+  $('.bp3-button.bp3-intent-primary').click()
   $('.bp3-heading=Select Ballots to Audit').waitForExist(10000)
 }
 
-export const formTwo = () => {
-  formOne()
+export const fillFormTwo = () => {
   $('input[name="manifest"]').setValue(filePath)
-  $('.bp3-button-text=Select Ballots To Audit').click()
+}
 
+export const submitFormTwo = () => {
+  $('.bp3-button-text=Select Ballots To Audit').click()
   $('.bp3-heading=Round 1').waitForExist(10000)
 }
 
