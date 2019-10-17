@@ -14,51 +14,51 @@ def sampler():
             'cand1': 600,
             'cand2': 400,
             'ballots': 1000,
-            'winners': 1
+            'numWinners': 1
         },
         'test2': {
             'cand1': 600,
             'cand2': 200,
             'cand3': 100,
             'ballots': 900,
-            'winners': 1
+            'numWinners': 1
         },
         'test3': {
             'cand1': 100,
             'ballots': 100,
-            'winners': 1
+            'numWinners': 1
         },
         'test4': {
             'cand1': 100,
             'ballots': 100,
-            'winners': 1
+            'numWinners': 1
         },
         'test5': {
             'cand1' : 500,
             'cand2': 500,
             'ballots': 1000,
-            'winners': 1
+            'numWinners': 1
         },
         'test6': {
             'cand1': 300,
             'cand2': 200,
             'cand3': 200,
             'ballots': 1000,
-            'winners': 1
+            'numWinners': 1
         },
         'test7': {
             'cand1': 300,
             'cand2': 200,
             'cand3': 100,
             'ballots': 700,
-            'winners': 2
+            'numWinners': 2
         },
         'test7': {
             'cand1': 300,
             'cand2': 200,
             'cand3': 100,
             'ballots': 700,
-            'winners': 2
+            'numWinners': 2
 
         },
         'test8': {
@@ -66,21 +66,21 @@ def sampler():
             'cand2': 300,
             'cand3': 100,
             'ballots': 700,
-            'winners': 2
+            'numWinners': 2
 
         },
         'test9': {
             'cand1': 300,
             'cand2': 200,
             'ballots': 700,
-            'winners': 2
+            'numWinners': 2
         },
         'test10': {
             'cand1': 600,
             'cand2': 300,
             'cand3': 100,
             'ballots': 1000,
-            'winners': 2
+            'numWinners': 2
         },
     }
 
@@ -445,7 +445,7 @@ def test_get_sample_sizes(sampler):
         for key in true_sample_sizes[contest]:
             if key == 'asn': 
                 # Check probs:
-                if sampler.contests[contest]['winners'] == 1:
+                if sampler.contests[contest]['numWinners'] == 1:
                     expected_prob = true_sample_sizes[contest][key]['prob']
                     computed_prob = round(computed_samples[contest][key]['prob'], 2)
 
@@ -457,7 +457,7 @@ def test_get_sample_sizes(sampler):
                 expected =  true_sample_sizes[contest][key]
                 computed = computed_samples[contest][key]
             diff = expected - computed
-            # TODO are these tolerances acceptable?
+
             assert not diff , '{} sample size for {} failed: got {}, expected {}'.format(key, contest, computed, expected)
 
 def test_draw_sample(sampler):

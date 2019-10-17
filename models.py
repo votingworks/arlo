@@ -65,7 +65,7 @@ class TargetedContest(db.Model):
     election_id = db.Column(db.String(200), db.ForeignKey('election.id', ondelete='cascade'), nullable=False)
     name = db.Column(db.String(200), nullable=False)
     total_ballots_cast = db.Column(db.Integer, nullable=False)
-    winners = db.Column(db.Integer, nullable=False)
+    num_winners = db.Column(db.Integer, nullable=False)
 
     choices = relationship('TargetedContestChoice', backref='contest', passive_deletes=True)
     results = relationship('RoundContestResult', backref='contest', passive_deletes=True)

@@ -89,14 +89,14 @@ class Sampler:
             cand_vec = sorted(
                     [(cand, self.contests[contest][cand]) 
                         for cand in self.contests[contest]
-                            if cand not in ['winners', 'ballots']
+                            if cand not in ['numWinners', 'ballots']
                     ], 
             key=operator.itemgetter(1), reverse = True)
 
-            if 'winners' not in self.contests[contest]:
+            if 'numWinners' not in self.contests[contest]:
                 num_winners = 1
             else:
-                num_winners = self.contests[contest]['winners']
+                num_winners = self.contests[contest]['numWinners']
             winners = cand_vec[:num_winners]
             losers = cand_vec[num_winners:]
 
@@ -378,7 +378,7 @@ class Sampler:
 
 
             # For multi-winner, do nothing
-            if 'winners' not in self.contests[contest] or self.contests[contest]['winners'] != 1:
+            if 'numWinners' not in self.contests[contest] or self.contests[contest]['numWinners'] != 1:
                 samples[contest] = {
                     'asn': {
                         'size': asns[contest],
