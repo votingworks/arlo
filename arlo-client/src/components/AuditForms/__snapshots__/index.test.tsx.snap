@@ -86,7 +86,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           <div
             class="sc-bwzfXH izcbHX"
           >
-            Enter the number of winners for the contest
+            Enter the number of winners for the contest.
           </div>
           <label
             for="contests[0].winners"
@@ -722,7 +722,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           <div
             class="sc-bwzfXH izcbHX"
           >
-            Enter the number of winners for the contest
+            Enter the number of winners for the contest.
           </div>
           <label
             for="contests[0].winners"
@@ -1142,7 +1142,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
           <div
             class="sc-bwzfXH izcbHX"
           >
-            Enter the number of winners for the contest
+            Enter the number of winners for the contest.
           </div>
           <label
             for="contests[0].winners"
@@ -1564,7 +1564,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           <div
             class="sc-bwzfXH izcbHX"
           >
-            Enter the number of winners for the contest
+            Enter the number of winners for the contest.
           </div>
           <label
             for="contests[0].winners"
@@ -2358,7 +2358,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           <div
             class="sc-bwzfXH izcbHX"
           >
-            Enter the number of winners for the contest
+            Enter the number of winners for the contest.
           </div>
           <label
             for="contests[0].winners"
@@ -2994,7 +2994,7 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
           <div
             class="sc-bwzfXH izcbHX"
           >
-            Enter the number of winners for the contest
+            Enter the number of winners for the contest.
           </div>
           <label
             for="contests[0].winners"
