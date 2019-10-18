@@ -166,7 +166,6 @@ def sample_ballots(election, round):
         num_sampled = 0
 
     chosen_sample_size = round_contest.sample_size
-    print(chosen_sample_size, num_sampled)
     sampler = get_sampler(election)
     sample = sampler.draw_sample(manifest_summary(jurisdiction), chosen_sample_size, num_sampled=num_sampled)
 
