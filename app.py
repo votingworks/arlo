@@ -92,6 +92,7 @@ def compute_sample_sizes(round_contest):
     raw_sample_size_options = sampler.get_sample_sizes(sample_results(election))[election.contests[0].id]
     sample_size_options = []
     sample_size_90 = None
+    sample_size_backup = None
     for (prob_or_asn, size) in raw_sample_size_options.items():
         prob = None
         type = None
@@ -104,6 +105,8 @@ def compute_sample_sizes(round_contest):
                 "prob": prob,
                 "size": int(math.ceil(size["size"]))
             })
+            sample_size_backup = int(math.ceil(size["size"]))
+
         else:
             prob = prob_or_asn
             sample_size_options.append({
@@ -117,6 +120,10 @@ def compute_sample_sizes(round_contest):
                 sample_size_90 = size
     
     round_contest.sample_size_options = json.dumps(sample_size_options)
+
+    # if we are in multi-winner, there is no sample_size_90 so fix it
+    if not sample_size_90:
+        sample_size_90 = sample_size_backup
 
     # for later rounds, we always pick 90%
     if round_contest.round.round_num > 1:
@@ -159,6 +166,7 @@ def sample_ballots(election, round):
         num_sampled = 0
 
     chosen_sample_size = round_contest.sample_size
+    print(chosen_sample_size, num_sampled)
     sampler = get_sampler(election)
     sample = sampler.draw_sample(manifest_summary(jurisdiction), chosen_sample_size, num_sampled=num_sampled)
 
