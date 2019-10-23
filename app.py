@@ -17,7 +17,7 @@ if database_url == "":
     database_url = SQLITE_DATABASE_URL
 
 # enforce foreign keys in SQLite
-if database_url[:7] == "sqlite:":
+if database_url.startswith("sqlite:"):
     @event.listens_for(Engine, "connect")
     def set_sqlite_pragma(dbapi_connection, connection_record):
         cursor = dbapi_connection.cursor()
