@@ -21,7 +21,7 @@ import {
   IRoundContest,
   IAudit,
 } from '../../types'
-import { dummyBoard } from '../AuditFlow/_mocks'
+import { statusStates } from './_mocks'
 
 const InputSection = styled.div`
   display: block;
@@ -93,7 +93,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
 
   const downloadLabels = (r: number): void => {
     audit.jurisdictions[0].auditBoards.forEach(
-      b => (b.ballots = dummyBoard[3].ballots)
+      b => (b.ballots = statusStates[4].jurisdictions[0].auditBoards[0].ballots)
     )
     /* istanbul ignore else */
     if (audit.jurisdictions[0].auditBoards.every(b => !!b.ballots)) {
@@ -131,7 +131,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
 
   const downloadPlaceholders = (r: number): void => {
     audit.jurisdictions[0].auditBoards.forEach(
-      b => (b.ballots = dummyBoard[3].ballots)
+      b => (b.ballots = statusStates[4].jurisdictions[0].auditBoards[0].ballots)
     )
     /* istanbul ignore else */
     if (audit.jurisdictions[0].auditBoards.every(b => !!b.ballots)) {
