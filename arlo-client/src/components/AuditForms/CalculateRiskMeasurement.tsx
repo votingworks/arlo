@@ -117,14 +117,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
           }
           const x = getX(labelCount - 1)
           const y = getY(labelCount - 1)
-          labels.text(
-            labels.splitTextToSize(
-              `Audit Board #${i + 1}: ${board.name}`,
-              60
-            )[0],
-            x,
-            y[0]
-          )
+          labels.text(labels.splitTextToSize(board.name, 60)[0], x, y[0])
           labels.text(
             labels.splitTextToSize(`Batch Name: ${ballot.batch}`, 60),
             x,
@@ -151,10 +144,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
         board.ballots!.forEach(ballot => {
           pageCount > 0 && placeholders.addPage('letter')
           placeholders.text(
-            placeholders.splitTextToSize(
-              `Audit Board #${i + 1}: ${board.name}`,
-              180
-            ),
+            placeholders.splitTextToSize(board.name, 180),
             20,
             20
           )
