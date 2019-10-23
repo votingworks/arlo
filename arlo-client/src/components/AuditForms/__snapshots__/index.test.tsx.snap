@@ -587,13 +587,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           >
             <div
               class="sc-kGXeez dEUkfc"
-            >
-              <input
-                data-testid="audit-name-0"
-                name="auditNames[0]"
-                value="Audit Board #1"
-              />
-            </div>
+            />
           </div>
         </div>
         <div
@@ -2061,12 +2055,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             <div
               class="sc-kGXeez dEUkfc"
             >
-              <input
-                data-testid="audit-name-0"
-                disabled=""
-                name="auditNames[0]"
-                value="Audit Board #1"
-              />
               <a
                 class="bp3-text-small"
                 href="/election/1/board/audit-board-1"
@@ -2676,13 +2664,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           >
             <div
               class="sc-kGXeez dEUkfc"
-            >
-              <input
-                data-testid="audit-name-0"
-                name="auditNames[0]"
-                value=""
-              />
-            </div>
+            />
           </div>
         </div>
         <div

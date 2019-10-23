@@ -369,11 +369,11 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                       {values.auditNames.map((name, i) => (
                         /* eslint-disable react/no-array-index-key */
                         <AuditBoard key={i}>
-                          <Field
+                          {/* <Field
                             name={`auditNames[${i}]`}
                             data-testid={`audit-name-${i}`}
                             disabled={sampleSizeSelected}
-                          />
+                          /> */}
                           {sampleSizeSelected && (
                             <>
                               <Link
