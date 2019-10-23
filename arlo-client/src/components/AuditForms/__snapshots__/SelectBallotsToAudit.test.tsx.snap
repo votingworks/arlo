@@ -110,31 +110,13 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
         >
           <div
             class="sc-jTzLTM iSsWST"
-          >
-            <input
-              data-testid="audit-name-0"
-              name="auditNames[0]"
-              value=""
-            />
-          </div>
+          />
           <div
             class="sc-jTzLTM iSsWST"
-          >
-            <input
-              data-testid="audit-name-1"
-              name="auditNames[1]"
-              value=""
-            />
-          </div>
+          />
           <div
             class="sc-jTzLTM iSsWST"
-          >
-            <input
-              data-testid="audit-name-2"
-              name="auditNames[2]"
-              value=""
-            />
-          </div>
+          />
         </div>
       </div>
       <div
@@ -294,22 +276,10 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
         >
           <div
             class="sc-jTzLTM iSsWST"
-          >
-            <input
-              data-testid="audit-name-0"
-              name="auditNames[0]"
-              value=""
-            />
-          </div>
+          />
           <div
             class="sc-jTzLTM iSsWST"
-          >
-            <input
-              data-testid="audit-name-1"
-              name="auditNames[1]"
-              value=""
-            />
-          </div>
+          />
         </div>
       </div>
       <div
@@ -469,13 +439,7 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
         >
           <div
             class="sc-jTzLTM iSsWST"
-          >
-            <input
-              data-testid="audit-name-0"
-              name="auditNames[0]"
-              value=""
-            />
-          </div>
+          />
         </div>
       </div>
       <div
@@ -635,13 +599,7 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
         >
           <div
             class="sc-jTzLTM iSsWST"
-          >
-            <input
-              data-testid="audit-name-0"
-              name="auditNames[0]"
-              value=""
-            />
-          </div>
+          />
         </div>
       </div>
       <div
