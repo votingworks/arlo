@@ -1,5 +1,5 @@
 import os, datetime, csv, io, math, json, uuid
-from flask import Flask, send_from_directory, jsonify, request, Response
+from flask import Flask, jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from sampler import Sampler
 
@@ -579,14 +579,10 @@ def audit_reset(election_id=None):
 
 
 # React App
-@app.route('/', defaults={'path': ''})
-@app.route('/election/<election_id>', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve(path, election_id=None):
-    if path != "" and os.path.exists(app.static_folder + path):
-        return send_from_directory(app.static_folder, path)
-    else:
-        return send_from_directory(app.static_folder, 'index.html')
+@app.route('/')
+@app.route('/election/<election_id>')
+def serve(election_id=None):
+    return app.send_static_file('index.html')
 
 
 if __name__ == '__main__':
