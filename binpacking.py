@@ -1,6 +1,6 @@
 import csv
 import operator
-import statistics
+import numpy
 from typing import Dict, Optional, Tuple, List
 
 class Bucket:
@@ -58,7 +58,7 @@ class BucketList:
         self.avg_size = self.get_avg_size() 
 
     def get_avg_size(self) -> float:
-        return statistics.mean([s.size for s in self.buckets])
+        return numpy.mean([s.size for s in self.buckets])
 
 
     def deviation(self) -> float:
@@ -160,7 +160,7 @@ class BalancedBucketList:
         buckets, minimizing the deviation from the average.
         '''
 
-        self.avg_size = statistics.mean([s.size for s in buckets])
+        self.avg_size = numpy.mean([s.size for s in buckets])
 
         self.buckets = []
 
@@ -217,7 +217,7 @@ class BalancedBucketList:
             self.buckets[min_idx].add_batch(batch[0], batch[1])
 
     def get_avg_size(self) -> float:
-        return statistics.mean([s.size for s in self.buckets])
+        return numpy.mean([s.size for s in self.buckets])
 
     def deviation(self) -> float:
         return sum([abs(self.avg_size - b.size) for b in self.buckets])/self.avg_size
