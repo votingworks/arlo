@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
+import jsPDF from 'jspdf'
 /* istanbul ignore next */
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
 import { Spinner } from '@blueprintjs/core'
@@ -14,6 +15,7 @@ import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api, testNumber, poll } from '../utilities'
 import { Contest, Round, Candidate, RoundContest, Audit } from '../../types'
+import { statusStates } from './_mocks'
 
 const InputSection = styled.div`
   display: block;
@@ -81,6 +83,75 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
     e.preventDefault()
     window.open(`/election/${electionId}/audit/report`)
     updateAudit()
+  }
+
+  const downloadLabels = (r: number): void => {
+    audit.jurisdictions[0].auditBoards.forEach(
+      b => (b.ballots = statusStates[4].jurisdictions[0].auditBoards[0].ballots)
+    )
+    /* istanbul ignore else */
+    if (audit.jurisdictions[0].auditBoards.every(b => !!b.ballots)) {
+      const getX = (l: number): number => (l % 3) * 60 + 9 * ((l % 3) + 1)
+      const getY = (l: number): number[] => [
+        Math.floor(l / 3) * 25.5 + 20,
+        Math.floor(l / 3) * 25.5 + 25,
+        Math.floor(l / 3) * 25.5 + 34,
+      ]
+      const labels = new jsPDF({ format: 'letter' })
+      labels.setFontSize(9)
+      let labelCount = 0
+      audit.jurisdictions[0].auditBoards.forEach((board, i) =>
+        board.ballots!.forEach(ballot => {
+          labelCount++
+          if (labelCount > 30) {
+            labels.addPage('letter')
+            labelCount = 1
+          }
+          const x = getX(labelCount - 1)
+          const y = getY(labelCount - 1)
+          labels.text(labels.splitTextToSize(board.name, 60)[0], x, y[0])
+          labels.text(
+            labels.splitTextToSize(`Batch Name: ${ballot.batch}`, 60),
+            x,
+            y[1]
+          )
+          labels.text(`Ballot Number: ${ballot.id}`, x, y[2])
+        })
+      )
+      labels.autoPrint()
+      labels.save(`Round ${r + 1} Placeholders.pdf`)
+    }
+  }
+
+  const downloadPlaceholders = (r: number): void => {
+    audit.jurisdictions[0].auditBoards.forEach(
+      b => (b.ballots = statusStates[4].jurisdictions[0].auditBoards[0].ballots)
+    )
+    /* istanbul ignore else */
+    if (audit.jurisdictions[0].auditBoards.every(b => !!b.ballots)) {
+      const placeholders = new jsPDF({ format: 'letter' })
+      placeholders.setFontSize(20)
+      let pageCount = 0
+      audit.jurisdictions[0].auditBoards.forEach((board, i) =>
+        board.ballots!.forEach(ballot => {
+          pageCount > 0 && placeholders.addPage('letter')
+          placeholders.text(
+            placeholders.splitTextToSize(board.name, 180),
+            20,
+            20
+          )
+          placeholders.text(
+            placeholders.splitTextToSize(`Batch Name: ${ballot.batch}`, 180),
+            20,
+            40
+          )
+          placeholders.text(`Ballot Number: ${ballot.id}`, 20, 100)
+          pageCount++
+        })
+      )
+      placeholders.autoPrint()
+      placeholders.save(`Round ${r + 1} Placeholders.pdf`)
+    }
   }
 
   const calculateRiskMeasurement = async (
@@ -197,6 +268,12 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                 inline
               >
                 Download Aggregated Ballot Retrieval List for Round {i + 1}
+              </FormButton>
+              <FormButton onClick={() => downloadPlaceholders(i)} inline>
+                Download Placeholders for Round {i + 1}
+              </FormButton>
+              <FormButton onClick={() => downloadLabels(i)} inline>
+                Download Label Sheets for Round {i + 1}
               </FormButton>
               <FieldArray
                 name="contests"

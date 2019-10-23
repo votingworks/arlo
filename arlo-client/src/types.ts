@@ -22,10 +22,21 @@ export interface Contest {
   totalBallotsCast: string
 }
 
+export interface Ballot {
+  id: string
+  tabulator: string
+  batch: string
+  position: string
+  status: 'AUDITED' | 'NOT_AUDITED'
+  vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
+  comment: string
+}
+
 export interface AuditBoard {
   id: string
   name: string
   members: any[]
+  ballots?: Ballot[]
 }
 
 export interface BallotManifest {
