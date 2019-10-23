@@ -240,7 +240,7 @@ def check_round(election, jurisdiction_id, round_id):
 
     round.ended_at = datetime.datetime.utcnow()
     # TODO this is a hack, should we report pairwise p-values?
-    round_contest.end_p_value = max([risk[pair] for pair in risk])
+    round_contest.end_p_value = max(risk.values())
     round_contest.is_complete = is_complete
 
     db.session.commit()
