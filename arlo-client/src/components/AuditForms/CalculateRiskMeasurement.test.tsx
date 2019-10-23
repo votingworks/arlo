@@ -1,26 +1,45 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
+import jsPDF from 'jspdf'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { statusStates } from './_mocks'
 import * as utilities from '../utilities'
+
+jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation()
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
 
+jest.mock('jspdf')
+
+const jspdfMock = jsPDF as jest.Mock
+
 const setIsLoadingMock = jest.fn()
 const updateAuditMock = jest.fn()
 const getStatusMock = jest.fn().mockImplementation(async () => statusStates[5])
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
+let jspdfInstance: any
 beforeEach(() => {
+  jspdfInstance = {
+    addImage: jest.fn(),
+    setFontSize: jest.fn(),
+    addPage: jest.fn(),
+    text: jest.fn(),
+    splitTextToSize: jest.fn().mockReturnValue(['']),
+    save: jest.fn(),
+    autoPrint: jest.fn(),
+  }
+  jspdfMock.mockImplementation(() => jspdfInstance)
   setIsLoadingMock.mockClear()
   updateAuditMock.mockClear()
   getStatusMock.mockClear()
   toastSpy.mockClear()
   apiMock.mockClear()
+  jspdfMock.mockClear()
 })
 
 describe('CalculateRiskMeasurement', () => {
@@ -212,6 +231,54 @@ describe('CalculateRiskMeasurement', () => {
         expect(toastSpy).toBeCalledTimes(1)
       })
     }
+  })
+
+  it('downloads labels sheets', () => {
+    const { getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[3]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    fireEvent.click(getByText('Download Label Sheets for Round 1'), {
+      bubbles: true,
+    })
+
+    expect(jspdfMock).toHaveBeenCalledTimes(1)
+    expect(jspdfInstance.setFontSize).toHaveBeenCalledTimes(1)
+    expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(80)
+    expect(jspdfInstance.text).toHaveBeenCalledTimes(120)
+    expect(jspdfInstance.addPage).toHaveBeenCalledTimes(1)
+    expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
+  })
+
+  it('downloads placeholder sheets', () => {
+    const { getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[3]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    fireEvent.click(getByText('Download Placeholders for Round 1'), {
+      bubbles: true,
+    })
+
+    expect(jspdfMock).toHaveBeenCalledTimes(1)
+    expect(jspdfInstance.setFontSize).toHaveBeenCalledTimes(1)
+    expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(80)
+    expect(jspdfInstance.text).toHaveBeenCalledTimes(120)
+    expect(jspdfInstance.addPage).toHaveBeenCalledTimes(39)
+    expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
   })
 
   it('downloads aggregated ballots report', () => {

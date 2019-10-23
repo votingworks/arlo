@@ -43,6 +43,28 @@ exports[`CalculateRiskMeasurement handles background process timeout 1`] = `
           1
         </span>
       </button>
+      <button
+        class="bp3-button"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Placeholders for Round 
+          1
+        </span>
+      </button>
+      <button
+        class="bp3-button"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Label Sheets for Round 
+          1
+        </span>
+      </button>
       <div
         class="sc-bdVaJa fdbLH"
       >
@@ -202,6 +224,28 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
           class="bp3-button-text"
         >
           Download Aggregated Ballot Retrieval List for Round 
+          1
+        </span>
+      </button>
+      <button
+        class="bp3-button"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Placeholders for Round 
+          1
+        </span>
+      </button>
+      <button
+        class="bp3-button"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Label Sheets for Round 
           1
         </span>
       </button>
@@ -367,6 +411,28 @@ Object {
               class="bp3-button-text"
             >
               Download Aggregated Ballot Retrieval List for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Placeholders for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Label Sheets for Round 
               1
             </span>
           </button>
@@ -545,6 +611,28 @@ Object {
             class="bp3-button-text"
           >
             Download Aggregated Ballot Retrieval List for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Placeholders for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Label Sheets for Round 
             1
           </span>
         </button>
@@ -783,6 +871,28 @@ Object {
               1
             </span>
           </button>
+          <button
+            class="bp3-button"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Placeholders for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Label Sheets for Round 
+              1
+            </span>
+          </button>
           <div
             class="sc-bdVaJa fdbLH"
           >
@@ -984,6 +1094,28 @@ Object {
             class="bp3-button-text"
           >
             Download Aggregated Ballot Retrieval List for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Placeholders for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Label Sheets for Round 
             1
           </span>
         </button>
@@ -1248,6 +1380,28 @@ Object {
               1
             </span>
           </button>
+          <button
+            class="bp3-button"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Placeholders for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Label Sheets for Round 
+              1
+            </span>
+          </button>
           <div
             class="sc-bdVaJa fdbLH"
           >
@@ -1405,6 +1559,28 @@ Object {
             class="bp3-button-text"
           >
             Download Aggregated Ballot Retrieval List for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Placeholders for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Label Sheets for Round 
             1
           </span>
         </button>
@@ -1625,6 +1801,28 @@ Object {
               1
             </span>
           </button>
+          <button
+            class="bp3-button"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Placeholders for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Label Sheets for Round 
+              1
+            </span>
+          </button>
           <div
             class="sc-bdVaJa fdbLH"
           >
@@ -1794,6 +1992,28 @@ Object {
             class="bp3-button-text"
           >
             Download Aggregated Ballot Retrieval List for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Placeholders for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Label Sheets for Round 
             1
           </span>
         </button>
