@@ -2661,13 +2661,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           >
             <div
               class="sc-kGXeez dEUkfc"
-            >
-              <input
-                data-testid="audit-name-0"
-                name="auditNames[0]"
-                value=""
-              />
-            </div>
+            />
           </div>
         </div>
         <div
