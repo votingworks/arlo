@@ -258,7 +258,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
                     ],
 
                     "totalBallotsCast": 86147,
-                    "numWinners": 2
+                    "winners": 2
                 }
             ]
         })
@@ -654,7 +654,7 @@ def test_multi_winner_election(client):
                     ],
 
                     "totalBallotsCast": 2123,
-                    "numWinners": 2,
+                    "winners": 2,
                 }
             ]
         })
