@@ -207,7 +207,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
 
     # get the retrieval list for round 1
     rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
-    lines = rv.data.decode('utf-8').split("\r\n")
+    lines = rv.data.decode('utf-8').splitlines()
     assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
     assert len(lines) > 5
     assert 'attachment' in rv.headers['Content-Disposition']
@@ -365,7 +365,7 @@ def test_small_election(client):
 
     # get the retrieval list for round 1
     rv = client.get('/jurisdiction/county-1/1/retrieval-list')
-    lines = rv.data.decode('utf-8').split("\r\n")
+    lines = rv.data.decode('utf-8').splitlines()
     assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
@@ -399,7 +399,7 @@ def test_small_election(client):
     assert math.floor(round_contest["endMeasurements"]["pvalue"] * 100) <= 9
 
     rv = client.get('/audit/report')
-    lines = rv.data.decode('utf-8').split("\r\n")
+    lines = rv.data.decode('utf-8').splitlines()
     assert lines[0] == "Contest Name,Contest 1"
     assert 'attachment' in rv.headers['Content-Disposition']
     
@@ -452,7 +452,7 @@ def test_multi_round_audit(client):
 
     # round 2 retrieval list should be ready
     rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
-    lines = rv.data.decode('utf-8').split("\r\n")
+    lines = rv.data.decode('utf-8').splitlines()
     num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
     
