@@ -425,7 +425,6 @@ def run_election_reset(client, election_id):
     assert status["jurisdictions"] == []
     assert status["rounds"] == []        
     
-@pytest.mark.quick
 def test_small_election(client):
     rv = post_json(
         client, '/audit/basic',
