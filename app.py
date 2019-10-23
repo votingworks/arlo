@@ -17,7 +17,7 @@ if database_url == "":
     database_url = SQLITE_DATABASE_URL
 
 # enforce foreign keys in SQLite
-if database_url[:7] == "sqlite:":
+if database_url.startswith("sqlite:"):
     @event.listens_for(Engine, "connect")
     def set_sqlite_pragma(dbapi_connection, connection_record):
         cursor = dbapi_connection.cursor()
@@ -247,7 +247,7 @@ def check_round(election, jurisdiction_id, round_id):
 
     round.ended_at = datetime.datetime.utcnow()
     # TODO this is a hack, should we report pairwise p-values?
-    round_contest.end_p_value = max([risk[pair] for pair in risk])
+    round_contest.end_p_value = max(risk.values())
     round_contest.is_complete = is_complete
 
     db.session.commit()
