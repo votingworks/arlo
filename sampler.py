@@ -183,12 +183,8 @@ class Sampler:
                 z_w = math.log(2 * s_w)
                 z_l = math.log(2 - 2 * s_w)
                 p = p_w + s_l
-                print(z_w, z_l, p, self.risk_limit)
                 asns[contest] = math.ceil((math.log(1.0/self.risk_limit) + (z_w / 2.0)) / (p_w*z_w + p_l*z_l))
-                print('Num: {}'.format((math.log(1.0/self.risk_limit) + z_w/2.0)))
-                print('Denom: {}'.format(((p_w*z_w) + (p_l*z_l))))
 
-        print(asns)
         return asns
 
     def bravo_sample_size(self, p_w, p_r, sample_w, sample_r, p_completion):
