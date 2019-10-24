@@ -251,9 +251,9 @@ describe('CalculateRiskMeasurement', () => {
 
     expect(jspdfMock).toHaveBeenCalledTimes(1)
     expect(jspdfInstance.setFontSize).toHaveBeenCalledTimes(1)
-    expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(80)
-    expect(jspdfInstance.text).toHaveBeenCalledTimes(120)
-    expect(jspdfInstance.addPage).toHaveBeenCalledTimes(1)
+    expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(80) // called twice per label, with 40 labels
+    expect(jspdfInstance.text).toHaveBeenCalledTimes(120) // called thrice per label, with 40 labels
+    expect(jspdfInstance.addPage).toHaveBeenCalledTimes(1) // 40 ballots have 40 labels, which requires two pages
     expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
   })
 
@@ -275,9 +275,9 @@ describe('CalculateRiskMeasurement', () => {
 
     expect(jspdfMock).toHaveBeenCalledTimes(1)
     expect(jspdfInstance.setFontSize).toHaveBeenCalledTimes(1)
-    expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(80)
-    expect(jspdfInstance.text).toHaveBeenCalledTimes(120)
-    expect(jspdfInstance.addPage).toHaveBeenCalledTimes(39)
+    expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(80) // called twice per label, with 40 labels
+    expect(jspdfInstance.text).toHaveBeenCalledTimes(120) // called thrice per label, with 40 labels
+    expect(jspdfInstance.addPage).toHaveBeenCalledTimes(39) // one page per placeholder, with 40 placeholders for 40 ballots
     expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
   })
 
