@@ -56,7 +56,7 @@
     "build": "react-scripts build",
     "test": "is-ci \"test:ci\" \"test:watch\"",
     "test:watch": "react-scripts test",
-    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage",
+    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage && wdio wdio.conf.js",
     "test:update": "react-scripts test -u  --watchAll=false",
     "test:coverage": "react-scripts test --coverage --watchAll=false",
     "test:wdio": "wdio wdio.conf.js",
