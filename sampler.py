@@ -6,8 +6,12 @@ from scipy import stats
 import consistent_sampler
 import operator
 from bravo import Bravo
+from audit import RiskLimitingAudit
 
 class Sampler:
+
+    audit: RiskLimitingAudit
+
     def __init__(self, audit_type, seed, risk_limit, contests):
         """
         Initializes PRNG, computes margins, and returns initial sample
@@ -135,109 +139,6 @@ class Sampler:
 
         return margins
 
-    def get_sample_sizes(self, sample_results):
-        """
-        Computes initial sample sizes parameterized by likelihood that the
-        initial sample will confirm the election result, assuming no
-        discrpancies.
-
-        Inputs:
-            sample_results - if a sample has already been drawn, this will
-                             contain its results. 
-
-            TODO: could take in likelihood parameters instead of hardcoding
-
-        Outputs:
-            samples - dictionary mapping confirmation likelihood to sample size:
-                    {
-                       contest1:  { 
-                            likelihood1: sample_size,
-                            likelihood2: sample_size,
-                            ...
-                        },
-                        ...
-                    }
-        """
-        # TODO Note this treats each contest separately instead of together
-
-        # TODO Do we want these hard-coded or parameterized?
-        quants = [.7, .8, .9]
-
-        samples = {}
-
-        asns = self.audit.get_expected_sample_sizes(self.margins, self.contests)
-        for contest in self.contests:
-            samples[contest] = {}
-
-            p_w = 10**7
-            s_w = 0 
-            p_l = 0
-            best_loser = ''
-            worse_winner = ''
-
-
-            # For multi-winner, do nothing
-            if 'numWinners' not in self.contests[contest] or self.contests[contest]['numWinners'] != 1:
-                samples[contest] = {
-                    'asn': {
-                        'size': asns[contest],
-                        'prob': None
-                    }
-                }
-                return samples
-
-            margin = self.margins[contest]
-            # Get smallest p_w - p_l
-            for winner in margin['winners']:
-                if margin['winners'][winner]['p_w'] < p_w:
-                    p_w = margin['winners'][winner]['p_w']
-                    worse_winner = winner
-
-            for loser in margin['losers']:
-                if margin['losers'][loser]['p_l'] > p_l:
-                    p_l = margin['losers'][loser]['p_l']
-                    best_loser = loser
-
-            # If we're in a single-candidate race, set sample to 0
-            if not margin['losers']:
-                samples[contest]['asn'] = {
-                    'size': -1,
-                    'prob': -1
-                }
-                for quant in quants:
-                    samples[contest][quant] = -1
-
-                continue
-            s_w = p_w/(p_w + p_l) 
-            s_l = 1 - s_w
-
-
-            num_ballots = self.contests[contest]['ballots']
-            
-            # Handles ties
-            if p_w == p_l:
-                samples[contest]['asn'] = {
-                    'size': num_ballots,
-                    'prob': 1,
-                }
-
-                for quant in quants:
-                    samples[contest][quant] = num_ballots
-                continue
-
-
-            sample_w = sample_results[contest][worse_winner]
-            sample_l = sample_results[contest][best_loser]
-           
-            samples[contest]['asn'] = {
-                'size': asns[contest],
-                'prob': self.audit.expected_prob(p_w, p_l, sample_w, sample_l, asns[contest])
-                }
-
-            for quant in quants:
-                samples[contest][quant] = self.audit.get_sample_sizes(p_w, p_l, sample_w, sample_l, quant)
-
-        return samples
 
 
     def draw_sample(self, manifest, sample_size, num_sampled=0):
@@ -278,6 +179,28 @@ class Sampler:
         
         # TODO this is sort of a hack to get the list sorted right. Maybe it's okay?
         return sorted(sample)
+
+    def get_sample_sizes(self, sample_results):
+        """
+        Computes initial sample sizes parameterized by likelihood that the
+        initial sample will confirm the election result, assuming no
+        discrpancies.
+        Inputs:
+            sample_results - if a sample has already been drawn, this will
+                             contain its results. 
+            TODO: could take in likelihood parameters instead of hardcoding
+        Outputs:
+            samples - dictionary mapping confirmation likelihood to sample size:
+                    {
+                       contest1:  { 
+                            likelihood1: sample_size,
+                            likelihood2: sample_size,
+                            ...
+                        },
+                        ...
+                    }
+        """
+        return self.audit.get_sample_sizes(contests=self.contests, margins=self.margins, sample_results=sample_results)
 
     def compute_risk(self, contest, sample_results):
         """
