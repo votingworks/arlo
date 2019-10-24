@@ -81,7 +81,8 @@ def manifest_summary(jurisdiction):
     return manifest
 
 def get_sampler(election):
-    return Sampler(election.random_seed, election.risk_limit / 100, contest_status(election))
+    # TODO Change this to audit_type
+    return Sampler('BRAVO', election.random_seed, election.risk_limit / 100, contest_status(election))
 
 def compute_sample_sizes(round_contest):
     the_round = round_contest.round
