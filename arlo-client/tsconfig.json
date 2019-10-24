@@ -14,8 +14,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
-    "noUnusedLocals": true,
-    "types": ["node", "@wdio/sync", "@wdio/jasmine-framework", "@types/jest"]
+    "noUnusedLocals": true
   },
   "include": ["src"]
 }
