@@ -2,13 +2,20 @@ version: 2
 jobs:
   build-and-test:
     docker:
-      - image: circleci/python:3.7.3-node
+      - image: circleci/python:3.7.3-node-browsers
     steps:
       - checkout
       - run:
           name: install
           command: |
             make install install-development
+      - run:
+          name: Install Chrome
+          command: |
+            curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            sudo dpkg -i google-chrome.deb
+            sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
+            rm google-chrome.deb
       - run:
           name: create data model
           command: |
