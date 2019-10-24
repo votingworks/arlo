@@ -5,7 +5,7 @@ jobs:
       - image: circleci/python:3.7.3-node-browsers
       - image: selenium/hub
         name: hub
-      - image: selenium/node-chrome
+      - image: selenium/node-chrome:latest
         environment:
           HUB_PORT_4444_TCP_ADDR: hub
           HUB_PORT_4444_TCP_PORT: 4444
