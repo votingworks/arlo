@@ -94,7 +94,7 @@ describe('audit flow', () => {
 
   it('skips forward and back', () => {
     $('a=Start Auditing').click()
-    ;[1, 2, 3, 4].forEach(_ => ballotSkip())
+    ballotSkip(4)
     while (ballotPrev())
       $('.bp3-callout*=Round 1: auditing ballot').waitForExist()
     $('h1*=Ballot Cards to Audit').waitForExist(10000)
