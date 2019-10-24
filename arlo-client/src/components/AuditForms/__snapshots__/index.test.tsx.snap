@@ -2656,13 +2656,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               </span>
             </div>
           </label>
-          <div
-            class="sc-kgoBCf iTvLnm"
-          >
-            <div
-              class="sc-kGXeez dEUkfc"
-            />
-          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
