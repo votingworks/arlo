@@ -2,7 +2,8 @@
 
 ### Initial audit creation
 
-- `POST /election/new`
+- `POST /election/new` `src/components/CreateAudit.tsx` > `CreateAudit` >
+  `onClick()` > `api()`
 
 - `src/components/CreateAudit.tsx` > `CreateAudit` > `onClick()` > `api()`
 
@@ -15,6 +16,7 @@
 ### Initial data from /audit/status
 
 - `GET /election/{electionId}/audit/status`
+  `src/components/AuditForms/index.tsx` > `AuditForms` > `updateAudit()`
 
 - `src/components/AuditForms/index.tsx` > `AuditForms` > `updateAudit()`
 
@@ -32,6 +34,8 @@
 ### Creation of election & contests on form one
 
 - `POST /election/{electionId}/audit/basic`
+  `src/components/AuditForms/EstimateSampleSize.tsx` > `EstimateSampleSize` >
+  `handlePost()` > `api()`
 
 - `src/components/AuditForms/EstimateSampleSize.tsx` > `EstimateSampleSize` >
   `handlePost()` > `api()`
@@ -64,6 +68,8 @@
 Getting the new status and waiting for sample size calculations to complete:
 
 - `GET /election/{electionId}/audit/status`
+  `src/components/AuditForms/EstimateSampleSize.tsx` > `EstimateSampleSize` >
+  `handlePost()` > `poll()`
 
 - `src/components/AuditForms/EstimateSampleSize.tsx` > `EstimateSampleSize` >
   `handlePost()` > `poll()`
@@ -119,6 +125,8 @@ The front end will poll the back end until `sampleSizeOptions` returns something
 other than `null`, like so:
 
 - `GET /election/{electionId}/audit/status`
+  `src/components/AuditForms/EstimateSampleSize.tsx` > `EstimateSampleSize` >
+  `handlePost()` > `poll()`
 
 - `src/components/AuditForms/EstimateSampleSize.tsx` > `EstimateSampleSize` >
   `handlePost()` > `poll()`
@@ -224,6 +232,8 @@ After the first two are successfully POSTed, it GETs a new response from the
 status endpoint again.
 
 - `GET /election/{electionId}/audit/status`
+  `src/components/AuditForms/SelectBallotsToAudit.tsx` >
+  `SelectBallotsToAudit` > `handlePost()` > `getStatus()`
 
 - `src/components/AuditForms/SelectBallotsToAudit.tsx` >
   `SelectBallotsToAudit` > `handlePost()` > `getStatus()`
@@ -310,6 +320,8 @@ ballot manifest:
 And then GET the updated status:
 
 - `GET /election/{electionId}/audit/status`
+  `src/components/AuditForms/SelectBallotsToAudit.tsx` >
+  `SelectBallotsToAudit` > `handlePost()` > `updateAudit()`
 
 - `src/components/AuditForms/SelectBallotsToAudit.tsx` >
   `SelectBallotsToAudit` > `handlePost()` > `updateAudit()`
@@ -402,6 +414,8 @@ The first round of form three is displayed, and the results for one round are
 posted:
 
 - `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/<round_num>/results`
+  `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+  `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `api()`
 
 - `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
   `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `api()`
@@ -426,6 +440,8 @@ the `rounds` array has a non-null `sampleSize` value:
 Incomplete sample size calculations:
 
 - `GET /election/{electionId}/audit/status`
+  `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+  `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `poll()`
 
 - `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
   `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `poll()`
@@ -534,6 +550,8 @@ Incomplete sample size calculations:
 Complete sample size calculations:
 
 - `GET /election/{electionId}/audit/status`
+  `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+  `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `poll()`
 
 - `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
   `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `poll()`
@@ -648,6 +666,8 @@ This cycle will continue until a round returns with
 happened on the first round, would look like this:
 
 - `GET /election/{electionId}/audit/status`
+  `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+  `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `poll()`
 
 - `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
   `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `poll()`
