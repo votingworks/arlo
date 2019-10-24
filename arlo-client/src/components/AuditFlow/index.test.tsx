@@ -5,7 +5,7 @@ import { routerTestProps } from '../testUtilities'
 import AuditFlow from './index'
 import { dummyBoard } from './_mocks'
 import statusStates from '../AuditForms/_mocks'
-import api from '../utilities'
+import { api } from '../utilities'
 
 const dummy = statusStates[3]
 dummy.jurisdictions[0].auditBoards = [dummyBoard[0]]

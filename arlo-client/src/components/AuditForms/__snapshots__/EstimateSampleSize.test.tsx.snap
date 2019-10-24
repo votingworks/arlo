@@ -107,7 +107,6 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
                 id="contests[0].winners"
                 name="contests[0].winners"
                 style="padding-right: 10px;"
-                type="text"
                 value="1"
               />
             </div>
@@ -507,7 +506,6 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
                 id="contests[0].winners"
                 name="contests[0].winners"
                 style="padding-right: 10px;"
-                type="text"
                 value="1"
               />
             </div>
@@ -933,7 +931,6 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
                 id="contests[0].winners"
                 name="contests[0].winners"
                 style="padding-right: 10px;"
-                type="text"
                 value="1"
               />
             </div>
@@ -1333,7 +1330,6 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
                 id="contests[0].winners"
                 name="contests[0].winners"
                 style="padding-right: 10px;"
-                type="text"
                 value="1"
               />
             </div>
@@ -1759,7 +1755,6 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
                 id="contests[0].winners"
                 name="contests[0].winners"
                 style="padding-right: 10px;"
-                type="text"
                 value="1"
               />
             </div>
@@ -2159,7 +2154,6 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
                 id="contests[0].winners"
                 name="contests[0].winners"
                 style="padding-right: 10px;"
-                type="text"
                 value="1"
               />
             </div>
@@ -2585,7 +2579,6 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
                 id="contests[0].winners"
                 name="contests[0].winners"
                 style="padding-right: 10px;"
-                type="text"
                 value="1"
               />
             </div>
@@ -2985,7 +2978,6 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
                 id="contests[0].winners"
                 name="contests[0].winners"
                 style="padding-right: 10px;"
-                type="text"
                 value="1"
               />
             </div>
@@ -3408,7 +3400,6 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
                 id="contests[0].winners"
                 name="contests[0].winners"
                 style="padding-right: 10px;"
-                type="text"
                 value="1"
               />
             </div>
@@ -3817,7 +3808,6 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
                 id="contests[0].winners"
                 name="contests[0].winners"
                 style="padding-right: 10px;"
-                type="text"
                 value="1"
               />
             </div>

@@ -62,8 +62,8 @@ async function inputAndSubmitForm() {
 }
 
 beforeEach(() => {
-  apiMock.mockReset()
-  toastSpy.mockReset()
+  apiMock.mockClear()
+  toastSpy.mockClear()
 })
 
 describe('SelectBallotsToAudit', () => {
