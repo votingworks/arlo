@@ -38,17 +38,16 @@ const ballotPrev = () => {
   }
 }
 
-const ballotSkip = () => {
-  const callout = $('.bp3-callout*=Round 1: auditing ballot')
-    .getText()
-    .split(' ')
-  const ballot = Number(callout[callout.length - 3])
-  $(`.bp3-button-text=Ballot ${ballot} not found - move to next ballot`).click()
-  if (ballot === 1) {
-    return false
-  } else {
-    return true
-  }
+const ballotSkip = (count: number) => {
+  Array.from(Array(count).keys()).forEach(_ => {
+    const callout = $('.bp3-callout*=Round 1: auditing ballot')
+      .getText()
+      .split(' ')
+    const ballot = Number(callout[callout.length - 3])
+    $(
+      `.bp3-button-text=Ballot ${ballot} not found - move to next ballot`
+    ).click()
+  })
 }
 
 beforeEach(() => {
@@ -94,7 +93,7 @@ describe('audit flow', () => {
 
   it('skips forward and back', () => {
     $('a=Start Auditing').click()
-    ;[1, 2, 3, 4].forEach(_ => ballotSkip())
+    ballotSkip(4)
     while (ballotPrev())
       $('.bp3-callout*=Round 1: auditing ballot').waitForExist()
     $('h1*=Ballot Cards to Audit').waitForExist(10000)
