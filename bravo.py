@@ -1,9 +1,10 @@
 import math
 from scipy import stats
+from audit import RiskLimitingAudit
 
-class Bravo:
+class Bravo(RiskLimitingAudit):
     def __init__(self, risk_limit):
-        self.risk_limit = risk_limit
+        super().__init__(risk_limit)
 
     def get_expected_sample_sizes(self, margins, contests):
         """
@@ -59,7 +60,7 @@ class Bravo:
 
         return asns
 
-    def get_sample_sizes(self, p_w, p_r, sample_w, sample_r, p_completion):
+    def bravo_sample_sizes(self, p_w, p_r, sample_w, sample_r, p_completion):
         """
         Analytic calculation for BRAVO round completion assuming the election
         outcome is correct. Written by Mark Lindeman. 
@@ -204,6 +205,104 @@ class Bravo:
         # Invert the PPF used to compute z from the sample prob
         return stats.norm.cdf(-z)        
 
+    def get_sample_sizes(self, contests, margins, sample_results):
+        """
+        Computes initial sample sizes parameterized by likelihood that the
+        initial sample will confirm the election result, assuming no
+        discrpancies.
+
+        Inputs:
+            sample_results - if a sample has already been drawn, this will
+                             contain its results. 
+
+        Outputs:
+            samples - dictionary mapping confirmation likelihood to sample size:
+                    {
+                       contest1:  { 
+                            likelihood1: sample_size,
+                            likelihood2: sample_size,
+                            ...
+                        },
+                        ...
+                    }
+        """
+        quants = [.7, .8, .9]
+
+        samples = {}
+
+        asns = self.get_expected_sample_sizes(margins, contests)
+        for contest in contests:
+            samples[contest] = {}
+
+            p_w = 10**7
+            s_w = 0 
+            p_l = 0
+            best_loser = ''
+            worse_winner = ''
+
+
+            # For multi-winner, do nothing
+            if 'numWinners' not in contests[contest] or contests[contest]['numWinners'] != 1:
+                samples[contest] = {
+                    'asn': {
+                        'size': asns[contest],
+                        'prob': None
+                    }
+                }
+                return samples
+
+            margin = margins[contest]
+            # Get smallest p_w - p_l
+            for winner in margin['winners']:
+                if margin['winners'][winner]['p_w'] < p_w:
+                    p_w = margin['winners'][winner]['p_w']
+                    worse_winner = winner
+
+            for loser in margin['losers']:
+                if margin['losers'][loser]['p_l'] > p_l:
+                    p_l = margin['losers'][loser]['p_l']
+                    best_loser = loser
+
+            # If we're in a single-candidate race, set sample to 0
+            if not margin['losers']:
+                samples[contest]['asn'] = {
+                    'size': -1,
+                    'prob': -1
+                }
+                for quant in quants:
+                    samples[contest][quant] = -1
+
+                continue
+            s_w = p_w/(p_w + p_l) 
+            s_l = 1 - s_w
+
+
+            num_ballots = contests[contest]['ballots']
+            
+            # Handles ties
+            if p_w == p_l:
+                samples[contest]['asn'] = {
+                    'size': num_ballots,
+                    'prob': 1,
+                }
+
+                for quant in quants:
+                    samples[contest][quant] = num_ballots
+                continue
+
+
+            sample_w = sample_results[contest][worse_winner]
+            sample_l = sample_results[contest][best_loser]
+           
+            samples[contest]['asn'] = {
+                'size': asns[contest],
+                'prob': self.expected_prob(p_w, p_l, sample_w, sample_l, asns[contest])
+                }
+
+            for quant in quants:
+                samples[contest][quant] = self.bravo_sample_sizes(p_w, p_l, sample_w, sample_l, quant)
+
+        return samples
 
     def compute_risk(self, margins, sample_results):
         """
