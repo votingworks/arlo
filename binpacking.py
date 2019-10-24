@@ -1,16 +1,18 @@
 import csv
 import operator
+import numpy
+from typing import Dict, Optional, Tuple, List
 
 class Bucket:
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
         self.size = 0
-        self.batches = {}
-        self.largest_element = None
+        self.batches: Dict[str, int] = {}
+        self.largest_element: Optional[str] = None
 
 
-    def add_batch(self, batch_name, batch_size):
+    def add_batch(self, batch_name: str, batch_size: int) -> None:
         self.batches[batch_name] = batch_size
         self.size += batch_size
 
@@ -19,23 +21,18 @@ class Bucket:
         elif batch_size > self.batches[self.largest_element]:
             self.largest_element = batch_name
 
-    def remove_batch(self, batch_name):
+    def remove_batch(self, batch_name: str) -> Dict[str, int]:
         taken = self.batches.pop(batch_name)
         self.size -= taken
 
         if not self.size:
             self.largest_element = None
         elif batch_name == self.largest_element:
-            self.largest_element = next(iter(self.batches))
-            for b in self.batches:
-                if self.batches[b] > self.batches[self.largest_element]:
-                    self.largest_element = b
-
-
+            self.largest_element = max(self.batches.items(), key=operator.itemgetter(1))[0]
 
         return({batch_name: taken})
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         ret_str = {
             'name': self.name,
             'size': self.size,
@@ -44,10 +41,10 @@ class Bucket:
         }
         return str(ret_str)
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         return self.size > other.size
     
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.name == other.name
 
 class BucketList:
@@ -57,19 +54,18 @@ class BucketList:
     '''
 
     def __init__(self, buckets):
-
         self.buckets = buckets
         self.avg_size = self.get_avg_size() 
 
-    def get_avg_size(self):
-        return sum([s.size for s in self.buckets])/len(self.buckets)
+    def get_avg_size(self) -> float:
+        return numpy.mean([s.size for s in self.buckets])
 
 
-    def deviation(self):
+    def deviation(self) -> float:
         return sum([abs(self.avg_size - b.size) for b in self.buckets])/self.avg_size
 
 
-    def balance(self):
+    def balance(self) -> 'BucketList':
         '''
         Assign all batches that are bigger than the average size to buckets, 
         minimizing the amount of size deviation from the average.
@@ -78,7 +74,7 @@ class BucketList:
         '''
 
         # first get all the batches in a list
-        batches = []
+        batches: List[Tuple[str, int]] = []
 
         # TODO maybe rework the whole thing so that we don't have to create a
         # new list?
@@ -95,7 +91,7 @@ class BucketList:
         
         added = True
         falses = [0]*len(new_buckets)
-        left_overs = []
+        left_overs: List[Tuple[str, int]] = []
         # Now assign batches
 
     
@@ -104,14 +100,12 @@ class BucketList:
 
             # Find the least-full bucket and assign this batch
             if batch[1] > self.avg_size:
-                min_del = 10**7
-                min_idx = -1
-
-                # Find the lest-bad bucket
-                for j, bucket in enumerate(new_buckets):
-                    if (bucket.size + batch[1]) - self.avg_size < min_del:
-                        min_idx = j
-                        min_del = (bucket.size + batch[1]) - self.avg_size 
+                # Find the least-bad bucket
+                (min_idx, min_del) = min(
+                    enumerate(map(
+                        lambda bucket: bucket.size + batch[1] - self.avg_size,
+                        new_buckets)),
+                    key=operator.itemgetter(1))
 
                 # Now add to the least-bad bucket
                 new_buckets[min_idx].add_batch(batch[0], batch[1])
@@ -125,21 +119,21 @@ class BucketList:
         # Now iterate through remaining batches and add them to the bucket
         # that will be _least_ over the average
         for batch in left_overs:
-            min_del = 10**7
-            min_idx = -1
-
-            # Find the lest-bad bucket
-            for i, bucket in enumerate(new_buckets):
-                if (bucket.size + batch[1]) - self.avg_size < min_del:
-                    min_idx = i
-                    min_del = (bucket.size + batch[1]) - self.avg_size 
+            # Find the least-bad bucket
+            (min_idx, min_del) = min(
+                enumerate(map(
+                    lambda bucket: bucket.size + batch[1] - self.avg_size,
+                    new_buckets
+                )),
+                key=operator.itemgetter(1)
+            )
 
             # Now add to the least-bad bucket
             new_buckets[min_idx].add_batch(batch[0], batch[1])
 
         return BucketList(new_buckets)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self.buckets)
 
     def pretty_print(self):
@@ -153,6 +147,9 @@ class BalancedBucketList:
     A balanced list of buckets.
     '''
 
+    avg_size: float
+    buckets: List[Bucket]
+
     def __init__(self, buckets):
 
         '''
@@ -163,12 +160,12 @@ class BalancedBucketList:
         buckets, minimizing the deviation from the average.
         '''
 
-        self.avg_size = sum([s.size for s in buckets])/len(buckets)
+        self.avg_size = numpy.mean([s.size for s in buckets])
 
         self.buckets = []
 
         # first get all the batches in a list, and initialize our buckets
-        batches = []
+        batches: Tuple[str, int] = []
         for bucket in buckets:
             self.buckets.append(Bucket(bucket.name))
             for batch_name in bucket.batches:
@@ -180,7 +177,7 @@ class BalancedBucketList:
         
         added = True
         falses = [0]*len(self.buckets)
-        left_overs = []
+        left_overs: List[Tuple[str, int]] = []
 
         # Now assign batches to buckets
         # Assign all the too-big batches first
@@ -188,14 +185,14 @@ class BalancedBucketList:
 
             # Find the least-full bucket and assign this batch
             if batch[1] > self.avg_size:
-                min_del = 10**7
-                min_idx = -1
-
-                # Find the lest-bad bucket
-                for j, bucket in enumerate(self.buckets):
-                    if (bucket.size + batch[1]) - self.avg_size < min_del:
-                        min_idx = j
-                        min_del = (bucket.size + batch[1]) - self.avg_size 
+                # Find the least-bad bucket
+                (min_idx, min_del) = min(
+                    enumerate(map(
+                        lambda bucket: bucket.size + batch[1] - self.avg_size,
+                        self.buckets
+                    )),
+                    key=operator.itemgetter(1)
+                )
 
                 # Now add to the least-bad bucket
                 self.buckets[min_idx].add_batch(batch[0], batch[1])
@@ -207,25 +204,25 @@ class BalancedBucketList:
         # Now iterate through remaining batches and add them to the bucket
         # that will be _least_ over the average
         for batch in left_overs:
-            min_del = 10**7
-            min_idx = -1
-
-            # Find the lest-bad bucket
-            for i, bucket in enumerate(self.buckets):
-                if (bucket.size + batch[1]) - self.avg_size < min_del:
-                    min_idx = i
-                    min_del = (bucket.size + batch[1]) - self.avg_size 
+            # Find the least-bad bucket
+            (min_idx, min_del) = min(
+                enumerate(map(
+                    lambda bucket: bucket.size + batch[1] - self.avg_size,
+                    self.buckets
+                )),
+                key=operator.itemgetter(1)
+            )
 
             # Now add to the least-bad bucket
             self.buckets[min_idx].add_batch(batch[0], batch[1])
 
-    def get_avg_size(self):
-        return sum([s.size for s in self.buckets])/len(self.buckets)
+    def get_avg_size(self) -> float:
+        return numpy.mean([s.size for s in self.buckets])
 
-    def deviation(self):
+    def deviation(self) -> float:
         return sum([abs(self.avg_size - b.size) for b in self.buckets])/self.avg_size
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self.buckets)
 
     def pretty_print(self):

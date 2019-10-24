@@ -6,13 +6,14 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+consistent_sampler = "*"
+cryptorandom = "*"
 flask = "*"
 flask-sqlalchemy = "*"
-pytest = "*"
-cryptorandom = "*"
-psycopg2 = "*"
-consistent_sampler = "*"
 joblib = "*"
+numpy = "*"
+psycopg2 = "*"
+pytest = "*"
 uuid = "*"
 
 [requires]
