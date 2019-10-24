@@ -1,4 +1,6 @@
 exports.config = {
+  host: 'hub',
+  port: 4444,
   //
   // ====================
   // Runner Configuration

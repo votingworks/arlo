@@ -3,6 +3,12 @@ jobs:
   build-and-test:
     docker:
       - image: circleci/python:3.7.3-node
+      - image: selenium/hub
+        name: hub
+      - image: selenium/node-firefox
+        environment:
+          HUB_PORT_4444_TCP_ADDR: hub
+          HUB_PORT_4444_TCP_PORT: 4444
     steps:
       - checkout
       - run:
