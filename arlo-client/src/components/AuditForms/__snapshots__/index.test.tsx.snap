@@ -102,7 +102,6 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                   id="contests[0].winners"
                   name="contests[0].winners"
                   style="padding-right: 10px;"
-                  type="text"
                   value="1"
                 />
               </div>
@@ -737,7 +736,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   id="contests[0].winners"
                   name="contests[0].winners"
                   style="padding-right: 10px;"
-                  type="text"
                   value="1"
                 />
               </div>
@@ -1150,7 +1148,6 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                   id="contests[0].winners"
                   name="contests[0].winners"
                   style="padding-right: 10px;"
-                  type="text"
                   value="1"
                 />
               </div>
@@ -1566,7 +1563,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                   id="contests[0].winners"
                   name="contests[0].winners"
                   style="padding-right: 10px;"
-                  type="text"
                   value="1"
                 />
               </div>
@@ -2399,7 +2395,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                   id="contests[0].winners"
                   name="contests[0].winners"
                   style="padding-right: 10px;"
-                  type="text"
                   value="1"
                 />
               </div>
@@ -2661,13 +2656,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               </span>
             </div>
           </label>
-          <div
-            class="sc-kgoBCf iTvLnm"
-          >
-            <div
-              class="sc-kGXeez dEUkfc"
-            />
-          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -2886,6 +2874,13 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               </span>
             </div>
           </label>
+          <div
+            class="sc-kgoBCf iTvLnm"
+          >
+            <div
+              class="sc-kGXeez dEUkfc"
+            />
+          </div>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -3034,7 +3029,6 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                   id="contests[0].winners"
                   name="contests[0].winners"
                   style="padding-right: 10px;"
-                  type="text"
                   value="1"
                 />
               </div>
