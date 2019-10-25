@@ -2,7 +2,7 @@ import math
 from scipy import stats
 from audits.audit import RiskLimitingAudit
 
-class Bravo(RiskLimitingAudit):
+class BRAVO(RiskLimitingAudit):
     def __init__(self, risk_limit):
         super().__init__(risk_limit)
 

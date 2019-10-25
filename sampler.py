@@ -6,7 +6,7 @@ from scipy import stats
 import consistent_sampler
 import operator
 from audits.audit import RiskLimitingAudit
-from audits.bravo import Bravo
+from audits.bravo import BRAVO
 
 class Sampler:
 
@@ -41,7 +41,7 @@ class Sampler:
         self.margins = self.compute_margins()
 
         if audit_type == 'BRAVO':
-            self.audit = Bravo(risk_limit)
+            self.audit = BRAVO(risk_limit)
 
     def compute_margins(self):
         """
