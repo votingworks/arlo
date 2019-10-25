@@ -5,8 +5,8 @@ import numpy as np
 from scipy import stats
 import consistent_sampler
 import operator
-from bravo import Bravo
-from audit import RiskLimitingAudit
+from audits.audit import RiskLimitingAudit
+from audits.bravo import Bravo
 
 class Sampler:
 
