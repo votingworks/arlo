@@ -1,6 +1,6 @@
 import math
 from scipy import stats
-from audit import RiskLimitingAudit
+from audits.audit import RiskLimitingAudit
 
 class Bravo(RiskLimitingAudit):
     def __init__(self, risk_limit):

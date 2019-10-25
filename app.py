@@ -6,7 +6,7 @@ from sampler import Sampler
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 
-from binpacking import Bucket, BalancedBucketList
+from util.binpacking import Bucket, BalancedBucketList
 
 app = Flask(__name__, static_folder='arlo-client/build/')
 

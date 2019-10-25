@@ -1,5 +1,5 @@
 import pytest
-from binpacking import Bucket, BucketList, BalancedBucketList
+from util.binpacking import Bucket, BucketList, BalancedBucketList
 
 
 @pytest.fixture
