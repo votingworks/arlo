@@ -4,6 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+mypy = "*"
+numpy-stubs = {git = "https://github.com/numpy/numpy-stubs"}
+sqlalchemy-stubs = "*"
 
 [packages]
 consistent_sampler = "*"

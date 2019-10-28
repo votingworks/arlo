@@ -1,7 +1,7 @@
 import csv
 import operator
 import numpy
-from typing import Dict, Optional, Tuple, List
+from typing import Dict, Optional, Tuple, List, cast
 
 class Bucket:
 
@@ -41,10 +41,12 @@ class Bucket:
         }
         return str(ret_str)
 
-    def __gt__(self, other) -> bool:
+    def __gt__(self, other: 'Bucket') -> bool:
         return self.size > other.size
     
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Bucket):
+            return False
         return self.name == other.name
 
 class BucketList:
@@ -53,12 +55,12 @@ class BucketList:
     algorithms.
     '''
 
-    def __init__(self, buckets):
+    def __init__(self, buckets: List[Bucket]):
         self.buckets = buckets
         self.avg_size = self.get_avg_size() 
 
     def get_avg_size(self) -> float:
-        return numpy.mean([s.size for s in self.buckets])
+        return cast(float, numpy.mean([s.size for s in self.buckets]))
 
 
     def deviation(self) -> float:
@@ -217,7 +219,7 @@ class BalancedBucketList:
             self.buckets[min_idx].add_batch(batch[0], batch[1])
 
     def get_avg_size(self) -> float:
-        return numpy.mean([s.size for s in self.buckets])
+        return cast(float, numpy.mean([s.size for s in self.buckets]))
 
     def deviation(self) -> float:
         return sum([abs(self.avg_size - b.size) for b in self.buckets])/self.avg_size
