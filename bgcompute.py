@@ -1,4 +1,4 @@
-
+# type: ignore
 import time, json
 
 from flask import Flask

@@ -13,6 +13,9 @@ resetdb-postgres:
 	createdb arlo
 	pipenv run python create.py
 
+typecheck:
+	pipenv run mypy .
+
 test-client:
 	yarn --cwd arlo-client test
 

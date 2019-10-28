@@ -1,0 +1,3 @@
+import random
+
+class SHA256(random.Random): ...
