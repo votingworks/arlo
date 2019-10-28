@@ -1,22 +1,21 @@
 import * as Yup from 'yup'
 import { Params } from '../types'
 
-export const api = <T>(
+export const api = async <T>(
   endpoint: string,
   { electionId, ...options }: Params & RequestInit
 ): Promise<T> => {
   const apiBaseURL = electionId ? `/election/${electionId}` : ''
-  return fetch(apiBaseURL + endpoint, options).then(res => {
-    if (!res.ok) {
-      throw new Error(res.statusText)
-    }
-    return res.json() as Promise<T>
-  })
+  const res = await fetch(apiBaseURL + endpoint, options)
+  if (!res.ok) {
+    throw new Error(res.statusText)
+  }
+  return res.json() as Promise<T>
 }
 
 export const poll = (
   condition: () => Promise<boolean>,
-  callback: () => any,
+  callback: () => void,
   errback: (arg0: Error) => void,
   timeout: number = 120000,
   interval: number = 1000
@@ -40,27 +39,21 @@ const numberSchema = Yup.number()
   .min(0, 'Must be a positive number')
   .required('Required')
 
-export const testNumber = (max?: number, message?: string) => (value: any) =>
-  numberSchema.validate(value).then(
-    success => {
-      if (max) {
-        const schema = Yup.number().test(
-          'cap',
-          message || `Must be smaller than ${max}`,
-          function(v) {
-            /* istanbul ignore else */
-            if (this.options.context) {
-              const { max } = this.options.context as { max: number }
-              return v <= max
-            } else return true
-          }
-        )
-        return schema
-          .validate(value, { context: { max } })
-          .then(success => undefined, error => error.errors[0])
-      } else return undefined
-    },
-    error => error.errors[0]
-  )
+export const testNumber = (
+  max?: number,
+  message?: string
+): ((value: number) => Promise<string | undefined>) => {
+  const schema = max
+    ? numberSchema.concat(
+        Yup.number().max(max, message || `Must be smaller than ${max}`)
+      )
+    : numberSchema
 
-export default api
+  return async (value: unknown) => {
+    try {
+      await schema.validate(value)
+    } catch (error) {
+      return error.errors[0]
+    }
+  }
+}

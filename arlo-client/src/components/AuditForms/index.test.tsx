@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react'
 import AuditForms from './index'
 import statusStates from './_mocks'
-import api from '../utilities'
+import { api } from '../utilities'
 import { routerTestProps } from '../testUtilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>

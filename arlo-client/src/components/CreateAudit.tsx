@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { RouteComponentProps } from 'react-router-dom'
 import FormButton from './Form/FormButton'
-import api from './utilities'
+import { api } from './utilities'
 import { Params } from '../types'
 
 const Button = styled(FormButton)`

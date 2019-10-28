@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import CreateAudit from './CreateAudit'
 import { Params } from '../types'
 import { routerTestProps } from './testUtilities'
-import api from './utilities'
+import { api } from './utilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
