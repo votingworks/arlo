@@ -8,7 +8,7 @@ jobs:
       - run:
           name: install
           command: |
-            make install
+            make install install-development
       - run:
           name: create data model
           command: |
