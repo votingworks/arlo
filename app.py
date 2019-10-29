@@ -468,6 +468,20 @@ def jurisdiction_manifest(jurisdiction_id, election_id=None):
     
     return jsonify(status="ok")
 
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/board/<board_id>/round/<round_number>/ballot/<ballot_position>', methods=["POST"])
+def update_(election_id, jurisdiction_id, board_id, round_number, ballot_position):
+    results = SampledBallot \
+        .query.filter_by(ballot_position=ballot_position) \
+        .join(Round).filter_by(election_id=election_id, round_num=round_number) \
+        .join(Jurisdiction).filter_by(id=jurisdiction_id) \
+        .join(AuditBoard).filter_by(id=board_id) \
+        .all()
+
+    if not results:
+        return "no ballot", 404
+
+    return jsonify(status="ok")
+
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list', methods=["GET"])
 @app.route('/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list', methods=["GET"])
 def jurisdiction_retrieval_list(jurisdiction_id, round_num, election_id=None):

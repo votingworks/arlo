@@ -376,9 +376,11 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     assert len(lines) > 5
     assert 'attachment' in rv.headers['content-disposition']
 
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    rows = [line.split(",") for line in lines[1:] if line!=""]
+    num_ballots = sum([int(row[4]) for row in rows])
+    ballot_numbers = [int(row[1]) for row in rows]
 
-    return url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
+    return url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots, ballot_numbers
     
 def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
     url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_audit(client, election_id, name, risk_limit, random_seed)
@@ -777,7 +779,7 @@ def test_multi_round_multi_winner_audit(client):
     rv = post_json(client, '/election/new', {})
     election_id = json.loads(rv.data)['electionId']
 
-    url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
+    url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots, ballot_numbers = setup_whole_multi_winner_audit(client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
 
     # post results for round 1 with 50/50 split, should not complete.
     num_for_winner = int(num_ballots * 0.4)
@@ -827,3 +829,18 @@ def test_multi_round_multi_winner_audit(client):
     lines = rv.data.decode('utf-8').split("\r\n")
     num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
+
+def test_update_ballot(client):
+    rv = post_json(client, '/election/new', {})
+    election_id = json.loads(rv.data)['electionId']
+
+    url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots, ballot_numbers = setup_whole_multi_winner_audit(client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
+
+    assert num_ballots > 0
+    url = '{}/jurisdiction/{}/board/{}/round/{}/ballot/{}'.format(url_prefix, jurisdiction_id, audit_board_id_1, 1, ballot_numbers[0])
+    rv = post_json(client, url, {})
+    response = json.loads(rv.data)
+
+    # TODO: actually POST some data and check that it did something
+
+    assert response['status'] == 'ok'
