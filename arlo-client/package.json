@@ -56,7 +56,7 @@
     "build": "react-scripts build",
     "test": "is-ci \"test:ci\" \"test:watch\"",
     "test:watch": "react-scripts test",
-    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage && test:wdio",
+    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage && yarn test:wdio",
     "test:update": "react-scripts test -u  --watchAll=false",
     "test:coverage": "react-scripts test --coverage --watchAll=false",
     "test:wdio": "pipenv run python ../app.py & pipenv run python ../bgcompute.py & react-scripts start & wdio wdio.conf.js",
