@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import ResetButton from './ResetButton'
-import api from '../utilities'
+import { api } from '../utilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
