@@ -39,15 +39,15 @@ describe('form two', () => {
     submitFormTwo()
   })
 
-  it('should accept custom audit board names', () => {
-    start()
-    fillFormOne()
-    submitFormOne()
-    fillFormTwo()
-    $('input[name="auditNames[0]"]').addValue('First Audit Board')
-    submitFormTwo()
-    expect($('a=First Audit Board')).toBeTruthy()
-  })
+  // it('should accept custom audit board names', () => { // commented out until we decide to add it back in again
+  //   start()
+  //   fillFormOne()
+  //   submitFormOne()
+  //   fillFormTwo()
+  //   $('input[name="auditNames[0]"]').addValue('First Audit Board')
+  //   submitFormTwo()
+  //   expect($('a=First Audit Board')).toBeTruthy()
+  // })
 })
 
 describe('form three', () => {
