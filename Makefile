@@ -4,6 +4,10 @@ install:
 	yarn --cwd arlo-client install
 	yarn --cwd arlo-client build
 
+install-development:
+	pipenv install --dev
+	yarn --cwd arlo-client install
+
 resetdb-sqlite:
 	rm -f arlo.db
 	DATABASE_URL="" pipenv run python create.py

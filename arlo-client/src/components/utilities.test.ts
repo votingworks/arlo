@@ -1,4 +1,4 @@
-import api, { testNumber } from './utilities'
+import { api, testNumber } from './utilities'
 
 const response = () =>
   new Response(new Blob([JSON.stringify({ success: true })]))
