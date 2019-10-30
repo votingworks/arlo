@@ -838,9 +838,22 @@ def test_update_ballot(client):
 
     assert num_ballots > 0
     url = '{}/jurisdiction/{}/board/{}/round/{}/ballot/{}'.format(url_prefix, jurisdiction_id, audit_board_id_1, 1, ballot_numbers[0])
-    rv = post_json(client, url, {})
+
+    rv = client.get(url)
     response = json.loads(rv.data)
 
-    # TODO: actually POST some data and check that it did something
+    assert not response['status']
+    assert not response['vote']
+    assert not response['comment']
+
+    rv = post_json(client, url, { 'vote': 'NO', 'comment': 'This one had a hanging chad.' })
+    response = json.loads(rv.data)
 
     assert response['status'] == 'ok'
+
+    rv = client.get(url)
+    response = json.loads(rv.data)
+
+    assert response['status'] == 'AUDITED'
+    assert response['vote'] == 'NO'
+    assert response['comment'] == 'This one had a hanging chad.'
