@@ -301,11 +301,22 @@ def audit_status(election_id = None):
                     "numBallots": j.manifest_num_ballots,
                     "numBatches": j.manifest_num_batches,
                     "uploadedAt": j.manifest_uploaded_at
-                }
+                },
+                "batches": [
+                    {
+                        "id": batch.id,
+                        "name": batch.name,
+                        "numBallots": batch.num_ballots,
+                        "storageLocation": batch.storage_location,
+                        "tabulator": batch.tabulator
+                    }
+                    for batch in j.batches
+                ]
             }
             for j in election.jurisdictions],
         rounds=[
             {
+                "id": round.id,
                 "startedAt": round.started_at,
                 "endedAt": round.ended_at,
                 "contests": [
@@ -466,6 +477,55 @@ def jurisdiction_manifest(jurisdiction_id, election_id=None):
     # draw the sample
     sample_ballots(election, election.rounds[0])
     
+    return jsonify(status="ok")
+
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/round/<round_id>/ballot-list')
+def ballot_list(election_id, jurisdiction_id, batch_id, round_id):
+    ballots = SampledBallot \
+        .query.filter_by(jurisdiction_id=jurisdiction_id, batch_id=batch_id, round_id=round_id) \
+        .all()
+
+    return jsonify(
+        ballots=[
+            {
+                "timesSampled": ballot.times_sampled,
+                "auditBoardId": ballot.audit_board_id,
+                "status": 'AUDITED' if ballot.vote is not None else None,
+                "vote": ballot.vote,
+                "comment": ballot.comment,
+                "position": ballot.ballot_position
+            }
+            for ballot in ballots
+        ]
+    )
+
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/round/<round_id>/ballot/<ballot_position>', methods=["POST"])
+def ballot_set(election_id, jurisdiction_id, batch_id, round_id, ballot_position):
+    try:
+        attributes = request.get_json()
+    except:
+        return "invalid request: could not parse JSON", 400
+
+    ballots = SampledBallot \
+        .query.filter_by(jurisdiction_id=jurisdiction_id, batch_id=batch_id, ballot_position=ballot_position) \
+        .join(Round).filter_by(election_id=election_id, id=round_id) \
+        .all()
+
+    if not ballots:
+        return "no ballot", 404
+    elif len(ballots) > 1:
+        return "multiple ballots found, expected one", 400
+
+    ballot = ballots[0]
+
+    if 'vote' in attributes:
+        ballot.vote = attributes['vote']
+
+    if 'comment' in attributes:
+        ballot.comment = attributes['comment']
+
+    db.session.commit()
+
     return jsonify(status="ok")
 
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list', methods=["GET"])
