@@ -378,9 +378,8 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
 
     rows = [line.split(",") for line in lines[1:] if line!=""]
     num_ballots = sum([int(row[4]) for row in rows])
-    ballot_numbers = [int(row[1]) for row in rows]
 
-    return url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots, ballot_numbers
+    return url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
     
 def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
     url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_audit(client, election_id, name, risk_limit, random_seed)
@@ -779,7 +778,7 @@ def test_multi_round_multi_winner_audit(client):
     rv = post_json(client, '/election/new', {})
     election_id = json.loads(rv.data)['electionId']
 
-    url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots, ballot_numbers = setup_whole_multi_winner_audit(client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
+    url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
 
     # post results for round 1 with 50/50 split, should not complete.
     num_for_winner = int(num_ballots * 0.4)
@@ -830,30 +829,58 @@ def test_multi_round_multi_winner_audit(client):
     num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
 
-def test_update_ballot(client):
+def test_ballot_set(client):
+    ## setup
     rv = post_json(client, '/election/new', {})
     election_id = json.loads(rv.data)['electionId']
 
-    url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots, ballot_numbers = setup_whole_multi_winner_audit(client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
+    url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
 
-    assert num_ballots > 0
-    url = '{}/jurisdiction/{}/board/{}/round/{}/ballot/{}'.format(url_prefix, jurisdiction_id, audit_board_id_1, 1, ballot_numbers[0])
-
-    rv = client.get(url)
+    ## find a sampled ballot to update
+    rv = client.get('{}/audit/status'.format(url_prefix))
     response = json.loads(rv.data)
+    jurisdiction = [j for j in response['jurisdictions'] if j['id'] == jurisdiction_id][0]
+    batches = jurisdiction['batches']
+    rounds = response['rounds']
+    batch_id = None
+    round_id = None
+    ballot = None
 
-    assert not response['status']
-    assert not response['vote']
-    assert not response['comment']
+    for batch in batches:
+        for round in rounds:
+            rv = client.get('{}/jurisdiction/{}/batch/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, batch['id'], round['id']))
+            response = json.loads(rv.data)
+
+            if response['ballots']:
+                batch_id = batch['id']
+                round_id = round['id']
+                ballot = response['ballots'][0]
+                assert not ballot['status']
+                assert not ballot['vote']
+                assert not ballot['comment']
+                break
+
+        if ballot:
+            break
+
+    assert batch_id is not None
+    assert round_id is not None
+    assert ballot is not None
+
+    ## set the ballot data
+    url = '{}/jurisdiction/{}/batch/{}/round/{}/ballot/{}'.format(url_prefix, jurisdiction_id, batch_id, round_id, ballot['position'])
 
     rv = post_json(client, url, { 'vote': 'NO', 'comment': 'This one had a hanging chad.' })
     response = json.loads(rv.data)
 
     assert response['status'] == 'ok'
 
-    rv = client.get(url)
+    ## verify the update actually did something
+    rv = client.get('{}/jurisdiction/{}/batch/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, batch_id, round_id))
     response = json.loads(rv.data)
+    ballot_position = ballot['position']
+    ballot = [b for b in response['ballots'] if b['position'] == ballot_position][0]
 
-    assert response['status'] == 'AUDITED'
-    assert response['vote'] == 'NO'
-    assert response['comment'] == 'This one had a hanging chad.'
+    assert ballot['status'] == 'AUDITED'
+    assert ballot['vote'] == 'NO'
+    assert ballot['comment'] == 'This one had a hanging chad.'
