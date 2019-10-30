@@ -124,6 +124,8 @@ class SampledBallot(db.Model):
     
     times_sampled = db.Column(db.Integer, nullable=False)
     audit_board_id = db.Column(db.String(200), db.ForeignKey('audit_board.id', ondelete='cascade'), nullable=False)
+    vote = db.Column(db.String(200), nullable=True)
+    comment = db.Column(db.Text, nullable=True)
     
 class RoundContest(db.Model):
     round_id = db.Column(db.String(200), db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
