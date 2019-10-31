@@ -257,6 +257,23 @@ def check_round(election, jurisdiction_id, round_id):
 
     return is_complete
 
+def serialize_members(audit_board):
+    members = []
+
+    for i in range(0, AUDIT_BOARD_MEMBER_COUNT):
+        name = getattr(audit_board, f"member_{i + 1}")
+        affiliation = getattr(audit_board, f"member_{i + 1}_affiliation")
+
+        if not name:
+            break
+
+        members.append({
+            "name": name,
+            "affiliation": affiliation
+        })
+
+    return members
+
 @app.route('/election/new', methods=["POST"])
 def election_new():
     election_id = create_election()
@@ -295,7 +312,7 @@ def audit_status(election_id = None):
                     {
                         "id": audit_board.id,
                         "name": audit_board.name,
-                        "members": []
+                        "members": serialize_members(audit_board)
                     }
                     for audit_board in j.audit_boards],
                 "ballotManifest": {
@@ -495,24 +512,10 @@ def audit_board(election_id, jurisdiction_id, audit_board_id):
 
     audit_board = audit_boards[0]
 
-    members = []
-
-    for i in range(0, AUDIT_BOARD_MEMBER_COUNT):
-        name = getattr(audit_board, f"member_{i + 1}")
-        affiliation = getattr(audit_board, f"member_{i + 1}_affiliation")
-
-        if not name:
-            break
-
-        members.append({
-            "name": name,
-            "affiliation": affiliation
-        })
-
     return jsonify(
         id=audit_board.id,
         name=audit_board.name,
-        members=members
+        members=serialize_members(audit_board)
     )
 
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>', methods=["POST"])
