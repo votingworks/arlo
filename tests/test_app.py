@@ -884,3 +884,42 @@ def test_ballot_set(client):
     assert ballot['status'] == 'AUDITED'
     assert ballot['vote'] == 'NO'
     assert ballot['comment'] == 'This one had a hanging chad.'
+
+def test_audit_board(client):
+    ## setup
+    rv = post_json(client, '/election/new', {})
+    election_id = json.loads(rv.data)['electionId']
+
+    url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
+    url = '{}/jurisdiction/{}/audit-board/{}'.format(url_prefix, jurisdiction_id, audit_board_id_1)
+
+    ## check audit board
+    rv = client.get(url)
+    response = json.loads(rv.data)
+
+    assert response['id'] == audit_board_id_1
+    assert response['name']
+    assert response['members'] == []
+
+    ## submit new data
+    rv = post_json(client, url, {
+        'name': 'Awesome Audit Board',
+        'members': [
+            { 'name': 'Darth Vader', 'affiliation': 'EMP' },
+            { 'name': 'Leia Organa', 'affiliation': 'REB' }
+        ]
+    })
+    response = json.loads(rv.data)
+
+    assert response['status'] == 'ok'
+
+    ## check new data
+    rv = client.get(url)
+    response = json.loads(rv.data)
+
+    assert response['id'] == audit_board_id_1
+    assert response['name'] == 'Awesome Audit Board'
+    assert response['members'] == [
+        { 'name': 'Darth Vader', 'affiliation': 'EMP' },
+        { 'name': 'Leia Organa', 'affiliation': 'REB' }
+    ]
