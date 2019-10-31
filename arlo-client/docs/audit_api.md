@@ -6,7 +6,7 @@ pertinent part of the response from the status api will look like this:
 
 - `GET /election/{electionId}/audit/status`
 
-```
+```js
 ...
 jurisdictions: [
 ￼    {
@@ -72,7 +72,7 @@ status of the audit, which will have the populated `members` array.
 
 - `GET /election/{electionId}/audit/status`
 
-```
+```js
 ...
 jurisdictions: [
 ￼    {
@@ -125,13 +125,13 @@ The front end will then show the audit board table view.
 There is a link on the audit board table view which will download the ballot
 list for the audit board:
 
-- `GET /election/${electionId}/jurisdiction/${jurisdictionID}/board/${boardId}/ballot-list`
+- `GET /election/${electionId}/jurisdiction/${jurisdictionID}/batch/${batchId}/round/${roundId}/ballot-list`
 
 When auditing the ballots, each ballot has its own endpoint:
 
-- `POST /election/${electionId}/jurisdiction/${jurisdictionID}/board/${boardId}/round/{round_number}/ballot/{ballotId}`
+- `POST /election/${electionId}/jurisdiction/${jurisdictionID}/batch/${batchId}/round/{roundId}/ballot/{ballotId}`
 
-```
+```js
 {
   status: 'AUDITED',
   vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null,

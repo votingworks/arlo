@@ -1,9 +1,10 @@
 # API Documentation
 
 - `POST /election/new`
-```
+
+```js
 {
-	electionId: "03649ac0-b623-11e9-83e1-bf0244df89af"
+  electionId: "03649ac0-b623-11e9-83e1-bf0244df89af";
 }
 ```
 
@@ -13,7 +14,7 @@
 that the server is still computing these values and the client should
 poll until those values are filled.
 
-```
+```js
 {
 	name: "Primary 2019",
 	riskLimit: 10,
@@ -23,7 +24,7 @@ poll until those values are filled.
 	    {
 			id: "contest-1",
 			name: "Contest 1",
-			
+
 			choices: [
 				{
 					id: "candidate-1",
@@ -31,11 +32,11 @@ poll until those values are filled.
 					numVotes: 42
 				}
 			],
-			
+
 			totalBallotsCast: 4200,
 		}
 	],
-	
+
 	jurisdictions: [
 		{
 			id: "adams-county",
@@ -61,7 +62,7 @@ poll until those values are filled.
 			}
 		}
 	],
-	
+
 	rounds: [
 		{
 			startedAt: "2019-06-17 11:45:00",
@@ -77,12 +78,12 @@ poll until those values are filled.
 						"candidate-1": 55,
 						"candidate-2": 35
 					},
-					
+
 					sampleSizeOptions: [
 						{"prob": 0.5, "size": 143},
 						{"type": "ASN", "prob": 0.6, "size": 157},
 					],
-					
+
 					sampleSize: 152,
 				}
 			],
@@ -92,16 +93,16 @@ poll until those values are filled.
 				}
 			}
 		},
-		
+
 		{
 			startedAt: "2019-06-17 11:56:00",
 			// no endedAt
 			contests: [
 				{
 					id: "contest-1",
-					
+
 					// no results yet
-					
+
 					// no sample size options yet, they're being computed
 				}
 			],
@@ -112,13 +113,13 @@ poll until those values are filled.
 			}
 		}
 	]
-		
+
 }
 ```
 
 - `POST /election/{electionId}/audit/basic` -- the overall audit configuration
 
-```
+```js
 {
 	name: "Primary 2019",
 	riskLimit: 10,
@@ -128,7 +129,7 @@ poll until those values are filled.
 	    {
 			id: "contest-1",
 			name: "Contest 1",
-			
+
 			choices: [
 				{
 					id: "candidate-1",
@@ -136,43 +137,42 @@ poll until those values are filled.
 					numVotes: 42
 				}
 			],
-			
+
 			totalBallotsCast: 4200
 		}
 	]
 }
 ```
 
-
 - `POST /election/{electionId}/audit/jurisdictions` -- the jurisdictions that are going to be auditing
 
-```
+```js
 {
-	jurisdictions: [
-		{
-			id: "adams-county",
-			name: "Adams County",
-			contests: ["contest-1"],
-			auditBoards: [
-				{
-					id: "63ce500e-acf0-11e9-b49e-bfb880180fb4",
-					name: "Audit Board #1",
-					members: []
-				},
-				{
-					id: "7134a64e-acf0-11e9-bb0c-57b152ee1513",
-					name: "Audit Board #2",					
-					members: []
-				}
-			]
-		}
-	]
+  jurisdictions: [
+    {
+      id: "adams-county",
+      name: "Adams County",
+      contests: ["contest-1"],
+      auditBoards: [
+        {
+          id: "63ce500e-acf0-11e9-b49e-bfb880180fb4",
+          name: "Audit Board #1",
+          members: []
+        },
+        {
+          id: "7134a64e-acf0-11e9-bb0c-57b152ee1513",
+          name: "Audit Board #2",
+          members: []
+        }
+      ]
+    }
+  ];
 }
 ```
 
 - `POST /election/{electionId}/audit/sample-size` -- the selected sample size from the given sampleSizeOptions
 
-```
+```js
 {
 	'size': 578,
 }
@@ -182,12 +182,11 @@ poll until those values are filled.
 
 straight file upload `multipart/form-data`
 
-
 - `DELETE /election/{electionId}/jurisdiction/<jurisdiction_id>/manifest` -- delete the ballot manifest
 
 - `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/<round_num>/results` -- the results for one round
 
-```
+```js
 {
 	"contests": [
 		{
