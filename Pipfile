@@ -7,6 +7,7 @@ verify_ssl = true
 mypy = "*"
 numpy-stubs = {git = "https://github.com/numpy/numpy-stubs"}
 sqlalchemy-stubs = "*"
+pytest = "*"
 
 [packages]
 consistent_sampler = "*"
@@ -16,7 +17,6 @@ flask-sqlalchemy = "*"
 joblib = "*"
 numpy = "*"
 psycopg2 = "*"
-pytest = "*"
 uuid = "*"
 
 [requires]
