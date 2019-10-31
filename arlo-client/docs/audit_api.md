@@ -48,23 +48,24 @@ jurisdictions: [
 While the audit board that is relevant to the current link has an empty array
 for `members`, the `MemberForm` view is displayed.
 
-- `POST /election/{electionId}/jurisdiction/{jurisdiction_id}/board/{board_id}/members`
+- `POST /election/{electionId}/jurisdiction/{jurisdiction_id}/audit-board/{board_id}`
 
+```js
+{
+  name: 'Audit Board #1',
+  // always zero or two members
+  members: [
+    {
+      name: 'Member one name',
+      affiliation: '' // can be any one of: '', 'IND', 'DEM', 'REP', 'LIB'
+    },
+    {
+      name: 'Member one name',
+      affiliation: '' // can be any one of: '', 'IND', 'DEM', 'REP', 'LIB'
+    }
+  ]
+}
 ```
-[ // always exactly two members
-  {
-    name: 'Member one name',
-    affiliation: '' // can be any one of: '', 'IND', 'DEM', 'REP', 'LIB'
-  },
-  {
-    name: 'Member one name',
-    affiliation: '' // can be any one of: '', 'IND', 'DEM', 'REP', 'LIB'
-  }
-]
-```
-
-This should be the same endpoint that will update member information if we
-implement that feature at some point.
 
 Once the above is POSTed to the back end, the front end will GET an updated
 status of the audit, which will have the populated `members` array.
@@ -85,7 +86,7 @@ jurisdictions: [
               affiliation: ''
             },
             {
-              name: 'Member one name',
+              name: 'Member two name',
               affiliation: 'IND'
             }
           ],
