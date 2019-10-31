@@ -30,6 +30,8 @@ db = SQLAlchemy(app)
 
 from models import *
 
+AUDIT_BOARD_MEMBER_COUNT = 2
+
 def create_election(election_id=None):
     if not election_id:
         election_id = str(uuid.uuid4())
@@ -477,6 +479,77 @@ def jurisdiction_manifest(jurisdiction_id, election_id=None):
     # draw the sample
     sample_ballots(election, election.rounds[0])
     
+    return jsonify(status="ok")
+
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>', methods=["GET"])
+def audit_board(election_id, jurisdiction_id, audit_board_id):
+    audit_boards = AuditBoard.query.filter_by(id=audit_board_id) \
+        .join(Jurisdiction).filter_by(id=jurisdiction_id, election_id=election_id) \
+        .all()
+
+    if not audit_boards:
+        return f"no audit board found with id={audit_board_id}", 404
+
+    if len(audit_boards) > 1:
+        return f"found too many audit boards with id={audit_board_id}", 400
+
+    audit_board = audit_boards[0]
+
+    members = []
+
+    for i in range(0, AUDIT_BOARD_MEMBER_COUNT):
+        name = getattr(audit_board, f"member_{i + 1}")
+        affiliation = getattr(audit_board, f"member_{i + 1}_affiliation")
+
+        if not name:
+            break
+
+        members.append({
+            "name": name,
+            "affiliation": affiliation
+        })
+
+    return jsonify(
+        id=audit_board.id,
+        name=audit_board.name,
+        members=members
+    )
+
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>', methods=["POST"])
+def set_audit_board(election_id, jurisdiction_id, audit_board_id):
+    try:
+        attributes = request.get_json()
+    except:
+        return "invalid request: could not parse JSON", 400
+
+    audit_boards = AuditBoard.query.filter_by(id=audit_board_id) \
+        .join(Jurisdiction).filter_by(id=jurisdiction_id, election_id=election_id) \
+        .all()
+
+    if not audit_boards:
+        return f"no audit board found with id={audit_board_id}", 404
+
+    if len(audit_boards) > 1:
+        return f"found too many audit boards with id={audit_board_id}", 400
+
+    audit_board = audit_boards[0]
+    members = attributes.get('members', None)
+
+    if members is not None:
+        if len(members) != AUDIT_BOARD_MEMBER_COUNT:
+            return f"members must contain exactly {AUDIT_BOARD_MEMBER_COUNT} entries, got {len(members)}", 400
+
+        for i in range(0, AUDIT_BOARD_MEMBER_COUNT):
+            setattr(audit_board, f"member_{i + 1}", members[i]['name'])
+            setattr(audit_board, f"member_{i + 1}_affiliation", members[i]['affiliation'])
+
+    name = attributes.get('name', None)
+
+    if name is not None:
+        audit_board.name = name
+
+    db.session.commit()
+
     return jsonify(status="ok")
 
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/round/<round_id>/ballot-list')
