@@ -3,7 +3,7 @@ import { render, fireEvent, wait, waitForElement } from '@testing-library/react'
 import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 import Ballot from './Ballot'
-import { dummyBoard } from './_mocks'
+import { dummyBallots } from './_mocks'
 
 const history = createMemoryHistory()
 
@@ -12,12 +12,15 @@ describe('Ballot', () => {
     const { container } = render(
       <Ballot
         home="/election/1/board/1"
-        roundId="1"
-        ballotId="1"
-        board={dummyBoard[2]}
+        ballots={dummyBallots.ballots}
+        boardName="audit board #1"
         contest="contest name"
         previousBallot={jest.fn()}
         nextBallot={jest.fn()}
+        submitBallot={jest.fn()}
+        roundIx="1"
+        batchId="batch-id"
+        ballotId={1}
       />
     )
     expect(container).toMatchSnapshot()
@@ -27,12 +30,15 @@ describe('Ballot', () => {
     const { container, getByText, getByTestId } = render(
       <Ballot
         home="/election/1/board/1"
-        roundId="1"
-        ballotId="1"
-        board={dummyBoard[2]}
+        ballots={dummyBallots.ballots}
+        boardName="audit board #1"
         contest="contest name"
         previousBallot={jest.fn()}
         nextBallot={jest.fn()}
+        submitBallot={jest.fn()}
+        roundIx="1"
+        batchId="batch-id"
+        ballotId={1}
       />
     )
 
@@ -54,12 +60,15 @@ describe('Ballot', () => {
     const { container, getByText, getByTestId } = render(
       <Ballot
         home="/election/1/board/1"
-        roundId="1"
-        ballotId="1"
-        board={dummyBoard[2]}
+        ballots={dummyBallots.ballots}
+        boardName="audit board #1"
         contest="contest name"
         previousBallot={jest.fn()}
         nextBallot={jest.fn()}
+        submitBallot={jest.fn()}
+        roundIx="1"
+        batchId="batch-id"
+        ballotId={1}
       />
     )
 
@@ -85,12 +94,15 @@ describe('Ballot', () => {
     const { container, getByText, getByTestId } = render(
       <Ballot
         home="/election/1/board/1"
-        roundId="1"
-        ballotId="1"
-        board={dummyBoard[2]}
+        ballots={dummyBallots.ballots}
+        boardName="audit board #1"
         contest="contest name"
         previousBallot={jest.fn()}
         nextBallot={nextBallotMock}
+        submitBallot={jest.fn()}
+        roundIx="1"
+        batchId="batch-id"
+        ballotId={1}
       />
     )
 
@@ -115,15 +127,20 @@ describe('Ballot', () => {
   it('navigates to previous ballot', async () => {
     const previousBallotMock = jest.fn()
     const { getByText, getByTestId } = render(
-      <Ballot
-        home="/election/1/board/1"
-        roundId="1"
-        ballotId="2"
-        board={dummyBoard[2]}
-        contest="contest name"
-        previousBallot={previousBallotMock}
-        nextBallot={jest.fn()}
-      />
+      <Router history={history}>
+        <Ballot
+          home="/election/1/board/1"
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
+          contest="contest name"
+          previousBallot={previousBallotMock}
+          nextBallot={jest.fn()}
+          submitBallot={jest.fn()}
+          roundIx="1"
+          batchId="batch-id"
+          ballotId={2}
+        />
+      </Router>
     )
     fireEvent.click(getByText('Back'), { bubbles: true })
 
@@ -149,12 +166,15 @@ describe('Ballot', () => {
       <Router history={history}>
         <Ballot
           home="/election/1/board/1"
-          roundId="1"
-          ballotId="6"
-          board={dummyBoard[2]}
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
           contest="contest name"
           previousBallot={jest.fn()}
           nextBallot={jest.fn()}
+          submitBallot={jest.fn()}
+          roundIx="1"
+          batchId="batch-id"
+          ballotId={6}
         />
       </Router>
     )
@@ -169,12 +189,15 @@ describe('Ballot', () => {
       <Router history={history}>
         <Ballot
           home="/election/1/board/1"
-          roundId="1"
-          ballotId="1"
-          board={dummyBoard[1]}
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
           contest="contest name"
           previousBallot={jest.fn()}
           nextBallot={jest.fn()}
+          submitBallot={jest.fn()}
+          roundIx="1"
+          batchId="batch-id"
+          ballotId={1}
         />
       </Router>
     )

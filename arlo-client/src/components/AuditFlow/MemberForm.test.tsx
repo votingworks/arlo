@@ -6,9 +6,12 @@ describe('MemberForm', () => {
   it('renders correctly', () => {
     const { container } = render(
       <MemberForm
-        setDummy={jest.fn()}
         boardName="board name"
         jurisdictionName="jurisdiction name"
+        updateAudit={jest.fn()}
+        boardId="123"
+        jurisdictionId="321"
+        electionId="1"
       />
     )
     expect(container).toMatchSnapshot()
@@ -18,9 +21,12 @@ describe('MemberForm', () => {
     const setDummyMock = jest.fn()
     const { queryAllByLabelText, queryAllByText, getByText } = render(
       <MemberForm
-        setDummy={setDummyMock}
         boardName="board name"
         jurisdictionName="jurisdiction name"
+        updateAudit={jest.fn()}
+        boardId="123"
+        jurisdictionId="321"
+        electionId="1"
       />
     )
 

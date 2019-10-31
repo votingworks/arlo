@@ -6,6 +6,7 @@ import FormWrapper from '../Form/FormWrapper'
 import FormSection from '../Form/FormSection'
 import { IAuditBoardMember } from '../../types'
 import FormButton from '../Form/FormButton'
+import { api } from '../utilities'
 
 const LabelText = styled.span`
   display: block;
@@ -17,15 +18,21 @@ const NameField = styled(Field)`
 `
 
 interface IProps {
-  setDummy: (arg0: number) => void
   boardName: string
+  boardId: string
   jurisdictionName: string
+  jurisdictionId: string
+  electionId: string
+  updateAudit: () => void
 }
 
 const MemberForm: React.FC<IProps> = ({
   boardName,
+  boardId,
   jurisdictionName,
-  setDummy,
+  jurisdictionId,
+  electionId,
+  updateAudit,
 }: IProps) => {
   return (
     <>
@@ -46,9 +53,23 @@ const MemberForm: React.FC<IProps> = ({
               affiliation: '',
             },
           ]}
-          onSubmit={values => {
-            setDummy(1)
-            // TODO submit to api then refresh audit
+          onSubmit={async values => {
+            const body = {
+              name: boardName,
+              members: values,
+            }
+            await api(
+              `/jurisdiction/${jurisdictionId}/audit-board/${boardId}`,
+              {
+                electionId,
+                method: 'POST',
+                body: JSON.stringify(body),
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            )
+            updateAudit()
           }}
           render={({
             setFieldValue,

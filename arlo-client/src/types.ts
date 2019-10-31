@@ -39,7 +39,7 @@ export interface IBallot {
   status: 'AUDITED' | null
   vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
   comment: string
-  position: string
+  position: number
   batch: {
     id: string
     name: string
@@ -71,7 +71,7 @@ export interface IBallotManifest {
   uploadedAt: string | null
 }
 
-export interface Batch {
+export interface IBatch {
   id: string
   name: string
   numBallots: number
@@ -83,9 +83,9 @@ export interface IJurisdiction {
   id: string
   name: string
   contests: string[]
-  batches?: Batch[] // TODO make not optional
   auditBoards: IAuditBoard[]
   ballotManifest?: IBallotManifest
+  batches?: IBatch[] // optional until I'm ready to update everything
 }
 
 export interface IRoundContest {

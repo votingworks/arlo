@@ -3,7 +3,7 @@ import { render, wait, fireEvent } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
 import { routerTestProps } from '../testUtilities'
 import AuditFlow from './index'
-import { dummyBoard } from './_mocks'
+import { dummyBoard, dummyBallots } from './_mocks'
 import statusStates from '../AuditForms/_mocks'
 import { api } from '../utilities'
 
@@ -14,7 +14,9 @@ const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
 
 jest.mock('../utilities')
 
-apiMock.mockImplementation(async () => dummy)
+apiMock
+  .mockImplementationOnce(async () => dummy)
+  .mockImplementationOnce(async () => dummyBallots)
 
 afterEach(() => {
   apiMock.mockClear()
@@ -48,10 +50,9 @@ describe('AuditFlow', () => {
   })
 
   it('renders member form', async () => {
-    apiMock.mockImplementationOnce(async () => dummy)
     const { container, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow {...routeProps} dummyID={0} />
+        <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -64,10 +65,10 @@ describe('AuditFlow', () => {
   })
 
   it('renders board table with no ballots', async () => {
-    apiMock.mockImplementationOnce(async () => dummy)
+    dummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
     const { queryByText, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow {...routeProps} dummyID={1} />
+        <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -78,10 +79,10 @@ describe('AuditFlow', () => {
   })
 
   it('renders board table with ballots', async () => {
-    apiMock.mockImplementationOnce(async () => dummy)
+    dummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
     const { container, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow {...routeProps} dummyID={2} />
+        <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -93,7 +94,7 @@ describe('AuditFlow', () => {
   })
 
   it('renders board table with large container size', async () => {
-    apiMock.mockImplementationOnce(async () => dummy)
+    dummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
     ;(jest
       .spyOn(window.document, 'getElementsByClassName')
       .mockReturnValue([
@@ -101,7 +102,7 @@ describe('AuditFlow', () => {
       ] as any) as any) as jest.SpyInstance<[{ clientWidth: number }]>
     const { container } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow {...routeProps} dummyID={2} />
+        <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -110,10 +111,10 @@ describe('AuditFlow', () => {
   })
 
   it('renders board table with completed ballots', async () => {
-    apiMock.mockImplementationOnce(async () => dummy)
+    dummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
     const { container, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow {...routeProps} dummyID={3} />
+        <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -125,20 +126,21 @@ describe('AuditFlow', () => {
   })
 
   it('renders ballot route', async () => {
+    dummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
     const ballotRouteProps = routerTestProps(
-      '/election/:electionId/board/:token/round/:roundId/ballot/:ballotId',
+      '/election/:electionId/board/:token/round/:roundId/batch/:batchId/ballot/:ballotId',
       {
         electionId: '1',
         token: '123',
         roundId: '1',
-        ballotId: '1',
+        batchId: 'batch-id',
+        ballotId: '313',
       }
     )
-    apiMock.mockImplementationOnce(async () => dummy)
     ballotRouteProps.match.url = '/election/1/board/123'
     const { container, getByText } = render(
       <StaticRouter {...ballotRouteProps}>
-        <AuditFlow {...ballotRouteProps} dummyID={2} />
+        <AuditFlow {...ballotRouteProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -149,27 +151,28 @@ describe('AuditFlow', () => {
   })
 
   it('advances ballot forward and backward', async () => {
+    dummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
     const ballotRouteProps = routerTestProps(
-      '/election/:electionId/board/:token/round/:roundId/ballot/:ballotId',
+      '/election/:electionId/board/:token/round/:roundId/batch/:batchId/ballot/:ballotId',
       {
         electionId: '1',
         token: '123',
         roundId: '1',
-        ballotId: '2',
+        batchId: 'batch-id',
+        ballotId: '313',
       }
     )
     const pushSpy = jest
       .spyOn(ballotRouteProps.history, 'push')
       .mockImplementation()
-    apiMock.mockImplementationOnce(async () => dummy)
     ballotRouteProps.match.url = '/election/1/board/123'
     const { getByText } = render(
       <StaticRouter {...ballotRouteProps}>
-        <AuditFlow {...ballotRouteProps} dummyID={2} />
+        <AuditFlow {...ballotRouteProps} />
       </StaticRouter>
     )
 
-    fireEvent.click(getByText('Ballot 2 not found - move to next ballot'), {
+    fireEvent.click(getByText('Ballot 313 not found - move to next ballot'), {
       bubbles: true,
     })
     await wait(() => {
@@ -182,10 +185,10 @@ describe('AuditFlow', () => {
     })
 
     expect(pushSpy.mock.calls[0][0]).toBe(
-      '/election/1/board/123/round/1/ballot/3'
+      '/election/1/board/123/round/1/batch/batch-id/ballot/2112'
     )
     expect(pushSpy.mock.calls[1][0]).toBe(
-      '/election/1/board/123/round/1/ballot/1'
+      '/election/1/board/123/round/1/batch/batch-id/ballot/313'
     )
   })
 })

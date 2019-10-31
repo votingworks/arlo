@@ -141,6 +141,15 @@ export const statusStates: IAudit[] = [
           numBatches: null,
           uploadedAt: null,
         },
+        batches: [
+          {
+            id: 'batch-1',
+            name: 'Batch One',
+            numBallots: 12,
+            storageLocation: null,
+            tabulator: null,
+          },
+        ],
         contests: ['contest-1'],
         id: 'jurisdiction-1',
         name: 'Jurisdiction 1',

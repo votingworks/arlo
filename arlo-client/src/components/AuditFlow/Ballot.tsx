@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Redirect } from 'react-router-dom'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
-import { IAuditBoard, IReview } from '../../types'
+import { IReview, IBallot } from '../../types'
 import { BallotRow } from './Atoms'
 
 const TopH1 = styled(H1)`
@@ -29,9 +29,11 @@ const MainCallout = styled(Callout)`
 
 interface IProps {
   home: string
+  boardName: string
   roundId: string
-  ballotId: string
-  board: IAuditBoard
+  batchId: string
+  ballotId: number
+  ballots: IBallot[]
   contest: string
   previousBallot: () => void
   nextBallot: () => void
@@ -39,9 +41,11 @@ interface IProps {
 
 const Ballot: React.FC<IProps> = ({
   home,
+  boardName,
   roundId,
+  batchId,
   ballotId,
-  board,
+  ballots,
   contest,
   previousBallot,
   nextBallot,
@@ -49,9 +53,10 @@ const Ballot: React.FC<IProps> = ({
   const [auditing, setAuditing] = useState(true)
   const [review, setReview] = useState<IReview>({ vote: null, comment: '' })
 
-  const ballot = board.ballots
-    ? board.ballots.find(b => b.id === ballotId)
-    : null
+  const ballotIx = ballots
+    ? ballots.findIndex(b => b.position === ballotId && b.batch.id === batchId)
+    : -1
+  const ballot = ballots[ballotIx]
   useEffect(() => {
     if (ballot) {
       const { vote, comment } = ballot
@@ -59,20 +64,20 @@ const Ballot: React.FC<IProps> = ({
     }
   }, [ballot])
 
-  return !board.ballots || !ballot ? (
+  return !ballots || !ballot || ballotIx < 0 ? (
     <Redirect to={home} />
   ) : (
     <Wrapper>
-      <TopH1>{board.name}: Ballot Card Data Entry</TopH1>
+      <TopH1>{boardName}: Ballot Card Data Entry</TopH1>
       <H3>Enter Ballot Information</H3>
       <MainCallout icon={null}>
-        Round {roundId}: auditing ballot {ballotId} of {board.ballots.length}
+        Round {roundId}: auditing ballot {ballotIx + 1} of {ballots.length}
       </MainCallout>
       <BallotRow>
         <div className="ballot-side">
           <H4>Current ballot:</H4>
-          <div>Tabulator: {ballot.tabulator}</div>
-          <div>Batch: {ballot.batch}</div>
+          <div>Tabulator: {ballot.batch.tabulator}</div>
+          <div>Batch: {ballot.batch.name}</div>
           <div>Record/Position: {ballot.position}</div>
         </div>
         <Divider />
