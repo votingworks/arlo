@@ -1,4 +1,52 @@
-import { IAuditBoard } from '../../types'
+import { IAuditBoard, IBallot } from '../../types'
+
+export const dummyBallots: IBallot[] = [
+  {
+    tabulator: '11',
+    batch: 'Precinct 13',
+    position: '313',
+    status: 'NOT_AUDITED',
+    vote: null,
+    comment: '',
+    id: '1',
+  },
+  {
+    tabulator: '17',
+    batch: 'Precinct 19',
+    position: '2112',
+    status: 'NOT_AUDITED',
+    vote: null,
+    comment: '',
+    id: '2',
+  },
+  {
+    tabulator: '23',
+    batch: 'Precinct 29',
+    position: '1789',
+    status: 'NOT_AUDITED',
+    vote: null,
+    comment: '',
+    id: '3',
+  },
+  {
+    tabulator: '17',
+    batch: 'Precinct 19',
+    position: '2112',
+    status: 'NOT_AUDITED',
+    vote: null,
+    comment: '',
+    id: '4',
+  },
+  {
+    tabulator: '23',
+    batch: 'Precinct 29',
+    position: '1789',
+    status: 'AUDITED',
+    vote: null,
+    comment: '',
+    id: '5',
+  },
+]
 
 export const dummyBoard: IAuditBoard[] = [
   {
