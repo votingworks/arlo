@@ -1,5 +1,12 @@
 import React from 'react'
 import { Button } from '@blueprintjs/core'
+import styled from 'styled-components'
+
+const SpacedButton = styled(Button)`
+  & + & {
+    margin-top: 10px;
+  }
+`
 
 interface Props {
   disabled?: boolean
@@ -21,9 +28,14 @@ const FormButton: React.FC<Props> = ({
   children,
   ...rest
 }: Props) => (
-  <Button onClick={onClick} disabled={disabled} small={size === 'sm'} {...rest}>
+  <SpacedButton
+    onClick={onClick}
+    disabled={disabled}
+    small={size === 'sm'}
+    {...rest}
+  >
     {children}
-  </Button>
+  </SpacedButton>
 )
 
 export default FormButton

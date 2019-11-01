@@ -3,7 +3,7 @@
 exports[`CreateAudit renders correctly 1`] = `
 <div>
   <div
-    class="sc-bwzfXH jDZqng"
+    class="sc-htpNat dgtpPg"
   >
     <img
       alt="Arlo, by VotingWorks"
@@ -11,7 +11,7 @@ exports[`CreateAudit renders correctly 1`] = `
       src="/arlo.png"
     />
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bdVaJa iOdBoI"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH iEhHA sc-bdVaJa gLVjYw"
       type="button"
     >
       <span
