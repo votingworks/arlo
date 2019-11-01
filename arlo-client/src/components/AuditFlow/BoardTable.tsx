@@ -20,18 +20,18 @@ const PaddedCell = styled(Cell)`
   padding: 3px 5px;
 `
 
-const ActionWrapper = styled.div`
-  margin-bottom: 20px;
-  .bp3-checkbox {
-    display: inline-block;
-    margin-left: 20px;
-  }
-  @media (max-width: 775px) {
-    .bp3-button {
-      width: 100%;
-    }
-  }
-`
+// const ActionWrapper = styled.div` // commented out until feature is used
+//   margin-bottom: 20px;
+//   .bp3-checkbox {
+//     display: inline-block;
+//     margin-left: 20px;
+//   }
+//   @media (max-width: 775px) {
+//     .bp3-button {
+//       width: 100%;
+//     }
+//   }
+// `
 
 interface IProps {
   setIsLoading: (arg0: boolean) => void
@@ -128,13 +128,13 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
           )
         )}
       </RightWrapper>
-      <ActionWrapper>
+      {/* <ActionWrapper> // commented out until feature is added
         {!roundComplete && (
           <>
             <Button intent="primary">Download Ballot List as CSV</Button>
           </>
         )}
-      </ActionWrapper>
+      </ActionWrapper> */}
       <Table
         numRows={numRows}
         defaultRowHeight={30}

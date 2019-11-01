@@ -2,10 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { H1 } from '@blueprintjs/core'
 import { Route, Switch } from 'react-router-dom'
 import { History } from 'history'
-import { IAuditFlowParams, IAudit, IAuditBoard } from '../../types'
+import {
+  IAuditFlowParams,
+  IAudit,
+  IAuditBoard,
+  // IBallot
+} from '../../types'
 import { api } from '../utilities'
 import { statusStates } from '../AuditForms/_mocks'
-import { dummyBoard } from './_mocks'
+import {
+  dummyBoard,
+  // dummyBallots
+} from './_mocks'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
 import Ballot from './Ballot'
@@ -47,6 +55,17 @@ const AuditFlow: React.FC<IProps> = ({
   useEffect(() => {
     updateAudit()
   }, [updateAudit])
+
+  // const [ballots, setBallots] = useState<IBallot[]>(dummyBallots)
+
+  // const getBallots = useCallback(async (): Promise<IBallot[]> => {
+  //   const allBallots: IBallot[] = []
+  //   audit.jurisdictions[0].batches!.forEach(async batch => {
+  //     const { ballots } = await api(`/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch.id}/round/<round_id>/ballot-list`, { electionId })
+  //     allBallots.push(...ballots)
+  //   })
+  //   return allBallots
+  // }, [electionId])
 
   const [dummy, setDummy] = useState(dummyID)
   const board = {
