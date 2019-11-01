@@ -40,12 +40,11 @@ interface IProps {
   url: string
 }
 
-const KEYS: ('id' | 'tabulator' | 'batch' | 'position' | 'status')[] = [
-  'id',
+const KEYS: ('position' | 'tabulator' | 'batch' | 'status')[] = [
+  'position',
   'batch',
   'status',
   'tabulator',
-  'position',
 ]
 
 const STATUSES: { [key: string]: string } = {
@@ -64,7 +63,7 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
         const content =
           row[KEYS[cI]] === 'AUDITED' ? (
             <Link
-              to={`${url}/round/1/ballot/${row.id}`}
+              to={`${url}/round/1/ballot/${row.position}`}
               className="bp3-button bp3-small"
             >
               Re-audit
@@ -138,19 +137,18 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
       <Table
         numRows={numRows}
         defaultRowHeight={30}
-        columnWidths={columnWidths(6)}
+        columnWidths={columnWidths(5)}
         enableRowHeader={false}
       >
-        <Column key="id" name="Ballot" cellRenderer={renderCell} />
+        <Column
+          key="position"
+          name="Ballot Position"
+          cellRenderer={renderCell}
+        />
         <Column key="batch" name="Batch" cellRenderer={renderCell} />
         <Column key="status" name="Status" cellRenderer={renderCell} />
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
-        <Column
-          key="position"
-          name="Record/Position"
-          cellRenderer={renderCell}
-        />
-        <Column key="board" name="Audit Board" cellRenderer={renderCell} />
+        <Column key="round" name="Audit Round" cellRenderer={renderCell} />
       </Table>
     </div>
   )

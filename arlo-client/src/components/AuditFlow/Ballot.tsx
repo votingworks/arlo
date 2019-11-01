@@ -50,7 +50,7 @@ const Ballot: React.FC<IProps> = ({
   const [review, setReview] = useState<IReview>({ vote: null, comment: '' })
 
   const ballot = board.ballots
-    ? board.ballots.find(b => b.id === ballotId)
+    ? board.ballots.find(b => b.position === ballotId)
     : null
   useEffect(() => {
     if (ballot) {

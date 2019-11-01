@@ -10,10 +10,10 @@ import {
 } from '../../types'
 import { api } from '../utilities'
 import { statusStates } from '../AuditForms/_mocks'
-import {
-  dummyBoard,
-  // dummyBallots
-} from './_mocks'
+// import {
+//   dummyBoard,
+//   dummyBallots
+// } from './_mocks'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
 import Ballot from './Ballot'
@@ -67,13 +67,11 @@ const AuditFlow: React.FC<IProps> = ({
   //   return allBallots
   // }, [electionId])
 
-  const [dummy, setDummy] = useState(dummyID)
-  const board = {
-    ...audit.jurisdictions[0].auditBoards.find(
-      (v: IAuditBoard) => v.id === token
-    ),
-    ...dummyBoard[dummy],
-  }
+  const board:
+    | IAuditBoard
+    | undefined = audit.jurisdictions[0].auditBoards.find(
+    (v: IAuditBoard) => v.id === token
+  )
 
   const nextBallot = (r: string, b: string) => () => {
     history.push(`${url}/round/${r}/ballot/${Number(b) + 1}`)
@@ -134,9 +132,12 @@ const AuditFlow: React.FC<IProps> = ({
     return (
       <Wrapper>
         <MemberForm
-          setDummy={setDummy}
+          updateAudit={updateAudit}
           boardName={board.name}
+          boardId={board.id}
           jurisdictionName={audit.jurisdictions[0].name}
+          jurisdictionId={audit.jurisdictions[0].id}
+          electionId={electionId}
         />
       </Wrapper>
     )
