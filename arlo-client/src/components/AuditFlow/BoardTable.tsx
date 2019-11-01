@@ -36,7 +36,8 @@ const PaddedCell = styled(Cell)`
 interface IProps {
   setIsLoading: (arg0: boolean) => void
   isLoading: boolean
-  board: IAuditBoard
+  boardName: IAuditBoard['name']
+  ballots: IBallot[]
   url: string
 }
 
@@ -52,18 +53,18 @@ const STATUSES: { [key: string]: string } = {
   NOT_AUDITED: 'Not Audited',
 }
 
-const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
+const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
   const renderCell = (rI: number, cI: number) => {
-    if (board.ballots) {
-      const row: IBallot = board.ballots[rI]
+    if (ballots) {
+      const row: IBallot = ballots[rI]
       /* istanbul ignore if */
       if (!KEYS[cI]) {
-        return <PaddedCell>{board.name}</PaddedCell>
+        return <PaddedCell>{1}</PaddedCell>
       } else if (STATUSES[row[KEYS[cI]]]) {
         const content =
           row[KEYS[cI]] === 'AUDITED' ? (
             <Link
-              to={`${url}/round/1/ballot/${row.position}`}
+              to={`${url}/round/1/batch/${row.batchId}/ballot/${row.position}`}
               className="bp3-button bp3-small"
             >
               Re-audit
@@ -73,7 +74,7 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
           )
         return (
           <PaddedCell>
-            <>{content}</>
+            <>{content === null ? 'N/A' : content}</>
           </PaddedCell>
         )
         // wrapping content in React.Fragment to avoid unexpected props being passed to dom elements and throwing warnings
@@ -95,15 +96,14 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
     return Array(length).fill(containerSize / length)
   }
 
-  const roundComplete =
-    board.ballots && board.ballots.every(b => b.status === 'AUDITED')
+  const roundComplete = ballots && ballots.every(b => b.status === 'AUDITED')
 
   let numRows = 10
-  if (board.ballots && board.ballots.length < 10) numRows = board.ballots.length
+  if (ballots && ballots.length < 10) numRows = ballots.length
 
   return (
     <div className="board-table-container">
-      <H1>{board.name}: Ballot Cards to Audit</H1>
+      <H1>{boardName}: Ballot Cards to Audit</H1>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -117,9 +117,12 @@ const BoardTable: React.FC<IProps> = ({ board, url }: IProps) => {
         {roundComplete ? (
           <Button intent="primary">Review Complete - Finish Round</Button>
         ) : (
-          board.ballots && (
+          ballots && (
             <Link
-              to={url + '/round/1/ballot/1'}
+              to={
+                url +
+                `/round/1/batch/${ballots[0].batchId}/ballot/${ballots[0].position}`
+              }
               className="bp3-button bp3-intent-primary"
             >
               Start Auditing

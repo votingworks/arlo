@@ -1,19 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { H1 } from '@blueprintjs/core'
+import { Spinner } from '@blueprintjs/core'
 import { Route, Switch } from 'react-router-dom'
 import { History } from 'history'
-import {
-  IAuditFlowParams,
-  IAudit,
-  IAuditBoard,
-  // IBallot
-} from '../../types'
+import { IAuditFlowParams, IAudit, IAuditBoard, IBallot } from '../../types'
 import { api } from '../utilities'
 import { statusStates } from '../AuditForms/_mocks'
-// import {
-//   dummyBoard,
-//   dummyBallots
-// } from './_mocks'
+import {
+  // dummyBoard,
+  dummyBallots,
+} from './_mocks'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
 import Ballot from './Ballot'
@@ -25,7 +20,6 @@ interface IProps {
     url: string
   }
   history: History
-  dummyID?: number
 }
 
 const AuditFlow: React.FC<IProps> = ({
@@ -34,7 +28,6 @@ const AuditFlow: React.FC<IProps> = ({
     url,
   },
   history,
-  dummyID = 2,
 }: IProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -46,8 +39,8 @@ const AuditFlow: React.FC<IProps> = ({
   }, [electionId])
 
   const updateAudit = useCallback(async () => {
-    const audit = await getStatus()
     setIsLoading(true)
+    const audit = await getStatus()
     setAudit(audit)
     setIsLoading(false)
   }, [getStatus])
@@ -56,16 +49,34 @@ const AuditFlow: React.FC<IProps> = ({
     updateAudit()
   }, [updateAudit])
 
-  // const [ballots, setBallots] = useState<IBallot[]>(dummyBallots)
+  const [ballots, setBallots] = useState<IBallot[]>(dummyBallots)
 
-  // const getBallots = useCallback(async (): Promise<IBallot[]> => {
-  //   const allBallots: IBallot[] = []
-  //   audit.jurisdictions[0].batches!.forEach(async batch => {
-  //     const { ballots } = await api(`/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch.id}/round/<round_id>/ballot-list`, { electionId })
-  //     allBallots.push(...ballots)
-  //   })
-  //   return allBallots
-  // }, [electionId])
+  const getBallots = useCallback(async (): Promise<IBallot[]> => {
+    if (audit.jurisdictions.length) {
+      const allBallots: IBallot[] = []
+      audit.jurisdictions[0].batches!.forEach(async batch => {
+        const { ballots } = await api(
+          `/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch.id}/round/1/ballot-list`,
+          { electionId }
+        )
+        allBallots.push(...ballots)
+      })
+      return allBallots.length ? allBallots : dummyBallots
+    } else {
+      return []
+    }
+  }, [electionId, audit.jurisdictions])
+
+  const updateBallots = useCallback(async () => {
+    setIsLoading(true)
+    const ballots = await getBallots()
+    setBallots(ballots)
+    setIsLoading(false)
+  }, [getBallots])
+
+  useEffect(() => {
+    updateBallots()
+  }, [updateBallots])
 
   const board:
     | IAuditBoard
@@ -73,22 +84,35 @@ const AuditFlow: React.FC<IProps> = ({
     (v: IAuditBoard) => v.id === token
   )
 
-  const nextBallot = (r: string, b: string) => () => {
-    history.push(`${url}/round/${r}/ballot/${Number(b) + 1}`)
+  const nextBallot = (r: string, batchId: string, ballot: string) => () => {
+    const ballotIx = ballots.findIndex(
+      (b: IBallot) => b.batchId === batchId && b.position === ballot
+    )
+    if (ballotIx > -1 && ballots[ballotIx + 1]) {
+      const b = ballots[ballotIx + 1]
+      history.push(`${url}/round/${r}/batch/${b.batchId}/ballot/${b.position}`)
+    } else {
+      history.push(url)
+    }
   }
 
-  const previousBallot = (r: string, b: string) => () => {
-    history.push(`${url}/round/${r}/ballot/${Number(b) - 1}`)
+  const previousBallot = (r: string, batchId: string, ballot: string) => () => {
+    const ballotIx = ballots.findIndex(
+      (b: IBallot) => b.batchId === batchId && b.position === ballot
+    )
+    if (ballotIx > -1 && ballots[ballotIx - 1]) {
+      const b = ballots[ballotIx - 1]
+      history.push(`${url}/round/${r}/batch/${b.batchId}/ballot/${b.position}`)
+    } else {
+      history.push(url)
+    }
   }
 
   /* istanbul ignore if */
   if (!board) {
     return (
       <Wrapper>
-        <H1>
-          Sorry, but that Audit Board does not exist in{' '}
-          {audit.jurisdictions[0].name} and {audit.name}
-        </H1>
+        <Spinner />
       </Wrapper>
     )
   } else if (board.members.length) {
@@ -102,26 +126,29 @@ const AuditFlow: React.FC<IProps> = ({
               <BoardTable
                 isLoading={isLoading}
                 setIsLoading={setIsLoading}
-                board={board}
+                boardName={board.name}
+                ballots={ballots}
                 url={url}
               />
             )}
           />
           <Route
-            path={url + '/round/:roundId/ballot/:ballotId'}
+            path={url + '/round/:roundId/batch/:batchId/ballot/:ballotId'}
             render={({
               match: {
-                params: { roundId, ballotId },
+                params: { roundId, batchId, ballotId },
               },
             }) => (
               <Ballot
                 home={url}
-                previousBallot={previousBallot(roundId, ballotId)}
-                nextBallot={nextBallot(roundId, ballotId)}
+                previousBallot={previousBallot(roundId, batchId, ballotId)}
+                nextBallot={nextBallot(roundId, batchId, ballotId)}
                 contest={audit.contests[0].name}
                 roundId={roundId}
+                batchId={batchId}
                 ballotId={ballotId}
-                board={board}
+                ballots={ballots}
+                boardName={board.name}
               />
             )}
           />

@@ -51,7 +51,7 @@ describe('AuditFlow', () => {
     apiMock.mockImplementationOnce(async () => dummy)
     const { container, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow {...routeProps} dummyID={0} />
+        <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -67,7 +67,7 @@ describe('AuditFlow', () => {
     apiMock.mockImplementationOnce(async () => dummy)
     const { queryByText, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow {...routeProps} dummyID={1} />
+        <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -81,7 +81,7 @@ describe('AuditFlow', () => {
     apiMock.mockImplementationOnce(async () => dummy)
     const { container, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow {...routeProps} dummyID={2} />
+        <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -101,7 +101,7 @@ describe('AuditFlow', () => {
       ] as any) as any) as jest.SpyInstance<[{ clientWidth: number }]>
     const { container } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow {...routeProps} dummyID={2} />
+        <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -113,7 +113,7 @@ describe('AuditFlow', () => {
     apiMock.mockImplementationOnce(async () => dummy)
     const { container, getByText } = render(
       <StaticRouter {...routeProps}>
-        <AuditFlow {...routeProps} dummyID={3} />
+        <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -138,7 +138,7 @@ describe('AuditFlow', () => {
     ballotRouteProps.match.url = '/election/1/board/123'
     const { container, getByText } = render(
       <StaticRouter {...ballotRouteProps}>
-        <AuditFlow {...ballotRouteProps} dummyID={2} />
+        <AuditFlow {...ballotRouteProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -165,7 +165,7 @@ describe('AuditFlow', () => {
     ballotRouteProps.match.url = '/election/1/board/123'
     const { getByText } = render(
       <StaticRouter {...ballotRouteProps}>
-        <AuditFlow {...ballotRouteProps} dummyID={2} />
+        <AuditFlow {...ballotRouteProps} />
       </StaticRouter>
     )
 

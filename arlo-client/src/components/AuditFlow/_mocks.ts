@@ -3,6 +3,7 @@ import { IAuditBoard, IBallot } from '../../types'
 export const dummyBallots: IBallot[] = [
   {
     auditBoardId: '123',
+    batchId: '12345',
     tabulator: '11',
     batch: 'Precinct 13',
     position: '313',
@@ -12,6 +13,7 @@ export const dummyBallots: IBallot[] = [
   },
   {
     auditBoardId: '123',
+    batchId: '12345',
     tabulator: '17',
     batch: 'Precinct 19',
     position: '2112',
@@ -21,6 +23,7 @@ export const dummyBallots: IBallot[] = [
   },
   {
     auditBoardId: '123',
+    batchId: '12345',
     tabulator: '23',
     batch: 'Precinct 29',
     position: '1789',
@@ -30,6 +33,7 @@ export const dummyBallots: IBallot[] = [
   },
   {
     auditBoardId: '123',
+    batchId: '12345',
     tabulator: '17',
     batch: 'Precinct 19',
     position: '2115',
@@ -39,6 +43,7 @@ export const dummyBallots: IBallot[] = [
   },
   {
     auditBoardId: '123',
+    batchId: '12345',
     tabulator: '23',
     batch: 'Precinct 29',
     position: '1790',
@@ -84,6 +89,7 @@ export const dummyBoard: IAuditBoard[] = [
     ballots: [
       {
         auditBoardId: '123',
+        batchId: '12345',
         tabulator: '11',
         batch: 'Precinct 13',
         position: '313',
@@ -93,6 +99,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         auditBoardId: '123',
+        batchId: '12345',
         tabulator: '17',
         batch: 'Precinct 19',
         position: '2112',
@@ -102,6 +109,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         auditBoardId: '123',
+        batchId: '12345',
         tabulator: '23',
         batch: 'Precinct 29',
         position: '1789',
@@ -111,6 +119,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         auditBoardId: '123',
+        batchId: '12345',
         tabulator: '17',
         batch: 'Precinct 19',
         position: '2112',
@@ -121,6 +130,7 @@ export const dummyBoard: IAuditBoard[] = [
       {
         auditBoardId: '123',
         tabulator: '23',
+        batchId: '12345',
         batch: 'Precinct 29',
         position: '1789',
         status: 'AUDITED',
@@ -145,6 +155,7 @@ export const dummyBoard: IAuditBoard[] = [
     ballots: [
       {
         auditBoardId: '123',
+        batchId: '12345',
         tabulator: '11',
         batch: 'Precinct 13',
         position: '313',
@@ -154,6 +165,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         auditBoardId: '123',
+        batchId: '12345',
         tabulator: '17',
         batch: 'Precinct 19',
         position: '2112',
@@ -163,6 +175,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         auditBoardId: '123',
+        batchId: '12345',
         tabulator: '23',
         batch: 'Precinct 29',
         position: '1789',
@@ -172,6 +185,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         auditBoardId: '123',
+        batchId: '12345',
         tabulator: '17',
         batch: 'Precinct 19',
         position: '2112',
@@ -181,6 +195,7 @@ export const dummyBoard: IAuditBoard[] = [
       },
       {
         auditBoardId: '123',
+        batchId: '12345',
         tabulator: '23',
         batch: 'Precinct 29',
         position: '1789',
