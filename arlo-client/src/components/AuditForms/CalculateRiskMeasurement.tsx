@@ -14,7 +14,7 @@ import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api, testNumber, poll } from '../utilities'
-import { Contest, Round, Candidate, RoundContest, Audit } from '../../types'
+import { Contest, Round, Candidate, RoundContest, Audit, Ballot } from '../../types'
 import { statusStates } from './_mocks'
 
 const InputSection = styled.div`
@@ -127,6 +127,12 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
     audit.jurisdictions[0].auditBoards.forEach(
       b => (b.ballots = statusStates[4].jurisdictions[0].auditBoards[0].ballots)
     )
+    const ballots: Ballot[] = []
+    audit.jurisdictions[0].batches!.forEach(async batch => {
+      const { ballots: b } = await api(`/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch.id}/round/${r+1}/ballot-list`, { electionId })
+      ballots.push(...b.map((v: Ballot) => { v.tabulator = batch.tabulator; v.batch = batch.name; v.id = v.position; return v }))
+    })
+    console.log(ballots)
     /* istanbul ignore else */
     if (audit.jurisdictions[0].auditBoards.every(b => !!b.ballots)) {
       const placeholders = new jsPDF({ format: 'letter' })

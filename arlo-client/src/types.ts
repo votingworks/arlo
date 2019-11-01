@@ -23,20 +23,22 @@ export interface Contest {
 }
 
 export interface Ballot {
-  id: string
-  tabulator: string
-  batch: string
-  position: string
-  status: 'AUDITED' | 'NOT_AUDITED'
+  timesSampled: number,
+  auditBoardId: string,
+  status: 'AUDITED' | null,
   vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
   comment: string
+  position: string
+  tabulator?: string | null
+  batch?: string
+  id?: string
 }
 
 export interface AuditBoard {
   id: string
   name: string
   members: any[]
-  ballots?: Ballot[]
+  ballots?: Ballot[] // TODO remove
 }
 
 export interface BallotManifest {
@@ -46,12 +48,21 @@ export interface BallotManifest {
   uploadedAt: string | null
 }
 
+export interface Batch {
+  id: string
+  name: string
+  numBallots: number
+  storageLocation: null | string
+  tabulator: null | string
+}
+
 export interface Jurisdiction {
   id: string
   name: string
   contests: string[]
   auditBoards: AuditBoard[]
   ballotManifest?: BallotManifest
+  batches?: Batch[] // TODO make not optional
 }
 
 export interface RoundContest {
