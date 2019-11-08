@@ -848,13 +848,13 @@ def test_ballot_set(client):
 
     for batch in batches:
         for round in rounds:
-            rv = client.get('{}/jurisdiction/{}/batch/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, batch['id'], round['id']))
+            rv = client.get('{}/jurisdiction/{}/audit-board/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, audit_board_id_1, round['id']))
             response = json.loads(rv.data)
 
             if response['ballots']:
-                batch_id = batch['id']
-                round_id = round['id']
                 ballot = response['ballots'][0]
+                batch_id = ballot['batch']['id']
+                round_id = round['id']
                 assert not ballot['status']
                 assert not ballot['vote']
                 assert not ballot['comment']
@@ -868,15 +868,17 @@ def test_ballot_set(client):
     assert ballot is not None
 
     ## set the ballot data
+    print({ 'jurisdiction_id': jurisdiction_id, 'batch_id': batch_id, 'round_id': round_id, 'position': ballot['position'] })
     url = '{}/jurisdiction/{}/batch/{}/round/{}/ballot/{}'.format(url_prefix, jurisdiction_id, batch_id, round_id, ballot['position'])
 
     rv = post_json(client, url, { 'vote': 'NO', 'comment': 'This one had a hanging chad.' })
+    print(rv.data)
     response = json.loads(rv.data)
 
     assert response['status'] == 'ok'
 
     ## verify the update actually did something
-    rv = client.get('{}/jurisdiction/{}/batch/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, batch_id, round_id))
+    rv = client.get('{}/jurisdiction/{}/audit-board/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, audit_board_id_1, round_id))
     response = json.loads(rv.data)
     ballot_position = ballot['position']
     ballot = [b for b in response['ballots'] if b['position'] == ballot_position][0]
