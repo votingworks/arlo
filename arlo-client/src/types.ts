@@ -24,19 +24,16 @@ export interface Contest {
 
 export interface Ballot {
   timesSampled: number
-  auditBoardId?: string
   boardName?: string
   status: 'AUDITED' | null
   vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
   comment: string
   position: string
-  batch?: {
+  batch: {
     id: string
     name: string
     tabulator: string | null
   }
-  tabulator?: string | null
-  id?: string
 }
 
 export interface AuditBoard {
@@ -84,7 +81,7 @@ export interface RoundContest {
 }
 
 export interface Round {
-  id?: string
+  id: string
   name?: string
   randomSeed?: string
   riskLimit?: number

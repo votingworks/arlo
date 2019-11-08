@@ -3,7 +3,7 @@ import { render, fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import jsPDF from 'jspdf'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
-import { statusStates } from './_mocks'
+import { statusStates, dummyBallots } from './_mocks'
 import * as utilities from '../utilities'
 
 jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation()
@@ -233,7 +233,8 @@ describe('CalculateRiskMeasurement', () => {
     }
   })
 
-  it('downloads labels sheets', () => {
+  it('downloads labels sheets', async () => {
+    apiMock.mockImplementationOnce(async () => dummyBallots)
     const { getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates[3]}
@@ -249,7 +250,10 @@ describe('CalculateRiskMeasurement', () => {
       bubbles: true,
     })
 
-    expect(jspdfMock).toHaveBeenCalledTimes(1)
+    await wait(() => {
+      expect(apiMock).toHaveBeenCalledTimes(1)
+      expect(jspdfMock).toHaveBeenCalledTimes(1)
+    })
     expect(jspdfInstance.setFontSize).toHaveBeenCalledTimes(1)
     expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(80) // called twice per label, with 40 labels
     expect(jspdfInstance.text).toHaveBeenCalledTimes(120) // called thrice per label, with 40 labels
@@ -257,7 +261,8 @@ describe('CalculateRiskMeasurement', () => {
     expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
   })
 
-  it('downloads placeholder sheets', () => {
+  it('downloads placeholder sheets', async () => {
+    apiMock.mockImplementationOnce(async () => dummyBallots)
     const { getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates[3]}
@@ -273,7 +278,10 @@ describe('CalculateRiskMeasurement', () => {
       bubbles: true,
     })
 
-    expect(jspdfMock).toHaveBeenCalledTimes(1)
+    await wait(() => {
+      expect(apiMock).toHaveBeenCalledTimes(1)
+      expect(jspdfMock).toHaveBeenCalledTimes(1)
+    })
     expect(jspdfInstance.setFontSize).toHaveBeenCalledTimes(1)
     expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(80) // called twice per label, with 40 labels
     expect(jspdfInstance.text).toHaveBeenCalledTimes(120) // called thrice per label, with 40 labels
