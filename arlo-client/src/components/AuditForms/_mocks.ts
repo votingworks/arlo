@@ -199,7 +199,11 @@ export const statusStates: Audit[] = [
             ballots: [
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -209,7 +213,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -219,7 +227,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -229,7 +241,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -239,7 +255,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -249,7 +269,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -259,7 +283,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -269,7 +297,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -279,7 +311,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -289,7 +325,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -299,7 +339,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -309,7 +353,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -319,7 +367,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -329,7 +381,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -339,7 +395,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -349,7 +409,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -359,7 +423,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -369,7 +437,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -379,7 +451,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -389,7 +465,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -399,7 +479,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -409,7 +493,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -419,7 +507,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -429,7 +521,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -439,7 +535,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -449,7 +549,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -459,7 +563,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -469,7 +577,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -479,7 +591,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -489,7 +605,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -499,7 +619,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -509,7 +633,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -519,7 +647,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -529,7 +661,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -539,7 +675,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -549,7 +689,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -559,7 +703,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -569,7 +717,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -579,7 +731,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -589,7 +745,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -668,7 +828,11 @@ export const statusStates: Audit[] = [
             ballots: [
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -678,7 +842,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -688,7 +856,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -698,7 +870,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -708,7 +884,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -718,7 +898,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -728,7 +912,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -738,7 +926,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -748,7 +940,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -758,7 +954,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -768,7 +968,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -778,7 +982,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -788,7 +996,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -798,7 +1010,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -808,7 +1024,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -818,7 +1038,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -828,7 +1052,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -838,7 +1066,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -848,7 +1080,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -858,7 +1094,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -868,7 +1108,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -878,7 +1122,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -888,7 +1136,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -898,7 +1150,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -908,7 +1164,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -918,7 +1178,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -928,7 +1192,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -938,7 +1206,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -948,7 +1220,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -958,7 +1234,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -968,7 +1248,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -978,7 +1262,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -988,7 +1276,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -998,7 +1290,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1008,7 +1304,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1018,7 +1318,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -1028,7 +1332,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1038,7 +1346,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1048,7 +1360,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1058,7 +1374,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1140,7 +1460,11 @@ export const statusStates: Audit[] = [
             ballots: [
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -1150,7 +1474,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1160,7 +1488,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1170,7 +1502,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1180,7 +1516,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1190,7 +1530,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -1200,7 +1544,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1210,7 +1558,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1220,7 +1572,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1230,7 +1586,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1240,7 +1600,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -1250,7 +1614,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1260,7 +1628,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1270,7 +1642,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1280,7 +1656,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1290,7 +1670,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -1300,7 +1684,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1310,7 +1698,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1320,7 +1712,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1330,7 +1726,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1340,7 +1740,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -1350,7 +1754,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1360,7 +1768,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1370,7 +1782,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1380,7 +1796,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1390,7 +1810,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -1400,7 +1824,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1410,7 +1838,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1420,7 +1852,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1430,7 +1866,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1440,7 +1880,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -1450,7 +1894,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1460,7 +1908,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1470,7 +1922,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1480,7 +1936,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1490,7 +1950,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '11',
-                batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '313',
                 status: 'AUDITED',
                 vote: null,
@@ -1500,7 +1964,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1510,7 +1978,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,
@@ -1520,7 +1992,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '17',
-                batch: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '2112',
                 status: 'AUDITED',
                 vote: null,
@@ -1530,7 +2006,11 @@ export const statusStates: Audit[] = [
               },
               {
                 tabulator: '23',
-                batch: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                batch: {
+                  name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+                  id: 'batch-id',
+                  tabulator: '11',
+                },
                 position: '1789',
                 status: 'AUDITED',
                 vote: null,

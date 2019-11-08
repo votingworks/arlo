@@ -14,8 +14,15 @@ import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api, testNumber, poll } from '../utilities'
-import { Contest, Round, Candidate, RoundContest, Audit, Ballot } from '../../types'
-import { statusStates } from './_mocks'
+import { asyncForEach } from '../testUtilities'
+import {
+  Contest,
+  Round,
+  Candidate,
+  RoundContest,
+  Audit,
+  Ballot,
+} from '../../types'
 
 const InputSection = styled.div`
   display: block;
@@ -71,6 +78,24 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
   getStatus,
   electionId,
 }: Props) => {
+  const getBallots = async (r: number): Promise<Ballot[]> => {
+    const round = audit.rounds[r]
+    const ballots: Ballot[] = []
+    await asyncForEach(audit.jurisdictions[0].auditBoards, async board => {
+      const { ballots: b } = await api(
+        `/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`,
+        { electionId }
+      )
+      ballots.push(
+        ...b.map((v: Ballot) => {
+          v.boardName = board.name
+          return v
+        })
+      )
+    })
+    return ballots
+  }
+
   const downloadBallotRetrievalList = (id: number, e: React.FormEvent) => {
     e.preventDefault()
     const jurisdictionID: string = audit.jurisdictions[0].id
@@ -85,12 +110,10 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
     updateAudit()
   }
 
-  const downloadLabels = (r: number): void => {
-    audit.jurisdictions[0].auditBoards.forEach(
-      b => (b.ballots = statusStates[4].jurisdictions[0].auditBoards[0].ballots)
-    )
+  const downloadLabels = async (r: number): Promise<void> => {
+    const ballots = await getBallots(r)
     /* istanbul ignore else */
-    if (audit.jurisdictions[0].auditBoards.every(b => !!b.ballots)) {
+    if (ballots.length) {
       const getX = (l: number): number => (l % 3) * 60 + 9 * ((l % 3) + 1)
       const getY = (l: number): number[] => [
         Math.floor(l / 3) * 25.5 + 20,
@@ -100,61 +123,52 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
       const labels = new jsPDF({ format: 'letter' })
       labels.setFontSize(9)
       let labelCount = 0
-      audit.jurisdictions[0].auditBoards.forEach((board, i) =>
-        board.ballots!.forEach(ballot => {
-          labelCount++
-          if (labelCount > 30) {
-            labels.addPage('letter')
-            labelCount = 1
-          }
-          const x = getX(labelCount - 1)
-          const y = getY(labelCount - 1)
-          labels.text(labels.splitTextToSize(board.name, 60)[0], x, y[0])
-          labels.text(
-            labels.splitTextToSize(`Batch Name: ${ballot.batch}`, 60),
-            x,
-            y[1]
-          )
-          labels.text(`Ballot Number: ${ballot.id}`, x, y[2])
-        })
-      )
+      ballots.forEach(ballot => {
+        labelCount++
+        if (labelCount > 30) {
+          labels.addPage('letter')
+          labelCount = 1
+        }
+        const x = getX(labelCount - 1)
+        const y = getY(labelCount - 1)
+        labels.text(labels.splitTextToSize(ballot.boardName!, 60)[0], x, y[0])
+        labels.text(
+          labels.splitTextToSize(`Batch Name: ${ballot.batch!.name}`, 60),
+          x,
+          y[1]
+        )
+        labels.text(`Ballot Number: ${ballot.position}`, x, y[2])
+      })
       labels.autoPrint()
       labels.save(`Round ${r + 1} Placeholders.pdf`)
     }
   }
 
-  const downloadPlaceholders = (r: number): void => {
-    audit.jurisdictions[0].auditBoards.forEach(
-      b => (b.ballots = statusStates[4].jurisdictions[0].auditBoards[0].ballots)
-    )
-    const ballots: Ballot[] = []
-    audit.jurisdictions[0].batches!.forEach(async batch => {
-      const { ballots: b } = await api(`/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch.id}/round/${r+1}/ballot-list`, { electionId })
-      ballots.push(...b.map((v: Ballot) => { v.tabulator = batch.tabulator; v.batch = batch.name; v.id = v.position; return v }))
-    })
-    console.log(ballots)
+  const downloadPlaceholders = async (r: number): Promise<void> => {
+    const ballots = await getBallots(r)
     /* istanbul ignore else */
-    if (audit.jurisdictions[0].auditBoards.every(b => !!b.ballots)) {
+    if (ballots.length) {
       const placeholders = new jsPDF({ format: 'letter' })
       placeholders.setFontSize(20)
       let pageCount = 0
-      audit.jurisdictions[0].auditBoards.forEach((board, i) =>
-        board.ballots!.forEach(ballot => {
-          pageCount > 0 && placeholders.addPage('letter')
-          placeholders.text(
-            placeholders.splitTextToSize(board.name, 180),
-            20,
-            20
-          )
-          placeholders.text(
-            placeholders.splitTextToSize(`Batch Name: ${ballot.batch}`, 180),
-            20,
-            40
-          )
-          placeholders.text(`Ballot Number: ${ballot.id}`, 20, 100)
-          pageCount++
-        })
-      )
+      ballots.forEach(ballot => {
+        pageCount > 0 && placeholders.addPage('letter')
+        placeholders.text(
+          placeholders.splitTextToSize(ballot.boardName!, 180),
+          20,
+          20
+        )
+        placeholders.text(
+          placeholders.splitTextToSize(
+            `Batch Name: ${ballot.batch!.name}`,
+            180
+          ),
+          20,
+          40
+        )
+        placeholders.text(`Ballot Number: ${ballot.position}`, 20, 100)
+        pageCount++
+      })
       placeholders.autoPrint()
       placeholders.save(`Round ${r + 1} Placeholders.pdf`)
     }
