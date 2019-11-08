@@ -10,7 +10,7 @@ import EstimateSampleSize, {
   InputLabel,
   Action,
 } from './EstimateSampleSize'
-import { asyncForEach, regexpEscape } from '../testUtilities'
+import { regexpEscape } from '../testUtilities'
 import statusStates from './_mocks'
 import * as utilities from '../utilities'
 
@@ -501,24 +501,27 @@ describe('EstimateSampleSize', () => {
       />
     )
 
-    await asyncForEach(estimateSampleSizeMocks.errorInputs, async inputData => {
-      const { key, value, error } = inputData
-      const input = getByLabelText(new RegExp(regexpEscape(key)), {
-        selector: 'input',
-      }) as HTMLInputElement
-      const errorID = input.name + '-error'
-      fireEvent.change(input, { target: { value: value } })
-      fireEvent.blur(input)
-      await wait(() => {
-        expect({
-          text: getByTestId(errorID).textContent,
-          context: `${key}, ${value}: ${input.value}, ${error}`,
-        }).toMatchObject({
-          text: error,
-          context: `${key}, ${value}: ${input.value}, ${error}`,
+    await utilities.asyncForEach(
+      estimateSampleSizeMocks.errorInputs,
+      async inputData => {
+        const { key, value, error } = inputData
+        const input = getByLabelText(new RegExp(regexpEscape(key)), {
+          selector: 'input',
+        }) as HTMLInputElement
+        const errorID = input.name + '-error'
+        fireEvent.change(input, { target: { value: value } })
+        fireEvent.blur(input)
+        await wait(() => {
+          expect({
+            text: getByTestId(errorID).textContent,
+            context: `${key}, ${value}: ${input.value}, ${error}`,
+          }).toMatchObject({
+            text: error,
+            context: `${key}, ${value}: ${input.value}, ${error}`,
+          })
         })
-      })
-    })
+      }
+    )
 
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
     await wait(() => {

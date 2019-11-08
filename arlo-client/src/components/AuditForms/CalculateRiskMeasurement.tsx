@@ -13,8 +13,7 @@ import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api, testNumber, poll } from '../utilities'
-import { asyncForEach } from '../testUtilities'
+import { api, testNumber, poll, asyncForEach } from '../utilities'
 import {
   Contest,
   Round,
