@@ -65,10 +65,11 @@ describe('audit flow', () => {
   it('has a happy path', () => {
     $('a=Start Auditing').click()
     ballotNext('Choice One')
-    for (let i = 0; ballotNext('Choice One') && i < 20; i++) {
+    ballotNext('Yes/For')
+    for (let i = 0; ballotNext('Yes/For') && i < 20; i++) {
       $('.bp3-callout*=auditing ballot').waitForExist()
     }
-    if (ballotNext('Choice One')) {
+    if (ballotNext('Yes/For')) {
       $('.bp3-button=Return to audit overview').click()
     }
     $('h1*=Ballot Cards to Audit').waitForExist(10000)
@@ -76,11 +77,11 @@ describe('audit flow', () => {
 
   it('handles all four voting options', () => {
     $('a=Start Auditing').click()
-    ballotNext('Choice One')
+    ballotNext('Yes/For')
     $('.bp3-callout*=auditing ballot 2 of').waitForExist()
-    ballotNext('Choice Two')
+    ballotNext('No/Against')
     $('.bp3-callout*=auditing ballot 3 of').waitForExist()
-    ballotNext("Audit board can't agree")
+    ballotNext('No audit board consensus')
     $('.bp3-callout*=auditing ballot 4 of').waitForExist()
     ballotNext('Blank vote/no mark')
     $('.bp3-callout*=auditing ballot 5 of').waitForExist()

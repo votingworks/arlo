@@ -1,5 +1,4 @@
 # Handles generating sample sizes and taking samples
-from cryptorandom.cryptorandom import SHA256
 import math
 import numpy as np
 from scipy import stats
@@ -54,7 +53,6 @@ class Sampler:
         Outputs:
         """
         self.seed = seed
-        self.prng = SHA256(seed)
         self.contests = contests
         self.batch_results = batch_results
         self.margins = self.compute_margins()
@@ -180,13 +178,15 @@ class Sampler:
                         }
                     
         Outputs:
-            sample - list of (<batch>, <ballot number>) tuples to sample, with duplicates, ballot position is 0-indexed, or just list of <batch> in the case of a MACRO audit. 
-                    [   
-                        (batch1, 1),
-                        (batch2, 49),
+            sample - list of 'tickets', consisting of: 
+                    [
+                        (
+                            '0.235789114', # ticket number
+                            (<batch>, <ballot number>), # id, here a tuple (batch, ballot)
+                            1                           # number of times this item has been picked
+                        ),
                         ...
                     ]
-
         """
 
         if self.audit_type == 'MACRO':
@@ -231,7 +231,9 @@ class Sampler:
             sample = []
             for i in faux_sample:
                 sample.append(i.split('.')[0])
-                
+
+            # TODO this is sort of a hack to get the list sorted right. Maybe it's okay?
+            return sorted(sample)
         else:
             ballots = []
             # First build a faux list of ballots
@@ -240,13 +242,12 @@ class Sampler:
                     ballots.append((batch, i))
 
             sample =  list(consistent_sampler.sampler(ballots, 
-                                                      seed=self.seed, 
-                                                      take=sample_size + num_sampled, 
-                                                      with_replacement=True,
-                                                      output='id'))[num_sampled:]
-            
-        # TODO this is sort of a hack to get the list sorted right. Maybe it's okay?
-        return sorted(sample)
+                                seed=self.seed, 
+                                take=sample_size + num_sampled, 
+                                with_replacement=True,
+                                output='tuple'))[num_sampled:]
+        
+            return sample
 
     def get_sample_sizes(self, sample_results):
         """
