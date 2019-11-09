@@ -157,13 +157,15 @@ class Sampler:
                         }
                     
         Outputs:
-            sample - list of (<batch>, <ballot number>) tuples to sample, with duplicates, ballot position is 0-indexed
-                    [   
-                        (batch1, 1),
-                        (batch2, 49),
+            sample - list of 'tickets', consisting of: 
+                    [
+                        (
+                            '0.235789114', # ticket number
+                            (<batch>, <ballot number>), # id, here a tuple (batch, ballot)
+                            1                           # number of times this item has been picked
+                        ),
                         ...
                     ]
-
         """
         ballots = []
         # First build a faux list of ballots
@@ -175,10 +177,9 @@ class Sampler:
                                                   seed=self.seed, 
                                                   take=sample_size + num_sampled, 
                                                   with_replacement=True,
-                                                  output='id'))[num_sampled:]
+                                                  output='tuple'))[num_sampled:]
         
-        # TODO this is sort of a hack to get the list sorted right. Maybe it's okay?
-        return sorted(sample)
+        return sample
 
     def get_sample_sizes(self, sample_results):
         """
