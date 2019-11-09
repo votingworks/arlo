@@ -49,23 +49,26 @@ const AuditFlow: React.FC<IProps> = ({
     updateAudit()
   }, [updateAudit])
 
-  const [ballots, setBallots] = useState<IBallot[]>(dummyBallots)
+  const round = audit.rounds[audit.rounds.length - 1]
+
+  const [ballots, setBallots] = useState<IBallot[]>(dummyBallots.ballots)
 
   const getBallots = useCallback(async (): Promise<IBallot[]> => {
     if (audit.jurisdictions.length) {
       const allBallots: IBallot[] = []
-      audit.jurisdictions[0].batches!.forEach(async batch => {
+      audit.jurisdictions[0].auditBoards!.forEach(async board => {
         const { ballots } = await api(
-          `/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch.id}/round/1/ballot-list`,
+          `/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`,
           { electionId }
         )
         allBallots.push(...ballots)
       })
-      return allBallots.length ? allBallots : dummyBallots
+      // return allBallots.length ? allBallots : dummyBallots.ballots
+      return allBallots
     } else {
       return []
     }
-  }, [electionId, audit.jurisdictions])
+  }, [electionId, audit.jurisdictions, round])
 
   const updateBallots = useCallback(async () => {
     setIsLoading(true)
@@ -76,7 +79,7 @@ const AuditFlow: React.FC<IProps> = ({
 
   useEffect(() => {
     updateBallots()
-  }, [updateBallots])
+  }, [updateBallots, audit.jurisdictions.length])
 
   const board:
     | IAuditBoard
@@ -86,11 +89,11 @@ const AuditFlow: React.FC<IProps> = ({
 
   const nextBallot = (r: string, batchId: string, ballot: string) => () => {
     const ballotIx = ballots.findIndex(
-      (b: IBallot) => b.batchId === batchId && b.position === ballot
+      (b: IBallot) => b.batch.id === batchId && b.position === ballot
     )
     if (ballotIx > -1 && ballots[ballotIx + 1]) {
       const b = ballots[ballotIx + 1]
-      history.push(`${url}/round/${r}/batch/${b.batchId}/ballot/${b.position}`)
+      history.push(`${url}/round/${r}/batch/${b.batch.id}/ballot/${b.position}`)
     } else {
       history.push(url)
     }
@@ -98,11 +101,11 @@ const AuditFlow: React.FC<IProps> = ({
 
   const previousBallot = (r: string, batchId: string, ballot: string) => () => {
     const ballotIx = ballots.findIndex(
-      (b: IBallot) => b.batchId === batchId && b.position === ballot
+      (b: IBallot) => b.batch.id === batchId && b.position === ballot
     )
     if (ballotIx > -1 && ballots[ballotIx - 1]) {
       const b = ballots[ballotIx - 1]
-      history.push(`${url}/round/${r}/batch/${b.batchId}/ballot/${b.position}`)
+      history.push(`${url}/round/${r}/batch/${b.batch.id}/ballot/${b.position}`)
     } else {
       history.push(url)
     }
@@ -128,6 +131,7 @@ const AuditFlow: React.FC<IProps> = ({
                 setIsLoading={setIsLoading}
                 boardName={board.name}
                 ballots={ballots}
+                round={audit.rounds.length}
                 url={url}
               />
             )}

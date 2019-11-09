@@ -39,47 +39,56 @@ interface IProps {
   boardName: IAuditBoard['name']
   ballots: IBallot[]
   url: string
+  round: number
 }
 
-const KEYS: ('position' | 'tabulator' | 'batch' | 'status')[] = [
+const KEYS: ('position' | 'tabulator' | 'batch' | 'status' | 'round')[] = [
   'position',
   'batch',
   'status',
   'tabulator',
+  'round',
 ]
 
-const STATUSES: { [key: string]: string } = {
-  AUDITED: 'Audited',
-  NOT_AUDITED: 'Not Audited',
-}
-
-const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
+const BoardTable: React.FC<IProps> = ({
+  boardName,
+  ballots,
+  url,
+  round,
+}: IProps) => {
   const renderCell = (rI: number, cI: number) => {
     if (ballots) {
-      const row: IBallot = ballots[rI]
-      /* istanbul ignore if */
-      if (!KEYS[cI]) {
-        return <PaddedCell>{1}</PaddedCell>
-      } else if (STATUSES[row[KEYS[cI]]]) {
-        const content =
-          row[KEYS[cI]] === 'AUDITED' ? (
-            <Link
-              to={`${url}/round/1/batch/${row.batchId}/ballot/${row.position}`}
-              className="bp3-button bp3-small"
-            >
-              Re-audit
-            </Link>
+      const ballot: IBallot = ballots[rI]
+      switch (KEYS[cI]) {
+        case 'position':
+          return <PaddedCell>{ballot.position}</PaddedCell>
+        case 'batch':
+          return <PaddedCell>{ballot.batch.name}</PaddedCell>
+        case 'status':
+          return ballot.status ? (
+            <PaddedCell>
+              <>
+                <Link
+                  to={`${url}/round/1/batch/${ballot.batch.id}/ballot/${ballot.position}`}
+                  className="bp3-button bp3-small"
+                >
+                  Re-audit
+                </Link>
+              </>
+            </PaddedCell>
           ) : (
-            STATUSES[row[KEYS[cI]]]
+            <PaddedCell>Not Audited</PaddedCell>
           )
-        return (
-          <PaddedCell>
-            <>{content === null ? 'N/A' : content}</>
-          </PaddedCell>
-        )
-        // wrapping content in React.Fragment to avoid unexpected props being passed to dom elements and throwing warnings
-      } else {
-        return <PaddedCell>{row[KEYS[cI]]}</PaddedCell>
+        case 'tabulator':
+          return (
+            <PaddedCell>
+              {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
+            </PaddedCell>
+          )
+        case 'round':
+          return <PaddedCell>{round}</PaddedCell> // make responsive
+        default:
+          return <PaddedCell>?</PaddedCell>
       }
     } else {
       return <PaddedCell loading />
@@ -121,7 +130,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
             <Link
               to={
                 url +
-                `/round/1/batch/${ballots[0].batchId}/ballot/${ballots[0].position}`
+                `/round/1/batch/${ballots[0].batch.id}/ballot/${ballots[0].position}`
               }
               className="bp3-button bp3-intent-primary"
             >

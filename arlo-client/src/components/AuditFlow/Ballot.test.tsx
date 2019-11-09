@@ -12,7 +12,7 @@ describe('Ballot', () => {
     const { container } = render(
       <Ballot
         home="/election/1/board/1"
-        ballots={dummyBallots}
+        ballots={dummyBallots.ballots}
         boardName="audit board #1"
         contest="contest name"
         previousBallot={jest.fn()}
@@ -29,7 +29,7 @@ describe('Ballot', () => {
     const { container, getByText, getByTestId } = render(
       <Ballot
         home="/election/1/board/1"
-        ballots={dummyBallots}
+        ballots={dummyBallots.ballots}
         boardName="audit board #1"
         contest="contest name"
         previousBallot={jest.fn()}
@@ -58,7 +58,7 @@ describe('Ballot', () => {
     const { container, getByText, getByTestId } = render(
       <Ballot
         home="/election/1/board/1"
-        ballots={dummyBallots}
+        ballots={dummyBallots.ballots}
         boardName="audit board #1"
         contest="contest name"
         previousBallot={jest.fn()}
@@ -91,7 +91,7 @@ describe('Ballot', () => {
     const { container, getByText, getByTestId } = render(
       <Ballot
         home="/election/1/board/1"
-        ballots={dummyBallots}
+        ballots={dummyBallots.ballots}
         boardName="audit board #1"
         contest="contest name"
         previousBallot={jest.fn()}
@@ -125,7 +125,7 @@ describe('Ballot', () => {
     const { getByText, getByTestId } = render(
       <Ballot
         home="/election/1/board/1"
-        ballots={dummyBallots}
+        ballots={dummyBallots.ballots}
         boardName="audit board #1"
         contest="contest name"
         previousBallot={previousBallotMock}
@@ -159,7 +159,7 @@ describe('Ballot', () => {
       <Router history={history}>
         <Ballot
           home="/election/1/board/1"
-          ballots={dummyBallots}
+          ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contest="contest name"
           previousBallot={jest.fn()}
@@ -181,7 +181,7 @@ describe('Ballot', () => {
       <Router history={history}>
         <Ballot
           home="/election/1/board/1"
-          ballots={dummyBallots}
+          ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contest="contest name"
           previousBallot={jest.fn()}

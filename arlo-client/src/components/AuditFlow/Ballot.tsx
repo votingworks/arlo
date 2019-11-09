@@ -54,7 +54,7 @@ const Ballot: React.FC<IProps> = ({
   const [review, setReview] = useState<IReview>({ vote: null, comment: '' })
 
   const ballotIx = ballots
-    ? ballots.findIndex(b => b.position === ballotId && b.batchId === batchId)
+    ? ballots.findIndex(b => b.position === ballotId && b.batch.id === batchId)
     : -1
   const ballot = ballots[ballotIx]
   useEffect(() => {
@@ -76,8 +76,8 @@ const Ballot: React.FC<IProps> = ({
       <BallotRow>
         <div className="ballot-side">
           <H4>Current ballot:</H4>
-          <div>Tabulator: {ballot.tabulator}</div>
-          <div>Batch: {ballot.batch}</div>
+          <div>Tabulator: {ballot.batch.tabulator}</div>
+          <div>Batch: {ballot.batch.name}</div>
           <div>Record/Position: {ballot.position}</div>
         </div>
         <Divider />
