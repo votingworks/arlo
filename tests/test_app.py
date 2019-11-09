@@ -1,6 +1,6 @@
 import os, math, uuid
 import tempfile
-import json
+import json, csv, io
 
 import pytest
 
@@ -204,11 +204,11 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     # get the retrieval list for round 1
     rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').splitlines()
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Audit Board"
     assert len(lines) > 5
     assert 'attachment' in rv.headers['content-disposition']
 
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
 
     return url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
     
@@ -369,12 +369,11 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     # get the retrieval list for round 1
     rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').split("\r\n")
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Audit Board"
     assert len(lines) > 5
     assert 'attachment' in rv.headers['content-disposition']
 
-    rows = [line.split(",") for line in lines[1:] if line!=""]
-    num_ballots = sum([int(row[4]) for row in rows])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
 
     return url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
     
@@ -425,6 +424,10 @@ def run_election_reset(client, election_id):
     assert status["contests"] == []
     assert status["jurisdictions"] == []
     assert status["rounds"] == []        
+
+def get_num_ballots_from_retrieval_list(rv):
+    lines = csv.DictReader(io.StringIO(rv.data.decode('utf-8')))
+    return sum([len(line['Ticket Numbers'].split(',')) for line in lines])
     
 def test_small_election(client):
     rv = post_json(client, '/election/new', {})
@@ -547,10 +550,10 @@ def test_small_election(client):
     assert rv.data.decode('utf-8').replace("\r\n","\n") == EXPECTED_RETRIEVAL_LIST
     
     lines = rv.data.decode('utf-8').splitlines()
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
 
     # post results for round 1
     num_for_winner = int(num_ballots * 0.61)
@@ -718,8 +721,10 @@ def test_multi_round_audit(client):
 
     # round 2 retrieval list should be ready
     rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
-    lines = rv.data.decode('utf-8').splitlines()
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+
+    # Count the ticket numbers
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
+
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
     
 @pytest.mark.quick
@@ -847,10 +852,10 @@ def test_multi_winner_election(client):
     # get the retrieval list for round 1
     rv = client.get(f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/retrieval-list')
     lines = rv.data.decode('utf-8').split("\r\n")
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
 
     # post results for round 1
     num_for_winner = int(num_ballots * 0.61)
@@ -939,8 +944,7 @@ def test_multi_round_multi_winner_audit(client):
 
     # round 2 retrieval list should be ready
     rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
-    lines = rv.data.decode('utf-8').split("\r\n")
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
 
 def test_ballot_set(client):
@@ -977,7 +981,7 @@ def test_ballot_set(client):
     assert ballot is not None
 
     ## set the ballot data
-    url = '{}/jurisdiction/{}/batch/{}/round/{}/ballot/{}'.format(url_prefix, jurisdiction_id, batch_id, round_id, ballot['position'])
+    url = '{}/jurisdiction/{}/batch/{}/ballot/{}'.format(url_prefix, jurisdiction_id, batch_id, ballot['position'])
 
     rv = post_json(client, url, { 'vote': 'NO', 'comment': 'This one had a hanging chad.' })
     response = json.loads(rv.data)

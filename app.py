@@ -6,7 +6,8 @@ from flask_httpauth import HTTPBasicAuth
 from sampler import Sampler
 from werkzeug.exceptions import InternalServerError
 
-from sqlalchemy import event
+from sqlalchemy import event, func
+from sqlalchemy.dialects.postgresql import aggregate_order_by
 from config import DATABASE_URL
 
 from util.binpacking import Bucket, BalancedBucketList
@@ -145,8 +146,8 @@ def sample_ballots(election, round):
     # assume only one contest
     round_contest = round.round_contests[0]
     jurisdiction = election.jurisdictions[0]
-    
-    num_sampled = db.session.query(db.func.sum(SampledBallot.times_sampled)).filter_by(jurisdiction_id=jurisdiction.id).one()[0]
+
+    num_sampled = db.session.query(SampledBallotDraw).join(SampledBallotDraw.batch).filter_by(jurisdiction_id=jurisdiction.id).count()
     if not num_sampled:
         num_sampled = 0
 
@@ -172,30 +173,23 @@ def sample_ballots(election, round):
 
     batch_sizes = {}
     batches_to_ballots = {}
-    seen_ballot_positions = set()
     # Build batch - batch_size map
-    for batch_name, ballot_position in sample:
-        batch_id = batch_id_from_name[batch_name]
+    for item in sample:
+        batch_id, ballot_position = item[1] 
+        sample_number = item[2]
+        ticket_number = item[0]
 
-        lookup = (batch_id, ballot_position)
-        # Only count ballots once here since it's only pulled once
-        if lookup in seen_ballot_positions:
-            batches_to_ballots[batch_id].append(ballot_position)
-            continue
-
-        seen_ballot_positions.add(lookup)
         if batch_id in batch_sizes:
-            batch_sizes[batch_id] += 1
-            batches_to_ballots[batch_id].append(ballot_position)
+            if sample_number == 1: # if we've already seen it, it doesn't affect batch size
+                batch_sizes[batch_id] += 1
+            batches_to_ballots[batch_id].append((ballot_position, ticket_number, sample_number))
         else:
             batch_sizes[batch_id] = 1
-            batches_to_ballots[batch_id] = [ballot_position]
+            batches_to_ballots[batch_id] = [(ballot_position, ticket_number, sample_number)]
+
 
     # Create the buckets and initially assign batches
-    buckets = []
-    for audit_board in audit_boards:
-        buckets.append(Bucket(audit_board.name))
-
+    buckets = [Bucket(audit_board.name) for audit_board in audit_boards]
     for i, batch in enumerate(batch_sizes):
         buckets[i%len(audit_boards)].add_batch(batch, batch_sizes[batch])
 
@@ -203,30 +197,32 @@ def sample_ballots(election, round):
     bl = BalancedBucketList(buckets)
 
     # read audit board and batch info out
-    for bucket in bl.buckets:
-        audit_board_num = bl.buckets.index(bucket)
+    for audit_board_num, bucket in enumerate(bl.buckets):
         audit_board = audit_boards[audit_board_num]
         for batch_id in bucket.batches:
 
-            for ballot_position in batches_to_ballots[batch_id]:
-                if last_sample == (batch_id, ballot_position):
-                    last_sampled_ballot.times_sampled += 1
-                    continue
+            for item in batches_to_ballots[batch_id]:
+                ballot_position, ticket_number, sample_number = item
 
-                sampled_ballot = SampledBallot(
-                        round_id = round.id,
-                        jurisdiction_id = jurisdiction.id,
+                # sampler is 0-indexed, we're 1-indexing here                
+                ballot_position += 1
+
+                if sample_number == 1:
+                    sampled_ballot = SampledBallot(
                         batch_id = batch_id,
-                        ballot_position = ballot_position + 1, # sampler is 0-indexed, we're 1-indexing here
-                        times_sampled = 1,
+                        ballot_position = ballot_position,
                         audit_board_id = audit_board.id)
+                    db.session.add(sampled_ballot)                    
 
-                # keep track for doubly-sampled ballots
-                last_sample = (batch_id, ballot_position)
-                last_sampled_ballot = sampled_ballot
+                sampled_ballot_draw = SampledBallotDraw(
+                    batch_id = batch_id,
+                    ballot_position = ballot_position,
+                    round_id = round.id,
+                    ticket_number = ticket_number
+                )
 
-                db.session.add(sampled_ballot)
-    
+                db.session.add(sampled_ballot_draw)
+
     db.session.commit()
         
 
@@ -571,7 +567,7 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>', methods=["GET"])
 def audit_board(election_id, jurisdiction_id, audit_board_id):
     audit_boards = AuditBoard.query.filter_by(id=audit_board_id) \
-        .join(Jurisdiction).filter_by(id=jurisdiction_id, election_id=election_id) \
+        .join(AuditBoard.jurisdiction).filter_by(id=jurisdiction_id, election_id=election_id) \
         .all()
 
     if not audit_boards:
@@ -647,17 +643,17 @@ def set_audit_board(election_id, jurisdiction_id, audit_board_id):
 
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballot-list')
 def ballot_list(election_id, jurisdiction_id, round_id):
-    query = db.session.query(AuditBoard, Batch, SampledBallot) \
-        .filter(Batch.id == SampledBallot.batch_id) \
-        .filter(SampledBallot.jurisdiction_id == jurisdiction_id) \
-        .filter(SampledBallot.round_id == round_id) \
-        .filter(SampledBallot.audit_board_id == AuditBoard.id) \
-        .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position)
-
+    query = SampledBallotDraw.query \
+                .join(SampledBallot).join(SampledBallotDraw.batch).join(AuditBoard).join(Round) \
+                .add_entity(SampledBallot).add_entity(Batch).add_entity(AuditBoard) \
+                .filter(Batch.jurisdiction_id == jurisdiction_id) \
+                .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position, SampledBallotDraw.ticket_number) \
+                .all()
+    
     return jsonify(
         ballots=[
             {
-                "timesSampled": ballot.times_sampled,
+                "ticketNumber": ballot_draw.ticket_number,
                 "status": 'AUDITED' if ballot.vote is not None else None,
                 "vote": ballot.vote,
                 "comment": ballot.comment,
@@ -672,23 +668,23 @@ def ballot_list(election_id, jurisdiction_id, round_id):
                     "name": audit_board.name
                 }
             }
-            for (audit_board, batch, ballot) in query
+            for (ballot_draw, ballot, batch, audit_board) in query
         ]
     )
 
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>/round/<round_id>/ballot-list')
 def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, round_id):
-    query = db.session.query(Batch, SampledBallot) \
-        .filter(Batch.id == SampledBallot.batch_id) \
-        .filter(SampledBallot.jurisdiction_id == jurisdiction_id) \
-        .filter(SampledBallot.audit_board_id == audit_board_id) \
-        .filter(SampledBallot.round_id == round_id) \
-        .order_by(Batch.name, SampledBallot.ballot_position)
+    query = SampledBallotDraw.query \
+                .join(Round).join(SampledBallot).join(Batch) \
+                .add_entity(SampledBallot).add_entity(Batch) \
+                .filter(Batch.jurisdiction_id == jurisdiction_id) \
+                .filter(SampledBallot.audit_board_id == audit_board_id) \
+                .order_by(Batch.name, SampledBallot.ballot_position, SampledBallotDraw.ticket_number)
 
     return jsonify(
         ballots=[
             {
-                "timesSampled": ballot.times_sampled,
+                "ticketNumber": ballot_draw.ticket_number,
                 "status": 'AUDITED' if ballot.vote is not None else None,
                 "vote": ballot.vote,
                 "comment": ballot.comment,
@@ -699,12 +695,12 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, rou
                     "tabulator": batch.tabulator
                 }
             }
-            for (batch, ballot) in query
+            for (ballot_draw, ballot, batch) in query
         ]
     )
 
-@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/round/<round_id>/ballot/<ballot_position>', methods=["POST"])
-def ballot_set(election_id, jurisdiction_id, batch_id, round_id, ballot_position):
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>', methods=["POST"])
+def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
     try:
         attributes = request.get_json()
     except:
@@ -715,9 +711,10 @@ def ballot_set(election_id, jurisdiction_id, batch_id, round_id, ballot_position
             }
         ]), 400
 
-    ballots = SampledBallot \
-        .query.filter_by(jurisdiction_id=jurisdiction_id, batch_id=batch_id, ballot_position=ballot_position) \
-        .join(Round).filter_by(election_id=election_id, id=round_id) \
+    ballots = SampledBallot.query \
+        .filter_by(batch_id=batch_id, ballot_position=ballot_position) \
+        .join(SampledBallot.batch) \
+        .filter_by(jurisdiction_id=jurisdiction_id) \
         .all()
 
     if not ballots:
@@ -752,16 +749,23 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     election = get_election(election_id)
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)
-    retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Times Selected","Audit Board"])
+    retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Ticket Numbers","Audit Board"])
 
     # check the jurisdiction and round
     jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).one()
     round = Round.query.filter_by(election_id = election.id, round_num = round_num).one()
 
-    ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = round.id).join(Batch).join(AuditBoard).order_by(AuditBoard.name, Batch.name, 'ballot_position').all()
+    # Get deduped sampled ballots
+    ballots = SampledBallotDraw.query.filter_by(round_id = round.id) \
+                    .join(SampledBallotDraw.batch).filter_by(jurisdiction_id = jurisdiction_id)  \
+                    .join(SampledBallotDraw.sampled_ballot).join(SampledBallot.audit_board) \
+                    .add_entity(Batch).add_entity(AuditBoard) \
+                    .group_by(Batch.name, Batch.id, Batch.storage_location, Batch.tabulator, AuditBoard.name)\
+                    .group_by(SampledBallotDraw.ballot_position) \
+                    .values(Batch.id, SampledBallotDraw.ballot_position, Batch.name, Batch.storage_location, Batch.tabulator, AuditBoard.name, func.string_agg(SampledBallotDraw.ticket_number, ","))
 
-    for ballot in ballots:
-        retrieval_list_writer.writerow([ballot.batch.name, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board.name])
+    for batch_id, position, batch_name, storage_location, tabulator, audit_board, ticket_numbers in ballots:
+        retrieval_list_writer.writerow([batch_name, position, storage_location, tabulator, ticket_numbers, audit_board])
 
     response = Response(csv_io.getvalue())
     response.headers['Content-Disposition'] = f'attachment; filename="ballot-retrieval-{election_timestamp_name(election)}.csv"'
@@ -831,9 +835,13 @@ def audit_report(election_id):
         report_writer.writerow(["Round {:d} Start".format(round.round_num), round.started_at])
         report_writer.writerow(["Round {:d} End".format(round.round_num), round.ended_at])
 
-        ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction.id, round_id = round.id).order_by('batch_id', 'ballot_position').all()
+        ballots = SampledBallotDraw.query \
+                    .filter_by(round_id = round.id) \
+                    .join(SampledBallotDraw.batch).add_entity(Batch) \
+                    .filter_by(jurisdiction_id = jurisdiction.id) \
+                    .order_by('batch_id', 'ballot_position').all()
 
-        report_writer.writerow(["Round {:d} Samples".format(round.round_num), " ".join(["(Batch {:s}, #{:d})".format(b.batch.name, b.ballot_position) for b in ballots])])
+        report_writer.writerow(["Round {:d} Samples".format(round.round_num), " ".join(["(Batch {:s}, #{:d}, Ticket #{:s})".format(batch.name, b.ballot_position, b.ticket_number) for b, batch in ballots])])
 
     
     response = Response(csv_io.getvalue())
