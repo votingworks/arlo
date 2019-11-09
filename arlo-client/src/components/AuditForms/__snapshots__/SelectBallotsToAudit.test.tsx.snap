@@ -31,7 +31,7 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gZMcBi fvQasU"
+            class="bp3-html-select sc-gqjmRU fLDKDv"
           >
             <select
               field="[object Object]"
@@ -136,10 +136,10 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="sc-EHOje kPsGPf"
+      class="sc-bZQynM gIxRNR"
     >
       <button
-        class="bp3-button bp3-intent-primary"
+        class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
         type="button"
       >
         <span
@@ -184,7 +184,7 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gZMcBi fvQasU"
+            class="bp3-html-select sc-gqjmRU fLDKDv"
           >
             <select
               field="[object Object]"

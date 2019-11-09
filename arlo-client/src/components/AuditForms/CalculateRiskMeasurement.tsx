@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
+import jsPDF from 'jspdf'
 /* istanbul ignore next */
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
 import { Spinner } from '@blueprintjs/core'
@@ -12,8 +13,15 @@ import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api, testNumber, poll } from '../utilities'
-import { Contest, Round, Candidate, RoundContest, Audit } from '../../types'
+import { api, testNumber, poll, asyncForEach } from '../utilities'
+import {
+  Contest,
+  Round,
+  Candidate,
+  RoundContest,
+  Audit,
+  Ballot,
+} from '../../types'
 
 const InputSection = styled.div`
   display: block;
@@ -69,6 +77,24 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
   getStatus,
   electionId,
 }: Props) => {
+  const getBallots = async (r: number): Promise<Ballot[]> => {
+    const round = audit.rounds[r]
+    const ballots: Ballot[] = []
+    await asyncForEach(audit.jurisdictions[0].auditBoards, async board => {
+      const { ballots: b } = await api(
+        `/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`,
+        { electionId }
+      )
+      ballots.push(
+        ...b.map((v: Ballot) => {
+          v.boardName = board.name
+          return v
+        })
+      )
+    })
+    return ballots
+  }
+
   const downloadBallotRetrievalList = (id: number, e: React.FormEvent) => {
     e.preventDefault()
     const jurisdictionID: string = audit.jurisdictions[0].id
@@ -81,6 +107,70 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
     e.preventDefault()
     window.open(`/election/${electionId}/audit/report`)
     updateAudit()
+  }
+
+  const downloadLabels = async (r: number): Promise<void> => {
+    const ballots = await getBallots(r)
+    /* istanbul ignore else */
+    if (ballots.length) {
+      const getX = (l: number): number => (l % 3) * 60 + 9 * ((l % 3) + 1)
+      const getY = (l: number): number[] => [
+        Math.floor(l / 3) * 25.5 + 20,
+        Math.floor(l / 3) * 25.5 + 25,
+        Math.floor(l / 3) * 25.5 + 34,
+      ]
+      const labels = new jsPDF({ format: 'letter' })
+      labels.setFontSize(9)
+      let labelCount = 0
+      ballots.forEach(ballot => {
+        labelCount++
+        if (labelCount > 30) {
+          labels.addPage('letter')
+          labelCount = 1
+        }
+        const x = getX(labelCount - 1)
+        const y = getY(labelCount - 1)
+        labels.text(labels.splitTextToSize(ballot.boardName!, 60)[0], x, y[0])
+        labels.text(
+          labels.splitTextToSize(`Batch Name: ${ballot.batch!.name}`, 60),
+          x,
+          y[1]
+        )
+        labels.text(`Ballot Number: ${ballot.position}`, x, y[2])
+      })
+      labels.autoPrint()
+      labels.save(`Round ${r + 1} Placeholders.pdf`)
+    }
+  }
+
+  const downloadPlaceholders = async (r: number): Promise<void> => {
+    const ballots = await getBallots(r)
+    /* istanbul ignore else */
+    if (ballots.length) {
+      const placeholders = new jsPDF({ format: 'letter' })
+      placeholders.setFontSize(20)
+      let pageCount = 0
+      ballots.forEach(ballot => {
+        pageCount > 0 && placeholders.addPage('letter')
+        placeholders.text(
+          placeholders.splitTextToSize(ballot.boardName!, 180),
+          20,
+          20
+        )
+        placeholders.text(
+          placeholders.splitTextToSize(
+            `Batch Name: ${ballot.batch!.name}`,
+            180
+          ),
+          20,
+          40
+        )
+        placeholders.text(`Ballot Number: ${ballot.position}`, 20, 100)
+        pageCount++
+      })
+      placeholders.autoPrint()
+      placeholders.save(`Round ${r + 1} Placeholders.pdf`)
+    }
   }
 
   const calculateRiskMeasurement = async (
@@ -197,6 +287,12 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
                 inline
               >
                 Download Aggregated Ballot Retrieval List for Round {i + 1}
+              </FormButton>
+              <FormButton onClick={() => downloadPlaceholders(i)} inline>
+                Download Placeholders for Round {i + 1}
+              </FormButton>
+              <FormButton onClick={() => downloadLabels(i)} inline>
+                Download Label Sheets for Round {i + 1}
               </FormButton>
               <FieldArray
                 name="contests"

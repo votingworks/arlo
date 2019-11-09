@@ -33,13 +33,35 @@ exports[`CalculateRiskMeasurement handles background process timeout 1`] = `
         </p>
       </div>
       <button
-        class="bp3-button"
+        class="bp3-button sc-EHOje fJvKPB"
         type="button"
       >
         <span
           class="bp3-button-text"
         >
           Download Aggregated Ballot Retrieval List for Round 
+          1
+        </span>
+      </button>
+      <button
+        class="bp3-button sc-EHOje fJvKPB"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Placeholders for Round 
+          1
+        </span>
+      </button>
+      <button
+        class="bp3-button sc-EHOje fJvKPB"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Label Sheets for Round 
           1
         </span>
       </button>
@@ -70,22 +92,22 @@ exports[`CalculateRiskMeasurement handles background process timeout 1`] = `
           1
         </div>
         <div
-          class="sc-iwsKbI hmbaiI"
+          class="sc-gZMcBi cQokFm"
         >
           <div
-            class="sc-gqjmRU glEOTJ"
+            class="sc-VigVT kGjafq"
           >
             <label
-              class="sc-gZMcBi gnyAIo"
+              class="sc-gqjmRU cPrgYR"
               for="round-0-contest-0-choice-choice-1"
             >
               choice one
             </label>
             <div
-              class="sc-EHOje bXavad"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-bZQynM fFGKEg"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -99,19 +121,19 @@ exports[`CalculateRiskMeasurement handles background process timeout 1`] = `
             </div>
           </div>
           <div
-            class="sc-gqjmRU glEOTJ"
+            class="sc-VigVT kGjafq"
           >
             <label
-              class="sc-gZMcBi gnyAIo"
+              class="sc-gqjmRU cPrgYR"
               for="round-0-contest-0-choice-choice-2"
             >
               choice two
             </label>
             <div
-              class="sc-EHOje bXavad"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-bZQynM fFGKEg"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -141,10 +163,10 @@ exports[`CalculateRiskMeasurement handles background process timeout 1`] = `
         </h3>
       </div>
       <div
-        class="sc-dnqmqq itqjch"
+        class="sc-iwsKbI iqpfIi"
       >
         <button
-          class="bp3-button bp3-intent-primary"
+          class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
           type="button"
         >
           <span
@@ -195,13 +217,35 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
         </p>
       </div>
       <button
-        class="bp3-button"
+        class="bp3-button sc-EHOje fJvKPB"
         type="button"
       >
         <span
           class="bp3-button-text"
         >
           Download Aggregated Ballot Retrieval List for Round 
+          1
+        </span>
+      </button>
+      <button
+        class="bp3-button sc-EHOje fJvKPB"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Placeholders for Round 
+          1
+        </span>
+      </button>
+      <button
+        class="bp3-button sc-EHOje fJvKPB"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Label Sheets for Round 
           1
         </span>
       </button>
@@ -232,22 +276,22 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
           1
         </div>
         <div
-          class="sc-iwsKbI hmbaiI"
+          class="sc-gZMcBi cQokFm"
         >
           <div
-            class="sc-gqjmRU glEOTJ"
+            class="sc-VigVT kGjafq"
           >
             <label
-              class="sc-gZMcBi gnyAIo"
+              class="sc-gqjmRU cPrgYR"
               for="round-0-contest-0-choice-choice-1"
             >
               choice one
             </label>
             <div
-              class="sc-EHOje bXavad"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-bZQynM fFGKEg"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -261,19 +305,19 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
             </div>
           </div>
           <div
-            class="sc-gqjmRU glEOTJ"
+            class="sc-VigVT kGjafq"
           >
             <label
-              class="sc-gZMcBi gnyAIo"
+              class="sc-gqjmRU cPrgYR"
               for="round-0-contest-0-choice-choice-2"
             >
               choice two
             </label>
             <div
-              class="sc-EHOje bXavad"
+              class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-bZQynM fFGKEg"
+                class="bp3-input-group sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
@@ -303,10 +347,10 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
         </h3>
       </div>
       <div
-        class="sc-dnqmqq itqjch"
+        class="sc-iwsKbI iqpfIi"
       >
         <button
-          class="bp3-button bp3-intent-primary"
+          class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
           type="button"
         >
           <span
@@ -360,13 +404,35 @@ Object {
             </p>
           </div>
           <button
-            class="bp3-button"
+            class="bp3-button sc-EHOje fJvKPB"
             type="button"
           >
             <span
               class="bp3-button-text"
             >
               Download Aggregated Ballot Retrieval List for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Placeholders for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Label Sheets for Round 
               1
             </span>
           </button>
@@ -389,13 +455,13 @@ Object {
               COMPLETE
             </h3>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                 >
                   Risk Limit: 
                 </label>
@@ -403,10 +469,10 @@ Object {
                 %
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                 >
                   P-value: 
                 </label>
@@ -415,22 +481,22 @@ Object {
               </div>
             </div>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
                 </label>
                 <div
-                  class="sc-EHOje bXavad"
+                  class="sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -445,19 +511,19 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
                 </label>
                 <div
-                  class="sc-EHOje bXavad"
+                  class="sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -491,7 +557,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <button
-              class="bp3-button bp3-intent-success"
+              class="bp3-button bp3-intent-success sc-EHOje fJvKPB"
               data-testid="submit-form-three"
               type="button"
             >
@@ -538,13 +604,35 @@ Object {
           </p>
         </div>
         <button
-          class="bp3-button"
+          class="bp3-button sc-EHOje fJvKPB"
           type="button"
         >
           <span
             class="bp3-button-text"
           >
             Download Aggregated Ballot Retrieval List for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Placeholders for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Label Sheets for Round 
             1
           </span>
         </button>
@@ -567,13 +655,13 @@ Object {
             COMPLETE
           </h3>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
               >
                 Risk Limit: 
               </label>
@@ -581,10 +669,10 @@ Object {
               %
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
               >
                 P-value: 
               </label>
@@ -593,22 +681,22 @@ Object {
             </div>
           </div>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
               </label>
               <div
-                class="sc-EHOje bXavad"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+                  class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -623,19 +711,19 @@ Object {
               </div>
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
               </label>
               <div
-                class="sc-EHOje bXavad"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+                  class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -669,7 +757,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <button
-            class="bp3-button bp3-intent-success"
+            class="bp3-button bp3-intent-success sc-EHOje fJvKPB"
             data-testid="submit-form-three"
             type="button"
           >
@@ -773,13 +861,35 @@ Object {
             </p>
           </div>
           <button
-            class="bp3-button"
+            class="bp3-button sc-EHOje fJvKPB"
             type="button"
           >
             <span
               class="bp3-button-text"
             >
               Download Aggregated Ballot Retrieval List for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Placeholders for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Label Sheets for Round 
               1
             </span>
           </button>
@@ -802,13 +912,13 @@ Object {
               COMPLETE
             </h3>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                 >
                   Risk Limit: 
                 </label>
@@ -816,10 +926,10 @@ Object {
                 %
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                 >
                   P-value: 
                 </label>
@@ -828,22 +938,22 @@ Object {
               </div>
             </div>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
                 </label>
                 <div
-                  class="sc-EHOje bXavad"
+                  class="sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -858,19 +968,19 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
                 </label>
                 <div
-                  class="sc-EHOje bXavad"
+                  class="sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -930,7 +1040,7 @@ Object {
             class="sc-bdVaJa fdbLH"
           >
             <button
-              class="bp3-button bp3-intent-success"
+              class="bp3-button bp3-intent-success sc-EHOje fJvKPB"
               data-testid="submit-form-three"
               type="button"
             >
@@ -977,13 +1087,35 @@ Object {
           </p>
         </div>
         <button
-          class="bp3-button"
+          class="bp3-button sc-EHOje fJvKPB"
           type="button"
         >
           <span
             class="bp3-button-text"
           >
             Download Aggregated Ballot Retrieval List for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Placeholders for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Label Sheets for Round 
             1
           </span>
         </button>
@@ -1006,13 +1138,13 @@ Object {
             COMPLETE
           </h3>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
               >
                 Risk Limit: 
               </label>
@@ -1020,10 +1152,10 @@ Object {
               %
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
               >
                 P-value: 
               </label>
@@ -1032,22 +1164,22 @@ Object {
             </div>
           </div>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
               </label>
               <div
-                class="sc-EHOje bXavad"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+                  class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -1062,19 +1194,19 @@ Object {
               </div>
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
               </label>
               <div
-                class="sc-EHOje bXavad"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group bp3-disabled sc-bZQynM fFGKEg"
+                  class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -1134,7 +1266,7 @@ Object {
           class="sc-bdVaJa fdbLH"
         >
           <button
-            class="bp3-button bp3-intent-success"
+            class="bp3-button bp3-intent-success sc-EHOje fJvKPB"
             data-testid="submit-form-three"
             type="button"
           >
@@ -1238,13 +1370,35 @@ Object {
             </p>
           </div>
           <button
-            class="bp3-button"
+            class="bp3-button sc-EHOje fJvKPB"
             type="button"
           >
             <span
               class="bp3-button-text"
             >
               Download Aggregated Ballot Retrieval List for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Placeholders for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Label Sheets for Round 
               1
             </span>
           </button>
@@ -1275,22 +1429,22 @@ Object {
               1
             </div>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
                 </label>
                 <div
-                  class="sc-EHOje bXavad"
+                  class="sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-bZQynM fFGKEg"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -1304,19 +1458,19 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
                 </label>
                 <div
-                  class="sc-EHOje bXavad"
+                  class="sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-bZQynM fFGKEg"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -1346,10 +1500,10 @@ Object {
             </h3>
           </div>
           <div
-            class="sc-dnqmqq itqjch"
+            class="sc-iwsKbI iqpfIi"
           >
             <button
-              class="bp3-button bp3-intent-primary"
+              class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
               type="button"
             >
               <span
@@ -1398,13 +1552,35 @@ Object {
           </p>
         </div>
         <button
-          class="bp3-button"
+          class="bp3-button sc-EHOje fJvKPB"
           type="button"
         >
           <span
             class="bp3-button-text"
           >
             Download Aggregated Ballot Retrieval List for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Placeholders for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Label Sheets for Round 
             1
           </span>
         </button>
@@ -1435,22 +1611,22 @@ Object {
             1
           </div>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
               </label>
               <div
-                class="sc-EHOje bXavad"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group sc-bZQynM fFGKEg"
+                  class="bp3-input-group sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -1464,19 +1640,19 @@ Object {
               </div>
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
               </label>
               <div
-                class="sc-EHOje bXavad"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group sc-bZQynM fFGKEg"
+                  class="bp3-input-group sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -1506,10 +1682,10 @@ Object {
           </h3>
         </div>
         <div
-          class="sc-dnqmqq itqjch"
+          class="sc-iwsKbI iqpfIi"
         >
           <button
-            class="bp3-button bp3-intent-primary"
+            class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
             type="button"
           >
             <span
@@ -1615,13 +1791,35 @@ Object {
             </p>
           </div>
           <button
-            class="bp3-button"
+            class="bp3-button sc-EHOje fJvKPB"
             type="button"
           >
             <span
               class="bp3-button-text"
             >
               Download Aggregated Ballot Retrieval List for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Placeholders for Round 
+              1
+            </span>
+          </button>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Label Sheets for Round 
               1
             </span>
           </button>
@@ -1652,22 +1850,22 @@ Object {
               1
             </div>
             <div
-              class="sc-iwsKbI hmbaiI"
+              class="sc-gZMcBi cQokFm"
             >
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
                 </label>
                 <div
-                  class="sc-EHOje bXavad"
+                  class="sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-bZQynM fFGKEg"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -1681,19 +1879,19 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-gqjmRU glEOTJ"
+                class="sc-VigVT kGjafq"
               >
                 <label
-                  class="sc-gZMcBi gnyAIo"
+                  class="sc-gqjmRU cPrgYR"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
                 </label>
                 <div
-                  class="sc-EHOje bXavad"
+                  class="sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-bZQynM fFGKEg"
+                    class="bp3-input-group sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
@@ -1787,13 +1985,35 @@ Object {
           </p>
         </div>
         <button
-          class="bp3-button"
+          class="bp3-button sc-EHOje fJvKPB"
           type="button"
         >
           <span
             class="bp3-button-text"
           >
             Download Aggregated Ballot Retrieval List for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Placeholders for Round 
+            1
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Label Sheets for Round 
             1
           </span>
         </button>
@@ -1824,22 +2044,22 @@ Object {
             1
           </div>
           <div
-            class="sc-iwsKbI hmbaiI"
+            class="sc-gZMcBi cQokFm"
           >
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
               </label>
               <div
-                class="sc-EHOje bXavad"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group sc-bZQynM fFGKEg"
+                  class="bp3-input-group sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
@@ -1853,19 +2073,19 @@ Object {
               </div>
             </div>
             <div
-              class="sc-gqjmRU glEOTJ"
+              class="sc-VigVT kGjafq"
             >
               <label
-                class="sc-gZMcBi gnyAIo"
+                class="sc-gqjmRU cPrgYR"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
               </label>
               <div
-                class="sc-EHOje bXavad"
+                class="sc-bZQynM iEAxBy"
               >
                 <div
-                  class="bp3-input-group sc-bZQynM fFGKEg"
+                  class="bp3-input-group sc-gzVnrw htprzv"
                 >
                   <input
                     class="bp3-input"
