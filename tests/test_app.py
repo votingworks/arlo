@@ -1,6 +1,7 @@
 import os, math, uuid
 import tempfile
 import json
+import csv
 
 import pytest
 
@@ -714,8 +715,9 @@ def test_multi_round_audit(client):
 
     # round 2 retrieval list should be ready
     rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
-    lines = rv.data.decode('utf-8').splitlines()
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    lines = csv.DictReader(rv.data.decode('utf-8').splitlines())
+
+    num_ballots = sum([int(line['Times Selected']) for line in lines])
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
     
 @pytest.mark.quick

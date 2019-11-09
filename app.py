@@ -169,21 +169,24 @@ def sample_ballots(election, round):
     batches_to_ballots = {}
     seen_ballot_positions = set()
     # Build batch - batch_size map
-    for batch_id, ballot_position in sample:
+    for item in sample:
+        batch_id, ballot_position = item[1] 
+        times_sampled = item[2]
 
         lookup = (batch_id, ballot_position)
         # Only count ballots once here since it's only pulled once
         if lookup in seen_ballot_positions:
-            batches_to_ballots[batch_id].append(ballot_position)
+            batch_sizes[batch_id] += 1
             continue
 
         seen_ballot_positions.add(lookup)
         if batch_id in batch_sizes:
             batch_sizes[batch_id] += 1
-            batches_to_ballots[batch_id].append(ballot_position)
+            batches_to_ballots[batch_id].append((ballot_position, times_sampled))
         else:
             batch_sizes[batch_id] = 1
-            batches_to_ballots[batch_id] = [ballot_position]
+            batches_to_ballots[batch_id] = [(ballot_position, times_sampled)]
+
 
     # Create the buckets and initially assign batches
     buckets = []
@@ -202,7 +205,8 @@ def sample_ballots(election, round):
         audit_board = audit_boards[audit_board_num]
         for batch_id in bucket.batches:
 
-            for ballot_position in batches_to_ballots[batch_id]:
+            for item in batches_to_ballots[batch_id]:
+                ballot_position, times_sampled = item
                 if last_sample == (batch_id, ballot_position):
                     last_sampled_ballot.times_sampled += 1
                     continue
@@ -212,7 +216,7 @@ def sample_ballots(election, round):
                         jurisdiction_id = jurisdiction.id,
                         batch_id = batch_id,
                         ballot_position = ballot_position + 1, # sampler is 0-indexed, we're 1-indexing here
-                        times_sampled = 1,
+                        times_sampled = times_sampled,
                         audit_board_id = audit_board.id)
 
                 # keep track for doubly-sampled ballots
