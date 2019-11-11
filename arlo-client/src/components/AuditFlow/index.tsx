@@ -3,7 +3,13 @@ import { Spinner } from '@blueprintjs/core'
 import { Route, Switch } from 'react-router-dom'
 import { History } from 'history'
 import { toast } from 'react-toastify'
-import { IAuditFlowParams, IAudit, IAuditBoard, IBallot } from '../../types'
+import {
+  IAuditFlowParams,
+  IAudit,
+  IAuditBoard,
+  IBallot,
+  IReview,
+} from '../../types'
 import { api, poll } from '../utilities'
 import { statusStates } from '../AuditForms/_mocks'
 import {
@@ -102,16 +108,43 @@ const AuditFlow: React.FC<IProps> = ({
     }
   }
 
-  const previousBallot = (r: string, batchId: string, ballot: number) => () => {
+  const previousBallot = (
+    roundIx: string,
+    batchId: string,
+    ballot: number
+  ) => () => {
     const ballotIx = ballots.findIndex(
       (b: IBallot) => b.batch.id === batchId && b.position === ballot
     )
     if (ballotIx > -1 && ballots[ballotIx - 1]) {
       const b = ballots[ballotIx - 1]
-      history.push(`${url}/round/${r}/batch/${b.batch.id}/ballot/${b.position}`)
+      history.push(
+        `${url}/round/${roundIx}/batch/${b.batch.id}/ballot/${b.position}`
+      )
     } else {
       history.push(url)
     }
+  }
+
+  const submitBallot = async (
+    roundIx: string,
+    batch: string,
+    position: number,
+    data: IReview
+  ) => {
+    const roundId = audit.rounds[Number(roundIx) - 1].id
+    await api(
+      `/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch}/round/${roundId}/ballot/${position}`,
+      {
+        electionId,
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    updateBallots()
   }
 
   /* istanbul ignore if */
@@ -140,22 +173,23 @@ const AuditFlow: React.FC<IProps> = ({
             )}
           />
           <Route
-            path={url + '/round/:roundId/batch/:batchId/ballot/:ballotId'}
+            path={url + '/round/:roundIx/batch/:batchId/ballot/:ballotId'}
             render={({
               match: {
-                params: { roundId, batchId, ballotId },
+                params: { roundIx, batchId, ballotId },
               },
             }) => (
               <Ballot
                 home={url}
                 previousBallot={previousBallot(
-                  roundId,
+                  roundIx,
                   batchId,
                   Number(ballotId)
                 )}
-                nextBallot={nextBallot(roundId, batchId, Number(ballotId))}
+                nextBallot={nextBallot(roundIx, batchId, Number(ballotId))}
+                submitBallot={submitBallot}
                 contest={audit.contests[0].name}
-                roundId={roundId}
+                roundIx={roundIx}
                 batchId={batchId}
                 ballotId={Number(ballotId)}
                 ballots={ballots}
