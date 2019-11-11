@@ -139,7 +139,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
         labels.text(`Ballot Number: ${ballot.position}`, x, y[2])
       })
       labels.autoPrint()
-      labels.save(`Round ${r + 1} Placeholders.pdf`)
+      labels.save(`Round ${r + 1} Labels.pdf`)
     }
   }
 
