@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Spinner } from '@blueprintjs/core'
 import { Route, Switch } from 'react-router-dom'
 import { History } from 'history'
+import { toast } from 'react-toastify'
 import { IAuditFlowParams, IAudit, IAuditBoard, IBallot } from '../../types'
-import { api } from '../utilities'
+import { api, poll } from '../utilities'
 import { statusStates } from '../AuditForms/_mocks'
 import {
   // dummyBoard,
@@ -49,43 +50,45 @@ const AuditFlow: React.FC<IProps> = ({
     updateAudit()
   }, [updateAudit])
 
+  const board:
+    | IAuditBoard
+    | undefined = audit.jurisdictions[0].auditBoards.find(
+    (v: IAuditBoard) => v.id === token
+  )
+
   const round = audit.rounds[audit.rounds.length - 1]
 
   const [ballots, setBallots] = useState<IBallot[]>(dummyBallots.ballots)
 
   const getBallots = useCallback(async (): Promise<IBallot[]> => {
-    if (audit.jurisdictions.length) {
-      const allBallots: IBallot[] = []
-      audit.jurisdictions[0].auditBoards!.forEach(async board => {
-        const { ballots } = await api(
-          `/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`,
-          { electionId }
-        )
-        allBallots.push(...ballots)
-      })
-      // return allBallots.length ? allBallots : dummyBallots.ballots
-      return allBallots
+    if (audit.jurisdictions.length && board) {
+      const { ballots } = await api(
+        `/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`,
+        { electionId }
+      )
+      return ballots
     } else {
       return []
     }
-  }, [electionId, audit.jurisdictions, round])
+  }, [electionId, audit.jurisdictions, round, board])
 
   const updateBallots = useCallback(async () => {
     setIsLoading(true)
-    const ballots = await getBallots()
-    setBallots(ballots)
+    let ballots: IBallot[] = []
+    poll(
+      async () => {
+        ballots = await getBallots()
+        return !!ballots.length
+      },
+      () => setBallots(ballots),
+      (err: Error) => toast.error(err.message)
+    )
     setIsLoading(false)
   }, [getBallots])
 
   useEffect(() => {
     updateBallots()
   }, [updateBallots, audit.jurisdictions.length])
-
-  const board:
-    | IAuditBoard
-    | undefined = audit.jurisdictions[0].auditBoards.find(
-    (v: IAuditBoard) => v.id === token
-  )
 
   const nextBallot = (r: string, batchId: string, ballot: string) => () => {
     const ballotIx = ballots.findIndex(
