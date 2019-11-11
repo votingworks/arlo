@@ -37,7 +37,7 @@
     "jspdf": "^1.5.3",
     "jsdom": "^15.1.1",
     "qrcode.react": "^0.9.3",
-    "react": "^16.8.6",
+    "react": "^16.9.0",
     "react-app-polyfill": "^1.0.1",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
