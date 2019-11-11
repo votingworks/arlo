@@ -90,7 +90,7 @@ const AuditFlow: React.FC<IProps> = ({
     updateBallots()
   }, [updateBallots, audit.jurisdictions.length])
 
-  const nextBallot = (r: string, batchId: string, ballot: string) => () => {
+  const nextBallot = (r: string, batchId: string, ballot: number) => () => {
     const ballotIx = ballots.findIndex(
       (b: IBallot) => b.batch.id === batchId && b.position === ballot
     )
@@ -102,7 +102,7 @@ const AuditFlow: React.FC<IProps> = ({
     }
   }
 
-  const previousBallot = (r: string, batchId: string, ballot: string) => () => {
+  const previousBallot = (r: string, batchId: string, ballot: number) => () => {
     const ballotIx = ballots.findIndex(
       (b: IBallot) => b.batch.id === batchId && b.position === ballot
     )
@@ -148,12 +148,16 @@ const AuditFlow: React.FC<IProps> = ({
             }) => (
               <Ballot
                 home={url}
-                previousBallot={previousBallot(roundId, batchId, ballotId)}
-                nextBallot={nextBallot(roundId, batchId, ballotId)}
+                previousBallot={previousBallot(
+                  roundId,
+                  batchId,
+                  Number(ballotId)
+                )}
+                nextBallot={nextBallot(roundId, batchId, Number(ballotId))}
                 contest={audit.contests[0].name}
                 roundId={roundId}
                 batchId={batchId}
-                ballotId={ballotId}
+                ballotId={Number(ballotId)}
                 ballots={ballots}
                 boardName={board.name}
               />

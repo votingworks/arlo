@@ -39,7 +39,7 @@ export interface IBallot {
   status: 'AUDITED' | null
   vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
   comment: string
-  position: string
+  position: number
   batch: {
     id: string
     name: string

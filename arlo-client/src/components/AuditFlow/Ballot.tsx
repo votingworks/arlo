@@ -32,7 +32,7 @@ interface IProps {
   boardName: string
   roundId: string
   batchId: string
-  ballotId: string
+  ballotId: number
   ballots: IBallot[]
   contest: string
   previousBallot: () => void

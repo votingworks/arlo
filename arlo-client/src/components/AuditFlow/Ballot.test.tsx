@@ -19,7 +19,7 @@ describe('Ballot', () => {
         nextBallot={jest.fn()}
         roundId="1"
         batchId="12345"
-        ballotId="1"
+        ballotId={1}
       />
     )
     expect(container).toMatchSnapshot()
@@ -36,7 +36,7 @@ describe('Ballot', () => {
         nextBallot={jest.fn()}
         roundId="1"
         batchId="12345"
-        ballotId="1"
+        ballotId={1}
       />
     )
 
@@ -65,7 +65,7 @@ describe('Ballot', () => {
         nextBallot={jest.fn()}
         roundId="1"
         batchId="12345"
-        ballotId="1"
+        ballotId={1}
       />
     )
 
@@ -98,7 +98,7 @@ describe('Ballot', () => {
         nextBallot={nextBallotMock}
         roundId="1"
         batchId="12345"
-        ballotId="1"
+        ballotId={1}
       />
     )
 
@@ -132,7 +132,7 @@ describe('Ballot', () => {
         nextBallot={jest.fn()}
         roundId="1"
         batchId="12345"
-        ballotId="2"
+        ballotId={2}
       />
     )
     fireEvent.click(getByText('Back'), { bubbles: true })
@@ -166,7 +166,7 @@ describe('Ballot', () => {
           nextBallot={jest.fn()}
           roundId="1"
           batchId="12345"
-          ballotId="6"
+          ballotId={6}
         />
       </Router>
     )
@@ -188,7 +188,7 @@ describe('Ballot', () => {
           nextBallot={jest.fn()}
           roundId="1"
           batchId="12345"
-          ballotId="1"
+          ballotId={1}
         />
       </Router>
     )
