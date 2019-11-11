@@ -10,36 +10,40 @@ const history = createMemoryHistory()
 describe('Ballot', () => {
   it('renders correctly', () => {
     const { container } = render(
-      <Ballot
-        home="/election/1/board/1"
-        ballots={dummyBallots.ballots}
-        boardName="audit board #1"
-        contest="contest name"
-        previousBallot={jest.fn()}
-        nextBallot={jest.fn()}
-        submitBallot={jest.fn()}
-        roundIx="1"
-        batchId="batch-id"
-        ballotId={1}
-      />
+      <Router history={history}>
+        <Ballot
+          home="/election/1/board/1"
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
+          contest="contest name"
+          previousBallot={jest.fn()}
+          nextBallot={jest.fn()}
+          submitBallot={jest.fn()}
+          roundIx="1"
+          batchId="batch-id-1"
+          ballotId={313}
+        />
+      </Router>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('switches audit and review views', async () => {
     const { container, getByText, getByTestId } = render(
-      <Ballot
-        home="/election/1/board/1"
-        ballots={dummyBallots.ballots}
-        boardName="audit board #1"
-        contest="contest name"
-        previousBallot={jest.fn()}
-        nextBallot={jest.fn()}
-        submitBallot={jest.fn()}
-        roundIx="1"
-        batchId="batch-id"
-        ballotId={1}
-      />
+      <Router history={history}>
+        <Ballot
+          home="/election/1/board/1"
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
+          contest="contest name"
+          previousBallot={jest.fn()}
+          nextBallot={jest.fn()}
+          submitBallot={jest.fn()}
+          roundIx="1"
+          batchId="batch-id-1"
+          ballotId={313}
+        />
+      </Router>
     )
 
     fireEvent.click(getByTestId('YES'), { bubbles: true })
@@ -48,6 +52,8 @@ describe('Ballot', () => {
     )
     await wait(() => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
+    })
+    await wait(() => {
       expect(container).toMatchSnapshot()
     })
     fireEvent.click(getByText('Edit'), { bubbles: true })
@@ -58,25 +64,24 @@ describe('Ballot', () => {
 
   it('toggles and submits comment', async () => {
     const { container, getByText, getByTestId } = render(
-      <Ballot
-        home="/election/1/board/1"
-        ballots={dummyBallots.ballots}
-        boardName="audit board #1"
-        contest="contest name"
-        previousBallot={jest.fn()}
-        nextBallot={jest.fn()}
-        submitBallot={jest.fn()}
-        roundIx="1"
-        batchId="batch-id"
-        ballotId={1}
-      />
+      <Router history={history}>
+        <Ballot
+          home="/election/1/board/1"
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
+          contest="contest name"
+          previousBallot={jest.fn()}
+          nextBallot={jest.fn()}
+          submitBallot={jest.fn()}
+          roundIx="1"
+          batchId="batch-id-1"
+          ballotId={313}
+        />
+      </Router>
     )
 
-    fireEvent.click(getByText('Add comment'), { bubbles: true })
-    await wait(() => {
-      const commentInput = getByTestId('comment-textarea')
-      fireEvent.change(commentInput, { target: { value: 'a test comment' } })
-    })
+    const commentInput = getByTestId('comment-textarea')
+    fireEvent.change(commentInput, { target: { value: 'a test comment' } })
 
     fireEvent.click(getByTestId('YES'), { bubbles: true })
     await wait(() =>
@@ -90,20 +95,23 @@ describe('Ballot', () => {
   })
 
   it('submits review and progresses to next ballot', async () => {
+    const submitMock = jest.fn()
     const nextBallotMock = jest.fn()
     const { container, getByText, getByTestId } = render(
-      <Ballot
-        home="/election/1/board/1"
-        ballots={dummyBallots.ballots}
-        boardName="audit board #1"
-        contest="contest name"
-        previousBallot={jest.fn()}
-        nextBallot={nextBallotMock}
-        submitBallot={jest.fn()}
-        roundIx="1"
-        batchId="batch-id"
-        ballotId={1}
-      />
+      <Router history={history}>
+        <Ballot
+          home="/election/1/board/1"
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
+          contest="contest name"
+          previousBallot={jest.fn()}
+          nextBallot={nextBallotMock}
+          submitBallot={submitMock}
+          roundIx="1"
+          batchId="batch-id-1"
+          ballotId={313}
+        />
+      </Router>
     )
 
     fireEvent.click(getByTestId('YES'), { bubbles: true })
@@ -121,6 +129,7 @@ describe('Ballot', () => {
 
     await wait(() => {
       expect(nextBallotMock).toBeCalled()
+      expect(submitMock).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -137,8 +146,8 @@ describe('Ballot', () => {
           nextBallot={jest.fn()}
           submitBallot={jest.fn()}
           roundIx="1"
-          batchId="batch-id"
-          ballotId={2}
+          batchId="batch-id-1"
+          ballotId={2112}
         />
       </Router>
     )
@@ -175,29 +184,6 @@ describe('Ballot', () => {
           roundIx="1"
           batchId="batch-id"
           ballotId={6}
-        />
-      </Router>
-    )
-
-    await wait(() => {
-      expect(container).toMatchSnapshot()
-    })
-  })
-
-  it('redirects if ballots array does not exist', async () => {
-    const { container } = render(
-      <Router history={history}>
-        <Ballot
-          home="/election/1/board/1"
-          ballots={dummyBallots.ballots}
-          boardName="audit board #1"
-          contest="contest name"
-          previousBallot={jest.fn()}
-          nextBallot={jest.fn()}
-          submitBallot={jest.fn()}
-          roundIx="1"
-          batchId="batch-id"
-          ballotId={1}
         />
       </Router>
     )
