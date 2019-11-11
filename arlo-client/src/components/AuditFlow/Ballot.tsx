@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { H1, H3, Callout, H4, Divider, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
-import { Redirect } from 'react-router-dom'
+import { Redirect, Link } from 'react-router-dom'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
 import { IReview, IBallot } from '../../types'
@@ -30,25 +30,32 @@ const MainCallout = styled(Callout)`
 interface IProps {
   home: string
   boardName: string
-  roundId: string
+  roundIx: string
   batchId: string
   ballotId: number
   ballots: IBallot[]
   contest: string
   previousBallot: () => void
   nextBallot: () => void
+  submitBallot: (
+    round: string,
+    batch: string,
+    position: number,
+    data: IReview
+  ) => void
 }
 
 const Ballot: React.FC<IProps> = ({
   home,
   boardName,
-  roundId,
+  roundIx,
   batchId,
   ballotId,
   ballots,
   contest,
   previousBallot,
   nextBallot,
+  submitBallot,
 }: IProps) => {
   const [auditing, setAuditing] = useState(true)
   const [review, setReview] = useState<IReview>({ vote: null, comment: '' })
@@ -60,9 +67,9 @@ const Ballot: React.FC<IProps> = ({
   useEffect(() => {
     if (ballot) {
       const { vote, comment } = ballot
-      setReview({ vote, comment })
+      setReview({ vote, comment: comment || '' })
     }
-  }, [ballot])
+  }, [ballot, ballotIx])
 
   return !ballots || !ballot || ballotIx < 0 ? (
     <Redirect to={home} />
@@ -71,7 +78,7 @@ const Ballot: React.FC<IProps> = ({
       <TopH1>{boardName}: Ballot Card Data Entry</TopH1>
       <H3>Enter Ballot Information</H3>
       <MainCallout icon={null}>
-        Round {roundId}: auditing ballot {ballotIx + 1} of {ballots.length}
+        Round {roundIx}: auditing ballot {ballotIx + 1} of {ballots.length}
       </MainCallout>
       <BallotRow>
         <div className="ballot-side">
@@ -92,9 +99,16 @@ const Ballot: React.FC<IProps> = ({
             pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
             culpa qui officia deserunt mollit anim id est laborum.
           </p>
-          <Button onClick={nextBallot} intent="danger">
-            Ballot {ballotId} not found - move to next ballot
-          </Button>
+          <p>
+            <Button onClick={nextBallot} intent="danger">
+              Ballot {ballotId} not found - move to next ballot
+            </Button>
+          </p>
+          <p>
+            <Link to={home} className="bp3-button bp3-intent-primary">
+              Return to audit overview
+            </Link>
+          </p>
         </div>
       </BallotRow>
       {auditing ? (
@@ -115,6 +129,9 @@ const Ballot: React.FC<IProps> = ({
             setAuditing(true)
             previousBallot()
           }}
+          submitBallot={(data: IReview) =>
+            submitBallot(roundIx, batchId, ballot.position, data)
+          }
         />
       )}
     </Wrapper>

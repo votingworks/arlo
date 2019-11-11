@@ -17,7 +17,8 @@ describe('Ballot', () => {
         contest="contest name"
         previousBallot={jest.fn()}
         nextBallot={jest.fn()}
-        roundId="1"
+        submitBallot={jest.fn()}
+        roundIx="1"
         batchId="12345"
         ballotId={1}
       />
@@ -34,7 +35,8 @@ describe('Ballot', () => {
         contest="contest name"
         previousBallot={jest.fn()}
         nextBallot={jest.fn()}
-        roundId="1"
+        submitBallot={jest.fn()}
+        roundIx="1"
         batchId="12345"
         ballotId={1}
       />
@@ -63,7 +65,8 @@ describe('Ballot', () => {
         contest="contest name"
         previousBallot={jest.fn()}
         nextBallot={jest.fn()}
-        roundId="1"
+        submitBallot={jest.fn()}
+        roundIx="1"
         batchId="12345"
         ballotId={1}
       />
@@ -96,7 +99,8 @@ describe('Ballot', () => {
         contest="contest name"
         previousBallot={jest.fn()}
         nextBallot={nextBallotMock}
-        roundId="1"
+        submitBallot={jest.fn()}
+        roundIx="1"
         batchId="12345"
         ballotId={1}
       />
@@ -130,7 +134,8 @@ describe('Ballot', () => {
         contest="contest name"
         previousBallot={previousBallotMock}
         nextBallot={jest.fn()}
-        roundId="1"
+        submitBallot={jest.fn()}
+        roundIx="1"
         batchId="12345"
         ballotId={2}
       />
@@ -164,7 +169,8 @@ describe('Ballot', () => {
           contest="contest name"
           previousBallot={jest.fn()}
           nextBallot={jest.fn()}
-          roundId="1"
+          submitBallot={jest.fn()}
+          roundIx="1"
           batchId="12345"
           ballotId={6}
         />
@@ -186,7 +192,8 @@ describe('Ballot', () => {
           contest="contest name"
           previousBallot={jest.fn()}
           nextBallot={jest.fn()}
-          roundId="1"
+          submitBallot={jest.fn()}
+          roundIx="1"
           batchId="12345"
           ballotId={1}
         />
