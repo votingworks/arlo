@@ -505,50 +505,9 @@ export const dummyBoard: IAuditBoard[] = [
       },
     ],
   },
-  {
-    id: '123',
-    name: 'Audit Board #1',
-    members: [
-      {
-        name: 'John Doe',
-        affiliation: '',
-      },
-      {
-        name: 'Jane Doe',
-        affiliation: 'LIB',
-      },
-    ],
-  },
-  {
-    id: '123',
-    name: 'Audit Board #1',
-    members: [
-      {
-        name: 'John Doe',
-        affiliation: '',
-      },
-      {
-        name: 'Jane Doe',
-        affiliation: 'LIB',
-      },
-    ],
-  },
-  {
-    id: '123',
-    name: 'Audit Board #1',
-    members: [
-      {
-        name: 'John Doe',
-        affiliation: '',
-      },
-      {
-        name: 'Jane Doe',
-        affiliation: 'LIB',
-      },
-    ],
-  },
 ]
 
 export default {
   dummyBoard,
+  dummyBallots,
 }

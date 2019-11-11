@@ -19,7 +19,7 @@ describe('Ballot', () => {
         nextBallot={jest.fn()}
         submitBallot={jest.fn()}
         roundIx="1"
-        batchId="12345"
+        batchId="batch-id"
         ballotId={1}
       />
     )
@@ -37,7 +37,7 @@ describe('Ballot', () => {
         nextBallot={jest.fn()}
         submitBallot={jest.fn()}
         roundIx="1"
-        batchId="12345"
+        batchId="batch-id"
         ballotId={1}
       />
     )
@@ -67,7 +67,7 @@ describe('Ballot', () => {
         nextBallot={jest.fn()}
         submitBallot={jest.fn()}
         roundIx="1"
-        batchId="12345"
+        batchId="batch-id"
         ballotId={1}
       />
     )
@@ -101,7 +101,7 @@ describe('Ballot', () => {
         nextBallot={nextBallotMock}
         submitBallot={jest.fn()}
         roundIx="1"
-        batchId="12345"
+        batchId="batch-id"
         ballotId={1}
       />
     )
@@ -127,18 +127,20 @@ describe('Ballot', () => {
   it('navigates to previous ballot', async () => {
     const previousBallotMock = jest.fn()
     const { getByText, getByTestId } = render(
-      <Ballot
-        home="/election/1/board/1"
-        ballots={dummyBallots.ballots}
-        boardName="audit board #1"
-        contest="contest name"
-        previousBallot={previousBallotMock}
-        nextBallot={jest.fn()}
-        submitBallot={jest.fn()}
-        roundIx="1"
-        batchId="12345"
-        ballotId={2}
-      />
+      <Router history={history}>
+        <Ballot
+          home="/election/1/board/1"
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
+          contest="contest name"
+          previousBallot={previousBallotMock}
+          nextBallot={jest.fn()}
+          submitBallot={jest.fn()}
+          roundIx="1"
+          batchId="batch-id"
+          ballotId={2}
+        />
+      </Router>
     )
     fireEvent.click(getByText('Back'), { bubbles: true })
 
@@ -171,7 +173,7 @@ describe('Ballot', () => {
           nextBallot={jest.fn()}
           submitBallot={jest.fn()}
           roundIx="1"
-          batchId="12345"
+          batchId="batch-id"
           ballotId={6}
         />
       </Router>
@@ -194,7 +196,7 @@ describe('Ballot', () => {
           nextBallot={jest.fn()}
           submitBallot={jest.fn()}
           roundIx="1"
-          batchId="12345"
+          batchId="batch-id"
           ballotId={1}
         />
       </Router>

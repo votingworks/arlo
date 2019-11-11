@@ -92,13 +92,13 @@ exports[`CalculateRiskMeasurement handles background process timeout 1`] = `
           1
         </div>
         <div
-          class="sc-gZMcBi cQokFm"
+          class="sc-gqjmRU bKjpgI"
         >
           <div
-            class="sc-VigVT kGjafq"
+            class="sc-jTzLTM hJXymL"
           >
             <label
-              class="sc-gqjmRU cPrgYR"
+              class="sc-VigVT guVKvv"
               for="round-0-contest-0-choice-choice-1"
             >
               choice one
@@ -120,10 +120,10 @@ exports[`CalculateRiskMeasurement handles background process timeout 1`] = `
             </div>
           </div>
           <div
-            class="sc-VigVT kGjafq"
+            class="sc-jTzLTM hJXymL"
           >
             <label
-              class="sc-gqjmRU cPrgYR"
+              class="sc-VigVT guVKvv"
               for="round-0-contest-0-choice-choice-2"
             >
               choice two
@@ -161,7 +161,7 @@ exports[`CalculateRiskMeasurement handles background process timeout 1`] = `
         </h3>
       </div>
       <div
-        class="sc-iwsKbI iqpfIi"
+        class="sc-gZMcBi DmELe"
       >
         <button
           class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
@@ -274,13 +274,13 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
           1
         </div>
         <div
-          class="sc-gZMcBi cQokFm"
+          class="sc-gqjmRU bKjpgI"
         >
           <div
-            class="sc-VigVT kGjafq"
+            class="sc-jTzLTM hJXymL"
           >
             <label
-              class="sc-gqjmRU cPrgYR"
+              class="sc-VigVT guVKvv"
               for="round-0-contest-0-choice-choice-1"
             >
               choice one
@@ -302,10 +302,10 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
             </div>
           </div>
           <div
-            class="sc-VigVT kGjafq"
+            class="sc-jTzLTM hJXymL"
           >
             <label
-              class="sc-gqjmRU cPrgYR"
+              class="sc-VigVT guVKvv"
               for="round-0-contest-0-choice-choice-2"
             >
               choice two
@@ -343,7 +343,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
         </h3>
       </div>
       <div
-        class="sc-iwsKbI iqpfIi"
+        class="sc-gZMcBi DmELe"
       >
         <button
           class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
@@ -451,13 +451,13 @@ Object {
               COMPLETE
             </h3>
             <div
-              class="sc-gZMcBi cQokFm"
+              class="sc-gqjmRU bKjpgI"
             >
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                 >
                   Risk Limit: 
                 </label>
@@ -465,10 +465,10 @@ Object {
                 %
               </div>
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                 >
                   P-value: 
                 </label>
@@ -477,13 +477,13 @@ Object {
               </div>
             </div>
             <div
-              class="sc-gZMcBi cQokFm"
+              class="sc-gqjmRU bKjpgI"
             >
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -506,10 +506,10 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -649,13 +649,13 @@ Object {
             COMPLETE
           </h3>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gqjmRU bKjpgI"
           >
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
               >
                 Risk Limit: 
               </label>
@@ -663,10 +663,10 @@ Object {
               %
             </div>
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
               >
                 P-value: 
               </label>
@@ -675,13 +675,13 @@ Object {
             </div>
           </div>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gqjmRU bKjpgI"
           >
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -704,10 +704,10 @@ Object {
               </div>
             </div>
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -904,13 +904,13 @@ Object {
               COMPLETE
             </h3>
             <div
-              class="sc-gZMcBi cQokFm"
+              class="sc-gqjmRU bKjpgI"
             >
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                 >
                   Risk Limit: 
                 </label>
@@ -918,10 +918,10 @@ Object {
                 %
               </div>
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                 >
                   P-value: 
                 </label>
@@ -930,13 +930,13 @@ Object {
               </div>
             </div>
             <div
-              class="sc-gZMcBi cQokFm"
+              class="sc-gqjmRU bKjpgI"
             >
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -959,10 +959,10 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -1128,13 +1128,13 @@ Object {
             COMPLETE
           </h3>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gqjmRU bKjpgI"
           >
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
               >
                 Risk Limit: 
               </label>
@@ -1142,10 +1142,10 @@ Object {
               %
             </div>
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
               >
                 P-value: 
               </label>
@@ -1154,13 +1154,13 @@ Object {
             </div>
           </div>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gqjmRU bKjpgI"
           >
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -1183,10 +1183,10 @@ Object {
               </div>
             </div>
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -1417,13 +1417,13 @@ Object {
               1
             </div>
             <div
-              class="sc-gZMcBi cQokFm"
+              class="sc-gqjmRU bKjpgI"
             >
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -1445,10 +1445,10 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -1486,7 +1486,7 @@ Object {
             </h3>
           </div>
           <div
-            class="sc-iwsKbI iqpfIi"
+            class="sc-gZMcBi DmELe"
           >
             <button
               class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
@@ -1597,13 +1597,13 @@ Object {
             1
           </div>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gqjmRU bKjpgI"
           >
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -1625,10 +1625,10 @@ Object {
               </div>
             </div>
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -1666,7 +1666,7 @@ Object {
           </h3>
         </div>
         <div
-          class="sc-iwsKbI iqpfIi"
+          class="sc-gZMcBi DmELe"
         >
           <button
             class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
@@ -1834,13 +1834,13 @@ Object {
               1
             </div>
             <div
-              class="sc-gZMcBi cQokFm"
+              class="sc-gqjmRU bKjpgI"
             >
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -1862,10 +1862,10 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-VigVT kGjafq"
+                class="sc-jTzLTM hJXymL"
               >
                 <label
-                  class="sc-gqjmRU cPrgYR"
+                  class="sc-VigVT guVKvv"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -2026,13 +2026,13 @@ Object {
             1
           </div>
           <div
-            class="sc-gZMcBi cQokFm"
+            class="sc-gqjmRU bKjpgI"
           >
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -2054,10 +2054,10 @@ Object {
               </div>
             </div>
             <div
-              class="sc-VigVT kGjafq"
+              class="sc-jTzLTM hJXymL"
             >
               <label
-                class="sc-gqjmRU cPrgYR"
+                class="sc-VigVT guVKvv"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two

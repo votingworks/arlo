@@ -31,7 +31,7 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gqjmRU fLDKDv"
+            class="bp3-html-select sc-VigVT gtiHtv"
           >
             <select
               field="[object Object]"
@@ -106,16 +106,16 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
           </div>
         </label>
         <div
-          class="sc-VigVT UDKFG"
+          class="sc-jTzLTM jLWsng"
         >
           <div
-            class="sc-jTzLTM iSsWST"
+            class="sc-fjdhpX dlakeG"
           />
           <div
-            class="sc-jTzLTM iSsWST"
+            class="sc-fjdhpX dlakeG"
           />
           <div
-            class="sc-jTzLTM iSsWST"
+            class="sc-fjdhpX dlakeG"
           />
         </div>
       </div>
@@ -149,10 +149,10 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
       </div>
     </div>
     <div
-      class="sc-EHOje kPsGPf"
+      class="sc-bZQynM gIxRNR"
     >
       <button
-        class="bp3-button bp3-intent-primary"
+        class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
         type="button"
       >
         <span
@@ -197,7 +197,7 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gqjmRU fLDKDv"
+            class="bp3-html-select sc-VigVT gtiHtv"
           >
             <select
               field="[object Object]"
@@ -272,13 +272,13 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
           </div>
         </label>
         <div
-          class="sc-VigVT UDKFG"
+          class="sc-jTzLTM jLWsng"
         >
           <div
-            class="sc-jTzLTM iSsWST"
+            class="sc-fjdhpX dlakeG"
           />
           <div
-            class="sc-jTzLTM iSsWST"
+            class="sc-fjdhpX dlakeG"
           />
         </div>
       </div>
@@ -312,10 +312,10 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
       </div>
     </div>
     <div
-      class="sc-EHOje kPsGPf"
+      class="sc-bZQynM gIxRNR"
     >
       <button
-        class="bp3-button bp3-intent-primary"
+        class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
         type="button"
       >
         <span
@@ -360,7 +360,7 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gqjmRU fLDKDv"
+            class="bp3-html-select sc-VigVT gtiHtv"
           >
             <select
               field="[object Object]"
@@ -435,10 +435,10 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
           </div>
         </label>
         <div
-          class="sc-VigVT UDKFG"
+          class="sc-jTzLTM jLWsng"
         >
           <div
-            class="sc-jTzLTM iSsWST"
+            class="sc-fjdhpX dlakeG"
           />
         </div>
       </div>
@@ -520,7 +520,7 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gqjmRU fLDKDv"
+            class="bp3-html-select sc-VigVT gtiHtv"
           >
             <select
               field="[object Object]"
@@ -595,10 +595,10 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
           </div>
         </label>
         <div
-          class="sc-VigVT UDKFG"
+          class="sc-jTzLTM jLWsng"
         >
           <div
-            class="sc-jTzLTM iSsWST"
+            class="sc-fjdhpX dlakeG"
           />
         </div>
       </div>

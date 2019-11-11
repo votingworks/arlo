@@ -34,12 +34,12 @@ exports[`MemberForm renders correctly 1`] = `
           for="[0]name"
         >
           <span
-            class="sc-EHOje jNXuzs"
+            class="sc-bZQynM ftYzuW"
           >
             Full Name
           </span>
           <input
-            class="sc-bZQynM jhCxkA"
+            class="sc-gzVnrw gxLAvJ"
             id="[0]name"
             name="[0]name"
             value=""
@@ -47,7 +47,7 @@ exports[`MemberForm renders correctly 1`] = `
         </label>
         <div>
           <span
-            class="sc-EHOje jNXuzs"
+            class="sc-bZQynM ftYzuW"
           >
             Party Affiliation 
             <i>
@@ -136,12 +136,12 @@ exports[`MemberForm renders correctly 1`] = `
           for="[1]name"
         >
           <span
-            class="sc-EHOje jNXuzs"
+            class="sc-bZQynM ftYzuW"
           >
             Full Name
           </span>
           <input
-            class="sc-bZQynM jhCxkA"
+            class="sc-gzVnrw gxLAvJ"
             id="[1]name"
             name="[1]name"
             value=""
@@ -149,7 +149,7 @@ exports[`MemberForm renders correctly 1`] = `
         </label>
         <div>
           <span
-            class="sc-EHOje jNXuzs"
+            class="sc-bZQynM ftYzuW"
           >
             Party Affiliation 
             <i>
@@ -227,7 +227,7 @@ exports[`MemberForm renders correctly 1`] = `
         </div>
       </div>
       <button
-        class="bp3-button bp3-intent-primary"
+        class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
         type="button"
       >
         <span
