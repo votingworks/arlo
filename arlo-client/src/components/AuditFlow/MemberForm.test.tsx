@@ -1,6 +1,20 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import MemberForm from './MemberForm'
+import { api } from '../utilities'
+import { statusStates } from '../AuditForms/_mocks'
+import { dummyBoard, dummyBallots } from './_mocks'
+
+const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
+
+jest.mock('../utilities')
+
+const dummy = statusStates[3]
+dummy.jurisdictions[0].auditBoards = [dummyBoard[0]]
+
+apiMock
+  .mockImplementationOnce(async () => dummy)
+  .mockImplementationOnce(async () => dummyBallots)
 
 describe('MemberForm', () => {
   it('renders correctly', () => {
@@ -18,7 +32,6 @@ describe('MemberForm', () => {
   })
 
   it('handles inputs', async () => {
-    const setDummyMock = jest.fn()
     const { queryAllByLabelText, queryAllByText, getByText } = render(
       <MemberForm
         boardName="board name"
@@ -47,7 +60,7 @@ describe('MemberForm', () => {
     const nextButton = getByText('Next')
     fireEvent.click(nextButton, { bubbles: true })
     await wait(() => {
-      expect(setDummyMock).toBeCalled()
+      expect(apiMock).toBeCalledTimes(1)
     })
   })
 })
