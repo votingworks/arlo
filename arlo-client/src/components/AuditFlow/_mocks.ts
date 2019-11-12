@@ -1,5 +1,46 @@
 import { IAuditBoard, IBallot } from '../../types'
 
+export const doneDummyBallots: { ballots: IBallot[] } = {
+  ballots: [
+    {
+      batch: {
+        name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+        id: 'batch-id-1',
+        tabulator: '11',
+      },
+      position: 313,
+      status: 'AUDITED',
+      vote: null,
+      comment: '',
+      timesSampled: 1,
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id-1',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: 'AUDITED',
+      vote: null,
+      comment: '',
+      timesSampled: 1,
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id-1',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: 'AUDITED',
+      vote: null,
+      comment: '',
+      timesSampled: 1,
+    },
+  ],
+}
+
 export const dummyBallots: { ballots: IBallot[] } = {
   ballots: [
     {

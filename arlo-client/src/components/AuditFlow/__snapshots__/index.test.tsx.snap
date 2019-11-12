@@ -1,255 +1,252 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AuditFlow fetches initial state from api 1`] = `
+exports[`AuditFlow ballot interaction renders ballot route 1`] = `
 <div>
   <div
     class="sc-eNQAEJ jDJHSN"
   >
-    <h1
-      class="bp3-heading"
-    >
-      Member Sign in for Audit Board: 
-      Audit Board #1
-    </h1>
-    <p>
-      Enter the information below for each member of 
-      Jurisdiction 1
-       
-      Audit Board #1
-       below, then click "Next" to proceed.
-    </p>
     <div
-      class="sc-bxivhb cfvxmq"
+      class="sc-ckVGcZ bxAWbg"
     >
-      <h2
-        class="bp3-heading sc-htpNat fysvnw"
-      />
-      <form>
+      <h1
+        class="bp3-heading sc-dxgOiQ huYUSL"
+      >
+        Audit Board #1
+        : Ballot Card Data Entry
+      </h1>
+      <h3
+        class="bp3-heading"
+      >
+        Enter Ballot Information
+      </h3>
+      <div
+        class="bp3-callout sc-jKJlTe hzNJni"
+      >
+        Round 
+        1
+        : auditing ballot 
+        1
+         of 
+        27
+      </div>
+      <div
+        class="sc-iwsKbI bjzIpb"
+      >
         <div
-          class="sc-ifAKCX iKQdjg"
+          class="ballot-side"
         >
-          <h3
-            class="bp3-heading sc-bZQynM vxpym"
+          <h4
+            class="bp3-heading"
           >
-            Audit Board Member
-          </h3>
-          <label
-            for="[0]name"
-          >
-            <span
-              class="sc-htoDjs flCEIS"
-            >
-              Full Name
-            </span>
-            <input
-              class="sc-dnqmqq jyHOFs"
-              id="[0]name"
-              name="[0]name"
-              value=""
-            />
-          </label>
+            Current ballot:
+          </h4>
           <div>
-            <span
-              class="sc-htoDjs flCEIS"
-            >
-              Party Affiliation 
-              <i>
-                (optional)
-              </i>
-            </span>
-            <div>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="DEM"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Democrat
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="REP"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Republican
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="LIB"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Libertarian
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="IND"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Independent/Unaffiliated
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="[0]affiliation"
-                  type="radio"
-                  value=""
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                None
-              </label>
-            </div>
+            Tabulator: 
+            11
+          </div>
+          <div>
+            Batch: 
+            0003-04-Precinct 13 (Jonesboro Fire Department)
+          </div>
+          <div>
+            Record/Position: 
+            313
           </div>
         </div>
         <div
-          class="sc-ifAKCX iKQdjg"
+          class="bp3-divider"
+        />
+        <div
+          class="ballot-main"
         >
-          <h3
-            class="bp3-heading sc-bZQynM vxpym"
+          <h4
+            class="bp3-heading"
           >
-            Audit Board Member
-          </h3>
-          <label
-            for="[1]name"
-          >
-            <span
-              class="sc-htoDjs flCEIS"
+            Are you looking at the correct ballot?
+          </h4>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </p>
+          <p>
+            <button
+              class="bp3-button bp3-intent-danger"
+              type="button"
             >
-              Full Name
-            </span>
-            <input
-              class="sc-dnqmqq jyHOFs"
-              id="[1]name"
-              name="[1]name"
-              value=""
+              <span
+                class="bp3-button-text"
+              >
+                Ballot 
+                313
+                 not found - move to next ballot
+              </span>
+            </button>
+          </p>
+          <p>
+            <a
+              class="bp3-button bp3-intent-primary"
+              href="/election/1/board/123"
+            >
+              Return to audit overview
+            </a>
+          </p>
+        </div>
+      </div>
+      <div
+        class="sc-iwsKbI bjzIpb"
+      >
+        <div
+          class="ballot-side"
+        />
+        <div
+          class="ballot-main"
+        >
+          <h4
+            class="bp3-heading"
+          >
+            Are you looking at the right ballot?
+          </h4>
+          <p>
+            Step 1: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <p>
+            Step 2: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </p>
+          <form
+            class="sc-gZMcBi eyQxfl"
+          >
+            <h3
+              class="bp3-heading"
+            >
+              contest name
+            </h3>
+            <div
+              class="bp3-divider"
             />
-          </label>
-          <div>
-            <span
-              class="sc-htoDjs flCEIS"
+            <div
+              class="sc-gqjmRU dmwuIO"
             >
-              Party Affiliation 
-              <i>
-                (optional)
-              </i>
-            </span>
-            <div>
               <label
-                class="bp3-control bp3-radio"
+                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
               >
                 <input
-                  name="[1]affiliation"
+                  data-testid="YES"
+                  name="vote"
                   type="radio"
-                  value="DEM"
+                  value="YES"
                 />
                 <span
                   class="bp3-control-indicator"
-                />
-                Democrat
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    Yes/For
+                  </span>
+                </span>
               </label>
               <label
-                class="bp3-control bp3-radio"
+                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
               >
                 <input
-                  name="[1]affiliation"
+                  data-testid="NO"
+                  name="vote"
                   type="radio"
-                  value="REP"
+                  value="NO"
                 />
                 <span
                   class="bp3-control-indicator"
-                />
-                Republican
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    No/Against
+                  </span>
+                </span>
               </label>
               <label
-                class="bp3-control bp3-radio"
+                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
               >
                 <input
-                  name="[1]affiliation"
+                  data-testid="NO_CONSENSUS"
+                  name="vote"
                   type="radio"
-                  value="LIB"
+                  value="NO_CONSENSUS"
                 />
                 <span
                   class="bp3-control-indicator"
-                />
-                Libertarian
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    No audit board consensus
+                  </span>
+                </span>
               </label>
               <label
-                class="bp3-control bp3-radio"
+                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
               >
                 <input
-                  name="[1]affiliation"
+                  data-testid="NO_VOTE"
+                  name="vote"
                   type="radio"
-                  value="IND"
+                  value="NO_VOTE"
                 />
                 <span
                   class="bp3-control-indicator"
-                />
-                Independent/Unaffiliated
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="[1]affiliation"
-                  type="radio"
-                  value=""
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                None
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    Blank vote/no mark
+                  </span>
+                </span>
               </label>
             </div>
+            <div
+              class="sc-jzJRlG brNPlP"
+            >
+              <textarea
+                class="bp3-input sc-kAzzGY fpNxNJ"
+                data-testid="comment-textarea"
+                name="comment"
+              />
+            </div>
+          </form>
+          <div
+            class="sc-VigVT cyKuXR"
+          >
+            <button
+              class="bp3-button bp3-disabled bp3-intent-success sc-gzVnrw eLDrzZ"
+              data-testid="disabled-review"
+              disabled=""
+              tabindex="-1"
+              type="submit"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Review
+              </span>
+            </button>
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Back
+              </span>
+            </button>
           </div>
         </div>
-        <button
-          class="bp3-button bp3-intent-primary sc-gzVnrw eLDrzZ"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Next
-          </span>
-        </button>
-      </form>
+      </div>
     </div>
   </div>
 </div>
 `;
 
-exports[`AuditFlow renders ballot route 1`] = `<div />`;
-
-exports[`AuditFlow renders ballot route 2`] = `<div />`;
-
-exports[`AuditFlow renders board table with ballots 1`] = `
+exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
     class="sc-eNQAEJ jDJHSN"
@@ -271,7 +268,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
       >
         <a
           class="bp3-button bp3-intent-primary"
-          href="/election/1/board/123/round/1/batch/batch-id/ballot/313"
+          href="/election/1/board/123/round/1/batch/batch-id-1/ballot/313"
         >
           Start Auditing
         </a>
@@ -466,7 +463,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                           >
                             <a
                               class="bp3-button bp3-small"
-                              href="/election/1/board/123/round/1/batch/batch-id/ballot/313"
+                              href="/election/1/board/123/round/1/batch/batch-id-1/ballot/313"
                             >
                               Re-audit
                             </a>
@@ -551,7 +548,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                           >
                             <a
                               class="bp3-button bp3-small"
-                              href="/election/1/board/123/round/1/batch/batch-id/ballot/1789"
+                              href="/election/1/board/123/round/1/batch/batch-id-1/ballot/1789"
                             >
                               Re-audit
                             </a>
@@ -574,7 +571,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            2112
+                            313
                           </div>
                         </div>
                         <div
@@ -584,7 +581,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            0003-04-Precinct 19 (Jonesboro Fire Department)
+                            0003-04-Precinct 13 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -594,7 +591,12 @@ exports[`AuditFlow renders board table with ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Not Audited
+                            <a
+                              class="bp3-button bp3-small"
+                              href="/election/1/board/123/round/1/batch/batch-id-2/ballot/313"
+                            >
+                              Re-audit
+                            </a>
                           </div>
                         </div>
                         <div
@@ -809,243 +811,7 @@ exports[`AuditFlow renders board table with ballots 1`] = `
 </div>
 `;
 
-exports[`AuditFlow renders board table with completed ballots 1`] = `
-<div>
-  <div
-    class="sc-jKJlTe fVUbzk"
-  >
-    <div
-      class="board-table-container"
-    >
-      <h1
-        class="bp3-heading"
-      >
-        Audit Board #1
-        : Ballot Cards to Audit
-      </h1>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
-      <div
-        class="sc-bdVaJa cpRYMt"
-      >
-        <button
-          class="bp3-button bp3-intent-primary"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Review Complete - Finish Round
-          </span>
-        </button>
-      </div>
-      <div
-        class="sc-htpNat ehYsQA"
-      />
-      <div
-        class="bp3-table-container bp3-table-selection-enabled"
-        tabindex="0"
-      >
-        <div
-          class="bp3-table-quadrant-stack"
-        >
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-top"
-            style="height: 30px; right: 0px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: 1999.9999999999998px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 1999.9999999999998px;"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                        style="flex-basis: 333.3333333333333px; min-width: 0px; width: 333.3333333333333px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Ballot"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Ballot
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: 333.3333333333333px; min-width: 0px; width: 333.3333333333333px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Batch"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Batch
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: 333.3333333333333px; min-width: 0px; width: 333.3333333333333px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Status"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Status
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: 333.3333333333333px; min-width: 0px; width: 333.3333333333333px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Tabulator"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Tabulator
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 150px; width: 1999.9999999999998px;"
-              >
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="width: 1999.9999999999998px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
-        />
-        <div
-          class="bp3-table-resize-guides bp3-table-overlay-layer"
-        />
-        <div
-          class="bp3-table-resize-sensor"
-          style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
-        >
-          <div
-            class="bp3-table-resize-sensor-expand"
-            style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
-          >
-            <div
-              style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
-            />
-          </div>
-          <div
-            class="bp3-table-resize-sensor-shrink"
-            style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
-          >
-            <div
-              style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`AuditFlow renders board table with large container size 1`] = `
+exports[`AuditFlow ballot interaction renders board table with large container size 1`] = `
 <div>
   <div
     class="sc-eNQAEJ jDJHSN"
@@ -1067,7 +833,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
       >
         <a
           class="bp3-button bp3-intent-primary"
-          href="/election/1/board/123/round/1/batch/batch-id/ballot/313"
+          href="/election/1/board/123/round/1/batch/batch-id-1/ballot/313"
         >
           Start Auditing
         </a>
@@ -1262,7 +1028,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
                           >
                             <a
                               class="bp3-button bp3-small"
-                              href="/election/1/board/123/round/1/batch/batch-id/ballot/313"
+                              href="/election/1/board/123/round/1/batch/batch-id-1/ballot/313"
                             >
                               Re-audit
                             </a>
@@ -1347,7 +1113,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
                           >
                             <a
                               class="bp3-button bp3-small"
-                              href="/election/1/board/123/round/1/batch/batch-id/ballot/1789"
+                              href="/election/1/board/123/round/1/batch/batch-id-1/ballot/1789"
                             >
                               Re-audit
                             </a>
@@ -1370,7 +1136,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            2112
+                            313
                           </div>
                         </div>
                         <div
@@ -1380,7 +1146,7 @@ exports[`AuditFlow renders board table with large container size 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            0003-04-Precinct 19 (Jonesboro Fire Department)
+                            0003-04-Precinct 13 (Jonesboro Fire Department)
                           </div>
                         </div>
                         <div
@@ -1390,7 +1156,12 @@ exports[`AuditFlow renders board table with large container size 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            Not Audited
+                            <a
+                              class="bp3-button bp3-small"
+                              href="/election/1/board/123/round/1/batch/batch-id-2/ballot/313"
+                            >
+                              Re-audit
+                            </a>
                           </div>
                         </div>
                         <div
@@ -1605,493 +1376,36 @@ exports[`AuditFlow renders board table with large container size 1`] = `
 </div>
 `;
 
-exports[`AuditFlow renders correctly 1`] = `
+exports[`AuditFlow ballot interaction renders board table with no ballots 1`] = `
 <div>
   <div
     class="sc-eNQAEJ jDJHSN"
   >
-    <h1
-      class="bp3-heading"
-    >
-      Member Sign in for Audit Board: 
-      Audit Board #1
-    </h1>
-    <p>
-      Enter the information below for each member of 
-      Jurisdiction 1
-       
-      Audit Board #1
-       below, then click "Next" to proceed.
-    </p>
     <div
-      class="sc-bxivhb cfvxmq"
+      class="bp3-spinner"
     >
-      <h2
-        class="bp3-heading sc-htpNat fysvnw"
-      />
-      <form>
-        <div
-          class="sc-ifAKCX iKQdjg"
+      <div
+        class="bp3-spinner-animation"
+      >
+        <svg
+          height="50"
+          stroke-width="8.00"
+          viewBox="1.00 1.00 98.00 98.00"
+          width="50"
         >
-          <h3
-            class="bp3-heading sc-bZQynM vxpym"
-          >
-            Audit Board Member
-          </h3>
-          <label
-            for="[0]name"
-          >
-            <span
-              class="sc-htoDjs flCEIS"
-            >
-              Full Name
-            </span>
-            <input
-              class="sc-dnqmqq jyHOFs"
-              id="[0]name"
-              name="[0]name"
-              value=""
-            />
-          </label>
-          <div>
-            <span
-              class="sc-htoDjs flCEIS"
-            >
-              Party Affiliation 
-              <i>
-                (optional)
-              </i>
-            </span>
-            <div>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="DEM"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Democrat
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="REP"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Republican
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="LIB"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Libertarian
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="IND"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Independent/Unaffiliated
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="[0]affiliation"
-                  type="radio"
-                  value=""
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                None
-              </label>
-            </div>
-          </div>
-        </div>
-        <div
-          class="sc-ifAKCX iKQdjg"
-        >
-          <h3
-            class="bp3-heading sc-bZQynM vxpym"
-          >
-            Audit Board Member
-          </h3>
-          <label
-            for="[1]name"
-          >
-            <span
-              class="sc-htoDjs flCEIS"
-            >
-              Full Name
-            </span>
-            <input
-              class="sc-dnqmqq jyHOFs"
-              id="[1]name"
-              name="[1]name"
-              value=""
-            />
-          </label>
-          <div>
-            <span
-              class="sc-htoDjs flCEIS"
-            >
-              Party Affiliation 
-              <i>
-                (optional)
-              </i>
-            </span>
-            <div>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="DEM"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Democrat
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="REP"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Republican
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="LIB"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Libertarian
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="IND"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Independent/Unaffiliated
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="[1]affiliation"
-                  type="radio"
-                  value=""
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                None
-              </label>
-            </div>
-          </div>
-        </div>
-        <button
-          class="bp3-button bp3-intent-primary sc-gzVnrw eLDrzZ"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Next
-          </span>
-        </button>
-      </form>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`AuditFlow renders member form 1`] = `<div />`;
-
-exports[`AuditFlow renders member form 2`] = `
-<div>
-  <div
-    class="sc-eNQAEJ jDJHSN"
-  >
-    <h1
-      class="bp3-heading"
-    >
-      Member Sign in for Audit Board: 
-      Audit Board #1
-    </h1>
-    <p>
-      Enter the information below for each member of 
-      Jurisdiction 1
-       
-      Audit Board #1
-       below, then click "Next" to proceed.
-    </p>
-    <div
-      class="sc-bxivhb cfvxmq"
-    >
-      <h2
-        class="bp3-heading sc-htpNat fysvnw"
-      />
-      <form>
-        <div
-          class="sc-ifAKCX iKQdjg"
-        >
-          <h3
-            class="bp3-heading sc-bZQynM vxpym"
-          >
-            Audit Board Member
-          </h3>
-          <label
-            for="[0]name"
-          >
-            <span
-              class="sc-htoDjs flCEIS"
-            >
-              Full Name
-            </span>
-            <input
-              class="sc-dnqmqq jyHOFs"
-              id="[0]name"
-              name="[0]name"
-              value=""
-            />
-          </label>
-          <div>
-            <span
-              class="sc-htoDjs flCEIS"
-            >
-              Party Affiliation 
-              <i>
-                (optional)
-              </i>
-            </span>
-            <div>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="DEM"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Democrat
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="REP"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Republican
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="LIB"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Libertarian
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="IND"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Independent/Unaffiliated
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="[0]affiliation"
-                  type="radio"
-                  value=""
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                None
-              </label>
-            </div>
-          </div>
-        </div>
-        <div
-          class="sc-ifAKCX iKQdjg"
-        >
-          <h3
-            class="bp3-heading sc-bZQynM vxpym"
-          >
-            Audit Board Member
-          </h3>
-          <label
-            for="[1]name"
-          >
-            <span
-              class="sc-htoDjs flCEIS"
-            >
-              Full Name
-            </span>
-            <input
-              class="sc-dnqmqq jyHOFs"
-              id="[1]name"
-              name="[1]name"
-              value=""
-            />
-          </label>
-          <div>
-            <span
-              class="sc-htoDjs flCEIS"
-            >
-              Party Affiliation 
-              <i>
-                (optional)
-              </i>
-            </span>
-            <div>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="DEM"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Democrat
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="REP"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Republican
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="LIB"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Libertarian
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="IND"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Independent/Unaffiliated
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="[1]affiliation"
-                  type="radio"
-                  value=""
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                None
-              </label>
-            </div>
-          </div>
-        </div>
-        <button
-          class="bp3-button bp3-intent-primary sc-gzVnrw eLDrzZ"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Next
-          </span>
-        </button>
-      </form>
+          <path
+            class="bp3-spinner-track"
+            d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+          />
+          <path
+            class="bp3-spinner-head"
+            d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
+            pathLength="280"
+            stroke-dasharray="280 280"
+            stroke-dashoffset="210"
+          />
+        </svg>
+      </div>
     </div>
   </div>
 </div>
