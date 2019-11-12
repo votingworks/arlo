@@ -1,6 +1,7 @@
 # type: ignore
 from app import db
 from sqlalchemy.orm import relationship
+from typing import Union, List
 
 # on-delete-cascade is done in SQLAlchemy like this:
 # https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete
@@ -126,7 +127,18 @@ class SampledBallot(db.Model):
     audit_board_id = db.Column(db.String(200), db.ForeignKey('audit_board.id', ondelete='cascade'), nullable=False)
     vote = db.Column(db.String(200), nullable=True)
     comment = db.Column(db.Text, nullable=True)
-    
+
+    # comma-separated ticket numbers
+    ticket_numbers = db.Column(db.Text, nullable=True)
+
+    @property
+    def tickets(self):
+        return self.ticket_numbers.split(',') if self.ticket_numbers else []
+
+    @tickets.setter
+    def tickets(self, tickets: Union[List[str], None]):
+        self.ticket_numbers = ','.join(tickets) if tickets else None
+
 class RoundContest(db.Model):
     round_id = db.Column(db.String(200), db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
     contest_id = db.Column(db.String(200), db.ForeignKey('targeted_contest.id', ondelete='cascade'), nullable=False)
