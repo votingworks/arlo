@@ -21,6 +21,7 @@ import FormButtonBar from '../Form/FormButtonBar'
 import { api, poll } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import { Audit } from '../../types'
+import number, { parse as parseNumber } from '../../utils/number-schema'
 
 export const Select = styled(HTMLSelect)`
   margin-left: 5px;
@@ -102,25 +103,26 @@ const contestsSchema = Yup.array()
   .of(
     Yup.object().shape({
       name: Yup.string().required('Required'),
-      winners: Yup.number()
+      winners: number()
         .typeError('Must be a number')
         .integer('Must be an integer')
         .min(0, 'Must be a positive number')
         .required('Required'),
-      totalBallotsCast: Yup.number()
+      totalBallotsCast: number()
         .typeError('Must be a number')
         .integer('Must be an integer')
         .min(0, 'Must be a positive number')
         .test(
           'is-sufficient',
           'Must be greater than or equal to the sum of votes for each candidate/choice',
-          function(value?: any) {
+          function(value?: unknown) {
             const { choices } = this.parent
             const totalVoters = choices.reduce(
-              (a: number, v: ChoiceValues) => a + (Number(v.numVotes) || 0),
+              (a: number, v: ChoiceValues) =>
+                a + (parseNumber(v.numVotes) || 0),
               0
             )
-            return Number(value) >= totalVoters || this.createError()
+            return parseNumber(value) >= totalVoters || this.createError()
           }
         )
         .required('Required'),
@@ -129,7 +131,7 @@ const contestsSchema = Yup.array()
         .of(
           Yup.object().shape({
             name: Yup.string().required('Required'),
-            numVotes: Yup.number()
+            numVotes: number()
               .typeError('Must be a number')
               .integer('Must be an integer')
               .min(0, 'Must be a positive number')
@@ -145,7 +147,7 @@ const schema = Yup.object().shape({
     .max(20, 'Must be 20 digits or less')
     .matches(/^\d+$/, 'Must be only numbers')
     .required('Required'),
-  riskLimit: Yup.number()
+  riskLimit: number()
     .typeError('Must be a number')
     .min(1, 'Must be greater than 0')
     .max(20, 'Must be less than 21')
@@ -167,16 +169,16 @@ const EstimateSampleSize: React.FC<Props> = ({
     const data = {
       name: values.name,
       randomSeed: values.randomSeed,
-      riskLimit: Number(values.riskLimit),
+      riskLimit: parseNumber(values.riskLimit),
       contests: values.contests.map(contest => ({
         id: uuidv4(),
         name: contest.name,
-        totalBallotsCast: Number(contest.totalBallotsCast),
-        winners: Number(contest.winners),
+        totalBallotsCast: parseNumber(contest.totalBallotsCast),
+        winners: parseNumber(contest.winners),
         choices: contest.choices.map(choice => ({
           id: uuidv4(),
           name: choice.name,
-          numVotes: Number(choice.numVotes),
+          numVotes: parseNumber(choice.numVotes),
         })),
       })),
     }
