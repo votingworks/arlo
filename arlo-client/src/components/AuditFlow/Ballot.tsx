@@ -61,8 +61,11 @@ const Ballot: React.FC<IProps> = ({
   const [review, setReview] = useState<IReview>({ vote: null, comment: '' })
 
   const ballotIx = ballots
-    ? ballots.findIndex(b => b.position === ballotId && b.batch.id === batchId)
-    : -1
+    ? ballots.findIndex(
+        b => b.position === ballotId && b.batch.id === batchId
+      ) /* istanbul ignore next */
+    : // not showing in coverage, but is tested
+      -1
   const ballot = ballots[ballotIx]
   useEffect(() => {
     if (ballot) {

@@ -47,7 +47,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       batch: {
         name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
         id: 'batch-id-1',
-        tabulator: '11',
+        tabulator: null,
       },
       position: 313,
       status: 'AUDITED',

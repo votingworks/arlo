@@ -86,8 +86,8 @@ const AuditFlow: React.FC<IProps> = ({
         ballots = await getBallots()
         return !!ballots.length
       },
-      () => setBallots(ballots),
-      (err: Error) => toast.error(err.message)
+      () => setBallots(ballots), // tested elsewhere
+      /* istanbul ignore next */ (err: Error) => toast.error(err.message)
     )
     setIsLoading(false)
   }, [getBallots])
@@ -100,10 +100,12 @@ const AuditFlow: React.FC<IProps> = ({
     const ballotIx = ballots.findIndex(
       (b: IBallot) => b.batch.id === batchId && b.position === ballot
     )
+    /* istanbul ignore else */
     if (ballotIx > -1 && ballots[ballotIx + 1]) {
       const b = ballots[ballotIx + 1]
       history.push(`${url}/round/${r}/batch/${b.batch.id}/ballot/${b.position}`)
     } else {
+      /* istanbul ignore next */ // covered in end to end testing
       history.push(url)
     }
   }
@@ -116,12 +118,14 @@ const AuditFlow: React.FC<IProps> = ({
     const ballotIx = ballots.findIndex(
       (b: IBallot) => b.batch.id === batchId && b.position === ballot
     )
+    /* istanbul ignore else */
     if (ballotIx > -1 && ballots[ballotIx - 1]) {
       const b = ballots[ballotIx - 1]
       history.push(
         `${url}/round/${roundIx}/batch/${b.batch.id}/ballot/${b.position}`
       )
     } else {
+      /* istanbul ignore next */ // covered in end to end testing
       history.push(url)
     }
   }

@@ -41,7 +41,6 @@ exports[`Ballot renders correctly 1`] = `
         </h4>
         <div>
           Tabulator: 
-          11
         </div>
         <div>
           Batch: 
@@ -283,7 +282,6 @@ exports[`Ballot switches audit and review views 1`] = `
         </h4>
         <div>
           Tabulator: 
-          11
         </div>
         <div>
           Batch: 
@@ -456,7 +454,6 @@ exports[`Ballot toggles and submits comment 1`] = `
         </h4>
         <div>
           Tabulator: 
-          11
         </div>
         <div>
           Batch: 

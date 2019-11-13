@@ -42,7 +42,6 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
           </h4>
           <div>
             Tabulator: 
-            11
           </div>
           <div>
             Batch: 
@@ -476,7 +475,7 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            11
+                            N/A
                           </div>
                         </div>
                         <div
@@ -1041,7 +1040,7 @@ exports[`AuditFlow ballot interaction renders board table with large container s
                           <div
                             class="bp3-table-truncated-text bp3-table-no-wrap-text"
                           >
-                            11
+                            N/A
                           </div>
                         </div>
                         <div

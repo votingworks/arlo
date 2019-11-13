@@ -57,6 +57,7 @@ const BoardTable: React.FC<IProps> = ({
   round,
 }: IProps) => {
   const renderCell = (rI: number, cI: number) => {
+    /* istanbul ignore else */
     if (ballots) {
       const ballot: IBallot = ballots[rI]
       switch (KEYS[cI]) {
@@ -85,8 +86,10 @@ const BoardTable: React.FC<IProps> = ({
               {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
             </PaddedCell>
           )
+        /* istanbul ignore next */
         case 'round':
-          return <PaddedCell>{round}</PaddedCell> // make responsive
+          return <PaddedCell>{round}</PaddedCell>
+        /* istanbul ignore next */
         default:
           return <PaddedCell>?</PaddedCell>
       }
@@ -101,6 +104,7 @@ const BoardTable: React.FC<IProps> = ({
     )[0]
     if (!container) return Array(length).fill(null)
     const containerSize = container.clientWidth
+    /* istanbul ignore next */
     if (containerSize < 775) return Array(length).fill(80)
     return Array(length).fill(containerSize / length)
   }
@@ -108,6 +112,7 @@ const BoardTable: React.FC<IProps> = ({
   const roundComplete = ballots && ballots.every(b => b.status === 'AUDITED')
 
   let numRows = 10
+  /* istanbul ignore next */
   if (ballots && ballots.length < 10) numRows = ballots.length
 
   return (

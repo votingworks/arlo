@@ -3,7 +3,7 @@ import { render, wait, fireEvent } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
 import { routerTestProps } from '../testUtilities'
 import AuditFlow from './index'
-import { dummyBoard, dummyBallots, doneDummyBallots } from './_mocks'
+import { dummyBoard, dummyBallots } from './_mocks'
 import statusStates from '../AuditForms/_mocks'
 import * as utilities from '../utilities'
 import { IAudit, IBallot } from '../../types'
@@ -86,31 +86,6 @@ describe('AuditFlow ballot interaction', () => {
     })
   })
 
-  it.skip('renders board table with completed ballots', async () => {
-    apiMock.mockImplementation(
-      async (endpoint: string): Promise<IAudit | { ballots: IBallot[] }> => {
-        switch (endpoint) {
-          case '/audit/status':
-            memberDummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
-            return memberDummy
-          default:
-            return doneDummyBallots
-        }
-      }
-    )
-    const { container, getByText } = render(
-      <StaticRouter {...staticRouteProps}>
-        <AuditFlow {...routeProps} />
-      </StaticRouter>
-    )
-    await wait(() => {
-      expect(apiMock).toBeCalled()
-      expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
-      expect(getByText('Review Complete - Finish Round')).toBeTruthy()
-      expect(container).toMatchSnapshot()
-    })
-  })
-
   it('renders ballot route', async () => {
     const ballotRouteProps = routerTestProps(
       '/election/:electionId/board/:token/round/:roundId/batch/:batchId/ballot/:ballotId',
@@ -176,5 +151,37 @@ describe('AuditFlow ballot interaction', () => {
     expect(pushSpy.mock.calls[1][0]).toBe(
       '/election/1/board/123/round/1/batch/batch-id-1/ballot/313'
     )
+  })
+
+  it('submits ballot', async () => {
+    const ballotRouteProps = routerTestProps(
+      '/election/:electionId/board/:token/round/:roundId/batch/:batchId/ballot/:ballotId',
+      {
+        electionId: '1',
+        token: '123',
+        roundId: '1',
+        batchId: 'batch-id-1',
+        ballotId: '2112',
+      }
+    )
+    const { history, ...staticBallotRouteProps } = ballotRouteProps
+    ballotRouteProps.match.url = '/election/1/board/123'
+    const { getByText, getByTestId } = render(
+      <StaticRouter {...staticBallotRouteProps}>
+        <AuditFlow {...ballotRouteProps} />
+      </StaticRouter>
+    )
+
+    fireEvent.click(getByTestId('YES'), { bubbles: true })
+    await wait(() =>
+      fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
+    )
+    await wait(() => {
+      fireEvent.click(getByText('Submit & Next Ballot'), { bubbles: true })
+    })
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(4)
+    })
   })
 })
