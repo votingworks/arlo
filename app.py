@@ -1,4 +1,4 @@
-import os, datetime, csv, io, math, json, uuid
+import os, datetime, csv, io, math, json, uuid, locale
 from flask import Flask, jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from sampler import Sampler
@@ -484,11 +484,23 @@ def jurisdiction_manifest(jurisdiction_id, election_id=None):
     num_batches = 0
     num_ballots = 0
     for row in manifest_csv:
+        num_ballots_in_batch_csv = row[NUMBER_OF_BALLOTS]
+
+        try:
+            num_ballots_in_batch = locale.atoi(num_ballots_in_batch_csv)
+        except:
+            return jsonify(errors=[
+                {
+                    'message': f'Invalid value for "{NUMBER_OF_BALLOTS}" on line {manifest_csv.line_num}: {num_ballots_in_batch_csv}',
+                    'errorType': 'InvalidCsvIntegerField'
+                }
+            ]), 400
+
         batch = Batch(
             id = str(uuid.uuid4()),
             name = row[BATCH_NAME],
             jurisdiction_id = jurisdiction.id,
-            num_ballots = int(row[NUMBER_OF_BALLOTS]),
+            num_ballots = num_ballots_in_batch,
             storage_location = row.get(STORAGE_LOCATION, None),
             tabulator = row.get(TABULATOR, None)
         )
