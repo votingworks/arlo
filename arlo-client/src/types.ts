@@ -24,7 +24,7 @@ export interface Contest {
 
 export interface Ballot {
   timesSampled: number
-  boardName?: string
+  auditBoard?: Pick<AuditBoard, 'id' | 'name'>
   status: 'AUDITED' | null
   vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
   comment: string

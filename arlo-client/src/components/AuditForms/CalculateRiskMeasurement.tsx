@@ -13,7 +13,7 @@ import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api, testNumber, poll, asyncForEach } from '../utilities'
+import { api, testNumber, poll } from '../utilities'
 import {
   Contest,
   Round,
@@ -79,19 +79,10 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
 }: Props) => {
   const getBallots = async (r: number): Promise<Ballot[]> => {
     const round = audit.rounds[r]
-    const ballots: Ballot[] = []
-    await asyncForEach(audit.jurisdictions[0].auditBoards, async board => {
-      const { ballots: b } = await api(
-        `/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`,
-        { electionId }
-      )
-      ballots.push(
-        ...b.map((v: Ballot) => {
-          v.boardName = board.name
-          return v
-        })
-      )
-    })
+    const { ballots } = await api<{ ballots: Ballot[] }>(
+      `/jurisdiction/${audit.jurisdictions[0].id}/round/${round.id}/ballot-list`,
+      { electionId }
+    )
     return ballots
   }
 
@@ -130,7 +121,11 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
         }
         const x = getX(labelCount - 1)
         const y = getY(labelCount - 1)
-        labels.text(labels.splitTextToSize(ballot.boardName!, 60)[0], x, y[0])
+        labels.text(
+          labels.splitTextToSize(ballot.auditBoard!.name, 60)[0],
+          x,
+          y[0]
+        )
         labels.text(
           labels.splitTextToSize(`Batch Name: ${ballot.batch!.name}`, 60),
           x,
@@ -153,7 +148,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
       ballots.forEach(ballot => {
         pageCount > 0 && placeholders.addPage('letter')
         placeholders.text(
-          placeholders.splitTextToSize(ballot.boardName!, 180),
+          placeholders.splitTextToSize(ballot.auditBoard!.name, 180),
           20,
           20
         )
