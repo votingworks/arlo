@@ -25,6 +25,7 @@ import { api, testNumber } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
 import FormField from '../Form/FormField'
+import number from '../../utils/number-schema'
 
 export const Select = styled(HTMLSelect)`
   margin-left: 5px;
@@ -55,7 +56,7 @@ interface SelectBallotsToAuditValues {
 }
 
 const schema = Yup.object().shape({
-  auditBoards: Yup.number()
+  auditBoards: number()
     .typeError('Must be a number')
     .min(1, 'Too few Audit Boards')
     .max(15, 'Too many Audit Boards')

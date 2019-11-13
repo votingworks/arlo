@@ -1,5 +1,5 @@
-import * as Yup from 'yup'
 import { Params } from '../types'
+import number from '../utils/number-schema'
 
 export const api = async <T>(
   endpoint: string,
@@ -33,7 +33,7 @@ export const poll = (
   })()
 }
 
-const numberSchema = Yup.number()
+const numberSchema = number()
   .typeError('Must be a number')
   .integer('Must be an integer')
   .min(0, 'Must be a positive number')
@@ -45,7 +45,7 @@ export const testNumber = (
 ): ((value: number) => Promise<string | undefined>) => {
   const schema = max
     ? numberSchema.concat(
-        Yup.number().max(max, message || `Must be smaller than ${max}`)
+        number().max(max, message || `Must be smaller than ${max}`)
       )
     : numberSchema
 
