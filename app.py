@@ -1,4 +1,4 @@
-import os, datetime, csv, io, math, json, uuid, locale
+import os, datetime, csv, io, math, json, uuid, locale, re
 from flask import Flask, jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from sampler import Sampler
@@ -726,10 +726,11 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_num, election_id=None):
     for ballot in ballots:
         retrieval_list_writer.writerow([ballot.batch.name, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board.name])
 
-    clean_jurisdiction_name = jurisdiction.name.replace(" ","-")
-        
+    clean_election_name = re.sub(r'[^a-zA-Z0-9]+', r'-', election.name)
+    now = datetime.datetime.utcnow().isoformat(timespec='minutes')
+
     response = Response(csv_io.getvalue())
-    response.headers['Content-Disposition'] = 'attachment; filename="ballot-retrieval-{:s}-{:s}.csv"'.format(clean_jurisdiction_name, round_num)
+    response.headers['Content-Disposition'] = f'attachment; filename="ballot-retrieval-{clean_election_name}-{now}.csv"'.format(clean_election_name, round_num)
     return response
 
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/results', methods=["POST"])
