@@ -4,7 +4,7 @@ import { StaticRouter } from 'react-router-dom'
 import { routerTestProps } from '../testUtilities'
 import AuditFlow from './index'
 import { dummyBoard, dummyBallots } from './_mocks'
-import statusStates from '../AuditForms/_mocks'
+import { statusStates } from '../AuditForms/_mocks'
 import * as utilities from '../utilities'
 import { IAudit, IBallot } from '../../types'
 
@@ -36,7 +36,7 @@ const routeProps = routerTestProps('/election/:electionId/board/:token', {
   token: '123',
 })
 
-const { history, ...staticRouteProps } = routeProps
+const { history, ...staticRouteProps } = routeProps // eslint-disable-line @typescript-eslint/no-unused-vars
 
 describe('AuditFlow ballot interaction', () => {
   beforeEach(() => {
@@ -75,7 +75,7 @@ describe('AuditFlow ballot interaction', () => {
       .spyOn(window.document, 'getElementsByClassName')
       .mockReturnValue([
         { clientWidth: 2000 },
-      ] as any) as any) as jest.SpyInstance<[{ clientWidth: number }]>
+      ] as any) as any) as jest.SpyInstance<[{ clientWidth: number }]> // eslint-disable-line @typescript-eslint/no-explicit-any
     const { container } = render(
       <StaticRouter {...staticRouteProps}>
         <AuditFlow {...routeProps} />
@@ -97,7 +97,7 @@ describe('AuditFlow ballot interaction', () => {
         ballotId: '313',
       }
     )
-    const { history, ...staticBallotRouteProps } = ballotRouteProps
+    const { history, ...staticBallotRouteProps } = ballotRouteProps // eslint-disable-line @typescript-eslint/no-unused-vars
     ballotRouteProps.match.url = '/election/1/board/123'
     const { container, getByText } = render(
       <StaticRouter {...staticBallotRouteProps}>
@@ -122,7 +122,7 @@ describe('AuditFlow ballot interaction', () => {
         ballotId: '2112',
       }
     )
-    const { history, ...staticBallotRouteProps } = ballotRouteProps
+    const { history, ...staticBallotRouteProps } = ballotRouteProps // eslint-disable-line @typescript-eslint/no-unused-vars
     const pushSpy = jest
       .spyOn(ballotRouteProps.history, 'push')
       .mockImplementation()
@@ -164,7 +164,7 @@ describe('AuditFlow ballot interaction', () => {
         ballotId: '2112',
       }
     )
-    const { history, ...staticBallotRouteProps } = ballotRouteProps
+    const { history, ...staticBallotRouteProps } = ballotRouteProps // eslint-disable-line @typescript-eslint/no-unused-vars
     ballotRouteProps.match.url = '/election/1/board/123'
     const { getByText, getByTestId } = render(
       <StaticRouter {...staticBallotRouteProps}>

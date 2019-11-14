@@ -73,7 +73,7 @@ const FormField: React.FC<IProps> = ({
     {type === 'number' ? (
       <NumberField
         disabled={disabled}
-        onValueChange={(n) => setFieldValue(field.name, n)}
+        onValueChange={n => setFieldValue(field.name, n)}
         type={type}
         {...field}
         {...rest}

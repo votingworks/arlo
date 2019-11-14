@@ -83,6 +83,7 @@ const BoardTable: React.FC<IProps> = ({
         case 'tabulator':
           return (
             <PaddedCell>
+              {/* eslint-disable-next-line no-null/no-null */}
               {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
             </PaddedCell>
           )
@@ -102,7 +103,7 @@ const BoardTable: React.FC<IProps> = ({
     const container = document.getElementsByClassName(
       'board-table-container'
     )[0]
-    if (!container) return Array(length).fill(null)
+    if (!container) return Array(length).fill(null) // eslint-disable-line no-null/no-null
     const containerSize = container.clientWidth
     /* istanbul ignore next */
     if (containerSize < 775) return Array(length).fill(80)
