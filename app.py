@@ -258,6 +258,11 @@ def check_round(election, jurisdiction_id, round_id):
 
     return is_complete
 
+def election_timestamp_name(election) -> str:
+    clean_election_name = re.sub(r'[^a-zA-Z0-9]+', r'-', election.name)
+    now = datetime.datetime.utcnow().isoformat(timespec='minutes')
+    return f'{clean_election_name}-{now}'
+
 @app.route('/election/new', methods=["POST"])
 def election_new():
     election_id = create_election()
@@ -726,11 +731,8 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_num, election_id=None):
     for ballot in ballots:
         retrieval_list_writer.writerow([ballot.batch.name, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board.name])
 
-    clean_election_name = re.sub(r'[^a-zA-Z0-9]+', r'-', election.name)
-    now = datetime.datetime.utcnow().isoformat(timespec='minutes')
-
     response = Response(csv_io.getvalue())
-    response.headers['Content-Disposition'] = f'attachment; filename="ballot-retrieval-{clean_election_name}-{now}.csv"'
+    response.headers['Content-Disposition'] = f'attachment; filename="ballot-retrieval-{election_timestamp_name(election)}.csv"'
     return response
 
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/results', methods=["POST"])
@@ -804,7 +806,7 @@ def audit_report(election_id=None):
 
     
     response = Response(csv_io.getvalue())
-    response.headers['Content-Disposition'] = 'attachment; filename="audit-report.csv"'
+    response.headers['Content-Disposition'] = f'attachment; filename="audit-report-{election_timestamp_name(election)}.csv"'
     return response
     
 
