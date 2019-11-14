@@ -25,7 +25,8 @@ import { api, testNumber } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
 import FormField from '../Form/FormField'
-import number from '../../utils/number-schema'
+import number, { parse as parseNumber } from '../../utils/number-schema'
+import { formattedUpTo } from '../../utils/indexes'
 
 export const Select = styled(HTMLSelect)`
   margin-left: 5px;
@@ -82,12 +83,12 @@ const SelectBallotsToAudit: React.FC<Props> = ({
 
   const handlePost = async (values: SelectBallotsToAuditValues) => {
     try {
-      const auditBoards = Array.from(
-        Array(parseInt(values.auditBoards)).keys()
-      ).map(i => {
+      const auditBoards = [
+        ...formattedUpTo(parseNumber(values.auditBoards)),
+      ].map(auditBoardIndex => {
         return {
           id: uuidv4(),
-          name: `Audit Board #${i + 1}`,
+          name: `Audit Board #${auditBoardIndex}`,
           members: [],
         }
       })
@@ -97,8 +98,8 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         {
           id: uuidv4(),
           name: 'Jurisdiction 1',
-          contests: [...audit.contests].map(contest => contest.id),
-          auditBoards: auditBoards,
+          contests: audit.contests.map(contest => contest.id),
+          auditBoards,
         },
       ]
       setIsLoading(true)
