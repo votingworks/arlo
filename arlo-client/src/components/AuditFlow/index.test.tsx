@@ -4,7 +4,7 @@ import { StaticRouter } from 'react-router-dom'
 import { routerTestProps } from '../testUtilities'
 import AuditFlow from './index'
 import { dummyBoard, dummyBallots } from './_mocks'
-import statusStates from '../AuditForms/_mocks'
+import { statusStates } from '../AuditForms/_mocks'
 import * as utilities from '../utilities'
 import { IAudit, IBallot } from '../../types'
 
