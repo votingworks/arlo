@@ -730,7 +730,7 @@ def jurisdiction_retrieval_list(jurisdiction_id, round_num, election_id=None):
     now = datetime.datetime.utcnow().isoformat(timespec='minutes')
 
     response = Response(csv_io.getvalue())
-    response.headers['Content-Disposition'] = f'attachment; filename="ballot-retrieval-{clean_election_name}-{now}.csv"'.format(clean_election_name, round_num)
+    response.headers['Content-Disposition'] = f'attachment; filename="ballot-retrieval-{clean_election_name}-{now}.csv"'
     return response
 
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/results', methods=["POST"])
