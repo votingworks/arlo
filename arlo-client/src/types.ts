@@ -36,10 +36,15 @@ export interface Ballot {
   }
 }
 
+export interface AuditBoardMember {
+  name: string
+  affiliation: string
+}
+
 export interface AuditBoard {
   id: string
   name: string
-  members: any[]
+  members: AuditBoardMember[]
   ballots?: Ballot[] // TODO remove
 }
 

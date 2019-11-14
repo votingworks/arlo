@@ -3,7 +3,7 @@ import { api, testNumber } from './utilities'
 const response = () =>
   new Response(new Blob([JSON.stringify({ success: true })]))
 const badResponse = () =>
-  new Response(null, {
+  new Response(undefined, {
     status: 404,
     statusText: 'A test error',
   })

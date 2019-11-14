@@ -62,7 +62,7 @@ export function parse(value: unknown): number {
 }
 
 export class NumberSchema extends (MixedSchema as new (
-  ...args: any[]
+  ...args: unknown[]
 ) => Yup.MixedSchema) {
   public constructor() {
     // eslint-disable-next-line constructor-super

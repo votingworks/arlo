@@ -180,7 +180,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
             a[k] = Number(values.contests[i][k])
             return a
           },
-          {} as any
+          {} as RoundPost['contests'][0]['results']
         ),
       })),
     }

@@ -1,3 +1,5 @@
+/* eslint-disable no-null/no-null */
+
 import { Audit, Ballot } from '../../types'
 
 export const statusStates: Audit[] = [
@@ -1026,5 +1028,3 @@ export const dummyBallots: { ballots: Ballot[] } = {
     },
   ],
 }
-
-export default statusStates

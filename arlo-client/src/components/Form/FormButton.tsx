@@ -10,7 +10,7 @@ const SpacedButton = styled(Button)`
 
 interface Props {
   disabled?: boolean
-  onClick?: (e: React.FormEvent<any>) => void
+  onClick?: (e: React.FormEvent<any>) => void // eslint-disable-line @typescript-eslint/no-explicit-any
   children?: React.ReactNode
   inline?: boolean
   size?: string
@@ -24,7 +24,8 @@ const FormButton: React.FC<Props> = ({
   disabled,
   onClick,
   size,
-  inline, // should we use this?
+  // should we use this?
+  inline, // eslint-disable-line @typescript-eslint/no-unused-vars
   children,
   ...rest
 }: Props) => (

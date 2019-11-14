@@ -154,7 +154,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
       ((audit.jurisdictions.length &&
         audit.jurisdictions[0].auditBoards.length) ||
         1),
-    manifest: null,
+    manifest: null, // eslint-disable-line no-null/no-null
     sampleSize: [...audit.rounds[0].contests].reduce(
       (a: { [key: string]: string }, c) => {
         a[c.id] =
@@ -223,7 +223,6 @@ const SelectBallotsToAudit: React.FC<Props> = ({
       validateOnChange={false}
       render={({
         handleBlur,
-        handleChange,
         handleSubmit,
         values,
         errors,
@@ -262,7 +261,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                           selectedValue={getIn(values, `sampleSize[${key}]`)}
                           disabled={sampleSizeSelected}
                         >
-                          {sampleSizeOptions[key].map((option, j) => {
+                          {sampleSizeOptions[key].map(option => {
                             return (
                               <Radio value={option.size} key={option.size}>
                                 {option.type
@@ -343,7 +342,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                       setFieldValue(
                         'manifest',
                         (e.currentTarget.files && e.currentTarget.files[0]) ||
-                          null
+                          undefined
                       )
                     }}
                     hasSelection={!!values.manifest}

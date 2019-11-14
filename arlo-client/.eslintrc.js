@@ -46,7 +46,7 @@ module.exports = {
     'react',
     'cypress',
     'jsx-a11y',
-    'react-hooks'
+    'react-hooks',
   ],
   settings: {
     react: {
@@ -85,5 +85,7 @@ module.exports = {
       },
     ],
     strict: 0,
+    '@typescript-eslint/no-object-literal-type-assertion': 'off',
+    '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
   },
 }
