@@ -29,7 +29,12 @@ import FormSection, {
 import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
-import { IJurisdiction, IAudit, ISampleSizeOption, IAuditBoard } from '../../types'
+import {
+  IJurisdiction,
+  IAudit,
+  ISampleSizeOption,
+  IAuditBoard,
+} from '../../types'
 import { api, testNumber, openQR } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
@@ -188,7 +193,9 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
     1
   const auditNames =
     audit.jurisdictions.length && audit.jurisdictions[0].auditBoards.length
-      ? audit.jurisdictions[0].auditBoards.map((board: IAuditBoard) => board.name)
+      ? audit.jurisdictions[0].auditBoards.map(
+          (board: IAuditBoard) => board.name
+        )
       : Array(numberOfBoards).fill('')
   const initialState: ISelectBallotsToAuditValues = {
     auditBoards: '' + numberOfBoards,
@@ -341,12 +348,12 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                   const num = values.auditNames.length
                   setFieldValue('auditBoards', n)
                   if (n > num) {
-                    Array.from(Array(n - num).keys()).forEach(i =>
+                    Array.from(Array(n - num).keys()).forEach(() =>
                       utils.push('')
                     )
                   }
                   if (n < num) {
-                    Array.from(Array(num - n).keys()).forEach(i => utils.pop())
+                    Array.from(Array(num - n).keys()).forEach(() => utils.pop())
                   }
                 }
                 return (

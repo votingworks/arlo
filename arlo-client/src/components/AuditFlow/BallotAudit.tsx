@@ -73,7 +73,7 @@ const BallotAudit: React.FC<IProps> = ({
                     name="vote"
                     onChange={
                       /* istanbul ignore next */
-                      () => null
+                      () => undefined
                     } // required by blueprintjs but we're implementing on BlockRadio instead
                     selectedValue={getIn(values, 'vote')}
                   >

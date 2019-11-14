@@ -20,7 +20,7 @@ import {
   ICandidate,
   IRoundContest,
   IAudit,
-  IBallot
+  IBallot,
 } from '../../types'
 
 const InputSection = styled.div`

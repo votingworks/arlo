@@ -1,3 +1,5 @@
+/* eslint-disable no-null/no-null */
+
 import { IAuditBoard, IBallot } from '../../types'
 
 export const doneDummyBallots: { ballots: IBallot[] } = {

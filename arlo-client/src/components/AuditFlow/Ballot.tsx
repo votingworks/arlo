@@ -58,7 +58,7 @@ const Ballot: React.FC<IProps> = ({
   submitBallot,
 }: IProps) => {
   const [auditing, setAuditing] = useState(true)
-  const [review, setReview] = useState<IReview>({ vote: null, comment: '' })
+  const [review, setReview] = useState<IReview>({ vote: null, comment: '' }) // eslint-disable-line no-null/no-null
 
   const ballotIx = ballots
     ? ballots.findIndex(
@@ -80,6 +80,7 @@ const Ballot: React.FC<IProps> = ({
     <Wrapper>
       <TopH1>{boardName}: Ballot Card Data Entry</TopH1>
       <H3>Enter Ballot Information</H3>
+      {/* eslint-disable-next-line no-null/no-null */}
       <MainCallout icon={null}>
         Round {roundIx}: auditing ballot {ballotIx + 1} of {ballots.length}
       </MainCallout>
