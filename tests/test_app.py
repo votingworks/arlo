@@ -846,7 +846,7 @@ def test_ballot_set(client):
     ballot = None
 
     for round in rounds:
-        rv = client.get('{}/jurisdiction/{}/audit-board/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, audit_board_id_1, round['id']))
+        rv = client.get('{}/jurisdiction/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, round['id']))
         response = json.loads(rv.data)
 
         if response['ballots']:
@@ -863,17 +863,15 @@ def test_ballot_set(client):
     assert ballot is not None
 
     ## set the ballot data
-    print({ 'jurisdiction_id': jurisdiction_id, 'batch_id': batch_id, 'round_id': round_id, 'position': ballot['position'] })
     url = '{}/jurisdiction/{}/batch/{}/round/{}/ballot/{}'.format(url_prefix, jurisdiction_id, batch_id, round_id, ballot['position'])
 
     rv = post_json(client, url, { 'vote': 'NO', 'comment': 'This one had a hanging chad.' })
-    print(rv.data)
     response = json.loads(rv.data)
 
     assert response['status'] == 'ok'
 
     ## verify the update actually did something
-    rv = client.get('{}/jurisdiction/{}/audit-board/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, audit_board_id_1, round_id))
+    rv = client.get('{}/jurisdiction/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, round_id))
     response = json.loads(rv.data)
     ballot_position = ballot['position']
     ballot = [b for b in response['ballots'] if b['position'] == ballot_position][0]
@@ -883,6 +881,32 @@ def test_ballot_set(client):
     assert ballot['comment'] == 'This one had a hanging chad.'
 
 def test_ballot_list_ordering(client):
+    ## setup
+    rv = post_json(client, '/election/new', {})
+    election_id = json.loads(rv.data)['electionId']
+
+    url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
+
+    ## find all rounds for this jurisdiction
+    rv = client.get('{}/audit/status'.format(url_prefix))
+    response = json.loads(rv.data)
+    jurisdiction = [j for j in response['jurisdictions'] if j['id'] == jurisdiction_id][0]
+    rounds = response['rounds']
+
+    ## verify order of all returned ballots
+    for round in rounds:
+        rv = client.get('{}/jurisdiction/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id, round['id']))
+        response = json.loads(rv.data)
+
+        unsorted_ballots = response['ballots']
+        sorted_ballots = sorted(
+            unsorted_ballots,
+            key=lambda ballot: (ballot['auditBoard']['name'], ballot['batch']['name'], ballot['position'])
+        )
+
+        assert unsorted_ballots == sorted_ballots
+
+def test_ballot_list_ordering_by_audit_board(client):
     ## setup
     rv = post_json(client, '/election/new', {})
     election_id = json.loads(rv.data)['electionId']
