@@ -21,6 +21,7 @@ export const poll = (
   interval: number = 1000
 ) => {
   const endTime = Date.now() + timeout
+  console.log(endTime)
   ;(async function p() {
     const done = await condition()
     if (done) {

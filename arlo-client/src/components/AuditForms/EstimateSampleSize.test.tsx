@@ -440,7 +440,7 @@ describe('EstimateSampleSize', () => {
 
   it('handles background process timeout', async () => {
     const startDate: number = Date.now()
-    const lateDate: number = startDate + 120000
+    const lateDate: number = startDate + 130000
     const dateSpy = jest
       .spyOn(Date, 'now')
       .mockReturnValueOnce(startDate)
