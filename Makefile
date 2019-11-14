@@ -21,6 +21,7 @@ typecheck:
 	pipenv run mypy .
 
 test-client:
+	yarn --cwd arlo-client lint
 	yarn --cwd arlo-client test
 
 test-server:

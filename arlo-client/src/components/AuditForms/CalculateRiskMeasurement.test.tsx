@@ -22,9 +22,9 @@ const updateAuditMock = jest.fn()
 const getStatusMock = jest.fn().mockImplementation(async () => statusStates[5])
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
-let jspdfInstance: any
+let jspdfInstance: jsPDF
 beforeEach(() => {
-  jspdfInstance = {
+  jspdfInstance = ({
     addImage: jest.fn(),
     setFontSize: jest.fn(),
     addPage: jest.fn(),
@@ -32,7 +32,7 @@ beforeEach(() => {
     splitTextToSize: jest.fn().mockReturnValue(['']),
     save: jest.fn(),
     autoPrint: jest.fn(),
-  }
+  } as unknown) as jsPDF
   jspdfMock.mockImplementation(() => jspdfInstance)
   setIsLoadingMock.mockClear()
   updateAuditMock.mockClear()

@@ -11,7 +11,7 @@ import EstimateSampleSize, {
   Action,
 } from './EstimateSampleSize'
 import { regexpEscape } from '../testUtilities'
-import statusStates from './_mocks'
+import { statusStates } from './_mocks'
 import * as utilities from '../utilities'
 
 const apiMock: jest.SpyInstance<
@@ -182,7 +182,10 @@ const estimateSampleSizeMocks = {
   },
 }
 
-function getDisplayName(WrappedComponent: React.ComponentClass) {
+function getDisplayName(WrappedComponent: {
+  displayName?: string
+  name?: string
+}) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component'
 }
 
@@ -195,7 +198,7 @@ describe('EstimateSampleSize', () => {
     //FieldRight,
     InputLabel,
     Action,
-  ].forEach((Component: any) => {
+  ].forEach(Component => {
     it(`renders ${getDisplayName(Component)} correctly`, () => {
       const { container } = render(<Component />)
       expect(container).toMatchSnapshot()

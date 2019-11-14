@@ -7,7 +7,7 @@ import {
   wait,
 } from '@testing-library/react'
 import AuditForms from './index'
-import statusStates from './_mocks'
+import { statusStates } from './_mocks'
 import { api } from '../utilities'
 import { routerTestProps } from '../testUtilities'
 

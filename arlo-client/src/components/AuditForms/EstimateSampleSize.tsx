@@ -266,7 +266,7 @@ const EstimateSampleSize: React.FC<Props> = ({
               </FormSection>
               <FieldArray
                 name="contests"
-                render={contestsArrayHelpers => (
+                render={() => (
                   <>
                     {values.contests.map(
                       (contest: ContestValues, i: number) => (

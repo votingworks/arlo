@@ -35,9 +35,12 @@ const ErrorLabel = styled.p`
   color: #ff0000;
 `
 
-interface Props {
+export interface Props {
   field: FieldProps['field']
-  form: FieldProps['form']
+  form: Pick<
+    FieldProps['form'],
+    'touched' | 'errors' | 'setFieldTouched' | 'setFieldValue'
+  >
   disabled?: boolean
   value?: string | number
   onChange?: (e: React.ChangeEvent) => void
@@ -60,7 +63,7 @@ const FormField: React.FC<Props> = ({
     {rest.type === 'number' ? (
       <NumberField
         disabled={disabled}
-        onValueChange={(n, s) => setFieldValue(field.name, n)}
+        onValueChange={n => setFieldValue(field.name, n)}
         {...field}
         {...rest}
         onBlur={() => setFieldTouched(field.name)}

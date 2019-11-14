@@ -1,7 +1,15 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
-import { FormikProps } from 'formik'
-import FormField from './FormField'
+import FormField, { Props } from './FormField'
+
+function testForm({
+  errors = {},
+  touched = {},
+  setFieldTouched = jest.fn(),
+  setFieldValue = jest.fn(),
+}: Partial<Props['form']> = {}): Props['form'] {
+  return { errors, touched, setFieldTouched, setFieldValue }
+}
 
 describe('FormField', () => {
   it('renders a Field', () => {
@@ -11,10 +19,7 @@ describe('FormField', () => {
       onChange: jest.fn(),
       onBlur: jest.fn(),
     }
-    const form = ({
-      errors: {},
-      touched: {},
-    } as any) as FormikProps<any> // eslint-disable-line @typescript-eslint/no-object-literal-type-assertion
+    const form = testForm()
     const { container } = render(
       <FormField field={field} form={form} type="text" />
     )
@@ -29,12 +34,7 @@ describe('FormField', () => {
       onChange: jest.fn(),
       onBlur: jest.fn(),
     }
-    const form = ({
-      errors: {},
-      touched: {},
-      setFieldTouched: jest.fn(),
-      setFieldValue: jest.fn(),
-    } as any) as FormikProps<any> // eslint-disable-line @typescript-eslint/no-object-literal-type-assertion
+    const form = testForm()
     const { container, getByTestId } = render(
       <FormField field={field} form={form} type="number" data-testid="testid" />
     )
@@ -57,14 +57,14 @@ describe('FormField', () => {
       onChange: jest.fn(),
       onBlur: jest.fn(),
     }
-    const form = ({
+    const form = testForm({
       errors: {
         'field-name': 'Required',
       },
       touched: {
         'field-name': true,
       },
-    } as any) as FormikProps<any> // eslint-disable-line @typescript-eslint/no-object-literal-type-assertion
+    })
     const { container } = render(
       <FormField field={field} form={form} type="text" />
     )
@@ -79,10 +79,7 @@ describe('FormField', () => {
       onChange: jest.fn(),
       onBlur: jest.fn(),
     }
-    const form = ({
-      errors: {},
-      touched: {},
-    } as any) as FormikProps<any>
+    const form = testForm()
     const { getByTestId } = render(
       <FormField field={field} form={form} type="text" data-testid="testid" />
     )
