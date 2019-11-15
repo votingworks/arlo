@@ -109,6 +109,7 @@ describe('utilities.ts', () => {
         expect(result).toBe('an error')
         expect(dateSpy).toBeCalledTimes(2)
       })
+      dateSpy.mockRestore()
     })
   })
 })

@@ -20,15 +20,22 @@ export const poll = (
   timeout: number = 120000,
   interval: number = 1000
 ) => {
+  console.log('initial poll call')
   const endTime = Date.now() + timeout
-  console.log(endTime)
+  console.log('endTime:', endTime)
   ;(async function p() {
+    console.log('new poll call')
+    const time = Date.now()
     const done = await condition()
+    console.log(endTime - time)
     if (done) {
+      console.log('callback')
       callback()
-    } else if (Date.now() < endTime) {
+    } else if (time < endTime) {
+      console.log('recalling poll')
       setTimeout(p, interval)
     } else {
+      console.log('timeout')
       errback(new Error(`Timed out`))
     }
   })()
