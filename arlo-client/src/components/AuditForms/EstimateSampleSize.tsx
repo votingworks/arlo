@@ -144,8 +144,7 @@ const contestsSchema = Yup.array()
 const schema = Yup.object().shape({
   name: Yup.string().required('Required'),
   randomSeed: Yup.string()
-    .max(20, 'Must be 20 digits or less')
-    .matches(/^\d+$/, 'Must be only numbers')
+    .max(100, 'Must be 100 characters or fewer')
     .required('Required'),
   riskLimit: number()
     .typeError('Must be a number')
@@ -434,7 +433,7 @@ const EstimateSampleSize: React.FC<Props> = ({
               <FormSection label="Random Seed">
                 {/* eslint-disable jsx-a11y/label-has-associated-control */}
                 <label htmlFor="random-seed" id="random-seed-label">
-                  Enter the random number to seed the pseudo-random number
+                  Enter the random characters to seed the pseudo-random number
                   generator.
                   <Field
                     id="random-seed"
