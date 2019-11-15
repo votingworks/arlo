@@ -41,8 +41,8 @@ const estimateSampleSizeMocks = {
     },
     {
       key:
-        'Enter the random number to seed the pseudo-random number generator.',
-      value: '12345678901234512345',
+        'Enter the random characters to seed the pseudo-random number generator.',
+      value: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     },
   ],
   errorInputs: [
@@ -133,28 +133,22 @@ const estimateSampleSizeMocks = {
     },
     {
       key:
-        'Enter the random number to seed the pseudo-random number generator.',
+        'Enter the random characters to seed the pseudo-random number generator.',
       value: '',
       error: 'Required',
     },
     {
       key:
-        'Enter the random number to seed the pseudo-random number generator.',
-      value: 'test',
-      error: 'Must be only numbers',
-    },
-    {
-      key:
-        'Enter the random number to seed the pseudo-random number generator.',
-      value: '123451234512345123451',
-      error: 'Must be 20 digits or less',
+        'Enter the random characters to seed the pseudo-random number generator.',
+      value: 'x'.repeat(101),
+      error: 'Must be 100 characters or fewer',
     },
   ],
   post: {
     method: 'POST',
     body: {
       name: 'Election Name',
-      randomSeed: '12345678901234512345',
+      randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
       riskLimit: 2,
       contests: [
         {

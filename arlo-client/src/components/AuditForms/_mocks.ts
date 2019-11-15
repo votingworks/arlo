@@ -53,7 +53,7 @@ export const statusStates: Audit[] = [
       },
     ],
     name: 'contest name',
-    randomSeed: '123456789',
+    randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
   },
   {
@@ -170,7 +170,7 @@ export const statusStates: Audit[] = [
       },
     ],
     name: 'contest name',
-    randomSeed: '123456789',
+    randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
   },
   {
@@ -238,7 +238,7 @@ export const statusStates: Audit[] = [
       },
     ],
     name: 'contest name',
-    randomSeed: '123456789',
+    randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
   },
   {
@@ -309,7 +309,7 @@ export const statusStates: Audit[] = [
       },
     ],
     name: 'contest name',
-    randomSeed: '123456789',
+    randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
   },
   {
@@ -373,7 +373,7 @@ export const statusStates: Audit[] = [
       },
     ],
     name: 'contest name',
-    randomSeed: '123456789',
+    randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
   },
 ]

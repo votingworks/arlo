@@ -389,7 +389,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random number to seed the pseudo-random number generator.
+          Enter the random characters to seed the pseudo-random number generator.
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -404,7 +404,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
                 name="randomSeed"
                 style="padding-right: 10px;"
                 type="text"
-                value="123456789"
+                value="12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
               />
             </div>
           </div>
@@ -796,7 +796,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random number to seed the pseudo-random number generator.
+          Enter the random characters to seed the pseudo-random number generator.
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -811,7 +811,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
                 name="randomSeed"
                 style="padding-right: 10px;"
                 type="text"
-                value="123456789"
+                value="12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
               />
             </div>
           </div>
@@ -1229,7 +1229,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random number to seed the pseudo-random number generator.
+          Enter the random characters to seed the pseudo-random number generator.
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -1244,7 +1244,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
                 name="randomSeed"
                 style="padding-right: 10px;"
                 type="text"
-                value="123456789"
+                value="12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
               />
             </div>
           </div>
@@ -1636,7 +1636,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random number to seed the pseudo-random number generator.
+          Enter the random characters to seed the pseudo-random number generator.
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -1651,7 +1651,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
                 name="randomSeed"
                 style="padding-right: 10px;"
                 type="text"
-                value="123456789"
+                value="12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
               />
             </div>
           </div>
@@ -2069,7 +2069,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random number to seed the pseudo-random number generator.
+          Enter the random characters to seed the pseudo-random number generator.
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -2084,7 +2084,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
                 name="randomSeed"
                 style="padding-right: 10px;"
                 type="text"
-                value="123456789"
+                value="12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
               />
             </div>
           </div>
@@ -2476,7 +2476,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random number to seed the pseudo-random number generator.
+          Enter the random characters to seed the pseudo-random number generator.
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -2491,7 +2491,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
                 name="randomSeed"
                 style="padding-right: 10px;"
                 type="text"
-                value="123456789"
+                value="12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
               />
             </div>
           </div>
@@ -2909,7 +2909,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random number to seed the pseudo-random number generator.
+          Enter the random characters to seed the pseudo-random number generator.
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -2924,7 +2924,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
                 name="randomSeed"
                 style="padding-right: 10px;"
                 type="text"
-                value="123456789"
+                value="12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
               />
             </div>
           </div>
@@ -3316,7 +3316,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random number to seed the pseudo-random number generator.
+          Enter the random characters to seed the pseudo-random number generator.
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -3331,7 +3331,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
                 name="randomSeed"
                 style="padding-right: 10px;"
                 type="text"
-                value="123456789"
+                value="12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
               />
             </div>
           </div>
@@ -3745,7 +3745,7 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random number to seed the pseudo-random number generator.
+          Enter the random characters to seed the pseudo-random number generator.
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -4161,7 +4161,7 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
           for="random-seed"
           id="random-seed-label"
         >
-          Enter the random number to seed the pseudo-random number generator.
+          Enter the random characters to seed the pseudo-random number generator.
           <div
             class="sc-bZQynM iEAxBy"
           >

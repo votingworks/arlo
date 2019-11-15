@@ -6,7 +6,7 @@ from sampler import Sampler
 
 @pytest.fixture
 def sampler():
-    seed = 12345678901234567890
+    seed = '12345678901234567890abcdefghijklmnopqrstuvwxyz😊'
 
     risk_limit = .1
     contests = {
