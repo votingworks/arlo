@@ -22,7 +22,7 @@ async function inputAndSubmitForm() {
     .fn()
     .mockImplementationOnce(async () => statusStates[5]) // the POST to /audit/status after manifest
 
-  const { getByLabelText, getByText, getByTestId } = render(
+  const { getByLabelText, getByText } = render(
     <SelectBallotsToAudit
       audit={statusStates[2]}
       isLoading={false}

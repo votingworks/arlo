@@ -6,10 +6,10 @@ exports[`App renders properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-hzDkRC iseoUI"
+    class="sc-jhAzac fsGapv"
   >
     <div
-      class="sc-bRBYWo fviRxC"
+      class="sc-hzDkRC eCqAio"
     >
       <img
         alt="Arlo, by VotingWorks"
@@ -17,11 +17,7 @@ exports[`App renders properly 1`] = `
         src="/arlo.png"
       />
       <button
-<<<<<<< HEAD
         class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bRBYWo gAsWwm sc-gzVnrw eLDrzZ"
-=======
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-Rmtcm khucSv"
->>>>>>> adding id to ballots; reording board table columns
         type="button"
       >
         <span
