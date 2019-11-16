@@ -4,19 +4,16 @@ import { toast } from 'react-toastify'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { statusStates } from './_mocks'
 import * as utilities from '../utilities'
-
-jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation()
+import { RoundContest } from '../../types'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
 
-jest.mock('jspdf')
-
 const setIsLoadingMock = jest.fn()
 const updateAuditMock = jest.fn()
-const getStatusMock = jest.fn().mockImplementation(async () => statusStates[5])
+const getStatusMock = jest.fn().mockImplementation(async () => statusStates[6])
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 beforeEach(() => {
@@ -28,26 +25,66 @@ beforeEach(() => {
 })
 
 describe('CalculateRiskMeasurement poll timeout', () => {
-  it(`handles background process timeout`, async () => {
+  it.skip('using only the relevant function', async () => {
+    const dateIncrementor = (function*() {
+      let i = 10
+      while (true) {
+        i += 130000
+        yield i
+      }
+    })()
+
     const realDate = global.Date.now
-    console.log('calculateriskmeasurement timeout test')
-    // const startDate: number = Date.now()
-    const startDate = 10
-    const lateDate: number = startDate + 130000
     global.Date.now = jest
       .fn()
-      .mockReturnValueOnce(startDate)
-      .mockReturnValueOnce(lateDate)
-    // const dateSpy = jest
-    //   .spyOn(Date, 'now')
-    //   .mockImplementationOnce(() => startDate)
-    //   .mockImplementationOnce(() => lateDate)
-    console.log('startDate:', startDate, 'lateDate:', lateDate)
-    getStatusMock.mockImplementation(async () => statusStates[6])
+      .mockImplementation(() => dateIncrementor.next().value)
+
+    const condition = async () => {
+      const { rounds } = await getStatusMock()
+      const { contests } = rounds[rounds.length - 1]
+      return (
+        !!contests.length && contests.every((c: RoundContest) => !!c.sampleSize)
+      )
+    }
+
+    const complete = () => {
+      updateAuditMock()
+      setIsLoadingMock(false)
+    }
+
+    await utilities.poll(condition, complete, (err: Error) =>
+      toast.error(err.message)
+    )
+
+    await wait(() => {
+      expect(global.Date.now).toBeCalledTimes(2)
+      expect(setIsLoadingMock).toBeCalledTimes(0)
+      expect(getStatusMock).toBeCalledTimes(1)
+      expect(updateAuditMock).toBeCalledTimes(0)
+      expect(toastSpy).toBeCalledTimes(1)
+    })
+
+    global.Date.now = realDate
+  })
+
+  it.skip(`using the whole component`, async () => {
+    const dateIncrementor = (function*() {
+      let i = 10
+      while (true) {
+        i += 130000
+        yield i
+      }
+    })()
+    const realDate = global.Date.now
+    global.Date.now = jest
+      .fn()
+      .mockImplementation(() => dateIncrementor.next().value)
+
     apiMock.mockImplementation(async () => ({
       message: 'success',
       ok: true,
     }))
+
     const { getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates[4]}
@@ -65,14 +102,13 @@ describe('CalculateRiskMeasurement poll timeout', () => {
 
     await wait(() => {
       expect(global.Date.now).toBeCalled()
-      expect(global.Date.now).toBeCalledTimes(2)
       expect(apiMock).toBeCalled()
       expect(setIsLoadingMock).toBeCalledTimes(1)
       expect(getStatusMock).toBeCalled()
       expect(updateAuditMock).toBeCalledTimes(0)
       expect(toastSpy).toBeCalledTimes(1)
     })
-    // dateSpy.mockRestore()
+
     global.Date.now = realDate
   })
 })
