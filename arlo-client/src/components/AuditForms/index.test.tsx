@@ -38,9 +38,9 @@ describe('RiskLimitingAuditForm', () => {
     })
   })
 
-  it('renders correctly with initialData', () => {
+  it('renders correctly with initialData', async () => {
     let utils: RenderResult
-    act(() => {
+    await act(async () => {
       utils = render(<AuditForms {...routeProps} />)
     })
     const { container } = utils!
