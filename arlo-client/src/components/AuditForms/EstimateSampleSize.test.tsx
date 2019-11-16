@@ -438,7 +438,7 @@ describe('EstimateSampleSize', () => {
     })
   })
 
-  it.skip('handles background process timeout', async () => {
+  it('handles background process timeout', async () => {
     const realDate = global.Date.now
     const dateIncrementor = (function*() {
       let i = 10

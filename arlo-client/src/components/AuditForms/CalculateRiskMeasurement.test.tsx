@@ -177,7 +177,7 @@ describe('CalculateRiskMeasurement', () => {
     }
   })
 
-  it.skip(`handles background process timeout`, async () => {
+  it(`handles background process timeout`, async () => {
     const realDate = global.Date.now
     const dateIncrementor = (function*() {
       let i = 10
@@ -194,6 +194,10 @@ describe('CalculateRiskMeasurement', () => {
       message: 'success',
       ok: true,
     }))
+
+    const getStatusMock = jest
+      .fn()
+      .mockImplementation(async () => statusStates[6])
 
     const { getByText } = render(
       <CalculateRiskMeasurement
@@ -212,11 +216,11 @@ describe('CalculateRiskMeasurement', () => {
 
     await wait(() => {
       expect(global.Date.now).toBeCalled()
+      expect(toastSpy).toBeCalledTimes(1)
       expect(apiMock).toBeCalled()
       expect(setIsLoadingMock).toBeCalledTimes(1)
       expect(getStatusMock).toBeCalled()
       expect(updateAuditMock).toBeCalledTimes(0)
-      expect(toastSpy).toBeCalledTimes(1)
     })
 
     global.Date.now = realDate
