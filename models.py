@@ -121,7 +121,7 @@ class SampledBallot(db.Model):
     ballot_position = db.Column(db.Integer, nullable=False)
     
     __table_args__ = (
-        db.PrimaryKeyConstraint('round_id', 'jurisdiction_id', 'batch_id', 'ballot_position'),
+        db.PrimaryKeyConstraint('round_id', 'jurisdiction_id', 'batch_id', 'ballot_position', 'ticket_number'),
     )
     
     times_sampled = db.Column(db.Integer, nullable=False)
@@ -130,15 +130,16 @@ class SampledBallot(db.Model):
     comment = db.Column(db.Text, nullable=True)
 
     # comma-separated ticket numbers
-    ticket_numbers = db.Column(db.Text, nullable=True)
+    # ticket_numbers = db.Column(db.Text, nullable=True)
+    ticket_number = db.Column(db.String(200), nullable=False)
 
-    @property
-    def tickets(self):
-        return self.ticket_numbers.split(',') if self.ticket_numbers else []
+   # @property
+   # def tickets(self):
+   #     return self.ticket_numbers.split(',') if self.ticket_numbers else []
 
-    @tickets.setter
-    def tickets(self, tickets: Union[List[str], None]):
-        self.ticket_numbers = ','.join(tickets) if tickets else None
+   # @tickets.setter
+   # def tickets(self, tickets: Union[List[str], None]):
+   #     self.ticket_numbers = ','.join(tickets) if tickets else None
 
 class RoundContest(db.Model):
     round_id = db.Column(db.String(200), db.ForeignKey('round.id', ondelete='cascade'), nullable=False)

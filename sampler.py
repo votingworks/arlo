@@ -36,7 +36,6 @@ class Sampler:
         Outputs:
         """
         self.seed = seed
-        self.prng = SHA256(seed)
         self.contests = contests
         self.margins = self.compute_margins()
 

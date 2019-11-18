@@ -167,25 +167,21 @@ def sample_ballots(election, round):
 
     batch_sizes = {}
     batches_to_ballots = {}
-    seen_ballot_positions = set()
     # Build batch - batch_size map
     for item in sample:
         batch_id, ballot_position = item[1] 
         times_sampled = item[2]
+        ticket_number = item[0]
 
         lookup = (batch_id, ballot_position)
-        # Only count ballots once here since it's only pulled once
-        if lookup in seen_ballot_positions:
-            batch_sizes[batch_id] += 1
-            continue
 
-        seen_ballot_positions.add(lookup)
         if batch_id in batch_sizes:
-            batch_sizes[batch_id] += 1
-            batches_to_ballots[batch_id].append((ballot_position, times_sampled))
+            if times_sampled == 1: # since we've already seen it, it doesn't affect batch size
+                batch_sizes[batch_id] += 1
+            batches_to_ballots[batch_id].append((ballot_position, ticket_number, times_sampled))
         else:
             batch_sizes[batch_id] = 1
-            batches_to_ballots[batch_id] = [(ballot_position, times_sampled)]
+            batches_to_ballots[batch_id] = [(ballot_position, ticket_number, times_sampled)]
 
 
     # Create the buckets and initially assign batches
@@ -206,22 +202,16 @@ def sample_ballots(election, round):
         for batch_id in bucket.batches:
 
             for item in batches_to_ballots[batch_id]:
-                ballot_position, times_sampled = item
-                if last_sample == (batch_id, ballot_position):
-                    last_sampled_ballot.times_sampled += 1
-                    continue
+                ballot_position, ticket_number, times_sampled = item
 
                 sampled_ballot = SampledBallot(
-                        round_id = round.id,
-                        jurisdiction_id = jurisdiction.id,
-                        batch_id = batch_id,
-                        ballot_position = ballot_position + 1, # sampler is 0-indexed, we're 1-indexing here
-                        times_sampled = times_sampled,
-                        audit_board_id = audit_board.id)
-
-                # keep track for doubly-sampled ballots
-                last_sample = (batch_id, ballot_position)
-                last_sampled_ballot = sampled_ballot
+                    round_id = round.id,
+                    jurisdiction_id = jurisdiction.id,
+                    batch_id = batch_id,
+                    ballot_position = ballot_position + 1, # sampler is 0-indexed, we're 1-indexing here
+                    times_sampled = times_sampled,
+                    ticket_number = ticket_number,
+                    audit_board_id = audit_board.id)
 
                 db.session.add(sampled_ballot)
     
@@ -634,6 +624,7 @@ def ballot_list(election_id, jurisdiction_id, round_id):
         ballots=[
             {
                 "timesSampled": ballot.times_sampled,
+                "ticketNumber": ballot.ticket_number,
                 "status": 'AUDITED' if ballot.vote is not None else None,
                 "vote": ballot.vote,
                 "comment": ballot.comment,
@@ -665,6 +656,7 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, rou
         ballots=[
             {
                 "timesSampled": ballot.times_sampled,
+                "ticketNumber": ballot.ticket_number,
                 "status": 'AUDITED' if ballot.vote is not None else None,
                 "vote": ballot.vote,
                 "comment": ballot.comment,
@@ -728,7 +720,7 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     election = get_election(election_id)
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)
-    retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Times Selected","Audit Board"])
+    retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Times Selected","Ticket Number","Audit Board"])
 
     # check the jurisdiction and round
     jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).one()
@@ -737,7 +729,7 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction_id, round_id = round.id).join(Batch).join(AuditBoard).order_by(AuditBoard.name, Batch.name, 'ballot_position').all()
 
     for ballot in ballots:
-        retrieval_list_writer.writerow([ballot.batch.name, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.audit_board.name])
+        retrieval_list_writer.writerow([ballot.batch.name, ballot.ballot_position, ballot.batch.storage_location, ballot.batch.tabulator, ballot.times_sampled, ballot.ticket_number, ballot.audit_board.name])
 
     response = Response(csv_io.getvalue())
     response.headers['Content-Disposition'] = f'attachment; filename="ballot-retrieval-{election_timestamp_name(election)}.csv"'
@@ -809,7 +801,7 @@ def audit_report(election_id):
 
         ballots = SampledBallot.query.filter_by(jurisdiction_id = jurisdiction.id, round_id = round.id).order_by('batch_id', 'ballot_position').all()
 
-        report_writer.writerow(["Round {:d} Samples".format(round.round_num), " ".join(["(Batch {:s}, #{:d})".format(b.batch.name, b.ballot_position) for b in ballots])])
+        report_writer.writerow(["Round {:d} Samples".format(round.round_num), " ".join(["(Batch {:s}, #{:d}, Ticket #{:s})".format(b.batch.name, b.ballot_position, b.ticket_number) for b in ballots])])
 
     
     response = Response(csv_io.getvalue())
