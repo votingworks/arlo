@@ -715,7 +715,6 @@ def test_multi_round_audit(client):
     # round 2 retrieval list should be ready
     rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').splitlines()
-    #num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
     num_ballots = len(lines) - 1
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
     

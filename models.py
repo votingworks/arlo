@@ -128,18 +128,8 @@ class SampledBallot(db.Model):
     audit_board_id = db.Column(db.String(200), db.ForeignKey('audit_board.id', ondelete='cascade'), nullable=False)
     vote = db.Column(db.String(200), nullable=True)
     comment = db.Column(db.Text, nullable=True)
-
-    # comma-separated ticket numbers
-    # ticket_numbers = db.Column(db.Text, nullable=True)
     ticket_number = db.Column(db.String(200), nullable=False)
 
-   # @property
-   # def tickets(self):
-   #     return self.ticket_numbers.split(',') if self.ticket_numbers else []
-
-   # @tickets.setter
-   # def tickets(self, tickets: Union[List[str], None]):
-   #     self.ticket_numbers = ','.join(tickets) if tickets else None
 
 class RoundContest(db.Model):
     round_id = db.Column(db.String(200), db.ForeignKey('round.id', ondelete='cascade'), nullable=False)

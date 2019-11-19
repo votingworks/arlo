@@ -1,5 +1,4 @@
 # Handles generating sample sizes and taking samples
-from cryptorandom.cryptorandom import SHA256
 import math
 import numpy as np
 from scipy import stats
