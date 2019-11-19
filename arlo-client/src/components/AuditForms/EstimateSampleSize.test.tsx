@@ -438,12 +438,17 @@ describe('EstimateSampleSize', () => {
   })
 
   it('handles background process timeout', async () => {
-    const startDate: number = Date.now()
-    const lateDate: number = startDate + 120000
+    const dateIncrementor = (function*() {
+      let i = 10
+      while (true) {
+        i += 130000
+        yield i
+      }
+    })()
     const dateSpy = jest
       .spyOn(Date, 'now')
-      .mockReturnValueOnce(startDate)
-      .mockReturnValueOnce(lateDate)
+      .mockImplementation(() => dateIncrementor.next().value)
+
     apiMock.mockImplementation(async () => ({
       message: 'success',
       ok: true,
@@ -482,7 +487,7 @@ describe('EstimateSampleSize', () => {
       )
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
       expect(getStatusMock).toBeCalled()
-      expect(dateSpy).toBeCalledTimes(2)
+      expect(dateSpy).toBeCalled()
       expect(toastSpy).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(0)
       expect(setIsLoadingMock).toBeCalledTimes(1)

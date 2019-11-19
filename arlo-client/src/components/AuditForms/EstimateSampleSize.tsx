@@ -202,7 +202,7 @@ const EstimateSampleSize: React.FC<Props> = ({
         updateAudit()
         setIsLoading(false)
       }
-      await poll(condition, complete, (err: Error) => toast.error(err.message))
+      poll(condition, complete, (err: Error) => toast.error(err.message))
     } catch (err) {
       toast.error(err.message)
     }

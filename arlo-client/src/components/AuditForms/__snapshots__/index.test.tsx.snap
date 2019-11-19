@@ -666,16 +666,17 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
               >
                 <input
                   aria-labelledby="audit-name-label"
                   class="bp3-input"
+                  disabled=""
                   id="audit-name"
                   name="name"
                   style="padding-right: 10px;"
                   type="text"
-                  value=""
+                  value="contest name"
                 />
               </div>
             </div>
@@ -706,15 +707,16 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
+                  disabled=""
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
                   type="text"
-                  value=""
+                  value="contest name"
                 />
               </div>
             </div>
@@ -732,10 +734,11 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
+                  disabled=""
                   id="contests[0].winners"
                   name="contests[0].winners"
                   style="padding-right: 10px;"
@@ -774,14 +777,15 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   class="sc-jzJRlG cjErgX sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
+                      disabled=""
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
                       type="text"
-                      value=""
+                      value="choice one"
                     />
                   </div>
                 </div>
@@ -795,14 +799,15 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   class="sc-jzJRlG cjErgX sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
+                      disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
                       type="text"
-                      value=""
+                      value="792"
                     />
                   </div>
                 </div>
@@ -820,14 +825,15 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   class="sc-jzJRlG cjErgX sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
+                      disabled=""
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
                       type="text"
-                      value=""
+                      value="choice two"
                     />
                   </div>
                 </div>
@@ -841,24 +847,20 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   class="sc-jzJRlG cjErgX sc-bZQynM iEAxBy"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
                   >
                     <input
                       class="bp3-input"
+                      disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
                       type="text"
-                      value=""
+                      value="1325"
                     />
                   </div>
                 </div>
               </label>
             </div>
-            <p
-              class="sc-kAzzGY eebgUX"
-            >
-              Add a new candidate/choice
-            </p>
           </div>
         </div>
         <div
@@ -884,15 +886,16 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
               >
                 <input
                   class="bp3-input"
+                  disabled=""
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
                   type="text"
-                  value=""
+                  value="2123"
                 />
               </div>
             </div>
@@ -916,9 +919,10 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           >
             Set the risk for the audit as a percentage (e.g. "5" = 5%)
             <div
-              class="bp3-html-select sc-gqjmRU fLDKDv"
+              class="bp3-html-select bp3-disabled sc-gqjmRU fLDKDv"
             >
               <select
+                disabled=""
                 field="[object Object]"
                 form="[object Object]"
                 id="risk-limit"
@@ -1023,35 +1027,22 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               class="sc-bZQynM iEAxBy"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
               >
                 <input
                   aria-labelledby="random-seed-label"
                   class="bp3-input"
+                  disabled=""
                   id="random-seed"
                   name="randomSeed"
                   style="padding-right: 10px;"
                   type="text"
-                  value=""
+                  value="123456789"
                 />
               </div>
             </div>
           </label>
         </div>
-      </div>
-      <div
-        class="sc-iwsKbI iqpfIi"
-      >
-        <button
-          class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
-          type="submit"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Estimate Sample Size
-          </span>
-        </button>
       </div>
     </form>
   </div>
