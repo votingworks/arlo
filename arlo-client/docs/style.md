@@ -24,8 +24,9 @@ make it to live code.
 
 In order to make sure that the client and the server data are in sync, and to
 handle concurrency, the app state will come from the server state directly
-through API calls. The `/audit/status` endpoint will be called to update the
-component data on page load and also after data is sent to the server.
+through API calls. The `/election/{electionId}/audit/status` endpoint will be
+called to update the component data on page load and also after data is sent to
+the server.
 
 5. Formik form library & Yup validation library
 

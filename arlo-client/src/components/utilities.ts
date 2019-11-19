@@ -1,12 +1,10 @@
-import { Params } from '../types'
 import number from '../utils/number-schema'
 
 export const api = async <T>(
   endpoint: string,
-  { electionId, ...options }: Params & RequestInit
+  options?: RequestInit
 ): Promise<T> => {
-  const apiBaseURL = electionId ? `/election/${electionId}` : ''
-  const res = await fetch(apiBaseURL + endpoint, options)
+  const res = await fetch(endpoint, options)
   if (!res.ok) {
     throw new Error(res.statusText)
   }

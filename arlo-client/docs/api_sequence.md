@@ -14,7 +14,7 @@
 }
 ```
 
-### Initial data from /audit/status
+### Initial data from /election/{electionId}/audit/status
 
 - `GET /election/{electionId}/audit/status`
 

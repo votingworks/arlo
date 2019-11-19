@@ -9,8 +9,8 @@
 - Possible number of audit boards changed from 5 to 15
 - Added support for IE11
 - Form validation and warnings
-- Driving default form state from `/audit/status` endpoint to preserve progress
-  through sessions
+- Driving default form state from `/election/{electionId}/audit/status` endpoint
+  to preserve progress through sessions
 - Layout improvements
 - Internal refactoring for efficiency and maintainability
 

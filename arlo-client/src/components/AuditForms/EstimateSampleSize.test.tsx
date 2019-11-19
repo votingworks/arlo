@@ -428,7 +428,9 @@ describe('EstimateSampleSize', () => {
       const { body } = apiMock.mock.calls[0][1] as { body: string }
       expect(setIsLoadingMock).toBeCalledTimes(2)
       expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
+      expect(apiMock.mock.calls[0][0]).toMatch(
+        /\/election\/[^/]+\/audit\/basic/
+      )
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
       expect(getStatusMock).toBeCalledTimes(3)
       expect(updateAuditMock).toBeCalledTimes(1)
@@ -475,7 +477,9 @@ describe('EstimateSampleSize', () => {
     await wait(() => {
       expect(apiMock).toBeCalled()
       const { body } = apiMock.mock.calls[0][1] as { body: string }
-      expect(apiMock.mock.calls[0][0]).toBe('/audit/basic')
+      expect(apiMock.mock.calls[0][0]).toMatch(
+        /\/election\/[^/]+\/audit\/basic/
+      )
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
       expect(getStatusMock).toBeCalled()
       expect(dateSpy).toBeCalledTimes(2)
