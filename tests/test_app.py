@@ -49,10 +49,6 @@ def test_whole_audit_flow(client):
     print("running whole audit flow " + election_id_2)    
     run_whole_audit_flow(client, election_id_2, "General 2019", 5, "12345678901234599999")
 
-    # also the old flow with no URL prefix
-    print("running whole audit flow legacy")
-    run_whole_audit_flow(client, None, "Legacy", 5, "77777666665555544444")    
-
     # after resetting election 1, election 2 is still around
     run_election_reset(client, election_id_1)
 
@@ -68,7 +64,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     audit_board_id_1 = str(uuid.uuid4())
     audit_board_id_2 = str(uuid.uuid4())    
 
-    url_prefix = "/election/{}".format(election_id) if election_id else ""
+    url_prefix = "/election/{}".format(election_id)
 
     rv = post_json(
         client, '{}/audit/basic'.format(url_prefix),
@@ -225,7 +221,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     audit_board_id_1 = str(uuid.uuid4())
     audit_board_id_2 = str(uuid.uuid4())    
 
-    url_prefix = "/election/{}".format(election_id) if election_id else ""
+    url_prefix = "/election/{}".format(election_id)
 
     rv = post_json(
         client, '{}/audit/basic'.format(url_prefix),
@@ -413,10 +409,13 @@ def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
 
 
 def run_election_reset(client, election_id):
-    url_prefix = "/election/{}".format(election_id) if election_id else ""
+    url_prefix = "/election/{}".format(election_id)
 
     # reset
-    client.post('{}/audit/reset'.format(url_prefix))
+    rv = client.post('{}/audit/reset'.format(url_prefix))
+    response = json.loads(rv.data)
+    assert response['status'] == 'ok'
+
     rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
 
@@ -427,8 +426,11 @@ def run_election_reset(client, election_id):
     assert status["rounds"] == []        
     
 def test_small_election(client):
+    rv = post_json(client, '/election/new', {})
+    election_id = json.loads(rv.data)['electionId']
+
     rv = post_json(
-        client, '/audit/basic',
+        client, f'/election/{election_id}/audit/basic',
         {
             "name" : "Small Test 2019",
             "riskLimit" : 10,
@@ -460,13 +462,13 @@ def test_small_election(client):
     assert json.loads(rv.data)['status'] == "ok"
 
     bgcompute.bgcompute()
-    rv = client.get('/audit/status')
+    rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)
 
     assert status["name"] == "Small Test 2019"
 
     rv = post_json(
-        client, '/audit/jurisdictions',
+        client, f'/election/{election_id}/audit/jurisdictions',
         {
 	    "jurisdictions": [
 		{
@@ -491,7 +493,7 @@ def test_small_election(client):
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    rv = client.get('/audit/status')
+    rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)
 
     assert len(status["jurisdictions"]) == 1
@@ -506,7 +508,7 @@ def test_small_election(client):
     sample_size = sample_size_90[0]["size"]
 
     # set the sample_size
-    rv = post_json(client, '/audit/sample-size', {
+    rv = post_json(client, f'/election/{election_id}/audit/sample-size', {
         "size": sample_size
     })
     
@@ -514,12 +516,12 @@ def test_small_election(client):
     data = {}
     data['manifest'] = (open(small_manifest_file_path, "rb"), 'small-manifest.csv')
     rv = client.post(
-        '/jurisdiction/county-1/manifest', data=data,
+        f'/election/{election_id}/jurisdiction/county-1/manifest', data=data,
         content_type='multipart/form-data')
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    rv = client.get('/audit/status')
+    rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)
     manifest = status['jurisdictions'][0]['ballotManifest']
     
@@ -529,7 +531,7 @@ def test_small_election(client):
     assert manifest['uploadedAt']
 
     # get the retrieval list for round 1
-    rv = client.get('/jurisdiction/county-1/1/retrieval-list')
+    rv = client.get(f'/election/{election_id}/jurisdiction/county-1/1/retrieval-list')
     lines = rv.data.decode('utf-8').splitlines()
     assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
@@ -539,7 +541,7 @@ def test_small_election(client):
     # post results for round 1
     num_for_winner = int(num_ballots * 0.61)
     num_for_loser = num_ballots - num_for_winner
-    rv = post_json(client, '/jurisdiction/county-1/1/results',
+    rv = post_json(client, f'/election/{election_id}/jurisdiction/county-1/1/results',
                    {
 	               "contests": [
 		           {
@@ -554,7 +556,7 @@ def test_small_election(client):
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    rv = client.get('/audit/status')
+    rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)
     round_contest = status["rounds"][0]["contests"][0]
     assert round_contest["id"] == "contest-1"
@@ -563,7 +565,7 @@ def test_small_election(client):
     assert round_contest["endMeasurements"]["isComplete"]
     assert math.floor(round_contest["endMeasurements"]["pvalue"] * 100) <= 9
 
-    rv = client.get('/audit/report')
+    rv = client.get(f'/election/{election_id}/audit/report')
     lines = rv.data.decode('utf-8').splitlines()
     assert lines[0] == "Contest Name,Contest 1"
     assert 'attachment' in rv.headers['Content-Disposition']
@@ -623,8 +625,11 @@ def test_multi_round_audit(client):
     
 @pytest.mark.quick
 def test_multi_winner_election(client):
+    rv = post_json(client, '/election/new', {})
+    election_id = json.loads(rv.data)['electionId']
+
     rv = post_json(
-        client, '/audit/basic',
+        client, f'/election/{election_id}/audit/basic',
         {
             "name" : "Small Multi-winner Test 2019",
             "riskLimit" : 10,
@@ -662,13 +667,13 @@ def test_multi_winner_election(client):
     assert json.loads(rv.data)['status'] == "ok"
 
     bgcompute.bgcompute()
-    rv = client.get('/audit/status')
+    rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)
 
     assert status["name"] == "Small Multi-winner Test 2019"
 
     rv = post_json(
-        client, '/audit/jurisdictions',
+        client, f'/election/{election_id}/audit/jurisdictions',
         {
 	    "jurisdictions": [
 		{
@@ -693,7 +698,7 @@ def test_multi_winner_election(client):
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    rv = client.get('/audit/status')
+    rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)
 
     assert len(status["jurisdictions"]) == 1
@@ -708,7 +713,7 @@ def test_multi_winner_election(client):
     sample_size = sample_size_asn[0]["size"]
 
     # set the sample_size
-    rv = post_json(client, '/audit/sample-size', {
+    rv = post_json(client, f'/election/{election_id}/audit/sample-size', {
         "size": sample_size
     })
     
@@ -716,12 +721,12 @@ def test_multi_winner_election(client):
     data = {}
     data['manifest'] = (open(small_manifest_file_path, "rb"), 'small-manifest.csv')
     rv = client.post(
-        '/jurisdiction/county-1/manifest', data=data,
+        f'/election/{election_id}/jurisdiction/county-1/manifest', data=data,
         content_type='multipart/form-data')
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    rv = client.get('/audit/status')
+    rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)
     manifest = status['jurisdictions'][0]['ballotManifest']
     
@@ -731,7 +736,7 @@ def test_multi_winner_election(client):
     assert manifest['uploadedAt']
 
     # get the retrieval list for round 1
-    rv = client.get('/jurisdiction/county-1/1/retrieval-list')
+    rv = client.get(f'/election/{election_id}/jurisdiction/county-1/1/retrieval-list')
     lines = rv.data.decode('utf-8').split("\r\n")
     assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
@@ -742,7 +747,7 @@ def test_multi_winner_election(client):
     num_for_winner = int(num_ballots * 0.61)
     num_for_winner2 = int(num_ballots * 0.3)
     num_for_loser = num_ballots - num_for_winner - num_for_winner2
-    rv = post_json(client, '/jurisdiction/county-1/1/results',
+    rv = post_json(client, f'/election/{election_id}/jurisdiction/county-1/1/results',
                    {
 	               "contests": [
 		           {
@@ -758,7 +763,7 @@ def test_multi_winner_election(client):
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    rv = client.get('/audit/status')
+    rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)
     round_contest = status["rounds"][0]["contests"][0]
     assert round_contest["id"] == "contest-1"
@@ -768,7 +773,7 @@ def test_multi_winner_election(client):
     assert round_contest["endMeasurements"]["isComplete"]
     assert math.floor(round_contest["endMeasurements"]["pvalue"] * 100) <= 9
 
-    rv = client.get('/audit/report')
+    rv = client.get(f'/election/{election_id}/audit/report')
     lines = rv.data.decode('utf-8').split("\r\n")
     assert lines[0] == "Contest Name,Contest 1"
     assert 'attachment' in rv.headers['Content-Disposition']

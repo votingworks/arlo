@@ -43,7 +43,7 @@ const AuditForms: React.FC<Props> = ({
   const [audit, setAudit] = useState(initialData)
 
   const getStatus = useCallback(async (): Promise<Audit> => {
-    const audit: Audit = await api('/audit/status', { electionId })
+    const audit: Audit = await api(`/election/${electionId}/audit/status`)
     return audit
   }, [electionId])
 

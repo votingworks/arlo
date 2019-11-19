@@ -183,8 +183,7 @@ const EstimateSampleSize: React.FC<Props> = ({
     }
     try {
       setIsLoading(true)
-      await api(`/audit/basic`, {
-        electionId,
+      await api(`/election/${electionId}/audit/basic`, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {

@@ -16,10 +16,10 @@ const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 async function inputAndSubmitForm() {
   const getStatusMock = jest
     .fn()
-    .mockImplementationOnce(async () => statusStates[4]) // the POST to /audit/status after jurisdictions
+    .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after jurisdictions
   const updateAuditMock = jest
     .fn()
-    .mockImplementationOnce(async () => statusStates[5]) // the POST to /audit/status after manifest
+    .mockImplementationOnce(async () => statusStates[5]) // the POST to /election/{electionId}/audit/status after manifest
 
   const { getByLabelText, getByText } = render(
     <SelectBallotsToAudit
@@ -124,10 +124,10 @@ describe('SelectBallotsToAudit', () => {
   it('conditionally shows custom text input and submits', async () => {
     const getStatusMock = jest
       .fn()
-      .mockImplementationOnce(async () => statusStates[3]) // the POST to /audit/status after jurisdictions
+      .mockImplementationOnce(async () => statusStates[3]) // the POST to /election/{electionId}/audit/status after jurisdictions
     const updateAuditMock = jest
       .fn()
-      .mockImplementationOnce(async () => statusStates[4]) // the POST to /audit/status after manifest
+      .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
 
     const {
       getByText,
@@ -189,7 +189,9 @@ describe('SelectBallotsToAudit', () => {
       await wait(() => {
         expect(apiMock).toBeCalledTimes(3)
 
-        expect(apiMock.mock.calls[0][0]).toBe('/audit/sample-size')
+        expect(apiMock.mock.calls[0][0]).toMatch(
+          /\/election\/[^/]+\/audit\/sample-size/
+        )
         expect(apiMock.mock.calls[0][1]).toMatchObject({
           method: 'POST',
           body: JSON.stringify({
@@ -258,20 +260,25 @@ describe('SelectBallotsToAudit', () => {
     await wait(() => {
       expect(apiMock).toBeCalledTimes(3)
 
-      expect(apiMock.mock.calls[0][0]).toBe('/audit/sample-size')
-      expect(apiMock.mock.calls[0][1]).toMatchObject({
-        method: 'POST',
-        body: JSON.stringify({
-          size: '379',
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      expect(apiMock.mock.calls[1][0]).toBe('/audit/jurisdictions')
-      expect(JSON.parse(apiMock.mock.calls[1][1].body as string)).toMatchObject(
+      expect(apiMock.mock.calls[0]).toMatchObject([
+        expect.stringMatching(/\/election\/[^/]+\/audit\/sample-size/),
         {
+          method: 'POST',
+          body: JSON.stringify({
+            size: '379',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      ])
+
+      {
+        const [url, options] = apiMock.mock.calls[1]
+        const body = options && JSON.parse(options.body as string)
+
+        expect(url).toMatch(/\/election\/[^/]+\/audit\/jurisdictions/)
+        expect(body).toMatchObject({
           // TODO fix type
           jurisdictions: [
             {
@@ -287,11 +294,11 @@ describe('SelectBallotsToAudit', () => {
               ],
             },
           ],
-        }
-      )
+        })
+      }
 
-      expect(apiMock.mock.calls[2][0]).toBe(
-        '/jurisdiction/jurisdiction-1/manifest'
+      expect(apiMock.mock.calls[2][0]).toMatch(
+        /\/election\/[^/]+\/jurisdiction\/jurisdiction-1\/manifest/
       )
 
       expect((getStatusMock as jest.Mock).mock.calls.length).toBe(1)

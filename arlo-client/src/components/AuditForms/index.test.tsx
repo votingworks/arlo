@@ -33,7 +33,9 @@ describe('RiskLimitingAuditForm', () => {
     expect(container).toMatchSnapshot()
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.calls[0][0]).toMatch(
+        /\/election\/[^/]+\/audit\/status/
+      )
       expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[0])
     })
   })
@@ -59,7 +61,9 @@ describe('RiskLimitingAuditForm', () => {
     expect(container).toMatchSnapshot()
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.calls[0][0]).toMatch(
+        /\/election\/[^/]+\/audit\/status/
+      )
       expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[1])
     })
   })
@@ -80,7 +84,9 @@ describe('RiskLimitingAuditForm', () => {
     expect(container).toMatchSnapshot()
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.calls[0][0]).toMatch(
+        /\/election\/[^/]+\/audit\/status/
+      )
       expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[2])
     })
   })
@@ -102,7 +108,9 @@ describe('RiskLimitingAuditForm', () => {
     expect(container).toMatchSnapshot()
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.calls[0][0]).toMatch(
+        /\/election\/[^/]+\/audit\/status/
+      )
       expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[3])
     })
   })
@@ -123,7 +131,9 @@ describe('RiskLimitingAuditForm', () => {
     expect(container).toMatchSnapshot()
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock.mock.calls[0][0]).toBe('/audit/status')
+      expect(apiMock.mock.calls[0][0]).toMatch(
+        /\/election\/[^/]+\/audit\/status/
+      )
       expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[4])
     })
   })

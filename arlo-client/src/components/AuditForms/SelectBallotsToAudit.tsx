@@ -112,8 +112,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         const body = {
           size, // until multiple contests are supported
         }
-        await api('/audit/sample-size', {
-          electionId,
+        await api(`/election/${electionId}/audit/sample-size`, {
           method: 'POST',
           body: JSON.stringify(body),
           headers: {
@@ -121,8 +120,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
           },
         })
       }
-      await api('/audit/jurisdictions', {
-        electionId,
+      await api(`/election/${electionId}/audit/jurisdictions`, {
         method: 'POST',
         body: JSON.stringify({ jurisdictions: data }),
         headers: {
@@ -136,11 +134,13 @@ const SelectBallotsToAudit: React.FC<Props> = ({
       if (values.manifest) {
         const formData: FormData = new FormData()
         formData.append('manifest', values.manifest, values.manifest.name)
-        await api(`/jurisdiction/${jurisdictionID}/manifest`, {
-          electionId,
-          method: 'POST',
-          body: formData,
-        })
+        await api(
+          `/election/${electionId}/jurisdiction/${jurisdictionID}/manifest`,
+          {
+            method: 'POST',
+            body: formData,
+          }
+        )
       }
 
       updateAudit()

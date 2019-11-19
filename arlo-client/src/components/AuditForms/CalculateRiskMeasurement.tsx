@@ -80,8 +80,7 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
   const getBallots = async (r: number): Promise<Ballot[]> => {
     const round = audit.rounds[r]
     const { ballots } = await api<{ ballots: Ballot[] }>(
-      `/jurisdiction/${audit.jurisdictions[0].id}/round/${round.id}/ballot-list`,
-      { electionId }
+      `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/round/${round.id}/ballot-list`
     )
     return ballots
   }
@@ -187,14 +186,16 @@ const CalculateRiskMeasurement: React.FC<Props> = ({
 
     try {
       setIsLoading(true)
-      await api(`/jurisdiction/${jurisdictionID}/${values.round}/results`, {
-        electionId,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      })
+      await api(
+        `/election/${electionId}/jurisdiction/${jurisdictionID}/${values.round}/results`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        }
+      )
       const condition = async () => {
         const { rounds } = await getStatus()
         const { contests } = rounds[rounds.length - 1]

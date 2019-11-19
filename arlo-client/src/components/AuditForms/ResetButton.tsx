@@ -16,7 +16,7 @@ const ResetButton: React.FC<Props> = ({
 }: Props) => {
   const resetButtonWrapper = document.getElementById('reset-button-wrapper')
   const reset = async () => {
-    await api(`/audit/reset`, { electionId, method: 'POST' })
+    await api(`/election/${electionId}/audit/reset`, { method: 'POST' })
 
     updateAudit()
   }
