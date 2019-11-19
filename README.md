@@ -1,6 +1,6 @@
 # Arlo: Open-source risk-limiting audit software by [VotingWorks](voting.works)
 
-Arlo is a web-based [risk-limiting audit](https://risklimitingaudits.org) (RLA) tool used to conduct post-election audits in the United States.  The tool helps election officials complete a statistically valid audit of vote tabulation processes by comparing the votes marked on a random sample of original paper ballots with the electronically recorded votes for those same ballots. This type of audit can confirm that the reported winner did indeed win, or correct the outcome through a full hand recount if the reported outcome cannot be confirmed.
+Arlo is a web-based [risk-limiting audit (RLA)](https://risklimitingaudits.org) tool used to conduct post-election audits in the United States.  The tool helps election officials complete a statistically valid audit of vote tabulation processes by comparing the votes marked on a random sample of original paper ballots with the electronically recorded votes for those same ballots. This type of audit can confirm that the reported winner did indeed win, or correct the outcome through a full hand recount if the reported outcome cannot be confirmed.
 
 ## About Arlo
 
@@ -52,6 +52,8 @@ The Ballot Manifest file must:
   * Be a comma-separated file saved in .csv format
   
   * Contain a header row with two column headers, labeled "Batch Name" and "Number of Ballots"
+  
+  ![Example ballot polling ballot manifest](https://github.com/votingworks/arlo/blob/readme-updates/images/Ballot%20Manifest%20Example.png)
 
 Note that batch names are strings with no required naming conventions - use whatever names or IDs are normally associated with your ballot storage batches/containers. "Number of Ballots" should be an integer, and is *the number of ballot pages/cards* in each ballot storage batch. 
 
@@ -77,7 +79,7 @@ Ongoing development is planned to support:
 
 ## Developer resources
 
-Arlo is open-source software, meaning you are free to use it, modify it, and redistribute those modifications as you'd like, provided that, when you redistribute your modifications, you share them in the same open way. Because Arlo is open-source, anyone can review it or run their own copy, thus ensuring that, when used in a real audit, it is performing according to specification.
+Arlo is open-source software ([AGPL v3.0](https://github.com/votingworks/arlo/blob/master/LICENSE)), meaning you are free to use it, modify it, and redistribute those modifications as you'd like, provided that, when you redistribute your modifications, you share them in the same open way. Because Arlo is open-source, anyone can review it or run their own copy, thus ensuring that, when used in a real audit, it is performing according to specification.
 
 Like any open-source software, Arlo welcomes suggested changes in the form of pull requests on GitHub. If you're interested in getting a change merged into Arlo, please consider the following:
 
