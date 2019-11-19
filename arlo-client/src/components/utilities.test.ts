@@ -61,29 +61,25 @@ describe('utilities.ts', () => {
   describe('poll', () => {
     it('iterates', async () => {
       const j = (function* idMaker() {
-        var index = 0
+        let index = 0
         while (true) yield index++
       })()
       let result = ''
       const condition = async () => j.next().value > 2
-      const callback = async () => (result = 'over five')
-      const error = async () => (result = 'an error')
-      await poll(condition, callback, error)
+      const callback = () => (result = 'callback completed')
+      const error = () => (result = 'an error')
+      poll(condition, callback, error)
       await wait(() => {
-        expect(result).toBe('over five')
+        expect(result).toBe('callback completed')
       })
     })
 
     it('times out', async () => {
-      const j = (function* idMaker() {
-        var index = 1
-        while (true) yield index++
-      })()
       let result = ''
-      const condition = async () => j.next().value < 1
-      const callback = async () => (result = 'over five')
-      const error = async () => (result = 'an error')
-      await poll(condition, callback, error, 50, 10)
+      const condition = async () => false
+      const callback = () => (result = 'callback completed')
+      const error = () => (result = 'an error')
+      poll(condition, callback, error, 50, 10)
       await wait(() => {
         expect(result).toBe('an error')
       })
@@ -96,15 +92,11 @@ describe('utilities.ts', () => {
         .spyOn(Date, 'now')
         .mockReturnValueOnce(startDate)
         .mockReturnValueOnce(lateDate)
-      const j = (function* idMaker() {
-        var index = 1
-        while (true) yield index++
-      })()
       let result = ''
-      const condition = async () => j.next().value < 1
-      const callback = async () => (result = 'over five')
-      const error = async () => (result = 'an error')
-      await poll(condition, callback, error)
+      const condition = async () => false
+      const callback = () => (result = 'callback completed')
+      const error = () => (result = 'an error')
+      poll(condition, callback, error)
       await wait(() => {
         expect(result).toBe('an error')
         expect(dateSpy).toBeCalledTimes(2)

@@ -25,7 +25,7 @@ describe('RiskLimitingAuditForm', () => {
   it('fetches initial state from api', async () => {
     apiMock.mockImplementation(async () => statusStates[0])
     let utils: RenderResult
-    act(() => {
+    await act(async () => {
       utils = render(<AuditForms {...routeProps} />)
     })
     const { container } = utils!
@@ -50,7 +50,7 @@ describe('RiskLimitingAuditForm', () => {
   it('does not render SelectBallotsToAudit when /audit/status is processing samplesizes', async () => {
     apiMock.mockImplementation(async () => statusStates[1])
     let utils: RenderResult
-    act(() => {
+    await act(async () => {
       utils = render(<AuditForms {...routeProps} />)
     })
     const { container, queryByTestId } = utils!
@@ -67,7 +67,7 @@ describe('RiskLimitingAuditForm', () => {
   it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
     apiMock.mockImplementation(async () => statusStates[2])
     let utils: RenderResult
-    act(() => {
+    await act(async () => {
       utils = render(<AuditForms {...routeProps} />)
     })
     const { container, getByTestId } = utils!
@@ -88,7 +88,7 @@ describe('RiskLimitingAuditForm', () => {
   it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
     apiMock.mockImplementation(async () => statusStates[3])
     let utils: RenderResult
-    act(() => {
+    await act(async () => {
       utils = render(<AuditForms {...routeProps} />) // this one will not have the first empty round
     })
     const { container, getByTestId, queryByTestId } = utils!
@@ -110,7 +110,7 @@ describe('RiskLimitingAuditForm', () => {
   it('renders CalculateRiskMeasurement when /audit/status returns round data', async () => {
     apiMock.mockImplementation(async () => statusStates[4])
     let utils: RenderResult
-    act(() => {
+    await act(async () => {
       utils = render(<AuditForms {...routeProps} />) // this one will not have the first empty round
     })
     const { container, getByTestId } = utils!

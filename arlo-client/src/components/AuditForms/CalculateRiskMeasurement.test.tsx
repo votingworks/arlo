@@ -178,7 +178,6 @@ describe('CalculateRiskMeasurement', () => {
   })
 
   it(`handles background process timeout`, async () => {
-    const realDate = global.Date.now
     const dateIncrementor = (function*() {
       let i = 10
       while (true) {
@@ -186,8 +185,8 @@ describe('CalculateRiskMeasurement', () => {
         yield i
       }
     })()
-    global.Date.now = jest
-      .fn()
+    const dateSpy = jest
+      .spyOn(Date, 'now')
       .mockImplementation(() => dateIncrementor.next().value)
 
     apiMock.mockImplementation(async () => ({
@@ -215,15 +214,13 @@ describe('CalculateRiskMeasurement', () => {
     })
 
     await wait(() => {
-      expect(global.Date.now).toBeCalled()
+      expect(dateSpy).toBeCalled()
       expect(toastSpy).toBeCalledTimes(1)
       expect(apiMock).toBeCalled()
       expect(setIsLoadingMock).toBeCalledTimes(1)
       expect(getStatusMock).toBeCalled()
       expect(updateAuditMock).toBeCalledTimes(0)
     })
-
-    global.Date.now = realDate
   })
 
   it('downloads labels sheets', async () => {
