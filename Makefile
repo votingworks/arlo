@@ -8,14 +8,8 @@ install-development:
 	pipenv install --dev
 	yarn --cwd arlo-client install
 
-resetdb-sqlite:
-	rm -f arlo.db
-	DATABASE_URL="" pipenv run python create.py
-
-resetdb-postgres:
-	dropdb arlo
-	createdb arlo
-	pipenv run python create.py
+resetdb:
+	pipenv run python resetdb.py
 
 typecheck:
 	pipenv run mypy .
@@ -25,4 +19,4 @@ test-client:
 	yarn --cwd arlo-client test
 
 test-server:
-	pipenv run python -m pytest --ignore=arlo-client
+	FLASK_ENV=test pipenv run python -m pytest --ignore=arlo-client

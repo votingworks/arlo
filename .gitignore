@@ -1,6 +1,6 @@
 *.pyc
-*.db
 *.DS_Store
 node_modules
 .mypy_cache
 .pytest_cache
+config/database.cfg
