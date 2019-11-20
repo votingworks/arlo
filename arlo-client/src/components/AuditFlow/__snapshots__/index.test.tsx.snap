@@ -64,7 +64,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
             Are you looking at the correct ballot?
           </h4>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
           </p>
           <p>
             <button
@@ -102,13 +102,20 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
           <h4
             class="bp3-heading"
           >
-            Are you looking at the right ballot?
+            Instructions
           </h4>
           <p>
-            Step 1: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Select 
+            <strong>
+              all
+            </strong>
+             the candidates/choices below that you see marked on the paper ballot.
           </p>
           <p>
-            Step 2: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            If the voter did not vote in the contest, select "Blank vote/no mark."
+          </p>
+          <p>
+            If the audit board cannot agree, select "No audit board consensus." You may add a comment for additional information about the disagreement.
           </p>
           <form
             class="sc-gZMcBi eyQxfl"
@@ -260,7 +267,7 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
         : Ballot Cards to Audit
       </h1>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
       </p>
       <div
         class="sc-bdVaJa cDShCX"
@@ -825,7 +832,7 @@ exports[`AuditFlow ballot interaction renders board table with large container s
         : Ballot Cards to Audit
       </h1>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
       </p>
       <div
         class="sc-bdVaJa cDShCX"

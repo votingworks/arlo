@@ -34,14 +34,19 @@ const BallotAudit: React.FC<IProps> = ({
     <BallotRow>
       <div className="ballot-side"></div>
       <div className="ballot-main">
-        <H4>Are you looking at the right ballot?</H4>
+        <H4>Instructions</H4>
         <p>
-          Step 1: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
-          do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          Select <strong>all</strong> the candidates/choices below that you see
+          marked on the paper ballot.
         </p>
         <p>
-          Step 2: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
-          do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          If the voter did not vote in the contest, select &quot;Blank vote/no
+          mark.&quot;
+        </p>
+        <p>
+          If the audit board cannot agree, select &quot;No audit board
+          consensus.&quot; You may add a comment for additional information
+          about the disagreement.
         </p>
         <Formik
           initialValues={review}

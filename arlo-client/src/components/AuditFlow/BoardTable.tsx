@@ -120,13 +120,10 @@ const BoardTable: React.FC<IProps> = ({
     <div className="board-table-container">
       <H1>{boardName}: Ballot Cards to Audit</H1>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
+        The following ballots have been assigned to your audit board for this
+        round of the audit. Once these ballots have been located and retrieved
+        from storage, click &quot;Start Auditing&quot; to begin recording the
+        votes you see marked on the paper ballots.
       </p>
       <RightWrapper>
         {roundComplete ? (
