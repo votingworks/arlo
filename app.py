@@ -4,28 +4,15 @@ from flask_sqlalchemy import SQLAlchemy
 from sampler import Sampler
 from werkzeug.exceptions import InternalServerError
 
-from sqlalchemy.engine import Engine
 from sqlalchemy import event
+from config import DATABASE_URL
 
 from util.binpacking import Bucket, BalancedBucketList
 
 app = Flask(__name__, static_folder='arlo-client/build/')
 
 # database config
-SQLITE_DATABASE_URL = 'sqlite:///./arlo.db'
-database_url = os.environ.get('DATABASE_URL', SQLITE_DATABASE_URL)
-if database_url == "":
-    database_url = SQLITE_DATABASE_URL
-
-# enforce foreign keys in SQLite
-if database_url.startswith("sqlite:"):
-    @event.listens_for(Engine, "connect")
-    def set_sqlite_pragma(dbapi_connection, connection_record):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
-
-app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
