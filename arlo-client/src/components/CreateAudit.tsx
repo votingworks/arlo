@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { toast } from 'react-toastify'
 import { RouteComponentProps } from 'react-router-dom'
 import FormButton from './Form/FormButton'
 import { api } from './utilities'
@@ -23,11 +24,22 @@ const Wrapper = styled.div`
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const [loading, setLoading] = useState(false)
   const onClick = async () => {
-    setLoading(true)
-    const { electionId } = await api('/election/new', {
-      method: 'POST',
-    })
-    history.push(`/election/${electionId}`)
+    try {
+      setLoading(true)
+      const response: string = await api('/election/new', {
+        method: 'POST',
+      })
+      const { electionId, errors } = JSON.parse(response)
+      if (errors) {
+        toast.error(
+          'There was a server error regarding: ' +
+            errors.map((v: { message: string }) => v.message).join(', ')
+        )
+      }
+      history.push(`/election/${electionId}`)
+    } catch (err) {
+      toast.error(err.message)
+    }
   }
   return (
     <Wrapper>
