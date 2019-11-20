@@ -193,13 +193,25 @@ const EstimateSampleSize: React.FC<IProps> = ({
     }
     try {
       setIsLoading(true)
-      await api(`/election/${electionId}/audit/basic`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      const response: string = await api(
+        `/election/${electionId}/audit/basic`,
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      const { errors } = JSON.parse(response)
+      if (errors) {
+        toast.error(
+          'There was a server error regarding: ' +
+            errors.map((v: { message: string }) => v.message).join(', ')
+        )
+        setIsLoading(false)
+        return
+      }
       const condition = async () => {
         const { rounds } = await getStatus()
         return (

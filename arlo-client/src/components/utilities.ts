@@ -5,10 +5,14 @@ export const api = async <T>(
   options?: RequestInit
 ): Promise<T> => {
   const res = await fetch(endpoint, options)
-  if (!res.ok) {
-    throw new Error(res.statusText)
+  try {
+    if (!res.ok) {
+      throw res
+    }
+    return res.json() as Promise<T>
+  } catch (err) {
+    return err.text()
   }
-  return res.json() as Promise<T>
 }
 
 export const poll = (
