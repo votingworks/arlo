@@ -1037,7 +1037,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   name="randomSeed"
                   style="padding-right: 10px;"
                   type="text"
-                  value="123456789"
+                  value="12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
                 />
               </div>
             </div>
