@@ -25,6 +25,10 @@ def client():
 
     yield client
 
+    # clear database between test runs
+    app.db.drop_all()
+    app.db.create_all()
+
 def test_index(client):
     rv = client.get('/')
     assert b'Arlo (by VotingWorks)' in rv.data
@@ -114,25 +118,25 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     rv = post_json(
         client, '{}/audit/jurisdictions'.format(url_prefix),
         {
-        "jurisdictions": [
-        {
-            "id": jurisdiction_id,
-            "name": "adams county",
-            "contests": [contest_id],
+            "jurisdictions": [
+                {
+                    "id": jurisdiction_id,
+                    "name": "adams county",
+                    "contests": [contest_id],
                     "auditBoards": [
-            {
-                "id": audit_board_id_1,
+                        {
+                            "id": audit_board_id_1,
                             "name": "audit board #1",
-                "members": []
-            },
-            {
-                "id": audit_board_id_2,
+                            "members": []
+                        },
+                        {
+                            "id": audit_board_id_2,
                             "name": "audit board #2",
-                "members": []
-            }
+                            "members": []
+                        }
+                    ]
+                }
             ]
-        }
-        ]
         })
 
     assert json.loads(rv.data)['status'] == 'ok'
