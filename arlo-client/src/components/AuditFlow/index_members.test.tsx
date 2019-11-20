@@ -18,7 +18,7 @@ const memberingMock = async (
   endpoint: string
 ): Promise<IAudit | { ballots: IBallot[] }> => {
   switch (endpoint) {
-    case '/audit/status':
+    case '/election/1/audit/status':
       memberlessDummy.jurisdictions[0].auditBoards = [dummyBoard[0]]
       return memberlessDummy
     default:

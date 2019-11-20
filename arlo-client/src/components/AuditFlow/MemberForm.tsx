@@ -59,9 +59,8 @@ const MemberForm: React.FC<IProps> = ({
               members: values,
             }
             await api(
-              `/jurisdiction/${jurisdictionId}/audit-board/${boardId}`,
+              `/election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${boardId}`,
               {
-                electionId,
                 method: 'POST',
                 body: JSON.stringify(body),
                 headers: {

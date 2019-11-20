@@ -30,7 +30,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
         27
       </div>
       <div
-        class="sc-iwsKbI bjzIpb"
+        class="sc-iwsKbI eBYIfb"
       >
         <div
           class="ballot-side"
@@ -91,7 +91,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
         </div>
       </div>
       <div
-        class="sc-iwsKbI bjzIpb"
+        class="sc-iwsKbI eBYIfb"
       >
         <div
           class="ballot-side"

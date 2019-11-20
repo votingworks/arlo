@@ -674,7 +674,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   id="audit-name"
                   name="name"
                   style="padding-right: 10px;"
-                  type="text"
                   value="contest name"
                 />
               </div>
@@ -714,7 +713,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   id="contests[0].name"
                   name="contests[0].name"
                   style="padding-right: 10px;"
-                  type="text"
                   value="contest name"
                 />
               </div>
@@ -782,7 +780,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                       disabled=""
                       name="contests[0].choices[0].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value="choice one"
                     />
                   </div>
@@ -804,7 +801,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                       disabled=""
                       name="contests[0].choices[0].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value="792"
                     />
                   </div>
@@ -830,7 +826,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                       disabled=""
                       name="contests[0].choices[1].name"
                       style="padding-right: 10px;"
-                      type="text"
                       value="choice two"
                     />
                   </div>
@@ -852,18 +847,12 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                       disabled=""
                       name="contests[0].choices[1].numVotes"
                       style="padding-right: 10px;"
-                      type="text"
                       value="1325"
                     />
                   </div>
                 </div>
               </label>
             </div>
-            <p
-              class="sc-chPdSV loppqH"
-            >
-              Add a new candidate/choice
-            </p>
           </div>
         </div>
         <div
@@ -897,7 +886,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   id="contests[0].totalBallotsCast"
                   name="contests[0].totalBallotsCast"
                   style="padding-right: 10px;"
-                  type="text"
                   value="2123"
                 />
               </div>
@@ -915,14 +903,14 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
-            Audit Boards
+            Desired Risk Limit
           </h3>
           <label
             for="risk-limit"
           >
             Set the risk for the audit as a percentage (e.g. "5" = 5%)
             <div
-              class="bp3-html-select sc-VigVT gtiHtv"
+              class="bp3-html-select bp3-disabled sc-VigVT gtiHtv"
             >
               <select
                 disabled=""
@@ -1012,12 +1000,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               </span>
             </div>
           </label>
-          <input
-            class="sc-chPdSV facZVB"
-            data-testid="audit-name-0"
-            name="auditNames[0]"
-            value="Audit Board #1"
-          />
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -1046,26 +1028,12 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                   name="randomSeed"
                   style="padding-right: 10px;"
                   type="text"
-                  value="123456789"
+                  value="12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
                 />
               </div>
             </div>
           </label>
         </div>
-      </div>
-      <div
-        class="sc-gZMcBi DmELe"
-      >
-        <button
-          class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
-          type="submit"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Estimate Sample Size
-          </span>
-        </button>
       </div>
     </form>
   </div>
@@ -2679,12 +2647,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               </span>
             </div>
           </label>
-          <input
-            class="sc-chPdSV facZVB"
-            data-testid="audit-name-0"
-            name="auditNames[0]"
-            value=""
-          />
         </div>
         <div
           class="sc-bdVaJa fdbLH"

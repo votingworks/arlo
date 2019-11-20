@@ -41,7 +41,7 @@ const AuditFlow: React.FC<IProps> = ({
   const [audit, setAudit] = useState(statusStates[3])
 
   const getStatus = useCallback(async (): Promise<IAudit> => {
-    const audit: IAudit = await api('/audit/status', { electionId })
+    const audit: IAudit = await api(`/election/${electionId}/audit/status`)
     return audit
   }, [electionId])
 
@@ -69,8 +69,7 @@ const AuditFlow: React.FC<IProps> = ({
   const getBallots = useCallback(async (): Promise<IBallot[]> => {
     if (audit.jurisdictions.length && board) {
       const { ballots } = await api(
-        `/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`,
-        { electionId }
+        `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`
       )
       return ballots
     } else {
@@ -138,9 +137,8 @@ const AuditFlow: React.FC<IProps> = ({
   ) => {
     const roundId = audit.rounds[Number(roundIx) - 1].id
     await api(
-      `/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch}/round/${roundId}/ballot/${position}`,
+      `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch}/round/${roundId}/ballot/${position}`,
       {
-        electionId,
         method: 'POST',
         body: JSON.stringify(data),
         headers: {

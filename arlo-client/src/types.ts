@@ -28,11 +28,6 @@ export interface IContest {
   totalBallotsCast: string
 }
 
-export interface IAuditMember {
-  name: string
-  affiliation: 'DEM' | 'REP' | 'LIB' | 'IND' | ''
-}
-
 export interface IBallot {
   timesSampled: number
   auditBoard?: Pick<IAuditBoard, 'id' | 'name'>

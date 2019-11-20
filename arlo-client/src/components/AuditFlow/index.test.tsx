@@ -19,7 +19,7 @@ const ballotingMock = async (
   endpoint: string
 ): Promise<IAudit | { ballots: IBallot[] }> => {
   switch (endpoint) {
-    case '/audit/status':
+    case '/election/1/audit/status':
       memberDummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
       return memberDummy
     default:

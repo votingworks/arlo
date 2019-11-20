@@ -29,7 +29,7 @@ exports[`Ballot renders correctly 1`] = `
       27
     </div>
     <div
-      class="sc-bdVaJa iuFquL"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -90,7 +90,7 @@ exports[`Ballot renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa iuFquL"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -270,7 +270,7 @@ exports[`Ballot switches audit and review views 1`] = `
       27
     </div>
     <div
-      class="sc-bdVaJa iuFquL"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -331,7 +331,7 @@ exports[`Ballot switches audit and review views 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa iuFquL"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -442,7 +442,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       27
     </div>
     <div
-      class="sc-bdVaJa iuFquL"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
@@ -503,7 +503,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa iuFquL"
+      class="sc-bdVaJa kMtymi"
     >
       <div
         class="ballot-side"
