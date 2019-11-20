@@ -17,6 +17,7 @@ flask-sqlalchemy = "*"
 joblib = "*"
 numpy = "*"
 psycopg2 = "*"
+sqlalchemy-utils = "*"
 uuid = "*"
 
 [requires]

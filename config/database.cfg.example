@@ -1,0 +1,14 @@
+# Configure your database connection by editing each section as appropriate.
+# Sections are named for $FLASK_ENV environment variable values.
+
+[development]
+database_url = postgres://postgres@localhost:5432/arlo
+
+[test]
+database_url = postgres://postgres@localhost:5432/arlo-test
+
+# [staging]
+# omitted, perhaps provided by $DATABASE_URL environment variable
+
+# [production]
+# omitted, perhaps provided by $DATABASE_URL environment variable
