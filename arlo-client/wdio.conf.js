@@ -177,7 +177,6 @@ exports.config = {
   // before: function (capabilities, specs) {
   // },
   before: function() {
-    require('ts-node').register({ files: true })
     require('@babel/register')({
       extensions: ['.ts'],
       presets: [

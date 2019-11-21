@@ -345,15 +345,15 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
               name="auditNames"
               render={(utils: ArrayHelpers) => {
                 const changeBoards = (n: number) => {
-                  const num = values.auditNames.length
+                  let num = values.auditNames.length
                   setFieldValue('auditBoards', n)
-                  if (n > num) {
-                    Array.from(Array(n - num).keys()).forEach(() =>
-                      utils.push('')
-                    )
+                  while (n > num) {
+                    utils.push('')
+                    num += 1
                   }
-                  if (n < num) {
-                    Array.from(Array(num - n).keys()).forEach(() => utils.pop())
+                  while (n < num) {
+                    utils.pop()
+                    num -= 1
                   }
                 }
                 return (
@@ -402,7 +402,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                                 }
                               >
                                 <QR
-                                  value={`http://localhost:3000/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}
+                                  value={`${window.location.origin}/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}
                                   size={250} // set size for printing so resolution is right
                                 />
                               </span>

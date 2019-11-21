@@ -42,7 +42,6 @@ const BallotReview: React.FC<IProps> = ({
   const completeVote = vote as Exclude<IReview['vote'], null>
   /* eslint-disable no-console */
   const handleSubmit = async () => {
-    console.log(completeVote, comment)
     await submitBallot(review)
     goAudit()
     nextBallot()
