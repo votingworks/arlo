@@ -88,6 +88,7 @@ interface ContestValues {
   name: string
   totalBallotsCast: string
   winners: string
+  numVotes: string
   choices: ChoiceValues[]
 }
 
@@ -104,6 +105,11 @@ const contestsSchema = Yup.array()
     Yup.object().shape({
       name: Yup.string().required('Required'),
       winners: number()
+        .typeError('Must be a number')
+        .integer('Must be an integer')
+        .min(0, 'Must be a positive number')
+        .required('Required'),
+      numVotes: number()
         .typeError('Must be a number')
         .integer('Must be an integer')
         .min(0, 'Must be a positive number')
@@ -174,6 +180,7 @@ const EstimateSampleSize: React.FC<Props> = ({
         name: contest.name,
         totalBallotsCast: parseNumber(contest.totalBallotsCast),
         winners: parseNumber(contest.winners),
+        numVotes: parseNumber(contest.numVotes),
         choices: contest.choices.map(choice => ({
           id: uuidv4(),
           name: choice.name,
@@ -213,6 +220,7 @@ const EstimateSampleSize: React.FC<Props> = ({
       name: '',
       totalBallotsCast: '',
       winners: '1',
+      numVotes: '1',
       choices: [
         {
           name: '',
@@ -303,6 +311,19 @@ const EstimateSampleSize: React.FC<Props> = ({
                               <Field
                                 id={`contests[${i}].winners`}
                                 name={`contests[${i}].winners`}
+                                disabled={!canEstimateSampleSize}
+                                component={FormField}
+                              />
+                            </label>
+                            <FormSectionDescription>
+                              Number of selections the voter can make in the
+                              contest.
+                            </FormSectionDescription>
+                            <label htmlFor={`contests[${i}].numVotes`}>
+                              Votes
+                              <Field
+                                id={`contests[${i}].numVotes`}
+                                name={`contests[${i}].numVotes`}
                                 disabled={!canEstimateSampleSize}
                                 component={FormField}
                               />

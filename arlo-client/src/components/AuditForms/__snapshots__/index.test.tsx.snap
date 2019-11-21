@@ -110,6 +110,33 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
               </div>
             </div>
           </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].numVotes"
+          >
+            Votes
+            <div
+              class="sc-bZQynM iEAxBy"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].numVotes"
+                  name="contests[0].numVotes"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -748,6 +775,33 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               </div>
             </div>
           </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].numVotes"
+          >
+            Votes
+            <div
+              class="sc-bZQynM iEAxBy"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].numVotes"
+                  name="contests[0].numVotes"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -1149,6 +1203,32 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                   class="bp3-input"
                   id="contests[0].winners"
                   name="contests[0].winners"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].numVotes"
+          >
+            Votes
+            <div
+              class="sc-bZQynM iEAxBy"
+            >
+              <div
+                class="bp3-input-group sc-gzVnrw htprzv"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].numVotes"
+                  name="contests[0].numVotes"
                   style="padding-right: 10px;"
                   type="text"
                   value="1"
@@ -1572,6 +1652,33 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                   disabled=""
                   id="contests[0].winners"
                   name="contests[0].winners"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].numVotes"
+          >
+            Votes
+            <div
+              class="sc-bZQynM iEAxBy"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].numVotes"
+                  name="contests[0].numVotes"
                   style="padding-right: 10px;"
                   type="text"
                   value="1"
@@ -2395,6 +2502,33 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               </div>
             </div>
           </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].numVotes"
+          >
+            Votes
+            <div
+              class="sc-bZQynM iEAxBy"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].numVotes"
+                  name="contests[0].numVotes"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
         </div>
         <div
           class="sc-bdVaJa fdbLH"
@@ -3023,6 +3157,32 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                   class="bp3-input"
                   id="contests[0].winners"
                   name="contests[0].winners"
+                  style="padding-right: 10px;"
+                  type="text"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-bwzfXH izcbHX"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].numVotes"
+          >
+            Votes
+            <div
+              class="sc-bZQynM iEAxBy"
+            >
+              <div
+                class="bp3-input-group sc-gzVnrw htprzv"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].numVotes"
+                  name="contests[0].numVotes"
                   style="padding-right: 10px;"
                   type="text"
                   value="1"
