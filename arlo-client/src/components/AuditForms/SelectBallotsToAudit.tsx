@@ -35,7 +35,7 @@ import {
   ISampleSizeOption,
   IAuditBoard,
 } from '../../types'
-import { api, testNumber, openQR } from '../utilities'
+import { api, testNumber, openQR, toaster } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
 import FormField from '../Form/FormField'
@@ -151,21 +151,30 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
         const body = {
           size, // until multiple contests are supported
         }
-        await api(`/election/${electionId}/audit/sample-size`, {
+        const response: string = await api(
+          `/election/${electionId}/audit/sample-size`,
+          {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        if (toaster(JSON.parse(response))) return
+      }
+      const response: string = await api(
+        `/election/${electionId}/audit/jurisdictions`,
+        {
           method: 'POST',
-          body: JSON.stringify(body),
+          body: JSON.stringify({ jurisdictions: data }),
           headers: {
             'Content-Type': 'application/json',
           },
-        })
-      }
-      await api(`/election/${electionId}/audit/jurisdictions`, {
-        method: 'POST',
-        body: JSON.stringify({ jurisdictions: data }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+        }
+      )
+      if (toaster(JSON.parse(response))) return
+
       const newStatus = await getStatus()
       const jurisdictionID: string = newStatus.jurisdictions[0].id
 
@@ -173,13 +182,14 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
       if (values.manifest) {
         const formData: FormData = new FormData()
         formData.append('manifest', values.manifest, values.manifest.name)
-        await api(
+        const response: string = await api(
           `/election/${electionId}/jurisdiction/${jurisdictionID}/manifest`,
           {
             method: 'POST',
             body: formData,
           }
         )
+        if (toaster(JSON.parse(response))) return
       }
 
       updateAudit()

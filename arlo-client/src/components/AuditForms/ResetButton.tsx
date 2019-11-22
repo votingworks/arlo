@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Button } from '@blueprintjs/core'
-import { api } from '../utilities'
+import { toast } from 'react-toastify'
+import { api, toaster } from '../utilities'
 
 interface IProps {
   updateAudit: () => void
@@ -16,9 +17,18 @@ const ResetButton: React.FC<IProps> = ({
 }: IProps) => {
   const resetButtonWrapper = document.getElementById('reset-button-wrapper')
   const reset = async () => {
-    await api(`/election/${electionId}/audit/reset`, { method: 'POST' })
-
-    updateAudit()
+    try {
+      const response: string = await api(
+        `/election/${electionId}/audit/reset`,
+        { method: 'POST' }
+      )
+      if (toaster(JSON.parse(response))) {
+        return
+      }
+      updateAudit()
+    } catch (err) {
+      toast.error(err.message)
+    }
   }
   if (resetButtonWrapper) {
     return ReactDOM.createPortal(
