@@ -758,7 +758,7 @@ def audit_report(election_id):
     
     report_writer.writerow(["Contest Name", contest.name])
     report_writer.writerow(["Number of Winners", contest.num_winners])
-    report_writer.writerow(["Number of Votes", contest.votes_allowed])
+    report_writer.writerow(["Votes Allowed", contest.votes_allowed])
     report_writer.writerow(["Total Ballots Cast", contest.total_ballots_cast])
 
     for choice in choices:
