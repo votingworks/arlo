@@ -88,7 +88,7 @@ interface ContestValues {
   name: string
   totalBallotsCast: string
   winners: string
-  numVotes: string
+  votesAllowed: string
   choices: ChoiceValues[]
 }
 
@@ -109,7 +109,7 @@ const contestsSchema = Yup.array()
         .integer('Must be an integer')
         .min(0, 'Must be a positive number')
         .required('Required'),
-      numVotes: number()
+      votesAllowed: number()
         .typeError('Must be a number')
         .integer('Must be an integer')
         .min(0, 'Must be a positive number')
@@ -180,7 +180,7 @@ const EstimateSampleSize: React.FC<Props> = ({
         name: contest.name,
         totalBallotsCast: parseNumber(contest.totalBallotsCast),
         winners: parseNumber(contest.winners),
-        numVotes: parseNumber(contest.numVotes),
+        votesAllowed: parseNumber(contest.votesAllowed),
         choices: contest.choices.map(choice => ({
           id: uuidv4(),
           name: choice.name,
@@ -220,7 +220,7 @@ const EstimateSampleSize: React.FC<Props> = ({
       name: '',
       totalBallotsCast: '',
       winners: '1',
-      numVotes: '1',
+      votesAllowed: '1',
       choices: [
         {
           name: '',
@@ -319,11 +319,11 @@ const EstimateSampleSize: React.FC<Props> = ({
                               Number of selections the voter can make in the
                               contest.
                             </FormSectionDescription>
-                            <label htmlFor={`contests[${i}].numVotes`}>
+                            <label htmlFor={`contests[${i}].votesAllowed`}>
                               Votes
                               <Field
-                                id={`contests[${i}].numVotes`}
-                                name={`contests[${i}].numVotes`}
+                                id={`contests[${i}].votesAllowed`}
+                                name={`contests[${i}].votesAllowed`}
                                 disabled={!canEstimateSampleSize}
                                 component={FormField}
                               />

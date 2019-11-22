@@ -43,7 +43,7 @@ def contest_status(election):
             for choice in contest.choices])
         contests[contest.id]['ballots'] = contest.total_ballots_cast
         contests[contest.id]['numWinners'] = contest.num_winners
-        contests[contest.id]['numVotes'] = contest.num_votes
+        contests[contest.id]['votesAllowed'] = contest.votes_allowed
 
     return contests
 
@@ -276,7 +276,7 @@ def audit_status(election_id = None):
                     for choice in contest.choices],
                 "totalBallotsCast": contest.total_ballots_cast,
                 "numWinners": contest.num_winners,
-                "numVotes": contest.num_votes
+                "votesAllowed": contest.votes_allowed
             }
             for contest in election.contests],
         jurisdictions=[
@@ -350,7 +350,7 @@ def audit_basic_update(election_id):
                              name = contest['name'],
                              total_ballots_cast = contest['totalBallotsCast'],
                              num_winners = contest['winners'],
-                             num_votes = contest['numVotes'])
+                             votes_allowed = contest['votesAllowed'])
         db.session.add(contest_obj)
 
         for choice in contest['choices']:
@@ -758,7 +758,7 @@ def audit_report(election_id):
     
     report_writer.writerow(["Contest Name", contest.name])
     report_writer.writerow(["Number of Winners", contest.num_winners])
-    report_writer.writerow(["Number of Votes", contest.num_votes])
+    report_writer.writerow(["Number of Votes", contest.votes_allowed])
     report_writer.writerow(["Total Ballots Cast", contest.total_ballots_cast])
 
     for choice in choices:

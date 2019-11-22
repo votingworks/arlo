@@ -116,7 +116,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
             Number of selections the voter can make in the contest.
           </div>
           <label
-            for="contests[0].numVotes"
+            for="contests[0].votesAllowed"
           >
             Votes
             <div
@@ -128,8 +128,8 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                 <input
                   class="bp3-input"
                   disabled=""
-                  id="contests[0].numVotes"
-                  name="contests[0].numVotes"
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
                   style="padding-right: 10px;"
                   type="text"
                   value="1"
@@ -781,7 +781,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
             Number of selections the voter can make in the contest.
           </div>
           <label
-            for="contests[0].numVotes"
+            for="contests[0].votesAllowed"
           >
             Votes
             <div
@@ -793,8 +793,8 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                 <input
                   class="bp3-input"
                   disabled=""
-                  id="contests[0].numVotes"
-                  name="contests[0].numVotes"
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
                   style="padding-right: 10px;"
                   type="text"
                   value="1"
@@ -1216,7 +1216,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
             Number of selections the voter can make in the contest.
           </div>
           <label
-            for="contests[0].numVotes"
+            for="contests[0].votesAllowed"
           >
             Votes
             <div
@@ -1227,8 +1227,8 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
               >
                 <input
                   class="bp3-input"
-                  id="contests[0].numVotes"
-                  name="contests[0].numVotes"
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
                   style="padding-right: 10px;"
                   type="text"
                   value="1"
@@ -1665,7 +1665,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             Number of selections the voter can make in the contest.
           </div>
           <label
-            for="contests[0].numVotes"
+            for="contests[0].votesAllowed"
           >
             Votes
             <div
@@ -1677,8 +1677,8 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                 <input
                   class="bp3-input"
                   disabled=""
-                  id="contests[0].numVotes"
-                  name="contests[0].numVotes"
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
                   style="padding-right: 10px;"
                   type="text"
                   value="1"
@@ -2508,7 +2508,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             Number of selections the voter can make in the contest.
           </div>
           <label
-            for="contests[0].numVotes"
+            for="contests[0].votesAllowed"
           >
             Votes
             <div
@@ -2520,8 +2520,8 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                 <input
                   class="bp3-input"
                   disabled=""
-                  id="contests[0].numVotes"
-                  name="contests[0].numVotes"
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
                   style="padding-right: 10px;"
                   type="text"
                   value="1"
@@ -3170,7 +3170,7 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
             Number of selections the voter can make in the contest.
           </div>
           <label
-            for="contests[0].numVotes"
+            for="contests[0].votesAllowed"
           >
             Votes
             <div
@@ -3181,8 +3181,8 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
               >
                 <input
                   class="bp3-input"
-                  id="contests[0].numVotes"
-                  name="contests[0].numVotes"
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
                   style="padding-right: 10px;"
                   type="text"
                   value="1"

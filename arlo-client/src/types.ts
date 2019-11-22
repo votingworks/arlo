@@ -18,7 +18,7 @@ export interface Contest {
   id: string
   name: string
   winners: string
-  numVotes: string
+  votesAllowed: string
   choices: Candidate[]
   totalBallotsCast: string
 }

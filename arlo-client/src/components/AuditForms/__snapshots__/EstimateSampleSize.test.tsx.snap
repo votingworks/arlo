@@ -121,7 +121,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
           Number of selections the voter can make in the contest.
         </div>
         <label
-          for="contests[0].numVotes"
+          for="contests[0].votesAllowed"
         >
           Votes
           <div
@@ -133,8 +133,8 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
               <input
                 class="bp3-input"
                 disabled=""
-                id="contests[0].numVotes"
-                name="contests[0].numVotes"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
                 type="text"
                 value="1"
@@ -555,7 +555,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
           Number of selections the voter can make in the contest.
         </div>
         <label
-          for="contests[0].numVotes"
+          for="contests[0].votesAllowed"
         >
           Votes
           <div
@@ -567,8 +567,8 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
               <input
                 class="bp3-input"
                 disabled=""
-                id="contests[0].numVotes"
-                name="contests[0].numVotes"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
                 type="text"
                 value="1"
@@ -1015,7 +1015,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
           Number of selections the voter can make in the contest.
         </div>
         <label
-          for="contests[0].numVotes"
+          for="contests[0].votesAllowed"
         >
           Votes
           <div
@@ -1027,8 +1027,8 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
               <input
                 class="bp3-input"
                 disabled=""
-                id="contests[0].numVotes"
-                name="contests[0].numVotes"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
                 type="text"
                 value="1"
@@ -1449,7 +1449,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
           Number of selections the voter can make in the contest.
         </div>
         <label
-          for="contests[0].numVotes"
+          for="contests[0].votesAllowed"
         >
           Votes
           <div
@@ -1461,8 +1461,8 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
               <input
                 class="bp3-input"
                 disabled=""
-                id="contests[0].numVotes"
-                name="contests[0].numVotes"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
                 type="text"
                 value="1"
@@ -1909,7 +1909,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
           Number of selections the voter can make in the contest.
         </div>
         <label
-          for="contests[0].numVotes"
+          for="contests[0].votesAllowed"
         >
           Votes
           <div
@@ -1921,8 +1921,8 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
               <input
                 class="bp3-input"
                 disabled=""
-                id="contests[0].numVotes"
-                name="contests[0].numVotes"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
                 type="text"
                 value="1"
@@ -2343,7 +2343,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
           Number of selections the voter can make in the contest.
         </div>
         <label
-          for="contests[0].numVotes"
+          for="contests[0].votesAllowed"
         >
           Votes
           <div
@@ -2355,8 +2355,8 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
               <input
                 class="bp3-input"
                 disabled=""
-                id="contests[0].numVotes"
-                name="contests[0].numVotes"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
                 type="text"
                 value="1"
@@ -2803,7 +2803,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
           Number of selections the voter can make in the contest.
         </div>
         <label
-          for="contests[0].numVotes"
+          for="contests[0].votesAllowed"
         >
           Votes
           <div
@@ -2815,8 +2815,8 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
               <input
                 class="bp3-input"
                 disabled=""
-                id="contests[0].numVotes"
-                name="contests[0].numVotes"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
                 type="text"
                 value="1"
@@ -3237,7 +3237,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
           Number of selections the voter can make in the contest.
         </div>
         <label
-          for="contests[0].numVotes"
+          for="contests[0].votesAllowed"
         >
           Votes
           <div
@@ -3249,8 +3249,8 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
               <input
                 class="bp3-input"
                 disabled=""
-                id="contests[0].numVotes"
-                name="contests[0].numVotes"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
                 type="text"
                 value="1"
@@ -3694,7 +3694,7 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
           Number of selections the voter can make in the contest.
         </div>
         <label
-          for="contests[0].numVotes"
+          for="contests[0].votesAllowed"
         >
           Votes
           <div
@@ -3705,8 +3705,8 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
             >
               <input
                 class="bp3-input"
-                id="contests[0].numVotes"
-                name="contests[0].numVotes"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
                 type="text"
                 value="1"
@@ -4136,7 +4136,7 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
           Number of selections the voter can make in the contest.
         </div>
         <label
-          for="contests[0].numVotes"
+          for="contests[0].votesAllowed"
         >
           Votes
           <div
@@ -4147,8 +4147,8 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
             >
               <input
                 class="bp3-input"
-                id="contests[0].numVotes"
-                name="contests[0].numVotes"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
                 type="text"
                 value="1"
