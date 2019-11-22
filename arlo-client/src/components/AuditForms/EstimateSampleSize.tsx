@@ -18,7 +18,7 @@ import FormTitle from '../Form/FormTitle'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api, poll } from '../utilities'
+import { api, poll, toaster } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import { IAudit } from '../../types'
 import number, { parse as parseNumber } from '../../utils/number-schema'
@@ -203,12 +203,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
           },
         }
       )
-      const { errors } = JSON.parse(response)
-      if (errors) {
-        toast.error(
-          'There was a server error regarding: ' +
-            errors.map((v: { message: string }) => v.message).join(', ')
-        )
+      if (toaster(JSON.parse(response))) {
         setIsLoading(false)
         return
       }

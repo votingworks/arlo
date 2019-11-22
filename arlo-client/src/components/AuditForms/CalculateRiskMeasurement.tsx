@@ -13,7 +13,7 @@ import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api, testNumber, poll } from '../utilities'
+import { api, testNumber, poll, toaster } from '../utilities'
 import {
   IContest,
   IRound,
@@ -79,10 +79,17 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
 }: IProps) => {
   const getBallots = async (r: number): Promise<IBallot[]> => {
     const round = audit.rounds[r]
-    const { ballots } = await api<{ ballots: IBallot[] }>(
+    const response = await api<{
+      ballots: IBallot[]
+      errors?: { message: string }[]
+    }>(
       `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/round/${round.id}/ballot-list`
     )
-    return ballots
+    if (toaster(response)) {
+      return []
+    } else {
+      return response.ballots
+    }
   }
 
   const downloadBallotRetrievalList = (id: number, e: React.FormEvent) => {
@@ -186,7 +193,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
 
     try {
       setIsLoading(true)
-      await api(
+      const response: string = await api(
         `/election/${electionId}/jurisdiction/${jurisdictionID}/${values.round}/results`,
         {
           method: 'POST',
@@ -196,6 +203,10 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
           body: JSON.stringify(body),
         }
       )
+      if (toaster(JSON.parse(response))) {
+        setIsLoading(false)
+        return
+      }
       const condition = async () => {
         const { rounds } = await getStatus()
         const { contests } = rounds[rounds.length - 1]

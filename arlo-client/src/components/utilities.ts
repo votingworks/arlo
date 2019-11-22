@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify'
 import number from '../utils/number-schema'
 
 export const api = async <T>(
@@ -106,5 +107,20 @@ export const openQR = (id: string, name: string) => {
       },
       true
     )
+  }
+}
+
+export const toaster = (response: {
+  errors?: { message: string }[]
+}): boolean => {
+  const { errors } = response
+  if (errors) {
+    toast.error(
+      'There was a server error regarding: ' +
+        errors.map((v: { message: string }) => v.message).join(', ')
+    )
+    return true
+  } else {
+    return false
   }
 }
