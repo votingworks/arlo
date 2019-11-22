@@ -122,13 +122,16 @@ const contestsSchema = Yup.array()
           'is-sufficient',
           'Must be greater than or equal to the sum of votes for each candidate/choice',
           function(value?: unknown) {
-            const { choices } = this.parent
-            const totalVoters = choices.reduce(
-              (a: number, v: ChoiceValues) =>
-                a + (parseNumber(v.numVotes) || 0),
+            const ballots = parseNumber(value)
+            const choices: ChoiceValues[] = this.parent.choices
+            const totalVotes = choices.reduce(
+              (sum, choiceValue) =>
+                sum + (parseNumber(choiceValue.numVotes) || 0),
               0
             )
-            return parseNumber(value) >= totalVoters || this.createError()
+            const allowedVotesPerBallot: number = this.parent.votesAllowed
+            const totalAllowedVotes = allowedVotesPerBallot * ballots
+            return totalAllowedVotes >= totalVotes || this.createError()
           }
         )
         .required('Required'),
@@ -320,7 +323,7 @@ const EstimateSampleSize: React.FC<Props> = ({
                               contest.
                             </FormSectionDescription>
                             <label htmlFor={`contests[${i}].votesAllowed`}>
-                              Votes
+                              Votes Allowed
                               <Field
                                 id={`contests[${i}].votesAllowed`}
                                 name={`contests[${i}].votesAllowed`}

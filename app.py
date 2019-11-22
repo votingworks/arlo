@@ -342,9 +342,12 @@ def audit_basic_update(election_id):
     election.risk_limit = info['riskLimit']
     election.random_seed = info['randomSeed']
 
+    errors = []
     db.session.query(TargetedContest).filter_by(election_id = election.id).delete()
 
     for contest in info['contests']:
+        total_allowed_votes_in_contest = contest['totalBallotsCast'] * contest['votesAllowed']
+
         contest_obj = TargetedContest(election_id = election.id,
                              id = contest['id'],
                              name = contest['name'],
@@ -353,12 +356,26 @@ def audit_basic_update(election_id):
                              votes_allowed = contest['votesAllowed'])
         db.session.add(contest_obj)
 
+        total_votes_in_all_choices = 0
+
         for choice in contest['choices']:
+            total_votes_in_all_choices += choice['numVotes']
+
             choice_obj = TargetedContestChoice(id = choice['id'],
                                                contest_id = contest_obj.id,
                                                name = choice['name'],
                                                num_votes = choice['numVotes'])
             db.session.add(choice_obj)
+
+        if total_votes_in_all_choices > total_allowed_votes_in_contest:
+            errors.append({
+                'message': f'Too many votes cast in contest: {contest["name"]} ({total_votes_in_all_choices} votes, {total_allowed_votes_in_contest} allowed)',
+                'errorType': 'TooManyVotes'
+            })
+
+    if errors:
+        db.session.rollback()
+        return jsonify(errors=errors), 400
 
     # prepare the round, including sample sizes
     setup_next_round(election)

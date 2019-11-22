@@ -123,7 +123,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
         <label
           for="contests[0].votesAllowed"
         >
-          Votes
+          Votes Allowed
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -557,7 +557,7 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
         <label
           for="contests[0].votesAllowed"
         >
-          Votes
+          Votes Allowed
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -1017,7 +1017,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
         <label
           for="contests[0].votesAllowed"
         >
-          Votes
+          Votes Allowed
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -1451,7 +1451,7 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
         <label
           for="contests[0].votesAllowed"
         >
-          Votes
+          Votes Allowed
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -1911,7 +1911,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
         <label
           for="contests[0].votesAllowed"
         >
-          Votes
+          Votes Allowed
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -2345,7 +2345,7 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
         <label
           for="contests[0].votesAllowed"
         >
-          Votes
+          Votes Allowed
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -2805,7 +2805,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
         <label
           for="contests[0].votesAllowed"
         >
-          Votes
+          Votes Allowed
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -3239,7 +3239,7 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
         <label
           for="contests[0].votesAllowed"
         >
-          Votes
+          Votes Allowed
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -3696,7 +3696,7 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
         <label
           for="contests[0].votesAllowed"
         >
-          Votes
+          Votes Allowed
           <div
             class="sc-bZQynM iEAxBy"
           >
@@ -4138,7 +4138,7 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
         <label
           for="contests[0].votesAllowed"
         >
-          Votes
+          Votes Allowed
           <div
             class="sc-bZQynM iEAxBy"
           >

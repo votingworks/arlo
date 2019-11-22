@@ -183,6 +183,13 @@ function getDisplayName(WrappedComponent: {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component'
 }
 
+function typeInto(input: Element, value: string): void {
+  // TODO: do more, like `focusIn`, `focusOut`, `input`, etc?
+  fireEvent.focus(input)
+  fireEvent.change(input, { target: { value } })
+  fireEvent.blur(input)
+}
+
 describe('EstimateSampleSize', () => {
   ;[
     TwoColumnSection,
@@ -419,7 +426,7 @@ describe('EstimateSampleSize', () => {
       const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',
       }) as HTMLInputElement
-      fireEvent.change(input, { target: { value: inputData.value } })
+      typeInto(input, inputData.value)
       expect(input.value).toBe(inputData.value)
     })
 
@@ -474,7 +481,7 @@ describe('EstimateSampleSize', () => {
       const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',
       }) as HTMLInputElement
-      fireEvent.change(input, { target: { value: inputData.value } })
+      typeInto(input, inputData.value)
       expect(input.value).toBe(inputData.value)
     })
 
@@ -515,8 +522,7 @@ describe('EstimateSampleSize', () => {
           selector: 'input',
         }) as HTMLInputElement
         const errorID = input.name + '-error'
-        fireEvent.change(input, { target: { value: value } })
-        fireEvent.blur(input)
+        typeInto(input, value)
         await wait(() => {
           expect({
             text: getByTestId(errorID).textContent,
@@ -532,6 +538,98 @@ describe('EstimateSampleSize', () => {
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
     await wait(() => {
       expect(apiMock.mock.calls.length).toBe(0) // doesn't post because of errors
+    })
+  })
+
+  it('displays an error when the total votes are greater than the allowed votes and more than one vote is allowed per contest', async () => {
+    const { getByLabelText, getByTestId } = render(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+        getStatus={jest.fn()}
+        electionId="1"
+      />
+    )
+
+    typeInto(
+      getByLabelText('Votes Allowed', {
+        selector: 'input',
+      }),
+      '2'
+    )
+
+    typeInto(
+      getByLabelText('Votes for Candidate/Choice 1', {
+        selector: 'input',
+      }),
+      '21'
+    )
+
+    typeInto(
+      getByLabelText('Votes for Candidate/Choice 2', {
+        selector: 'input',
+      }),
+      '40'
+    )
+
+    const totalBallotInput = getByLabelText('Total Ballots for Contest', {
+      selector: 'input',
+    }) as HTMLInputElement
+    typeInto(totalBallotInput, '30')
+
+    await wait(() => {
+      // 30 ballots * 2 allowed votes / ballot = 60 allowed votes
+      // 21 actual votes in choice #1 + 40 actual votes in choice #2 = 61 actual votes
+      expect(getByTestId(`${totalBallotInput.name}-error`).textContent).toBe(
+        'Must be greater than or equal to the sum of votes for each candidate/choice'
+      )
+    })
+  })
+
+  it('displays no error when the total votes are greater than the ballot count, but less than the total allowed votes for a contest', async () => {
+    const { getByLabelText, queryByTestId } = render(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+        getStatus={jest.fn()}
+        electionId="1"
+      />
+    )
+
+    typeInto(
+      getByLabelText('Votes Allowed', {
+        selector: 'input',
+      }),
+      '2'
+    )
+
+    typeInto(
+      getByLabelText('Votes for Candidate/Choice 1', {
+        selector: 'input',
+      }),
+      '20'
+    )
+
+    typeInto(
+      getByLabelText('Votes for Candidate/Choice 2', {
+        selector: 'input',
+      }),
+      '40'
+    )
+
+    const totalBallotInput = getByLabelText('Total Ballots for Contest', {
+      selector: 'input',
+    }) as HTMLInputElement
+    typeInto(totalBallotInput, '30')
+
+    await wait(() => {
+      // 30 ballots * 2 allowed votes / ballot = 60 allowed votes
+      // 20 actual votes in choice #1 + 40 actual votes in choice #2 = 60 actual votes
+      expect(queryByTestId(`${totalBallotInput.name}-error`)).toBeNull()
     })
   })
 

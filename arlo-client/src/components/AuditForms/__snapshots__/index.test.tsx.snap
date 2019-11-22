@@ -118,7 +118,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           <label
             for="contests[0].votesAllowed"
           >
-            Votes
+            Votes Allowed
             <div
               class="sc-bZQynM iEAxBy"
             >
@@ -783,7 +783,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           <label
             for="contests[0].votesAllowed"
           >
-            Votes
+            Votes Allowed
             <div
               class="sc-bZQynM iEAxBy"
             >
@@ -1218,7 +1218,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
           <label
             for="contests[0].votesAllowed"
           >
-            Votes
+            Votes Allowed
             <div
               class="sc-bZQynM iEAxBy"
             >
@@ -1667,7 +1667,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           <label
             for="contests[0].votesAllowed"
           >
-            Votes
+            Votes Allowed
             <div
               class="sc-bZQynM iEAxBy"
             >
@@ -2510,7 +2510,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           <label
             for="contests[0].votesAllowed"
           >
-            Votes
+            Votes Allowed
             <div
               class="sc-bZQynM iEAxBy"
             >
@@ -3172,7 +3172,7 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
           <label
             for="contests[0].votesAllowed"
           >
-            Votes
+            Votes Allowed
             <div
               class="sc-bZQynM iEAxBy"
             >
