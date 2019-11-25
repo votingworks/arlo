@@ -1,13 +1,13 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
-import FormField, { Props } from './FormField'
+import FormField, { IProps } from './FormField'
 
 function testForm({
   errors = {},
   touched = {},
   setFieldTouched = jest.fn(),
   setFieldValue = jest.fn(),
-}: Partial<Props['form']> = {}): Props['form'] {
+}: Partial<IProps['form']> = {}): IProps['form'] {
   return { errors, touched, setFieldTouched, setFieldValue }
 }
 

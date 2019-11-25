@@ -9,11 +9,11 @@ const StyledFormTitle = styled(H2)`
 `
 /* stylelint-enable */
 
-interface Props {
+interface IProps {
   children: React.ReactNode
 }
 
-const FormTitle: React.FC<Props> = ({ children }: Props) => (
+const FormTitle: React.FC<IProps> = ({ children }: IProps) => (
   <StyledFormTitle>{children}</StyledFormTitle>
 )
 

@@ -1,24 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import styled from 'styled-components'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api } from '../utilities'
-import { Audit, Params } from '../../types'
+import { IAudit, ICreateAuditParams } from '../../types'
 import ResetButton from './ResetButton'
+import Wrapper from '../Atoms/Wrapper'
 
-const Wrapper = styled.div`
-  flex-grow: 1;
-  margin-top: 20px;
-  margin-right: auto;
-  margin-left: auto;
-  width: 100%;
-  max-width: 1020px;
-  padding-right: 15px;
-  padding-left: 15px;
-`
-
-const initialData: Audit = {
+const initialData: IAudit = {
   name: '',
   riskLimit: '',
   randomSeed: '',
@@ -27,23 +16,23 @@ const initialData: Audit = {
   rounds: [],
 }
 
-interface Props {
+interface IProps {
   match: {
-    params: Params
+    params: ICreateAuditParams
   }
 }
 
-const AuditForms: React.FC<Props> = ({
+const AuditForms: React.FC<IProps> = ({
   match: {
     params: { electionId },
   },
-}: Props) => {
+}: IProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [audit, setAudit] = useState(initialData)
 
-  const getStatus = useCallback(async (): Promise<Audit> => {
-    const audit: Audit = await api(`/election/${electionId}/audit/status`)
+  const getStatus = useCallback(async (): Promise<IAudit> => {
+    const audit: IAudit = await api(`/election/${electionId}/audit/status`)
     return audit
   }, [electionId])
 

@@ -2,9 +2,17 @@
 
 import React from 'react'
 import { toast } from 'react-toastify'
-import { Formik, FormikProps, Field, getIn } from 'formik'
+import {
+  Formik,
+  FormikProps,
+  Field,
+  getIn,
+  FieldArray,
+  ArrayHelpers,
+} from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
+import QRCode from 'qrcode.react'
 import {
   RadioGroup,
   Radio,
@@ -13,6 +21,7 @@ import {
   Spinner,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -20,8 +29,13 @@ import FormSection, {
 import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormButtonBar from '../Form/FormButtonBar'
-import { Jurisdiction, Audit, SampleSizeOption } from '../../types'
-import { api, testNumber } from '../utilities'
+import {
+  IJurisdiction,
+  IAudit,
+  ISampleSizeOption,
+  IAuditBoard,
+} from '../../types'
+import { api, testNumber, openQR } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
 import FormField from '../Form/FormField'
@@ -31,22 +45,47 @@ import { formattedUpTo } from '../../utils/indexes'
 export const Select = styled(HTMLSelect)`
   margin-left: 5px;
 `
+export const AuditBoardsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`
 
-interface SampleSizeOptionsByContest {
-  [key: string]: SampleSizeOption[]
+export const AuditBoard = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 5px 20px 5px 0;
+  width: 100px;
+  text-align: center;
+`
+
+// override size on QR element to display in grid
+export const QR = styled(QRCode)`
+  margin: 2px;
+  border: 1px solid #000000;
+  cursor: pointer;
+  /* stylelint-disable */
+  width: 90px !important;
+  height: 90px !important;
+  /* stylelint-enable */
+  padding: 3px;
+`
+
+interface ISampleSizeOptionsByContest {
+  [key: string]: ISampleSizeOption[]
 }
 
-interface Props {
-  audit: Audit
+interface IProps {
+  audit: IAudit
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
   updateAudit: () => void
-  getStatus: () => Promise<Audit>
+  getStatus: () => Promise<IAudit>
   electionId: string
 }
 
-interface SelectBallotsToAuditValues {
+interface ISelectBallotsToAuditValues {
   auditBoards: string
+  auditNames: string[]
   manifest: File | null
   sampleSize: {
     [key: string]: string
@@ -65,14 +104,14 @@ const schema = Yup.object().shape({
   manifest: Yup.mixed().required('You must upload a manifest'),
 })
 
-const SelectBallotsToAudit: React.FC<Props> = ({
+const SelectBallotsToAudit: React.FC<IProps> = ({
   audit,
   isLoading,
   setIsLoading,
   updateAudit,
   getStatus,
   electionId,
-}: Props) => {
+}: IProps) => {
   const manifestUploaded =
     audit.jurisdictions.length &&
     audit.jurisdictions[0].ballotManifest &&
@@ -81,7 +120,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
     audit.jurisdictions[0].ballotManifest.numBatches
   const sampleSizeSelected = audit.rounds[0].contests.every(c => !!c.sampleSize)
 
-  const handlePost = async (values: SelectBallotsToAuditValues) => {
+  const handlePost = async (values: ISelectBallotsToAuditValues) => {
     try {
       const auditBoards = [
         ...formattedUpTo(parseNumber(values.auditBoards)),
@@ -94,7 +133,7 @@ const SelectBallotsToAudit: React.FC<Props> = ({
       })
 
       // upload jurisdictions
-      const data: Jurisdiction[] = [
+      const data: IJurisdiction[] = [
         {
           id: uuidv4(),
           name: 'Jurisdiction 1',
@@ -149,12 +188,18 @@ const SelectBallotsToAudit: React.FC<Props> = ({
     }
   }
 
-  const initialState: SelectBallotsToAuditValues = {
-    auditBoards:
-      '' +
-      ((audit.jurisdictions.length &&
-        audit.jurisdictions[0].auditBoards.length) ||
-        1),
+  const numberOfBoards =
+    (audit.jurisdictions.length && audit.jurisdictions[0].auditBoards.length) ||
+    1
+  const auditNames =
+    audit.jurisdictions.length && audit.jurisdictions[0].auditBoards.length
+      ? audit.jurisdictions[0].auditBoards.map(
+          (board: IAuditBoard) => board.name
+        )
+      : Array(numberOfBoards).fill('')
+  const initialState: ISelectBallotsToAuditValues = {
+    auditBoards: '' + numberOfBoards,
+    auditNames,
     manifest: null, // eslint-disable-line no-null/no-null
     sampleSize: [...audit.rounds[0].contests].reduce(
       (a: { [key: string]: string }, c) => {
@@ -182,11 +227,11 @@ const SelectBallotsToAudit: React.FC<Props> = ({
   }
 
   const sampleSizeOptions = [...audit.rounds[0].contests].reduce<
-    SampleSizeOptionsByContest
+    ISampleSizeOptionsByContest
   >((acc, contest) => {
     acc[contest.id] =
       contest.sampleSizeOptions && contest.sampleSizeOptions.length
-        ? contest.sampleSizeOptions.reduce<SampleSizeOption[]>(
+        ? contest.sampleSizeOptions.reduce<ISampleSizeOption[]>(
             (acc, option) => {
               const duplicateOptionIndex: number = acc.findIndex(
                 v => Number(v.size) === option.size
@@ -229,8 +274,8 @@ const SelectBallotsToAudit: React.FC<Props> = ({
         errors,
         touched,
         setFieldValue,
-      }: FormikProps<SelectBallotsToAuditValues>) => (
-        <form onSubmit={handleSubmit} id="formTwo" data-testid="form-two">
+      }: FormikProps<ISelectBallotsToAuditValues>) => (
+        <form onSubmit={handleSubmit} id="fillFormTwo" data-testid="form-two">
           <hr />
           <FormWrapper>
             <FormTitle>Select Ballots to Audit</FormTitle>
@@ -296,22 +341,80 @@ const SelectBallotsToAudit: React.FC<Props> = ({
                   ))}
                 </FormSection>
               )}
-            <FormSection label="Number of Audit Boards">
-              <label htmlFor="auditBoards">
-                Set the number of audit boards you wish to use.
-                <Field
-                  component={Select}
-                  id="auditBoards"
-                  name="auditBoards"
-                  onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-                    setFieldValue('auditBoards', e.currentTarget.value)
+            <FieldArray
+              name="auditNames"
+              render={(utils: ArrayHelpers) => {
+                const changeBoards = (n: number) => {
+                  let num = values.auditNames.length
+                  setFieldValue('auditBoards', n)
+                  while (n > num) {
+                    utils.push('')
+                    num += 1
                   }
-                  disabled={sampleSizeSelected}
-                >
-                  {generateOptions(15)}
-                </Field>
-              </label>
-            </FormSection>
+                  while (n < num) {
+                    utils.pop()
+                    num -= 1
+                  }
+                }
+                return (
+                  <FormSection label="Audit Boards">
+                    <label htmlFor="auditBoards">
+                      Set the number of audit boards you wish to use.
+                      <Field
+                        component={Select}
+                        id="auditBoards"
+                        name="auditBoards"
+                        onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                          changeBoards(Number(e.currentTarget.value))
+                        }
+                        disabled={sampleSizeSelected}
+                      >
+                        {generateOptions(15)}
+                      </Field>
+                    </label>
+                    <AuditBoardsWrapper>
+                      {values.auditNames.map((name, i) => (
+                        /* eslint-disable react/no-array-index-key */
+                        <AuditBoard key={i}>
+                          {/* <Field
+                            name={`auditNames[${i}]`}
+                            data-testid={`audit-name-${i}`}
+                            disabled={sampleSizeSelected}
+                          /> */}
+                          {sampleSizeSelected && (
+                            <>
+                              <Link
+                                to={`/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}
+                                className="bp3-text-small"
+                              >
+                                {name}
+                              </Link>
+                              {/* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus */}
+                              <span
+                                id={`qr-${audit.jurisdictions[0].auditBoards[i].id}`}
+                                title="Click to print"
+                                role="button"
+                                onClick={() =>
+                                  openQR(
+                                    audit.jurisdictions[0].auditBoards[i].id,
+                                    name
+                                  )
+                                }
+                              >
+                                <QR
+                                  value={`${window.location.origin}/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}
+                                  size={250} // set size for printing so resolution is right
+                                />
+                              </span>
+                            </>
+                          )}
+                        </AuditBoard>
+                      ))}
+                    </AuditBoardsWrapper>
+                  </FormSection>
+                )
+              }}
+            />
             <FormSection label="Ballot Manifest">
               {manifestUploaded && audit.jurisdictions[0].ballotManifest ? ( // duplicating effect of manifestUploaded for TS
                 <React.Fragment>

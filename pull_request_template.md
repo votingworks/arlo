@@ -26,6 +26,8 @@
 
 [] Code is easily understandable and self-documenting (using naming conventions in keeping with the rest of the codebase)
 
+[] Interfaces all have 'I' before their names (as in `IAudit`)
+
 [] Comments are only included as needed to explain the 'why' instead of the 'what'
 
 [] Common standards and coding practices are adhered to
