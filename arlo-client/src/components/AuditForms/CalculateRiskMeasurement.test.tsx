@@ -12,6 +12,10 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
+const toasterMock: jest.SpyInstance<
+  ReturnType<typeof utilities.toaster>,
+  Parameters<typeof utilities.toaster>
+> = jest.spyOn(utilities, 'toaster').mockImplementation(() => false)
 
 jest.mock('jspdf')
 
@@ -40,6 +44,7 @@ beforeEach(() => {
   toastSpy.mockClear()
   apiMock.mockClear()
   jspdfMock.mockClear()
+  toasterMock.mockClear()
 })
 
 describe('CalculateRiskMeasurement', () => {

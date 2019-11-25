@@ -21,6 +21,7 @@ import {
   IRoundContest,
   IAudit,
   IBallot,
+  IErrorResponse,
 } from '../../types'
 
 const InputSection = styled.div`
@@ -79,10 +80,11 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
 }: IProps) => {
   const getBallots = async (r: number): Promise<IBallot[]> => {
     const round = audit.rounds[r]
-    const response = await api<{
-      ballots: IBallot[]
-      errors?: { message: string }[]
-    }>(
+    const response = await api<
+      {
+        ballots: IBallot[]
+      } & IErrorResponse
+    >(
       `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/round/${round.id}/ballot-list`
     )
     if (toaster(response)) {
@@ -193,7 +195,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
 
     try {
       setIsLoading(true)
-      const response: string = await api(
+      const response: IErrorResponse = await api(
         `/election/${electionId}/jurisdiction/${jurisdictionID}/${values.round}/results`,
         {
           method: 'POST',
@@ -203,7 +205,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
           body: JSON.stringify(body),
         }
       )
-      if (toaster(JSON.parse(response))) {
+      if (toaster(response)) {
         setIsLoading(false)
         return
       }

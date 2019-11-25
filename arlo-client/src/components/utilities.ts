@@ -1,5 +1,6 @@
 import { toast } from 'react-toastify'
 import number from '../utils/number-schema'
+import { IErrorResponse } from '../types'
 
 export const api = async <T>(
   endpoint: string,
@@ -12,7 +13,8 @@ export const api = async <T>(
     }
     return res.json() as Promise<T>
   } catch (err) {
-    return err.text()
+    const error = await err.json()
+    return Promise.reject(error)
   }
 }
 
@@ -110,9 +112,7 @@ export const openQR = (id: string, name: string) => {
   }
 }
 
-export const toaster = (response: {
-  errors?: { message: string }[]
-}): boolean => {
+export const toaster = (response: IErrorResponse): boolean => {
   const { errors } = response
   if (errors) {
     toast.error(

@@ -34,6 +34,7 @@ import {
   IAudit,
   ISampleSizeOption,
   IAuditBoard,
+  IErrorResponse,
 } from '../../types'
 import { api, testNumber, openQR, toaster } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
@@ -151,7 +152,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
         const body = {
           size, // until multiple contests are supported
         }
-        const response: string = await api(
+        const response: IErrorResponse = await api(
           `/election/${electionId}/audit/sample-size`,
           {
             method: 'POST',
@@ -161,9 +162,9 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
             },
           }
         )
-        if (toaster(JSON.parse(response))) return
+        if (toaster(response)) return
       }
-      const response: string = await api(
+      const response: IErrorResponse = await api(
         `/election/${electionId}/audit/jurisdictions`,
         {
           method: 'POST',
@@ -173,7 +174,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
           },
         }
       )
-      if (toaster(JSON.parse(response))) return
+      if (toaster(response)) return
 
       const newStatus = await getStatus()
       const jurisdictionID: string = newStatus.jurisdictions[0].id
@@ -182,14 +183,14 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
       if (values.manifest) {
         const formData: FormData = new FormData()
         formData.append('manifest', values.manifest, values.manifest.name)
-        const response: string = await api(
+        const response: IErrorResponse = await api(
           `/election/${electionId}/jurisdiction/${jurisdictionID}/manifest`,
           {
             method: 'POST',
             body: formData,
           }
         )
-        if (toaster(JSON.parse(response))) return
+        if (toaster(response)) return
       }
 
       updateAudit()

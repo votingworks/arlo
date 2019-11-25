@@ -12,6 +12,11 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
+
+const toasterMock: jest.SpyInstance<
+  ReturnType<typeof utilities.toaster>,
+  Parameters<typeof utilities.toaster>
+> = jest.spyOn(utilities, 'toaster').mockImplementation(() => false)
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 async function inputAndSubmitForm() {
@@ -64,6 +69,7 @@ async function inputAndSubmitForm() {
 beforeEach(() => {
   apiMock.mockClear()
   toastSpy.mockClear()
+  toasterMock.mockClear()
 })
 
 describe('SelectBallotsToAudit', () => {
@@ -132,6 +138,7 @@ describe('SelectBallotsToAudit', () => {
     const updateAuditMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
+    apiMock.mockImplementation(async () => {})
 
     const {
       getByText,
@@ -165,50 +172,53 @@ describe('SelectBallotsToAudit', () => {
       expect(queryAllByTestId('customSampleSize[contest-1]').length).toBe(0)
     })
     fireEvent.click(customRadio, { bubbles: true })
-    await wait(async () => {
-      const customInput = getByTestId('customSampleSize[contest-1]')
-      fireEvent.change(customInput, { target: { value: '3000' } })
-      fireEvent.blur(customInput)
-      await wait(() => {
-        expect(
-          getByText('Must be less than or equal to the total number of ballots')
-        ).toBeTruthy()
+    await wait(() => {
+      expect(queryAllByTestId('customSampleSize[contest-1]').length).toBe(1)
+    })
+
+    const customInput = getByTestId('customSampleSize[contest-1]')
+    fireEvent.change(customInput, { target: { value: '3000' } })
+    fireEvent.blur(customInput)
+    await wait(() => {
+      expect(
+        getByText('Must be less than or equal to the total number of ballots')
+      ).toBeTruthy()
+    })
+    fireEvent.change(customInput, { target: { value: '11' } })
+    fireEvent.blur(customInput)
+    await wait(() => {
+      expect(
+        queryAllByText(
+          'Must be less than or equal to the total number of ballots'
+        ).length
+      ).toBe(0)
+    })
+
+    const manifestInput = getByLabelText('Select manifest...')
+    fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
+
+    const submitButton = getByText('Select Ballots To Audit')
+    fireEvent.click(submitButton, { bubbles: true })
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(3)
+
+      expect(apiMock.mock.calls[0][0]).toMatch(
+        /\/election\/[^/]+\/audit\/sample-size/
+      )
+      expect(apiMock.mock.calls[0][1]).toMatchObject({
+        method: 'POST',
+        body: JSON.stringify({
+          size: '11',
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      fireEvent.change(customInput, { target: { value: '11' } })
-      fireEvent.blur(customInput)
-      await wait(() => {
-        expect(
-          queryAllByText(
-            'Must be less than or equal to the total number of ballots'
-          ).length
-        ).toBe(0)
-      })
 
-      const manifestInput = getByLabelText('Select manifest...')
-      fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
-
-      const submitButton = getByText('Select Ballots To Audit')
-      fireEvent.click(submitButton, { bubbles: true })
-
-      await wait(() => {
-        expect(apiMock).toBeCalledTimes(3)
-
-        expect(apiMock.mock.calls[0][0]).toMatch(
-          /\/election\/[^/]+\/audit\/sample-size/
-        )
-        expect(apiMock.mock.calls[0][1]).toMatchObject({
-          method: 'POST',
-          body: JSON.stringify({
-            size: '11',
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-
-        expect((getStatusMock as jest.Mock).mock.calls.length).toBe(1)
-        expect((updateAuditMock as jest.Mock).mock.calls.length).toBe(1)
-      })
+      expect(getStatusMock).toBeCalledTimes(1)
+      expect(updateAuditMock).toBeCalledTimes(1)
+      expect(toasterMock).toBeCalledTimes(3)
     })
   })
 
@@ -262,7 +272,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('submits sample size, ballot manifest, and audits', async () => {
-    apiMock.mockImplementation(async () => ({}))
+    apiMock.mockImplementation(async () => {})
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -338,9 +348,9 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles api error on /audit/jurisdictions', async () => {
     apiMock
-      .mockImplementationOnce(async () => ({}))
+      .mockImplementationOnce(async () => {})
       .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
-      .mockImplementation(async () => ({}))
+      .mockImplementation(async () => {})
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -355,8 +365,8 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles api error on /audit/jurisdiction/:id/manifest', async () => {
     apiMock
-      .mockImplementationOnce(async () => ({}))
-      .mockImplementationOnce(async () => ({}))
+      .mockImplementationOnce(async () => {})
+      .mockImplementationOnce(async () => {})
       .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()

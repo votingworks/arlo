@@ -4,10 +4,13 @@ import { api, testNumber, poll } from './utilities'
 const response = () =>
   new Response(new Blob([JSON.stringify({ success: true })]))
 const badResponse = () =>
-  new Response(undefined, {
-    status: 404,
-    statusText: 'A test error',
-  })
+  new Response(
+    new Blob([JSON.stringify({ errors: [{ message: 'An error message' }] })]),
+    {
+      status: 404,
+      statusText: 'A test error',
+    }
+  )
 
 const fetchSpy = jest.spyOn(window, 'fetch').mockImplementation()
 
@@ -30,9 +33,9 @@ describe('utilities.ts', () => {
 
     it('throws an error', async () => {
       fetchSpy.mockImplementationOnce(async () => badResponse())
-      await expect(api('/test', { method: 'GET' })).rejects.toThrow(
-        'A test error'
-      )
+      await expect(api('/test', { method: 'GET' })).rejects.toStrictEqual({
+        errors: [{ message: 'An error message' }],
+      })
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/test', {

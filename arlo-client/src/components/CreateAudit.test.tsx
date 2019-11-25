@@ -4,11 +4,17 @@ import { RouteComponentProps } from 'react-router-dom'
 import CreateAudit from './CreateAudit'
 import { ICreateAuditParams } from '../types'
 import { routerTestProps } from './testUtilities'
-import { api } from './utilities'
+import { api, toaster } from './utilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
+const toasterMock = toaster as jest.Mock<
+  ReturnType<typeof toaster>,
+  Parameters<typeof toaster>
+>
 
 jest.mock('./utilities')
+
+toasterMock.mockImplementation(() => false)
 
 const routeProps: RouteComponentProps<ICreateAuditParams> = routerTestProps(
   '/election/:electionId',

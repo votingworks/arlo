@@ -1,12 +1,17 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import ResetButton from './ResetButton'
-import { api } from '../utilities'
+import { api, toaster } from '../utilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
+const toasterMock = toaster as jest.Mock<
+  ReturnType<typeof toaster>,
+  Parameters<typeof toaster>
+>
 
 jest.mock('../utilities')
-apiMock.mockImplementationOnce(async () => ({}))
+apiMock.mockImplementationOnce(async () => '{}')
+toasterMock.mockImplementation(() => false)
 
 describe('ResetButton', () => {
   it('renders', () => {
@@ -39,6 +44,7 @@ describe('ResetButton', () => {
 
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
+      expect(toasterMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(1)
     })
   })

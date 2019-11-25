@@ -9,17 +9,24 @@ import {
 import { BrowserRouter as Router } from 'react-router-dom'
 import AuditForms from './index'
 import { statusStates } from './_mocks'
-import { api } from '../utilities'
+import { api, toaster } from '../utilities'
 import { routerTestProps } from '../testUtilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
+const toasterMock = toaster as jest.Mock<
+  ReturnType<typeof toaster>,
+  Parameters<typeof toaster>
+>
 
 jest.mock('../utilities')
+
+toasterMock.mockImplementation(() => false)
 
 const routeProps = routerTestProps('/election/:electionId', { electionId: '1' })
 
 afterEach(() => {
   apiMock.mockClear()
+  toasterMock.mockClear()
 })
 
 describe('RiskLimitingAuditForm', () => {

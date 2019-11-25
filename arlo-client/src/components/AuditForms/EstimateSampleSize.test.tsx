@@ -19,11 +19,17 @@ const apiMock: jest.SpyInstance<
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
 
+const toasterMock: jest.SpyInstance<
+  ReturnType<typeof utilities.toaster>,
+  Parameters<typeof utilities.toaster>
+> = jest.spyOn(utilities, 'toaster').mockImplementation(() => false)
+
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 afterEach(() => {
   apiMock.mockClear()
   toastSpy.mockClear()
+  toasterMock.mockClear()
 })
 
 const estimateSampleSizeMocks = {

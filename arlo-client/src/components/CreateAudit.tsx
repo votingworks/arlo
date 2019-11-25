@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { RouteComponentProps } from 'react-router-dom'
 import FormButton from './Form/FormButton'
-import { api } from './utilities'
-import { ICreateAuditParams } from '../types'
+import { api, toaster } from './utilities'
+import { ICreateAuditParams, IErrorResponse } from '../types'
 
 const Button = styled(FormButton)`
   margin: 65px 0;
@@ -26,15 +26,14 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const onClick = async () => {
     try {
       setLoading(true)
-      const response: string = await api('/election/new', {
+      const response: {
+        electionId: string
+      } & IErrorResponse = await api('/election/new', {
         method: 'POST',
       })
-      const { electionId, errors } = JSON.parse(response)
-      if (errors) {
-        toast.error(
-          'There was a server error regarding: ' +
-            errors.map((v: { message: string }) => v.message).join(', ')
-        )
+      const { electionId } = response
+      if (toaster(response)) {
+        return
       }
       history.push(`/election/${electionId}`)
     } catch (err) {

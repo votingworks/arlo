@@ -20,7 +20,7 @@ import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
 import { api, poll, toaster } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
-import { IAudit } from '../../types'
+import { IAudit, IErrorResponse } from '../../types'
 import number, { parse as parseNumber } from '../../utils/number-schema'
 
 export const Select = styled(HTMLSelect)`
@@ -193,7 +193,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
     }
     try {
       setIsLoading(true)
-      const response: string = await api(
+      const response: IErrorResponse = await api(
         `/election/${electionId}/audit/basic`,
         {
           method: 'POST',
@@ -203,7 +203,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
           },
         }
       )
-      if (toaster(JSON.parse(response))) {
+      if (toaster(response)) {
         setIsLoading(false)
         return
       }
