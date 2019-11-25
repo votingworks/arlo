@@ -177,7 +177,7 @@ exports.config = {
   // before: function (capabilities, specs) {
   // },
   before: function() {
-    require('ts-node').register({ files: true })
+    require('ts-node').register({ files: true }) // TODO figure out how to only use ts-node or @babel/register
     require('@babel/register')({
       extensions: ['.ts'],
       presets: [
