@@ -119,6 +119,8 @@ class SampledBallot(db.Model):
 
     # this ballot position should be 1-indexed
     ballot_position = db.Column(db.Integer, nullable=False)
+
+    ticket_number = db.Column(db.String(200), nullable=False)
     
     __table_args__ = (
         db.PrimaryKeyConstraint('round_id', 'jurisdiction_id', 'batch_id', 'ballot_position', 'ticket_number'),
@@ -128,7 +130,6 @@ class SampledBallot(db.Model):
     audit_board_id = db.Column(db.String(200), db.ForeignKey('audit_board.id', ondelete='cascade'), nullable=False)
     vote = db.Column(db.String(200), nullable=True)
     comment = db.Column(db.Text, nullable=True)
-    ticket_number = db.Column(db.String(200), nullable=False)
 
 
 class RoundContest(db.Model):
