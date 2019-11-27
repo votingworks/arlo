@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SelectBallotsToAudit renders correctly 1`] = `
+exports[`SelectBallotsToAudit changes number of audits 1`] = `
 <div>
   <form
     data-testid="form-two"
-    id="formTwo"
+    id="fillFormTwo"
   >
     <hr />
     <div
@@ -24,14 +24,14 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Number of Audit Boards
+          Audit Boards
         </h3>
         <label
           for="auditBoards"
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gqjmRU fLDKDv"
+            class="bp3-html-select sc-VigVT gtiHtv"
           >
             <select
               field="[object Object]"
@@ -105,6 +105,342 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
             </span>
           </div>
         </label>
+        <div
+          class="sc-jTzLTM jLWsng"
+        >
+          <div
+            class="sc-fjdhpX dlakeG"
+          />
+          <div
+            class="sc-fjdhpX dlakeG"
+          />
+          <div
+            class="sc-fjdhpX dlakeG"
+          />
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
+        >
+          Ballot Manifest
+        </h3>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Click "Browse" to choose the appropriate Ballot Manifest file from your computer
+        </div>
+        <label
+          class="bp3-file-input"
+        >
+          <input
+            accept=".csv"
+            name="manifest"
+            type="file"
+          />
+          <span
+            class="bp3-file-upload-input"
+          >
+            Select manifest...
+          </span>
+        </label>
+      </div>
+    </div>
+    <div
+      class="sc-bZQynM gIxRNR"
+    >
+      <button
+        class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Select Ballots To Audit
+        </span>
+      </button>
+    </div>
+  </form>
+</div>
+`;
+
+exports[`SelectBallotsToAudit changes number of audits 2`] = `
+<div>
+  <form
+    data-testid="form-two"
+    id="fillFormTwo"
+  >
+    <hr />
+    <div
+      class="sc-ifAKCX dUfgxM"
+    >
+      <h2
+        class="bp3-heading sc-bxivhb jFEWwS"
+      />
+      <h2
+        class="bp3-heading sc-bxivhb jFEWwS"
+      >
+        Select Ballots to Audit
+      </h2>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
+        >
+          Audit Boards
+        </h3>
+        <label
+          for="auditBoards"
+        >
+          Set the number of audit boards you wish to use.
+          <div
+            class="bp3-html-select sc-VigVT gtiHtv"
+          >
+            <select
+              field="[object Object]"
+              form="[object Object]"
+              id="auditBoards"
+            >
+              <option>
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
+            >
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
+        <div
+          class="sc-jTzLTM jLWsng"
+        >
+          <div
+            class="sc-fjdhpX dlakeG"
+          />
+          <div
+            class="sc-fjdhpX dlakeG"
+          />
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
+        >
+          Ballot Manifest
+        </h3>
+        <div
+          class="sc-bwzfXH izcbHX"
+        >
+          Click "Browse" to choose the appropriate Ballot Manifest file from your computer
+        </div>
+        <label
+          class="bp3-file-input"
+        >
+          <input
+            accept=".csv"
+            name="manifest"
+            type="file"
+          />
+          <span
+            class="bp3-file-upload-input"
+          >
+            Select manifest...
+          </span>
+        </label>
+      </div>
+    </div>
+    <div
+      class="sc-bZQynM gIxRNR"
+    >
+      <button
+        class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Select Ballots To Audit
+        </span>
+      </button>
+    </div>
+  </form>
+</div>
+`;
+
+exports[`SelectBallotsToAudit renders correctly 1`] = `
+<div>
+  <form
+    data-testid="form-two"
+    id="fillFormTwo"
+  >
+    <hr />
+    <div
+      class="sc-ifAKCX dUfgxM"
+    >
+      <h2
+        class="bp3-heading sc-bxivhb jFEWwS"
+      />
+      <h2
+        class="bp3-heading sc-bxivhb jFEWwS"
+      >
+        Select Ballots to Audit
+      </h2>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <h3
+          class="bp3-heading sc-htpNat cNFUHJ"
+        >
+          Audit Boards
+        </h3>
+        <label
+          for="auditBoards"
+        >
+          Set the number of audit boards you wish to use.
+          <div
+            class="bp3-html-select sc-VigVT gtiHtv"
+          >
+            <select
+              field="[object Object]"
+              form="[object Object]"
+              id="auditBoards"
+            >
+              <option>
+                1
+              </option>
+              <option>
+                2
+              </option>
+              <option>
+                3
+              </option>
+              <option>
+                4
+              </option>
+              <option>
+                5
+              </option>
+              <option>
+                6
+              </option>
+              <option>
+                7
+              </option>
+              <option>
+                8
+              </option>
+              <option>
+                9
+              </option>
+              <option>
+                10
+              </option>
+              <option>
+                11
+              </option>
+              <option>
+                12
+              </option>
+              <option>
+                13
+              </option>
+              <option>
+                14
+              </option>
+              <option>
+                15
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
+            >
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
+        <div
+          class="sc-jTzLTM jLWsng"
+        >
+          <div
+            class="sc-fjdhpX dlakeG"
+          />
+        </div>
       </div>
       <div
         class="sc-bdVaJa fdbLH"
@@ -157,7 +493,7 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
 <div>
   <form
     data-testid="form-two"
-    id="formTwo"
+    id="fillFormTwo"
   >
     <hr />
     <div
@@ -177,14 +513,14 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
-          Number of Audit Boards
+          Audit Boards
         </h3>
         <label
           for="auditBoards"
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-gqjmRU fLDKDv"
+            class="bp3-html-select sc-VigVT gtiHtv"
           >
             <select
               field="[object Object]"
@@ -258,6 +594,13 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
             </span>
           </div>
         </label>
+        <div
+          class="sc-jTzLTM jLWsng"
+        >
+          <div
+            class="sc-fjdhpX dlakeG"
+          />
+        </div>
       </div>
       <div
         class="sc-bdVaJa fdbLH"

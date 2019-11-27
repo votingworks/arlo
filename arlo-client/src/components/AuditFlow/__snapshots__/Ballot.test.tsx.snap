@@ -1,0 +1,595 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Ballot redirects if ballot does not exist 1`] = `<div />`;
+
+exports[`Ballot renders correctly 1`] = `
+<div>
+  <div
+    class="sc-fjdhpX kEvzkS"
+  >
+    <h1
+      class="bp3-heading sc-jTzLTM eHLtYK"
+    >
+      audit board #1
+      : Ballot Card Data Entry
+    </h1>
+    <h3
+      class="bp3-heading"
+    >
+      Enter Ballot Information
+    </h3>
+    <div
+      class="bp3-callout sc-jzJRlG iQxVZM"
+    >
+      Round 
+      1
+      : auditing ballot 
+      1
+       of 
+      27
+    </div>
+    <div
+      class="sc-bdVaJa kMtymi"
+    >
+      <div
+        class="ballot-side"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Current ballot:
+        </h4>
+        <div>
+          Tabulator: 
+        </div>
+        <div>
+          Batch: 
+          0003-04-Precinct 13 (Jonesboro Fire Department)
+        </div>
+        <div>
+          Record/Position: 
+          313
+        </div>
+      </div>
+      <div
+        class="bp3-divider"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Are you looking at the correct ballot?
+        </h4>
+        <p>
+          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+        </p>
+        <p>
+          <button
+            class="bp3-button bp3-intent-danger"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Ballot 
+              313
+               not found - move to next ballot
+            </span>
+          </button>
+        </p>
+        <p>
+          <a
+            class="bp3-button bp3-intent-primary"
+            href="/election/1/board/1"
+          >
+            Return to audit overview
+          </a>
+        </p>
+      </div>
+    </div>
+    <div
+      class="sc-bdVaJa kMtymi"
+    >
+      <div
+        class="ballot-side"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Instructions
+        </h4>
+        <p>
+          Select 
+          <strong>
+            all
+          </strong>
+           the candidates/choices below that you see marked on the paper ballot.
+        </p>
+        <p>
+          If the voter did not vote in the contest, select "Blank vote/no mark."
+        </p>
+        <p>
+          If the audit board cannot agree, select "No audit board consensus." You may add a comment for additional information about the disagreement.
+        </p>
+        <form
+          class="sc-bwzfXH imPamb"
+        >
+          <h3
+            class="bp3-heading"
+          >
+            contest name
+          </h3>
+          <div
+            class="bp3-divider"
+          />
+          <div
+            class="sc-htpNat fisUI"
+          >
+            <label
+              class="undefined bp3-control bp3-radio sc-EHOje cxPscF"
+            >
+              <input
+                data-testid="YES"
+                name="vote"
+                type="radio"
+                value="YES"
+              />
+              <span
+                class="bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  Yes/For
+                </span>
+              </span>
+            </label>
+            <label
+              class="undefined bp3-control bp3-radio sc-EHOje cxPscF"
+            >
+              <input
+                data-testid="NO"
+                name="vote"
+                type="radio"
+                value="NO"
+              />
+              <span
+                class="bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  No/Against
+                </span>
+              </span>
+            </label>
+            <label
+              class="undefined bp3-control bp3-radio sc-EHOje cxPscF"
+            >
+              <input
+                data-testid="NO_CONSENSUS"
+                name="vote"
+                type="radio"
+                value="NO_CONSENSUS"
+              />
+              <span
+                class="bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  No audit board consensus
+                </span>
+              </span>
+            </label>
+            <label
+              class="undefined bp3-control bp3-radio sc-EHOje cxPscF"
+            >
+              <input
+                data-testid="NO_VOTE"
+                name="vote"
+                type="radio"
+                value="NO_VOTE"
+              />
+              <span
+                class="bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  Blank vote/no mark
+                </span>
+              </span>
+            </label>
+          </div>
+          <div
+            class="sc-gzVnrw lfdfns"
+          >
+            <textarea
+              class="bp3-input sc-dnqmqq nIqCe"
+              data-testid="comment-textarea"
+              name="comment"
+            />
+          </div>
+        </form>
+        <div
+          class="sc-bxivhb dewsOl"
+        >
+          <button
+            class="bp3-button bp3-disabled bp3-intent-success sc-ifAKCX kKfkZO"
+            data-testid="disabled-review"
+            disabled=""
+            tabindex="-1"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Review
+            </span>
+          </button>
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Back
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Ballot switches audit and review views 1`] = `
+<div>
+  <div
+    class="sc-fjdhpX kEvzkS"
+  >
+    <h1
+      class="bp3-heading sc-jTzLTM eHLtYK"
+    >
+      audit board #1
+      : Ballot Card Data Entry
+    </h1>
+    <h3
+      class="bp3-heading"
+    >
+      Enter Ballot Information
+    </h3>
+    <div
+      class="bp3-callout sc-jzJRlG iQxVZM"
+    >
+      Round 
+      1
+      : auditing ballot 
+      1
+       of 
+      27
+    </div>
+    <div
+      class="sc-bdVaJa kMtymi"
+    >
+      <div
+        class="ballot-side"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Current ballot:
+        </h4>
+        <div>
+          Tabulator: 
+        </div>
+        <div>
+          Batch: 
+          0003-04-Precinct 13 (Jonesboro Fire Department)
+        </div>
+        <div>
+          Record/Position: 
+          313
+        </div>
+      </div>
+      <div
+        class="bp3-divider"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Are you looking at the correct ballot?
+        </h4>
+        <p>
+          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+        </p>
+        <p>
+          <button
+            class="bp3-button bp3-intent-danger"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Ballot 
+              313
+               not found - move to next ballot
+            </span>
+          </button>
+        </p>
+        <p>
+          <a
+            class="bp3-button bp3-intent-primary"
+            href="/election/1/board/1"
+          >
+            Return to audit overview
+          </a>
+        </p>
+      </div>
+    </div>
+    <div
+      class="sc-bdVaJa kMtymi"
+    >
+      <div
+        class="ballot-side"
+      />
+      <div
+        class="ballot-main"
+      >
+        <form
+          class="sc-bwzfXH imPamb"
+        >
+          <h3
+            class="bp3-heading"
+          >
+            contest name
+          </h3>
+          <div
+            class="bp3-divider"
+          />
+          <div
+            class="sc-gqjmRU eYlscI"
+          >
+            <div
+              class="bp3-button-group bp3-fill bp3-large bp3-vertical"
+            >
+              <button
+                class="bp3-button bp3-disabled bp3-fill bp3-large bp3-intent-primary sc-bZQynM hJohEA sc-ifAKCX kKfkZO"
+                disabled=""
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Yes/For
+                </span>
+              </button>
+              <button
+                class="bp3-button"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Edit
+                </span>
+              </button>
+            </div>
+          </div>
+          <p>
+            COMMENT: 
+            
+          </p>
+        </form>
+        <div
+          class="sc-bxivhb dewsOl"
+        >
+          <button
+            class="bp3-button bp3-intent-success sc-ifAKCX kKfkZO"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Submit & Next Ballot
+            </span>
+          </button>
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Back
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Ballot toggles and submits comment 1`] = `
+<div>
+  <div
+    class="sc-fjdhpX kEvzkS"
+  >
+    <h1
+      class="bp3-heading sc-jTzLTM eHLtYK"
+    >
+      audit board #1
+      : Ballot Card Data Entry
+    </h1>
+    <h3
+      class="bp3-heading"
+    >
+      Enter Ballot Information
+    </h3>
+    <div
+      class="bp3-callout sc-jzJRlG iQxVZM"
+    >
+      Round 
+      1
+      : auditing ballot 
+      1
+       of 
+      27
+    </div>
+    <div
+      class="sc-bdVaJa kMtymi"
+    >
+      <div
+        class="ballot-side"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Current ballot:
+        </h4>
+        <div>
+          Tabulator: 
+        </div>
+        <div>
+          Batch: 
+          0003-04-Precinct 13 (Jonesboro Fire Department)
+        </div>
+        <div>
+          Record/Position: 
+          313
+        </div>
+      </div>
+      <div
+        class="bp3-divider"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Are you looking at the correct ballot?
+        </h4>
+        <p>
+          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+        </p>
+        <p>
+          <button
+            class="bp3-button bp3-intent-danger"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Ballot 
+              313
+               not found - move to next ballot
+            </span>
+          </button>
+        </p>
+        <p>
+          <a
+            class="bp3-button bp3-intent-primary"
+            href="/election/1/board/1"
+          >
+            Return to audit overview
+          </a>
+        </p>
+      </div>
+    </div>
+    <div
+      class="sc-bdVaJa kMtymi"
+    >
+      <div
+        class="ballot-side"
+      />
+      <div
+        class="ballot-main"
+      >
+        <form
+          class="sc-bwzfXH imPamb"
+        >
+          <h3
+            class="bp3-heading"
+          >
+            contest name
+          </h3>
+          <div
+            class="bp3-divider"
+          />
+          <div
+            class="sc-gqjmRU eYlscI"
+          >
+            <div
+              class="bp3-button-group bp3-fill bp3-large bp3-vertical"
+            >
+              <button
+                class="bp3-button bp3-disabled bp3-fill bp3-large bp3-intent-primary sc-bZQynM hJohEA sc-ifAKCX kKfkZO"
+                disabled=""
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Yes/For
+                </span>
+              </button>
+              <button
+                class="bp3-button"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Edit
+                </span>
+              </button>
+            </div>
+          </div>
+          <p>
+            COMMENT: 
+            a test comment
+          </p>
+        </form>
+        <div
+          class="sc-bxivhb dewsOl"
+        >
+          <button
+            class="bp3-button bp3-intent-success sc-ifAKCX kKfkZO"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Submit & Next Ballot
+            </span>
+          </button>
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Back
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
