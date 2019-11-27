@@ -88,6 +88,7 @@ interface IContestValues {
   name: string
   totalBallotsCast: string
   winners: string
+  votesAllowed: string
   choices: IChoiceValues[]
 }
 
@@ -108,6 +109,11 @@ const contestsSchema = Yup.array()
         .integer('Must be an integer')
         .min(0, 'Must be a positive number')
         .required('Required'),
+      votesAllowed: number()
+        .typeError('Must be a number')
+        .integer('Must be an integer')
+        .min(0, 'Must be a positive number')
+        .required('Required'),
       totalBallotsCast: number()
         .typeError('Must be a number')
         .integer('Must be an integer')
@@ -116,13 +122,16 @@ const contestsSchema = Yup.array()
           'is-sufficient',
           'Must be greater than or equal to the sum of votes for each candidate/choice',
           function(value?: unknown) {
-            const { choices } = this.parent
-            const totalVoters = choices.reduce(
-              (a: number, v: IChoiceValues) =>
-                a + (parseNumber(v.numVotes) || 0),
+            const ballots = parseNumber(value)
+            const choices: IChoiceValues[] = this.parent.choices
+            const totalVotes = choices.reduce(
+              (sum, choiceValue) =>
+                sum + (parseNumber(choiceValue.numVotes) || 0),
               0
             )
-            return parseNumber(value) >= totalVoters || this.createError()
+            const allowedVotesPerBallot: number = this.parent.votesAllowed
+            const totalAllowedVotes = allowedVotesPerBallot * ballots
+            return totalAllowedVotes >= totalVotes || this.createError()
           }
         )
         .required('Required'),
@@ -174,6 +183,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
         name: contest.name,
         totalBallotsCast: parseNumber(contest.totalBallotsCast),
         winners: parseNumber(contest.winners),
+        votesAllowed: parseNumber(contest.votesAllowed),
         choices: contest.choices.map(choice => ({
           id: uuidv4(),
           name: choice.name,
@@ -213,6 +223,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
       name: '',
       totalBallotsCast: '',
       winners: '1',
+      votesAllowed: '1',
       choices: [
         {
           name: '',
@@ -303,6 +314,19 @@ const EstimateSampleSize: React.FC<IProps> = ({
                               <Field
                                 id={`contests[${i}].winners`}
                                 name={`contests[${i}].winners`}
+                                disabled={!canEstimateSampleSize}
+                                component={FormField}
+                              />
+                            </label>
+                            <FormSectionDescription>
+                              Number of selections the voter can make in the
+                              contest.
+                            </FormSectionDescription>
+                            <label htmlFor={`contests[${i}].votesAllowed`}>
+                              Votes Allowed
+                              <Field
+                                id={`contests[${i}].votesAllowed`}
+                                name={`contests[${i}].votesAllowed`}
                                 disabled={!canEstimateSampleSize}
                                 component={FormField}
                               />

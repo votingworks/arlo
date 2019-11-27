@@ -43,6 +43,7 @@ def contest_status(election):
             for choice in contest.choices])
         contests[contest.id]['ballots'] = contest.total_ballots_cast
         contests[contest.id]['numWinners'] = contest.num_winners
+        contests[contest.id]['votesAllowed'] = contest.votes_allowed
 
     return contests
 
@@ -291,7 +292,8 @@ def audit_status(election_id = None):
                     }
                     for choice in contest.choices],
                 "totalBallotsCast": contest.total_ballots_cast,
-                "numWinners": contest.num_winners
+                "numWinners": contest.num_winners,
+                "votesAllowed": contest.votes_allowed
             }
             for contest in election.contests],
         jurisdictions=[
@@ -357,22 +359,40 @@ def audit_basic_update(election_id):
     election.risk_limit = info['riskLimit']
     election.random_seed = info['randomSeed']
 
+    errors = []
     db.session.query(TargetedContest).filter_by(election_id = election.id).delete()
 
     for contest in info['contests']:
+        total_allowed_votes_in_contest = contest['totalBallotsCast'] * contest['votesAllowed']
+
         contest_obj = TargetedContest(election_id = election.id,
                              id = contest['id'],
                              name = contest['name'],
                              total_ballots_cast = contest['totalBallotsCast'],
-                             num_winners = contest['winners'])
+                             num_winners = contest['winners'],
+                             votes_allowed = contest['votesAllowed'])
         db.session.add(contest_obj)
 
+        total_votes_in_all_choices = 0
+
         for choice in contest['choices']:
+            total_votes_in_all_choices += choice['numVotes']
+
             choice_obj = TargetedContestChoice(id = choice['id'],
                                                contest_id = contest_obj.id,
                                                name = choice['name'],
                                                num_votes = choice['numVotes'])
             db.session.add(choice_obj)
+
+        if total_votes_in_all_choices > total_allowed_votes_in_contest:
+            errors.append({
+                'message': f'Too many votes cast in contest: {contest["name"]} ({total_votes_in_all_choices} votes, {total_allowed_votes_in_contest} allowed)',
+                'errorType': 'TooManyVotes'
+            })
+
+    if errors:
+        db.session.rollback()
+        return jsonify(errors=errors), 400
 
     # prepare the round, including sample sizes
     setup_next_round(election)
@@ -758,6 +778,7 @@ def audit_report(election_id):
     
     report_writer.writerow(["Contest Name", contest.name])
     report_writer.writerow(["Number of Winners", contest.num_winners])
+    report_writer.writerow(["Votes Allowed", contest.votes_allowed])
     report_writer.writerow(["Total Ballots Cast", contest.total_ballots_cast])
 
     for choice in choices:

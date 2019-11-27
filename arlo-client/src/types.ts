@@ -24,6 +24,7 @@ export interface IContest {
   id: string
   name: string
   winners: string
+  votesAllowed: string
   choices: ICandidate[]
   totalBallotsCast: string
 }

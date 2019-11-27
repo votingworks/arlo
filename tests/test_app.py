@@ -90,7 +90,8 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
                     ],
 
                     "totalBallotsCast": 86147,
-                    "winners": 1
+                    "winners": 1,
+                    "votesAllowed": 1
                 }
             ]
         })
@@ -253,7 +254,8 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
                     ],
 
                     "totalBallotsCast": 86147,
-                    "winners": 2
+                    "winners": 2,
+                    "votesAllowed": 1
                 }
             ]
         })
@@ -458,6 +460,7 @@ def test_small_election(client):
 
                     "totalBallotsCast": 2123,
                     "winners": 1,
+                    "votesAllowed": 1
                 }
             ]
         })
@@ -576,7 +579,92 @@ def test_small_election(client):
     lines = rv.data.decode('utf-8').splitlines()
     assert lines[0] == "Contest Name,Contest 1"
     assert 'attachment' in rv.headers['Content-Disposition']
-    
+
+
+def test_contest_choices_cannot_have_more_votes_than_allowed(client):
+    rv = post_json(client, '/election/new', {})
+    election_id = json.loads(rv.data)['electionId']
+
+    contest_id = str(uuid.uuid4())
+    candidate_id_1 = str(uuid.uuid4())
+    candidate_id_2 = str(uuid.uuid4())
+
+    # bad request, 21 + 40 actual votes > 30 * 2 allowed votes
+    rv = post_json(
+        client, f'/election/{election_id}/audit/basic',
+        {
+            "name" : "Small Test 2019",
+            "riskLimit" : 10,
+            "randomSeed": "a1234567890987654321b",
+
+            "contests" : [
+                {
+                    "id": contest_id,
+                    "name": "Contest 1",
+                    "choices": [
+                        {
+                            "id": candidate_id_1,
+                            "name": "Candidate 1",
+                            "numVotes": 21
+                        },
+                        {
+                            "id": candidate_id_2,
+                            "name": "Candidate 2",
+                            "numVotes": 40
+                        }                        
+                    ],
+
+                    "totalBallotsCast": 30,
+                    "winners": 1,
+                    "votesAllowed": 2
+                }
+            ]
+        })
+
+    response = json.loads(rv.data)
+    assert response == {
+        'errors': [
+            {
+                'message': 'Too many votes cast in contest: Contest 1 (61 votes, 60 allowed)',
+                'errorType': 'TooManyVotes'
+            }
+        ]
+    }
+
+    # good request, 20 + 40 actual votes <= 30 * 2 allowed votes
+    rv = post_json(
+        client, f'/election/{election_id}/audit/basic',
+        {
+            "name" : "Small Test 2019",
+            "riskLimit" : 10,
+            "randomSeed": "a1234567890987654321b",
+
+            "contests" : [
+                {
+                    "id": contest_id,
+                    "name": "Contest 1",
+                    "choices": [
+                        {
+                            "id": candidate_id_1,
+                            "name": "Candidate 1",
+                            "numVotes": 20
+                        },
+                        {
+                            "id": candidate_id_2,
+                            "name": "Candidate 2",
+                            "numVotes": 40
+                        }                        
+                    ],
+
+                    "totalBallotsCast": 30,
+                    "winners": 1,
+                    "votesAllowed": 2
+                }
+            ]
+        })
+
+    response = json.loads(rv.data)
+    assert response == { 'status': 'ok' }
 
 def test_multi_round_audit(client):
     rv = post_json(client, '/election/new', {})
@@ -672,6 +760,7 @@ def test_multi_winner_election(client):
 
                     "totalBallotsCast": 2123,
                     "winners": 2,
+                    "votesAllowed": 1
                 }
             ]
         })
