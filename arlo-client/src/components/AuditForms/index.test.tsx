@@ -57,6 +57,14 @@ describe('RiskLimitingAuditForm', () => {
     expect(container).toMatchSnapshot()
   })
 
+  it('still renders if there is a server error', async () => {
+    toasterMock.mockImplementationOnce(() => true)
+    await act(async () => {
+      render(<AuditForms {...routeProps} />)
+    })
+    expect(toasterMock).toBeCalledTimes(1)
+  })
+
   it('does not render SelectBallotsToAudit when /audit/status is processing samplesizes', async () => {
     apiMock.mockImplementation(async () => statusStates[1])
     let utils: RenderResult

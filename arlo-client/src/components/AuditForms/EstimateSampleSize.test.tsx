@@ -676,4 +676,43 @@ describe('EstimateSampleSize', () => {
       expect(updateAuditMock).toBeCalledTimes(0)
     })
   })
+
+  it('handles errors from the server side', async () => {
+    apiMock.mockReset()
+    // apiMock.mockImplementation(() =>
+    //   Promise.reject({
+    //     message: 'A test error',
+    //     ok: false,
+    //   })
+    // )
+    toasterMock.mockImplementationOnce(() => true)
+    const updateAuditMock = jest.fn()
+    const { getByLabelText, getByText } = render(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={updateAuditMock}
+        getStatus={jest.fn()}
+        electionId="1"
+      />
+    )
+
+    estimateSampleSizeMocks.inputs.forEach(inputData => {
+      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
+        selector: 'input',
+      }) as HTMLInputElement
+      fireEvent.change(input, { target: { value: inputData.value } })
+      expect(input.value).toBe(inputData.value)
+    })
+
+    fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
+
+    await wait(() => {
+      expect(toasterMock).toBeCalledTimes(1)
+      expect(apiMock).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledTimes(0)
+      expect(updateAuditMock).toBeCalledTimes(0)
+    })
+  })
 })

@@ -6,8 +6,8 @@ export const api = async <T>(
   endpoint: string,
   options?: RequestInit
 ): Promise<T> => {
-  const res = await fetch(endpoint, options)
   try {
+    const res = await fetch(endpoint, options)
     if (!res.ok) {
       throw res
     }

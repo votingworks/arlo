@@ -228,6 +228,58 @@ describe('CalculateRiskMeasurement', () => {
     })
   })
 
+  it(`handles server errors`, async () => {
+    apiMock.mockImplementation(async () => ({
+      message: 'success',
+      ok: true,
+    }))
+    toasterMock
+      .mockImplementationOnce(() => true)
+      .mockImplementationOnce(() => true)
+      .mockImplementationOnce(() => true)
+
+    const getStatusMock = jest
+      .fn()
+      .mockImplementation(async () => statusStates[6])
+
+    const { getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[4]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    fireEvent.click(getByText('Calculate Risk Measurement'), {
+      bubbles: true,
+    })
+
+    await wait(() => {
+      expect(toasterMock).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledTimes(0)
+      expect(apiMock).toBeCalled()
+      expect(setIsLoadingMock).toBeCalledTimes(2)
+      expect(getStatusMock).toBeCalledTimes(0)
+      expect(updateAuditMock).toBeCalledTimes(0)
+    })
+
+    fireEvent.click(getByText('Download Label Sheets for Round 1'), {
+      bubbles: true,
+    })
+
+    fireEvent.click(getByText('Download Placeholders for Round 1'), {
+      bubbles: true,
+    })
+
+    await wait(() => {
+      expect(toasterMock).toHaveBeenCalledTimes(3)
+      expect(jspdfMock).toHaveBeenCalledTimes(0)
+    })
+  })
+
   it('downloads labels sheets', async () => {
     apiMock.mockImplementationOnce(async () => dummyBallots)
     const { getByText } = render(

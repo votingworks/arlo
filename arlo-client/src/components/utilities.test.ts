@@ -1,5 +1,6 @@
 import { wait } from '@testing-library/react'
-import { api, testNumber, poll } from './utilities'
+import { toast } from 'react-toastify'
+import { api, testNumber, poll, toaster } from './utilities'
 
 const response = () =>
   new Response(new Blob([JSON.stringify({ success: true })]))
@@ -13,9 +14,11 @@ const badResponse = () =>
   )
 
 const fetchSpy = jest.spyOn(window, 'fetch').mockImplementation()
+const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 afterEach(() => {
   fetchSpy.mockClear()
+  toastSpy.mockClear()
 })
 
 describe('utilities.ts', () => {
@@ -94,6 +97,17 @@ describe('utilities.ts', () => {
         expect(dateSpy).toBeCalledTimes(2)
       })
       dateSpy.mockRestore()
+    })
+  })
+
+  describe('toaster', () => {
+    it('toasts errors', () => {
+      expect(toaster({ errors: [{ message: 'error' }] })).toBeTruthy()
+      expect(toastSpy).toBeCalledTimes(1)
+    })
+
+    it('returns false without errors', () => {
+      expect(toaster({})).toBeFalsy()
     })
   })
 })

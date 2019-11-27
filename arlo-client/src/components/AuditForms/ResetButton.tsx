@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { Button } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
 import { api, toaster } from '../utilities'
+import { IErrorResponse } from '../../types'
 
 interface IProps {
   updateAudit: () => void
@@ -18,11 +19,11 @@ const ResetButton: React.FC<IProps> = ({
   const resetButtonWrapper = document.getElementById('reset-button-wrapper')
   const reset = async () => {
     try {
-      const response: string = await api(
+      const response: IErrorResponse = await api(
         `/election/${electionId}/audit/reset`,
         { method: 'POST' }
       )
-      if (toaster(JSON.parse(response))) {
+      if (toaster(response)) {
         return
       }
       updateAudit()

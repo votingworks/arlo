@@ -380,6 +380,60 @@ describe('SelectBallotsToAudit', () => {
     })
   })
 
+  it('handles server error on /audit/sample-size', async () => {
+    apiMock.mockImplementation(async () => ({}))
+    toasterMock
+      .mockImplementationOnce(() => true)
+      .mockImplementation(() => false)
+
+    const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledTimes(0)
+      expect(toasterMock).toBeCalledTimes(1)
+      expect(getStatusMock).toBeCalledTimes(0)
+      expect(updateAuditMock).toBeCalledTimes(0)
+    })
+  })
+
+  it('handles server error on /audit/jurisdictions', async () => {
+    apiMock.mockImplementation(async () => {})
+    toasterMock
+      .mockImplementationOnce(() => false)
+      .mockImplementationOnce(() => true)
+      .mockImplementation(() => false)
+
+    const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(2)
+      expect(toastSpy).toBeCalledTimes(0)
+      expect(toasterMock).toBeCalledTimes(2)
+      expect(getStatusMock).toBeCalledTimes(0)
+      expect(updateAuditMock).toBeCalledTimes(0)
+    })
+  })
+
+  it('handles server error on /audit/jurisdiction/:id/manifest', async () => {
+    apiMock.mockImplementation(async () => {})
+    toasterMock
+      .mockImplementationOnce(() => false)
+      .mockImplementationOnce(() => false)
+      .mockImplementationOnce(() => true)
+      .mockImplementation(() => false)
+
+    const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(3)
+      expect(toastSpy).toBeCalledTimes(0)
+      expect(toasterMock).toBeCalledTimes(3)
+      expect(getStatusMock).toBeCalledTimes(1)
+      expect(updateAuditMock).toBeCalledTimes(0)
+    })
+  })
+
   it('uses the highest prob value from duplicate sampleSizes', () => {
     statusStates[1].rounds[0].contests[0].sampleSizeOptions = [
       { size: 30, prob: 0.8, type: null }, // eslint-disable-line no-null/no-null
