@@ -6,13 +6,14 @@ class BRAVO(RiskLimitingAudit):
     def __init__(self, risk_limit):
         super().__init__(risk_limit)
 
-    def get_expected_sample_sizes(self, margins, contests):
+    def get_expected_sample_sizes(self, margins, contests, sample_results):
         """
         Returns the expected sample size for a BRAVO audit of each contest in contests.
 
         Input:
             margins - a dict of the margins for each contest passed from Sampler
             contests - a dict of the contests passed in from Sampler
+            sample_results - a dict of the sample results from the Sampler
 
         Output:
             expected sample sizes - dict of computed expected sample size for each contest:
@@ -45,9 +46,7 @@ class BRAVO(RiskLimitingAudit):
             s_w = p_w/(p_w + p_l) 
             s_l = 1 - s_w
 
-            print(p_w, p_l, s_w, s_l)
-
-            if p_w == 1:
+            if p_w == 2:
                 # Handle single-candidate or crazy landslides
                 asns[contest] = -1
             elif p_w == p_l:
@@ -56,7 +55,11 @@ class BRAVO(RiskLimitingAudit):
                 z_w = math.log(2 * s_w)
                 z_l = math.log(2 - 2 * s_w)
                 p = p_w + s_l
-                asns[contest] = math.ceil((math.log(1.0/self.risk_limit) + (z_w / 2.0)) / (p_w*z_w + p_l*z_l))
+
+                T = min(self.get_test_statistics(margins[contest], sample_results[contest]).values())
+
+                weighted_alpha = math.log((1.0/self.risk_limit)/T)  
+                asns[contest] = math.ceil((weighted_alpha + (z_w / 2.0)) / (p_w*z_w + p_l*z_l))
 
         return asns
 
@@ -154,7 +157,7 @@ class BRAVO(RiskLimitingAudit):
     def expected_prob(self, p_w, p_r, sample_w, sample_r, asn):
         """ 
         Analytic calculation for BRAVO round completion of the expected value, assuming
-        the election outcome is correct. Adapted Mark Lindeman. 
+        the election outcome is correct. Adapted from Mark Lindeman. 
 
         Inputs:
             asn             - the expected value
@@ -230,7 +233,7 @@ class BRAVO(RiskLimitingAudit):
 
         samples = {}
 
-        asns = self.get_expected_sample_sizes(margins, contests)
+        asns = self.get_expected_sample_sizes(margins, contests, sample_results)
         for contest in contests:
             samples[contest] = {}
 
@@ -304,9 +307,10 @@ class BRAVO(RiskLimitingAudit):
 
         return samples
 
-    def compute_risk(self, margins, sample_results):
+
+    def get_test_statistics(self, margins, sample_results):
         """
-        Computes the risk-value of <sample_results> based on results in <contest>.
+        Computes T*, the test statistic from an existing sample. 
 
         Inputs: 
             margins        - the margins for the contest being audited
@@ -320,9 +324,8 @@ class BRAVO(RiskLimitingAudit):
                     }
 
         Outputs:
-            measurements    - the p-value of the hypotheses that the election
-                              result is correct based on the sample, for each winner-loser pair. 
-            confirmed       - a boolean indicating whether the audit can stop
+            T - Mapping of (winner, loser) pairs to their test statistic based
+                on sample_results
         """
         winners = margins['winners']
         losers = margins['losers']
@@ -346,6 +349,32 @@ class BRAVO(RiskLimitingAudit):
             elif cand in losers:
                 for winner in winners:
                     T[(winner, cand)] *= ((1 - winners[winner]['swl'][cand])/0.5)**votes
+
+        return T
+
+
+    def compute_risk(self, margins, sample_results):
+        """
+        Computes the risk-value of <sample_results> based on results in <contest>.
+
+        Inputs: 
+            margins        - the margins for the contest being audited
+            sample_results - mapping of candidates to votes in the (cumulative)
+                             sample:
+
+                    {
+                        candidate1: sampled_votes,
+                        candidate2: sampled_votes,
+                        ...
+                    }
+
+        Outputs:
+            measurements    - the p-value of the hypotheses that the election
+                              result is correct based on the sample, for each winner-loser pair. 
+            confirmed       - a boolean indicating whether the audit can stop
+        """
+
+        T = self.get_test_statistics(margins, sample_results)
 
         measurements = {}
         finished = True
