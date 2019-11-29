@@ -46,7 +46,7 @@ class BRAVO(RiskLimitingAudit):
             s_w = p_w/(p_w + p_l) 
             s_l = 1 - s_w
 
-            if p_w == 2:
+            if p_w == 1:
                 # Handle single-candidate or crazy landslides
                 asns[contest] = -1
             elif p_w == p_l:
