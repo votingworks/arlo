@@ -296,11 +296,11 @@ class BRAVO(RiskLimitingAudit):
            
             samples[contest]['asn'] = {
                 'size': asns[contest],
-                'prob': self.expected_prob(p_w, p_l, sample_w, sample_l, asns[contest])
+                'prob': round(self.expected_prob(p_w, p_l, sample_w, sample_l, asns[contest]), 2)
                 }
 
             for quant in quants:
-                samples[contest][quant] = self.bravo_sample_sizes(p_w, p_l, sample_w, sample_l, quant)
+                samples[contest][quant] = round(self.bravo_sample_sizes(p_w, p_l, sample_w, sample_l, quant), 2)
 
         return samples
 
