@@ -84,11 +84,7 @@ def sampler():
         },
     }
 
-
-
     yield Sampler('BRAVO', seed, risk_limit, contests)
-
-
 
 def test_expected_sample_sizes(sampler):
     # Test expected sample sizes computation
@@ -106,7 +102,31 @@ def test_expected_sample_sizes(sampler):
         'test10': 48,
     }
 
-    computed_asns = sampler.audit.get_expected_sample_sizes(sampler.margins, sampler.contests)
+    computed_asns = sampler.audit.get_expected_sample_sizes(sampler.margins, sampler.contests, round0_sample_results)
+    for contest in true_asns:
+        expected = true_asns[contest]
+        computed = computed_asns[contest]
+
+        assert expected == computed, 'get_expected_sample_sizes failed in {}: got {}, expected {}'.format(contest, computed, expected)
+
+
+def test_expected_sample_sizes_second_round(sampler):
+    # Test expected sample sizes computation
+
+    true_asns = {
+        'test1': -12,
+        'test2': 42,
+        'test3': -1,
+        'test4': -1,
+        'test5': 1000,
+        'test6': -2,
+        'test7': -28,
+        'test8': 14,
+        'test9': -1,
+        'test10': -52,
+    }
+
+    computed_asns = sampler.audit.get_expected_sample_sizes(sampler.margins, sampler.contests, round1_sample_results)
     for contest in true_asns:
         expected = true_asns[contest]
         computed = computed_asns[contest]
@@ -555,6 +575,11 @@ round0_sample_results = {
         'cand3': 0
     },
     'test9': {
+        'cand1': 0,
+        'cand2': 0,
+        'cand3': 0
+    },
+    'test10': {
         'cand1': 0,
         'cand2': 0,
         'cand3': 0

@@ -94,7 +94,7 @@ Like any open-source software, Arlo welcomes suggested changes in the form of pu
 1. Download [`python-dev`](https://www.python.org/) >3.7 
 2. Download [`pip`](https://pypi.org/project/pip/)
 3. Install `pipenv` (note: run `python3 -m pip install pipenv` to get a version that's compatible with your local python install if your system defaults to a python other than >3.7).
-4. Install [`yarn`](https://yarnpkg.com/en/docs/install).
+4. Install [`yarn`](https://yarnpkg.com/en/docs/install) and [nodejs](https://github.com/nodesource/distributions/blob/master/README.md).
 5. Install `postgres-client` and `postgresql-dev`, see https://www.postgresql.org/download.
 6. Install dependencies with `make install` or `make install-development` depending on your use-case
 7. Create a database config by copying `config/database.cfg.example` to `config/database.cfg`
