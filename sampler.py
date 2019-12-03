@@ -7,12 +7,13 @@ import consistent_sampler
 import operator
 from audits.audit import RiskLimitingAudit
 from audits.bravo import BRAVO
+from audits.macro import MACRO
 
 class Sampler:
 
     audit: RiskLimitingAudit
 
-    def __init__(self, audit_type, seed, risk_limit, contests):
+    def __init__(self, audit_type, seed, risk_limit, contests, batch_results=None):
         """
         Initializes PRNG, computes margins, and returns initial sample
         sizes parameterized by likelihood that the initial sample will confirm the
@@ -32,16 +33,37 @@ class Sampler:
                             }
                             ...
                         }
+            batch_results - results for each batch, for use with MACRO:
+                {   
+                    batch:  {
+                                contest: {
+                                    candidate1: votes,
+                                    candidate2: votes,
+                                    ...
+                                    'ballots': ballots, # total ballots cast
+                                    'winners': winners # number of winners in this contest
+                                }
+                                ...
+                            }
+                    ...
+                }
+                        
+
+
 
         Outputs:
         """
         self.seed = seed
         self.prng = SHA256(seed)
         self.contests = contests
+        self.batch_results = batch_results
         self.margins = self.compute_margins()
 
         if audit_type == 'BRAVO':
             self.audit = BRAVO(risk_limit)
+        elif audit_type == 'MACRO':
+            assert self.batch_results, 'Must have batch-level results to use MACRO'
+            self.audit = MACRO(risk_limit)
 
     def compute_margins(self):
         """
@@ -200,7 +222,10 @@ class Sampler:
                         ...
                     }
         """
-        return self.audit.get_sample_sizes(contests=self.contests, margins=self.margins, sample_results=sample_results)
+        return self.audit.get_sample_sizes(contests=self.contests, 
+                                           margins=self.margins, 
+                                           batch_results=self.batch_results,
+                                           sample_results=sample_results)
 
     def compute_risk(self, contest, sample_results):
         """
