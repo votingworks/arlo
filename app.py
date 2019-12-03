@@ -173,10 +173,8 @@ def sample_ballots(election, round):
         times_sampled = item[2]
         ticket_number = item[0]
 
-        lookup = (batch_id, ballot_position)
-
         if batch_id in batch_sizes:
-            if times_sampled == 1: # since we've already seen it, it doesn't affect batch size
+            if times_sampled == 1: # if we've already seen it, it doesn't affect batch size
                 batch_sizes[batch_id] += 1
             batches_to_ballots[batch_id].append((ballot_position, ticket_number, times_sampled))
         else:
