@@ -260,6 +260,10 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
     return acc
   }, {})
 
+  const percentFormatter = new Intl.NumberFormat(undefined, {
+    style: 'percent',
+  })
+
   return (
     <Formik
       initialValues={initialState}
@@ -315,8 +319,9 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                                   : ''}
                                 {`${option.size} samples`}
                                 {option.prob
-                                  ? ` (${option.prob *
-                                      100}% chance of reaching risk limit and completing the audit in one round)`
+                                  ? ` (${percentFormatter.format(
+                                      option.prob
+                                    )} chance of reaching risk limit and completing the audit in one round)`
                                   : ''}
                               </Radio>
                             )
