@@ -22,7 +22,7 @@ const apiMock: jest.SpyInstance<
 const checkAndToastMock: jest.SpyInstance<
   ReturnType<typeof utilities.checkAndToast>,
   Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockImplementation(() => false)
+> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
@@ -679,7 +679,7 @@ describe('EstimateSampleSize', () => {
 
   it('handles errors from the server side', async () => {
     apiMock.mockReset()
-    checkAndToastMock.mockImplementationOnce(() => true) // checkAndToast returns true if there's an error from the server
+    checkAndToastMock.mockReturnValueOnce(true) // checkAndToast returns true if there's an error from the server
     const updateAuditMock = jest.fn()
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize

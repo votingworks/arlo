@@ -108,6 +108,7 @@ describe('utilities.ts', () => {
 
     it('returns false without errors', () => {
       expect(checkAndToast({})).toBeFalsy()
+      expect(toastSpy).toBeCalledTimes(0)
     })
   })
 })

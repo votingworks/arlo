@@ -15,7 +15,7 @@ const checkAndToastMock = checkAndToast as jest.Mock<
 
 jest.mock('./utilities')
 
-checkAndToastMock.mockImplementation(() => false)
+checkAndToastMock.mockReturnValue(false)
 
 const routeProps: RouteComponentProps<ICreateAuditParams> = routerTestProps(
   '/election/:electionId',
@@ -57,7 +57,7 @@ describe('CreateAudit', () => {
 
   it('handles error responses from server', async () => {
     apiMock.mockImplementation(async () => ({ electionId: '1' }))
-    checkAndToastMock.mockImplementation(() => true)
+    checkAndToastMock.mockReturnValue(true)
     const { getByText } = render(<CreateAudit {...routeProps} />)
 
     fireEvent.click(getByText('Create a New Audit'), { bubbles: true })
@@ -75,7 +75,7 @@ describe('CreateAudit', () => {
     apiMock.mockImplementation(async () => {
       throw new Error('404')
     })
-    checkAndToastMock.mockImplementation(() => true)
+    checkAndToastMock.mockReturnValue(true)
     const { getByText } = render(<CreateAudit {...routeProps} />)
 
     fireEvent.click(getByText('Create a New Audit'), { bubbles: true })

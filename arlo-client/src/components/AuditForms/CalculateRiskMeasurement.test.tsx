@@ -15,7 +15,7 @@ const apiMock: jest.SpyInstance<
 const checkAndToastMock: jest.SpyInstance<
   ReturnType<typeof utilities.checkAndToast>,
   Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockImplementation(() => false)
+> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 jest.mock('jspdf')
 
@@ -234,9 +234,9 @@ describe('CalculateRiskMeasurement', () => {
       ok: true,
     }))
     checkAndToastMock
-      .mockImplementationOnce(() => true)
-      .mockImplementationOnce(() => true)
-      .mockImplementationOnce(() => true)
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(true)
 
     const getStatusMock = jest
       .fn()

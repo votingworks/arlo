@@ -20,7 +20,7 @@ const checkAndToastMock = checkAndToast as jest.Mock<
 
 jest.mock('../utilities')
 
-checkAndToastMock.mockImplementation(() => false)
+checkAndToastMock.mockReturnValue(false)
 
 const routeProps = routerTestProps('/election/:electionId', { electionId: '1' })
 
@@ -58,7 +58,7 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('still renders if there is a server error', async () => {
-    checkAndToastMock.mockImplementationOnce(() => true)
+    checkAndToastMock.mockReturnValueOnce(true)
     await act(async () => {
       render(<AuditForms {...routeProps} />)
     })

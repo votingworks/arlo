@@ -12,7 +12,7 @@ const checkAndToastMock = checkAndToast as jest.Mock<
 
 jest.mock('../utilities')
 apiMock.mockImplementationOnce(async () => '{}')
-checkAndToastMock.mockImplementation(() => false)
+checkAndToastMock.mockReturnValue(false)
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 afterEach(() => {
@@ -58,7 +58,7 @@ describe('ResetButton', () => {
   })
 
   it('handles server errors', async () => {
-    checkAndToastMock.mockImplementationOnce(() => true)
+    checkAndToastMock.mockReturnValueOnce(true)
     const updateAuditMock = jest.fn()
     const wrapper = document.createElement('div')
     wrapper.setAttribute('id', 'reset-button-wrapper')
@@ -79,7 +79,7 @@ describe('ResetButton', () => {
   })
 
   it('handles 404 errors', async () => {
-    checkAndToastMock.mockImplementationOnce(() => true)
+    checkAndToastMock.mockReturnValueOnce(true)
     apiMock.mockImplementationOnce(async () => {
       throw new Error('404')
     })

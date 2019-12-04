@@ -16,7 +16,7 @@ const apiMock: jest.SpyInstance<
 const checkAndToastMock: jest.SpyInstance<
   ReturnType<typeof utilities.checkAndToast>,
   Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockImplementation(() => false)
+> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 async function inputAndSubmitForm() {
@@ -382,9 +382,7 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles server error on /audit/sample-size', async () => {
     apiMock.mockImplementation(async () => ({}))
-    checkAndToastMock
-      .mockImplementationOnce(() => true)
-      .mockImplementation(() => false)
+    checkAndToastMock.mockReturnValueOnce(true).mockReturnValue(false)
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -400,9 +398,9 @@ describe('SelectBallotsToAudit', () => {
   it('handles server error on /audit/jurisdictions', async () => {
     apiMock.mockImplementation(async () => {})
     checkAndToastMock
-      .mockImplementationOnce(() => false)
-      .mockImplementationOnce(() => true)
-      .mockImplementation(() => false)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true)
+      .mockReturnValue(false)
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -418,10 +416,10 @@ describe('SelectBallotsToAudit', () => {
   it('handles server error on /audit/jurisdiction/:id/manifest', async () => {
     apiMock.mockImplementation(async () => {})
     checkAndToastMock
-      .mockImplementationOnce(() => false)
-      .mockImplementationOnce(() => false)
-      .mockImplementationOnce(() => true)
-      .mockImplementation(() => false)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true)
+      .mockReturnValue(false)
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
