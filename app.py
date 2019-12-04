@@ -623,6 +623,7 @@ def ballot_list(election_id, jurisdiction_id, round_id):
         .filter(Batch.id == SampledBallot.batch_id) \
         .filter(SampledBallot.jurisdiction_id == jurisdiction_id) \
         .filter(SampledBallot.round_id == round_id) \
+        .filter(SampledBallot.audit_board_id == AuditBoard.id) \
         .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position)
 
     return jsonify(
