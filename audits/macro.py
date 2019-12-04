@@ -4,12 +4,8 @@ from audits.audit import RiskLimitingAudit
 
 class MACRO(RiskLimitingAudit):
 
-    
-
     def __init__(self, risk_limit):
         super().__init__(risk_limit)
-
-    
 
     def compute_error(self, contests, margins, reported_results, sampled_results):
         """
@@ -75,6 +71,37 @@ class MACRO(RiskLimitingAudit):
 
         return error
 
+    def compute_u_minus(self, contests, margins, reported_results):
+        """
+        Computes the maximum error in this batch
+
+        Inputs:
+            margins - the margins for the election
+            reported_results - the reported votes in this batch
+        
+        Outputs:
+            the maximum possible overstatement for batch p
+        """
+        
+        u_minus = 0
+
+        for contest in reported_results:
+            for winner in margins[contest]['winners']:
+                for loser in margins[contest]['losers']:
+                    v_wp = reported_results[contest][winner]
+                    v_lp = reported_results[contest][loser]
+
+                    b_cp = reported_results[contest]['ballots']
+
+                    V_wl = contests[contest][winner] - contests[contest][loser]
+
+                    u_p_minus = ((v_wp - v_lp) - b_cp)/V_wl
+
+                    if u_p_minus > u_minus:
+                        u_minus = u_p_minus
+
+        return u_minus
+
                     
 
     def get_sample_sizes(self, contests, margins, batch_results, sample_results):
@@ -99,7 +126,21 @@ class MACRO(RiskLimitingAudit):
                     }
         """
 
+        U = 0
 
+        tau_minus = 10**7
+        for batch in batch_results:
+
+            u_p = self.compute_max_error(contests, margins, batch_results[batch])
+
+            u_minus = self.compute_u_minus(contests, margins, batch_results[batch])
+
+            if u_minus/u_p < tau_minus:
+                tau_minus = u_minus/u_p
+
+            U += u_p
+
+        return math.ceil(math.log(self.risk_limit)/(math.log(1 - 1/U) - math.log(1 - tau_minus)))
 
 
     def compute_risk(self, margins, sample_results):
