@@ -13,7 +13,7 @@ import FormWrapper from '../Form/FormWrapper'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api, testNumber, poll, toaster } from '../utilities'
+import { api, testNumber, poll, checkAndToast } from '../utilities'
 import {
   IContest,
   IRound,
@@ -87,7 +87,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
     >(
       `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/round/${round.id}/ballot-list`
     )
-    if (toaster(response)) {
+    if (checkAndToast(response)) {
       return []
     } else {
       return response.ballots
@@ -205,7 +205,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
           body: JSON.stringify(body),
         }
       )
-      if (toaster(response)) {
+      if (checkAndToast(response)) {
         setIsLoading(false)
         return
       }

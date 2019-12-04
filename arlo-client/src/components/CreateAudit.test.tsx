@@ -5,17 +5,17 @@ import { RouteComponentProps } from 'react-router-dom'
 import CreateAudit from './CreateAudit'
 import { ICreateAuditParams } from '../types'
 import { routerTestProps } from './testUtilities'
-import { api, toaster } from './utilities'
+import { api, checkAndToast } from './utilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
-const toasterMock = toaster as jest.Mock<
-  ReturnType<typeof toaster>,
-  Parameters<typeof toaster>
+const checkAndToastMock = checkAndToast as jest.Mock<
+  ReturnType<typeof checkAndToast>,
+  Parameters<typeof checkAndToast>
 >
 
 jest.mock('./utilities')
 
-toasterMock.mockImplementation(() => false)
+checkAndToastMock.mockImplementation(() => false)
 
 const routeProps: RouteComponentProps<ICreateAuditParams> = routerTestProps(
   '/election/:electionId',
@@ -30,7 +30,7 @@ const historySpy = jest.spyOn(routeProps.history, 'push').mockImplementation()
 
 afterEach(() => {
   apiMock.mockClear()
-  toasterMock.mockClear()
+  checkAndToastMock.mockClear()
   toastSpy.mockClear()
   historySpy.mockClear()
 })
@@ -57,7 +57,7 @@ describe('CreateAudit', () => {
 
   it('handles error responses from server', async () => {
     apiMock.mockImplementation(async () => ({ electionId: '1' }))
-    toasterMock.mockImplementation(() => true)
+    checkAndToastMock.mockImplementation(() => true)
     const { getByText } = render(<CreateAudit {...routeProps} />)
 
     fireEvent.click(getByText('Create a New Audit'), { bubbles: true })
@@ -65,7 +65,7 @@ describe('CreateAudit', () => {
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/election/new')
-      expect(toasterMock).toBeCalledTimes(1)
+      expect(checkAndToastMock).toBeCalledTimes(1)
       expect(historySpy).toBeCalledTimes(0)
       expect(toastSpy).toBeCalledTimes(0)
     })
@@ -75,7 +75,7 @@ describe('CreateAudit', () => {
     apiMock.mockImplementation(async () => {
       throw new Error('404')
     })
-    toasterMock.mockImplementation(() => true)
+    checkAndToastMock.mockImplementation(() => true)
     const { getByText } = render(<CreateAudit {...routeProps} />)
 
     fireEvent.click(getByText('Create a New Audit'), { bubbles: true })
@@ -83,7 +83,7 @@ describe('CreateAudit', () => {
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toBe('/election/new')
-      expect(toasterMock).toBeCalledTimes(0)
+      expect(checkAndToastMock).toBeCalledTimes(0)
       expect(historySpy).toBeCalledTimes(0)
       expect(toastSpy).toBeCalledTimes(1)
     })

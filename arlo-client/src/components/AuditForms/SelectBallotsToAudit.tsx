@@ -36,7 +36,7 @@ import {
   IAuditBoard,
   IErrorResponse,
 } from '../../types'
-import { api, testNumber, openQR, toaster } from '../utilities'
+import { api, testNumber, openQR, checkAndToast } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import FormTitle from '../Form/FormTitle'
 import FormField from '../Form/FormField'
@@ -162,7 +162,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
             },
           }
         )
-        if (toaster(response)) return
+        if (checkAndToast(response)) return
       }
       const response: IErrorResponse = await api(
         `/election/${electionId}/audit/jurisdictions`,
@@ -174,7 +174,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
           },
         }
       )
-      if (toaster(response)) return
+      if (checkAndToast(response)) return
 
       const newStatus = await getStatus()
       const jurisdictionID: string = newStatus.jurisdictions[0].id
@@ -190,7 +190,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
             body: formData,
           }
         )
-        if (toaster(response)) return
+        if (checkAndToast(response)) return
       }
 
       updateAudit()

@@ -12,10 +12,10 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
-const toasterMock: jest.SpyInstance<
-  ReturnType<typeof utilities.toaster>,
-  Parameters<typeof utilities.toaster>
-> = jest.spyOn(utilities, 'toaster').mockImplementation(() => false)
+const checkAndToastMock: jest.SpyInstance<
+  ReturnType<typeof utilities.checkAndToast>,
+  Parameters<typeof utilities.checkAndToast>
+> = jest.spyOn(utilities, 'checkAndToast').mockImplementation(() => false)
 
 jest.mock('jspdf')
 
@@ -44,7 +44,7 @@ beforeEach(() => {
   toastSpy.mockClear()
   apiMock.mockClear()
   jspdfMock.mockClear()
-  toasterMock.mockClear()
+  checkAndToastMock.mockClear()
 })
 
 describe('CalculateRiskMeasurement', () => {
@@ -233,7 +233,7 @@ describe('CalculateRiskMeasurement', () => {
       message: 'success',
       ok: true,
     }))
-    toasterMock
+    checkAndToastMock
       .mockImplementationOnce(() => true)
       .mockImplementationOnce(() => true)
       .mockImplementationOnce(() => true)
@@ -258,7 +258,7 @@ describe('CalculateRiskMeasurement', () => {
     })
 
     await wait(() => {
-      expect(toasterMock).toBeCalledTimes(1)
+      expect(checkAndToastMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(0)
       expect(apiMock).toBeCalled()
       expect(setIsLoadingMock).toBeCalledTimes(2)
@@ -275,7 +275,7 @@ describe('CalculateRiskMeasurement', () => {
     })
 
     await wait(() => {
-      expect(toasterMock).toHaveBeenCalledTimes(3)
+      expect(checkAndToastMock).toHaveBeenCalledTimes(3)
       expect(jspdfMock).toHaveBeenCalledTimes(0)
     })
   })

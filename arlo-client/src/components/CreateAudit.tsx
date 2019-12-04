@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { RouteComponentProps } from 'react-router-dom'
 import FormButton from './Form/FormButton'
-import { api, toaster } from './utilities'
+import { api, checkAndToast } from './utilities'
 import { ICreateAuditParams, IErrorResponse } from '../types'
 
 const Button = styled(FormButton)`
@@ -32,7 +32,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
         method: 'POST',
       })
       const { electionId } = response
-      if (toaster(response)) {
+      if (checkAndToast(response)) {
         return
       }
       history.push(`/election/${electionId}`)

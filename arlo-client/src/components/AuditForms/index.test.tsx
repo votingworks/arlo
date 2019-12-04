@@ -9,24 +9,24 @@ import {
 import { BrowserRouter as Router } from 'react-router-dom'
 import AuditForms from './index'
 import { statusStates } from './_mocks'
-import { api, toaster } from '../utilities'
+import { api, checkAndToast } from '../utilities'
 import { routerTestProps } from '../testUtilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
-const toasterMock = toaster as jest.Mock<
-  ReturnType<typeof toaster>,
-  Parameters<typeof toaster>
+const checkAndToastMock = checkAndToast as jest.Mock<
+  ReturnType<typeof checkAndToast>,
+  Parameters<typeof checkAndToast>
 >
 
 jest.mock('../utilities')
 
-toasterMock.mockImplementation(() => false)
+checkAndToastMock.mockImplementation(() => false)
 
 const routeProps = routerTestProps('/election/:electionId', { electionId: '1' })
 
 afterEach(() => {
   apiMock.mockClear()
-  toasterMock.mockClear()
+  checkAndToastMock.mockClear()
 })
 
 describe('RiskLimitingAuditForm', () => {
@@ -58,11 +58,11 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('still renders if there is a server error', async () => {
-    toasterMock.mockImplementationOnce(() => true)
+    checkAndToastMock.mockImplementationOnce(() => true)
     await act(async () => {
       render(<AuditForms {...routeProps} />)
     })
-    expect(toasterMock).toBeCalledTimes(1)
+    expect(checkAndToastMock).toBeCalledTimes(1)
   })
 
   it('does not render SelectBallotsToAudit when /audit/status is processing samplesizes', async () => {

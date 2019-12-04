@@ -1,6 +1,6 @@
 import { wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
-import { api, testNumber, poll, toaster } from './utilities'
+import { api, testNumber, poll, checkAndToast } from './utilities'
 
 const response = () =>
   new Response(new Blob([JSON.stringify({ success: true })]))
@@ -100,14 +100,14 @@ describe('utilities.ts', () => {
     })
   })
 
-  describe('toaster', () => {
+  describe('checkAndToast', () => {
     it('toasts errors', () => {
-      expect(toaster({ errors: [{ message: 'error' }] })).toBeTruthy()
+      expect(checkAndToast({ errors: [{ message: 'error' }] })).toBeTruthy()
       expect(toastSpy).toBeCalledTimes(1)
     })
 
     it('returns false without errors', () => {
-      expect(toaster({})).toBeFalsy()
+      expect(checkAndToast({})).toBeFalsy()
     })
   })
 })

@@ -18,7 +18,7 @@ import FormTitle from '../Form/FormTitle'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api, poll, toaster } from '../utilities'
+import { api, poll, checkAndToast } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import { IAudit, IErrorResponse } from '../../types'
 import number, { parse as parseNumber } from '../../utils/number-schema'
@@ -203,7 +203,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
           },
         }
       )
-      if (toaster(response)) {
+      if (checkAndToast(response)) {
         setIsLoading(false)
         return
       }

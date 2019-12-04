@@ -2,23 +2,23 @@ import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import ResetButton from './ResetButton'
-import { api, toaster } from '../utilities'
+import { api, checkAndToast } from '../utilities'
 
 const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
-const toasterMock = toaster as jest.Mock<
-  ReturnType<typeof toaster>,
-  Parameters<typeof toaster>
+const checkAndToastMock = checkAndToast as jest.Mock<
+  ReturnType<typeof checkAndToast>,
+  Parameters<typeof checkAndToast>
 >
 
 jest.mock('../utilities')
 apiMock.mockImplementationOnce(async () => '{}')
-toasterMock.mockImplementation(() => false)
+checkAndToastMock.mockImplementation(() => false)
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 afterEach(() => {
   apiMock.mockClear()
   toastSpy.mockClear()
-  toasterMock.mockClear()
+  checkAndToastMock.mockClear()
 })
 
 describe('ResetButton', () => {
@@ -52,13 +52,13 @@ describe('ResetButton', () => {
 
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
-      expect(toasterMock).toBeCalledTimes(1)
+      expect(checkAndToastMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(1)
     })
   })
 
   it('handles server errors', async () => {
-    toasterMock.mockImplementationOnce(() => true)
+    checkAndToastMock.mockImplementationOnce(() => true)
     const updateAuditMock = jest.fn()
     const wrapper = document.createElement('div')
     wrapper.setAttribute('id', 'reset-button-wrapper')
@@ -72,14 +72,14 @@ describe('ResetButton', () => {
 
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
-      expect(toasterMock).toBeCalledTimes(1)
+      expect(checkAndToastMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(0)
       expect(toastSpy).toBeCalledTimes(0)
     })
   })
 
   it('handles 404 errors', async () => {
-    toasterMock.mockImplementationOnce(() => true)
+    checkAndToastMock.mockImplementationOnce(() => true)
     apiMock.mockImplementationOnce(async () => {
       throw new Error('404')
     })
@@ -96,7 +96,7 @@ describe('ResetButton', () => {
 
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
-      expect(toasterMock).toBeCalledTimes(0)
+      expect(checkAndToastMock).toBeCalledTimes(0)
       expect(updateAuditMock).toBeCalledTimes(0)
       expect(toastSpy).toBeCalledTimes(1)
     })

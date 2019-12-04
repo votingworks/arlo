@@ -13,10 +13,10 @@ const apiMock: jest.SpyInstance<
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
 
-const toasterMock: jest.SpyInstance<
-  ReturnType<typeof utilities.toaster>,
-  Parameters<typeof utilities.toaster>
-> = jest.spyOn(utilities, 'toaster').mockImplementation(() => false)
+const checkAndToastMock: jest.SpyInstance<
+  ReturnType<typeof utilities.checkAndToast>,
+  Parameters<typeof utilities.checkAndToast>
+> = jest.spyOn(utilities, 'checkAndToast').mockImplementation(() => false)
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 async function inputAndSubmitForm() {
@@ -69,7 +69,7 @@ async function inputAndSubmitForm() {
 beforeEach(() => {
   apiMock.mockClear()
   toastSpy.mockClear()
-  toasterMock.mockClear()
+  checkAndToastMock.mockClear()
 })
 
 describe('SelectBallotsToAudit', () => {
@@ -218,7 +218,7 @@ describe('SelectBallotsToAudit', () => {
 
       expect(getStatusMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(1)
-      expect(toasterMock).toBeCalledTimes(3)
+      expect(checkAndToastMock).toBeCalledTimes(3)
     })
   })
 
@@ -382,7 +382,7 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles server error on /audit/sample-size', async () => {
     apiMock.mockImplementation(async () => ({}))
-    toasterMock
+    checkAndToastMock
       .mockImplementationOnce(() => true)
       .mockImplementation(() => false)
 
@@ -391,7 +391,7 @@ describe('SelectBallotsToAudit', () => {
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(0)
-      expect(toasterMock).toBeCalledTimes(1)
+      expect(checkAndToastMock).toBeCalledTimes(1)
       expect(getStatusMock).toBeCalledTimes(0)
       expect(updateAuditMock).toBeCalledTimes(0)
     })
@@ -399,7 +399,7 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles server error on /audit/jurisdictions', async () => {
     apiMock.mockImplementation(async () => {})
-    toasterMock
+    checkAndToastMock
       .mockImplementationOnce(() => false)
       .mockImplementationOnce(() => true)
       .mockImplementation(() => false)
@@ -409,7 +409,7 @@ describe('SelectBallotsToAudit', () => {
     await wait(() => {
       expect(apiMock).toBeCalledTimes(2)
       expect(toastSpy).toBeCalledTimes(0)
-      expect(toasterMock).toBeCalledTimes(2)
+      expect(checkAndToastMock).toBeCalledTimes(2)
       expect(getStatusMock).toBeCalledTimes(0)
       expect(updateAuditMock).toBeCalledTimes(0)
     })
@@ -417,7 +417,7 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles server error on /audit/jurisdiction/:id/manifest', async () => {
     apiMock.mockImplementation(async () => {})
-    toasterMock
+    checkAndToastMock
       .mockImplementationOnce(() => false)
       .mockImplementationOnce(() => false)
       .mockImplementationOnce(() => true)
@@ -428,7 +428,7 @@ describe('SelectBallotsToAudit', () => {
     await wait(() => {
       expect(apiMock).toBeCalledTimes(3)
       expect(toastSpy).toBeCalledTimes(0)
-      expect(toasterMock).toBeCalledTimes(3)
+      expect(checkAndToastMock).toBeCalledTimes(3)
       expect(getStatusMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(0)
     })

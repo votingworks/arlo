@@ -112,7 +112,7 @@ export const openQR = (id: string, name: string) => {
   }
 }
 
-export const toaster = (response: IErrorResponse): boolean => {
+export const checkAndToast = (response: IErrorResponse): boolean => {
   const { errors } = response
   if (errors) {
     toast.error(

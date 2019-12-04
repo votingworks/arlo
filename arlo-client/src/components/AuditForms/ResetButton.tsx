@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Button } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
-import { api, toaster } from '../utilities'
+import { api, checkAndToast } from '../utilities'
 import { IErrorResponse } from '../../types'
 
 interface IProps {
@@ -23,7 +23,7 @@ const ResetButton: React.FC<IProps> = ({
         `/election/${electionId}/audit/reset`,
         { method: 'POST' }
       )
-      if (toaster(response)) {
+      if (checkAndToast(response)) {
         return
       }
       updateAudit()
