@@ -48,7 +48,14 @@ const AuditFlow: React.FC<IProps> = ({
         riskLimit: '',
         randomSeed: '',
         contests: [],
-        jurisdictions: [],
+        jurisdictions: [
+          {
+            auditBoards: [],
+            id: '',
+            name: '',
+            contests: [],
+          },
+        ],
         rounds: [],
       }
     } else {

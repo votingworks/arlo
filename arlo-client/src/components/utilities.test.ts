@@ -110,5 +110,11 @@ describe('utilities.ts', () => {
       expect(checkAndToast({})).toBeFalsy()
       expect(toastSpy).toBeCalledTimes(0)
     })
+
+    it('handles falsy input and nonobject inputs', () => {
+      expect(checkAndToast(null)).toBeFalsy()
+      expect(checkAndToast('')).toBeFalsy()
+      expect(toastSpy).toBeCalledTimes(0)
+    })
   })
 })
