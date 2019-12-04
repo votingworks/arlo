@@ -87,6 +87,8 @@ def test_macro_error():
     make sure sampler throws an error if we don't give it batches for MACRO
     """
 
+    assert False, 'Not implemented'
+
 def test_max_error(sampler):
 
     expected_up = 0.0852 # Per the MACRO paper 
@@ -97,6 +99,11 @@ def test_max_error(sampler):
         delta = computed_up - expected_up
         assert delta < 0.001, \
                 'Got an incorrect maximum possible overstatement: {} should be {}'.format(computed_up, expected_up)
+
+def test_get_sample_sizes(sampler):
+    expected = 36
+    computed = sampler.get_sample_sizes({})
+    assert computed == expected, 'Failed to compute sample sized: got {}, expected {}'.format(computed, expected)
 
 
 
