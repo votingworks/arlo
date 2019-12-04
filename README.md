@@ -1,4 +1,4 @@
-# Arlo: Open-source risk-limiting audit software by [VotingWorks](voting.works)
+# Arlo: Open-source risk-limiting audit software by [VotingWorks](https://voting.works)
 
 Arlo is a web-based [risk-limiting audit (RLA)](https://risklimitingaudits.org) tool used to conduct post-election audits in the United States.  The tool helps election officials complete a statistically valid audit of vote tabulation processes by comparing the votes marked on a random sample of original paper ballots with the electronically recorded votes for those same ballots. This type of audit can confirm that the reported winner did indeed win, or correct the outcome through a full hand recount if the reported outcome cannot be confirmed.
 
