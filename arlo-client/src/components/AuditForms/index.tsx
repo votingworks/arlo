@@ -3,7 +3,7 @@ import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api, checkAndToast } from '../utilities'
-import { IAudit, ICreateAuditParams } from '../../types'
+import { IAudit, ICreateAuditParams, IErrorResponse } from '../../types'
 import ResetButton from './ResetButton'
 import Wrapper from '../Atoms/Wrapper'
 
@@ -32,7 +32,9 @@ const AuditForms: React.FC<IProps> = ({
   const [audit, setAudit] = useState(initialData)
 
   const getStatus = useCallback(async (): Promise<IAudit> => {
-    const audit: IAudit = await api(`/election/${electionId}/audit/status`)
+    const audit: IAudit | IErrorResponse = await api(
+      `/election/${electionId}/audit/status`
+    )
     if (checkAndToast(audit)) {
       return initialData
     } else {

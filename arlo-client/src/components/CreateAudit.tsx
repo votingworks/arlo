@@ -26,15 +26,16 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const onClick = async () => {
     try {
       setLoading(true)
-      const response: {
-        electionId: string
-      } & IErrorResponse = await api('/election/new', {
-        method: 'POST',
-      })
-      const { electionId } = response
+      const response: { electionId: string } | IErrorResponse = await api(
+        '/election/new',
+        {
+          method: 'POST',
+        }
+      )
       if (checkAndToast(response)) {
         return
       }
+      const { electionId } = response
       history.push(`/election/${electionId}`)
     } catch (err) {
       toast.error(err.message)

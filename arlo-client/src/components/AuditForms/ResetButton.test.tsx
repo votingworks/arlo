@@ -2,15 +2,26 @@ import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import ResetButton from './ResetButton'
-import { api, checkAndToast } from '../utilities'
+// import { api, checkAndToast } from '../utilities'
+import * as utilities from '../utilities'
 
-const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
-const checkAndToastMock = checkAndToast as jest.Mock<
-  ReturnType<typeof checkAndToast>,
-  Parameters<typeof checkAndToast>
->
+// const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
+// const checkAndToastMock = checkAndToast as jest.Mock<
+//   ReturnType<typeof checkAndToast>,
+//   Parameters<typeof checkAndToast>
+// >
 
-jest.mock('../utilities')
+// jest.mock('../utilities')
+
+const apiMock: jest.SpyInstance<
+  ReturnType<typeof utilities.api>,
+  Parameters<typeof utilities.api>
+> = jest.spyOn(utilities, 'api').mockImplementation()
+const checkAndToastMock: jest.SpyInstance<
+  ReturnType<typeof utilities.checkAndToast>,
+  Parameters<typeof utilities.checkAndToast>
+> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
+
 apiMock.mockImplementationOnce(async () => '{}')
 checkAndToastMock.mockReturnValue(false)
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()

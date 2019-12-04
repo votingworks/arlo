@@ -6,7 +6,7 @@ import FormWrapper from '../Form/FormWrapper'
 import FormSection from '../Form/FormSection'
 import { IAuditBoardMember } from '../../types'
 import FormButton from '../Form/FormButton'
-import { api } from '../utilities'
+import { api, checkAndToast } from '../utilities'
 
 const LabelText = styled.span`
   display: block;
@@ -58,7 +58,7 @@ const MemberForm: React.FC<IProps> = ({
               name: boardName,
               members: values,
             }
-            await api(
+            const response = await api(
               `/election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${boardId}`,
               {
                 method: 'POST',
@@ -68,6 +68,7 @@ const MemberForm: React.FC<IProps> = ({
                 },
               }
             )
+            if (checkAndToast(response)) return
             updateAudit()
           }}
           render={({

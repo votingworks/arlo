@@ -1,5 +1,5 @@
 export interface IErrorResponse {
-  errors?: {
+  errors: {
     message: string
   }[]
 }
@@ -125,5 +125,4 @@ export interface IAudit {
   contests: IContest[]
   jurisdictions: IJurisdiction[]
   rounds: IRound[]
-  errors?: { message: string }[]
 }

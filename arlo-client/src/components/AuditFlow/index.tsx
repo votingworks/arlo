@@ -9,13 +9,11 @@ import {
   IAuditBoard,
   IBallot,
   IReview,
+  IErrorResponse,
 } from '../../types'
-import { api, poll } from '../utilities'
+import { api, poll, checkAndToast } from '../utilities'
 import { statusStates } from '../AuditForms/_mocks'
-import {
-  // dummyBoard,
-  dummyBallots,
-} from './_mocks'
+import { dummyBallots } from './_mocks'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
 import Ballot from './Ballot'
@@ -41,8 +39,21 @@ const AuditFlow: React.FC<IProps> = ({
   const [audit, setAudit] = useState(statusStates[3])
 
   const getStatus = useCallback(async (): Promise<IAudit> => {
-    const audit: IAudit = await api(`/election/${electionId}/audit/status`)
-    return audit
+    const audit: IAudit | IErrorResponse = await api(
+      `/election/${electionId}/audit/status`
+    )
+    if (checkAndToast(audit)) {
+      return {
+        name: '',
+        riskLimit: '',
+        randomSeed: '',
+        contests: [],
+        jurisdictions: [],
+        rounds: [],
+      }
+    } else {
+      return audit
+    }
   }, [electionId])
 
   const updateAudit = useCallback(async () => {
@@ -68,10 +79,19 @@ const AuditFlow: React.FC<IProps> = ({
 
   const getBallots = useCallback(async (): Promise<IBallot[]> => {
     if (audit.jurisdictions.length && board) {
-      const { ballots } = await api(
+      const response = await api<
+        | {
+            ballots: IBallot[]
+          }
+        | IErrorResponse
+      >(
         `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`
       )
-      return ballots
+      if (checkAndToast(response)) {
+        return []
+      } else {
+        return response.ballots
+      }
     } else {
       return []
     }

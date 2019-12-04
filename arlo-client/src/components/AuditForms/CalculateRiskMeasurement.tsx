@@ -81,9 +81,10 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
   const getBallots = async (r: number): Promise<IBallot[]> => {
     const round = audit.rounds[r]
     const response = await api<
-      {
-        ballots: IBallot[]
-      } & IErrorResponse
+      | {
+          ballots: IBallot[]
+        }
+      | IErrorResponse
     >(
       `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/round/${round.id}/ballot-list`
     )

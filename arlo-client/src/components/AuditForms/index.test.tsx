@@ -9,16 +9,26 @@ import {
 import { BrowserRouter as Router } from 'react-router-dom'
 import AuditForms from './index'
 import { statusStates } from './_mocks'
-import { api, checkAndToast } from '../utilities'
+// import { api, checkAndToast } from '../utilities'
+import * as utilities from '../utilities'
 import { routerTestProps } from '../testUtilities'
 
-const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
-const checkAndToastMock = checkAndToast as jest.Mock<
-  ReturnType<typeof checkAndToast>,
-  Parameters<typeof checkAndToast>
->
+// const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
+// const checkAndToastMock = checkAndToast as jest.Mock<
+//   ReturnType<typeof checkAndToast>,
+//   Parameters<typeof checkAndToast>
+// >
 
-jest.mock('../utilities')
+// jest.mock('../utilities')
+
+const apiMock: jest.SpyInstance<
+  ReturnType<typeof utilities.api>,
+  Parameters<typeof utilities.api>
+> = jest.spyOn(utilities, 'api').mockImplementation()
+const checkAndToastMock: jest.SpyInstance<
+  ReturnType<typeof utilities.checkAndToast>,
+  Parameters<typeof utilities.checkAndToast>
+> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 checkAndToastMock.mockReturnValue(false)
 

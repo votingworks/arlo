@@ -112,12 +112,30 @@ export const openQR = (id: string, name: string) => {
   }
 }
 
-export const checkAndToast = (response: IErrorResponse): boolean => {
-  const { errors } = response
+const getErrorsFromResponse = (
+  response: unknown
+): { message: string }[] | undefined => {
+  if (typeof response !== 'object' || !response) {
+    return
+  }
+
+  const errors = (response as { [key: string]: unknown })['errors']
+
+  if (!Array.isArray(errors)) {
+    return
+  }
+
+  return errors
+}
+
+export const checkAndToast = (
+  response: unknown
+): response is IErrorResponse => {
+  const errors = getErrorsFromResponse(response)
   if (errors) {
     toast.error(
       'There was a server error regarding: ' +
-        errors.map((v: { message: string }) => v.message).join(', ')
+        errors.map(({ message }) => message).join(', ')
     )
     return true
   } else {
