@@ -95,7 +95,9 @@ class MACRO(RiskLimitingAudit):
 
                     V_wl = contests[contest][winner] - contests[contest][loser]
 
-                    u_p_minus = ((v_wp - v_lp) - b_cp)/V_wl
+
+                    u_p_minus = float((v_wp - v_lp) - b_cp)/V_wl
+                    print(contest, winner, loser, v_wp, v_lp, b_cp, V_wl)
 
                     if u_p_minus > u_minus:
                         u_minus = u_p_minus
@@ -129,18 +131,22 @@ class MACRO(RiskLimitingAudit):
         U = 0
 
         tau_minus = 10**7
+
+        ups = set()
         for batch in batch_results:
 
             u_p = self.compute_max_error(contests, margins, batch_results[batch])
 
             u_minus = self.compute_u_minus(contests, margins, batch_results[batch])
+            ups.add((u_p, u_minus))
 
             if u_minus/u_p < tau_minus:
                 tau_minus = u_minus/u_p
 
             U += u_p
 
-        return math.ceil(math.log(self.risk_limit)/(math.log(1 - 1/U) - math.log(1 - tau_minus)))
+        print(ups)
+        return math.ceil(math.log(self.risk_limit)/(math.log(1 - (1/U)) - math.log(1 - tau_minus)))
 
 
     def compute_risk(self, margins, sample_results):
