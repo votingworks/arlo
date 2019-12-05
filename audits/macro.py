@@ -28,6 +28,7 @@ class MACRO(RiskLimitingAudit):
                     v_wp = reported_results[contest][winner]
                     v_lp = reported_results[contest][loser]
 
+
                     a_wp = sampled_results[contest][winner]
                     a_lp = sampled_results[contest][loser]
 
@@ -97,16 +98,22 @@ class MACRO(RiskLimitingAudit):
 
 
                     u_p_minus = float((v_wp - v_lp) - b_cp)/V_wl
-                    print(contest, winner, loser, v_wp, v_lp, b_cp, V_wl)
 
                     if u_p_minus > u_minus:
                         u_minus = u_p_minus
 
         return u_minus
 
-                    
+    def compute_U(self, contests, margins, reported_results):
 
-    def get_sample_sizes(self, contests, margins, batch_results, sample_results):
+        U = 0
+        for batch in reported_results:
+
+            U += self.compute_max_error(contests, margins, reported_results[batch])
+
+        return U       
+
+    def get_sample_sizes(self, contests, margins, reported_results, sample_results):
         """
         Computes initial sample sizes parameterized by likelihood that the
         initial sample will confirm the election result, assuming no
@@ -128,33 +135,30 @@ class MACRO(RiskLimitingAudit):
                     }
         """
 
-        U = 0
 
         tau_minus = 10**7
 
-        ups = set()
-        for batch in batch_results:
+        for batch in reported_results:
+            u_p = self.compute_max_error(contests, margins, reported_results[batch])
 
-            u_p = self.compute_max_error(contests, margins, batch_results[batch])
-
-            u_minus = self.compute_u_minus(contests, margins, batch_results[batch])
-            ups.add((u_p, u_minus))
+            u_minus = self.compute_u_minus(contests, margins, reported_results[batch])
 
             if u_minus/u_p < tau_minus:
                 tau_minus = u_minus/u_p
 
-            U += u_p
+        U = self.compute_U(contests, margins, reported_results)
 
-        print(ups)
         return math.ceil(math.log(self.risk_limit)/(math.log(1 - (1/U)) - math.log(1 - tau_minus)))
 
 
-    def compute_risk(self, margins, sample_results):
+    def compute_risk(self, contests, margins, reported_results, sample_results):
         """
         Computes the risk-value of <sample_results> based on results in <contest>.
 
         Inputs: 
+            contests       - the contests and results being audited
             margins        - the margins for the contest being audited
+            reported_results - mapping of candidates to reported votes
             sample_results - mapping of candidates to votes in the (cumulative)
                              sample:
 
@@ -169,3 +173,22 @@ class MACRO(RiskLimitingAudit):
                               result is correct based on the sample, for each winner-loser pair. 
             confirmed       - a boolean indicating whether the audit can stop
         """
+        
+        p = 1
+
+
+        U = self.compute_U(contests, margins, reported_results)
+
+        for ctr,batch in enumerate(sample_results):
+            e_p = self.compute_error(contests, margins, reported_results[batch], sample_results[batch])
+            u_p = self.compute_max_error(contests, margins, reported_results[batch])
+
+            taint = e_p/u_p
+            print(taint, ctr)
+
+            p *= (1 - 1/U)/(1 - taint)
+
+            if p < self.risk_limit:
+               return p, True
+
+        return p, p < self.risk_limit

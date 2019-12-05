@@ -131,5 +131,56 @@ def test_get_sample_sizes(sampler):
     assert computed == expected, 'Failed to compute sample sized: got {}, expected {}'.format(computed, expected)
 
 
+def test_compute_risk(sampler):
+
+    sample = {}
+
+    # Draws with taint of 0
+    for i in range(31):
+        sample['Batch {}'.format(i)] = {
+                'Contest A': {
+                'winner': 200,
+                'loser': 180,
+                },
+                'Contest B': {
+                    'winner': 200,
+                    'loser': 160,
+                },
+                'Contest C': {
+                    'winner': 200,
+                    'loser': 140,
+                }
+        }
+
+    # draws with taint of 0.04047619
+    for i in range(100, 106):
+        sample['Batch {}'.format(i)] = {
+                'Contest A': {
+                'winner': 190,
+                'loser': 190,
+                },
+                'Contest B': {
+                    'winner': 200,
+                    'loser': 160,
+                },
+                'Contest C': {
+                    'winner': 200,
+                    'loser': 140,
+                }
+        }
+    
+
+    computed_p, result = sampler.audit.compute_risk(sampler.contests, sampler.margins, sampler.batch_results, sample)
+
+    U = sampler.audit.compute_U(sampler.contests, sampler.margins, sampler.batch_results)
+    expected_p =  0.247688222
+
+    delta = abs(expected_p - computed_p)
+
+    assert delta < 10**-4, 'Incorrect p-value: Got {}, expected {}'.format(computed_p, expected_p)
+
+    assert result, 'Audit did not terminat but should have'
+
+
 
 
