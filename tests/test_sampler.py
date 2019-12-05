@@ -89,6 +89,12 @@ def sampler():
     yield Sampler('BRAVO', seed, risk_limit, contests)
 
 
+def test_macro_error():
+    with pytest.raises(Exception) as e:
+        Sampler('MACRO', 0, 0, {})
+        
+        assert 'Must have batch-level results to use MACRO' in e.value
+
 def test_draw_sample(sampler):
     # Test getting a sample
     manifest = {
