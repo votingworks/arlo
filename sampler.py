@@ -224,7 +224,7 @@ class Sampler:
         """
         return self.audit.get_sample_sizes(contests=self.contests, 
                                            margins=self.margins, 
-                                           batch_results=self.batch_results,
+                                           reported_results=self.batch_results,
                                            sample_results=sample_results)
 
     def compute_risk(self, contest, sample_results):
