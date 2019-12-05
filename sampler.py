@@ -222,9 +222,14 @@ class Sampler:
                         ...
                     }
         """
-        return self.audit.get_sample_sizes(contests=self.contests, 
+        if type(self.audit) == MACRO:
+            return self.audit.get_sample_sizes(contests=self.contests, 
                                            margins=self.margins, 
                                            reported_results=self.batch_results,
+                                           sample_results=sample_results)
+        else:
+            return self.audit.get_sample_sizes(contests=self.contests, 
+                                           margins=self.margins, 
                                            sample_results=sample_results)
 
     def compute_risk(self, contest, sample_results):
