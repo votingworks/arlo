@@ -14,7 +14,7 @@ export const api = async <T>(
     return res.json() as Promise<T>
   } catch (err) {
     const error = await err.json()
-    return Promise.reject(error)
+    throw error
   }
 }
 
