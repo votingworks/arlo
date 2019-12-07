@@ -5,7 +5,7 @@ import numpy as np
 from sampler import Sampler
 
 @pytest.fixture
-def sampler():
+def bravo_sampler():
     seed = '12345678901234567890abcdefghijklmnopqrstuvwxyz😊'
 
     risk_limit = .1
@@ -88,6 +88,42 @@ def sampler():
 
     yield Sampler('BRAVO', seed, risk_limit, contests)
 
+@pytest.fixture
+def macro_sampler():
+    seed = '12345678901234567890abcdefghijklmnopqrstuvwxyz😊'
+
+    risk_limit = .1
+    contests = {
+        'test1': {
+            'cand1': 600,
+            'cand2': 400,
+            'ballots': 1000,
+            'numWinners': 1
+        },
+    }
+
+    batches = {}
+
+    # 10 batches will have max error of .08
+    for i in range(10):
+        batches['pct {}'.format(i)] = {
+            'test1': {
+                'cand1': 40,
+                'cand2': 10,
+                'ballots': 50
+            }
+        }
+        # 10 batches will have max error of .04
+    for i in range(11, 20):
+        batches['pct {}'.format(i)] = {
+            'test1': {
+                'cand1': 20,
+                'cand2': 30,
+                'ballots': 50
+            }
+        }
+
+    yield Sampler('MACRO', seed, risk_limit, contests, batches)
 
 def test_macro_error():
     with pytest.raises(Exception) as e:
@@ -95,7 +131,7 @@ def test_macro_error():
         
         assert 'Must have batch-level results to use MACRO' in e.value
 
-def test_draw_sample(sampler):
+def test_draw_sample(bravo_sampler):
     # Test getting a sample
     manifest = {
         'pct 1': 25,
@@ -104,14 +140,14 @@ def test_draw_sample(sampler):
         'pct 4': 25,
     }
 
-    sample = sampler.draw_sample(manifest, 20)
+    sample = bravo_sampler.draw_sample(manifest, 20)
 
     for i, item in enumerate(sample):
         expected = expected_sample[i]
         assert item == expected, 'Draw sample failed: got {}, expected {}'.format(item, expected)
 
 
-def test_draw_more_samples(sampler):
+def test_draw_more_samples(bravo_sampler):
     # Test getting a sample
     manifest = {
         'pct 1': 25,
@@ -121,7 +157,7 @@ def test_draw_more_samples(sampler):
     }
 
     samp_size = 10
-    sample = sampler.draw_sample(manifest, 10)
+    sample = bravo_sampler.draw_sample(manifest, 10)
     assert samp_size == len(sample), 'Received sample of size {}, expected {}'.format(samp_size, len(sample))
 
     for i, item in enumerate(sample):
@@ -129,13 +165,38 @@ def test_draw_more_samples(sampler):
         assert item == expected, 'Draw sample failed: got {}, expected {}'.format(item, expected)
 
     samp_size = 10
-    sample = sampler.draw_sample(manifest, 10, 10)
+    sample = bravo_sampler.draw_sample(manifest, 10, 10)
     assert samp_size == len(sample), 'Received sample of size {}, expected {}'.format(samp_size, len(sample))
     for i, item in enumerate(sample):
         expected = expected_second_sample[i]
         assert item == expected, 'Draw sample failed: got {}, expected {}'.format(item, expected)
 
         
+def test_draw_macro_sample(macro_sampler):
+    # Test getting a sample
+    sample = macro_sampler.draw_sample({}, 10)
+
+    for i, item in enumerate(sample):
+        expected = expected_macro_sample[i]
+        assert item == expected, 'Draw sample failed: got {}, expected {}'.format(item, expected)
+
+def test_draw_more_macro_samples(macro_sampler):
+    # Test getting a sample
+    samp_size = 5
+    sample = macro_sampler.draw_sample({}, 5)
+    assert samp_size == len(sample), 'Received sample of size {}, expected {}'.format(samp_size, len(sample))
+
+    for i, item in enumerate(sample):
+        expected = expected_first_macro_sample[i]
+        assert item == expected, 'Draw sample failed: got {}, expected {}'.format(item, expected)
+
+    samp_size = 5
+    sample = macro_sampler.draw_sample({}, 5, 5)
+    assert samp_size == len(sample), 'Received sample of size {}, expected {}'.format(samp_size, len(sample))
+    for i, item in enumerate(sample):
+        expected = expected_second_macro_sample[i]
+        assert item == expected, 'Draw sample failed: got {}, expected {}'.format(item, expected)
+
 
 expected_sample = [
     ('pct 1', 4),
@@ -158,6 +219,19 @@ expected_sample = [
     ('pct 4', 17),
     ('pct 4', 19),
     ('pct 4', 20)
+]
+
+expected_macro_sample = [
+    'pct 13',
+    'pct 16',
+    'pct 18',
+    'pct 18',
+    'pct 2',
+    'pct 2',
+    'pct 2',
+    'pct 3',
+    'pct 4',
+    'pct 6'
 ]
 
 expected_first_sample = [
@@ -184,4 +258,21 @@ expected_second_sample = [
     ('pct 4', 3),
     ('pct 4', 17),
     ('pct 4', 20)
+]
+
+expected_first_macro_sample = [
+    'pct 16',
+    'pct 2',
+    'pct 2',
+    'pct 2',
+    'pct 3',
+]
+
+
+expected_second_macro_sample = [
+    'pct 13',
+    'pct 18',
+    'pct 18',
+    'pct 4',
+    'pct 6',
 ]

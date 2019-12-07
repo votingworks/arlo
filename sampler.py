@@ -58,6 +58,7 @@ class Sampler:
         self.contests = contests
         self.batch_results = batch_results
         self.margins = self.compute_margins()
+        self.audit_type = audit_type
 
         if audit_type == 'BRAVO':
             self.audit = BRAVO(risk_limit)
@@ -179,7 +180,7 @@ class Sampler:
                         }
                     
         Outputs:
-            sample - list of (<batch>, <ballot number>) tuples to sample, with duplicates, ballot position is 0-indexed
+            sample - list of (<batch>, <ballot number>) tuples to sample, with duplicates, ballot position is 0-indexed, or just list of <batch> in the case of a MACRO audit. 
                     [   
                         (batch1, 1),
                         (batch2, 49),
@@ -187,18 +188,63 @@ class Sampler:
                     ]
 
         """
-        ballots = []
-        # First build a faux list of ballots
-        for batch in manifest:
-            for i in range(manifest[batch]):
-                ballots.append((batch, i))
 
-        sample =  list(consistent_sampler.sampler(ballots, 
-                                                  seed=self.seed, 
-                                                  take=sample_size + num_sampled, 
-                                                  with_replacement=True,
-                                                  output='id'))[num_sampled:]
-        
+        if self.audit_type == 'MACRO':
+            # Here we do PPEB.
+
+            U = self.audit.compute_U(self.contests, self.margins, self.batch_results)
+
+            # Map each batch to its weighted probability of being picked
+            batch_to_prob = {}
+            min_prob = 1
+            # Get u_ps
+            for batch in self.batch_results:
+                error = self.audit.compute_max_error(self.contests, self.margins, self.batch_results[batch])
+
+                # Probability of being picked is directly related to how much this
+                # batch contributes to the overall possible error
+                batch_to_prob[batch] = error/U
+
+                if error/U < min_prob:
+                    min_prob = error/U
+
+
+            sample_from = []
+            # Now build faux list of batches, where each batch appears a number of
+            # times proportional to its prob
+            for batch in batch_to_prob:
+                times = int(batch_to_prob[batch]/min_prob)
+
+                for i in range(times):
+                    # We have to create "unique" records for the sampler, so we add 
+                    # a '.n' to the batch name so we know which duplicate it is. 
+                    sample_from.append('{}.{}'.format(batch, i))
+
+            # Now draw the sample
+            faux_sample = list(consistent_sampler.sampler(sample_from, 
+                                                      seed=self.seed, 
+                                                      take=sample_size + num_sampled, 
+                                                      with_replacement=True,
+                                                      output='id'))[num_sampled:]
+
+            # here we take off the decimals. 
+            sample = []
+            for i in faux_sample:
+                sample.append(i.split('.')[0])
+                
+        else:
+            ballots = []
+            # First build a faux list of ballots
+            for batch in manifest:
+                for i in range(manifest[batch]):
+                    ballots.append((batch, i))
+
+            sample =  list(consistent_sampler.sampler(ballots, 
+                                                      seed=self.seed, 
+                                                      take=sample_size + num_sampled, 
+                                                      with_replacement=True,
+                                                      output='id'))[num_sampled:]
+            
         # TODO this is sort of a hack to get the list sorted right. Maybe it's okay?
         return sorted(sample)
 
