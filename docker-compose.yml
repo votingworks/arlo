@@ -73,7 +73,7 @@ services:
 
   # provides a way to run client tests easily
   client-tests:
-    build: arlo-client
+    image: node:12.13.0
     command: /bin/true
     working_dir: /code
     volumes:
