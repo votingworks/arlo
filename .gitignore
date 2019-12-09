@@ -4,3 +4,8 @@ node_modules
 .mypy_cache
 .pytest_cache
 config/database.cfg
+
+# vim temp files
+*~
+*.swo
+*.swp
