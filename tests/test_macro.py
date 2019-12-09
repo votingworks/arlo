@@ -179,8 +179,7 @@ def test_compute_risk(sampler):
 
     assert delta < 10**-4, 'Incorrect p-value: Got {}, expected {}'.format(computed_p, expected_p)
 
-    assert result, 'Audit did not terminat but should have'
-
+    assert result, 'Audit did not terminate but should have'
 
 
 
