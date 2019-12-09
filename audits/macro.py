@@ -117,7 +117,7 @@ class MACRO(RiskLimitingAudit):
         """
         Computes initial sample sizes parameterized by likelihood that the
         initial sample will confirm the election result, assuming no
-        discrpancies.
+        discrepancies.
 
         Inputs:
             sample_results - if a sample has already been drawn, this will
