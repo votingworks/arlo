@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { toast } from 'react-toastify'
 import { RouteComponentProps } from 'react-router-dom'
 import FormButton from './Form/FormButton'
-import { api } from './utilities'
-import { ICreateAuditParams } from '../types'
+import { api, checkAndToast } from './utilities'
+import { ICreateAuditParams, IErrorResponse } from '../types'
 
 const Button = styled(FormButton)`
   margin: 65px 0;
@@ -23,11 +24,22 @@ const Wrapper = styled.div`
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const [loading, setLoading] = useState(false)
   const onClick = async () => {
-    setLoading(true)
-    const { electionId } = await api('/election/new', {
-      method: 'POST',
-    })
-    history.push(`/election/${electionId}`)
+    try {
+      setLoading(true)
+      const response: { electionId: string } | IErrorResponse = await api(
+        '/election/new',
+        {
+          method: 'POST',
+        }
+      )
+      if (checkAndToast(response)) {
+        return
+      }
+      const { electionId } = response
+      history.push(`/election/${electionId}`)
+    } catch (err) {
+      toast.error(err.message)
+    }
   }
   return (
     <Wrapper>

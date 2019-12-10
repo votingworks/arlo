@@ -14,6 +14,10 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
+const checkAndToastMock: jest.SpyInstance<
+  ReturnType<typeof utilities.checkAndToast>,
+  Parameters<typeof utilities.checkAndToast>
+> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 const ballotingMock = async (
   endpoint: string
@@ -29,6 +33,7 @@ const ballotingMock = async (
 
 afterEach(() => {
   apiMock.mockClear()
+  checkAndToastMock.mockClear()
 })
 
 const routeProps = routerTestProps('/election/:electionId/board/:token', {
@@ -67,6 +72,35 @@ describe('AuditFlow ballot interaction', () => {
       expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
       expect(getByText('Start Auditing')).toBeTruthy()
       expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('handles server error on /status', async () => {
+    checkAndToastMock.mockReturnValueOnce(true).mockReturnValue(false)
+    render(
+      <StaticRouter {...staticRouteProps}>
+        <AuditFlow {...routeProps} />
+      </StaticRouter>
+    )
+    await wait(() => {
+      expect(apiMock).toBeCalled()
+      expect(checkAndToastMock).toBeCalledTimes(2)
+    })
+  })
+
+  it('handles server error on /ballot-list', async () => {
+    checkAndToastMock
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true)
+      .mockReturnValue(false)
+    render(
+      <StaticRouter {...staticRouteProps}>
+        <AuditFlow {...routeProps} />
+      </StaticRouter>
+    )
+    await wait(() => {
+      expect(apiMock).toBeCalled()
+      expect(checkAndToastMock).toBeCalledTimes(2)
     })
   })
 

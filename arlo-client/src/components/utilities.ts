@@ -1,14 +1,21 @@
+import { toast } from 'react-toastify'
 import number from '../utils/number-schema'
+import { IErrorResponse } from '../types'
 
 export const api = async <T>(
   endpoint: string,
   options?: RequestInit
 ): Promise<T> => {
-  const res = await fetch(endpoint, options)
-  if (!res.ok) {
-    throw new Error(res.statusText)
+  try {
+    const res = await fetch(endpoint, options)
+    if (!res.ok) {
+      throw res
+    }
+    return res.json() as Promise<T>
+  } catch (err) {
+    const error = await err.json()
+    throw error
   }
-  return res.json() as Promise<T>
 }
 
 export const poll = (
@@ -102,5 +109,36 @@ export const openQR = (id: string, name: string) => {
       },
       true
     )
+  }
+}
+
+const getErrorsFromResponse = (
+  response: unknown
+): { message: string }[] | undefined => {
+  if (typeof response !== 'object' || !response) {
+    return
+  }
+
+  const errors = (response as { [key: string]: unknown })['errors']
+
+  if (!Array.isArray(errors)) {
+    return
+  }
+
+  return errors
+}
+
+export const checkAndToast = (
+  response: unknown
+): response is IErrorResponse => {
+  const errors = getErrorsFromResponse(response)
+  if (errors) {
+    toast.error(
+      'There was a server error regarding: ' +
+        errors.map(({ message }) => message).join(', ')
+    )
+    return true
+  } else {
+    return false
   }
 }

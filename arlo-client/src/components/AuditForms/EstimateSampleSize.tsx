@@ -18,9 +18,9 @@ import FormTitle from '../Form/FormTitle'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
-import { api, poll } from '../utilities'
+import { api, poll, checkAndToast } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
-import { IAudit } from '../../types'
+import { IAudit, IErrorResponse } from '../../types'
 import number, { parse as parseNumber } from '../../utils/number-schema'
 
 export const Select = styled(HTMLSelect)`
@@ -193,13 +193,20 @@ const EstimateSampleSize: React.FC<IProps> = ({
     }
     try {
       setIsLoading(true)
-      await api(`/election/${electionId}/audit/basic`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      const response: IErrorResponse = await api(
+        `/election/${electionId}/audit/basic`,
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      if (checkAndToast(response)) {
+        setIsLoading(false)
+        return
+      }
       const condition = async () => {
         const { rounds } = await getStatus()
         return (

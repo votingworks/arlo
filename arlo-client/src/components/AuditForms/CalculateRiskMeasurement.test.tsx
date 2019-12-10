@@ -12,6 +12,10 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
+const checkAndToastMock: jest.SpyInstance<
+  ReturnType<typeof utilities.checkAndToast>,
+  Parameters<typeof utilities.checkAndToast>
+> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 jest.mock('jspdf')
 
@@ -40,6 +44,7 @@ beforeEach(() => {
   toastSpy.mockClear()
   apiMock.mockClear()
   jspdfMock.mockClear()
+  checkAndToastMock.mockClear()
 })
 
 describe('CalculateRiskMeasurement', () => {
@@ -220,6 +225,58 @@ describe('CalculateRiskMeasurement', () => {
       expect(setIsLoadingMock).toBeCalledTimes(1)
       expect(getStatusMock).toBeCalled()
       expect(updateAuditMock).toBeCalledTimes(0)
+    })
+  })
+
+  it(`handles server errors`, async () => {
+    apiMock.mockImplementation(async () => ({
+      message: 'success',
+      ok: true,
+    }))
+    checkAndToastMock
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(true)
+
+    const getStatusMock = jest
+      .fn()
+      .mockImplementation(async () => statusStates[6])
+
+    const { getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[4]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    fireEvent.click(getByText('Calculate Risk Measurement'), {
+      bubbles: true,
+    })
+
+    await wait(() => {
+      expect(checkAndToastMock).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledTimes(0)
+      expect(apiMock).toBeCalled()
+      expect(setIsLoadingMock).toBeCalledTimes(2)
+      expect(getStatusMock).toBeCalledTimes(0)
+      expect(updateAuditMock).toBeCalledTimes(0)
+    })
+
+    fireEvent.click(getByText('Download Label Sheets for Round 1'), {
+      bubbles: true,
+    })
+
+    fireEvent.click(getByText('Download Placeholders for Round 1'), {
+      bubbles: true,
+    })
+
+    await wait(() => {
+      expect(checkAndToastMock).toHaveBeenCalledTimes(3)
+      expect(jspdfMock).toHaveBeenCalledTimes(0)
     })
   })
 

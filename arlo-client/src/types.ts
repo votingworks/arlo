@@ -1,3 +1,9 @@
+export interface IErrorResponse {
+  errors: {
+    message: string
+  }[]
+}
+
 export interface ICreateAuditParams {
   electionId: string
 }
