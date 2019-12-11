@@ -126,7 +126,6 @@ class SampledBallot(db.Model):
         db.PrimaryKeyConstraint('round_id', 'jurisdiction_id', 'batch_id', 'ballot_position', 'ticket_number'),
     )
     
-    times_sampled = db.Column(db.Integer, nullable=False)
     audit_board_id = db.Column(db.String(200), db.ForeignKey('audit_board.id', ondelete='cascade'), nullable=False)
     vote = db.Column(db.String(200), nullable=True)
     comment = db.Column(db.Text, nullable=True)

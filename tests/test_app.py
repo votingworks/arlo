@@ -204,11 +204,11 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     # get the retrieval list for round 1
     rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').splitlines()
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Ticket Number,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Number,Audit Board"
     assert len(lines) > 5
     assert 'attachment' in rv.headers['content-disposition']
 
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    num_ballots = len([line for line in lines[1:] if line!=""])
 
     return url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
     
@@ -369,12 +369,12 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     # get the retrieval list for round 1
     rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').split("\r\n")
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Ticket Number,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Number,Audit Board"
     assert len(lines) > 5
     assert 'attachment' in rv.headers['content-disposition']
 
     rows = [line.split(",") for line in lines[1:] if line!=""]
-    num_ballots = sum([int(row[4]) for row in rows])
+    num_ballots = len(rows)
 
     return url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
     
@@ -543,10 +543,10 @@ def test_small_election(client):
     # get the retrieval list for round 1
     rv = client.get(f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/retrieval-list')
     lines = rv.data.decode('utf-8').splitlines()
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Ticket Number,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Number,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    num_ballots = len([line for line in lines[1:] if line!=""])
 
     # post results for round 1
     num_for_winner = int(num_ballots * 0.61)
@@ -843,10 +843,10 @@ def test_multi_winner_election(client):
     # get the retrieval list for round 1
     rv = client.get(f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/retrieval-list')
     lines = rv.data.decode('utf-8').split("\r\n")
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Times Selected,Ticket Number,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Number,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    num_ballots = len([line for line in lines[1:] if line!=""])
 
     # post results for round 1
     num_for_winner = int(num_ballots * 0.61)
@@ -936,7 +936,7 @@ def test_multi_round_multi_winner_audit(client):
     # round 2 retrieval list should be ready
     rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').split("\r\n")
-    num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
+    num_ballots = len([line for line in lines[1:] if line!=""])
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
 
 def test_ballot_set(client):
