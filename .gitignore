@@ -9,3 +9,6 @@ config/database.cfg
 *~
 *.swo
 *.swp
+
+# PyCharm editor files
+.idea

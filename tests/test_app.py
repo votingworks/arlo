@@ -1,6 +1,7 @@
-import os, math, uuid
-import tempfile
 import json
+import math
+import os
+import uuid
 
 import pytest
 
@@ -56,9 +57,12 @@ def test_whole_audit_flow(client):
     assert result2["riskLimit"] == 5
 
 def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
-    contest_id = str(uuid.uuid4())
+    contest_id_1 = str(uuid.uuid4())
+    contest_id_2 = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
     candidate_id_2 = str(uuid.uuid4())
+    candidate_id_3 = str(uuid.uuid4())
+    candidate_id_4 = str(uuid.uuid4())
     jurisdiction_id = str(uuid.uuid4())
     audit_board_id_1 = str(uuid.uuid4())
     audit_board_id_2 = str(uuid.uuid4())    
@@ -74,7 +78,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
 
             "contests" : [
                 {
-                    "id": contest_id,
+                    "id": contest_id_1,
                     "name": "contest 1",
                     "choices": [
                         {
@@ -92,6 +96,26 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
                     "totalBallotsCast": 86147,
                     "winners": 1,
                     "votesAllowed": 1
+                },
+                {
+                    "id": contest_id_2,
+                    "name": "contest 2",
+                    "choices": [
+                        {
+                            "id": candidate_id_3,
+                            "name": "candidate 3",
+                            "numVotes": 1819
+                        },
+                        {
+                            "id": candidate_id_4,
+                            "name": "candidate 4",
+                            "numVotes": 7695
+                        }
+                    ],
+
+                    "totalBallotsCast": 9514,
+                    "winners": 1,
+                    "votesAllowed": 1
                 }
             ]
         })
@@ -102,15 +126,19 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
     assert status["rounds"][0]["contests"][0]["sampleSizeOptions"] is None
+    assert status["rounds"][0]["contests"][1]["sampleSizeOptions"] is None
 
     # after background compute
     bgcompute.bgcompute()
     rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
     assert len(status["rounds"][0]["contests"][0]["sampleSizeOptions"]) == 4
-    
+    assert len(status["rounds"][0]["contests"][1]["sampleSizeOptions"]) == 4
+    assert len(status["rounds"][0]["sampleSizeOptions"]) == 4
+    assert status["rounds"][0]["sampleSize"] is None
+
     assert status["randomSeed"] == random_seed
-    assert len(status["contests"]) == 1
+    assert len(status["contests"]) == 2
     assert status["riskLimit"] == risk_limit
     assert status["name"] == name
 
@@ -123,7 +151,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
                 {
                     "id": jurisdiction_id,
                     "name": "adams county",
-                    "contests": [contest_id],
+                    "contests": [contest_id_1],
                     "auditBoards": [
                         {
                             "id": audit_board_id_1,
@@ -149,10 +177,10 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     jurisdiction = status["jurisdictions"][0]
     assert jurisdiction["name"] == "adams county"
     assert jurisdiction["auditBoards"][1]["name"] == "audit board #2"
-    assert jurisdiction["contests"] == [contest_id]
+    assert jurisdiction["contests"] == [contest_id_1]
 
     # choose a sample size
-    sample_size_90 = [option for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"] if option["prob"] == 0.9]
+    sample_size_90 = [option for option in status["rounds"][0]["sampleSizeOptions"] if option["prob"] == 0.9]
     assert len(sample_size_90) == 1
     sample_size = sample_size_90[0]["size"]
 
@@ -210,7 +238,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
 
     num_ballots = sum([int(line.split(",")[4]) for line in lines[1:] if line!=""])
 
-    return url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
+    return url_prefix, contest_id_1, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
     
 def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random_seed):
     contest_id = str(uuid.uuid4())

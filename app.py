@@ -80,7 +80,7 @@ def compute_sample_sizes(round_contest):
     sampler = get_sampler(election)
 
     # format the options properly
-    raw_sample_size_options = sampler.get_sample_sizes(sample_results(election))[election.contests[0].id]
+    raw_sample_size_options = sampler.get_sample_sizes(sample_results(election))[round_contest.contest_id]
     sample_size_options = []
     sample_size_90 = None
     sample_size_backup = None
@@ -121,11 +121,24 @@ def compute_sample_sizes(round_contest):
         round_contest.sample_size = sample_size_90        
         sample_ballots(election, the_round)
 
+    # update the parent round's sample size options
+    if the_round.sample_size_options is None:
+        the_round.sample_size_options = round_contest.sample_size_options
+
+    else:
+        round_options = json.loads(the_round.sample_size_options)
+
+        # TODO: this assumes that the lists are always in the same order
+        for i, option in enumerate(sample_size_options):
+            if round_options[i]["size"] < option["size"]:
+                round_options[i] = option
+
+        the_round.sample_size_options = json.dumps(round_options)
+
     db.session.commit()
-        
+
+
 def setup_next_round(election):
-    if len(election.contests) > 1:
-        raise Exception("only supports one contest for now")
 
     rounds = Round.query.filter_by(election_id = election.id).order_by('round_num').all()
 
@@ -138,25 +151,20 @@ def setup_next_round(election):
 
     db.session.add(round)
 
-    # assume just one contest for now
-    contest = election.contests[0]
-    round_contest = RoundContest(
-        round_id = round.id,
-        contest_id = contest.id
-    )
+    for contest in election.contests:
+        round_contest = RoundContest(round_id=round.id, contest_id=contest.id)
+        db.session.add(round_contest)
 
-    db.session.add(round_contest)
 
 def sample_ballots(election, round):
-    # assume only one contest
-    round_contest = round.round_contests[0]
+
     jurisdiction = election.jurisdictions[0]
     
     num_sampled = db.session.query(db.func.sum(SampledBallot.times_sampled)).filter_by(jurisdiction_id=jurisdiction.id).one()[0]
     if not num_sampled:
         num_sampled = 0
 
-    chosen_sample_size = round_contest.sample_size
+    chosen_sample_size = round.sample_size
     sampler = get_sampler(election)
     sample = sampler.draw_sample(manifest_summary(jurisdiction), chosen_sample_size, num_sampled=num_sampled)
 
@@ -331,6 +339,8 @@ def audit_status(election_id = None):
                 "id": round.id,
                 "startedAt": round.started_at,
                 "endedAt": round.ended_at,
+                "sampleSizeOptions": json.loads(round.sample_size_options or 'null'),
+                "sampleSize": round.sample_size,
                 "contests": [
                     {
                         "id": round_contest.contest_id,
@@ -342,7 +352,6 @@ def audit_status(election_id = None):
                             [result.targeted_contest_choice_id, result.result]
                             for result in round_contest.results]),
                         "sampleSizeOptions": json.loads(round_contest.sample_size_options or 'null'),
-                        "sampleSize": round_contest.sample_size
                     }
                     for round_contest in round.round_contests
                 ]
@@ -410,7 +419,7 @@ def samplesize_set(election_id):
     if len(rounds) > 1:
         return jsonify(status="bad")
 
-    rounds[0].round_contests[0].sample_size = int(request.get_json()['size'])
+    rounds[0].sample_size = int(request.get_json()['size'])
     db.session.commit()
 
     return jsonify(status="ok")

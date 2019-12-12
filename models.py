@@ -106,6 +106,9 @@ class Round(db.Model):
     started_at = db.Column(db.DateTime, nullable=False)
     ended_at = db.Column(db.DateTime, nullable=True)
 
+    sample_size_options = db.Column(db.String(1000), nullable=True)
+    sample_size = db.Column(db.Integer)
+
     __table_args__ = (
         db.UniqueConstraint('election_id', 'round_num'),
     )        
@@ -154,7 +157,6 @@ class RoundContest(db.Model):
 
     end_p_value = db.Column(db.Float)
     is_complete = db.Column(db.Boolean)
-    sample_size = db.Column(db.Integer)
 
 class RoundContestResult(db.Model):
     round_id = db.Column(db.String(200), db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
