@@ -8,7 +8,7 @@ import {
 import { voteValue } from '../../components/AuditFlow/BlockRadio'
 
 const ballotNext = (option: voteValue) => {
-  const callout = $('.bp3-callout*=Round 1: auditing ballot')
+  const callout = $('.bp3-callout*=auditing ballot')
     .getText()
     .split(' ')
   const ballot = Number(callout[callout.length - 3])
@@ -26,7 +26,7 @@ const ballotNext = (option: voteValue) => {
 }
 
 const ballotPrev = () => {
-  const callout = $('.bp3-callout*=Round 1: auditing ballot')
+  const callout = $('.bp3-callout*=auditing ballot')
     .getText()
     .split(' ')
   const ballot = Number(callout[callout.length - 3])
@@ -64,21 +64,26 @@ beforeEach(() => {
 describe('audit flow', () => {
   it('has a happy path', () => {
     $('a=Start Auditing').click()
-    while (ballotNext('Yes/For'))
-      $('.bp3-callout*=Round 1: auditing ballot').waitForExist()
+    ballotNext('Yes/For')
+    for (let i = 0; ballotNext('Yes/For') && i < 20; i++) {
+      $('.bp3-callout*=auditing ballot').waitForExist()
+    }
+    if (ballotNext('Yes/For')) {
+      $('.bp3-button=Return to audit overview').click()
+    }
     $('h1*=Ballot Cards to Audit').waitForExist(10000)
   })
 
   it('handles all four voting options', () => {
     $('a=Start Auditing').click()
     ballotNext('Yes/For')
-    $('.bp3-callout*=Round 1: auditing ballot 2 of').waitForExist()
+    $('.bp3-callout*=auditing ballot 2 of').waitForExist()
     ballotNext('No/Against')
-    $('.bp3-callout*=Round 1: auditing ballot 3 of').waitForExist()
+    $('.bp3-callout*=auditing ballot 3 of').waitForExist()
     ballotNext('No audit board consensus')
-    $('.bp3-callout*=Round 1: auditing ballot 4 of').waitForExist()
+    $('.bp3-callout*=auditing ballot 4 of').waitForExist()
     ballotNext('Blank vote/no mark')
-    $('.bp3-callout*=Round 1: auditing ballot 5 of').waitForExist()
+    $('.bp3-callout*=auditing ballot 5 of').waitForExist()
   })
 
   it('enters a comment', () => {
@@ -95,8 +100,7 @@ describe('audit flow', () => {
   it('skips forward and back', () => {
     $('a=Start Auditing').click()
     ballotSkip(4)
-    while (ballotPrev())
-      $('.bp3-callout*=Round 1: auditing ballot').waitForExist()
+    while (ballotPrev()) $('.bp3-callout*=auditing ballot').waitForExist()
     $('h1*=Ballot Cards to Audit').waitForExist(10000)
   })
 
