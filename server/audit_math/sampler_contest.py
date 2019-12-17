@@ -2,7 +2,7 @@
 A Module containing the Contest class, which encapsulates useful info for RLA
 computations.
 """
-from typing import Dict, Tuple, List, cast
+from typing import Dict
 import operator
 
 
@@ -37,14 +37,15 @@ class Contest:
     """
 
     candidates: Dict[str, int]  # Dict mapping candidates to their vote totals
-    numWinners: int  # How many winners this contest had
+    num_winners: int  # How many winners this contest had
     votesAllowed: int  # How many voters are allowed in this contest
     ballots: int  # The total number of ballots cast in this contest
     name: str  # The name of the contest
 
-    winners: List[Tuple[str, int]]  # List of all the winners
-    losers: List[Tuple[str, int]]  # List of all the losers
+    winners: Dict[str, int]  # List of all the winners
+    losers: Dict[str, int]  # List of all the losers
 
+    diluted_margin: float  # The smallest diluted margin in this contest
     margins: Dict[str, Dict]  # Dict of the margins for this contest
 
     def __init__(self, name: str, contest_info_dict: Dict[str, int]):
@@ -67,8 +68,8 @@ class Contest:
 
         self.candidates = {}
 
-        self.winners: List[Tuple[str, int]] = []
-        self.losers: List[Tuple[str, int]] = []
+        self.winners = {}
+        self.losers = {}
 
         for cand in contest_info_dict:
             if cand in ["ballots", "numWinners", "votesAllowed"]:
@@ -113,30 +114,46 @@ class Contest:
             reverse=True,
         )
 
-        self.winners = cast(List[Tuple[str, int]], cand_vec[: self.num_winners])
-        self.losers = cand_vec[self.num_winners :]
+        v_wl = 0
 
-        v_wl = sum([c[1] for c in self.winners + self.losers])
+        for i, choice in enumerate(cand_vec):
+            v_wl += choice[1]
+            if i < self.num_winners:
+                self.winners[choice[0]] = choice[1]
+
+            else:
+                self.losers[choice[0]] = choice[1]
 
         for loser in self.losers:
-            self.margins["losers"][loser[0]] = {
-                "p_l": loser[1] / self.ballots,
-                "s_l": loser[1] / v_wl,
+            self.margins["losers"][loser] = {
+                "p_l": self.losers[loser] / self.ballots,
+                "s_l": self.losers[loser] / v_wl,
             }
 
+        min_margin = self.ballots
+
         for winner in self.winners:
-            s_w = winner[1] / v_wl
+            s_w = self.winners[winner] / v_wl
 
             swl = {}
-            for loser in self.margins["losers"]:
+            for loser in self.losers:
                 s_l = self.margins["losers"][loser]["s_l"]
                 swl[loser] = s_w / (s_w + s_l)
 
-            self.margins["winners"][winner[0]] = {
-                "p_w": winner[1] / self.ballots,
+                # Find the smallest margin, in ballots
+                if self.winners[winner] - self.losers[loser] < min_margin:
+                    min_margin = self.winners[winner] - self.losers[loser]
+
+            self.margins["winners"][winner] = {
+                "p_w": self.winners[winner] / self.ballots,
                 "s_w": s_w,
                 "swl": swl,
             }
+
+        if self.losers:
+            self.diluted_margin = float(min_margin) / self.ballots
+        else:
+            self.diluted_margin = -1.0
 
     def __repr__(self) -> str:
         """

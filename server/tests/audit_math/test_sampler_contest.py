@@ -58,6 +58,15 @@ def test_compute_margins(contests):
             )
 
 
+def test_diluted_margin(contests):
+    for contest in contests:
+        assert (
+            contest.diluted_margin == true_dms[contest.name]
+        ), "Diluted margin calculation failed! Got {}, expected {} for contest {}".format(
+            contest.diluted_margin, true_dms[contest.name], contest.name
+        )
+
+
 def test_repr(contests):
     str_rep = str(contests[0])
 
@@ -221,4 +230,17 @@ true_margins = {
         },
         "losers": {"cand3": {"p_l": 100 / 1000, "s_l": 100 / 1000}},
     },
+}
+
+true_dms = {
+    "test1": 0.2,
+    "test2": 4 / 9,
+    "test3": -1,
+    "test4": -1,
+    "test5": 0,
+    "test6": 0.1,
+    "test7": 1 / 7,
+    "test8": 2 / 7,
+    "test9": -1,
+    "test10": 0.2,
 }
