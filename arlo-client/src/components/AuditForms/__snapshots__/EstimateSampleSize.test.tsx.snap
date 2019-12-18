@@ -294,6 +294,41 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
+        <div>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              checked=""
+              disabled=""
+              name="online"
+              type="radio"
+              value="online"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Online
+          </label>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              disabled=""
+              name="online"
+              type="radio"
+              value="offline"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Offline
+          </label>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
@@ -716,6 +751,41 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
       >
         Audit Settings
       </h2>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              checked=""
+              disabled=""
+              name="online"
+              type="radio"
+              value="online"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Online
+          </label>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              disabled=""
+              name="online"
+              type="radio"
+              value="offline"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Offline
+          </label>
+        </div>
+      </div>
       <div
         class="sc-bdVaJa fdbLH"
       >
@@ -1170,6 +1240,41 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
+        <div>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              checked=""
+              disabled=""
+              name="online"
+              type="radio"
+              value="online"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Online
+          </label>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              disabled=""
+              name="online"
+              type="radio"
+              value="offline"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Offline
+          </label>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
@@ -1592,6 +1697,41 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
       >
         Audit Settings
       </h2>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              checked=""
+              disabled=""
+              name="online"
+              type="radio"
+              value="online"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Online
+          </label>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              disabled=""
+              name="online"
+              type="radio"
+              value="offline"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Offline
+          </label>
+        </div>
+      </div>
       <div
         class="sc-bdVaJa fdbLH"
       >
@@ -2046,6 +2186,41 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
       <div
         class="sc-bdVaJa fdbLH"
       >
+        <div>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              checked=""
+              disabled=""
+              name="online"
+              type="radio"
+              value="online"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Online
+          </label>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              disabled=""
+              name="online"
+              type="radio"
+              value="offline"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Offline
+          </label>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
@@ -2468,6 +2643,41 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
       >
         Audit Settings
       </h2>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              checked=""
+              disabled=""
+              name="online"
+              type="radio"
+              value="online"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Online
+          </label>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              disabled=""
+              name="online"
+              type="radio"
+              value="offline"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Offline
+          </label>
+        </div>
+      </div>
       <div
         class="sc-bdVaJa fdbLH"
       >
@@ -2922,6 +3132,41 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
+        <div>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              checked=""
+              disabled=""
+              name="online"
+              type="radio"
+              value="online"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Online
+          </label>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              disabled=""
+              name="online"
+              type="radio"
+              value="offline"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Offline
+          </label>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
@@ -3344,6 +3589,41 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
       >
         Audit Settings
       </h2>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              checked=""
+              disabled=""
+              name="online"
+              type="radio"
+              value="online"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Online
+          </label>
+          <label
+            class="bp3-control bp3-radio bp3-disabled"
+          >
+            <input
+              disabled=""
+              name="online"
+              type="radio"
+              value="offline"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Offline
+          </label>
+        </div>
+      </div>
       <div
         class="sc-bdVaJa fdbLH"
       >
@@ -3794,6 +4074,39 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
       <div
         class="sc-bdVaJa fdbLH"
       >
+        <div>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              checked=""
+              name="online"
+              type="radio"
+              value="online"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Online
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              name="online"
+              type="radio"
+              value="offline"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Offline
+          </label>
+        </div>
+      </div>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
         <h3
           class="bp3-heading sc-htpNat cNFUHJ"
         >
@@ -4224,6 +4537,39 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
       >
         Audit Settings
       </h2>
+      <div
+        class="sc-bdVaJa fdbLH"
+      >
+        <div>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              checked=""
+              name="online"
+              type="radio"
+              value="online"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Online
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              name="online"
+              type="radio"
+              value="offline"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Offline
+          </label>
+        </div>
+      </div>
       <div
         class="sc-bdVaJa fdbLH"
       >

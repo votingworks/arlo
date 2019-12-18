@@ -20,6 +20,7 @@ export const fillFormOne = () => {
   $('input[name="contests[0].choices[1].numVotes"]').addValue('1325')
   $('input[name="contests[0].totalBallotsCast"]').addValue('2123')
   $('#random-seed').addValue('1234567890')
+  $('label.bp3-radio*=Online').click()
 }
 
 export const submitFormOne = () => {

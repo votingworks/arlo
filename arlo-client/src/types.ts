@@ -121,6 +121,7 @@ export interface IRound {
 
 export interface IAudit {
   name: string
+  online: boolean
   riskLimit: string
   randomSeed: string
   contests: IContest[]
