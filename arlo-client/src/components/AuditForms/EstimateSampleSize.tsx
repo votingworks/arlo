@@ -11,7 +11,13 @@ import {
 } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
-import { HTMLSelect, Label, Spinner } from '@blueprintjs/core'
+import {
+  HTMLSelect,
+  Label,
+  Spinner,
+  RadioGroup,
+  Radio,
+} from '@blueprintjs/core'
 import FormSection, { FormSectionDescription } from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
 import FormTitle from '../Form/FormTitle'
@@ -94,6 +100,7 @@ interface IContestValues {
 
 interface IEstimateSampleSizeValues {
   name: string
+  online: boolean
   randomSeed: string
   riskLimit: string
   contests: IContestValues[]
@@ -176,6 +183,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
   const handlePost = async (values: IEstimateSampleSizeValues) => {
     const data = {
       name: values.name,
+      // online: values.online,
       randomSeed: values.randomSeed,
       riskLimit: parseNumber(values.riskLimit),
       contests: values.contests.map(contest => ({
@@ -248,6 +256,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
     randomSeed: audit.randomSeed || '',
     riskLimit: audit.riskLimit || '10',
     name: audit.name || '',
+    online: audit.online,
     contests: audit.contests.length ? audit.contests : contestValues,
   }
 
@@ -441,6 +450,22 @@ const EstimateSampleSize: React.FC<IProps> = ({
                 )}
               />
               <FormTitle>Audit Settings</FormTitle>
+              <FormSection>
+                <RadioGroup
+                  name="online"
+                  onChange={e =>
+                    setFieldValue(
+                      'online',
+                      e.currentTarget.value === 'online' ? true : false
+                    )
+                  }
+                  selectedValue={values.online ? 'online' : 'offline'}
+                  disabled={!canEstimateSampleSize}
+                >
+                  <Radio value="online">Online</Radio>
+                  <Radio value="offline">Offline</Radio>
+                </RadioGroup>
+              </FormSection>
               <FormSection label="Desired Risk Limit">
                 <label htmlFor="risk-limit">
                   Set the risk for the audit as a percentage (e.g. &quot;5&quot;

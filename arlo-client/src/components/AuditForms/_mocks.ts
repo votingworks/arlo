@@ -6,6 +6,7 @@ export const statusStates: IAudit[] = [
   {
     name: '',
     riskLimit: '',
+    online: true,
     randomSeed: '',
     contests: [],
     jurisdictions: [],
@@ -56,6 +57,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    online: true,
   },
   {
     contests: [
@@ -106,6 +108,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '123456789',
     riskLimit: '1',
+    online: true,
   },
   {
     contests: [
@@ -184,6 +187,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    online: true,
   },
   {
     contests: [
@@ -254,6 +258,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    online: true,
   },
   {
     contests: [
@@ -326,6 +331,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    online: true,
   },
   {
     contests: [
@@ -391,6 +397,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    online: true,
   },
   {
     contests: [

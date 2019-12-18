@@ -375,6 +375,9 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                         {generateOptions(15)}
                       </Field>
                     </label>
+                    <FormSectionDescription>
+                      Audit boards will enter data about each ballot:
+                    </FormSectionDescription>
                     <AuditBoardsWrapper>
                       {values.auditNames.map((name, i) => (
                         /* eslint-disable react/no-array-index-key */
@@ -384,7 +387,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                             data-testid={`audit-name-${i}`}
                             disabled={sampleSizeSelected}
                           /> */}
-                          {sampleSizeSelected && (
+                          {sampleSizeSelected && audit.online && (
                             <>
                               <Link
                                 to={`/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}

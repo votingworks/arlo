@@ -9,6 +9,7 @@ import Wrapper from '../Atoms/Wrapper'
 
 const initialData: IAudit = {
   name: '',
+  online: true,
   riskLimit: '',
   randomSeed: '',
   contests: [],
