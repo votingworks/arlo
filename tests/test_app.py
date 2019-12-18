@@ -973,7 +973,7 @@ def test_ballot_set(client):
     assert ballot is not None
 
     ## set the ballot data
-    url = '{}/jurisdiction/{}/batch/{}/round/{}/ballot/{}'.format(url_prefix, jurisdiction_id, batch_id, round_id, ballot['position'])
+    url = '{}/jurisdiction/{}/batch/{}/ballot/{}'.format(url_prefix, jurisdiction_id, batch_id, ballot['position'])
 
     rv = post_json(client, url, { 'vote': 'NO', 'comment': 'This one had a hanging chad.' })
     response = json.loads(rv.data)

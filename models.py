@@ -20,7 +20,7 @@ class Election(db.Model):
     
     jurisdictions = relationship('Jurisdiction', backref='election', passive_deletes=True)
     contests = relationship('TargetedContest', backref='election', passive_deletes=True)
-    rounds = relationship('Round', backref='election', passive_deletes=True)    
+    rounds = relationship('Round', backref='election', passive_deletes=True)
 
 # these are typically counties
 class Jurisdiction(db.Model):
@@ -59,7 +59,8 @@ class Batch(db.Model):
     storage_location = db.Column(db.String(200), nullable=True)
     tabulator = db.Column(db.String(200), nullable=True)
 
-    ballots = relationship('SampledBallot', backref='batch', passive_deletes=True)
+    ballots = relationship('SampledBallot', backref='batch', passive_deletes=True)    
+    ballot_draws = relationship('SampledBallotDraw', backref='batch', passive_deletes=True)
         
 class TargetedContest(db.Model):
     id = db.Column(db.String(200), primary_key=True)
@@ -111,17 +112,16 @@ class Round(db.Model):
     )        
     
     round_contests = relationship('RoundContest', backref='round', passive_deletes=True)
+    sampled_ballot_draws = relationship('SampledBallotDraw', backref='round', passive_deletes=True)
 
 class SampledBallot(db.Model):
-    round_id = db.Column(db.String(200), db.ForeignKey('round.id'), nullable=False)
-    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
     batch_id = db.Column(db.String(200), db.ForeignKey('batch.id', ondelete='cascade'), nullable=False)
 
     # this ballot position should be 1-indexed
     ballot_position = db.Column(db.Integer, nullable=False)
 
     __table_args__ = (
-        db.PrimaryKeyConstraint('round_id', 'jurisdiction_id', 'batch_id', 'ballot_position'),
+        db.PrimaryKeyConstraint('batch_id', 'ballot_position'),
     )
 
     draws = relationship('SampledBallotDraw', backref='sampled_ballot', passive_deletes=True)
@@ -131,16 +131,16 @@ class SampledBallot(db.Model):
     comment = db.Column(db.Text, nullable=True)
 
 class SampledBallotDraw(db.Model):
-    round_id = db.Column(db.String(200), db.ForeignKey('round.id'), nullable=False)
-    jurisdiction_id = db.Column(db.String(200), db.ForeignKey('jurisdiction.id', ondelete='cascade'), nullable=False)
     batch_id = db.Column(db.String(200), db.ForeignKey('batch.id', ondelete='cascade'), nullable=False)
     ballot_position = db.Column(db.Integer, nullable=False)
+
+    round_id = db.Column(db.String(200), db.ForeignKey('round.id', ondelete='cascade'), nullable=False)
     ticket_number = db.Column(db.String(200), nullable=False)
     
     __table_args__ = (
-        db.PrimaryKeyConstraint('round_id', 'jurisdiction_id', 'batch_id', 'ballot_position', 'ticket_number'),
-        db.ForeignKeyConstraint(['round_id', 'jurisdiction_id', 'batch_id', 'ballot_position'],
-                                ['sampled_ballot.round_id', 'sampled_ballot.jurisdiction_id', 'sampled_ballot.batch_id', 'sampled_ballot.ballot_position'],
+        db.PrimaryKeyConstraint('batch_id', 'ballot_position', 'round_id', 'ticket_number'),
+        db.ForeignKeyConstraint(['batch_id', 'ballot_position'],
+                                ['sampled_ballot.batch_id', 'sampled_ballot.ballot_position'],
                                 ondelete='cascade')        
     )
     
