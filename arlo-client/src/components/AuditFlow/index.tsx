@@ -162,9 +162,8 @@ const AuditFlow: React.FC<IProps> = ({
     position: number,
     data: IReview
   ) => {
-    const roundId = audit.rounds[Number(roundIx) - 1].id
     await api(
-      `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch}/round/${roundId}/ballot/${position}`,
+      `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch}/ballot/${position}`,
       {
         method: 'POST',
         body: JSON.stringify(data),
