@@ -1,7 +1,9 @@
+/* eslint-disable react/prop-types */
 import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import jsPDF from 'jspdf'
+import QRCode from 'qrcode.react'
 /* istanbul ignore next */
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
 import { Spinner } from '@blueprintjs/core'
@@ -22,6 +24,7 @@ import {
   IAudit,
   IBallot,
   IErrorResponse,
+  IAuditBoard,
 } from '../../types'
 
 const InputSection = styled.div`
@@ -42,6 +45,28 @@ const InlineWrapper = styled.div`
   margin-bottom: 10px;
   width: 50%;
 `
+
+const QRroot = styled.div`
+  display: none;
+`
+
+const QRs: React.FC<{ electionId: string; boardIds: string[] }> = ({
+  electionId,
+  boardIds,
+}) => {
+  return (
+    <QRroot id="qr-root">
+      {boardIds.map(id => (
+        <span key={id} id={`qr-${id}`}>
+          <QRCode
+            value={`${window.location.origin}/election/${electionId}/board/${id}`}
+            size={200}
+          />
+        </span>
+      ))}
+    </QRroot>
+  )
+}
 
 interface IProps {
   audit: IAudit
@@ -177,6 +202,35 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
     }
   }
 
+  const downloadDataEntry = async (): Promise<void> => {
+    const auditBoards = new jsPDF({ format: 'letter' })
+    audit.jurisdictions[0].auditBoards.forEach(
+      (board: IAuditBoard, i: number) => {
+        const qr: HTMLCanvasElement | null = document.querySelector(
+          `#qr-${board.id} > canvas`
+        )
+        /* istanbul ignore else */
+        if (qr) {
+          i > 0 && auditBoards.addPage('letter')
+          const url = qr.toDataURL()
+          auditBoards.setFontSize(22)
+          auditBoards.setFontStyle('bold')
+          auditBoards.text(board.name, 20, 20)
+          auditBoards.setFontSize(14)
+          auditBoards.setFontStyle('normal')
+          auditBoards.text(
+            'Scan this QR code to enter the votes you see on your assigned ballots.',
+            20,
+            50
+          )
+          auditBoards.addImage(url, 'JPEG', 20, 80, 50, 50)
+        }
+      }
+    )
+    auditBoards.autoPrint()
+    auditBoards.save(`Audit Boards Credentials for Data Entry.pdf`)
+  }
+
   const calculateRiskMeasurement = async (
     values: ICalculateRiskMeasurementValues
   ) => {
@@ -276,6 +330,12 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
           handleSubmit,
         }: FormikProps<ICalculateRiskMeasurementValues>) => (
           <Form data-testid={`form-three-${i + 1}`}>
+            {i === 0 && (
+              <QRs
+                electionId={electionId}
+                boardIds={audit.jurisdictions[0].auditBoards.map(b => b.id)}
+              />
+            )}
             <hr />
             <FormWrapper title={`Round ${i + 1}`}>
               <FormSectionLabel>
@@ -290,6 +350,11 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
                   )
                 )}
               </FormSectionDescription>
+              {i === 0 && (
+                <FormButton onClick={() => downloadDataEntry()} inline>
+                  Download Audit Boards Credentials for Data Entry
+                </FormButton>
+              )}
               <FormButton
                 onClick={(e: React.FormEvent) =>
                   downloadBallotRetrievalList(i + 1, e)

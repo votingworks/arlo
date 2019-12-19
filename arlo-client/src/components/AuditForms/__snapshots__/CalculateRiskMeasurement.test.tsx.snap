@@ -5,6 +5,20 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
   <form
     data-testid="form-three-1"
   >
+    <div
+      class="sc-fjdhpX djZNwv"
+      id="qr-root"
+    >
+      <span
+        id="qr-audit-board-1"
+      >
+        <canvas
+          height="200"
+          style="height: 200px; width: 200px;"
+          width="200"
+        />
+      </span>
+    </div>
     <hr />
     <div
       class="sc-ifAKCX dUfgxM"
@@ -32,6 +46,16 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
            ballots
         </p>
       </div>
+      <button
+        class="bp3-button sc-EHOje fJvKPB"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Audit Boards Credentials for Data Entry
+        </span>
+      </button>
       <button
         class="bp3-button sc-EHOje fJvKPB"
         type="button"
@@ -190,6 +214,20 @@ Object {
       <form
         data-testid="form-three-1"
       >
+        <div
+          class="sc-fjdhpX djZNwv"
+          id="qr-root"
+        >
+          <span
+            id="qr-audit-board-1"
+          >
+            <canvas
+              height="200"
+              style="height: 200px; width: 200px;"
+              width="200"
+            />
+          </span>
+        </div>
         <hr />
         <div
           class="sc-ifAKCX dUfgxM"
@@ -217,6 +255,16 @@ Object {
                ballots
             </p>
           </div>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Audit Boards Credentials for Data Entry
+            </span>
+          </button>
           <button
             class="bp3-button sc-EHOje fJvKPB"
             type="button"
@@ -388,6 +436,20 @@ Object {
     <form
       data-testid="form-three-1"
     >
+      <div
+        class="sc-fjdhpX djZNwv"
+        id="qr-root"
+      >
+        <span
+          id="qr-audit-board-1"
+        >
+          <canvas
+            height="200"
+            style="height: 200px; width: 200px;"
+            width="200"
+          />
+        </span>
+      </div>
       <hr />
       <div
         class="sc-ifAKCX dUfgxM"
@@ -415,6 +477,16 @@ Object {
              ballots
           </p>
         </div>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Boards Credentials for Data Entry
+          </span>
+        </button>
         <button
           class="bp3-button sc-EHOje fJvKPB"
           type="button"
@@ -643,6 +715,20 @@ Object {
       <form
         data-testid="form-three-1"
       >
+        <div
+          class="sc-fjdhpX djZNwv"
+          id="qr-root"
+        >
+          <span
+            id="qr-audit-board-1"
+          >
+            <canvas
+              height="200"
+              style="height: 200px; width: 200px;"
+              width="200"
+            />
+          </span>
+        </div>
         <hr />
         <div
           class="sc-ifAKCX dUfgxM"
@@ -670,6 +756,16 @@ Object {
                ballots
             </p>
           </div>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Audit Boards Credentials for Data Entry
+            </span>
+          </button>
           <button
             class="bp3-button sc-EHOje fJvKPB"
             type="button"
@@ -867,6 +963,20 @@ Object {
     <form
       data-testid="form-three-1"
     >
+      <div
+        class="sc-fjdhpX djZNwv"
+        id="qr-root"
+      >
+        <span
+          id="qr-audit-board-1"
+        >
+          <canvas
+            height="200"
+            style="height: 200px; width: 200px;"
+            width="200"
+          />
+        </span>
+      </div>
       <hr />
       <div
         class="sc-ifAKCX dUfgxM"
@@ -894,6 +1004,16 @@ Object {
              ballots
           </p>
         </div>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Boards Credentials for Data Entry
+          </span>
+        </button>
         <button
           class="bp3-button sc-EHOje fJvKPB"
           type="button"
@@ -1148,6 +1268,20 @@ Object {
       <form
         data-testid="form-three-1"
       >
+        <div
+          class="sc-fjdhpX djZNwv"
+          id="qr-root"
+        >
+          <span
+            id="qr-audit-board-1"
+          >
+            <canvas
+              height="200"
+              style="height: 200px; width: 200px;"
+              width="200"
+            />
+          </span>
+        </div>
         <hr />
         <div
           class="sc-ifAKCX dUfgxM"
@@ -1175,6 +1309,16 @@ Object {
                ballots
             </p>
           </div>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Audit Boards Credentials for Data Entry
+            </span>
+          </button>
           <button
             class="bp3-button sc-EHOje fJvKPB"
             type="button"
@@ -1328,6 +1472,20 @@ Object {
     <form
       data-testid="form-three-1"
     >
+      <div
+        class="sc-fjdhpX djZNwv"
+        id="qr-root"
+      >
+        <span
+          id="qr-audit-board-1"
+        >
+          <canvas
+            height="200"
+            style="height: 200px; width: 200px;"
+            width="200"
+          />
+        </span>
+      </div>
       <hr />
       <div
         class="sc-ifAKCX dUfgxM"
@@ -1355,6 +1513,16 @@ Object {
              ballots
           </p>
         </div>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Boards Credentials for Data Entry
+          </span>
+        </button>
         <button
           class="bp3-button sc-EHOje fJvKPB"
           type="button"
@@ -1565,6 +1733,20 @@ Object {
       <form
         data-testid="form-three-1"
       >
+        <div
+          class="sc-fjdhpX djZNwv"
+          id="qr-root"
+        >
+          <span
+            id="qr-audit-board-1"
+          >
+            <canvas
+              height="200"
+              style="height: 200px; width: 200px;"
+              width="200"
+            />
+          </span>
+        </div>
         <hr />
         <div
           class="sc-ifAKCX dUfgxM"
@@ -1592,6 +1774,16 @@ Object {
                ballots
             </p>
           </div>
+          <button
+            class="bp3-button sc-EHOje fJvKPB"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Download Audit Boards Credentials for Data Entry
+            </span>
+          </button>
           <button
             class="bp3-button sc-EHOje fJvKPB"
             type="button"
@@ -1757,6 +1949,20 @@ Object {
     <form
       data-testid="form-three-1"
     >
+      <div
+        class="sc-fjdhpX djZNwv"
+        id="qr-root"
+      >
+        <span
+          id="qr-audit-board-1"
+        >
+          <canvas
+            height="200"
+            style="height: 200px; width: 200px;"
+            width="200"
+          />
+        </span>
+      </div>
       <hr />
       <div
         class="sc-ifAKCX dUfgxM"
@@ -1784,6 +1990,16 @@ Object {
              ballots
           </p>
         </div>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Boards Credentials for Data Entry
+          </span>
+        </button>
         <button
           class="bp3-button sc-EHOje fJvKPB"
           type="button"

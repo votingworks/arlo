@@ -2153,18 +2153,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               >
                 Audit Board #1
               </a>
-              <span
-                id="qr-audit-board-1"
-                role="button"
-                title="Click to print"
-              >
-                <canvas
-                  class="sc-dxgOiQ hbjSjR"
-                  height="250"
-                  style="height: 250px; width: 250px;"
-                  width="250"
-                />
-              </span>
             </div>
           </div>
         </div>
@@ -2209,6 +2197,20 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
     <form
       data-testid="form-three-1"
     >
+      <div
+        class="sc-eNQAEJ jlmWxR"
+        id="qr-root"
+      >
+        <span
+          id="qr-audit-board-1"
+        >
+          <canvas
+            height="200"
+            style="height: 200px; width: 200px;"
+            width="200"
+          />
+        </span>
+      </div>
       <hr />
       <div
         class="sc-ifAKCX dUfgxM"
@@ -2236,6 +2238,16 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
              ballots
           </p>
         </div>
+        <button
+          class="bp3-button sc-EHOje fJvKPB"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Boards Credentials for Data Entry
+          </span>
+        </button>
         <button
           class="bp3-button sc-EHOje fJvKPB"
           type="button"
@@ -2296,13 +2308,13 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             1
           </div>
           <div
-            class="sc-ckVGcZ krgvLw"
+            class="sc-dxgOiQ fYWcqN"
           >
             <div
-              class="sc-eNQAEJ jmKSfw"
+              class="sc-jKJlTe kzXGOb"
             >
               <label
-                class="sc-jKJlTe VrNsr"
+                class="sc-ckVGcZ DOsGM"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -2324,10 +2336,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               </div>
             </div>
             <div
-              class="sc-eNQAEJ jmKSfw"
+              class="sc-jKJlTe kzXGOb"
             >
               <label
-                class="sc-jKJlTe VrNsr"
+                class="sc-ckVGcZ DOsGM"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
