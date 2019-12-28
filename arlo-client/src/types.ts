@@ -29,7 +29,7 @@ export interface ISampleSizeOption {
 export interface IContest {
   id: string
   name: string
-  winners: string
+  numWinners: string
   votesAllowed: string
   choices: ICandidate[]
   totalBallotsCast: string
