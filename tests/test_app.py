@@ -204,7 +204,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     # get the retrieval list for round 1
     rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').splitlines()
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Number,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Audit Board"
     assert len(lines) > 5
     assert 'attachment' in rv.headers['content-disposition']
 
@@ -369,7 +369,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     # get the retrieval list for round 1
     rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').split("\r\n")
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Number,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Audit Board"
     assert len(lines) > 5
     assert 'attachment' in rv.headers['content-disposition']
 
@@ -543,7 +543,7 @@ def test_small_election(client):
     # get the retrieval list for round 1
     rv = client.get(f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/retrieval-list')
     lines = rv.data.decode('utf-8').splitlines()
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Number,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
     num_ballots = len([line for line in lines[1:] if line!=""])
@@ -843,7 +843,7 @@ def test_multi_winner_election(client):
     # get the retrieval list for round 1
     rv = client.get(f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/retrieval-list')
     lines = rv.data.decode('utf-8').split("\r\n")
-    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Number,Audit Board"
+    assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
     num_ballots = len([line for line in lines[1:] if line!=""])
