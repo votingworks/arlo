@@ -721,7 +721,7 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     election = get_election(election_id)
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)
-    retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Ticket Number","Audit Board"])
+    retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Ticket Numbers","Audit Board"])
 
     # check the jurisdiction and round
     jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).one()
@@ -734,8 +734,33 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
                     .order_by(AuditBoard.name, Batch.name, SampledBallotDraw.ballot_position, SampledBallotDraw.ticket_number) \
                     .all()
 
+    ballot_to_sampled = {}
     for ballot_draw, batch, audit_board in ballots:
-        retrieval_list_writer.writerow([batch.name, ballot_draw.ballot_position, batch.storage_location, batch.tabulator, ballot_draw.ticket_number, audit_board.name])
+
+        index = (batch.name, ballot_draw.ballot_position)
+        if index in ballot_to_sampled:
+            ballot_to_sampled[index]['ticket_numbers'].append(ballot_draw.ticket_number)
+        else:
+            ballot_to_sampled[index] = {
+                'batch_name': batch.name,
+                'ballot_position': ballot_draw.ballot_position,
+                'storage_location': batch.storage_location,
+                'tabulator': batch.tabulator,
+                'ticket_numbers': [ballot_draw.ticket_number],
+                'audit_board_name': audit_board.name,
+            }
+
+
+    
+    for ballot in ballot_to_sampled:
+        batch_name = ballot_to_sampled[ballot]['batch_name']
+        position = ballot_to_sampled[ballot]['ballot_position']
+        location = ballot_to_sampled[ballot]['storage_location']
+        tabulator = ballot_to_sampled[ballot]['tabulator']
+        tickets = ','.join(ballot_to_sampled[ballot]['ticket_numbers'])
+        audit_board = ballot_to_sampled[ballot]['audit_board_name']
+
+        retrieval_list_writer.writerow([batch_name, position,location, tabulator, tickets, audit_board])
 
     response = Response(csv_io.getvalue())
     response.headers['Content-Disposition'] = f'attachment; filename="ballot-retrieval-{election_timestamp_name(election)}.csv"'
