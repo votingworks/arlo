@@ -62,14 +62,6 @@ def sample_results(election):
 
     return contests
 
-def manifest_summary(jurisdiction):
-    manifest = {}
-
-    for batch in jurisdiction.batches:
-        manifest[batch.id] = batch.num_ballots
-
-    return manifest
-
 def get_sampler(election):
     # TODO Change this to audit_type
     return Sampler('BRAVO', election.random_seed, election.risk_limit / 100, contest_status(election))
@@ -158,7 +150,18 @@ def sample_ballots(election, round):
 
     chosen_sample_size = round_contest.sample_size
     sampler = get_sampler(election)
-    sample = sampler.draw_sample(manifest_summary(jurisdiction), chosen_sample_size, num_sampled=num_sampled)
+
+    # the sampler needs to have the same inputs given the same manifest
+    # so we use the batch name, rather than the batch id
+    # (because the batch ID is an internally generated uuid
+    #  that changes from one run to the next.)
+    manifest = {}
+    batch_id_from_name = {}
+    for batch in jurisdiction.batches:
+        manifest[batch.name] = batch.num_ballots
+        batch_id_from_name[batch.name] = batch.id
+    
+    sample = sampler.draw_sample(manifest, chosen_sample_size, num_sampled=num_sampled)
 
     audit_boards = jurisdiction.audit_boards
     
@@ -169,7 +172,8 @@ def sample_ballots(election, round):
     batches_to_ballots = {}
     seen_ballot_positions = set()
     # Build batch - batch_size map
-    for batch_id, ballot_position in sample:
+    for batch_name, ballot_position in sample:
+        batch_id = batch_id_from_name[batch_name]
 
         lookup = (batch_id, ballot_position)
         # Only count ballots once here since it's only pulled once
