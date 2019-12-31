@@ -727,40 +727,33 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).one()
     round = Round.query.filter_by(election_id = election.id, round_num = round_num).one()
 
+    '''
     ballots = SampledBallotDraw.query.filter_by(round_id = round.id) \
                     .join(SampledBallotDraw.batch).filter_by(jurisdiction_id = jurisdiction_id)  \
                     .join(SampledBallotDraw.sampled_ballot).join(SampledBallot.audit_board) \
                     .add_entity(Batch).add_entity(AuditBoard) \
+                    .group_by(Batch.name)\
+                    .group_by(SampledBallotDraw.ballot_position) \
                     .order_by(AuditBoard.name, Batch.name, SampledBallotDraw.ballot_position, SampledBallotDraw.ticket_number) \
                     .all()
+    '''
 
-    ballot_to_sampled = {}
-    for ballot_draw, batch, audit_board in ballots:
+    # Get deduped sampled ballots
+    ballots = SampledBallotDraw.query.filter_by(round_id = round.id) \
+                    .join(SampledBallotDraw.batch).filter_by(jurisdiction_id = jurisdiction_id)  \
+                    .join(SampledBallotDraw.sampled_ballot).join(SampledBallot.audit_board) \
+                    .add_entity(Batch).add_entity(AuditBoard) \
+                    .group_by(Batch.name, Batch.id, Batch.storage_location, Batch.tabulator, AuditBoard.name)\
+                    .group_by(SampledBallotDraw.ballot_position) \
+                    .values(Batch.id, SampledBallotDraw.ballot_position, Batch.name, Batch.storage_location, Batch.tabulator, AuditBoard.name)
 
-        index = (batch.name, ballot_draw.ballot_position)
-        if index in ballot_to_sampled:
-            ballot_to_sampled[index]['ticket_numbers'].append(ballot_draw.ticket_number)
-        else:
-            ballot_to_sampled[index] = {
-                'batch_name': batch.name,
-                'ballot_position': ballot_draw.ballot_position,
-                'storage_location': batch.storage_location,
-                'tabulator': batch.tabulator,
-                'ticket_numbers': [ballot_draw.ticket_number],
-                'audit_board_name': audit_board.name,
-            }
+    rows = []
+    for batch_id, position, batch_name, storage_location, tabulator, audit_board in ballots:
 
+        # Get ticket_numbers
+        ticket_numbers = ','.join([b.ticket_number for b in SampledBallotDraw.query.filter_by(batch_id = batch_id, ballot_position=position, round_id = round.id).all()])
 
-    
-    for ballot in ballot_to_sampled:
-        batch_name = ballot_to_sampled[ballot]['batch_name']
-        position = ballot_to_sampled[ballot]['ballot_position']
-        location = ballot_to_sampled[ballot]['storage_location']
-        tabulator = ballot_to_sampled[ballot]['tabulator']
-        tickets = ','.join(ballot_to_sampled[ballot]['ticket_numbers'])
-        audit_board = ballot_to_sampled[ballot]['audit_board_name']
-
-        retrieval_list_writer.writerow([batch_name, position,location, tabulator, tickets, audit_board])
+        retrieval_list_writer.writerow([batch_name, position, storage_location, tabulator, ticket_numbers, audit_board])
 
     response = Response(csv_io.getvalue())
     response.headers['Content-Disposition'] = f'attachment; filename="ballot-retrieval-{election_timestamp_name(election)}.csv"'
