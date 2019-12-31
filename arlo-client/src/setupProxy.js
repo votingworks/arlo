@@ -16,4 +16,5 @@ module.exports = function(app) {
   app.use(proxy('/election/*/audit/**', { target }))
   app.use(proxy('/election/*/jurisdiction/**', { target }))
   app.use(proxy('/election/*/admin/**', { target }))
+  app.use(proxy('/auditboard/*', { target }))
 }
