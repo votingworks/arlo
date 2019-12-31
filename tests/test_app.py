@@ -208,8 +208,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     assert len(lines) > 5
     assert 'attachment' in rv.headers['content-disposition']
 
-    lines = csv.DictReader(io.StringIO(rv.data.decode('utf-8')))
-    num_ballots = sum([len(line['Ticket Numbers'].split(',')) for line in lines])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
 
     return url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
     
@@ -374,8 +373,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     assert len(lines) > 5
     assert 'attachment' in rv.headers['content-disposition']
 
-    lines = csv.DictReader(io.StringIO(rv.data.decode('utf-8')))
-    num_ballots = sum([len(line['Ticket Numbers'].split(',')) for line in lines])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
 
     return url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
     
@@ -426,6 +424,10 @@ def run_election_reset(client, election_id):
     assert status["contests"] == []
     assert status["jurisdictions"] == []
     assert status["rounds"] == []        
+
+def get_num_ballots_from_retrieval_list(rv):
+    lines = csv.DictReader(io.StringIO(rv.data.decode('utf-8')))
+    return sum([len(line['Ticket Numbers'].split(',')) for line in lines])
     
 def test_small_election(client):
     rv = post_json(client, '/election/new', {})
@@ -547,8 +549,7 @@ def test_small_election(client):
     assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
-    lines = csv.DictReader(io.StringIO(rv.data.decode('utf-8')))
-    num_ballots = sum([len(line['Ticket Numbers'].split(',')) for line in lines])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
 
     # post results for round 1
     num_for_winner = int(num_ballots * 0.61)
@@ -718,8 +719,7 @@ def test_multi_round_audit(client):
     rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
 
     # Count the ticket numbers
-    lines = csv.DictReader(io.StringIO(rv.data.decode('utf-8')))
-    num_ballots = sum([len(line['Ticket Numbers'].split(',')) for line in lines])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
 
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
     
@@ -851,8 +851,7 @@ def test_multi_winner_election(client):
     assert lines[0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Audit Board"
     assert 'attachment' in rv.headers['Content-Disposition']
 
-    lines = csv.DictReader(io.StringIO(rv.data.decode('utf-8')))
-    num_ballots = sum([len(line['Ticket Numbers'].split(',')) for line in lines])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
 
     # post results for round 1
     num_for_winner = int(num_ballots * 0.61)
@@ -941,8 +940,7 @@ def test_multi_round_multi_winner_audit(client):
 
     # round 2 retrieval list should be ready
     rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
-    lines = csv.DictReader(io.StringIO(rv.data.decode('utf-8')))
-    num_ballots = sum([len(line['Ticket Numbers'].split(',')) for line in lines])
+    num_ballots = get_num_ballots_from_retrieval_list(rv)
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
 
 def test_ballot_set(client):
