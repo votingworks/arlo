@@ -1,6 +1,8 @@
 import os, datetime, csv, io, math, json, uuid, locale, re
 from flask import Flask, jsonify, request, Response
 from flask_sqlalchemy import SQLAlchemy
+from flask_httpauth import HTTPBasicAuth
+
 from sampler import Sampler
 from werkzeug.exceptions import InternalServerError
 
@@ -266,6 +268,26 @@ def serialize_members(audit_board):
         })
 
     return members
+
+ADMIN_PASSWORD = os.environ.get('ARLO_ADMIN_PASSWORD',None)
+
+# this is a temporary approach to getting all running audits
+# before we actually tie audits to a single user / login.
+#
+# only allow this URL if an admin password has been set.
+if ADMIN_PASSWORD:
+    auth = HTTPBasicAuth()
+
+    @auth.verify_password
+    def verify_password(username, password):
+        return password == ADMIN_PASSWORD
+    
+    @app.route('/admin', methods=["GET"])
+    @auth.login_required
+    def admin():
+        elections = Election.query.all()
+        result = "\n".join(["%s - %s" % (e.id, e.name) for e in elections])
+        return Response(result, content_type='text/plain')
 
 @app.route('/election/new', methods=["POST"])
 def election_new():

@@ -19,6 +19,7 @@ numpy = "*"
 psycopg2 = "*"
 sqlalchemy-utils = "*"
 uuid = "*"
+flask-httpauth = "*"
 
 [requires]
 python_version = "3.7"
