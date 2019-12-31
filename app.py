@@ -4,7 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sampler import Sampler
 from werkzeug.exceptions import InternalServerError
 
-from sqlalchemy import event
+from sqlalchemy import event, func
+from sqlalchemy.dialects.postgresql import aggregate_order_by
 from config import DATABASE_URL
 
 from util.binpacking import Bucket, BalancedBucketList
@@ -745,13 +746,9 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
                     .add_entity(Batch).add_entity(AuditBoard) \
                     .group_by(Batch.name, Batch.id, Batch.storage_location, Batch.tabulator, AuditBoard.name)\
                     .group_by(SampledBallotDraw.ballot_position) \
-                    .values(Batch.id, SampledBallotDraw.ballot_position, Batch.name, Batch.storage_location, Batch.tabulator, AuditBoard.name)
+                    .values(Batch.id, SampledBallotDraw.ballot_position, Batch.name, Batch.storage_location, Batch.tabulator, AuditBoard.name, func.string_agg(SampledBallotDraw.ticket_number, ","))
 
-    rows = []
-    for batch_id, position, batch_name, storage_location, tabulator, audit_board in ballots:
-
-        # Get ticket_numbers
-        ticket_numbers = ','.join([b.ticket_number for b in SampledBallotDraw.query.filter_by(batch_id = batch_id, ballot_position=position, round_id = round.id).all()])
+    for batch_id, position, batch_name, storage_location, tabulator, audit_board, ticket_numbers in ballots:
 
         retrieval_list_writer.writerow([batch_name, position, storage_location, tabulator, ticket_numbers, audit_board])
 
