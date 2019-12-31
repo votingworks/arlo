@@ -1,10 +1,11 @@
 import os, datetime, csv, io, math, json, uuid, locale, re, hmac
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 
 from sampler import Sampler
 from werkzeug.exceptions import InternalServerError
+from xkcdpass import xkcd_password as xp
 
 from sqlalchemy import event
 from config import DATABASE_URL
@@ -21,6 +22,7 @@ db = SQLAlchemy(app)
 from models import *
 
 AUDIT_BOARD_MEMBER_COUNT = 2
+WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 
 def create_election(election_id=None):
     if not election_id:
@@ -333,7 +335,8 @@ def audit_status(election_id = None):
                     {
                         "id": audit_board.id,
                         "name": audit_board.name,
-                        "members": serialize_members(audit_board)
+                        "members": serialize_members(audit_board),
+                        "passphrase": audit_board.passphrase
                     }
                     for audit_board in j.audit_boards],
                 "ballotManifest": {
@@ -470,7 +473,8 @@ def jurisdictions_set(election_id):
             audit_board_obj = AuditBoard(
                 id = audit_board["id"],
                 name = audit_board["name"],
-                jurisdiction_id = jurisdiction_obj.id
+                jurisdiction_id = jurisdiction_obj.id,
+                passphrase = xp.generate_xkcdpassword(WORDS, numwords=4, delimiter="-")
             )
             db.session.add(audit_board_obj)
         
@@ -852,6 +856,11 @@ def audit_reset(election_id):
     
     return jsonify(status="ok")
 
+
+@app.route('/auditboard/<passphrase>', methods=["GET"])
+def auditboard_passphrase(passphrase):
+    auditboard = AuditBoard.query.filter_by(passphrase=passphrase).one()
+    return redirect("/election/%s/board/%s" % (auditboard.jurisdiction.election.id, auditboard.id))
 
 # React App
 @app.route('/')

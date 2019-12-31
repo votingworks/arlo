@@ -96,6 +96,7 @@ class AuditBoard(db.Model):
     member_1_affiliation = db.Column(db.String(200), nullable=True)
     member_2 = db.Column(db.String(200), nullable=True)
     member_2_affiliation = db.Column(db.String(200), nullable=True)
+    passphrase = db.Column(db.String(1000), nullable=True)
 
     sampled_ballots = relationship('SampledBallot', backref='audit_board', passive_deletes=True)
     
