@@ -728,17 +728,6 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).one()
     round = Round.query.filter_by(election_id = election.id, round_num = round_num).one()
 
-    '''
-    ballots = SampledBallotDraw.query.filter_by(round_id = round.id) \
-                    .join(SampledBallotDraw.batch).filter_by(jurisdiction_id = jurisdiction_id)  \
-                    .join(SampledBallotDraw.sampled_ballot).join(SampledBallot.audit_board) \
-                    .add_entity(Batch).add_entity(AuditBoard) \
-                    .group_by(Batch.name)\
-                    .group_by(SampledBallotDraw.ballot_position) \
-                    .order_by(AuditBoard.name, Batch.name, SampledBallotDraw.ballot_position, SampledBallotDraw.ticket_number) \
-                    .all()
-    '''
-
     # Get deduped sampled ballots
     ballots = SampledBallotDraw.query.filter_by(round_id = round.id) \
                     .join(SampledBallotDraw.batch).filter_by(jurisdiction_id = jurisdiction_id)  \
@@ -749,7 +738,6 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
                     .values(Batch.id, SampledBallotDraw.ballot_position, Batch.name, Batch.storage_location, Batch.tabulator, AuditBoard.name, func.string_agg(SampledBallotDraw.ticket_number, ","))
 
     for batch_id, position, batch_name, storage_location, tabulator, audit_board, ticket_numbers in ballots:
-
         retrieval_list_writer.writerow([batch_name, position, storage_location, tabulator, ticket_numbers, audit_board])
 
     response = Response(csv_io.getvalue())
