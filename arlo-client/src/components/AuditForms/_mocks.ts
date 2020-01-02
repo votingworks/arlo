@@ -392,6 +392,94 @@ export const statusStates: IAudit[] = [
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
   },
+  {
+    contests: [
+      {
+        choices: [
+          {
+            id: 'choice-1',
+            name: 'choice one',
+            numVotes: 792,
+          },
+          {
+            id: 'choice-2',
+            name: 'choice two',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-1',
+        name: 'contest name',
+        totalBallotsCast: '2123',
+        winners: '1',
+        votesAllowed: '1',
+      },
+    ],
+    jurisdictions: [
+      {
+        auditBoards: [
+          {
+            id: 'audit-board-1',
+            name: 'Audit Board #1',
+            members: [],
+          },
+          {
+            id: 'audit-board-2',
+            name: 'Audit Board #2',
+            members: [],
+          },
+          {
+            id: 'audit-board-3',
+            name: 'Audit Board #3',
+            members: [],
+          },
+        ],
+        ballotManifest: {
+          filename: null,
+          numBallots: null,
+          numBatches: null,
+          uploadedAt: null,
+        },
+        batches: [
+          {
+            id: 'batch-1',
+            name: 'Batch One',
+            numBallots: 12,
+            storageLocation: null,
+            tabulator: null,
+          },
+        ],
+        contests: ['contest-1'],
+        id: 'jurisdiction-1',
+        name: 'Jurisdiction 1',
+      },
+    ],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: null,
+              pvalue: null,
+            },
+            id: 'contest-1',
+            results: {},
+            sampleSize: null,
+            sampleSizeOptions: [
+              { size: 269, type: 'ASN', prob: null },
+              { size: 379, prob: 0.8, type: null },
+              { size: 78, prob: null, type: null },
+            ],
+          },
+        ],
+        endedAt: null,
+        startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
+        id: 'round-1',
+      },
+    ],
+    name: 'contest name',
+    randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
+    riskLimit: '1',
+  },
 ]
 
 export const ballotManifest = new File(
