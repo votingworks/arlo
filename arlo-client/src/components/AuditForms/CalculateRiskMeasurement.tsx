@@ -221,9 +221,22 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
           auditBoards.text(
             'Scan this QR code to enter the votes you see on your assigned ballots.',
             20,
-            50
+            40
           )
-          auditBoards.addImage(url, 'JPEG', 20, 80, 50, 50)
+          auditBoards.addImage(url, 'JPEG', 20, 50, 50, 50)
+          auditBoards.text(
+            auditBoards.splitTextToSize(
+              'If you are not able to scan the QR code, you may also type the following URL into a web browser to access the data entry portal.',
+              180
+            ),
+            20,
+            120
+          )
+          auditBoards.text(
+            `arlo.votingworks.app/auditboard/${board.passphrase}`,
+            20,
+            140
+          )
         }
       }
     )
