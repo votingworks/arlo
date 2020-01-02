@@ -364,7 +364,8 @@ describe('CalculateRiskMeasurement', () => {
     expect(jspdfInstance.addPage).toHaveBeenCalledTimes(2)
     expect(jspdfInstance.setFontSize).toHaveBeenCalledTimes(6) // 2X per page
     expect(jspdfInstance.setFontStyle).toHaveBeenCalledTimes(6) // 2X per page
-    expect(jspdfInstance.text).toHaveBeenCalledTimes(6) // 2X per page
+    expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(3) // 1X per page
+    expect(jspdfInstance.text).toHaveBeenCalledTimes(12) // 4X per page
     expect(jspdfInstance.addImage).toHaveBeenCalledTimes(3) // 1X per page
     expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
   })

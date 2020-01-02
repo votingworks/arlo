@@ -63,6 +63,7 @@ export interface IAuditBoard {
   id: string
   name: string
   members: IAuditBoardMember[]
+  passphrase?: string
   ballots?: IBallot[] // TODO remove
 }
 
