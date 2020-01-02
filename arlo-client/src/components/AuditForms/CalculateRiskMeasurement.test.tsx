@@ -31,6 +31,7 @@ beforeEach(() => {
   jspdfInstance = ({
     addImage: jest.fn(),
     setFontSize: jest.fn(),
+    setFontStyle: jest.fn(),
     addPage: jest.fn(),
     text: jest.fn(),
     splitTextToSize: jest.fn().mockReturnValue(['']),
@@ -333,6 +334,38 @@ describe('CalculateRiskMeasurement', () => {
     expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(80) // called twice per label, with 40 labels
     expect(jspdfInstance.text).toHaveBeenCalledTimes(120) // called thrice per label, with 40 labels
     expect(jspdfInstance.addPage).toHaveBeenCalledTimes(39) // one page per placeholder, with 40 placeholders for 40 ballots
+    expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
+  })
+
+  it('downloads data entry flow sheets', async () => {
+    apiMock.mockImplementationOnce(async () => dummyBallots)
+    const { getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[7]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    fireEvent.click(
+      getByText('Download Audit Boards Credentials for Data Entry'),
+      {
+        bubbles: true,
+      }
+    )
+
+    await wait(() => {
+      expect(apiMock).toHaveBeenCalledTimes(0)
+      expect(jspdfMock).toHaveBeenCalledTimes(1)
+    })
+    expect(jspdfInstance.addPage).toHaveBeenCalledTimes(2)
+    expect(jspdfInstance.setFontSize).toHaveBeenCalledTimes(6) // 2X per page
+    expect(jspdfInstance.setFontStyle).toHaveBeenCalledTimes(6) // 2X per page
+    expect(jspdfInstance.text).toHaveBeenCalledTimes(6) // 2X per page
+    expect(jspdfInstance.addImage).toHaveBeenCalledTimes(3) // 1X per page
     expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
   })
 
