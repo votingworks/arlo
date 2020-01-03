@@ -233,7 +233,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
             120
           )
           auditBoards.text(
-            `arlo.votingworks.app/auditboard/${board.passphrase}`,
+            `${window.location.origin}/auditboard/${board.passphrase}`,
             20,
             140
           )
