@@ -202,7 +202,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
     }
   }
 
-  const downloadDataEntry = async (): Promise<void> => {
+  const downloadDataEntry = (): void => {
     const auditBoards = new jsPDF({ format: 'letter' })
     audit.jurisdictions[0].auditBoards.forEach(
       (board: IAuditBoard, i: number) => {
