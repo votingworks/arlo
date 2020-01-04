@@ -90,7 +90,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
                     ],
 
                     "totalBallotsCast": 86147,
-                    "winners": 1,
+                    "numWinners": 1,
                     "votesAllowed": 1
                 }
             ]
@@ -254,7 +254,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
                     ],
 
                     "totalBallotsCast": 86147,
-                    "winners": 2,
+                    "numWinners": 2,
                     "votesAllowed": 1
                 }
             ]
@@ -459,7 +459,7 @@ def test_small_election(client):
                     ],
 
                     "totalBallotsCast": 2123,
-                    "winners": 1,
+                    "numWinners": 1,
                     "votesAllowed": 1
                 }
             ]
@@ -615,7 +615,7 @@ def test_contest_choices_cannot_have_more_votes_than_allowed(client):
                     ],
 
                     "totalBallotsCast": 30,
-                    "winners": 1,
+                    "numWinners": 1,
                     "votesAllowed": 2
                 }
             ]
@@ -657,7 +657,7 @@ def test_contest_choices_cannot_have_more_votes_than_allowed(client):
                     ],
 
                     "totalBallotsCast": 30,
-                    "winners": 1,
+                    "numWinners": 1,
                     "votesAllowed": 2
                 }
             ]
@@ -759,7 +759,7 @@ def test_multi_winner_election(client):
                     ],
 
                     "totalBallotsCast": 2123,
-                    "winners": 2,
+                    "numWinners": 2,
                     "votesAllowed": 1
                 }
             ]
