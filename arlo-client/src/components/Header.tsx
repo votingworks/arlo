@@ -1,13 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useAuth0 } from '../react-auth0-spa'
-import FormButton from './Form/FormButton'
 import {
   Navbar,
   NavbarGroup,
   NavbarHeading,
   Alignment,
 } from '@blueprintjs/core'
+import { useAuth0 } from '../react-auth0-spa'
+import FormButton from './Form/FormButton'
 
 const ButtonBar = styled.div`
   display: inline-block;
@@ -24,7 +24,7 @@ const Nav = styled(Navbar)`
 `
 
 const Header: React.FC<{}> = () => {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, logout } = useAuth0()
   return (
     <Nav fixedToTop>
       <NavbarGroup align={Alignment.LEFT}>
@@ -35,9 +35,15 @@ const Header: React.FC<{}> = () => {
       <NavbarGroup align={Alignment.RIGHT}>
         <ButtonBar id="reset-button-wrapper" />
         {!isAuthenticated && (
-          <FormButton size="sm" onClick={() => loginWithRedirect({})}>Log in</FormButton>
+          <FormButton size="sm" onClick={() => loginWithRedirect({})}>
+            Log in
+          </FormButton>
         )}
-        {isAuthenticated && <FormButton  size="sm" onClick={() => logout()}>Log out</FormButton>}
+        {isAuthenticated && (
+          <FormButton size="sm" onClick={() => logout()}>
+            Log out
+          </FormButton>
+        )}
       </NavbarGroup>
     </Nav>
   )

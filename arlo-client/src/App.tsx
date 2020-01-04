@@ -20,27 +20,26 @@ const Main = styled.div`
 `
 
 const App: React.FC = () => {
-  const { loading } = useAuth0();
+  const { loading } = useAuth0()
   return (
     <Router>
       <ToastContainer />
       <Main>
         <Route path="/" component={Header} />
         {loading ? (
-            <p>loading</p>
-          ) : (
-            <Switch>
-              <PrivateRoute exact path="/" component={CreateAudit} />
-              <PrivateRoute
-                path="/election/:electionId/board/:token"
-                component={AuditFlow}
-              />
-              <PrivateRoute path="/election/:electionId" component={AuditForms} />
-              <PrivateRoute path="/board/:token" component={AuditFlow} />
-              <Route>404</Route>
-            </Switch>
-          )
-        }
+          <p>loading</p>
+        ) : (
+          <Switch>
+            <PrivateRoute exact path="/" component={CreateAudit} />
+            <PrivateRoute
+              path="/election/:electionId/board/:token"
+              component={AuditFlow}
+            />
+            <PrivateRoute path="/election/:electionId" component={AuditForms} />
+            <PrivateRoute path="/board/:token" component={AuditFlow} />
+            <Route>404</Route>
+          </Switch>
+        )}
       </Main>
     </Router>
   )
