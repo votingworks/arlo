@@ -8,6 +8,8 @@ import AuditForms from './components/AuditForms'
 import AuditFlow from './components/AuditFlow'
 import CreateAudit from './components/CreateAudit'
 import 'react-toastify/dist/ReactToastify.css'
+import { useAuth0 } from './react-auth0-spa'
+import PrivateRoute from './components/PrivateRoute'
 
 const Main = styled.div`
   display: flex;
@@ -18,21 +20,27 @@ const Main = styled.div`
 `
 
 const App: React.FC = () => {
+  const { loading } = useAuth0();
   return (
     <Router>
       <ToastContainer />
       <Main>
-        <Route path="/election" component={Header} />
-        <Switch>
-          <Route exact path="/" component={CreateAudit} />
-          <Route
-            path="/election/:electionId/board/:token"
-            component={AuditFlow}
-          />
-          <Route path="/election/:electionId" component={AuditForms} />
-          <Route path="/board/:token" component={AuditFlow} />
-          <Route>404</Route>
-        </Switch>
+        <Route path="/" component={Header} />
+        {loading ? (
+            <p>loading</p>
+          ) : (
+            <Switch>
+              <PrivateRoute exact path="/" component={CreateAudit} />
+              <PrivateRoute
+                path="/election/:electionId/board/:token"
+                component={AuditFlow}
+              />
+              <PrivateRoute path="/election/:electionId" component={AuditForms} />
+              <PrivateRoute path="/board/:token" component={AuditFlow} />
+              <Route>404</Route>
+            </Switch>
+          )
+        }
       </Main>
     </Router>
   )
