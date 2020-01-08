@@ -59,7 +59,7 @@ const BallotReview: React.FC<IProps> = ({
               <Button onClick={goAudit}>Edit</Button>
             </ButtonGroup>
           </Wrapper>
-          <p>COMMENT: {comment}</p>
+          <p>{comment && `COMMENT: ${comment}`}</p>
         </FormBlock>
         <ProgressActions>
           <FormButton type="submit" onClick={handleSubmit} intent="success">

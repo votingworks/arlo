@@ -120,7 +120,7 @@ const AuditFlow: React.FC<IProps> = ({
 
   useEffect(() => {
     updateBallots()
-  }, [updateBallots, audit.jurisdictions.length])
+  }, [updateBallots])
 
   const nextBallot = (r: string, batchId: string, ballot: number) => () => {
     const ballotIx = ballots.findIndex(

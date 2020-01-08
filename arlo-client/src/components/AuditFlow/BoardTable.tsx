@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
 import { H1, Button } from '@blueprintjs/core'
@@ -103,10 +103,9 @@ const BoardTable: React.FC<IProps> = ({
     }
   }
 
+  const container = document.getElementsByClassName('board-table-container')[0]
+
   const columnWidths = (length: number): (number | null)[] => {
-    const container = document.getElementsByClassName(
-      'board-table-container'
-    )[0]
     if (!container) return Array(length).fill(null) // eslint-disable-line no-null/no-null
     const containerSize = container.clientWidth
     /* istanbul ignore next */
@@ -114,11 +113,14 @@ const BoardTable: React.FC<IProps> = ({
     return Array(length).fill(containerSize / length)
   }
 
+  const colWidths: (number | null)[] = useMemo(() => columnWidths(5), [
+    container,
+  ])
+
   const roundComplete = ballots && ballots.every(b => b.status === 'AUDITED')
 
   let numRows = ballots.length
   /* istanbul ignore next */
-  //if (ballots && ballots.length) numRows = ballots.length
 
   const unauditedBallot = ballots.find(b => !b.status)
 
@@ -159,7 +161,8 @@ const BoardTable: React.FC<IProps> = ({
       <ShortTable
         numRows={numRows}
         defaultRowHeight={30}
-        columnWidths={columnWidths(5)}
+        columnWidths={colWidths}
+        minColumnWidth={80}
         enableRowHeader={false}
       >
         <Column
