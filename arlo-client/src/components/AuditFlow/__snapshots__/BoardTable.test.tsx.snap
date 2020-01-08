@@ -29,7 +29,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
       </button>
     </div>
     <div
-      class="bp3-table-container bp3-table-selection-enabled"
+      class="bp3-table-container bp3-table-selection-enabled sc-htpNat ejHXZb"
       tabindex="0"
     >
       <div

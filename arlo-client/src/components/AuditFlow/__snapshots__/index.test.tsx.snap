@@ -3,13 +3,13 @@
 exports[`AuditFlow ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <div
-      class="sc-ckVGcZ bxAWbg"
+      class="sc-jKJlTe cJqkLF"
     >
       <h1
-        class="bp3-heading sc-dxgOiQ huYUSL"
+        class="bp3-heading sc-ckVGcZ ipbdjm"
       >
         Audit Board #1
         : Ballot Card Data Entry
@@ -20,7 +20,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
         Enter Ballot Information
       </h3>
       <div
-        class="bp3-callout sc-jKJlTe hzNJni"
+        class="bp3-callout sc-eNQAEJ TJXrb"
       >
         Round 
         1
@@ -30,7 +30,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
         27
       </div>
       <div
-        class="sc-iwsKbI eBYIfb"
+        class="sc-gZMcBi gQZRSp"
       >
         <div
           class="ballot-side"
@@ -91,7 +91,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
         </div>
       </div>
       <div
-        class="sc-iwsKbI eBYIfb"
+        class="sc-gZMcBi gQZRSp"
       >
         <div
           class="ballot-side"
@@ -118,7 +118,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
             If the audit board cannot agree, select "No audit board consensus." You may add a comment for additional information about the disagreement.
           </p>
           <form
-            class="sc-gZMcBi eyQxfl"
+            class="sc-gqjmRU dBJbzz"
           >
             <h3
               class="bp3-heading"
@@ -129,10 +129,10 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
               class="bp3-divider"
             />
             <div
-              class="sc-gqjmRU dmwuIO"
+              class="sc-VigVT fPsdeH"
             >
               <label
-                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
+                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
               >
                 <input
                   data-testid="YES"
@@ -151,7 +151,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
+                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
               >
                 <input
                   data-testid="NO"
@@ -170,7 +170,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
+                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
               >
                 <input
                   data-testid="NO_CONSENSUS"
@@ -189,7 +189,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class="undefined bp3-control bp3-radio sc-jTzLTM kBwOnb"
+                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
               >
                 <input
                   data-testid="NO_VOTE"
@@ -209,20 +209,20 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
               </label>
             </div>
             <div
-              class="sc-jzJRlG brNPlP"
+              class="sc-cSHVUG jAnVpe"
             >
               <textarea
-                class="bp3-input sc-kAzzGY fpNxNJ"
+                class="bp3-input sc-chPdSV PhUsl"
                 data-testid="comment-textarea"
                 name="comment"
               />
             </div>
           </form>
           <div
-            class="sc-VigVT cyKuXR"
+            class="sc-jTzLTM wJgxM"
           >
             <button
-              class="bp3-button bp3-disabled bp3-intent-success sc-gzVnrw eLDrzZ"
+              class="bp3-button bp3-disabled bp3-intent-success sc-htoDjs eellYq"
               data-testid="disabled-review"
               disabled=""
               tabindex="-1"
@@ -255,7 +255,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
 exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <div
       class="board-table-container"
@@ -274,13 +274,13 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
       >
         <a
           class="bp3-button bp3-intent-primary"
-          href="/election/1/board/123/round/1/batch/batch-id-1/ballot/313"
+          href="/election/1/board/123/round/1/batch/batch-id-1/ballot/2112"
         >
           Start Auditing
         </a>
       </div>
       <div
-        class="bp3-table-container bp3-table-selection-enabled"
+        class="bp3-table-container bp3-table-selection-enabled sc-htpNat ejHXZb"
         tabindex="0"
       >
         <div
@@ -427,7 +427,7 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 300px; width: 750px;"
+                style="height: 810px; width: 750px;"
               >
                 <div
                   class="bp3-table-quadrant-body-container"
@@ -435,7 +435,7 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 300px; width: 750px;"
+                      style="height: 810px; width: 750px;"
                     >
                       <div
                         class="bp3-table-body-cells"
@@ -764,7 +764,7 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 300px; width: 750px;"
+                style="height: 810px; width: 750px;"
               >
                 <div
                   class="bp3-table-quadrant-body-container"
@@ -820,7 +820,7 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
 exports[`AuditFlow ballot interaction renders board table with large container size 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <div
       class="board-table-container"
@@ -839,13 +839,13 @@ exports[`AuditFlow ballot interaction renders board table with large container s
       >
         <a
           class="bp3-button bp3-intent-primary"
-          href="/election/1/board/123/round/1/batch/batch-id-1/ballot/313"
+          href="/election/1/board/123/round/1/batch/batch-id-1/ballot/2112"
         >
           Start Auditing
         </a>
       </div>
       <div
-        class="bp3-table-container bp3-table-selection-enabled"
+        class="bp3-table-container bp3-table-selection-enabled sc-htpNat ejHXZb"
         tabindex="0"
       >
         <div
@@ -992,7 +992,7 @@ exports[`AuditFlow ballot interaction renders board table with large container s
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 300px; width: 2000px;"
+                style="height: 810px; width: 2000px;"
               >
                 <div
                   class="bp3-table-quadrant-body-container"
@@ -1000,7 +1000,7 @@ exports[`AuditFlow ballot interaction renders board table with large container s
                   <div>
                     <div
                       class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 300px; width: 2000px;"
+                      style="height: 810px; width: 2000px;"
                     >
                       <div
                         class="bp3-table-body-cells"
@@ -1329,7 +1329,7 @@ exports[`AuditFlow ballot interaction renders board table with large container s
               </div>
               <div
                 class="bp3-table-bottom-container"
-                style="height: 300px; width: 2000px;"
+                style="height: 810px; width: 2000px;"
               >
                 <div
                   class="bp3-table-quadrant-body-container"
@@ -1385,7 +1385,7 @@ exports[`AuditFlow ballot interaction renders board table with large container s
 exports[`AuditFlow ballot interaction renders board table with no ballots 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <div
       class="bp3-spinner"
