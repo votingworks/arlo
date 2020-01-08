@@ -20,6 +20,10 @@ const PaddedCell = styled(Cell)`
   padding: 3px 5px;
 `
 
+const ShortTable = styled(Table)`
+  height: 500px;
+`
+
 // const ActionWrapper = styled.div` // commented out until feature is used
 //   margin-bottom: 20px;
 //   .bp3-checkbox {
@@ -112,9 +116,11 @@ const BoardTable: React.FC<IProps> = ({
 
   const roundComplete = ballots && ballots.every(b => b.status === 'AUDITED')
 
-  let numRows = 10
+  let numRows = ballots.length
   /* istanbul ignore next */
-  if (ballots && ballots.length < 10) numRows = ballots.length
+  //if (ballots && ballots.length) numRows = ballots.length
+
+  const unauditedBallot = ballots.find(b => !b.status)
 
   return (
     <div className="board-table-container">
@@ -129,11 +135,12 @@ const BoardTable: React.FC<IProps> = ({
         {roundComplete ? (
           <Button intent="primary">Review Complete - Finish Round</Button>
         ) : (
-          ballots && (
+          ballots &&
+          unauditedBallot && (
             <Link
               to={
                 url +
-                `/round/1/batch/${ballots[0].batch.id}/ballot/${ballots[0].position}`
+                `/round/1/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
               }
               className="bp3-button bp3-intent-primary"
             >
@@ -149,7 +156,7 @@ const BoardTable: React.FC<IProps> = ({
           </>
         )}
       </ActionWrapper> */}
-      <Table
+      <ShortTable
         numRows={numRows}
         defaultRowHeight={30}
         columnWidths={columnWidths(5)}
@@ -164,7 +171,7 @@ const BoardTable: React.FC<IProps> = ({
         <Column key="status" name="Status" cellRenderer={renderCell} />
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="round" name="Audit Round" cellRenderer={renderCell} />
-      </Table>
+      </ShortTable>
     </div>
   )
 }
