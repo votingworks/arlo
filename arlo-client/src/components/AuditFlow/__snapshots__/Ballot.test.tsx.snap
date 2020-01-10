@@ -145,7 +145,7 @@ exports[`Ballot renders correctly 1`] = `
                 <span
                   class="radio-text"
                 >
-                  Yes/For
+                  YES
                 </span>
               </span>
             </label>
@@ -164,7 +164,7 @@ exports[`Ballot renders correctly 1`] = `
                 <span
                   class="radio-text"
                 >
-                  No/Against
+                  NO
                 </span>
               </span>
             </label>
@@ -183,7 +183,7 @@ exports[`Ballot renders correctly 1`] = `
                 <span
                   class="radio-text"
                 >
-                  No audit board consensus
+                  NO_CONSENSUS
                 </span>
               </span>
             </label>
@@ -202,7 +202,7 @@ exports[`Ballot renders correctly 1`] = `
                 <span
                   class="radio-text"
                 >
-                  Blank vote/no mark
+                  NO_VOTE
                 </span>
               </span>
             </label>
@@ -372,7 +372,7 @@ exports[`Ballot switches audit and review views 1`] = `
                 <span
                   class="bp3-button-text"
                 >
-                  Yes/For
+                  YES
                 </span>
               </button>
               <button
@@ -387,10 +387,7 @@ exports[`Ballot switches audit and review views 1`] = `
               </button>
             </div>
           </div>
-          <p>
-            COMMENT: 
-            
-          </p>
+          <p />
         </form>
         <div
           class="sc-bxivhb dewsOl"
@@ -544,7 +541,7 @@ exports[`Ballot toggles and submits comment 1`] = `
                 <span
                   class="bp3-button-text"
                 >
-                  Yes/For
+                  YES
                 </span>
               </button>
               <button
@@ -560,8 +557,7 @@ exports[`Ballot toggles and submits comment 1`] = `
             </div>
           </div>
           <p>
-            COMMENT: 
-            a test comment
+            COMMENT: a test comment
           </p>
         </form>
         <div
