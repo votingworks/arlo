@@ -92,6 +92,23 @@ Like any open-source software, Arlo welcomes suggested changes in the form of pu
 
 ### Setting up the dev environment
 
+#### Linux
+
+We recommend Ubuntu 18.0.4.
+
+* Install Node10. See https://joshtronic.com/2018/05/08/how-to-install-nodejs-10-on-ubuntu-1804-lts/
+* `make dev-environment` or, if you prefer, look at individual make tasks like `deps`, `initdevdb`, `install-development`, and `resetdb`
+* `cp config/database.cfg.dev config/database.cfg`
+* `bash ./run-dev.sh`
+
+For testing:
+
+* `make resettestdb`
+* `make test-server`
+* `make test-client`
+
+
+#### 
 1. Download [`python-dev`](https://www.python.org/) >3.7
 2. Download [`pip`](https://pypi.org/project/pip/)
 3. Install `pipenv` (note: run `python3 -m pip install pipenv` to get a version that's compatible with your local python install if your system defaults to a python other than >3.7).

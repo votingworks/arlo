@@ -1,18 +1,35 @@
 
+deps:
+	sudo apt install python3.7 python3-pip nodejs npm libpython3.7-dev libpq-dev
+	python3 -m pip install pipenv
+	sudo npm install -g yarn
+	sudo apt install postgresql
+
+# this should only be used for development
+initdevdb:
+	sudo -u postgres psql -c "create user arlo superuser password 'arlo';"
+	sudo -u postgres psql -c "create database arlo with owner arlo;"
+
 install:
-	pipenv install
+	python3 -m pipenv install
 	yarn --cwd arlo-client install
 	yarn --cwd arlo-client build
 
 install-development:
-	pipenv install --dev
+	python3 -m pipenv install --dev
 	yarn --cwd arlo-client install
 
+resettestdb:
+	sudo -u postgres psql -c "drop database if exists arlotest;"
+	sudo -u postgres psql -c "create database arlotest with owner arlo;"
+
 resetdb:
-	pipenv run python resetdb.py
+	python3 -m pipenv run python resetdb.py
+
+dev-environment: deps initdevdb install-development resetdb
 
 typecheck:
-	pipenv run mypy .
+	python3 -m pipenv run mypy .
 
 test-client:
 	yarn --cwd arlo-client lint
