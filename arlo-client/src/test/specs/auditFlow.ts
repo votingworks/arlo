@@ -5,9 +5,9 @@ import {
   submitFormOne,
   submitFormTwo,
 } from './helpers'
-import { voteValue } from '../../components/AuditFlow/BlockRadio'
+// import { voteValue } from '../../components/AuditFlow/BlockRadio'
 
-const ballotNext = (option: voteValue) => {
+const ballotNext = (option: string) => {
   const callout = $('.bp3-callout*=Round 1: auditing ballot')
     .getText()
     .split(' ')

@@ -42,15 +42,8 @@ interface IProps {
   checked?: boolean
 }
 
-const TEXT = {
-  YES: 'Yes/For',
-  NO: 'No/Against',
-  NO_CONSENSUS: 'No audit board consensus',
-  NO_VOTE: 'Blank vote/no mark',
-} as const
-
-export type voteKey = keyof typeof TEXT
-export type voteValue = typeof TEXT[voteKey]
+// export type voteKey = keyof typeof TEXT
+// export type voteValue = typeof TEXT[voteKey]
 
 const BlockRadio = ({
   name = '',
@@ -63,7 +56,7 @@ const BlockRadio = ({
   <>
     {locked ? (
       <LockedButton disabled fill large intent="primary">
-        {TEXT[value]}
+        {value}
       </LockedButton>
     ) : (
       <Block className={`${className} bp3-control bp3-radio`}>
@@ -76,7 +69,7 @@ const BlockRadio = ({
           checked={checked}
         />
         <span className="bp3-control-indicator">
-          <span className="radio-text">{TEXT[value]}</span>
+          <span className="radio-text">{value}</span>
         </span>
       </Block>
     )}

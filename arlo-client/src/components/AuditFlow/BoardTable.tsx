@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
 import { H1, Button } from '@blueprintjs/core'
@@ -103,24 +103,24 @@ const BoardTable: React.FC<IProps> = ({
     }
   }
 
-  const container = document.getElementsByClassName('board-table-container')[0]
-
-  const columnWidths = (length: number): (number | null)[] => {
-    if (!container) return Array(length).fill(null) // eslint-disable-line no-null/no-null
+  const columnWidths = (): (number | undefined)[] => {
+    const container = document.getElementsByClassName(
+      'board-table-container'
+    )[0]
+    if (!container) return Array(KEYS.length).fill(undefined)
     const containerSize = container.clientWidth
     /* istanbul ignore next */
-    if (containerSize < 775) return Array(length).fill(80)
-    return Array(length).fill(containerSize / length)
+    if (containerSize < 500) return Array(KEYS.length).fill(80)
+    return Array(KEYS.length).fill(containerSize / KEYS.length)
   }
 
-  const colWidths: (number | null)[] = useMemo(() => columnWidths(5), [
-    container,
-  ])
+  const [cols, setCols] = useState(Array(KEYS.length).fill(undefined))
+
+  useEffect(() => {
+    setCols(columnWidths())
+  }, [ballots])
 
   const roundComplete = ballots && ballots.every(b => b.status === 'AUDITED')
-
-  let numRows = ballots.length
-  /* istanbul ignore next */
 
   const unauditedBallot = ballots.find(b => !b.status)
 
@@ -159,10 +159,9 @@ const BoardTable: React.FC<IProps> = ({
         )}
       </ActionWrapper> */}
       <ShortTable
-        numRows={numRows}
+        numRows={ballots.length}
         defaultRowHeight={30}
-        columnWidths={colWidths}
-        minColumnWidth={80}
+        columnWidths={cols}
         enableRowHeader={false}
       >
         <Column
