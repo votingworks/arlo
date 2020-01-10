@@ -1,24 +1,21 @@
 import React from 'react'
-import { H3, Divider, Button, ButtonGroup } from '@blueprintjs/core'
+import { H3, Divider, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IReview } from '../../types'
 import { BallotRow, FormBlock, ProgressActions } from './Atoms'
 import FormButton from '../Form/FormButton'
-import BlockRadio from './BlockRadio'
 
 const Wrapper = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   padding: 20px 0;
   @media (max-width: 775px) {
     flex-direction: column;
   }
 `
 
-const SingleBlockRadio = styled(BlockRadio)`
-  &.bp3-control.bp3-radio {
-    margin: 0;
-  }
+const LockedButton = styled(FormButton)`
+  text-align: center;
 `
 
 interface IProps {
@@ -54,10 +51,14 @@ const BallotReview: React.FC<IProps> = ({
           <H3>{contest}</H3>
           <Divider />
           <Wrapper>
-            <ButtonGroup fill large vertical>
-              <SingleBlockRadio value={completeVote} locked />
-              <Button onClick={goAudit}>Edit</Button>
-            </ButtonGroup>
+            {/* <ButtonGroup fill large vertical> */}
+            <LockedButton disabled large intent="primary">
+              {completeVote}
+            </LockedButton>
+            <Button icon="edit" minimal onClick={goAudit}>
+              Edit
+            </Button>
+            {/* </ButtonGroup> */}
           </Wrapper>
           <p>{comment && `COMMENT: ${comment}`}</p>
         </FormBlock>

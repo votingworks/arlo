@@ -3,13 +3,13 @@
 exports[`AuditFlow ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
-      class="sc-jKJlTe cJqkLF"
+      class="sc-ckVGcZ bxAWbg"
     >
       <h1
-        class="bp3-heading sc-ckVGcZ ipbdjm"
+        class="bp3-heading sc-dxgOiQ huYUSL"
       >
         Audit Board #1
         : Ballot Card Data Entry
@@ -20,7 +20,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
         Enter Ballot Information
       </h3>
       <div
-        class="bp3-callout sc-eNQAEJ TJXrb"
+        class="bp3-callout sc-jKJlTe hzNJni"
       >
         Round 
         1
@@ -209,10 +209,10 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
               </label>
             </div>
             <div
-              class="sc-cSHVUG jAnVpe"
+              class="sc-jzJRlG brNPlP"
             >
               <textarea
-                class="bp3-input sc-chPdSV PhUsl"
+                class="bp3-input sc-kAzzGY fpNxNJ"
                 data-testid="comment-textarea"
                 name="comment"
               />
@@ -255,7 +255,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
 exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="board-table-container"
@@ -820,7 +820,7 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
 exports[`AuditFlow ballot interaction renders board table with large container size 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="board-table-container"
@@ -1385,7 +1385,7 @@ exports[`AuditFlow ballot interaction renders board table with large container s
 exports[`AuditFlow ballot interaction renders board table with no ballots 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-eNQAEJ jDJHSN"
   >
     <div
       class="bp3-spinner"
