@@ -410,7 +410,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 313,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -426,7 +426,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -442,7 +442,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -458,7 +458,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -474,7 +474,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -490,7 +490,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 313,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -506,7 +506,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -522,7 +522,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -538,7 +538,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -554,7 +554,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -570,7 +570,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 313,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -586,7 +586,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -602,7 +602,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -618,7 +618,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -634,7 +634,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -650,7 +650,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 313,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -666,7 +666,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -682,7 +682,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -698,7 +698,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -714,7 +714,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -730,7 +730,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 313,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -746,7 +746,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -762,7 +762,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -778,7 +778,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -794,7 +794,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -810,7 +810,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 313,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -826,7 +826,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -842,7 +842,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -858,7 +858,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -874,7 +874,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -890,7 +890,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 313,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -906,7 +906,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -922,7 +922,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -938,7 +938,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -954,7 +954,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -970,7 +970,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 313,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -986,7 +986,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -1002,7 +1002,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -1018,7 +1018,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 2112,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {
@@ -1034,7 +1034,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 1789,
       status: 'AUDITED',
-      vote: null,
+      vote: '',
       comment: '',
       timesSampled: 1,
       auditBoard: {

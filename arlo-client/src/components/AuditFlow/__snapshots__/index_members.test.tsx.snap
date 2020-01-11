@@ -3,7 +3,7 @@
 exports[`AuditFlow initial load fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <h1
       class="bp3-heading"
@@ -248,7 +248,7 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
 exports[`AuditFlow initial load renders correctly 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <div
       class="bp3-spinner"
@@ -283,7 +283,7 @@ exports[`AuditFlow initial load renders correctly 1`] = `
 exports[`AuditFlow initial load renders member form 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <h1
       class="bp3-heading"

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { H1, H3, Callout, H4, Divider, Button } from '@blueprintjs/core'
+import { H1, H3, Callout, H4, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { Redirect, Link } from 'react-router-dom'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
-import { IReview, IBallot } from '../../types'
-import { BallotRow } from './Atoms'
+import { IReview, IBallot, IContest } from '../../types'
+import { BallotRow, FlushDivider } from './Atoms'
 
 const TopH1 = styled(H1)`
   margin: 40px 0 25px 0;
@@ -34,7 +34,7 @@ interface IProps {
   batchId: string
   ballotId: number
   ballots: IBallot[]
-  contest: string
+  contest: IContest
   previousBallot: () => void
   nextBallot: () => void
   submitBallot: (
@@ -58,8 +58,9 @@ const Ballot: React.FC<IProps> = ({
   submitBallot,
 }: IProps) => {
   const [auditing, setAuditing] = useState(true)
-  const [review, setReview] = useState<IReview>({ vote: null, comment: '' }) // eslint-disable-line no-null/no-null
+  const [review, setReview] = useState<IReview>({ vote: '', comment: '' })
 
+  const contestName = contest.name
   const ballotIx = ballots
     ? ballots.findIndex(
         b => b.position === ballotId && b.batch.id === batchId
@@ -91,7 +92,7 @@ const Ballot: React.FC<IProps> = ({
           <div>Batch: {ballot.batch.name}</div>
           <div>Record/Position: {ballot.position}</div>
         </div>
-        <Divider />
+        <FlushDivider />
         <div className="ballot-main">
           <H4>Are you looking at the correct ballot?</H4>
           <p>
@@ -122,7 +123,7 @@ const Ballot: React.FC<IProps> = ({
         />
       ) : (
         <BallotReview
-          contest={contest}
+          contestName={contestName}
           review={review}
           goAudit={() => setAuditing(true)}
           nextBallot={nextBallot}

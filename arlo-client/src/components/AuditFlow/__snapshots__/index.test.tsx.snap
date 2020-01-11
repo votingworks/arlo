@@ -3,13 +3,13 @@
 exports[`AuditFlow ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <div
-      class="sc-ckVGcZ bxAWbg"
+      class="sc-jKJlTe cJqkLF"
     >
       <h1
-        class="bp3-heading sc-dxgOiQ huYUSL"
+        class="bp3-heading sc-ckVGcZ ipbdjm"
       >
         Audit Board #1
         : Ballot Card Data Entry
@@ -20,7 +20,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
         Enter Ballot Information
       </h3>
       <div
-        class="bp3-callout sc-jKJlTe hzNJni"
+        class="bp3-callout sc-eNQAEJ TJXrb"
       >
         Round 
         1
@@ -30,7 +30,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
         27
       </div>
       <div
-        class="sc-gZMcBi gQZRSp"
+        class="sc-gqjmRU kTzBLL"
       >
         <div
           class="ballot-side"
@@ -53,7 +53,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
           </div>
         </div>
         <div
-          class="bp3-divider"
+          class="bp3-divider sc-gZMcBi jbSoiK"
         />
         <div
           class="ballot-main"
@@ -91,7 +91,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
         </div>
       </div>
       <div
-        class="sc-gZMcBi gQZRSp"
+        class="sc-gqjmRU kTzBLL"
       >
         <div
           class="ballot-side"
@@ -118,7 +118,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
             If the audit board cannot agree, select "No audit board consensus." You may add a comment for additional information about the disagreement.
           </p>
           <form
-            class="sc-gqjmRU dBJbzz"
+            class="sc-VigVT dMoKhi"
           >
             <h3
               class="bp3-heading"
@@ -126,19 +126,19 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
               contest name
             </h3>
             <div
-              class="bp3-divider"
+              class="bp3-divider sc-gZMcBi jbSoiK"
             />
             <div
-              class="sc-VigVT fPsdeH"
+              class="sc-jTzLTM iLZJqT"
             >
               <label
-                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
+                class=" bp3-control bp3-radio sc-jzJRlG fWQFBh"
               >
                 <input
-                  data-testid="YES"
+                  data-testid="choice one"
                   name="vote"
                   type="radio"
-                  value="YES"
+                  value="choice one"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -146,18 +146,18 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                   <span
                     class="radio-text"
                   >
-                    YES
+                    choice one
                   </span>
                 </span>
               </label>
               <label
-                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
+                class=" bp3-control bp3-radio sc-jzJRlG fWQFBh"
               >
                 <input
-                  data-testid="NO"
+                  data-testid="choice two"
                   name="vote"
                   type="radio"
-                  value="NO"
+                  value="choice two"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -165,18 +165,18 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                   <span
                     class="radio-text"
                   >
-                    NO
+                    choice two
                   </span>
                 </span>
               </label>
               <label
-                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
+                class=" bp3-control bp3-radio sc-jzJRlG fWQFBh"
               >
                 <input
-                  data-testid="NO_CONSENSUS"
+                  data-testid="Audit board can't agree"
                   name="vote"
                   type="radio"
-                  value="NO_CONSENSUS"
+                  value="Audit board can't agree"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -184,18 +184,18 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                   <span
                     class="radio-text"
                   >
-                    NO_CONSENSUS
+                    Audit board can't agree
                   </span>
                 </span>
               </label>
               <label
-                class="undefined bp3-control bp3-radio sc-fjdhpX hGdrdn"
+                class=" bp3-control bp3-radio sc-jzJRlG fWQFBh"
               >
                 <input
-                  data-testid="NO_VOTE"
+                  data-testid="Blank vote/no mark"
                   name="vote"
                   type="radio"
-                  value="NO_VOTE"
+                  value="Blank vote/no mark"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -203,23 +203,23 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                   <span
                     class="radio-text"
                   >
-                    NO_VOTE
+                    Blank vote/no mark
                   </span>
                 </span>
               </label>
             </div>
             <div
-              class="sc-jzJRlG brNPlP"
+              class="sc-cSHVUG jAnVpe"
             >
               <textarea
-                class="bp3-input sc-kAzzGY fpNxNJ"
+                class="bp3-input sc-chPdSV PhUsl"
                 data-testid="comment-textarea"
                 name="comment"
               />
             </div>
           </form>
           <div
-            class="sc-jTzLTM wJgxM"
+            class="sc-fjdhpX hGGYTz"
           >
             <button
               class="bp3-button bp3-disabled bp3-intent-success sc-htoDjs eellYq"
@@ -255,7 +255,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
 exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <div
       class="board-table-container"
@@ -820,7 +820,7 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
 exports[`AuditFlow ballot interaction renders board table with large container size 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <div
       class="board-table-container"
@@ -1385,7 +1385,7 @@ exports[`AuditFlow ballot interaction renders board table with large container s
 exports[`AuditFlow ballot interaction renders board table with no ballots 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <div
       class="bp3-spinner"

@@ -217,7 +217,7 @@ const AuditFlow: React.FC<IProps> = ({
                 )}
                 nextBallot={nextBallot(roundIx, batchId, Number(ballotId))}
                 submitBallot={submitBallot}
-                contest={audit.contests[0].name}
+                contest={audit.contests[0]}
                 roundIx={roundIx}
                 batchId={batchId}
                 ballotId={Number(ballotId)}

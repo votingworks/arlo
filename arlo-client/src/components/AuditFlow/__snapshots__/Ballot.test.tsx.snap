@@ -5,10 +5,10 @@ exports[`Ballot redirects if ballot does not exist 1`] = `<div />`;
 exports[`Ballot renders correctly 1`] = `
 <div>
   <div
-    class="sc-jTzLTM iNxaQE"
+    class="sc-fjdhpX kEvzkS"
   >
     <h1
-      class="bp3-heading sc-VigVT cWADhG"
+      class="bp3-heading sc-jTzLTM eHLtYK"
     >
       audit board #1
       : Ballot Card Data Entry
@@ -19,7 +19,7 @@ exports[`Ballot renders correctly 1`] = `
       Enter Ballot Information
     </h3>
     <div
-      class="bp3-callout sc-fjdhpX dwcRBj"
+      class="bp3-callout sc-jzJRlG iQxVZM"
     >
       Round 
       1
@@ -29,7 +29,7 @@ exports[`Ballot renders correctly 1`] = `
       27
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -52,7 +52,7 @@ exports[`Ballot renders correctly 1`] = `
         </div>
       </div>
       <div
-        class="bp3-divider"
+        class="bp3-divider sc-bdVaJa gqVLlZ"
       />
       <div
         class="ballot-main"
@@ -90,7 +90,7 @@ exports[`Ballot renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -117,7 +117,7 @@ exports[`Ballot renders correctly 1`] = `
           If the audit board cannot agree, select "No audit board consensus." You may add a comment for additional information about the disagreement.
         </p>
         <form
-          class="sc-bwzfXH imPamb"
+          class="sc-htpNat blpdRK"
         >
           <h3
             class="bp3-heading"
@@ -125,19 +125,19 @@ exports[`Ballot renders correctly 1`] = `
             contest name
           </h3>
           <div
-            class="bp3-divider"
+            class="bp3-divider sc-bdVaJa gqVLlZ"
           />
           <div
-            class="sc-htpNat fisUI"
+            class="sc-bxivhb eqbYCx"
           >
             <label
-              class="undefined bp3-control bp3-radio sc-ifAKCX csvjng"
+              class=" bp3-control bp3-radio sc-EHOje kdKekF"
             >
               <input
-                data-testid="YES"
+                data-testid="choice one"
                 name="vote"
                 type="radio"
-                value="YES"
+                value="choice one"
               />
               <span
                 class="bp3-control-indicator"
@@ -145,18 +145,18 @@ exports[`Ballot renders correctly 1`] = `
                 <span
                   class="radio-text"
                 >
-                  YES
+                  choice one
                 </span>
               </span>
             </label>
             <label
-              class="undefined bp3-control bp3-radio sc-ifAKCX csvjng"
+              class=" bp3-control bp3-radio sc-EHOje kdKekF"
             >
               <input
-                data-testid="NO"
+                data-testid="choice two"
                 name="vote"
                 type="radio"
-                value="NO"
+                value="choice two"
               />
               <span
                 class="bp3-control-indicator"
@@ -164,18 +164,18 @@ exports[`Ballot renders correctly 1`] = `
                 <span
                   class="radio-text"
                 >
-                  NO
+                  choice two
                 </span>
               </span>
             </label>
             <label
-              class="undefined bp3-control bp3-radio sc-ifAKCX csvjng"
+              class=" bp3-control bp3-radio sc-EHOje kdKekF"
             >
               <input
-                data-testid="NO_CONSENSUS"
+                data-testid="Audit board can't agree"
                 name="vote"
                 type="radio"
-                value="NO_CONSENSUS"
+                value="Audit board can't agree"
               />
               <span
                 class="bp3-control-indicator"
@@ -183,18 +183,18 @@ exports[`Ballot renders correctly 1`] = `
                 <span
                   class="radio-text"
                 >
-                  NO_CONSENSUS
+                  Audit board can't agree
                 </span>
               </span>
             </label>
             <label
-              class="undefined bp3-control bp3-radio sc-ifAKCX csvjng"
+              class=" bp3-control bp3-radio sc-EHOje kdKekF"
             >
               <input
-                data-testid="NO_VOTE"
+                data-testid="Blank vote/no mark"
                 name="vote"
                 type="radio"
-                value="NO_VOTE"
+                value="Blank vote/no mark"
               />
               <span
                 class="bp3-control-indicator"
@@ -202,26 +202,26 @@ exports[`Ballot renders correctly 1`] = `
                 <span
                   class="radio-text"
                 >
-                  NO_VOTE
+                  Blank vote/no mark
                 </span>
               </span>
             </label>
           </div>
           <div
-            class="sc-bZQynM EvJhB"
+            class="sc-gzVnrw lfdfns"
           >
             <textarea
-              class="bp3-input sc-htoDjs jVvDPF"
+              class="bp3-input sc-dnqmqq nIqCe"
               data-testid="comment-textarea"
               name="comment"
             />
           </div>
         </form>
         <div
-          class="sc-bxivhb dewsOl"
+          class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-disabled bp3-intent-success sc-EHOje fJvKPB"
+            class="bp3-button bp3-disabled bp3-intent-success sc-bZQynM lbThrI"
             data-testid="disabled-review"
             disabled=""
             tabindex="-1"
@@ -253,10 +253,10 @@ exports[`Ballot renders correctly 1`] = `
 exports[`Ballot switches audit and review views 1`] = `
 <div>
   <div
-    class="sc-jTzLTM iNxaQE"
+    class="sc-fjdhpX kEvzkS"
   >
     <h1
-      class="bp3-heading sc-VigVT cWADhG"
+      class="bp3-heading sc-jTzLTM eHLtYK"
     >
       audit board #1
       : Ballot Card Data Entry
@@ -267,7 +267,7 @@ exports[`Ballot switches audit and review views 1`] = `
       Enter Ballot Information
     </h3>
     <div
-      class="bp3-callout sc-fjdhpX dwcRBj"
+      class="bp3-callout sc-jzJRlG iQxVZM"
     >
       Round 
       1
@@ -277,7 +277,7 @@ exports[`Ballot switches audit and review views 1`] = `
       27
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -300,7 +300,7 @@ exports[`Ballot switches audit and review views 1`] = `
         </div>
       </div>
       <div
-        class="bp3-divider"
+        class="bp3-divider sc-bdVaJa gqVLlZ"
       />
       <div
         class="ballot-main"
@@ -338,7 +338,7 @@ exports[`Ballot switches audit and review views 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -347,7 +347,7 @@ exports[`Ballot switches audit and review views 1`] = `
         class="ballot-main"
       >
         <form
-          class="sc-bwzfXH imPamb"
+          class="sc-htpNat blpdRK"
         >
           <h3
             class="bp3-heading"
@@ -355,13 +355,13 @@ exports[`Ballot switches audit and review views 1`] = `
             contest name
           </h3>
           <div
-            class="bp3-divider"
+            class="bp3-divider sc-bdVaJa gqVLlZ"
           />
           <div
-            class="sc-gZMcBi jCbQxU"
+            class="sc-gqjmRU cVeKms"
           >
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-gqjmRU llWrTw sc-EHOje fJvKPB"
+              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-VigVT kGCCTl sc-bZQynM lbThrI"
               disabled=""
               tabindex="-1"
               type="button"
@@ -369,7 +369,7 @@ exports[`Ballot switches audit and review views 1`] = `
               <span
                 class="bp3-button-text"
               >
-                YES
+                choice one
               </span>
             </button>
             <button
@@ -405,10 +405,10 @@ exports[`Ballot switches audit and review views 1`] = `
           <p />
         </form>
         <div
-          class="sc-bxivhb dewsOl"
+          class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-intent-success sc-EHOje fJvKPB"
+            class="bp3-button bp3-intent-success sc-bZQynM lbThrI"
             type="submit"
           >
             <span
@@ -437,10 +437,10 @@ exports[`Ballot switches audit and review views 1`] = `
 exports[`Ballot toggles and submits comment 1`] = `
 <div>
   <div
-    class="sc-jTzLTM iNxaQE"
+    class="sc-fjdhpX kEvzkS"
   >
     <h1
-      class="bp3-heading sc-VigVT cWADhG"
+      class="bp3-heading sc-jTzLTM eHLtYK"
     >
       audit board #1
       : Ballot Card Data Entry
@@ -451,7 +451,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       Enter Ballot Information
     </h3>
     <div
-      class="bp3-callout sc-fjdhpX dwcRBj"
+      class="bp3-callout sc-jzJRlG iQxVZM"
     >
       Round 
       1
@@ -461,7 +461,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       27
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -484,7 +484,7 @@ exports[`Ballot toggles and submits comment 1`] = `
         </div>
       </div>
       <div
-        class="bp3-divider"
+        class="bp3-divider sc-bdVaJa gqVLlZ"
       />
       <div
         class="ballot-main"
@@ -522,7 +522,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -531,7 +531,7 @@ exports[`Ballot toggles and submits comment 1`] = `
         class="ballot-main"
       >
         <form
-          class="sc-bwzfXH imPamb"
+          class="sc-htpNat blpdRK"
         >
           <h3
             class="bp3-heading"
@@ -539,13 +539,13 @@ exports[`Ballot toggles and submits comment 1`] = `
             contest name
           </h3>
           <div
-            class="bp3-divider"
+            class="bp3-divider sc-bdVaJa gqVLlZ"
           />
           <div
-            class="sc-gZMcBi jCbQxU"
+            class="sc-gqjmRU cVeKms"
           >
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-gqjmRU llWrTw sc-EHOje fJvKPB"
+              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-VigVT kGCCTl sc-bZQynM lbThrI"
               disabled=""
               tabindex="-1"
               type="button"
@@ -553,7 +553,7 @@ exports[`Ballot toggles and submits comment 1`] = `
               <span
                 class="bp3-button-text"
               >
-                YES
+                choice one
               </span>
             </button>
             <button
@@ -591,10 +591,10 @@ exports[`Ballot toggles and submits comment 1`] = `
           </p>
         </form>
         <div
-          class="sc-bxivhb dewsOl"
+          class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-intent-success sc-EHOje fJvKPB"
+            class="bp3-button bp3-intent-success sc-bZQynM lbThrI"
             type="submit"
           >
             <span

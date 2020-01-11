@@ -1,8 +1,8 @@
 import React from 'react'
-import { H3, Divider, Button } from '@blueprintjs/core'
+import { H3, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IReview } from '../../types'
-import { BallotRow, FormBlock, ProgressActions } from './Atoms'
+import { BallotRow, FormBlock, ProgressActions, FlushDivider } from './Atoms'
 import FormButton from '../Form/FormButton'
 
 const Wrapper = styled.div`
@@ -19,7 +19,7 @@ const LockedButton = styled(FormButton)`
 `
 
 interface IProps {
-  contest: string
+  contestName: string
   goAudit: () => void
   review: IReview
   nextBallot: () => void
@@ -28,7 +28,7 @@ interface IProps {
 }
 
 const BallotReview: React.FC<IProps> = ({
-  contest,
+  contestName,
   goAudit,
   review: { vote, comment },
   review,
@@ -48,8 +48,8 @@ const BallotReview: React.FC<IProps> = ({
       <div className="ballot-side"></div>
       <div className="ballot-main">
         <FormBlock>
-          <H3>{contest}</H3>
-          <Divider />
+          <H3>{contestName}</H3>
+          <FlushDivider />
           <Wrapper>
             {/* <ButtonGroup fill large vertical> */}
             <LockedButton disabled large intent="primary">

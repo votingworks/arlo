@@ -206,7 +206,7 @@ describe('AuditFlow ballot interaction', () => {
       </StaticRouter>
     )
 
-    fireEvent.click(getByTestId('YES'), { bubbles: true })
+    fireEvent.click(getByTestId('choice one'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )

@@ -6,6 +6,7 @@ const Block = styled.label`
   &.bp3-control.bp3-radio {
     display: inline-block;
     position: relative;
+    margin-right: 20px;
     margin-bottom: 20px;
 
     .bp3-control-indicator {
@@ -47,7 +48,7 @@ const BlockRadio = ({
   className,
   checked,
 }: IProps) => (
-  <Block className={`${className} bp3-control bp3-radio`}>
+  <Block className={`${className || ''} bp3-control bp3-radio`}>
     <input
       type="radio"
       name={name}
