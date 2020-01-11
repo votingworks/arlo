@@ -99,8 +99,9 @@ Like any open-source software, Arlo welcomes suggested changes in the form of pu
 5. Install `postgres-client` and `postgresql-dev`, see https://www.postgresql.org/download.
 6. Install dependencies with `make install` or `make install-development` depending on your use-case
 7. Create a database config by copying `config/database.cfg.example` to `config/database.cfg`
-8. Run tests via `make test-sever`
-9. Run via `./run-dev.sh`
+8. Initialize the databases with `make resetdb`
+9. Run tests via `make test-sever`
+10. Run via `./run-dev.sh`
 
 #### Troubleshooting
 
