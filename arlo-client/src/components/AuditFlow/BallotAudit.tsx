@@ -96,6 +96,7 @@ const BallotAudit: React.FC<IProps> = ({
                     ))}
                     <BlockRadio
                       {...radioProps}
+                      gray
                       checked={
                         getIn(values, 'vote') === "Audit board can't agree"
                       }
@@ -103,6 +104,7 @@ const BallotAudit: React.FC<IProps> = ({
                     />
                     <BlockRadio
                       {...radioProps}
+                      gray
                       checked={getIn(values, 'vote') === 'Blank vote/no mark'}
                       value="Blank vote/no mark"
                     />

@@ -131,7 +131,7 @@ exports[`Ballot renders correctly 1`] = `
             class="sc-bxivhb eqbYCx"
           >
             <label
-              class=" bp3-control bp3-radio sc-EHOje kdKekF"
+              class=" bp3-control bp3-radio sc-EHOje edVgdh"
             >
               <input
                 data-testid="choice one"
@@ -140,7 +140,7 @@ exports[`Ballot renders correctly 1`] = `
                 value="choice one"
               />
               <span
-                class="bp3-control-indicator"
+                class="undefined bp3-control-indicator"
               >
                 <span
                   class="radio-text"
@@ -150,7 +150,7 @@ exports[`Ballot renders correctly 1`] = `
               </span>
             </label>
             <label
-              class=" bp3-control bp3-radio sc-EHOje kdKekF"
+              class=" bp3-control bp3-radio sc-EHOje edVgdh"
             >
               <input
                 data-testid="choice two"
@@ -159,7 +159,7 @@ exports[`Ballot renders correctly 1`] = `
                 value="choice two"
               />
               <span
-                class="bp3-control-indicator"
+                class="undefined bp3-control-indicator"
               >
                 <span
                   class="radio-text"
@@ -169,7 +169,7 @@ exports[`Ballot renders correctly 1`] = `
               </span>
             </label>
             <label
-              class=" bp3-control bp3-radio sc-EHOje kdKekF"
+              class=" bp3-control bp3-radio sc-EHOje edVgdh"
             >
               <input
                 data-testid="Audit board can't agree"
@@ -178,7 +178,7 @@ exports[`Ballot renders correctly 1`] = `
                 value="Audit board can't agree"
               />
               <span
-                class="bp3-control-indicator"
+                class="gray bp3-control-indicator"
               >
                 <span
                   class="radio-text"
@@ -188,7 +188,7 @@ exports[`Ballot renders correctly 1`] = `
               </span>
             </label>
             <label
-              class=" bp3-control bp3-radio sc-EHOje kdKekF"
+              class=" bp3-control bp3-radio sc-EHOje edVgdh"
             >
               <input
                 data-testid="Blank vote/no mark"
@@ -197,7 +197,7 @@ exports[`Ballot renders correctly 1`] = `
                 value="Blank vote/no mark"
               />
               <span
-                class="bp3-control-indicator"
+                class="gray bp3-control-indicator"
               >
                 <span
                   class="radio-text"

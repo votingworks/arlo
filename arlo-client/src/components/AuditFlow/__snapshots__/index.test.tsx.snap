@@ -132,7 +132,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
               class="sc-jTzLTM iLZJqT"
             >
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG fWQFBh"
+                class=" bp3-control bp3-radio sc-jzJRlG kQbQmN"
               >
                 <input
                   data-testid="choice one"
@@ -141,7 +141,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                   value="choice one"
                 />
                 <span
-                  class="bp3-control-indicator"
+                  class="undefined bp3-control-indicator"
                 >
                   <span
                     class="radio-text"
@@ -151,7 +151,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG fWQFBh"
+                class=" bp3-control bp3-radio sc-jzJRlG kQbQmN"
               >
                 <input
                   data-testid="choice two"
@@ -160,7 +160,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                   value="choice two"
                 />
                 <span
-                  class="bp3-control-indicator"
+                  class="undefined bp3-control-indicator"
                 >
                   <span
                     class="radio-text"
@@ -170,7 +170,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG fWQFBh"
+                class=" bp3-control bp3-radio sc-jzJRlG kQbQmN"
               >
                 <input
                   data-testid="Audit board can't agree"
@@ -179,7 +179,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                   value="Audit board can't agree"
                 />
                 <span
-                  class="bp3-control-indicator"
+                  class="gray bp3-control-indicator"
                 >
                   <span
                     class="radio-text"
@@ -189,7 +189,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG fWQFBh"
+                class=" bp3-control bp3-radio sc-jzJRlG kQbQmN"
               >
                 <input
                   data-testid="Blank vote/no mark"
@@ -198,7 +198,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                   value="Blank vote/no mark"
                 />
                 <span
-                  class="bp3-control-indicator"
+                  class="gray bp3-control-indicator"
                 >
                   <span
                     class="radio-text"

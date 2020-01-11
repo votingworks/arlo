@@ -25,6 +25,10 @@ const Block = styled.label`
         padding: 5px;
         text-align: center;
       }
+
+      &.gray {
+        background-color: #dddddd;
+      }
     }
   }
 `
@@ -36,6 +40,7 @@ interface IProps {
   locked?: boolean
   className?: string
   checked?: boolean
+  gray?: boolean
 }
 
 // export type voteKey = keyof typeof TEXT
@@ -46,6 +51,7 @@ const BlockRadio = ({
   value,
   handleChange,
   className,
+  gray,
   checked,
 }: IProps) => (
   <Block className={`${className || ''} bp3-control bp3-radio`}>
@@ -57,7 +63,7 @@ const BlockRadio = ({
       onChange={handleChange}
       checked={checked}
     />
-    <span className="bp3-control-indicator">
+    <span className={`${gray && 'gray'} bp3-control-indicator`}>
       <span className="radio-text">{value}</span>
     </span>
   </Block>
