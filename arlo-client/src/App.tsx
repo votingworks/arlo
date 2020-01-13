@@ -30,13 +30,13 @@ const App: React.FC = () => {
           <p>loading</p>
         ) : (
           <Switch>
-            <PrivateRoute exact path="/" component={CreateAudit} />
-            <PrivateRoute
+            <Route exact path="/" component={CreateAudit} />
+            <Route
               path="/election/:electionId/board/:token"
               component={AuditFlow}
             />
             <PrivateRoute path="/election/:electionId" component={AuditForms} />
-            <PrivateRoute path="/board/:token" component={AuditFlow} />
+            <Route path="/board/:token" component={AuditFlow} />
             <Route>404</Route>
           </Switch>
         )}

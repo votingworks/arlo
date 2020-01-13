@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { RouteComponentProps } from 'react-router-dom'
 import FormButton from './Form/FormButton'
+import { useAuth0 } from '../react-auth0-spa'
 import { api, checkAndToast } from './utilities'
 import { ICreateAuditParams, IErrorResponse } from '../types'
 
@@ -23,6 +24,7 @@ const Wrapper = styled.div`
 
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const [loading, setLoading] = useState(false)
+  const { isAuthenticated, loginWithRedirect } = useAuth0()
   const onClick = async () => {
     try {
       setLoading(true)
@@ -44,17 +46,31 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   return (
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      <Button
-        type="button"
-        intent="primary"
-        fill
-        large
-        onClick={onClick}
-        loading={loading}
-        disabled={loading}
-      >
-        Create a New Audit
-      </Button>
+      {isAuthenticated ? (
+        <Button
+          type="button"
+          intent="primary"
+          fill
+          large
+          onClick={onClick}
+          loading={loading}
+          disabled={loading}
+        >
+          Create a New Audit
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          intent="primary"
+          fill
+          large
+          onClick={() => loginWithRedirect()}
+          loading={loading}
+          disabled={loading}
+        >
+          Welcome, Please Log In!
+        </Button>
+      )}
     </Wrapper>
   )
 }

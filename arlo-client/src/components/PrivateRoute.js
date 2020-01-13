@@ -13,11 +13,11 @@ const PrivateRoute = ({ component: Component, path, ...rest }) => {
     }
     const fn = async () => {
       await loginWithRedirect({
-        appState: { targetUrl: path },
+        appState: { targetUrl: rest.url },
       })
     }
     fn()
-  }, [loading, isAuthenticated, loginWithRedirect, path])
+  }, [loading, isAuthenticated, loginWithRedirect, rest.url])
 
   const render = props =>
     isAuthenticated === true ? <Component {...props} /> : null

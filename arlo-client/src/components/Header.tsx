@@ -6,6 +6,7 @@ import {
   NavbarHeading,
   Alignment,
 } from '@blueprintjs/core'
+import { Route } from 'react-router'
 import { useAuth0 } from '../react-auth0-spa'
 import FormButton from './Form/FormButton'
 
@@ -34,11 +35,16 @@ const Header: React.FC<{}> = () => {
       </NavbarGroup>
       <NavbarGroup align={Alignment.RIGHT}>
         <ButtonBar id="reset-button-wrapper" />
-        {!isAuthenticated && (
-          <FormButton size="sm" onClick={() => loginWithRedirect({})}>
-            Log in
-          </FormButton>
-        )}
+        <Route
+          path="/election"
+          render={() =>
+            !isAuthenticated && (
+              <FormButton size="sm" onClick={() => loginWithRedirect({})}>
+                Log in
+              </FormButton>
+            )
+          }
+        />
         {isAuthenticated && (
           <FormButton size="sm" onClick={() => logout()}>
             Log out
