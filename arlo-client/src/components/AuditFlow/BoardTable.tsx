@@ -107,6 +107,7 @@ const BoardTable: React.FC<IProps> = ({
     const container = document.getElementsByClassName(
       'board-table-container'
     )[0]
+    /* istanbul ignore next */
     if (!container) return Array(KEYS.length).fill(undefined)
     const containerSize = container.clientWidth
     /* istanbul ignore next */

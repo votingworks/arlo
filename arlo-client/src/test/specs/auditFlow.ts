@@ -64,18 +64,18 @@ beforeEach(() => {
 describe('audit flow', () => {
   it('has a happy path', () => {
     $('a=Start Auditing').click()
-    while (ballotNext('Yes/For'))
+    while (ballotNext('Choice One'))
       $('.bp3-callout*=Round 1: auditing ballot').waitForExist()
     $('h1*=Ballot Cards to Audit').waitForExist(10000)
   })
 
   it('handles all four voting options', () => {
     $('a=Start Auditing').click()
-    ballotNext('Yes/For')
+    ballotNext('Choice One')
     $('.bp3-callout*=Round 1: auditing ballot 2 of').waitForExist()
-    ballotNext('No/Against')
+    ballotNext('Choice Two')
     $('.bp3-callout*=Round 1: auditing ballot 3 of').waitForExist()
-    ballotNext('No audit board consensus')
+    ballotNext("Audit board can't agree")
     $('.bp3-callout*=Round 1: auditing ballot 4 of').waitForExist()
     ballotNext('Blank vote/no mark')
     $('.bp3-callout*=Round 1: auditing ballot 5 of').waitForExist()
@@ -83,11 +83,11 @@ describe('audit flow', () => {
 
   it('enters a comment', () => {
     $('a=Start Auditing').click()
-    // $('.bp3-button-text=Add comment').click()
+    $('.bp3-button-text=Add comment').click()
     const comment = $('textarea[name="comment"]')
-    // comment.waitForExist()
+    comment.waitForExist()
     comment.addValue('Test comment text')
-    $(`.radio-text=Yes/For`).click()
+    $(`.radio-text=Choice One`).click()
     $('.bp3-button-text=Review').click()
     $('p=COMMENT: Test comment text').waitForExist()
   })

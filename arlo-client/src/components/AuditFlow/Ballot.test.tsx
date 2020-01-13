@@ -1,5 +1,11 @@
 import React from 'react'
-import { render, fireEvent, wait, waitForElement } from '@testing-library/react'
+import {
+  render,
+  fireEvent,
+  wait,
+  waitForElement,
+  queryByText,
+} from '@testing-library/react'
 import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 import Ballot from './Ballot'
@@ -100,6 +106,8 @@ describe('Ballot', () => {
       </Router>
     )
 
+    fireEvent.click(getByText('Add comment'), { bubbles: true })
+
     const commentInput = getByTestId('comment-textarea')
     fireEvent.change(commentInput, { target: { value: 'a test comment' } })
 
@@ -110,6 +118,42 @@ describe('Ballot', () => {
     await wait(() => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
       expect(getByText('COMMENT: a test comment')).toBeTruthy()
+      expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('toggles and deletes a comment', async () => {
+    const { container, getByText, queryByText, getByTestId } = render(
+      <Router history={history}>
+        <Ballot
+          home="/election/1/board/1"
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
+          contest={contest}
+          previousBallot={jest.fn()}
+          nextBallot={jest.fn()}
+          submitBallot={jest.fn()}
+          roundIx="1"
+          batchId="batch-id-1"
+          ballotId={313}
+        />
+      </Router>
+    )
+
+    fireEvent.click(getByText('Add comment'), { bubbles: true })
+
+    const commentInput = getByTestId('comment-textarea')
+    fireEvent.change(commentInput, { target: { value: 'a test comment' } })
+
+    fireEvent.click(getByText('Remove comment'), { bubbles: true })
+
+    fireEvent.click(getByTestId('choice one'), { bubbles: true })
+    await wait(() =>
+      fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
+    )
+    await wait(() => {
+      expect(getByText('Submit & Next Ballot')).toBeTruthy()
+      expect(queryByText('COMMENT: a test comment')).toBeFalsy()
       expect(container).toMatchSnapshot()
     })
   })

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Formik, FormikProps, getIn, Field } from 'formik'
 import { H4, H3, Button } from '@blueprintjs/core'
 import {
@@ -33,7 +33,10 @@ const BallotAudit: React.FC<IProps> = ({
   setReview,
   previousBallot,
 }: IProps) => {
-  // const [commenting, setCommenting] = useState(!!review.comment)
+  const [commenting, setCommenting] = useState(false)
+  useEffect(() => {
+    setCommenting(!!review.comment)
+  }, [review.comment])
   return (
     <BallotRow>
       <div className="ballot-side"></div>
@@ -69,10 +72,10 @@ const BallotAudit: React.FC<IProps> = ({
               handleChange: (e: React.ChangeEvent<HTMLInputElement>) =>
                 setFieldValue('vote', e.currentTarget.value),
             }
-            // const toggleCommenting = () => {
-            //   setCommenting(!commenting)
-            //   // setFieldValue('comment', '')
-            // }
+            const toggleCommenting = () => {
+              setCommenting(!commenting)
+              setFieldValue('comment', '')
+            }
             return (
               <>
                 <FormBlock>
@@ -109,19 +112,17 @@ const BallotAudit: React.FC<IProps> = ({
                       value="Blank vote/no mark"
                     />
                   </RadioGroupFlex>
-                  {/* <Button minimal icon="edit" onClick={toggleCommenting}>
-                    {commenting ? 'Remove comment' : review.comment ? 'Edit Comment' : 'Add comment'}
+                  <Button minimal icon="edit" onClick={toggleCommenting}>
+                    {commenting ? 'Remove comment' : 'Add comment'}
                   </Button>
-                  {commenting ? ( */}
-                  <Field
-                    name="comment"
-                    type="textarea"
-                    data-testid="comment-textarea"
-                    component={FormField}
-                  />
-                  {/* ) : (
-                  <p>{review.comment}</p>
-                  )} */}
+                  {commenting && (
+                    <Field
+                      name="comment"
+                      type="textarea"
+                      data-testid="comment-textarea"
+                      component={FormField}
+                    />
+                  )}
                 </FormBlock>
                 <ProgressActions>
                   <FormButton

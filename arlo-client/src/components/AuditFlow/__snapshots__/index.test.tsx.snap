@@ -132,7 +132,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
               class="sc-jTzLTM iLZJqT"
             >
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG kQbQmN"
+                class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
               >
                 <input
                   data-testid="choice one"
@@ -151,7 +151,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG kQbQmN"
+                class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
               >
                 <input
                   data-testid="choice two"
@@ -170,7 +170,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG kQbQmN"
+                class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
               >
                 <input
                   data-testid="Audit board can't agree"
@@ -189,7 +189,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG kQbQmN"
+                class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
               >
                 <input
                   data-testid="Blank vote/no mark"
@@ -208,15 +208,35 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
             </div>
-            <div
-              class="sc-cSHVUG jAnVpe"
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
             >
-              <textarea
-                class="bp3-input sc-chPdSV PhUsl"
-                data-testid="comment-textarea"
-                name="comment"
-              />
-            </div>
+              <span
+                class="bp3-icon bp3-icon-edit"
+                icon="edit"
+              >
+                <svg
+                  data-icon="edit"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    edit
+                  </desc>
+                  <path
+                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+              <span
+                class="bp3-button-text"
+              >
+                Add comment
+              </span>
+            </button>
           </form>
           <div
             class="sc-fjdhpX hGGYTz"

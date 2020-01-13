@@ -34,7 +34,7 @@ const Block = styled.label`
 `
 
 interface IProps {
-  name?: string
+  name: string
   value: Exclude<IBallot['vote'], null>
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   locked?: boolean
@@ -47,7 +47,7 @@ interface IProps {
 // export type voteValue = typeof TEXT[voteKey]
 
 const BlockRadio = ({
-  name = '',
+  name,
   value,
   handleChange,
   className,
