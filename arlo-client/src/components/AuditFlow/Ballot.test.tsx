@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  render,
-  fireEvent,
-  wait,
-  waitForElement,
-  queryByText,
-} from '@testing-library/react'
+import { render, fireEvent, wait, waitForElement } from '@testing-library/react'
 import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 import Ballot from './Ballot'

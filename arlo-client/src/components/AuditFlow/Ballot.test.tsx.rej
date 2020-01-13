@@ -1,0 +1,10 @@
+diff a/arlo-client/src/components/AuditFlow/Ballot.test.tsx b/arlo-client/src/components/AuditFlow/Ballot.test.tsx	(rejected hunks)
+@@ -2 +2,7 @@ import React from 'react'
+-import { render, fireEvent, wait, waitForElement, queryByText } from '@testing-library/react'
++import {
++  render,
++  fireEvent,
++  wait,
++  waitForElement,
++  queryByText,
++} from '@testing-library/react'
