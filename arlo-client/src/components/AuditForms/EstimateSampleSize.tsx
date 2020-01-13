@@ -87,7 +87,7 @@ interface IChoiceValues {
 interface IContestValues {
   name: string
   totalBallotsCast: string
-  winners: string
+  numWinners: string
   votesAllowed: string
   choices: IChoiceValues[]
 }
@@ -104,7 +104,7 @@ const contestsSchema = Yup.array()
   .of(
     Yup.object().shape({
       name: Yup.string().required('Required'),
-      winners: number()
+      numWinners: number()
         .typeError('Must be a number')
         .integer('Must be an integer')
         .min(0, 'Must be a positive number')
@@ -182,7 +182,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
         id: uuidv4(),
         name: contest.name,
         totalBallotsCast: parseNumber(contest.totalBallotsCast),
-        winners: parseNumber(contest.winners),
+        numWinners: parseNumber(contest.numWinners),
         votesAllowed: parseNumber(contest.votesAllowed),
         choices: contest.choices.map(choice => ({
           id: uuidv4(),
@@ -229,7 +229,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
     {
       name: '',
       totalBallotsCast: '',
-      winners: '1',
+      numWinners: '1',
       votesAllowed: '1',
       choices: [
         {
@@ -316,11 +316,11 @@ const EstimateSampleSize: React.FC<IProps> = ({
                             <FormSectionDescription>
                               Enter the number of winners for the contest.
                             </FormSectionDescription>
-                            <label htmlFor={`contests[${i}].winners`}>
+                            <label htmlFor={`contests[${i}].numWinners`}>
                               Winners
                               <Field
-                                id={`contests[${i}].winners`}
-                                name={`contests[${i}].winners`}
+                                id={`contests[${i}].numWinners`}
+                                name={`contests[${i}].numWinners`}
                                 disabled={!canEstimateSampleSize}
                                 component={FormField}
                               />

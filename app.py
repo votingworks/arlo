@@ -397,7 +397,7 @@ def audit_basic_update(election_id):
                              id = contest['id'],
                              name = contest['name'],
                              total_ballots_cast = contest['totalBallotsCast'],
-                             num_winners = contest['winners'],
+                             num_winners = contest['numWinners'],
                              votes_allowed = contest['votesAllowed'])
         db.session.add(contest_obj)
 

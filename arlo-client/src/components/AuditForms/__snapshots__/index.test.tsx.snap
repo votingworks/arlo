@@ -87,7 +87,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
             Enter the number of winners for the contest.
           </div>
           <label
-            for="contests[0].winners"
+            for="contests[0].numWinners"
           >
             Winners
             <div
@@ -99,8 +99,8 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                 <input
                   class="bp3-input"
                   disabled=""
-                  id="contests[0].winners"
-                  name="contests[0].winners"
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
                   style="padding-right: 10px;"
                   value="1"
                 />
@@ -750,7 +750,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
             Enter the number of winners for the contest.
           </div>
           <label
-            for="contests[0].winners"
+            for="contests[0].numWinners"
           >
             Winners
             <div
@@ -762,8 +762,8 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                 <input
                   class="bp3-input"
                   disabled=""
-                  id="contests[0].winners"
-                  name="contests[0].winners"
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
                   style="padding-right: 10px;"
                   value="1"
                 />
@@ -1177,7 +1177,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
             Enter the number of winners for the contest.
           </div>
           <label
-            for="contests[0].winners"
+            for="contests[0].numWinners"
           >
             Winners
             <div
@@ -1188,8 +1188,8 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
               >
                 <input
                   class="bp3-input"
-                  id="contests[0].winners"
-                  name="contests[0].winners"
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
                   style="padding-right: 10px;"
                   value="1"
                 />
@@ -1616,7 +1616,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             Enter the number of winners for the contest.
           </div>
           <label
-            for="contests[0].winners"
+            for="contests[0].numWinners"
           >
             Winners
             <div
@@ -1628,8 +1628,8 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                 <input
                   class="bp3-input"
                   disabled=""
-                  id="contests[0].winners"
-                  name="contests[0].winners"
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
                   style="padding-right: 10px;"
                   value="1"
                 />
@@ -2474,7 +2474,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             Enter the number of winners for the contest.
           </div>
           <label
-            for="contests[0].winners"
+            for="contests[0].numWinners"
           >
             Winners
             <div
@@ -2486,8 +2486,8 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                 <input
                   class="bp3-input"
                   disabled=""
-                  id="contests[0].winners"
-                  name="contests[0].winners"
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
                   style="padding-right: 10px;"
                   value="1"
                 />
@@ -3135,7 +3135,7 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
             Enter the number of winners for the contest.
           </div>
           <label
-            for="contests[0].winners"
+            for="contests[0].numWinners"
           >
             Winners
             <div
@@ -3146,8 +3146,8 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
               >
                 <input
                   class="bp3-input"
-                  id="contests[0].winners"
-                  name="contests[0].winners"
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
                   style="padding-right: 10px;"
                   value="1"
                 />
