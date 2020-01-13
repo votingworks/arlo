@@ -114,6 +114,19 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
                 class="bp3-control bp3-radio"
               >
                 <input
+                  name="[0]affiliation"
+                  type="radio"
+                  value="OTH"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Other
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
                   checked=""
                   name="[0]affiliation"
                   type="radio"
@@ -211,6 +224,19 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
                   class="bp3-control-indicator"
                 />
                 Independent/Unaffiliated
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[1]affiliation"
+                  type="radio"
+                  value="OTH"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Other
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -394,6 +420,19 @@ exports[`AuditFlow initial load renders member form 1`] = `
                 class="bp3-control bp3-radio"
               >
                 <input
+                  name="[0]affiliation"
+                  type="radio"
+                  value="OTH"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Other
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
                   checked=""
                   name="[0]affiliation"
                   type="radio"
@@ -491,6 +530,19 @@ exports[`AuditFlow initial load renders member form 1`] = `
                   class="bp3-control-indicator"
                 />
                 Independent/Unaffiliated
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[1]affiliation"
+                  type="radio"
+                  value="OTH"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Other
               </label>
               <label
                 class="bp3-control bp3-radio"
