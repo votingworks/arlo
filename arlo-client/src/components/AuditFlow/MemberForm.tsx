@@ -102,6 +102,7 @@ const MemberForm: React.FC<IProps> = ({
                       <Radio value="REP">Republican</Radio>
                       <Radio value="LIB">Libertarian</Radio>
                       <Radio value="IND">Independent/Unaffiliated</Radio>
+                      <Radio value="OTH">Other</Radio>
                       <Radio value="">None</Radio>
                     </RadioGroup>
                   </div>

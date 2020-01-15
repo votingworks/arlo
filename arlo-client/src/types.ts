@@ -39,7 +39,7 @@ export interface IBallot {
   timesSampled: number
   auditBoard?: Pick<IAuditBoard, 'id' | 'name'>
   status: 'AUDITED' | null
-  vote: 'YES' | 'NO' | 'NO_CONSENSUS' | 'NO_VOTE' | null
+  vote: string
   comment: string
   position: number
   batch: {

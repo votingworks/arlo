@@ -1,6 +1,10 @@
 import styled from 'styled-components'
 import { Form } from 'formik'
-import { RadioGroup } from '@blueprintjs/core'
+import { RadioGroup, Divider } from '@blueprintjs/core'
+
+export const FlushDivider = styled(Divider)`
+  margin: 5px 0;
+`
 
 export const BallotRow = styled.div`
   display: flex;
@@ -48,7 +52,7 @@ export const FormBlock = styled(Form)`
 export const RadioGroupFlex = styled(RadioGroup)`
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
+  justify-content: start;
   padding-top: 20px;
 `
 

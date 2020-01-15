@@ -29,7 +29,7 @@ exports[`Ballot renders correctly 1`] = `
       27
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -52,7 +52,7 @@ exports[`Ballot renders correctly 1`] = `
         </div>
       </div>
       <div
-        class="bp3-divider"
+        class="bp3-divider sc-bdVaJa gqVLlZ"
       />
       <div
         class="ballot-main"
@@ -90,7 +90,7 @@ exports[`Ballot renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -117,7 +117,7 @@ exports[`Ballot renders correctly 1`] = `
           If the audit board cannot agree, select "No audit board consensus." You may add a comment for additional information about the disagreement.
         </p>
         <form
-          class="sc-bwzfXH imPamb"
+          class="sc-htpNat blpdRK"
         >
           <h3
             class="bp3-heading"
@@ -125,79 +125,79 @@ exports[`Ballot renders correctly 1`] = `
             contest name
           </h3>
           <div
-            class="bp3-divider"
+            class="bp3-divider sc-bdVaJa gqVLlZ"
           />
           <div
-            class="sc-htpNat fisUI"
+            class="sc-bxivhb eqbYCx"
           >
             <label
-              class="undefined bp3-control bp3-radio sc-EHOje cxPscF"
+              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
             >
               <input
-                data-testid="YES"
+                data-testid="choice one"
                 name="vote"
                 type="radio"
-                value="YES"
+                value="choice one"
               />
               <span
-                class="bp3-control-indicator"
+                class="undefined bp3-control-indicator"
               >
                 <span
                   class="radio-text"
                 >
-                  Yes/For
+                  choice one
                 </span>
               </span>
             </label>
             <label
-              class="undefined bp3-control bp3-radio sc-EHOje cxPscF"
+              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
             >
               <input
-                data-testid="NO"
+                data-testid="choice two"
                 name="vote"
                 type="radio"
-                value="NO"
+                value="choice two"
               />
               <span
-                class="bp3-control-indicator"
+                class="undefined bp3-control-indicator"
               >
                 <span
                   class="radio-text"
                 >
-                  No/Against
+                  choice two
                 </span>
               </span>
             </label>
             <label
-              class="undefined bp3-control bp3-radio sc-EHOje cxPscF"
+              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
             >
               <input
-                data-testid="NO_CONSENSUS"
+                data-testid="Audit board can't agree"
                 name="vote"
                 type="radio"
-                value="NO_CONSENSUS"
+                value="Audit board can't agree"
               />
               <span
-                class="bp3-control-indicator"
+                class="gray bp3-control-indicator"
               >
                 <span
                   class="radio-text"
                 >
-                  No audit board consensus
+                  Audit board can't agree
                 </span>
               </span>
             </label>
             <label
-              class="undefined bp3-control bp3-radio sc-EHOje cxPscF"
+              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
             >
               <input
-                data-testid="NO_VOTE"
+                data-testid="Blank vote/no mark"
                 name="vote"
                 type="radio"
-                value="NO_VOTE"
+                value="Blank vote/no mark"
               />
               <span
-                class="bp3-control-indicator"
+                class="gray bp3-control-indicator"
               >
                 <span
                   class="radio-text"
@@ -207,21 +207,41 @@ exports[`Ballot renders correctly 1`] = `
               </span>
             </label>
           </div>
-          <div
-            class="sc-gzVnrw lfdfns"
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
           >
-            <textarea
-              class="bp3-input sc-dnqmqq nIqCe"
-              data-testid="comment-textarea"
-              name="comment"
-            />
-          </div>
+            <span
+              class="bp3-icon bp3-icon-edit"
+              icon="edit"
+            >
+              <svg
+                data-icon="edit"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  edit
+                </desc>
+                <path
+                  d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+            <span
+              class="bp3-button-text"
+            >
+              Add comment
+            </span>
+          </button>
         </form>
         <div
-          class="sc-bxivhb dewsOl"
+          class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-disabled bp3-intent-success sc-ifAKCX kKfkZO"
+            class="bp3-button bp3-disabled bp3-intent-success sc-bZQynM lbThrI"
             data-testid="disabled-review"
             disabled=""
             tabindex="-1"
@@ -277,7 +297,7 @@ exports[`Ballot switches audit and review views 1`] = `
       27
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -300,7 +320,7 @@ exports[`Ballot switches audit and review views 1`] = `
         </div>
       </div>
       <div
-        class="bp3-divider"
+        class="bp3-divider sc-bdVaJa gqVLlZ"
       />
       <div
         class="ballot-main"
@@ -338,7 +358,7 @@ exports[`Ballot switches audit and review views 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -347,7 +367,7 @@ exports[`Ballot switches audit and review views 1`] = `
         class="ballot-main"
       >
         <form
-          class="sc-bwzfXH imPamb"
+          class="sc-htpNat blpdRK"
         >
           <h3
             class="bp3-heading"
@@ -355,48 +375,244 @@ exports[`Ballot switches audit and review views 1`] = `
             contest name
           </h3>
           <div
-            class="bp3-divider"
+            class="bp3-divider sc-bdVaJa gqVLlZ"
           />
           <div
-            class="sc-gqjmRU eYlscI"
+            class="sc-gqjmRU cVeKms"
           >
-            <div
-              class="bp3-button-group bp3-fill bp3-large bp3-vertical"
+            <button
+              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-VigVT kGCCTl sc-bZQynM lbThrI"
+              disabled=""
+              tabindex="-1"
+              type="button"
             >
-              <button
-                class="bp3-button bp3-disabled bp3-fill bp3-large bp3-intent-primary sc-bZQynM hJohEA sc-ifAKCX kKfkZO"
-                disabled=""
-                tabindex="-1"
-                type="button"
+              <span
+                class="bp3-button-text"
               >
-                <span
-                  class="bp3-button-text"
-                >
-                  Yes/For
-                </span>
-              </button>
-              <button
-                class="bp3-button"
-                type="button"
+                choice one
+              </span>
+            </button>
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
+            >
+              <span
+                class="bp3-icon bp3-icon-edit"
+                icon="edit"
               >
-                <span
-                  class="bp3-button-text"
+                <svg
+                  data-icon="edit"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
                 >
-                  Edit
-                </span>
-              </button>
-            </div>
+                  <desc>
+                    edit
+                  </desc>
+                  <path
+                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+              <span
+                class="bp3-button-text"
+              >
+                Edit
+              </span>
+            </button>
           </div>
-          <p>
-            COMMENT: 
-            
-          </p>
+          <p />
         </form>
         <div
-          class="sc-bxivhb dewsOl"
+          class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-intent-success sc-ifAKCX kKfkZO"
+            class="bp3-button bp3-intent-success sc-bZQynM lbThrI"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Submit & Next Ballot
+            </span>
+          </button>
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Back
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Ballot toggles and deletes a comment 1`] = `
+<div>
+  <div
+    class="sc-fjdhpX kEvzkS"
+  >
+    <h1
+      class="bp3-heading sc-jTzLTM eHLtYK"
+    >
+      audit board #1
+      : Ballot Card Data Entry
+    </h1>
+    <h3
+      class="bp3-heading"
+    >
+      Enter Ballot Information
+    </h3>
+    <div
+      class="bp3-callout sc-jzJRlG iQxVZM"
+    >
+      Round 
+      1
+      : auditing ballot 
+      1
+       of 
+      27
+    </div>
+    <div
+      class="sc-bwzfXH kYAzKM"
+    >
+      <div
+        class="ballot-side"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Current ballot:
+        </h4>
+        <div>
+          Tabulator: 
+        </div>
+        <div>
+          Batch: 
+          0003-04-Precinct 13 (Jonesboro Fire Department)
+        </div>
+        <div>
+          Record/Position: 
+          313
+        </div>
+      </div>
+      <div
+        class="bp3-divider sc-bdVaJa gqVLlZ"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Are you looking at the correct ballot?
+        </h4>
+        <p>
+          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+        </p>
+        <p>
+          <button
+            class="bp3-button bp3-intent-danger"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Ballot 
+              313
+               not found - move to next ballot
+            </span>
+          </button>
+        </p>
+        <p>
+          <a
+            class="bp3-button bp3-intent-primary"
+            href="/election/1/board/1"
+          >
+            Return to audit overview
+          </a>
+        </p>
+      </div>
+    </div>
+    <div
+      class="sc-bwzfXH kYAzKM"
+    >
+      <div
+        class="ballot-side"
+      />
+      <div
+        class="ballot-main"
+      >
+        <form
+          class="sc-htpNat blpdRK"
+        >
+          <h3
+            class="bp3-heading"
+          >
+            contest name
+          </h3>
+          <div
+            class="bp3-divider sc-bdVaJa gqVLlZ"
+          />
+          <div
+            class="sc-gqjmRU cVeKms"
+          >
+            <button
+              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-VigVT kGCCTl sc-bZQynM lbThrI"
+              disabled=""
+              tabindex="-1"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                choice one
+              </span>
+            </button>
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
+            >
+              <span
+                class="bp3-icon bp3-icon-edit"
+                icon="edit"
+              >
+                <svg
+                  data-icon="edit"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    edit
+                  </desc>
+                  <path
+                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+              <span
+                class="bp3-button-text"
+              >
+                Edit
+              </span>
+            </button>
+          </div>
+          <p />
+        </form>
+        <div
+          class="sc-ifAKCX jzSIMx"
+        >
+          <button
+            class="bp3-button bp3-intent-success sc-bZQynM lbThrI"
             type="submit"
           >
             <span
@@ -449,7 +665,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       27
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -472,7 +688,7 @@ exports[`Ballot toggles and submits comment 1`] = `
         </div>
       </div>
       <div
-        class="bp3-divider"
+        class="bp3-divider sc-bdVaJa gqVLlZ"
       />
       <div
         class="ballot-main"
@@ -510,7 +726,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       </div>
     </div>
     <div
-      class="sc-bdVaJa kMtymi"
+      class="sc-bwzfXH kYAzKM"
     >
       <div
         class="ballot-side"
@@ -519,7 +735,7 @@ exports[`Ballot toggles and submits comment 1`] = `
         class="ballot-main"
       >
         <form
-          class="sc-bwzfXH imPamb"
+          class="sc-htpNat blpdRK"
         >
           <h3
             class="bp3-heading"
@@ -527,48 +743,62 @@ exports[`Ballot toggles and submits comment 1`] = `
             contest name
           </h3>
           <div
-            class="bp3-divider"
+            class="bp3-divider sc-bdVaJa gqVLlZ"
           />
           <div
-            class="sc-gqjmRU eYlscI"
+            class="sc-gqjmRU cVeKms"
           >
-            <div
-              class="bp3-button-group bp3-fill bp3-large bp3-vertical"
+            <button
+              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-VigVT kGCCTl sc-bZQynM lbThrI"
+              disabled=""
+              tabindex="-1"
+              type="button"
             >
-              <button
-                class="bp3-button bp3-disabled bp3-fill bp3-large bp3-intent-primary sc-bZQynM hJohEA sc-ifAKCX kKfkZO"
-                disabled=""
-                tabindex="-1"
-                type="button"
+              <span
+                class="bp3-button-text"
               >
-                <span
-                  class="bp3-button-text"
-                >
-                  Yes/For
-                </span>
-              </button>
-              <button
-                class="bp3-button"
-                type="button"
+                choice one
+              </span>
+            </button>
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
+            >
+              <span
+                class="bp3-icon bp3-icon-edit"
+                icon="edit"
               >
-                <span
-                  class="bp3-button-text"
+                <svg
+                  data-icon="edit"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
                 >
-                  Edit
-                </span>
-              </button>
-            </div>
+                  <desc>
+                    edit
+                  </desc>
+                  <path
+                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+              <span
+                class="bp3-button-text"
+              >
+                Edit
+              </span>
+            </button>
           </div>
           <p>
-            COMMENT: 
-            a test comment
+            COMMENT: a test comment
           </p>
         </form>
         <div
-          class="sc-bxivhb dewsOl"
+          class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-intent-success sc-ifAKCX kKfkZO"
+            class="bp3-button bp3-intent-success sc-bZQynM lbThrI"
             type="submit"
           >
             <span

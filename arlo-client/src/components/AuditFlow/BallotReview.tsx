@@ -1,28 +1,25 @@
 import React from 'react'
-import { H3, Divider, Button, ButtonGroup } from '@blueprintjs/core'
+import { H3, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IReview } from '../../types'
-import { BallotRow, FormBlock, ProgressActions } from './Atoms'
+import { BallotRow, FormBlock, ProgressActions, FlushDivider } from './Atoms'
 import FormButton from '../Form/FormButton'
-import BlockRadio from './BlockRadio'
 
 const Wrapper = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   padding: 20px 0;
   @media (max-width: 775px) {
     flex-direction: column;
   }
 `
 
-const SingleBlockRadio = styled(BlockRadio)`
-  &.bp3-control.bp3-radio {
-    margin: 0;
-  }
+const LockedButton = styled(FormButton)`
+  text-align: center;
 `
 
 interface IProps {
-  contest: string
+  contestName: string
   goAudit: () => void
   review: IReview
   nextBallot: () => void
@@ -31,7 +28,7 @@ interface IProps {
 }
 
 const BallotReview: React.FC<IProps> = ({
-  contest,
+  contestName,
   goAudit,
   review: { vote, comment },
   review,
@@ -51,15 +48,19 @@ const BallotReview: React.FC<IProps> = ({
       <div className="ballot-side"></div>
       <div className="ballot-main">
         <FormBlock>
-          <H3>{contest}</H3>
-          <Divider />
+          <H3>{contestName}</H3>
+          <FlushDivider />
           <Wrapper>
-            <ButtonGroup fill large vertical>
-              <SingleBlockRadio value={completeVote} locked />
-              <Button onClick={goAudit}>Edit</Button>
-            </ButtonGroup>
+            {/* <ButtonGroup fill large vertical> */}
+            <LockedButton disabled large intent="primary">
+              {completeVote}
+            </LockedButton>
+            <Button icon="edit" minimal onClick={goAudit}>
+              Edit
+            </Button>
+            {/* </ButtonGroup> */}
           </Wrapper>
-          <p>COMMENT: {comment}</p>
+          <p>{comment && `COMMENT: ${comment}`}</p>
         </FormBlock>
         <ProgressActions>
           <FormButton type="submit" onClick={handleSubmit} intent="success">

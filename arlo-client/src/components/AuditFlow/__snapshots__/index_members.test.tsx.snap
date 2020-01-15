@@ -3,7 +3,7 @@
 exports[`AuditFlow initial load fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <h1
       class="bp3-heading"
@@ -19,17 +19,17 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
        below, then click "Next" to proceed.
     </p>
     <div
-      class="sc-bxivhb cfvxmq"
+      class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-htpNat fysvnw"
+        class="bp3-heading sc-bxivhb jFEWwS"
       />
       <form>
         <div
-          class="sc-ifAKCX iKQdjg"
+          class="sc-EHOje gNDuQv"
         >
           <h3
-            class="bp3-heading sc-bZQynM vxpym"
+            class="bp3-heading sc-gzVnrw hYCxik"
           >
             Audit Board Member
           </h3>
@@ -37,12 +37,12 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
             for="[0]name"
           >
             <span
-              class="sc-htoDjs flCEIS"
+              class="sc-dnqmqq kSLuZR"
             >
               Full Name
             </span>
             <input
-              class="sc-dnqmqq jyHOFs"
+              class="sc-iwsKbI jnBmwk"
               id="[0]name"
               name="[0]name"
               value=""
@@ -50,7 +50,7 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
           </label>
           <div>
             <span
-              class="sc-htoDjs flCEIS"
+              class="sc-dnqmqq kSLuZR"
             >
               Party Affiliation 
               <i>
@@ -109,6 +109,19 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
                   class="bp3-control-indicator"
                 />
                 Independent/Unaffiliated
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[0]affiliation"
+                  type="radio"
+                  value="OTH"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Other
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -128,10 +141,10 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
           </div>
         </div>
         <div
-          class="sc-ifAKCX iKQdjg"
+          class="sc-EHOje gNDuQv"
         >
           <h3
-            class="bp3-heading sc-bZQynM vxpym"
+            class="bp3-heading sc-gzVnrw hYCxik"
           >
             Audit Board Member
           </h3>
@@ -139,12 +152,12 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
             for="[1]name"
           >
             <span
-              class="sc-htoDjs flCEIS"
+              class="sc-dnqmqq kSLuZR"
             >
               Full Name
             </span>
             <input
-              class="sc-dnqmqq jyHOFs"
+              class="sc-iwsKbI jnBmwk"
               id="[1]name"
               name="[1]name"
               value=""
@@ -152,7 +165,7 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
           </label>
           <div>
             <span
-              class="sc-htoDjs flCEIS"
+              class="sc-dnqmqq kSLuZR"
             >
               Party Affiliation 
               <i>
@@ -211,6 +224,19 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
                   class="bp3-control-indicator"
                 />
                 Independent/Unaffiliated
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[1]affiliation"
+                  type="radio"
+                  value="OTH"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Other
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -230,7 +256,7 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
           </div>
         </div>
         <button
-          class="bp3-button bp3-intent-primary sc-gzVnrw eLDrzZ"
+          class="bp3-button bp3-intent-primary sc-htoDjs eellYq"
           type="button"
         >
           <span
@@ -248,7 +274,7 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
 exports[`AuditFlow initial load renders correctly 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <div
       class="bp3-spinner"
@@ -283,7 +309,7 @@ exports[`AuditFlow initial load renders correctly 1`] = `
 exports[`AuditFlow initial load renders member form 1`] = `
 <div>
   <div
-    class="sc-eNQAEJ jDJHSN"
+    class="sc-hMqMXs dhuBfg"
   >
     <h1
       class="bp3-heading"
@@ -299,17 +325,17 @@ exports[`AuditFlow initial load renders member form 1`] = `
        below, then click "Next" to proceed.
     </p>
     <div
-      class="sc-bxivhb cfvxmq"
+      class="sc-ifAKCX dUfgxM"
     >
       <h2
-        class="bp3-heading sc-htpNat fysvnw"
+        class="bp3-heading sc-bxivhb jFEWwS"
       />
       <form>
         <div
-          class="sc-ifAKCX iKQdjg"
+          class="sc-EHOje gNDuQv"
         >
           <h3
-            class="bp3-heading sc-bZQynM vxpym"
+            class="bp3-heading sc-gzVnrw hYCxik"
           >
             Audit Board Member
           </h3>
@@ -317,12 +343,12 @@ exports[`AuditFlow initial load renders member form 1`] = `
             for="[0]name"
           >
             <span
-              class="sc-htoDjs flCEIS"
+              class="sc-dnqmqq kSLuZR"
             >
               Full Name
             </span>
             <input
-              class="sc-dnqmqq jyHOFs"
+              class="sc-iwsKbI jnBmwk"
               id="[0]name"
               name="[0]name"
               value=""
@@ -330,7 +356,7 @@ exports[`AuditFlow initial load renders member form 1`] = `
           </label>
           <div>
             <span
-              class="sc-htoDjs flCEIS"
+              class="sc-dnqmqq kSLuZR"
             >
               Party Affiliation 
               <i>
@@ -389,6 +415,19 @@ exports[`AuditFlow initial load renders member form 1`] = `
                   class="bp3-control-indicator"
                 />
                 Independent/Unaffiliated
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[0]affiliation"
+                  type="radio"
+                  value="OTH"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Other
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -408,10 +447,10 @@ exports[`AuditFlow initial load renders member form 1`] = `
           </div>
         </div>
         <div
-          class="sc-ifAKCX iKQdjg"
+          class="sc-EHOje gNDuQv"
         >
           <h3
-            class="bp3-heading sc-bZQynM vxpym"
+            class="bp3-heading sc-gzVnrw hYCxik"
           >
             Audit Board Member
           </h3>
@@ -419,12 +458,12 @@ exports[`AuditFlow initial load renders member form 1`] = `
             for="[1]name"
           >
             <span
-              class="sc-htoDjs flCEIS"
+              class="sc-dnqmqq kSLuZR"
             >
               Full Name
             </span>
             <input
-              class="sc-dnqmqq jyHOFs"
+              class="sc-iwsKbI jnBmwk"
               id="[1]name"
               name="[1]name"
               value=""
@@ -432,7 +471,7 @@ exports[`AuditFlow initial load renders member form 1`] = `
           </label>
           <div>
             <span
-              class="sc-htoDjs flCEIS"
+              class="sc-dnqmqq kSLuZR"
             >
               Party Affiliation 
               <i>
@@ -491,6 +530,19 @@ exports[`AuditFlow initial load renders member form 1`] = `
                   class="bp3-control-indicator"
                 />
                 Independent/Unaffiliated
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[1]affiliation"
+                  type="radio"
+                  value="OTH"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Other
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -510,7 +562,7 @@ exports[`AuditFlow initial load renders member form 1`] = `
           </div>
         </div>
         <button
-          class="bp3-button bp3-intent-primary sc-gzVnrw eLDrzZ"
+          class="bp3-button bp3-intent-primary sc-htoDjs eellYq"
           type="button"
         >
           <span

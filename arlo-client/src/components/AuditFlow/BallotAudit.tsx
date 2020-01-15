@@ -1,25 +1,29 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Formik, FormikProps, getIn, Field } from 'formik'
-import { H4, H3, Divider, Button } from '@blueprintjs/core'
-import { BallotRow, FormBlock, RadioGroupFlex, ProgressActions } from './Atoms'
+import { H4, H3, Button } from '@blueprintjs/core'
+import {
+  BallotRow,
+  FormBlock,
+  RadioGroupFlex,
+  ProgressActions,
+  FlushDivider,
+} from './Atoms'
 import BlockRadio from './BlockRadio'
 import FormButton from '../Form/FormButton'
-import { IBallot, IReview } from '../../types'
+import { IReview, IContest } from '../../types'
 import FormField from '../Form/FormField'
 
 interface IProps {
-  contest: string
+  contest: IContest
   goReview: () => void
   review: IReview
-  setReview: (arg0: {
-    vote: IBallot['vote']
-    comment: IBallot['comment']
-  }) => void
+  setReview: (arg0: { vote: string; comment: string }) => void
   previousBallot: () => void
 }
 
 interface IOptions {
-  vote: IBallot['vote']
+  vote: string
+  comment: string
 }
 
 const BallotAudit: React.FC<IProps> = ({
@@ -29,7 +33,10 @@ const BallotAudit: React.FC<IProps> = ({
   setReview,
   previousBallot,
 }: IProps) => {
-  // const [commenting, setCommenting] = useState(!!review.comment)
+  const [commenting, setCommenting] = useState(false)
+  useEffect(() => {
+    setCommenting(!!review.comment)
+  }, [review.comment])
   return (
     <BallotRow>
       <div className="ballot-side"></div>
@@ -65,15 +72,15 @@ const BallotAudit: React.FC<IProps> = ({
               handleChange: (e: React.ChangeEvent<HTMLInputElement>) =>
                 setFieldValue('vote', e.currentTarget.value),
             }
-            // const toggleCommenting = () => {
-            //   setCommenting(!commenting)
-            //   // setFieldValue('comment', '')
-            // }
+            const toggleCommenting = () => {
+              setCommenting(!commenting)
+              setFieldValue('comment', '')
+            }
             return (
               <>
                 <FormBlock>
-                  <H3>{contest}</H3>
-                  <Divider />
+                  <H3>{contest.name}</H3>
+                  <FlushDivider />
                   <RadioGroupFlex
                     name="vote"
                     onChange={
@@ -82,40 +89,40 @@ const BallotAudit: React.FC<IProps> = ({
                     } // required by blueprintjs but we're implementing on BlockRadio instead
                     selectedValue={getIn(values, 'vote')}
                   >
+                    {contest.choices.map(c => (
+                      <BlockRadio
+                        key={c.id}
+                        {...radioProps}
+                        checked={getIn(values, 'vote') === c.name}
+                        value={c.name}
+                      />
+                    ))}
                     <BlockRadio
                       {...radioProps}
-                      checked={getIn(values, 'vote') === 'YES'}
-                      value="YES"
+                      gray
+                      checked={
+                        getIn(values, 'vote') === "Audit board can't agree"
+                      }
+                      value="Audit board can't agree"
                     />
                     <BlockRadio
                       {...radioProps}
-                      checked={getIn(values, 'vote') === 'NO'}
-                      value="NO"
-                    />
-                    <BlockRadio
-                      {...radioProps}
-                      checked={getIn(values, 'vote') === 'NO_CONSENSUS'}
-                      value="NO_CONSENSUS"
-                    />
-                    <BlockRadio
-                      {...radioProps}
-                      checked={getIn(values, 'vote') === 'NO_VOTE'}
-                      value="NO_VOTE"
+                      gray
+                      checked={getIn(values, 'vote') === 'Blank vote/no mark'}
+                      value="Blank vote/no mark"
                     />
                   </RadioGroupFlex>
-                  {/* <Button minimal icon="edit" onClick={toggleCommenting}>
-                    {commenting ? 'Remove comment' : review.comment ? 'Edit Comment' : 'Add comment'}
+                  <Button minimal icon="edit" onClick={toggleCommenting}>
+                    {commenting ? 'Remove comment' : 'Add comment'}
                   </Button>
-                  {commenting ? ( */}
-                  <Field
-                    name="comment"
-                    type="textarea"
-                    data-testid="comment-textarea"
-                    component={FormField}
-                  />
-                  {/* ) : (
-                  <p>{review.comment}</p>
-                  )} */}
+                  {commenting && (
+                    <Field
+                      name="comment"
+                      type="textarea"
+                      data-testid="comment-textarea"
+                      component={FormField}
+                    />
+                  )}
                 </FormBlock>
                 <ProgressActions>
                   <FormButton

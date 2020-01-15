@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
 import { H1, Button } from '@blueprintjs/core'
@@ -18,6 +18,10 @@ const RightWrapper = styled.div`
 
 const PaddedCell = styled(Cell)`
   padding: 3px 5px;
+`
+
+const ShortTable = styled(Table)`
+  height: 500px;
 `
 
 // const ActionWrapper = styled.div` // commented out until feature is used
@@ -99,22 +103,27 @@ const BoardTable: React.FC<IProps> = ({
     }
   }
 
-  const columnWidths = (length: number): (number | null)[] => {
+  const columnWidths = (): (number | undefined)[] => {
     const container = document.getElementsByClassName(
       'board-table-container'
     )[0]
-    if (!container) return Array(length).fill(null) // eslint-disable-line no-null/no-null
+    /* istanbul ignore next */
+    if (!container) return Array(KEYS.length).fill(undefined)
     const containerSize = container.clientWidth
     /* istanbul ignore next */
-    if (containerSize < 775) return Array(length).fill(80)
-    return Array(length).fill(containerSize / length)
+    if (containerSize < 500) return Array(KEYS.length).fill(80)
+    return Array(KEYS.length).fill(containerSize / KEYS.length)
   }
+
+  const [cols, setCols] = useState(Array(KEYS.length).fill(undefined))
+
+  useEffect(() => {
+    setCols(columnWidths())
+  }, [ballots])
 
   const roundComplete = ballots && ballots.every(b => b.status === 'AUDITED')
 
-  let numRows = 10
-  /* istanbul ignore next */
-  if (ballots && ballots.length < 10) numRows = ballots.length
+  const unauditedBallot = ballots.find(b => !b.status)
 
   return (
     <div className="board-table-container">
@@ -129,11 +138,12 @@ const BoardTable: React.FC<IProps> = ({
         {roundComplete ? (
           <Button intent="primary">Review Complete - Finish Round</Button>
         ) : (
-          ballots && (
+          ballots &&
+          unauditedBallot && (
             <Link
               to={
                 url +
-                `/round/1/batch/${ballots[0].batch.id}/ballot/${ballots[0].position}`
+                `/round/1/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
               }
               className="bp3-button bp3-intent-primary"
             >
@@ -149,10 +159,10 @@ const BoardTable: React.FC<IProps> = ({
           </>
         )}
       </ActionWrapper> */}
-      <Table
-        numRows={numRows}
+      <ShortTable
+        numRows={ballots.length}
         defaultRowHeight={30}
-        columnWidths={columnWidths(5)}
+        columnWidths={cols}
         enableRowHeader={false}
       >
         <Column
@@ -164,7 +174,7 @@ const BoardTable: React.FC<IProps> = ({
         <Column key="status" name="Status" cellRenderer={renderCell} />
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="round" name="Audit Round" cellRenderer={renderCell} />
-      </Table>
+      </ShortTable>
     </div>
   )
 }
