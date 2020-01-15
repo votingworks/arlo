@@ -1,4 +1,4 @@
-import os, datetime, csv, io, math, json, uuid, locale, re
+import os, datetime, csv, io, math, json, uuid, locale, re, hmac
 from flask import Flask, jsonify, request, Response, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
@@ -286,7 +286,9 @@ if ADMIN_PASSWORD:
 
     @auth.verify_password
     def verify_password(username, password):
-        return password == ADMIN_PASSWORD
+        # use a comparison method that prevents timing attacks:
+        # https://securitypitfalls.wordpress.com/2018/08/03/constant-time-compare-in-python/
+        return password is not None and hmac.compare_digest(password, ADMIN_PASSWORD)
     
     @app.route('/admin', methods=["GET"])
     @auth.login_required
@@ -398,7 +400,7 @@ def audit_basic_update(election_id):
                              id = contest['id'],
                              name = contest['name'],
                              total_ballots_cast = contest['totalBallotsCast'],
-                             num_winners = contest['winners'],
+                             num_winners = contest['numWinners'],
                              votes_allowed = contest['votesAllowed'])
         db.session.add(contest_obj)
 
