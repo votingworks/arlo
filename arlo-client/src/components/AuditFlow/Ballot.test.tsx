@@ -22,7 +22,7 @@ const contest = {
   ],
   id: 'contest-1',
   name: 'contest name',
-  winners: '1',
+  numWinners: '1',
   votesAllowed: '1',
   totalBallotsCast: '2123',
 }
