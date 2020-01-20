@@ -753,14 +753,23 @@ def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list', methods=["GET"])
 def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     election = get_election(election_id)
-    csv_io = io.StringIO()
-    retrieval_list_writer = csv.writer(csv_io)
-    retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Ticket Numbers","Audit Board"])
 
     # check the jurisdiction and round
     jurisdiction = Jurisdiction.query.filter_by(election_id = election.id, id = jurisdiction_id).one()
     round = Round.query.filter_by(election_id = election.id, round_num = round_num).one()
 
+    csv_io = io.StringIO()
+    retrieval_list_writer = csv.writer(csv_io)
+    retrieval_list_writer.writerow(["Batch Name","Ballot Number","Storage Location","Tabulator","Ticket Numbers","Already Audited","Audit Board"])    
+
+    # Get previously sampled ballots as a separate query for clarity
+    # (self joins are cool but they're not super clear)
+    previous_ballots_query = SampledBallotDraw.query \
+                        .join(SampledBallotDraw.round).filter(Round.round_num < round_num) \
+                        .join(SampledBallotDraw.batch).filter_by(jurisdiction_id = jurisdiction_id)  \
+                        .values(Batch.name, SampledBallotDraw.ballot_position)
+    previous_ballots = {(batch_name, ballot_position) for batch_name, ballot_position in previous_ballots_query}
+                                                      
     # Get deduped sampled ballots
     ballots = SampledBallotDraw.query.filter_by(round_id = round.id) \
                     .join(SampledBallotDraw.batch).filter_by(jurisdiction_id = jurisdiction_id)  \
@@ -775,7 +784,8 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
                                             aggregate_order_by(",", SampledBallotDraw.ticket_number)))
 
     for batch_id, position, batch_name, storage_location, tabulator, audit_board, ticket_numbers in ballots:
-        retrieval_list_writer.writerow([batch_name, position, storage_location, tabulator, ticket_numbers, audit_board])
+        previously_audited = "Y" if (batch_name, position) in previous_ballots else "N"
+        retrieval_list_writer.writerow([batch_name, position, storage_location, tabulator, ticket_numbers, previously_audited, audit_board])
 
     response = Response(csv_io.getvalue())
     response.headers['Content-Disposition'] = f'attachment; filename="ballot-retrieval-{election_timestamp_name(election)}.csv"'
