@@ -175,17 +175,17 @@ def sample_ballots(election, round):
     batches_to_ballots = {}
     # Build batch - batch_size map
     for item in sample:
-        batch_id, ballot_position = item[1] 
+        batch_name, ballot_position = item[1]
         sample_number = item[2]
         ticket_number = item[0]
 
-        if batch_id in batch_sizes:
+        if batch_name in batch_sizes:
             if sample_number == 1: # if we've already seen it, it doesn't affect batch size
-                batch_sizes[batch_id] += 1
-            batches_to_ballots[batch_id].append((ballot_position, ticket_number, sample_number))
+                batch_sizes[batch_name] += 1
+            batches_to_ballots[batch_name].append((ballot_position, ticket_number, sample_number))
         else:
-            batch_sizes[batch_id] = 1
-            batches_to_ballots[batch_id] = [(ballot_position, ticket_number, sample_number)]
+            batch_sizes[batch_name] = 1
+            batches_to_ballots[batch_name] = [(ballot_position, ticket_number, sample_number)]
 
 
     # Create the buckets and initially assign batches
@@ -199,14 +199,16 @@ def sample_ballots(election, round):
     # read audit board and batch info out
     for audit_board_num, bucket in enumerate(bl.buckets):
         audit_board = audit_boards[audit_board_num]
-        for batch_id in bucket.batches:
+        for batch_name in bucket.batches:
 
-            for item in batches_to_ballots[batch_id]:
+            for item in batches_to_ballots[batch_name]:
                 ballot_position, ticket_number, sample_number = item
 
                 # sampler is 0-indexed, we're 1-indexing here                
                 ballot_position += 1
 
+                batch_id = batch_id_from_name[batch_name]
+                
                 if sample_number == 1:
                     sampled_ballot = SampledBallot(
                         batch_id = batch_id,
@@ -762,7 +764,11 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
                     .add_entity(Batch).add_entity(AuditBoard) \
                     .group_by(Batch.name, Batch.id, Batch.storage_location, Batch.tabulator, AuditBoard.name)\
                     .group_by(SampledBallotDraw.ballot_position) \
-                    .values(Batch.id, SampledBallotDraw.ballot_position, Batch.name, Batch.storage_location, Batch.tabulator, AuditBoard.name, func.string_agg(SampledBallotDraw.ticket_number, ","))
+                    .order_by(AuditBoard.name, Batch.name, SampledBallotDraw.ballot_position) \
+                    .values(Batch.id, SampledBallotDraw.ballot_position, Batch.name,
+                            Batch.storage_location, Batch.tabulator, AuditBoard.name,
+                            func.string_agg(SampledBallotDraw.ticket_number,
+                                            aggregate_order_by(",", SampledBallotDraw.ticket_number)))
 
     for batch_id, position, batch_name, storage_location, tabulator, audit_board, ticket_numbers in ballots:
         retrieval_list_writer.writerow([batch_name, position, storage_location, tabulator, ticket_numbers, audit_board])
