@@ -435,10 +435,14 @@ def run_election_reset(client, election_id):
     assert status["jurisdictions"] == []
     assert status["rounds"] == []        
 
-def get_num_ballots_from_retrieval_list(rv):
+def get_lines_from_retrieval_list(rv):
     lines = csv.DictReader(io.StringIO(rv.data.decode('utf-8')))
+    return ([line for line in lines])
+
+def get_num_ballots_from_retrieval_list(rv):
+    lines = get_lines_from_retrieval_list(rv)
     return sum([len(line['Ticket Numbers'].split(',')) for line in lines])
-    
+
 def test_small_election(client):
     rv = post_json(client, '/election/new', {})
     election_id = json.loads(rv.data)['electionId']
@@ -737,8 +741,12 @@ def test_multi_round_audit(client):
 
     # Count the ticket numbers
     num_ballots = get_num_ballots_from_retrieval_list(rv)
-
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
+
+    # Check the already-retrieved
+    lines = get_lines_from_retrieval_list(rv)
+    already_audited = [(l['Batch Name'], l['Ballot Number']) for l in lines if l['Already Audited'] == 'Y']
+    assert already_audited == EXPECTED_ALREADY_AUDITED_BALLOTS    
     
 @pytest.mark.quick
 def test_multi_winner_election(client):
@@ -1103,6 +1111,8 @@ def test_audit_board(client):
         { 'name': 'Leia Organa', 'affiliation': 'REB' }
     ]
 
+
+EXPECTED_ALREADY_AUDITED_BALLOTS = [('112', '146'), ('136', '118'), ('240', '174'), ('327', '85'), ('341', '52'), ('434', '101'), ('71', '46'), ('145', '134'), ('146', '152'), ('189', '26'), ('197', '150'), ('22', '103'), ('222', '4'), ('227', '147'), ('271', '6'), ('275', '162'), ('281', '30'), ('31', '13'), ('323', '175'), ('354', '182'), ('446', '59'), ('46', '44'), ('483', '13'), ('60', '11')]
 
 EXPECTED_RETRIEVAL_LIST = """Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board
 2,1,,,0.051285890,N,Audit Board #1
