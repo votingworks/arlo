@@ -2,7 +2,6 @@ import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { JSDOM } from 'jsdom'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import { statusStates, ballotManifest } from './_mocks'
 import { regexpEscape } from '../testUtilities'
@@ -473,31 +472,5 @@ describe('SelectBallotsToAudit', () => {
     )
 
     expect(queryAllByText('30 samples').length).toBe(1)
-  })
-
-  it('opens print window', async () => {
-    const dom = new JSDOM()
-    dom.window.focus = jest.fn()
-    dom.window.print = jest.fn()
-    const openSpy = jest.spyOn(window, 'open').mockReturnValue(dom.window)
-    const { getAllByTitle } = render(
-      <Router>
-        <SelectBallotsToAudit
-          audit={statusStates[4]}
-          isLoading={false}
-          setIsLoading={jest.fn()}
-          updateAudit={jest.fn()}
-          getStatus={jest.fn()}
-          electionId="1"
-        />
-      </Router>
-    )
-
-    fireEvent.click(getAllByTitle('Click to print')[0], { bubbles: true })
-    await wait(() => {
-      expect(openSpy).toBeCalled()
-      expect(dom.window.focus).toBeCalledTimes(1)
-      expect(dom.window.print).toBeCalledTimes(1)
-    })
   })
 })
