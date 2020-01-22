@@ -410,7 +410,7 @@ export const statusStates: IAudit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
-        winners: '1',
+        numWinners: '1',
         votesAllowed: '1',
       },
     ],
