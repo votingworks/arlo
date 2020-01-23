@@ -6,8 +6,8 @@ import {
   NavbarHeading,
   Alignment,
 } from '@blueprintjs/core'
-import { Route } from 'react-router'
-import { useAuth0 } from '../react-auth0-spa'
+import { Route } from 'react-router-dom'
+import { useAuth0, IAuth0Context } from '../react-auth0-spa'
 import FormButton from './Form/FormButton'
 
 const ButtonBar = styled.div`
@@ -25,7 +25,11 @@ const Nav = styled(Navbar)`
 `
 
 const Header: React.FC<{}> = () => {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0()
+  const {
+    isAuthenticated,
+    loginWithRedirect,
+    logout,
+  } = useAuth0() as IAuth0Context
   return (
     <Nav fixedToTop>
       <NavbarGroup align={Alignment.LEFT}>

@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { RouteComponentProps } from 'react-router-dom'
 import FormButton from './Form/FormButton'
-import { useAuth0 } from '../react-auth0-spa'
+import { useAuth0, IAuth0Context } from '../react-auth0-spa'
 import { api, checkAndToast } from './utilities'
 import { ICreateAuditParams, IErrorResponse } from '../types'
 
@@ -24,7 +24,7 @@ const Wrapper = styled.div`
 
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const [loading, setLoading] = useState(false)
-  const { isAuthenticated, loginWithRedirect } = useAuth0()
+  const { isAuthenticated, loginWithRedirect } = useAuth0() as IAuth0Context
   const onClick = async () => {
     try {
       setLoading(true)
@@ -64,7 +64,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
           intent="primary"
           fill
           large
-          onClick={() => loginWithRedirect()}
+          onClick={() => loginWithRedirect({})}
           loading={loading}
           disabled={loading}
         >

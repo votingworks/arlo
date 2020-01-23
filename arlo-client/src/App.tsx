@@ -8,7 +8,7 @@ import AuditForms from './components/AuditForms'
 import AuditFlow from './components/AuditFlow'
 import CreateAudit from './components/CreateAudit'
 import 'react-toastify/dist/ReactToastify.css'
-import { useAuth0 } from './react-auth0-spa'
+import { useAuth0, IAuth0Context } from './react-auth0-spa'
 import PrivateRoute from './components/PrivateRoute'
 
 const Main = styled.div`
@@ -20,7 +20,7 @@ const Main = styled.div`
 `
 
 const App: React.FC = () => {
-  const { loading } = useAuth0()
+  const { loading } = useAuth0() as IAuth0Context
   return (
     <Router>
       <ToastContainer />

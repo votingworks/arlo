@@ -1,5 +1,5 @@
 const jsExtensions = ['.js', '.jsx']
-const tsExtensions = ['.ts', '.tsx']
+const tsExtensions = ['.ts', '.tsx', '.d.ts']
 const allExtensions = jsExtensions.concat(tsExtensions)
 
 module.exports = {
@@ -92,4 +92,12 @@ module.exports = {
     '@typescript-eslint/no-object-literal-type-assertion': 'off',
     '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
   },
+  overrides: [
+    {
+        "files": ["**/*.tsx"],
+        "rules": {
+            "react/prop-types": "off"
+        }
+    }
+]
 }
