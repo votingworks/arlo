@@ -27,7 +27,7 @@ const App: React.FC = () => {
       <Main>
         <Route path="/" component={Header} />
         {loading ? (
-          <p>loading</p>
+          <p>loading</p> // TODO: implement centered spinner
         ) : (
           <Switch>
             <Route exact path="/" component={CreateAudit} />

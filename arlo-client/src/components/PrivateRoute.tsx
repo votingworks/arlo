@@ -28,7 +28,6 @@ const PrivateRoute = ({ component, path, ...rest }: RouteProps) => {
     isAuthenticated === true && component
       ? React.createElement(component, props)
       : null // eslint-disable-line no-null/no-null
-
   return <Route path={path} render={render} {...rest} />
 }
 
