@@ -865,7 +865,8 @@ def auditboard_passphrase(passphrase):
 # React App
 @app.route('/')
 @app.route('/election/<election_id>')
-def serve(election_id=None):
+@app.route('/election/<election_id>/board/<board_id>')
+def serve(election_id=None, board_id=None):
     return app.send_static_file('index.html')
 
 @app.errorhandler(InternalServerError)

@@ -32,6 +32,13 @@ def client():
 def test_index(client):
     rv = client.get('/')
     assert b'Arlo (by VotingWorks)' in rv.data
+
+    rv = client.get('/election/1234')
+    assert b'Arlo (by VotingWorks)' in rv.data
+
+    rv = client.get('/election/1234/board/5677')
+    assert b'Arlo (by VotingWorks)' in rv.data
+    
     
 def test_whole_audit_flow(client):
     rv = post_json(client, '/election/new', {})
