@@ -37,3 +37,7 @@
 [] Code is intuitively structured following a Separation of Concerns
 
 [] No class components; only functional components (using Hooks as needed)
+
+*Workflow*
+
+[] Do an interactive rebase or a rebase 
