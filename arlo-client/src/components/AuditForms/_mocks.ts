@@ -486,6 +486,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    online: true,
   },
 ]
 
