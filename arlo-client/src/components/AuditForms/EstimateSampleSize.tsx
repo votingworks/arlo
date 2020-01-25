@@ -183,7 +183,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
   const handlePost = async (values: IEstimateSampleSizeValues) => {
     const data = {
       name: values.name,
-      // online: values.online,
+      online: values.online,
       randomSeed: values.randomSeed,
       riskLimit: parseNumber(values.riskLimit),
       contests: values.contests.map(contest => ({

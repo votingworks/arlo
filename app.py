@@ -308,6 +308,7 @@ def audit_status(election_id = None):
 
     return jsonify(
         name = election.name,
+        online = election.online,
         riskLimit = election.risk_limit,
         randomSeed = election.random_seed,
         contests = [
@@ -389,6 +390,7 @@ def audit_basic_update(election_id):
     election.name = info['name']
     election.risk_limit = info['riskLimit']
     election.random_seed = info['randomSeed']
+    election.online = info['online']
 
     errors = []
     db.session.query(TargetedContest).filter_by(election_id = election.id).delete()
