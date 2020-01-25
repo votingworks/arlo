@@ -17,6 +17,9 @@ class Election(db.Model):
     meeting_date = db.Column(db.Date, nullable=True)
     risk_limit = db.Column(db.Integer, nullable=True)
     random_seed = db.Column(db.String(100), nullable=True)
+
+    # an election is "online" if every ballot is entered online, vs. offline in a tally sheet.
+    online = db.Column(db.Boolean, nullable=False, default=False)
     
     jurisdictions = relationship('Jurisdiction', backref='election', passive_deletes=True)
     contests = relationship('TargetedContest', backref='election', passive_deletes=True)
