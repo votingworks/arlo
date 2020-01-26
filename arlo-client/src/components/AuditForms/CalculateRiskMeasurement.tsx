@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
-import React from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import jsPDF from 'jspdf'
 import QRCode from 'qrcode.react'
 /* istanbul ignore next */
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
-import { Spinner } from '@blueprintjs/core'
+import { Spinner, ProgressBar } from '@blueprintjs/core'
 import FormSection, {
   FormSectionLabel,
   FormSectionDescription,
@@ -103,22 +103,26 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
   getStatus,
   electionId,
 }: IProps) => {
-  const getBallots = async (r: number): Promise<IBallot[]> => {
-    const round = audit.rounds[r]
-    const response = await api<
-      | {
-          ballots: IBallot[]
-        }
-      | IErrorResponse
-    >(
-      `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/round/${round.id}/ballot-list`
-    )
-    if (checkAndToast(response)) {
-      return []
-    } else {
-      return response.ballots
-    }
-  }
+  const jId = audit.jurisdictions[0].id // for react-hooks/exhaustive-deps rules
+  const getBallots = useCallback(
+    async (r: number): Promise<IBallot[]> => {
+      const round = audit.rounds[r]
+      const response = await api<
+        | {
+            ballots: IBallot[]
+          }
+        | IErrorResponse
+      >(
+        `/election/${electionId}/jurisdiction/${jId}/round/${round.id}/ballot-list`
+      )
+      if (checkAndToast(response)) {
+        return []
+      } else {
+        return response.ballots
+      }
+    },
+    [electionId, jId, audit.rounds]
+  )
 
   const downloadBallotRetrievalList = (id: number, e: React.FormEvent) => {
     e.preventDefault()
@@ -292,6 +296,17 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
     }
   }
 
+  const [ballots, setBallots] = useState<IBallot[]>([])
+  useEffect(() => {
+    ;(async () => {
+      if (audit.online) {
+        const b = await getBallots(audit.rounds.length - 1)
+        setBallots(b)
+      }
+    })()
+  }, [audit.online, audit.rounds.length, getBallots])
+  const completeBallots: number = ballots.filter(b => b.status).length
+
   const roundForms = audit.rounds.map((round: IRound, i: number) => {
     const aggregateContests: AggregateContest[] = audit.contests.reduce(
       (acc: AggregateContest[], contest: IContest) => {
@@ -418,41 +433,55 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
                                   </InlineWrapper>
                                 </InputSection>
                               )}
-                              {!isSubmitted && (
-                                <FormSectionDescription>
-                                  Enter the number of votes recorded for each
-                                  candidate/choice in the audited ballots for
-                                  Round {i + 1}, Contest {j + 1}
-                                </FormSectionDescription>
+                              {audit.online ? (
+                                <ProgressBar
+                                  value={
+                                    i + 1 < audit.rounds.length
+                                      ? 1
+                                      : completeBallots / ballots.length
+                                  }
+                                  animate={i + 1 === audit.rounds.length}
+                                  intent="primary"
+                                />
+                              ) : (
+                                <>
+                                  {!isSubmitted && (
+                                    <FormSectionDescription>
+                                      Enter the number of votes recorded for
+                                      each candidate/choice in the audited
+                                      ballots for Round {i + 1}, Contest {j + 1}
+                                    </FormSectionDescription>
+                                  )}
+                                  <InputSection>
+                                    {Object.keys(contest).map(choiceId => {
+                                      const name = aggregateContests[
+                                        j
+                                      ].choices.find(
+                                        (candidate: ICandidate) =>
+                                          candidate.id === choiceId
+                                      )!.name
+                                      return (
+                                        <React.Fragment key={choiceId}>
+                                          <InlineWrapper>
+                                            <InputLabel
+                                              htmlFor={`round-${i}-contest-${j}-choice-${choiceId}`}
+                                            >
+                                              {name}
+                                            </InputLabel>
+                                            <Field
+                                              id={`round-${i}-contest-${j}-choice-${choiceId}`}
+                                              name={`contests[${j}][${choiceId}]`}
+                                              validate={testNumber()}
+                                              component={FormField}
+                                              disabled={isSubmitted}
+                                            />
+                                          </InlineWrapper>
+                                        </React.Fragment>
+                                      )
+                                    })}
+                                  </InputSection>
+                                </>
                               )}
-                              <InputSection>
-                                {Object.keys(contest).map(choiceId => {
-                                  const name = aggregateContests[
-                                    j
-                                  ].choices.find(
-                                    (candidate: ICandidate) =>
-                                      candidate.id === choiceId
-                                  )!.name
-                                  return (
-                                    <React.Fragment key={choiceId}>
-                                      <InlineWrapper>
-                                        <InputLabel
-                                          htmlFor={`round-${i}-contest-${j}-choice-${choiceId}`}
-                                        >
-                                          {name}
-                                        </InputLabel>
-                                        <Field
-                                          id={`round-${i}-contest-${j}-choice-${choiceId}`}
-                                          name={`contests[${j}][${choiceId}]`}
-                                          validate={testNumber()}
-                                          component={FormField}
-                                          disabled={isSubmitted}
-                                        />
-                                      </InlineWrapper>
-                                    </React.Fragment>
-                                  )
-                                })}
-                              </InputSection>
                             </>
                           </FormSection>
                         )
@@ -479,6 +508,9 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
                       type="button"
                       intent="primary"
                       onClick={handleSubmit}
+                      disabled={
+                        audit.online && completeBallots < ballots.length
+                      }
                     >
                       Calculate Risk Measurement
                     </FormButton>
