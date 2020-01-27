@@ -25,7 +25,7 @@ describe('create audit page', () => {
 describe('form one', () => {
   it('should submit', () => {
     start()
-    fillFormOne()
+    fillFormOne(false)
     submitFormOne()
   })
 })
@@ -33,7 +33,7 @@ describe('form one', () => {
 describe('form two', () => {
   it('should submit', () => {
     start()
-    fillFormOne()
+    fillFormOne(false)
     submitFormOne()
     fillFormTwo()
     submitFormTwo()
@@ -41,7 +41,7 @@ describe('form two', () => {
 
   // it('should accept custom audit board names', () => { // commented out until we decide to add it back in again
   //   start()
-  //   fillFormOne()
+  //   fillFormOne(false)
   //   submitFormOne()
   //   fillFormTwo()
   //   $('input[name="auditNames[0]"]').addValue('First Audit Board')
@@ -53,7 +53,7 @@ describe('form two', () => {
 describe('form three', () => {
   it('should go to the next round', () => {
     start()
-    fillFormOne()
+    fillFormOne(false)
     submitFormOne()
     fillFormTwo()
     submitFormTwo()
@@ -62,7 +62,7 @@ describe('form three', () => {
 
   it('should cycle through several rounds', () => {
     start()
-    fillFormOne()
+    fillFormOne(false)
     submitFormOne()
     fillFormTwo()
     submitFormTwo()
@@ -73,7 +73,7 @@ describe('form three', () => {
 
   it('should complete the audit', () => {
     start()
-    fillFormOne()
+    fillFormOne(false)
     submitFormOne()
     fillFormTwo()
     submitFormTwo()
@@ -87,7 +87,7 @@ describe('form three', () => {
 
   it('should display the same candidates/choices entered in form one', () => {
     start()
-    fillFormOne()
+    fillFormOne(false)
     $('p=Add a new candidate/choice').click()
     $('input[name="contests[0].totalBallotsCast"]').setValue('2436')
     $('input[name="contests[0].choices[2].name"]').addValue('Choice Three')

@@ -1,10 +1,22 @@
 import React from 'react'
-import { render, fireEvent, wait } from '@testing-library/react'
+import {
+  render,
+  fireEvent,
+  wait,
+  act,
+  RenderResult,
+} from '@testing-library/react'
 import { toast } from 'react-toastify'
 import jsPDF from 'jspdf'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
-import { statusStates, dummyBallots } from './_mocks'
+import { statusStates, dummyBallots, incompleteDummyBallots } from './_mocks'
 import * as utilities from '../utilities'
+
+statusStates[3].online = false
+statusStates[4].online = false
+statusStates[5].online = false
+statusStates[6].online = false
+statusStates[7].online = false
 
 jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation()
 
@@ -456,5 +468,45 @@ describe('CalculateRiskMeasurement', () => {
         expect(toastSpy).toBeCalledTimes(1)
       })
     }
+  })
+
+  it('renders online mode progress bar', async () => {
+    statusStates[4].online = true
+    apiMock.mockImplementationOnce(async () => incompleteDummyBallots)
+    let utils: RenderResult
+    await act(async () => {
+      utils = render(
+        <CalculateRiskMeasurement
+          audit={statusStates[4]}
+          isLoading
+          setIsLoading={setIsLoadingMock}
+          updateAudit={updateAuditMock}
+          getStatus={getStatusMock}
+          electionId="1"
+        />
+      )
+    })
+    const { container } = utils!
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders online mode progress bar in multiple rounds', async () => {
+    statusStates[8].online = true
+    apiMock.mockImplementationOnce(async () => incompleteDummyBallots)
+    let utils: RenderResult
+    await act(async () => {
+      utils = render(
+        <CalculateRiskMeasurement
+          audit={statusStates[8]}
+          isLoading
+          setIsLoading={setIsLoadingMock}
+          updateAudit={updateAuditMock}
+          getStatus={getStatusMock}
+          electionId="1"
+        />
+      )
+    })
+    const { container } = utils!
+    expect(container).toMatchSnapshot()
   })
 })

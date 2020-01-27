@@ -10,8 +10,7 @@ export const start = () => {
   $('.bp3-button-text=Create a New Audit').click()
   $('#audit-name').waitForExist(5000)
 }
-
-export const fillFormOne = () => {
+export const fillFormOne = (online: boolean) => {
   $('#audit-name').addValue('Election Name')
   $('input[name="contests[0].name"]').addValue('Contest Name')
   $('input[name="contests[0].choices[0].name"]').addValue('Choice One')
@@ -20,7 +19,7 @@ export const fillFormOne = () => {
   $('input[name="contests[0].choices[1].numVotes"]').addValue('1325')
   $('input[name="contests[0].totalBallotsCast"]').addValue('2123')
   $('#random-seed').addValue('1234567890')
-  $('label.bp3-radio*=Online').click()
+  online && $('label.bp3-radio*=Online').click()
 }
 
 export const submitFormOne = () => {
