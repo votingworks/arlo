@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import AuditForms from './index'
-import { statusStates } from './_mocks'
+import { statusStates, dummyBallots } from './_mocks'
 import * as utilities from '../utilities'
 import { routerTestProps } from '../testUtilities'
 
@@ -133,7 +133,9 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('renders CalculateRiskMeasurement when /audit/status returns round data', async () => {
-    apiMock.mockImplementation(async () => statusStates[4])
+    apiMock
+      .mockImplementationOnce(async () => statusStates[4])
+      .mockImplementationOnce(async () => dummyBallots)
     let utils: RenderResult
     await act(async () => {
       utils = render(
@@ -151,7 +153,7 @@ describe('RiskLimitingAuditForm', () => {
     expect(formThree).toBeTruthy()
     expect(container).toMatchSnapshot()
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock).toBeCalledTimes(2)
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/
       )
