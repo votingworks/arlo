@@ -7,11 +7,11 @@ import { useAuth0, IAuth0Context } from '../react-auth0-spa'
 import { api, checkAndToast } from './utilities'
 import { ICreateAuditParams, IErrorResponse } from '../types'
 
-const Button = styled(FormButton)`
+export const Button = styled(FormButton)`
   margin: 65px 0;
 `
 
-const Wrapper = styled.div`
+export const Wrapper = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;

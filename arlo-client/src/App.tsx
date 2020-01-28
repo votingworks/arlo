@@ -6,7 +6,10 @@ import { ToastContainer } from 'react-toastify'
 import Header from './components/Header'
 import AuditForms from './components/AuditForms'
 import AuditFlow from './components/AuditFlow'
-import CreateAudit from './components/CreateAudit'
+import CreateAudit, {
+  Wrapper as LoadingWrapper,
+  Button,
+} from './components/CreateAudit'
 import 'react-toastify/dist/ReactToastify.css'
 import { useAuth0, IAuth0Context } from './react-auth0-spa'
 import PrivateRoute from './components/PrivateRoute'
@@ -27,7 +30,18 @@ const App: React.FC = () => {
       <Main>
         <Route path="/" component={Header} />
         {loading ? (
-          <p>loading</p> // TODO: implement centered spinner
+          <LoadingWrapper>
+            <Button
+              type="button"
+              intent="primary"
+              fill
+              large
+              loading={loading}
+              disabled={loading}
+            >
+              Loading
+            </Button>
+          </LoadingWrapper>
         ) : (
           <Switch>
             <Route exact path="/" component={CreateAudit} />
