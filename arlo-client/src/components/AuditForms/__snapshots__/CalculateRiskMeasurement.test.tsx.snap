@@ -53,16 +53,6 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
         <span
           class="bp3-button-text"
         >
-          Download Audit Boards Credentials for Data Entry
-        </span>
-      </button>
-      <button
-        class="bp3-button sc-EHOje fJvKPB"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
           Download Aggregated Ballot Retrieval List for Round 
           1
         </span>
@@ -255,16 +245,6 @@ Object {
                ballots
             </p>
           </div>
-          <button
-            class="bp3-button sc-EHOje fJvKPB"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Download Audit Boards Credentials for Data Entry
-            </span>
-          </button>
           <button
             class="bp3-button sc-EHOje fJvKPB"
             type="button"
@@ -477,16 +457,6 @@ Object {
              ballots
           </p>
         </div>
-        <button
-          class="bp3-button sc-EHOje fJvKPB"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Download Audit Boards Credentials for Data Entry
-          </span>
-        </button>
         <button
           class="bp3-button sc-EHOje fJvKPB"
           type="button"
@@ -763,16 +733,6 @@ Object {
             <span
               class="bp3-button-text"
             >
-              Download Audit Boards Credentials for Data Entry
-            </span>
-          </button>
-          <button
-            class="bp3-button sc-EHOje fJvKPB"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
               Download Aggregated Ballot Retrieval List for Round 
               1
             </span>
@@ -1004,16 +964,6 @@ Object {
              ballots
           </p>
         </div>
-        <button
-          class="bp3-button sc-EHOje fJvKPB"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Download Audit Boards Credentials for Data Entry
-          </span>
-        </button>
         <button
           class="bp3-button sc-EHOje fJvKPB"
           type="button"
@@ -1316,16 +1266,6 @@ Object {
             <span
               class="bp3-button-text"
             >
-              Download Audit Boards Credentials for Data Entry
-            </span>
-          </button>
-          <button
-            class="bp3-button sc-EHOje fJvKPB"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
               Download Aggregated Ballot Retrieval List for Round 
               1
             </span>
@@ -1513,16 +1453,6 @@ Object {
              ballots
           </p>
         </div>
-        <button
-          class="bp3-button sc-EHOje fJvKPB"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Download Audit Boards Credentials for Data Entry
-          </span>
-        </button>
         <button
           class="bp3-button sc-EHOje fJvKPB"
           type="button"
@@ -1781,16 +1711,6 @@ Object {
             <span
               class="bp3-button-text"
             >
-              Download Audit Boards Credentials for Data Entry
-            </span>
-          </button>
-          <button
-            class="bp3-button sc-EHOje fJvKPB"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
               Download Aggregated Ballot Retrieval List for Round 
               1
             </span>
@@ -1990,16 +1910,6 @@ Object {
              ballots
           </p>
         </div>
-        <button
-          class="bp3-button sc-EHOje fJvKPB"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Download Audit Boards Credentials for Data Entry
-          </span>
-        </button>
         <button
           class="bp3-button sc-EHOje fJvKPB"
           type="button"

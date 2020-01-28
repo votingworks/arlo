@@ -349,39 +349,6 @@ describe('CalculateRiskMeasurement', () => {
     expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
   })
 
-  it('downloads data entry flow sheets', async () => {
-    apiMock.mockImplementationOnce(async () => dummyBallots)
-    const { getByText } = render(
-      <CalculateRiskMeasurement
-        audit={statusStates[7]}
-        isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
-        electionId="1"
-      />
-    )
-
-    fireEvent.click(
-      getByText('Download Audit Boards Credentials for Data Entry'),
-      {
-        bubbles: true,
-      }
-    )
-
-    await wait(() => {
-      expect(apiMock).toHaveBeenCalledTimes(0)
-      expect(jspdfMock).toHaveBeenCalledTimes(1)
-    })
-    expect(jspdfInstance.addPage).toHaveBeenCalledTimes(2)
-    expect(jspdfInstance.setFontSize).toHaveBeenCalledTimes(6) // 2X per page
-    expect(jspdfInstance.setFontStyle).toHaveBeenCalledTimes(6) // 2X per page
-    expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(3) // 1X per page
-    expect(jspdfInstance.text).toHaveBeenCalledTimes(12) // 4X per page
-    expect(jspdfInstance.addImage).toHaveBeenCalledTimes(3) // 1X per page
-    expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
-  })
-
   it('downloads aggregated ballots report', () => {
     window.open = jest.fn()
     const { getByText } = render(
@@ -468,6 +435,40 @@ describe('CalculateRiskMeasurement', () => {
         expect(toastSpy).toBeCalledTimes(1)
       })
     }
+  })
+
+  it('downloads data entry flow sheets', async () => {
+    statusStates[7].online = true
+    apiMock.mockImplementationOnce(async () => dummyBallots)
+    const { getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates[7]}
+        isLoading={false}
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    fireEvent.click(
+      getByText('Download Audit Boards Credentials for Data Entry'),
+      {
+        bubbles: true,
+      }
+    )
+
+    await wait(() => {
+      expect(apiMock).toHaveBeenCalledTimes(1)
+      expect(jspdfMock).toHaveBeenCalledTimes(1)
+    })
+    expect(jspdfInstance.addPage).toHaveBeenCalledTimes(2)
+    expect(jspdfInstance.setFontSize).toHaveBeenCalledTimes(6) // 2X per page
+    expect(jspdfInstance.setFontStyle).toHaveBeenCalledTimes(6) // 2X per page
+    expect(jspdfInstance.splitTextToSize).toHaveBeenCalledTimes(3) // 1X per page
+    expect(jspdfInstance.text).toHaveBeenCalledTimes(12) // 4X per page
+    expect(jspdfInstance.addImage).toHaveBeenCalledTimes(3) // 1X per page
+    expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
   })
 
   it('renders online mode progress bar', async () => {

@@ -378,7 +378,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
                   )
                 )}
               </FormSectionDescription>
-              {i === 0 && (
+              {i === 0 && audit.online && (
                 <FormButton onClick={() => downloadDataEntry()} inline>
                   Download Audit Boards Credentials for Data Entry
                 </FormButton>
