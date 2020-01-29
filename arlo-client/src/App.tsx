@@ -44,6 +44,8 @@ const App: React.FC = () => {
           </LoadingWrapper>
         ) : (
           <Switch>
+            <Route path="/login">logging in</Route>{' '}
+            {/* replace with backend route */}
             <Route exact path="/" component={CreateAudit} />
             <Route
               path="/election/:electionId/board/:token"

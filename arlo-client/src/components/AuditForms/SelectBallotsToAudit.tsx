@@ -21,7 +21,7 @@ import {
   Spinner,
 } from '@blueprintjs/core'
 import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -113,6 +113,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
   getStatus,
   electionId,
 }: IProps) => {
+  const history = useHistory()
   const manifestUploaded =
     audit.jurisdictions.length &&
     audit.jurisdictions[0].ballotManifest &&
@@ -162,6 +163,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
             },
           }
         )
+        if ('redirect' in response) history.push('/login')
         if (checkAndToast(response)) return
       }
       const response: IErrorResponse = await api(
@@ -174,6 +176,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
           },
         }
       )
+      if ('redirect' in response) history.push('/login')
       if (checkAndToast(response)) return
 
       const newStatus = await getStatus()
@@ -190,6 +193,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
             body: formData,
           }
         )
+        if ('redirect' in response) history.push('/login')
         if (checkAndToast(response)) return
       }
 

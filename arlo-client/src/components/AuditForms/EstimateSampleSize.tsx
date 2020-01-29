@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
+import { useHistory } from 'react-router-dom'
 import {
   Formik,
   FormikProps,
@@ -171,6 +172,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
   getStatus,
   electionId,
 }: IProps) => {
+  const history = useHistory()
   const canEstimateSampleSize = !audit.contests.length
 
   const handlePost = async (values: IEstimateSampleSizeValues) => {
@@ -203,6 +205,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
           },
         }
       )
+      if ('redirect' in response) history.push('/login')
       if (checkAndToast(response)) {
         setIsLoading(false)
         return

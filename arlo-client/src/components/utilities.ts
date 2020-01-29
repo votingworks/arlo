@@ -5,9 +5,12 @@ import { IErrorResponse } from '../types'
 export const api = async <T>(
   endpoint: string,
   options?: RequestInit
-): Promise<T> => {
+): Promise<T | { redirect: boolean }> => {
   try {
     const res = await fetch(endpoint, options)
+    if (res.status === 401 || res.status === 403) {
+      return (async () => ({ redirect: true }))()
+    }
     if (!res.ok) {
       throw res
     }

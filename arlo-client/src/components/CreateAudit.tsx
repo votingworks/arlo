@@ -34,6 +34,10 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
           method: 'POST',
         }
       )
+      if ('redirect' in response) {
+        history.push('/login')
+        return
+      }
       if (checkAndToast(response)) {
         return
       }

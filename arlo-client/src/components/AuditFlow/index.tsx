@@ -42,6 +42,9 @@ const AuditFlow: React.FC<IProps> = ({
     const audit: IAudit | IErrorResponse = await api(
       `/election/${electionId}/audit/status`
     )
+    if ((audit as IErrorResponse).redirect) {
+      history.push('/login')
+    }
     if (checkAndToast(audit)) {
       return {
         name: '',
@@ -61,7 +64,7 @@ const AuditFlow: React.FC<IProps> = ({
     } else {
       return audit
     }
-  }, [electionId])
+  }, [electionId, history])
 
   const updateAudit = useCallback(async () => {
     setIsLoading(true)
@@ -94,15 +97,21 @@ const AuditFlow: React.FC<IProps> = ({
       >(
         `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`
       )
-      if (checkAndToast(response)) {
+      if ('redirect' in response) {
+        history.push('/login')
         return []
-      } else {
+      } else if (checkAndToast(response)) {
+        return []
+      } else if ('ballots' in response) {
         return response.ballots
+        /* istanbul ignore next */
+      } else {
+        return []
       }
     } else {
       return []
     }
-  }, [electionId, audit.jurisdictions, round, board])
+  }, [electionId, audit.jurisdictions, round, board, history])
 
   const updateBallots = useCallback(async () => {
     setIsLoading(true)

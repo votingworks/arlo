@@ -1,7 +1,8 @@
 export interface IErrorResponse {
-  errors: {
+  errors?: {
     message: string
   }[]
+  redirect?: boolean
 }
 
 export interface ICreateAuditParams {

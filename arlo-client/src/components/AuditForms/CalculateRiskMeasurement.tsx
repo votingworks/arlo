@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
+import { useHistory } from 'react-router-dom'
 import jsPDF from 'jspdf'
 /* istanbul ignore next */
 import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
@@ -78,6 +79,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
   getStatus,
   electionId,
 }: IProps) => {
+  const history = useHistory()
   const getBallots = async (r: number): Promise<IBallot[]> => {
     const round = audit.rounds[r]
     const response = await api<
@@ -88,10 +90,14 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
     >(
       `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/round/${round.id}/ballot-list`
     )
+    if ('redirect' in response) history.push('/login')
     if (checkAndToast(response)) {
       return []
-    } else {
+    } else if ('ballots' in response) {
       return response.ballots
+      /* istanbul ignore next */
+    } else {
+      return []
     }
   }
 

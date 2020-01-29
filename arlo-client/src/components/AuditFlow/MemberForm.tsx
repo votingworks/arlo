@@ -1,10 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useHistory } from 'react-router-dom'
 import { H1, RadioGroup, Radio } from '@blueprintjs/core'
 import { Formik, FormikProps, Form, Field, getIn } from 'formik'
 import FormWrapper from '../Form/FormWrapper'
 import FormSection from '../Form/FormSection'
-import { IAuditBoardMember } from '../../types'
+import { IAuditBoardMember, IErrorResponse } from '../../types'
 import FormButton from '../Form/FormButton'
 import { api, checkAndToast } from '../utilities'
 
@@ -34,6 +35,7 @@ const MemberForm: React.FC<IProps> = ({
   electionId,
   updateAudit,
 }: IProps) => {
+  const history = useHistory()
   return (
     <>
       <H1>Member Sign in for Audit Board: {boardName}</H1>
@@ -58,7 +60,7 @@ const MemberForm: React.FC<IProps> = ({
               name: boardName,
               members: values,
             }
-            const response = await api(
+            const response: IErrorResponse = await api(
               `/election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${boardId}`,
               {
                 method: 'POST',
@@ -68,6 +70,7 @@ const MemberForm: React.FC<IProps> = ({
                 },
               }
             )
+            if ('redirect' in response) history.push('/login')
             if (checkAndToast(response)) return
             updateAudit()
           }}

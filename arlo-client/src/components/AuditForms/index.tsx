@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { History } from 'history'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -20,12 +21,14 @@ interface IProps {
   match: {
     params: ICreateAuditParams
   }
+  history: History
 }
 
 const AuditForms: React.FC<IProps> = ({
   match: {
     params: { electionId },
   },
+  history,
 }: IProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -35,12 +38,13 @@ const AuditForms: React.FC<IProps> = ({
     const audit: IAudit | IErrorResponse = await api(
       `/election/${electionId}/audit/status`
     )
+    if ('redirect' in audit) history.push('/login')
     if (checkAndToast(audit)) {
       return initialData
     } else {
       return audit
     }
-  }, [electionId])
+  }, [electionId, history])
 
   const updateAudit = useCallback(async () => {
     const audit = await getStatus()

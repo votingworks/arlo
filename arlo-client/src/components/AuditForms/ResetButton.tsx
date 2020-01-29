@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { useHistory } from 'react-router-dom'
 import { Button } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
 import { api, checkAndToast } from '../utilities'
@@ -16,6 +17,7 @@ const ResetButton: React.FC<IProps> = ({
   disabled,
   updateAudit,
 }: IProps) => {
+  const history = useHistory()
   const resetButtonWrapper = document.getElementById('reset-button-wrapper')
   const reset = async () => {
     try {
@@ -23,6 +25,7 @@ const ResetButton: React.FC<IProps> = ({
         `/election/${electionId}/audit/reset`,
         { method: 'POST' }
       )
+      if ('redirect' in response) history.push('/login')
       if (checkAndToast(response)) {
         return
       }
