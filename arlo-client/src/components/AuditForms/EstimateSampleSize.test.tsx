@@ -342,6 +342,41 @@ describe('EstimateSampleSize', () => {
     expect(container).toMatchSnapshot()
   })
 
+  it('changes audits to be offline and online', () => {
+    const { getByLabelText } = render(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+        getStatus={jest.fn()}
+        electionId="1"
+      />
+    )
+
+    const auditToggleOffline = getByLabelText(
+      new RegExp(regexpEscape('Offline')),
+      {
+        selector: 'select',
+      }
+    )
+    expect(auditToggleOffline).toBeInstanceOf(HTMLInputElement)
+    if (auditToggleOffline instanceof HTMLInputElement) {
+      fireEvent.click(auditToggleOffline, { bubbles: true })
+    }
+
+    const auditToggleOnline = getByLabelText(
+      new RegExp(regexpEscape('Online')),
+      {
+        selector: 'select',
+      }
+    )
+    expect(auditToggleOnline).toBeInstanceOf(HTMLInputElement)
+    if (auditToggleOnline instanceof HTMLInputElement) {
+      fireEvent.click(auditToggleOnline, { bubbles: true })
+    }
+  })
+
   it.skip('adds and removes contests', async () => {
     // skip until feature is complete in backend
     const { getByText, getAllByText, queryByText } = render(

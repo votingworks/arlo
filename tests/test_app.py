@@ -78,6 +78,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
             "name" : name,
             "riskLimit" : risk_limit,
             "randomSeed": random_seed,
+            "online": False,
 
             "contests" : [
                 {
@@ -109,6 +110,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
     assert status["rounds"][0]["contests"][0]["sampleSizeOptions"] is None
+    assert status["online"] == False
 
     # after background compute
     bgcompute.bgcompute()
@@ -236,6 +238,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
             "name" : name,
             "riskLimit" : risk_limit,
             "randomSeed": random_seed,
+            "online": False,
 
             "contests" : [
                 {
@@ -447,6 +450,7 @@ def test_small_election(client):
             "name" : "Small Test 2019",
             "riskLimit" : 10,
             "randomSeed": "a1234567890987654321b",
+            "online": False,
 
             "contests" : [
                 {
@@ -607,6 +611,7 @@ def test_contest_choices_cannot_have_more_votes_than_allowed(client):
             "name" : "Small Test 2019",
             "riskLimit" : 10,
             "randomSeed": "a1234567890987654321b",
+            "online": False,
 
             "contests" : [
                 {
@@ -649,6 +654,7 @@ def test_contest_choices_cannot_have_more_votes_than_allowed(client):
             "name" : "Small Test 2019",
             "riskLimit" : 10,
             "randomSeed": "a1234567890987654321b",
+            "online": False,            
 
             "contests" : [
                 {
@@ -745,6 +751,7 @@ def test_multi_winner_election(client):
             "name" : "Small Multi-winner Test 2019",
             "riskLimit" : 10,
             "randomSeed": "a1234567890987654321b",
+            "online": False,
 
             "contests" : [
                 {

@@ -52,7 +52,7 @@ const memberFill = () => {
 
 beforeEach(() => {
   start()
-  fillFormOne()
+  fillFormOne(true)
   submitFormOne()
   fillFormTwo()
   submitFormTwo()

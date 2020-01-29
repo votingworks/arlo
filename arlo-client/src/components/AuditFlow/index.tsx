@@ -45,6 +45,7 @@ const AuditFlow: React.FC<IProps> = ({
     if (checkAndToast(audit)) {
       return {
         name: '',
+        online: true,
         riskLimit: '',
         randomSeed: '',
         contests: [],
