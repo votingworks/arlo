@@ -1,11 +1,11 @@
 
 install:
-	pipenv install --skip-lock
+	pipenv install
 	yarn --cwd arlo-client install
 	yarn --cwd arlo-client build
 
 install-development:
-	pipenv install --dev --skip-lock
+	pipenv install --dev
 	yarn --cwd arlo-client install
 
 resetdb:
