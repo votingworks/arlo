@@ -71,6 +71,7 @@ const AuditFlow: React.FC<IProps> = ({
   const [ballots, setBallots] = useState<IBallot[]>([])
 
   const getBallots = useCallback(async (): Promise<IBallot[]> => {
+    /* istanbul ignore else */
     if (audit && board && round) {
       const response = await api<
         | {
@@ -151,6 +152,7 @@ const AuditFlow: React.FC<IProps> = ({
     position: number,
     data: IReview
   ) => {
+    /* istanbul ignore next */
     if (audit) {
       const roundId = audit.rounds[Number(roundIx) - 1].id
       await api(

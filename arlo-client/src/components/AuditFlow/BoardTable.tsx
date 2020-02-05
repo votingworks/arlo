@@ -121,7 +121,8 @@ const BoardTable: React.FC<IProps> = ({
     setCols(columnWidths())
   }, [ballots])
 
-  const roundComplete = ballots && ballots.every(b => b.status === 'AUDITED')
+  const roundComplete =
+    ballots.length && ballots.every(b => b.status === 'AUDITED')
 
   const unauditedBallot = ballots.find(b => !b.status)
 
@@ -137,20 +138,18 @@ const BoardTable: React.FC<IProps> = ({
       <RightWrapper>
         {roundComplete ? (
           <Button intent="primary">Review Complete - Finish Round</Button>
-        ) : (
-          ballots &&
-          unauditedBallot && (
-            <Link
-              to={
-                url +
-                `/round/1/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
-              }
-              className="bp3-button bp3-intent-primary"
-            >
-              Start Auditing
-            </Link>
-          )
-        )}
+        ) : ballots.length && unauditedBallot ? (
+          <Link
+            to={
+              url +
+              `/round/1/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
+            }
+            className="bp3-button bp3-intent-primary"
+          >
+            Start Auditing
+          </Link>
+        ) : null // eslint-disable-line no-null/no-null
+        }
       </RightWrapper>
       {/* <ActionWrapper> // commented out until feature is added
         {!roundComplete && (
