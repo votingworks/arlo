@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  render,
-  fireEvent,
-  wait,
-  act,
-  RenderResult,
-} from '@testing-library/react'
+import { render, fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import jsPDF from 'jspdf'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -474,40 +468,32 @@ describe('CalculateRiskMeasurement', () => {
   it('renders online mode progress bar', async () => {
     statusStates[4].online = true
     apiMock.mockImplementationOnce(async () => incompleteDummyBallots)
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(
-        <CalculateRiskMeasurement
-          audit={statusStates[4]}
-          isLoading
-          setIsLoading={setIsLoadingMock}
-          updateAudit={updateAuditMock}
-          getStatus={getStatusMock}
-          electionId="1"
-        />
-      )
-    })
-    const { container } = utils!
+    const { container } = await utilities.asyncActRender(
+      <CalculateRiskMeasurement
+        audit={statusStates[4]}
+        isLoading
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
     expect(container).toMatchSnapshot()
   })
 
   it('renders online mode progress bar in multiple rounds', async () => {
     statusStates[8].online = true
     apiMock.mockImplementationOnce(async () => incompleteDummyBallots)
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(
-        <CalculateRiskMeasurement
-          audit={statusStates[8]}
-          isLoading
-          setIsLoading={setIsLoadingMock}
-          updateAudit={updateAuditMock}
-          getStatus={getStatusMock}
-          electionId="1"
-        />
-      )
-    })
-    const { container } = utils!
+    const { container } = await utilities.asyncActRender(
+      <CalculateRiskMeasurement
+        audit={statusStates[8]}
+        isLoading
+        setIsLoading={setIsLoadingMock}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
     expect(container).toMatchSnapshot()
   })
 })

@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  render,
-  wait,
-  fireEvent,
-  act,
-  RenderResult,
-} from '@testing-library/react'
+import { render, wait, fireEvent } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
 import { routerTestProps } from '../testUtilities'
 import AuditFlow from './index'
@@ -30,8 +24,16 @@ const ballotingMock = async (
 ): Promise<IAudit | { ballots: IBallot[] }> => {
   switch (endpoint) {
     case '/election/1/audit/status':
-      memberDummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
-      return memberDummy
+      return {
+        ...memberDummy,
+        jurisdictions: [
+          {
+            ...memberDummy.jurisdictions[0],
+            auditBoards: [dummyBoard[1]],
+          },
+          ...memberDummy.jurisdictions.slice(1),
+        ],
+      }
     default:
       return dummyBallots
   }
@@ -59,22 +61,26 @@ describe('AuditFlow ballot interaction', () => {
       async (endpoint: string): Promise<IAudit | { ballots: IBallot[] }> => {
         switch (endpoint) {
           case '/election/1/audit/status':
-            memberDummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
-            return memberDummy
+            return {
+              ...memberDummy,
+              jurisdictions: [
+                {
+                  ...memberDummy.jurisdictions[0],
+                  auditBoards: [dummyBoard[1]],
+                },
+                ...memberDummy.jurisdictions.slice(1),
+              ],
+            }
           default:
             return { ballots: [] }
         }
       }
     )
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(
-        <StaticRouter {...staticRouteProps}>
-          <AuditFlow {...routeProps} />
-        </StaticRouter>
-      )
-    })
-    const { queryByText } = utils!
+    const { queryByText } = await utilities.asyncActRender(
+      <StaticRouter {...staticRouteProps}>
+        <AuditFlow {...routeProps} />
+      </StaticRouter>
+    )
     await wait(() => {
       expect(apiMock).toBeCalled()
       expect(queryByText('Start Auditing')).toBeFalsy()
@@ -182,15 +188,11 @@ describe('AuditFlow ballot interaction', () => {
       .spyOn(ballotRouteProps.history, 'push')
       .mockImplementation()
     ballotRouteProps.match.url = '/election/1/board/123'
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(
-        <StaticRouter {...staticBallotRouteProps}>
-          <AuditFlow {...ballotRouteProps} />
-        </StaticRouter>
-      )
-    })
-    const { getByText } = utils!
+    const { getByText } = await utilities.asyncActRender(
+      <StaticRouter {...staticBallotRouteProps}>
+        <AuditFlow {...ballotRouteProps} />
+      </StaticRouter>
+    )
 
     fireEvent.click(getByText('Ballot 2112 not found - move to next ballot'), {
       bubbles: true,
@@ -225,15 +227,11 @@ describe('AuditFlow ballot interaction', () => {
     )
     const { history, ...staticBallotRouteProps } = ballotRouteProps // eslint-disable-line @typescript-eslint/no-unused-vars
     ballotRouteProps.match.url = '/election/1/board/123'
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(
-        <StaticRouter {...staticBallotRouteProps}>
-          <AuditFlow {...ballotRouteProps} />
-        </StaticRouter>
-      )
-    })
-    const { getByText, getByTestId } = utils!
+    const { getByText, getByTestId } = await utilities.asyncActRender(
+      <StaticRouter {...staticBallotRouteProps}>
+        <AuditFlow {...ballotRouteProps} />
+      </StaticRouter>
+    )
 
     fireEvent.click(getByTestId('choice one'), { bubbles: true })
     await wait(() =>

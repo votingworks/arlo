@@ -1,18 +1,19 @@
 import React from 'react'
-import { render, wait, act, RenderResult } from '@testing-library/react'
+import { wait } from '@testing-library/react'
 import { Router } from 'react-router-dom'
 import { routerTestProps } from '../testUtilities'
 import AuditFlow from './index'
 import { dummyBoard, dummyBallots } from './_mocks'
 import { statusStates } from '../AuditForms/_mocks'
-import { api } from '../utilities'
+import * as utilities from '../utilities'
 import { IAudit, IBallot } from '../../types'
 
 const memberlessDummy = statusStates[3]
 
-const apiMock = api as jest.Mock<ReturnType<typeof api>, Parameters<typeof api>>
-
-jest.mock('../utilities')
+const apiMock: jest.SpyInstance<
+  ReturnType<typeof utilities.api>,
+  Parameters<typeof utilities.api>
+> = jest.spyOn(utilities, 'api').mockImplementation()
 
 const memberingMock = async (
   endpoint: string
@@ -41,28 +42,20 @@ describe('AuditFlow initial load', () => {
   })
 
   it('renders correctly', async () => {
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(
-        <Router {...routeProps}>
-          <AuditFlow {...routeProps} />
-        </Router>
-      )
-    })
-    const { container } = utils!
+    const { container } = await utilities.asyncActRender(
+      <Router {...routeProps}>
+        <AuditFlow {...routeProps} />
+      </Router>
+    )
     expect(container).toMatchSnapshot()
   })
 
   it('fetches initial state from api', async () => {
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(
-        <Router {...routeProps}>
-          <AuditFlow {...routeProps} />
-        </Router>
-      )
-    })
-    const { container } = utils!
+    const { container } = await utilities.asyncActRender(
+      <Router {...routeProps}>
+        <AuditFlow {...routeProps} />
+      </Router>
+    )
     await wait(() => {
       expect(apiMock).toBeCalled()
       expect(container).toMatchSnapshot()
@@ -70,15 +63,11 @@ describe('AuditFlow initial load', () => {
   })
 
   it('renders member form', async () => {
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(
-        <Router {...routeProps}>
-          <AuditFlow {...routeProps} />
-        </Router>
-      )
-    })
-    const { container, getByText } = utils!
+    const { container, getByText } = await utilities.asyncActRender(
+      <Router {...routeProps}>
+        <AuditFlow {...routeProps} />
+      </Router>
+    )
     await wait(() => {
       expect(apiMock).toBeCalled()
       expect(
