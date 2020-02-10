@@ -1,7 +1,7 @@
 import React from 'react'
 import { wait } from '@testing-library/react'
 import { Router } from 'react-router-dom'
-import { routerTestProps } from '../testUtilities'
+import { routerTestProps, asyncActRender } from '../testUtilities'
 import AuditFlow from './index'
 import { dummyBoard, dummyBallots } from './_mocks'
 import { statusStates } from '../AuditForms/_mocks'
@@ -42,7 +42,7 @@ describe('AuditFlow initial load', () => {
   })
 
   it('renders correctly', async () => {
-    const { container } = await utilities.asyncActRender(
+    const { container } = await asyncActRender(
       <Router {...routeProps}>
         <AuditFlow {...routeProps} />
       </Router>
@@ -51,7 +51,7 @@ describe('AuditFlow initial load', () => {
   })
 
   it('fetches initial state from api', async () => {
-    const { container } = await utilities.asyncActRender(
+    const { container } = await asyncActRender(
       <Router {...routeProps}>
         <AuditFlow {...routeProps} />
       </Router>
@@ -63,7 +63,7 @@ describe('AuditFlow initial load', () => {
   })
 
   it('renders member form', async () => {
-    const { container, getByText } = await utilities.asyncActRender(
+    const { container, getByText } = await asyncActRender(
       <Router {...routeProps}>
         <AuditFlow {...routeProps} />
       </Router>
