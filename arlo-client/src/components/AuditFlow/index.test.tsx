@@ -24,8 +24,16 @@ const ballotingMock = async (
 ): Promise<IAudit | { ballots: IBallot[] }> => {
   switch (endpoint) {
     case '/election/1/audit/status':
-      memberDummy.jurisdictions[0].auditBoards = [dummyBoard[1]]
-      return memberDummy
+      return {
+        ...memberDummy,
+        jurisdictions: [
+          {
+            ...memberDummy.jurisdictions[0],
+            auditBoards: [dummyBoard[1]],
+          },
+          ...memberDummy.jurisdictions.slice(1),
+        ],
+      }
     default:
       return dummyBallots
   }
@@ -49,15 +57,34 @@ describe('AuditFlow ballot interaction', () => {
   })
 
   it('renders board table with no ballots', async () => {
-    const { queryByText, container } = render(
+    apiMock.mockImplementation(
+      async (endpoint: string): Promise<IAudit | { ballots: IBallot[] }> => {
+        switch (endpoint) {
+          case '/election/1/audit/status':
+            return {
+              ...memberDummy,
+              jurisdictions: [
+                {
+                  ...memberDummy.jurisdictions[0],
+                  auditBoards: [dummyBoard[1]],
+                },
+                ...memberDummy.jurisdictions.slice(1),
+              ],
+            }
+          default:
+            return { ballots: [] }
+        }
+      }
+    )
+    const { queryByText } = await utilities.asyncActRender(
       <StaticRouter {...staticRouteProps}>
         <AuditFlow {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
       expect(apiMock).toBeCalled()
-      expect(container).toMatchSnapshot()
       expect(queryByText('Start Auditing')).toBeFalsy()
+      expect(queryByText('Review Complete - Finish Round')).toBeFalsy()
     })
   })
 
@@ -84,7 +111,7 @@ describe('AuditFlow ballot interaction', () => {
     )
     await wait(() => {
       expect(apiMock).toBeCalled()
-      expect(checkAndToastMock).toBeCalledTimes(2)
+      expect(checkAndToastMock).toBeCalledTimes(1)
     })
   })
 
@@ -161,7 +188,7 @@ describe('AuditFlow ballot interaction', () => {
       .spyOn(ballotRouteProps.history, 'push')
       .mockImplementation()
     ballotRouteProps.match.url = '/election/1/board/123'
-    const { getByText } = render(
+    const { getByText } = await utilities.asyncActRender(
       <StaticRouter {...staticBallotRouteProps}>
         <AuditFlow {...ballotRouteProps} />
       </StaticRouter>
@@ -200,7 +227,7 @@ describe('AuditFlow ballot interaction', () => {
     )
     const { history, ...staticBallotRouteProps } = ballotRouteProps // eslint-disable-line @typescript-eslint/no-unused-vars
     ballotRouteProps.match.url = '/election/1/board/123'
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId } = await utilities.asyncActRender(
       <StaticRouter {...staticBallotRouteProps}>
         <AuditFlow {...ballotRouteProps} />
       </StaticRouter>

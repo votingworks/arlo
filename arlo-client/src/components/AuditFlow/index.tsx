@@ -12,8 +12,6 @@ import {
   IErrorResponse,
 } from '../../types'
 import { api, poll, checkAndToast } from '../utilities'
-import { statusStates } from '../AuditForms/_mocks'
-import { dummyBallots } from './_mocks'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
 import Ballot from './Ballot'
@@ -36,29 +34,14 @@ const AuditFlow: React.FC<IProps> = ({
 }: IProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [audit, setAudit] = useState(statusStates[3])
+  const [audit, setAudit] = useState<IAudit | undefined>(undefined) // here entereth the error monster
 
-  const getStatus = useCallback(async (): Promise<IAudit> => {
+  const getStatus = useCallback(async (): Promise<IAudit | undefined> => {
     const audit: IAudit | IErrorResponse = await api(
       `/election/${electionId}/audit/status`
     )
     if (checkAndToast(audit)) {
-      return {
-        name: '',
-        online: true,
-        riskLimit: '',
-        randomSeed: '',
-        contests: [],
-        jurisdictions: [
-          {
-            auditBoards: [],
-            id: '',
-            name: '',
-            contests: [],
-          },
-        ],
-        rounds: [],
-      }
+      return undefined
     } else {
       return audit
     }
@@ -75,18 +58,19 @@ const AuditFlow: React.FC<IProps> = ({
     updateAudit()
   }, [updateAudit])
 
-  const board:
-    | IAuditBoard
-    | undefined = audit.jurisdictions[0].auditBoards.find(
-    (v: IAuditBoard) => v.id === token
-  )
+  const board: IAuditBoard | undefined = audit
+    ? audit.jurisdictions[0].auditBoards.find(
+        (v: IAuditBoard) => v.id === token
+      )
+    : undefined
 
-  const round = audit.rounds[audit.rounds.length - 1]
+  const round = audit ? audit.rounds[audit.rounds.length - 1] : undefined
 
-  const [ballots, setBallots] = useState<IBallot[]>(dummyBallots.ballots)
+  const [ballots, setBallots] = useState<IBallot[]>([])
 
   const getBallots = useCallback(async (): Promise<IBallot[]> => {
-    if (audit.jurisdictions.length && board) {
+    /* istanbul ignore else */
+    if (audit && board && round) {
       const response = await api<
         | {
             ballots: IBallot[]
@@ -103,7 +87,7 @@ const AuditFlow: React.FC<IProps> = ({
     } else {
       return []
     }
-  }, [electionId, audit.jurisdictions, round, board])
+  }, [electionId, audit, round, board])
 
   const updateBallots = useCallback(async () => {
     setIsLoading(true)
@@ -120,8 +104,11 @@ const AuditFlow: React.FC<IProps> = ({
   }, [getBallots])
 
   useEffect(() => {
-    updateBallots()
-  }, [updateBallots])
+    /* istanbul ignore else */
+    if (audit) {
+      updateBallots()
+    }
+  }, [updateBallots, audit])
 
   const nextBallot = (r: string, batchId: string, ballot: number) => () => {
     const ballotIx = ballots.findIndex(
@@ -163,22 +150,25 @@ const AuditFlow: React.FC<IProps> = ({
     position: number,
     data: IReview
   ) => {
-    const roundId = audit.rounds[Number(roundIx) - 1].id
-    await api(
-      `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch}/round/${roundId}/ballot/${position}`,
-      {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-    updateBallots()
+    /* istanbul ignore next */
+    if (audit) {
+      const roundId = audit.rounds[Number(roundIx) - 1].id
+      await api(
+        `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch}/round/${roundId}/ballot/${position}`,
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      updateBallots()
+    }
   }
 
   /* istanbul ignore if */
-  if (!board) {
+  if (!audit || !board) {
     return (
       <Wrapper>
         <Spinner />

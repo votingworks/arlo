@@ -121,7 +121,8 @@ const BoardTable: React.FC<IProps> = ({
     setCols(columnWidths())
   }, [ballots])
 
-  const roundComplete = ballots && ballots.every(b => b.status === 'AUDITED')
+  const roundComplete =
+    ballots.length && ballots.every(b => b.status === 'AUDITED')
 
   const unauditedBallot = ballots.find(b => !b.status)
 
@@ -138,7 +139,7 @@ const BoardTable: React.FC<IProps> = ({
         {roundComplete ? (
           <Button intent="primary">Review Complete - Finish Round</Button>
         ) : (
-          ballots &&
+          ballots.length > 0 &&
           unauditedBallot && (
             <Link
               to={

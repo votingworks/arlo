@@ -1,4 +1,6 @@
+import React from 'react'
 import { toast } from 'react-toastify'
+import { RenderResult, act, render } from '@testing-library/react'
 import number from '../utils/number-schema'
 import { IErrorResponse } from '../types'
 
@@ -102,4 +104,14 @@ export const checkAndToast = (
   } else {
     return false
   }
+}
+
+export const asyncActRender = async (
+  component: React.ReactElement
+): Promise<RenderResult> => {
+  let result: RenderResult
+  await act(async () => {
+    result = render(component)
+  })
+  return result!
 }

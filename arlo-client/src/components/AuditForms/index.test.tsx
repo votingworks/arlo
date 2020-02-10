@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  render,
-  act,
-  RenderResult,
-  waitForElement,
-  wait,
-} from '@testing-library/react'
+import { waitForElement, wait } from '@testing-library/react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import AuditForms from './index'
 import { statusStates, dummyBallots } from './_mocks'
@@ -33,11 +27,9 @@ afterEach(() => {
 describe('RiskLimitingAuditForm', () => {
   it('fetches initial state from api', async () => {
     apiMock.mockImplementation(async () => statusStates[0])
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(<AuditForms {...routeProps} />)
-    })
-    const { container } = utils!
+    const { container } = await utilities.asyncActRender(
+      <AuditForms {...routeProps} />
+    )
 
     expect(container).toMatchSnapshot()
     await wait(() => {
@@ -50,29 +42,23 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('renders correctly with initialData', async () => {
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(<AuditForms {...routeProps} />)
-    })
-    const { container } = utils!
+    const { container } = await utilities.asyncActRender(
+      <AuditForms {...routeProps} />
+    )
     expect(container).toMatchSnapshot()
   })
 
   it('still renders if there is a server error', async () => {
     checkAndToastMock.mockReturnValueOnce(true)
-    await act(async () => {
-      render(<AuditForms {...routeProps} />)
-    })
+    await utilities.asyncActRender(<AuditForms {...routeProps} />)
     expect(checkAndToastMock).toBeCalledTimes(1)
   })
 
   it('does not render SelectBallotsToAudit when /audit/status is processing samplesizes', async () => {
     apiMock.mockImplementation(async () => statusStates[1])
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(<AuditForms {...routeProps} />)
-    })
-    const { container, queryByTestId } = utils!
+    const { container, queryByTestId } = await utilities.asyncActRender(
+      <AuditForms {...routeProps} />
+    )
 
     expect(queryByTestId('form-two')).toBeNull()
     expect(container).toMatchSnapshot()
@@ -87,11 +73,9 @@ describe('RiskLimitingAuditForm', () => {
 
   it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
     apiMock.mockImplementation(async () => statusStates[2])
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(<AuditForms {...routeProps} />)
-    })
-    const { container, getByTestId } = utils!
+    const { container, getByTestId } = await utilities.asyncActRender(
+      <AuditForms {...routeProps} />
+    )
 
     const fillFormTwo = await waitForElement(() => getByTestId('form-two'), {
       container,
@@ -110,11 +94,11 @@ describe('RiskLimitingAuditForm', () => {
 
   it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
     apiMock.mockImplementation(async () => statusStates[3])
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(<AuditForms {...routeProps} />) // this one will not have the first empty round
-    })
-    const { container, getByTestId, queryByTestId } = utils!
+    const {
+      container,
+      getByTestId,
+      queryByTestId,
+    } = await utilities.asyncActRender(<AuditForms {...routeProps} />) // this one will not have the first empty round
 
     const fillFormTwo = await waitForElement(() => getByTestId('form-two'), {
       container,
@@ -136,15 +120,11 @@ describe('RiskLimitingAuditForm', () => {
     apiMock
       .mockImplementationOnce(async () => statusStates[4])
       .mockImplementationOnce(async () => dummyBallots)
-    let utils: RenderResult
-    await act(async () => {
-      utils = render(
-        <Router>
-          <AuditForms {...routeProps} />
-        </Router>
-      ) // this one will not have the first empty round
-    })
-    const { container, getByTestId } = utils!
+    const { container, getByTestId } = await utilities.asyncActRender(
+      <Router>
+        <AuditForms {...routeProps} />
+      </Router>
+    ) // this one will not have the first empty round
 
     const formThree = await waitForElement(() => getByTestId('form-three-1'), {
       container,
