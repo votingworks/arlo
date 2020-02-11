@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, wait, fireEvent } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
-import { routerTestProps } from '../testUtilities'
+import { routerTestProps, asyncActRender } from '../testUtilities'
 import AuditFlow from './index'
 import { dummyBoard, dummyBallots } from './_mocks'
 import { statusStates } from '../AuditForms/_mocks'
@@ -76,7 +76,7 @@ describe('AuditFlow ballot interaction', () => {
         }
       }
     )
-    const { queryByText } = await utilities.asyncActRender(
+    const { queryByText } = await asyncActRender(
       <StaticRouter {...staticRouteProps}>
         <AuditFlow {...routeProps} />
       </StaticRouter>
@@ -188,7 +188,7 @@ describe('AuditFlow ballot interaction', () => {
       .spyOn(ballotRouteProps.history, 'push')
       .mockImplementation()
     ballotRouteProps.match.url = '/election/1/board/123'
-    const { getByText } = await utilities.asyncActRender(
+    const { getByText } = await asyncActRender(
       <StaticRouter {...staticBallotRouteProps}>
         <AuditFlow {...ballotRouteProps} />
       </StaticRouter>
@@ -227,7 +227,7 @@ describe('AuditFlow ballot interaction', () => {
     )
     const { history, ...staticBallotRouteProps } = ballotRouteProps // eslint-disable-line @typescript-eslint/no-unused-vars
     ballotRouteProps.match.url = '/election/1/board/123'
-    const { getByText, getByTestId } = await utilities.asyncActRender(
+    const { getByText, getByTestId } = await asyncActRender(
       <StaticRouter {...staticBallotRouteProps}>
         <AuditFlow {...ballotRouteProps} />
       </StaticRouter>

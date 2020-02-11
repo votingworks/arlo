@@ -1,3 +1,5 @@
+import React from 'react'
+import { RenderResult, act, render } from '@testing-library/react'
 import { createLocation, createMemoryHistory } from 'history'
 import { match as routerMatch } from 'react-router-dom'
 
@@ -43,6 +45,16 @@ export const routerTestProps = <Params extends MatchParameter<Params> = {}>(
 export const regexpEscape = (s: string) => {
   /* eslint-disable no-useless-escape */
   return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+}
+
+export const asyncActRender = async (
+  component: React.ReactElement
+): Promise<RenderResult> => {
+  let result: RenderResult
+  await act(async () => {
+    result = render(component)
+  })
+  return result!
 }
 
 export default {

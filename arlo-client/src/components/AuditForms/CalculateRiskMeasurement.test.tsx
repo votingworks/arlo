@@ -5,6 +5,7 @@ import jsPDF from 'jspdf'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { statusStates, dummyBallots, incompleteDummyBallots } from './_mocks'
 import * as utilities from '../utilities'
+import { asyncActRender } from '../testUtilities'
 
 statusStates[3].online = false
 statusStates[4].online = false
@@ -468,7 +469,7 @@ describe('CalculateRiskMeasurement', () => {
   it('renders online mode progress bar', async () => {
     statusStates[4].online = true
     apiMock.mockImplementationOnce(async () => incompleteDummyBallots)
-    const { container } = await utilities.asyncActRender(
+    const { container } = await asyncActRender(
       <CalculateRiskMeasurement
         audit={statusStates[4]}
         isLoading
@@ -484,7 +485,7 @@ describe('CalculateRiskMeasurement', () => {
   it('renders online mode progress bar in multiple rounds', async () => {
     statusStates[8].online = true
     apiMock.mockImplementationOnce(async () => incompleteDummyBallots)
-    const { container } = await utilities.asyncActRender(
+    const { container } = await asyncActRender(
       <CalculateRiskMeasurement
         audit={statusStates[8]}
         isLoading
