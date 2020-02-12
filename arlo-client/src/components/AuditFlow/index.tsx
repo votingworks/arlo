@@ -152,7 +152,6 @@ const AuditFlow: React.FC<IProps> = ({
   ) => {
     /* istanbul ignore next */
     if (audit) {
-      const roundId = audit.rounds[Number(roundIx) - 1].id
       await api(
         `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch}/ballot/${position}`,
         {
