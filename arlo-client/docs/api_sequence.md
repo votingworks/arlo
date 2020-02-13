@@ -27,6 +27,7 @@
   name: '',
   riskLimit: '',
   randomSeed: '',
+  online: false,
   contests: [],
   jurisdictions: [],
   rounds: [],
@@ -46,13 +47,17 @@
 ```
 {
 	name: "Primary 2019",
+  online: true,
 	riskLimit: 10,
 	randomSeed: "sdfkjsdflskjfd",
 
 	contests: [
-	    {
+    {
 			id: "contest-1",
 			name: "Contest 1",
+			totalBallotsCast: 4200,
+      votesAllowed: 1,
+      numWinners: 1,
 
 			choices: [
 				{
@@ -61,8 +66,6 @@
 					numVotes: 42
 				}
 			],
-
-			totalBallotsCast: 4200
 		}
 	]
 }
@@ -96,8 +99,9 @@ Getting the new status and waiting for sample size calculations to complete:
       ],
       id: 'contest-1',
       name: 'contest name',
-      numWinners: '1',
+      numWinners: 1,
       totalBallotsCast: '2123',
+      votesAllowed: 1
     },
   ],
   jurisdictions: [],
@@ -115,13 +119,15 @@ Getting the new status and waiting for sample size calculations to complete:
           sampleSizeOptions: null, // null!!
         },
       ],
+      id: 'round-1',
       endedAt: null,
       startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
     },
   ],
   name: 'contest name',
   randomSeed: '123456789',
-  riskLimit: '1',
+  riskLimit: 1,
+  online: true,
 }
 ```
 
@@ -154,8 +160,9 @@ other than `null`, like so:
       ],
       id: 'contest-1',
       name: 'contest name',
-      numWinners: '1',
+      numWinners: 1,
       totalBallotsCast: '2123',
+      votesAllowed: 1
     },
   ],
   jurisdictions: [],
@@ -171,19 +178,21 @@ other than `null`, like so:
           results: {},
           sampleSize: null,
           sampleSizeOptions: [ // not null!!
-            { size: 269, type: 'ASN', prob: null },
+            { size: 269, type: 'ASN', prob: [1] },
             { size: 379, prob: 0.8, type: null },
             { size: 78, prob: null, type: null },
           ],
         },
       ],
+      id: 'round-1',
       endedAt: null,
       startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
     },
   ],
   name: 'contest name',
   randomSeed: '123456789',
-  riskLimit: '1',
+  riskLimit: 1,
+  online: true,
 }
 ```
 
@@ -200,7 +209,7 @@ Form two has three separate POST calls.
 
 ```
 {
-	'size': 578,
+	'size': '578',
 }
 ```
 
@@ -262,8 +271,9 @@ status endpoint again.
       ],
       id: 'contest-1',
       name: 'contest name',
-      totalBallotsCast: '2123',
-      numWinners: '1',
+      totalBallotsCast: 2123,
+      numWinners: 1,
+      votesAllowed: 1
     },
   ],
   jurisdictions: [ // now the jurisdictions array is populated
@@ -273,6 +283,7 @@ status endpoint again.
           id: 'audit-board-1',
           name: 'Audit Board #1',
           members: [],
+          passphrase: 'swooned-scanning-crabmeat-trick'
         },
       ],
       ballotManifest: { // ballotManifest is null because it hasn't been uploaded yet
@@ -281,6 +292,7 @@ status endpoint again.
         numBatches: null,
         uploadedAt: null,
       },
+      batches: [],
       contests: ['contest-1'],
       id: 'jurisdiction-1',
       name: 'Jurisdiction 1',
@@ -298,19 +310,21 @@ status endpoint again.
           results: {},
           sampleSize: 269, // sampleSize is populated
           sampleSizeOptions: [
-            { size: 269, type: 'ASN', prob: null },
+            { size: 269, type: 'ASN', prob: [1] },
             { size: 379, prob: 0.8, type: null },
             { size: 78, prob: null, type: null },
           ],
         },
       ],
+      id: 'round-1',
       endedAt: null,
       startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
     },
   ],
   name: 'contest name',
   randomSeed: '123456789',
-  riskLimit: '1',
+  riskLimit: 1,
+  online: true,
 }
 ```
 
@@ -351,8 +365,9 @@ And then GET the updated status:
       ],
       id: 'contest-1',
       name: 'contest name',
-      numWinners: '1',
+      numWinners: 1,
       totalBallotsCast: '2123',
+      votesAllowed: 1
     },
   ],
   jurisdictions: [
@@ -362,18 +377,7 @@ And then GET the updated status:
           id: 'audit-board-1',
           name: 'Audit Board #1',
           members: [],
-          ballots: [ // there should now be a populated ballots array in each auditBoard
-            {
-              tabulator: '11',
-              batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
-              position: '313',
-              status: 'AUDITED',
-              vote: null,
-              comment: '',
-              id: '1',
-            },
-            ...
-          ],
+          passphrase: 'swooned-scanning-crabmeat-trick',
         },
       ],
       ballotManifest: { // ballotManifest is populated now
@@ -382,6 +386,16 @@ And then GET the updated status:
         numBatches: 10,
         uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
       },
+      batches: [ // there should now also be a populated array of batches
+        {
+          id: 'batch-1',
+          name: '1',
+          numBallots: 117,
+          storageLocation: null,
+          tabulator: null
+        },
+        ...
+      ],
       contests: ['contest-1'],
       id: 'jurisdiction-1',
       name: 'Jurisdiction 1',
@@ -399,23 +413,28 @@ And then GET the updated status:
           results: {},
           sampleSize: 379,
           sampleSizeOptions: [
-            { size: 269, type: 'ASN', prob: null },
+            { size: 269, type: 'ASN', prob: [1] },
             { size: 379, prob: 0.8, type: null },
             { size: 78, prob: null, type: null },
           ],
         },
       ],
+      id: 'round-1',
       endedAt: null,
       startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
     },
   ],
   name: 'contest name',
   randomSeed: '123456789',
-  riskLimit: '1',
+  riskLimit: 1,
+  online: true,
 }
 ```
 
-### Form Three flow
+### Form Three flow (OFFLINE)
+
+If the audit has `online: false` the toatal numbers of ballots for each choice
+must be entered for each round here.
 
 The first round of form three is displayed, and the results for one round are
 posted:
@@ -473,8 +492,9 @@ Incomplete sample size calculations:
       ],
       id: 'contest-1',
       name: 'contest name',
-      numWinners: '1',
+      numWinners: 1,
       totalBallotsCast: '2123',
+      votesAllowed: 1
     },
   ],
   jurisdictions: [
@@ -484,18 +504,7 @@ Incomplete sample size calculations:
           id: 'audit-board-1',
           name: 'Audit Board #1',
           members: [],
-          ballots: [
-            {
-              tabulator: '11',
-              batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
-              position: '313',
-              status: 'AUDITED',
-              vote: null,
-              comment: '',
-              id: '1',
-            },
-            ...
-          ],
+          passphrase: 'swooned-scanning-crabmeat-trick',
         },
       ],
       ballotManifest: {
@@ -504,6 +513,7 @@ Incomplete sample size calculations:
         numBatches: 10,
         uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
       },
+      batches: [],
       contests: ['contest-1'],
       id: 'jurisdiction-1',
       name: 'Jurisdiction 1',
@@ -524,7 +534,7 @@ Incomplete sample size calculations:
           },
           sampleSize: 379,
           sampleSizeOptions: [
-            { size: 269, type: 'ASN', prob: null },
+            { size: 269, type: 'ASN', prob: [1] },
             { size: 379, prob: 0.8, type: null },
             { size: 78, prob: null, type: null },
           ],
@@ -546,13 +556,15 @@ Incomplete sample size calculations:
           sampleSizeOptions: null,
         },
       ],
+      id: 'round-1',
       endedAt: null,
       startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
     },
   ],
   name: 'contest name',
   randomSeed: '123456789',
-  riskLimit: '1',
+  riskLimit: 1,
+  online: true,
 }
 ```
 
@@ -584,8 +596,9 @@ Complete sample size calculations:
       ],
       id: 'contest-1',
       name: 'contest name',
-      numWinners: '1',
+      numWinners: 1,
       totalBallotsCast: '2123',
+      votesAllowed: 1
     },
   ],
   jurisdictions: [
@@ -595,18 +608,7 @@ Complete sample size calculations:
           id: 'audit-board-1',
           name: 'Audit Board #1',
           members: [],
-          ballots: [
-            {
-              tabulator: '11',
-              batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
-              position: '313',
-              status: 'AUDITED',
-              vote: null,
-              comment: '',
-              id: '1',
-            },
-            ...
-          ],
+          passphrase: 'swooned-scanning-crabmeat-trick',
         },
       ],
       ballotManifest: {
@@ -615,6 +617,7 @@ Complete sample size calculations:
         numBatches: 10,
         uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
       },
+      batches: [],
       contests: ['contest-1'],
       id: 'jurisdiction-1',
       name: 'Jurisdiction 1',
@@ -635,7 +638,7 @@ Complete sample size calculations:
           },
           sampleSize: 379,
           sampleSizeOptions: [
-            { size: 269, type: 'ASN', prob: null },
+            { size: 269, type: 'ASN', prob: [1] },
             { size: 379, prob: 0.8, type: null },
             { size: 78, prob: null, type: null },
           ],
@@ -655,19 +658,21 @@ Complete sample size calculations:
           results: {}, // still no results for round 2 yet
           sampleSize: 379, // but now there's a sample size!
           sampleSizeOptions: [
-            { size: 269, type: 'ASN', prob: null },
+            { size: 269, type: 'ASN', prob: [1] },
             { size: 379, prob: 0.8, type: null },
             { size: 78, prob: null, type: null },
           ],
         },
       ],
+      id: 'round-1',
       endedAt: null,
       startedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
     },
   ],
   name: 'contest name',
   randomSeed: '123456789',
-  riskLimit: '1',
+  riskLimit: 1,
+  online: true,
 }
 ```
 
@@ -701,8 +706,9 @@ happened on the first round, would look like this:
       ],
       id: 'contest-1',
       name: 'contest name',
-      totalBallotsCast: '2123',
-      numWinners: '1',
+      totalBallotsCast: 2123,
+      numWinners: 1,
+      votesAllowed: 1
     },
   ],
   jurisdictions: [
@@ -712,18 +718,7 @@ happened on the first round, would look like this:
           id: 'audit-board-1',
           name: 'Audit Board #1',
           members: [],
-          ballots: [
-            {
-              tabulator: '11',
-              batch: '0003-04-Precinct 13 (Jonesboro Fire Department)',
-              position: '313',
-              status: 'AUDITED',
-              vote: null,
-              comment: '',
-              id: '1',
-            },
-            ...
-          ],
+          passphrase: 'swooned-scanning-crabmeat-trick',
         },
       ],
       ballotManifest: {
@@ -732,6 +727,7 @@ happened on the first round, would look like this:
         numBatches: 10,
         uploadedAt: 'Thu, 18 Jul 2019 16:34:07 GMT',
       },
+      batches: [],
       contests: ['contest-1'],
       id: 'jurisdiction-1',
       name: 'Jurisdiction 1',
@@ -752,7 +748,7 @@ happened on the first round, would look like this:
           },
           sampleSize: 379,
           sampleSizeOptions: [
-            { size: 269, type: 'ASN', prob: null },
+            { size: 269, type: 'ASN', prob: [1] },
             { size: 379, prob: 0.8, type: null },
             { size: 78, prob: null, type: null },
           ],
@@ -764,6 +760,48 @@ happened on the first round, would look like this:
   ],
   name: 'contest name',
   randomSeed: '123456789',
-  riskLimit: '1',
+  riskLimit: 1,
+  online: true,
 }
 ```
+
+### Form Three flow (ONLINE)
+
+If the audit has `online: true` the data is entered by the audit board members
+in the Data Entry Flow and there is no form shown here. Instead, a list of the
+ballots is fetched and a progress bar is displayed indicating how many of the
+ballots have been audited.
+
+- `GET /election/<electionId>/jurisdiction/<jurisdictionId>/round/<roundId>/ballot-list`
+
+- `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+  `CalculateRiskMeasurement` > `getBallots(round)` > `api()`
+
+  ```
+  {
+    ballots: [
+      {
+        comment: null,
+        position: 1,
+        status: null, // status is null!
+        timesSamples: 4,
+        vote: null,
+        batch: {
+          id: 'batch-1',
+          name: '1',
+          tabulator: null,
+        },
+        auditBoard: {
+          name: 'audit-board-1',
+          name: 'Audit Board #1',
+        },
+      },
+      ...
+    ]
+  }
+  ```
+
+Once all of the ballots returned have `status: 'AUDITED'` the progress bar will
+show completion and allow the round to be submitted for risk calculation.
+
+_More coming soon!_
