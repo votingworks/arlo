@@ -1,4 +1,4 @@
-# API Sequence
+# API Sequence Walkthrough
 
 ## Audit Admin Flow
 

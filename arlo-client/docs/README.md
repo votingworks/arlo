@@ -7,3 +7,4 @@ Welcome to Arlo!
 - [Release Notes](release_notes.md)
 - [Style Guide](style.md)
 - [Architecture Choices](style.md#architecture)
+- [API Sequence Walkthrough](api_sequence.md)
