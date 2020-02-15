@@ -297,6 +297,21 @@ if ADMIN_PASSWORD:
         result = "\n".join(["%s - %s" % (e.id, e.name) for e in elections])
         return Response(result, content_type='text/plain')
 
+@app.route('/elections', methods=["GET"])
+def audits_list():
+    elections_list = Election.query.all()
+
+    return jsonify(
+        elections = [
+            {
+                "id": e.id,
+                "name": e.name,
+                "date": e.created_at
+            }
+            for e in elections_list
+        ]
+    )
+
 @app.route('/election/new', methods=["POST"])
 def election_new():
     election_id = create_election()

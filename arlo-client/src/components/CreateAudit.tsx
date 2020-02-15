@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { RouteComponentProps } from 'react-router-dom'
@@ -21,6 +21,15 @@ const Wrapper = styled.div`
   }
 `
 
+interface IElection {
+  id: string
+  name: string
+  date: string
+}
+interface IElections {
+  elections: IElection[]
+}
+
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const [loading, setLoading] = useState(false)
   const onClick = async () => {
@@ -41,6 +50,29 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
       toast.error(err.message)
     }
   }
+
+  const [elections, setElections] = useState<IElections>({ elections: [] })
+
+  const getStatus = useCallback(async (): Promise<IElections> => {
+    const list: IElections | IErrorResponse = await api(`/elections`)
+    if (checkAndToast(list)) {
+      return { elections: [] }
+    } else {
+      return list
+    }
+  }, [])
+
+  const updateElections = useCallback(async () => {
+    const list = await getStatus()
+    setLoading(true)
+    setElections(list)
+    setLoading(false)
+  }, [getStatus])
+
+  useEffect(() => {
+    updateElections()
+  }, [updateElections])
+
   return (
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
@@ -55,6 +87,13 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
       >
         Create a New Audit
       </Button>
+      <div>
+        {elections.elections.map(e => (
+          <div key={e.id}>
+            {e.name} ({e.date})
+          </div>
+        ))}
+      </div>
     </Wrapper>
   )
 }

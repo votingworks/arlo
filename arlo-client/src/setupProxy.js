@@ -13,6 +13,7 @@ const target = process.env.ARLO_BACKEND_URL || 'http://localhost:3001/'
 module.exports = function(app) {
   app.use(proxy('/admin', { target }))
   app.use(proxy('/election/new', { target }))
+  app.use(proxy('/elections', { target }))
   app.use(proxy('/election/*/audit/**', { target }))
   app.use(proxy('/election/*/jurisdiction/**', { target }))
   app.use(proxy('/election/*/admin/**', { target }))
