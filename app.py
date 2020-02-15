@@ -299,7 +299,7 @@ if ADMIN_PASSWORD:
 
 @app.route('/elections', methods=["GET"])
 def audits_list():
-    elections_list = Election.query.all()
+    elections_list = Election.query.order_by(Election.created_at).all()
 
     return jsonify(
         elections = [
