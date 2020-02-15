@@ -2,6 +2,7 @@
 from app import db
 from sqlalchemy.orm import relationship
 from typing import Union, List
+import datetime
 
 # on-delete-cascade is done in SQLAlchemy like this:
 # https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete
@@ -13,6 +14,7 @@ class Election(db.Model):
     name = db.Column(db.String(200), nullable=True)
     state = db.Column(db.String(100), nullable=True)
     election_date = db.Column(db.Date, nullable=True)
+    created_at = db.Column(db.Date, nullable=True, default=datetime.datetime.now())
     election_type = db.Column(db.String(200), nullable=True)
     meeting_date = db.Column(db.Date, nullable=True)
     risk_limit = db.Column(db.Integer, nullable=True)
