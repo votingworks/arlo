@@ -41,6 +41,7 @@
     "http-proxy-middleware": "^0.19.1",
     "jsdom": "^15.1.1",
     "jspdf": "^1.5.3",
+    "moment": "^2.24.0",
     "qrcode.react": "^0.9.3",
     "react": "16.9.0",
     "react-app-polyfill": "^1.0.1",

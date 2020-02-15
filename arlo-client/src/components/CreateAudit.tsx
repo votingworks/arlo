@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
+import moment from 'moment'
 import { toast } from 'react-toastify'
-import { RouteComponentProps } from 'react-router-dom'
+import { RouteComponentProps, Link } from 'react-router-dom'
+import { RadioGroup, Radio } from '@blueprintjs/core'
 import FormButton from './Form/FormButton'
 import { api, checkAndToast } from './utilities'
 import { ICreateAuditParams, IErrorResponse } from '../types'
@@ -32,6 +34,8 @@ interface IElections {
 
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const [loading, setLoading] = useState(false)
+  const [electionId, setElectionId] = useState('')
+
   const onClick = async () => {
     try {
       setLoading(true)
@@ -66,6 +70,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
     const list = await getStatus()
     setLoading(true)
     setElections(list)
+    setElectionId(list.elections[0].id)
     setLoading(false)
   }, [getStatus])
 
@@ -87,13 +92,24 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
       >
         Create a New Audit
       </Button>
-      <div>
+      <RadioGroup
+        label="Select an existing audit:"
+        selectedValue={electionId}
+        onChange={e => setElectionId(e.currentTarget.value)}
+      >
         {elections.elections.map(e => (
-          <div key={e.id}>
-            {e.name} ({e.date})
-          </div>
+          <Radio key={e.id} value={e.id}>
+            {e.name || <i>Not named yet</i>} (Created&nbsp;
+            {moment(e.date).format('MM/DD/YYYY')})
+          </Radio>
         ))}
-      </div>
+      </RadioGroup>
+      <Link
+        to={`/election/${electionId}`}
+        className="bp3-button bp3-intent-primary"
+      >
+        View Audit
+      </Link>
     </Wrapper>
   )
 }
