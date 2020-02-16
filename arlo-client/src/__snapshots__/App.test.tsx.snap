@@ -26,6 +26,19 @@ exports[`App renders properly 1`] = `
           Create a New Audit
         </span>
       </button>
+      <div>
+        <label
+          class="bp3-label"
+        >
+          Select an existing audit:
+        </label>
+      </div>
+      <a
+        class="bp3-button bp3-intent-primary"
+        href="/election/"
+      >
+        View Audit
+      </a>
     </div>
   </div>
 </div>

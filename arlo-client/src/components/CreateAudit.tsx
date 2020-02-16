@@ -28,7 +28,7 @@ interface IElection {
   name: string
   date: string
 }
-interface IElections {
+export interface IElections {
   elections: IElection[]
 }
 
@@ -58,19 +58,24 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const [elections, setElections] = useState<IElections>({ elections: [] })
 
   const getStatus = useCallback(async (): Promise<IElections> => {
-    const list: IElections | IErrorResponse = await api(`/elections`)
-    if (checkAndToast(list)) {
-      return { elections: [] }
-    } else {
-      return list
+    try {
+      const list: IElections | IErrorResponse = await api(`/elections`)
+      if (checkAndToast(list)) {
+        return { elections: [] }
+      } else {
+        return list
+      }
+    } catch (err) {
+      toast.error(err.message)
     }
+    return { elections: [] }
   }, [])
 
   const updateElections = useCallback(async () => {
     const list = await getStatus()
     setLoading(true)
     setElections(list)
-    setElectionId(list.elections[0].id)
+    setElectionId(list.elections.length ? list.elections[0].id : '')
     setLoading(false)
   }, [getStatus])
 
