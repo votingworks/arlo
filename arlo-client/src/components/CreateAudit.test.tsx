@@ -1,10 +1,10 @@
 import React from 'react'
-import { render, fireEvent, wait } from '@testing-library/react'
+import { fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import { RouteComponentProps, BrowserRouter as Router } from 'react-router-dom'
 import CreateAudit, { IElections } from './CreateAudit'
 import { ICreateAuditParams } from '../types'
-import { routerTestProps } from './testUtilities'
+import { routerTestProps, asyncActRender } from './testUtilities'
 import * as utilities from './utilities'
 
 const apiMock: jest.SpyInstance<
@@ -21,8 +21,13 @@ const apiMock: jest.SpyInstance<
         return {
           elections: [
             {
-              name: 'Election One',
+              name: '',
               id: 'election-1',
+              date: 'Thu, 18 Jul 2019 16:34:07 GMT',
+            },
+            {
+              name: 'Election Two',
+              id: 'election-2',
               date: 'Thu, 18 Jul 2019 16:34:07 GMT',
             },
           ],
@@ -58,8 +63,8 @@ afterEach(() => {
 })
 
 describe('CreateAudit', () => {
-  it('renders correctly', () => {
-    const { container } = render(
+  it('renders correctly', async () => {
+    const { container } = await asyncActRender(
       <Router>
         <CreateAudit {...routeProps} />
       </Router>
@@ -68,7 +73,7 @@ describe('CreateAudit', () => {
   })
 
   it('calls the /election/new endpoint', async () => {
-    const { getByText } = render(
+    const { getByText } = await asyncActRender(
       <Router>
         <CreateAudit {...routeProps} />
       </Router>
@@ -85,9 +90,23 @@ describe('CreateAudit', () => {
     })
   })
 
+  it('selects a different election', async () => {
+    const { getByLabelText, container } = await asyncActRender(
+      <Router>
+        <CreateAudit {...routeProps} />
+      </Router>
+    )
+
+    fireEvent.click(getByLabelText('Election Two', { exact: false }), {
+      bubbles: true,
+    })
+
+    expect(container).toMatchSnapshot()
+  })
+
   it('handles error responses from server', async () => {
     checkAndToastMock.mockReturnValue(true)
-    const { getByText } = render(
+    const { getByText } = await asyncActRender(
       <Router>
         <CreateAudit {...routeProps} />
       </Router>
@@ -110,7 +129,7 @@ describe('CreateAudit', () => {
       throw new Error('404')
     })
     checkAndToastMock.mockReturnValue(true)
-    const { getByText } = render(
+    const { getByText } = await asyncActRender(
       <Router>
         <CreateAudit {...routeProps} />
       </Router>

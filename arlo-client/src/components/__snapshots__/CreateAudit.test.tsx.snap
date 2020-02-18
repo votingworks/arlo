@@ -26,10 +26,115 @@ exports[`CreateAudit renders correctly 1`] = `
       >
         Select an existing audit:
       </label>
+      <label
+        class="bp3-control bp3-radio"
+      >
+        <input
+          name="Blueprint3.RadioGroup-0"
+          type="radio"
+          value="election-1"
+        />
+        <span
+          class="bp3-control-indicator"
+        />
+        <i>
+          Not named yet
+        </i>
+         (Created 
+        07/18/2019
+        )
+      </label>
+      <label
+        class="bp3-control bp3-radio"
+      >
+        <input
+          name="Blueprint3.RadioGroup-0"
+          type="radio"
+          value="election-2"
+        />
+        <span
+          class="bp3-control-indicator"
+        />
+        Election Two
+         (Created 
+        07/18/2019
+        )
+      </label>
     </div>
     <a
       class="bp3-button bp3-intent-primary"
-      href="/election/"
+      href="/election/election-1"
+    >
+      View Audit
+    </a>
+  </div>
+</div>
+`;
+
+exports[`CreateAudit selects a different election 1`] = `
+<div>
+  <div
+    class="sc-htpNat dgtpPg"
+  >
+    <img
+      alt="Arlo, by VotingWorks"
+      height="50px"
+      src="/arlo.png"
+    />
+    <button
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH iEhHA sc-bdVaJa gLVjYw"
+      type="button"
+    >
+      <span
+        class="bp3-button-text"
+      >
+        Create a New Audit
+      </span>
+    </button>
+    <div>
+      <label
+        class="bp3-label"
+      >
+        Select an existing audit:
+      </label>
+      <label
+        class="bp3-control bp3-radio"
+      >
+        <input
+          name="Blueprint3.RadioGroup-2"
+          type="radio"
+          value="election-1"
+        />
+        <span
+          class="bp3-control-indicator"
+        />
+        <i>
+          Not named yet
+        </i>
+         (Created 
+        07/18/2019
+        )
+      </label>
+      <label
+        class="bp3-control bp3-radio"
+      >
+        <input
+          name="Blueprint3.RadioGroup-2"
+          type="radio"
+          value="election-2"
+        />
+        <span
+          class="bp3-control-indicator"
+        />
+        Election Two
+         (Created 
+        07/18/2019
+        )
+      </label>
+    </div>
+    <a
+      class="bp3-button bp3-intent-primary"
+      href="/election/election-2"
     >
       View Audit
     </a>
