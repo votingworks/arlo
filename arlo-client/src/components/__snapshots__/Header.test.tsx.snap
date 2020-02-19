@@ -11,10 +11,14 @@ exports[`renders correctly 1`] = `
       <div
         class="bp3-navbar-heading"
       >
-        <img
-          alt="Arlo, by VotingWorks"
-          src="/arlo.png"
-        />
+        <a
+          href="/"
+        >
+          <img
+            alt="Arlo, by VotingWorks"
+            src="/arlo.png"
+          />
+        </a>
       </div>
     </div>
     <div
