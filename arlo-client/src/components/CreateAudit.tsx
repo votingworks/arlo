@@ -97,24 +97,32 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
       >
         Create a New Audit
       </Button>
-      <RadioGroup
-        label="Select an existing audit:"
-        selectedValue={electionId}
-        onChange={e => setElectionId(e.currentTarget.value)}
-      >
-        {elections.elections.map(e => (
-          <Radio key={e.id} value={e.id}>
-            {e.name || <i>Not named yet</i>} (Created&nbsp;
-            {moment(e.date).format('MM/DD/YYYY')})
-          </Radio>
-        ))}
-      </RadioGroup>
-      <Link
-        to={`/election/${electionId}`}
-        className="bp3-button bp3-intent-primary"
-      >
-        View Audit
-      </Link>
+      {elections.elections.length > 0 ? (
+        <>
+          <RadioGroup
+            label="Select an existing audit:"
+            selectedValue={electionId}
+            onChange={e => setElectionId(e.currentTarget.value)}
+          >
+            {elections.elections.map(e => (
+              <Radio key={e.id} value={e.id}>
+                {e.name || <i>Not named yet</i>} (Created&nbsp;
+                {moment(e.date).format('MM/DD/YYYY')})
+              </Radio>
+            ))}
+          </RadioGroup>
+          <Link
+            to={`/election/${electionId}`}
+            className="bp3-button bp3-intent-primary"
+          >
+            View Audit
+          </Link>
+        </>
+      ) : (
+        <p>
+          You do not have any audits currently associated with your account.
+        </p>
+      )}
     </Wrapper>
   )
 }

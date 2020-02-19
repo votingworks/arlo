@@ -242,7 +242,7 @@ describe('AuditFlow ballot interaction', () => {
     })
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(4)
+      expect(apiMock).toBeCalledTimes(6)
     })
   })
 })
