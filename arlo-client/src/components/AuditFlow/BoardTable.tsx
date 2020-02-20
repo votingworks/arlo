@@ -87,7 +87,6 @@ const BoardTable: React.FC<IProps> = ({
         case 'tabulator':
           return (
             <PaddedCell>
-              {/* eslint-disable-next-line no-null/no-null */}
               {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
             </PaddedCell>
           )
@@ -142,10 +141,7 @@ const BoardTable: React.FC<IProps> = ({
           ballots.length > 0 &&
           unauditedBallot && (
             <Link
-              to={
-                url +
-                `/round/1/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
-              }
+              to={`${url}/round/1/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`}
               className="bp3-button bp3-intent-primary"
             >
               Start Auditing

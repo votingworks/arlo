@@ -58,6 +58,7 @@ export const testNumber = (
   return async (value: unknown) => {
     try {
       await schema.validate(value)
+      return undefined
     } catch (error) {
       return error.errors[0]
     }
@@ -68,7 +69,8 @@ export const asyncForEach = async <T>(
   array: T[],
   callback: (value: T, index: number, array: T[]) => Promise<void>
 ) => {
-  for (let index = 0; index < array.length; index++) {
+  for (let index = 0; index < array.length; index += 1) {
+    // eslint-disable-next-line no-await-in-loop
     await callback(array[index], index, array)
   }
 }
@@ -77,13 +79,13 @@ const getErrorsFromResponse = (
   response: unknown
 ): { message: string }[] | undefined => {
   if (typeof response !== 'object' || !response) {
-    return
+    return undefined
   }
 
-  const errors = (response as { [key: string]: unknown })['errors']
+  const { errors } = response as { [key: string]: unknown }
 
   if (!Array.isArray(errors)) {
-    return
+    return undefined
   }
 
   return errors
@@ -95,11 +97,11 @@ export const checkAndToast = (
   const errors = getErrorsFromResponse(response)
   if (errors) {
     toast.error(
-      'There was a server error regarding: ' +
-        errors.map(({ message }) => message).join(', ')
+      `There was a server error regarding: ${errors
+        .map(({ message }) => message)
+        .join(', ')}`
     )
     return true
-  } else {
-    return false
   }
+  return false
 }

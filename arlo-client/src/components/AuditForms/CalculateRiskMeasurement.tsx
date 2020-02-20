@@ -117,9 +117,8 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
       )
       if (checkAndToast(response)) {
         return []
-      } else {
-        return response.ballots
       }
+      return response.ballots
     },
     [electionId, jId, audit.rounds]
   )
@@ -152,7 +151,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
       labels.setFontSize(9)
       let labelCount = 0
       ballots.forEach(ballot => {
-        labelCount++
+        labelCount += 1
         if (labelCount > 30) {
           labels.addPage('letter')
           labelCount = 1
@@ -184,7 +183,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
       placeholders.setFontSize(20)
       let pageCount = 0
       ballots.forEach(ballot => {
-        pageCount > 0 && placeholders.addPage('letter')
+        if (pageCount > 0) placeholders.addPage('letter')
         placeholders.text(
           placeholders.splitTextToSize(ballot.auditBoard!.name, 180),
           20,
@@ -199,7 +198,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
           40
         )
         placeholders.text(`Ballot Number: ${ballot.position}`, 20, 100)
-        pageCount++
+        pageCount += 1
       })
       placeholders.autoPrint()
       placeholders.save(`Round ${r + 1} Placeholders.pdf`)
@@ -215,7 +214,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
         )
         /* istanbul ignore else */
         if (qr) {
-          i > 0 && auditBoards.addPage('letter')
+          if (i > 0) auditBoards.addPage('letter')
           const url = qr.toDataURL()
           auditBoards.setFontSize(22)
           auditBoards.setFontStyle('bold')
@@ -256,10 +255,10 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
       contests: audit.contests.map((contest: IContest, i: number) => ({
         id: contest.id,
         results: Object.keys(values.contests[i]).reduce(
-          (a, k) => {
-            a[k] = Number(values.contests[i][k])
-            return a
-          },
+          (a, k) => ({
+            ...a,
+            [k]: Number(values.contests[i][k]),
+          }),
           {} as IRoundPost['contests'][0]['results']
         ),
       })),
@@ -320,9 +319,13 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
     )
     const roundValues = {
       contests: aggregateContests.map((contest: AggregateContest) =>
-        contest.choices.reduce((acc, choice) => {
-          return { ...acc, [choice.id]: contest.results[choice.id] || 0 }
-        }, {})
+        contest.choices.reduce(
+          (acc, choice) => ({
+            ...acc,
+            [choice.id]: contest.results[choice.id] || 0,
+          }),
+          {}
+        )
       ),
       round: i + 1,
     }
@@ -331,18 +334,14 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
       aggregateContests.every(
         (contest: AggregateContest) => !!contest.endMeasurements.isComplete
       )
-    const completeContests = aggregateContests.reduce((acc, c) => {
-      if (c.endMeasurements.isComplete) {
-        acc += 1
-      }
-      return acc
-    }, 0)
+    const completeContests = aggregateContests.reduce(
+      (acc, c) => (c.endMeasurements.isComplete ? acc + 1 : acc),
+      0
+    )
     const aggregatedBallots = aggregateContests.reduce(
-      (acc: number, contest: AggregateContest) => {
+      (acc: number, contest: AggregateContest) =>
         /* istanbul ignore next */
-        acc += contest.sampleSize || 0
-        return acc
-      },
+        acc + (contest.sampleSize || 0),
       0
     )
     /* eslint-disable react/no-array-index-key */
@@ -371,9 +370,9 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
               </FormSectionLabel>
               <FormSectionDescription>
                 {aggregateContests.map(
-                  (contest: AggregateContest, i: number) => (
+                  (contest: AggregateContest, contestIndex: number) => (
                     <p key={contest.id}>
-                      Contest {i + 1}: {contest.sampleSize} ballots
+                      Contest {contestIndex + 1}: {contest.sampleSize} ballots
                     </p>
                   )
                 )}
@@ -454,12 +453,12 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
                                   )}
                                   <InputSection>
                                     {Object.keys(contest).map(choiceId => {
-                                      const name = aggregateContests[
+                                      const { name } = aggregateContests[
                                         j
                                       ].choices.find(
                                         (candidate: ICandidate) =>
                                           candidate.id === choiceId
-                                      )!.name
+                                      )!
                                       return (
                                         <React.Fragment key={choiceId}>
                                           <InlineWrapper>

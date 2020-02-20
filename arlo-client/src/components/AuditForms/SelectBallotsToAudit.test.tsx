@@ -331,7 +331,7 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles api error on /audit/sample-size', async () => {
     apiMock
-      .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
+      .mockRejectedValueOnce({ message: 'error' })
       .mockImplementation(async () => ({}))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
@@ -347,9 +347,9 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles api error on /audit/jurisdictions', async () => {
     apiMock
-      .mockImplementationOnce(async () => {})
-      .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
-      .mockImplementation(async () => {})
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce({ message: 'error' })
+      .mockResolvedValue(undefined)
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -364,9 +364,9 @@ describe('SelectBallotsToAudit', () => {
 
   it('handles api error on /audit/jurisdiction/:id/manifest', async () => {
     apiMock
-      .mockImplementationOnce(async () => {})
-      .mockImplementationOnce(async () => {})
-      .mockImplementationOnce(() => Promise.reject({ message: 'error' }))
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce({ message: 'error' })
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -380,7 +380,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('handles server error on /audit/sample-size', async () => {
-    apiMock.mockImplementation(async () => ({}))
+    apiMock.mockResolvedValue(undefined)
     checkAndToastMock.mockReturnValueOnce(true).mockReturnValue(false)
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
@@ -395,7 +395,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('handles server error on /audit/jurisdictions', async () => {
-    apiMock.mockImplementation(async () => {})
+    apiMock.mockResolvedValue(undefined)
     checkAndToastMock
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true)
@@ -413,7 +413,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('handles server error on /audit/jurisdiction/:id/manifest', async () => {
-    apiMock.mockImplementation(async () => {})
+    apiMock.mockResolvedValue(undefined)
     checkAndToastMock
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(false)
@@ -433,8 +433,8 @@ describe('SelectBallotsToAudit', () => {
 
   it('uses the highest prob value from duplicate sampleSizes', () => {
     statusStates[1].rounds[0].contests[0].sampleSizeOptions = [
-      { size: 30, prob: 0.8, type: null }, // eslint-disable-line no-null/no-null
-      { size: 30, prob: 0.9, type: null }, // eslint-disable-line no-null/no-null
+      { size: 30, prob: 0.8, type: null },
+      { size: 30, prob: 0.9, type: null },
     ]
     const { queryAllByText } = render(
       <SelectBallotsToAudit
@@ -457,8 +457,8 @@ describe('SelectBallotsToAudit', () => {
   it('does not display duplicate sampleSize options', () => {
     const statusState = { ...statusStates[1] }
     statusState.rounds[0].contests[0].sampleSizeOptions = [
-      { size: 30, prob: null, type: null }, // eslint-disable-line no-null/no-null
-      { size: 30, prob: null, type: null }, // eslint-disable-line no-null/no-null
+      { size: 30, prob: null, type: null },
+      { size: 30, prob: null, type: null },
     ]
     const { queryAllByText } = render(
       <SelectBallotsToAudit

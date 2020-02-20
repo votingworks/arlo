@@ -2,7 +2,7 @@
  * Yields indexes from 1 through `maximum`.
  */
 export function* upTo(maximum: number): IterableIterator<number> {
-  for (let i = 1; i <= maximum; i++) {
+  for (let i = 1; i <= maximum; i += 1) {
     yield i
   }
 }

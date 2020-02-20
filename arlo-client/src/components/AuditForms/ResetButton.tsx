@@ -39,7 +39,6 @@ const ResetButton: React.FC<IProps> = ({
       resetButtonWrapper
     )
   }
-  // eslint-disable-next-line no-null/no-null
   return null
 }
 

@@ -45,7 +45,6 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
     'jest',
-    'no-null',
     'react',
     'cypress',
     'jsx-a11y',
@@ -70,7 +69,6 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off', // Want to use it, but it requires return types for all built-in React lifecycle methods.
     '@typescript-eslint/no-non-null-assertion': 'off',
-    '@typescript-eslint/no-null-keyword': 'on',
     camelcase: 'error',
     'import/no-extraneous-dependencies': [
       'error',
@@ -79,7 +77,6 @@ module.exports = {
       },
     ],
     'no-unused-vars': 1,
-    'no-null/no-null': 1, // TypeScript with strictNullChecks
     'react/destructuring-assignment': 'off',
     'react/jsx-boolean-value': [2, 'never'],
     'react/jsx-filename-extension': [
@@ -91,5 +88,10 @@ module.exports = {
     strict: 0,
     '@typescript-eslint/no-object-literal-type-assertion': 'off',
     '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
+    'no-restricted-syntax': 'off',
+    'no-underscore-dangle': 'off',
+    'class-methods-use-this': 'off',
+    'no-nested-ternary': 'off',
+    'new-cap': 'off',
   },
 }

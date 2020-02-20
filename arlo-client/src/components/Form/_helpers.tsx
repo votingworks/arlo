@@ -2,8 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 
 export const generateOptions = (count: number): JSX.Element[] => {
-  let elements: JSX.Element[] = []
-  for (let i = 1; i <= count; i++) {
+  const elements: JSX.Element[] = []
+  for (let i = 1; i <= count; i += 1) {
     elements.push(<option key={i.toString()}>{i}</option>)
   }
   return elements

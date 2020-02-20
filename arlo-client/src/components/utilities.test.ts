@@ -57,12 +57,16 @@ describe('utilities.ts', () => {
     it('iterates', async () => {
       const j = (function* idMaker() {
         let index = 0
-        while (true) yield index++
+        while (true) yield (index += 1)
       })()
       let result = ''
       const condition = async () => j.next().value > 2
-      const callback = () => (result = 'callback completed')
-      const error = () => (result = 'an error')
+      const callback = () => {
+        result = 'callback completed'
+      }
+      const error = () => {
+        result = 'an error'
+      }
       poll(condition, callback, error)
       await wait(() => {
         expect(result).toBe('callback completed')
@@ -72,8 +76,12 @@ describe('utilities.ts', () => {
     it('times out', async () => {
       let result = ''
       const condition = async () => false
-      const callback = () => (result = 'callback completed')
-      const error = () => (result = 'an error')
+      const callback = () => {
+        result = 'callback completed'
+      }
+      const error = () => {
+        result = 'an error'
+      }
       poll(condition, callback, error, 50, 10)
       await wait(() => {
         expect(result).toBe('an error')
@@ -89,8 +97,12 @@ describe('utilities.ts', () => {
         .mockReturnValueOnce(lateDate)
       let result = ''
       const condition = async () => false
-      const callback = () => (result = 'callback completed')
-      const error = () => (result = 'an error')
+      const callback = () => {
+        result = 'callback completed'
+      }
+      const error = () => {
+        result = 'an error'
+      }
       poll(condition, callback, error)
       await wait(() => {
         expect(result).toBe('an error')

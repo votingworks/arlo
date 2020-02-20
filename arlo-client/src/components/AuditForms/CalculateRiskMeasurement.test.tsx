@@ -28,10 +28,12 @@ jest.mock('jspdf')
 
 const jspdfMock = jsPDF as jest.Mock
 
-const setIsLoadingMock = jest.fn()
-const updateAuditMock = jest.fn()
-const getStatusMock = jest.fn().mockImplementation(async () => statusStates[5])
-const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
+const sharedSetIsLoadingMock = jest.fn()
+const sharedUpdateAuditMock = jest.fn()
+const sharedGetStatusMock = jest
+  .fn()
+  .mockImplementation(async () => statusStates[5])
+const sharedToastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 let jspdfInstance: jsPDF
 beforeEach(() => {
@@ -46,10 +48,10 @@ beforeEach(() => {
     autoPrint: jest.fn(),
   } as unknown) as jsPDF
   jspdfMock.mockImplementation(() => jspdfInstance)
-  setIsLoadingMock.mockClear()
-  updateAuditMock.mockClear()
-  getStatusMock.mockClear()
-  toastSpy.mockClear()
+  sharedSetIsLoadingMock.mockClear()
+  sharedUpdateAuditMock.mockClear()
+  sharedGetStatusMock.mockClear()
+  sharedToastSpy.mockClear()
   apiMock.mockClear()
   jspdfMock.mockClear()
   checkAndToastMock.mockClear()
@@ -61,9 +63,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[4]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -75,9 +77,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[5]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -89,9 +91,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[4]}
         isLoading
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -103,9 +105,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[5]}
         isLoading
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -121,9 +123,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[4]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -182,16 +184,16 @@ describe('CalculateRiskMeasurement', () => {
 
       await wait(() => {
         expect(apiMock).toBeCalledTimes(1)
-        expect(setIsLoadingMock).toBeCalledTimes(2)
-        expect(getStatusMock).toBeCalledTimes(1)
-        expect(updateAuditMock).toBeCalledTimes(1)
-        expect(toastSpy).toBeCalledTimes(0)
+        expect(sharedSetIsLoadingMock).toBeCalledTimes(2)
+        expect(sharedGetStatusMock).toBeCalledTimes(1)
+        expect(sharedUpdateAuditMock).toBeCalledTimes(1)
+        expect(sharedToastSpy).toBeCalledTimes(0)
       })
     }
   })
 
   it(`handles background process timeout`, async () => {
-    const dateIncrementor = (function*() {
+    const dateIncrementor = (function* incr() {
       let i = 10
       while (true) {
         i += 130000
@@ -215,8 +217,8 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[4]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
         getStatus={getStatusMock}
         electionId="1"
       />
@@ -228,11 +230,11 @@ describe('CalculateRiskMeasurement', () => {
 
     await wait(() => {
       expect(dateSpy).toBeCalled()
-      expect(toastSpy).toBeCalledTimes(1)
+      expect(sharedToastSpy).toBeCalledTimes(1)
       expect(apiMock).toBeCalled()
-      expect(setIsLoadingMock).toBeCalledTimes(1)
+      expect(sharedSetIsLoadingMock).toBeCalledTimes(1)
       expect(getStatusMock).toBeCalled()
-      expect(updateAuditMock).toBeCalledTimes(0)
+      expect(sharedUpdateAuditMock).toBeCalledTimes(0)
     })
   })
 
@@ -254,8 +256,8 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[4]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
         getStatus={getStatusMock}
         electionId="1"
       />
@@ -267,11 +269,11 @@ describe('CalculateRiskMeasurement', () => {
 
     await wait(() => {
       expect(checkAndToastMock).toBeCalledTimes(1)
-      expect(toastSpy).toBeCalledTimes(0)
+      expect(sharedToastSpy).toBeCalledTimes(0)
       expect(apiMock).toBeCalled()
-      expect(setIsLoadingMock).toBeCalledTimes(2)
+      expect(sharedSetIsLoadingMock).toBeCalledTimes(2)
       expect(getStatusMock).toBeCalledTimes(0)
-      expect(updateAuditMock).toBeCalledTimes(0)
+      expect(sharedUpdateAuditMock).toBeCalledTimes(0)
     })
 
     fireEvent.click(getByText('Download Label Sheets for Round 1'), {
@@ -294,9 +296,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[3]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -322,9 +324,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[3]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -350,9 +352,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[4]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -374,9 +376,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[5]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -389,20 +391,18 @@ describe('CalculateRiskMeasurement', () => {
 
   it('handles errors from api', async () => {
     apiMock.mockReset()
-    apiMock.mockImplementation(() =>
-      Promise.reject({
-        message: 'error',
-        ok: false,
-      })
-    )
+    apiMock.mockRejectedValueOnce({
+      message: 'error',
+      ok: false,
+    })
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const { getByLabelText, getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates[4]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -425,8 +425,8 @@ describe('CalculateRiskMeasurement', () => {
 
       await wait(() => {
         expect(apiMock).toBeCalledTimes(1)
-        expect(setIsLoadingMock).toBeCalledTimes(1)
-        expect(updateAuditMock).toBeCalledTimes(0)
+        expect(sharedSetIsLoadingMock).toBeCalledTimes(1)
+        expect(sharedUpdateAuditMock).toBeCalledTimes(0)
         expect(toastSpy).toBeCalledTimes(1)
       })
     }
@@ -439,9 +439,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[7]}
         isLoading={false}
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -473,9 +473,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[4]}
         isLoading
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )
@@ -489,9 +489,9 @@ describe('CalculateRiskMeasurement', () => {
       <CalculateRiskMeasurement
         audit={statusStates[8]}
         isLoading
-        setIsLoading={setIsLoadingMock}
-        updateAudit={updateAuditMock}
-        getStatus={getStatusMock}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
         electionId="1"
       />
     )

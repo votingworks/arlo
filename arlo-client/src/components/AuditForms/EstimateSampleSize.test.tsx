@@ -5,8 +5,8 @@ import EstimateSampleSize, {
   TwoColumnSection,
   InputLabelRow,
   InputFieldRow,
-  //FieldLeft, TODO: need to mock Formik Field to test these like this
-  //FieldRight,
+  // FieldLeft, TODO: need to mock Formik Field to test these like this
+  // FieldRight,
   InputLabel,
   Action,
 } from './EstimateSampleSize'
@@ -201,8 +201,8 @@ describe('EstimateSampleSize', () => {
     TwoColumnSection,
     InputLabelRow,
     InputFieldRow,
-    //FieldLeft, TODO: need to mock Formik Field to test these like this
-    //FieldRight,
+    // FieldLeft, TODO: need to mock Formik Field to test these like this
+    // FieldRight,
     InputLabel,
     Action,
   ].forEach(Component => {
@@ -486,7 +486,7 @@ describe('EstimateSampleSize', () => {
   })
 
   it('handles background process timeout', async () => {
-    const dateIncrementor = (function*() {
+    const dateIncrementor = (function* incr() {
       let i = 10
       while (true) {
         i += 130000
@@ -562,7 +562,7 @@ describe('EstimateSampleSize', () => {
         const input = getByLabelText(new RegExp(regexpEscape(key)), {
           selector: 'input',
         }) as HTMLInputElement
-        const errorID = input.name + '-error'
+        const errorID = `${input.name}-error`
         typeInto(input, value)
         await wait(() => {
           expect({
@@ -676,12 +676,10 @@ describe('EstimateSampleSize', () => {
 
   it('handles errors from the form submission', async () => {
     apiMock.mockReset()
-    apiMock.mockImplementation(() =>
-      Promise.reject({
-        message: 'A test error',
-        ok: false,
-      })
-    )
+    apiMock.mockRejectedValue({
+      message: 'A test error',
+      ok: false,
+    })
     const updateAuditMock = jest.fn()
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
