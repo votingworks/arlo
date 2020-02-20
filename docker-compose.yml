@@ -1,4 +1,7 @@
-version: '3'
+# NOTE: This file is intended for using Docker for development, not to deploy
+# Arlo in a production environment.
+
+version: "3"
 services:
   # standard postgres instance to store application data
   db:
@@ -6,6 +9,8 @@ services:
     ports:
       - 5432:5432
     restart: on-failure
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
 
   # creates the initial database and, maybe later, runs migrations
   migrate:
