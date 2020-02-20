@@ -64,7 +64,7 @@ class Sampler:
             self.audit = BRAVO(risk_limit)
         elif audit_type == 'MACRO':
             assert self.batch_results, 'Must have batch-level results to use MACRO'
-            self.audit = MACRO(risk_limit)
+            self.audit = MACRO(risk_limit, batch_results)
 
     def compute_margins(self):
         """
@@ -192,14 +192,14 @@ class Sampler:
         if self.audit_type == 'MACRO':
             # Here we do PPEB.
 
-            U = self.audit.compute_U(self.contests, self.margins, self.batch_results)
+            U = self.audit.compute_U(self.contests, self.margins)
 
             # Map each batch to its weighted probability of being picked
             batch_to_prob = {}
             min_prob = 1
             # Get u_ps
             for batch in self.batch_results:
-                error = self.audit.compute_max_error(self.contests, self.margins, self.batch_results[batch])
+                error = self.audit.compute_max_error(batch, self.contests, self.margins)
 
                 # Probability of being picked is directly related to how much this
                 # batch contributes to the overall possible error
@@ -271,7 +271,6 @@ class Sampler:
         if type(self.audit) == MACRO:
             return self.audit.get_sample_sizes(contests=self.contests, 
                                            margins=self.margins, 
-                                           reported_results=self.batch_results,
                                            sample_results=sample_results)
         else:
             return self.audit.get_sample_sizes(contests=self.contests, 

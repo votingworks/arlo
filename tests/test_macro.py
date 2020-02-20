@@ -119,7 +119,7 @@ def test_max_error(sampler):
     
     for batch in sampler.batch_results:
         expected_up = expected_ups[batch]
-        computed_up = sampler.audit.compute_max_error(sampler.contests, sampler.margins, sampler.batch_results[batch])
+        computed_up = sampler.audit.compute_max_error(batch, sampler.contests, sampler.margins)
 
         delta = abs(computed_up - expected_up)
         assert delta < 0.001, \
@@ -170,9 +170,9 @@ def test_compute_risk(sampler):
         }
     
 
-    computed_p, result = sampler.audit.compute_risk(sampler.contests, sampler.margins, sampler.batch_results, sample)
+    computed_p, result = sampler.audit.compute_risk(sampler.contests, sampler.margins, sample)
 
-    U = sampler.audit.compute_U(sampler.contests, sampler.margins, sampler.batch_results)
+    U = sampler.audit.compute_U(sampler.contests, sampler.margins)
     expected_p =  0.247688222
 
     delta = abs(expected_p - computed_p)
