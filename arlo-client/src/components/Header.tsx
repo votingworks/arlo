@@ -6,6 +6,7 @@ import {
   NavbarHeading,
   Alignment,
 } from '@blueprintjs/core'
+import { Link } from 'react-router-dom'
 
 const ButtonBar = styled.div`
   display: inline-block;
@@ -25,7 +26,9 @@ const Header: React.FC<{}> = () => (
   <Nav fixedToTop>
     <NavbarGroup align={Alignment.LEFT}>
       <NavbarHeading>
-        <img src="/arlo.png" alt="Arlo, by VotingWorks" />
+        <Link to="/">
+          <img src="/arlo.png" alt="Arlo, by VotingWorks" />
+        </Link>
       </NavbarHeading>
     </NavbarGroup>
     <NavbarGroup align={Alignment.RIGHT}>
