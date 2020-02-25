@@ -16,11 +16,11 @@ flask = "*"
 flask-sqlalchemy = "*"
 joblib = "*"
 numpy = "*"
-psycopg2 = "*"
 sqlalchemy-utils = "*"
 uuid = "*"
 flask-httpauth = "*"
 xkcdpass = "*"
+psycopg2-binary = "*"
 
 [requires]
 python_version = "3.7"
