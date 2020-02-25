@@ -1,2 +1,2 @@
-web: pipenv run python app.py
-worker: pipenv run python bgcompute.py
+web: python app.py
+worker: python bgcompute.py
