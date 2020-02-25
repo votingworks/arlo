@@ -515,10 +515,8 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
         
         return jsonify(status="ok")
 
-    manifest_bytesio = io.BytesIO()
     manifest = request.files['manifest']
-    manifest.save(manifest_bytesio)
-    manifest_string = manifest_bytesio.getvalue().decode('utf-8-sig')
+    manifest_string = manifest.read().decode('utf-8-sig')
     jurisdiction.manifest = manifest_string
 
     jurisdiction.manifest_filename = manifest.filename
