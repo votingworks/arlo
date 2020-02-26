@@ -2,13 +2,21 @@
 from arlo_server import db
 from sqlalchemy.orm import relationship
 from typing import Union, List
+from enum import Enum
 
 # on-delete-cascade is done in SQLAlchemy like this:
 # https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete
 
 
-# there is usually only one of these
-# State is in here
+class Organization(db.Model):
+    id = db.Column(db.String(200), primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+
+    audit_administrations = relationship('AuditAdministration',
+                                         backref='organization',
+                                         passive_deletes=True)
+
+
 class Election(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     name = db.Column(db.String(200), nullable=True)
@@ -21,6 +29,11 @@ class Election(db.Model):
 
     # an election is "online" if every ballot is entered online, vs. offline in a tally sheet.
     online = db.Column(db.Boolean, nullable=False, default=False)
+
+    # Who does this election belong to?
+    organization_id = db.Column(db.String(200),
+                                db.ForeignKey('organization.id', ondelete='cascade'),
+                                nullable=False)
 
     jurisdictions = relationship('Jurisdiction', backref='election', passive_deletes=True)
     contests = relationship('TargetedContest', backref='election', passive_deletes=True)
@@ -51,18 +64,44 @@ class Jurisdiction(db.Model):
     contests = relationship('TargetedContestJurisdiction',
                             backref='jurisdiction',
                             passive_deletes=True)
+    jurisdiction_administrations = relationship('JurisdictionAdministration',
+                                                backref='jurisdiction',
+                                                passive_deletes=True)
 
 
-# users that log in
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    election_id = db.Column(db.String(200),
-                            db.ForeignKey('election.id', ondelete='cascade'),
-                            nullable=False)
+    id = db.Column(db.String(200), primary_key=True)
+    email = db.Column(db.String(200), unique=True, nullable=False)
+    external_id = db.Column(db.String(200), unique=True, nullable=False)
+
+    audit_administrations = relationship('AuditAdministration',
+                                         backref='user',
+                                         passive_deletes=True)
+    jurisdiction_administrations = relationship('JurisdictionAdministration',
+                                                backref='user',
+                                                passive_deletes=True)
+
+
+class AuditAdministration(db.Model):
+    organization_id = db.Column(db.String(200),
+                                db.ForeignKey('organization.id', ondelete='cascade'),
+                                nullable=False)
+    user_id = db.Column(db.String(200),
+                        db.ForeignKey('user.id', ondelete='cascade'),
+                        nullable=False)
+
+    __table_args__ = (db.PrimaryKeyConstraint('organization_id', 'user_id'), )
+
+
+class JurisdictionAdministration(db.Model):
+    user_id = db.Column(db.String(200),
+                        db.ForeignKey('user.id', ondelete='cascade'),
+                        nullable=False)
     jurisdiction_id = db.Column(db.String(200),
-                                db.ForeignKey('jurisdiction.id', ondelete="cascade"),
+                                db.ForeignKey('jurisdiction.id', ondelete='cascade'),
                                 nullable=True)
+
+    __table_args__ = (db.PrimaryKeyConstraint('user_id', 'jurisdiction_id'), )
 
 
 class Batch(db.Model):

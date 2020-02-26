@@ -19,13 +19,22 @@ AUDIT_BOARD_MEMBER_COUNT = 2
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 
 
-def create_election(election_id=None):
+def create_election(election_id=None, organization_id=None):
     if not election_id:
         election_id = str(uuid.uuid4())
-    e = Election(id=election_id, name="")
+    if not organization_id:
+        organization_id = create_organization().id
+    e = Election(id=election_id, organization_id=organization_id, name="")
     db.session.add(e)
     db.session.commit()
     return election_id
+
+
+def create_organization(name=""):
+    org = Organization(id=str(uuid.uuid4()), name=name)
+    db.session.add(org)
+    db.session.commit()
+    return org
 
 
 def init_db():
