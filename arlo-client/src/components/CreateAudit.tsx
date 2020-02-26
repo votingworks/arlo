@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { RouteComponentProps } from 'react-router-dom'
@@ -6,6 +6,7 @@ import FormButton from './Form/FormButton'
 import { useAuth0, IAuth0Context } from '../react-auth0-spa'
 import { api, checkAndToast } from './utilities'
 import { ICreateAuditParams, IErrorResponse } from '../types'
+import UserContext from '../UserContext'
 
 export const Button = styled(FormButton)`
   margin: 65px 0;
@@ -25,6 +26,7 @@ export const Wrapper = styled.div`
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const [loading, setLoading] = useState(false)
   const { isAuthenticated, loginWithRedirect } = useAuth0() as IAuth0Context
+  const user = useContext(UserContext)
   const onClick = async () => {
     try {
       setLoading(true)
@@ -51,17 +53,19 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
       {isAuthenticated ? (
-        <Button
-          type="button"
-          intent="primary"
-          fill
-          large
-          onClick={onClick}
-          loading={loading}
-          disabled={loading}
-        >
-          Create a New Audit
-        </Button>
+        user.permissions['create:audits'] && (
+          <Button
+            type="button"
+            intent="primary"
+            fill
+            large
+            onClick={onClick}
+            loading={loading}
+            disabled={loading}
+          >
+            Create a New Audit
+          </Button>
+        )
       ) : (
         <Button
           type="button"
