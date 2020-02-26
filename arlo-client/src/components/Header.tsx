@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import {
   Navbar,
@@ -9,6 +9,7 @@ import {
 import { Route } from 'react-router-dom'
 import { useAuth0, IAuth0Context } from '../react-auth0-spa'
 import FormButton from './Form/FormButton'
+import UserContext from '../UserContext'
 
 const ButtonBar = styled.div`
   display: inline-block;
@@ -30,6 +31,7 @@ const Header: React.FC<{}> = () => {
     loginWithRedirect,
     logout,
   } = useAuth0() as IAuth0Context
+  const user = useContext(UserContext)
   return (
     <Nav fixedToTop>
       <NavbarGroup align={Alignment.LEFT}>
@@ -37,6 +39,11 @@ const Header: React.FC<{}> = () => {
           <img src="/arlo.png" alt="Arlo, by VotingWorks" />
         </NavbarHeading>
       </NavbarGroup>
+      {isAuthenticated && (
+        <NavbarGroup align={Alignment.LEFT}>
+          <NavbarHeading>Welcome, {user.name}</NavbarHeading>
+        </NavbarGroup>
+      )}
       <NavbarGroup align={Alignment.RIGHT}>
         <ButtonBar id="reset-button-wrapper" />
         <Route

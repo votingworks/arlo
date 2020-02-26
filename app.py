@@ -300,9 +300,9 @@ def user_status():
     # this is a basic mock of the structure that will be returned once we have user auth in place
     return jsonify(
         permissions = { # these permissions are extracted from the access token returned from Auth0 and are created on the Auth0 dashboard
-            'create:audits': true,
-            'read:audits': true,
-            'manage:audits': true
+            'create:audits': True,
+            'read:audits': True,
+            'manage:audits': True
         }, 
         userid = 'email:clerk@county.gov', # can also take the form of 'tel:+12223334444'
         name = 'Jane Smith'

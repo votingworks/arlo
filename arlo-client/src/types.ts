@@ -1,3 +1,13 @@
+export interface IUser {
+  name: string
+  id: string
+  permissions: {
+    'create:audits': boolean
+    'read:audits': boolean
+    'manage:audits': boolean
+  }
+}
+
 export interface IErrorResponse {
   errors?: {
     message: string
