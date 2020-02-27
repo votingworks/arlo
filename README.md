@@ -127,6 +127,7 @@ For testing:
 - `pipenv install` can hang attempting to get [a lock on the packages it's installing](https://github.com/pypa/pipenv/issues/3827). To get around this, add the `--skip-lock` flag in the Makefile (the first line should be `pipenv install --skip-lock`).
 - A password may have to be set in `config/database.cfg` depending on your install of postgres. To do this, change `postgres://postgres@localhost:5432/arlo` to `postgres://postgres:{PASSWORD}@localhost:5432/arlo`, replacing `{PASSWORD}` with the password.
 - You may need to create `arlo` and `arlo-test` databases manually [via postgres](https://www.postgresql.org/docs/9.0/sql-createdatabase.html).
+- If you run into the error `fe_sendauth: no password supplied` when running `make dev-environment`, it means there's no password set for the default postgres user. You can change the postgres authentication method to not require a password by editing `/etc/postgresql/10/main/pg_hba.conf` and changing `md5` to `trust` for the IPv4 local connections setting.
 
 ### Docker-based dev environment
 
