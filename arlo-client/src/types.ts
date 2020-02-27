@@ -8,6 +8,12 @@ export interface IUser {
   }
 }
 
+export interface IStatus {
+  isComplete: boolean
+  stage: string
+  jurisdictionUploads: [number, number]
+}
+
 export interface IErrorResponse {
   errors?: {
     message: string
