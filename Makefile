@@ -35,5 +35,6 @@ test-client:
 	yarn --cwd arlo-client lint
 	yarn --cwd arlo-client test
 
+# To run a specific test: TEST=<test name> make test-server
 test-server:
-	FLASK_ENV=test pipenv run python -m pytest --ignore=arlo-client
+	FLASK_ENV=test python3 -m pipenv run python -m pytest -k '${TEST}' --ignore=arlo-client
