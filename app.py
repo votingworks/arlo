@@ -9,11 +9,11 @@ from xkcdpass import xkcd_password as xp
 
 from sqlalchemy import event, func
 from sqlalchemy.dialects.postgresql import aggregate_order_by
-from config import DATABASE_URL
+from config import DATABASE_URL, STATIC_FOLDER
 
 from util.binpacking import Bucket, BalancedBucketList
 
-app = Flask(__name__, static_folder='arlo-client/build/')
+app = Flask(__name__, static_folder=STATIC_FOLDER)
 
 # database config
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
