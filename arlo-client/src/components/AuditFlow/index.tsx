@@ -34,23 +34,22 @@ const AuditFlow: React.FC<IProps> = ({
 }: IProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [audit, setAudit] = useState<IAudit | undefined>(undefined) // here entereth the error monster
+  const [audit, setAudit] = useState<IAudit | undefined>(undefined)
 
   const getStatus = useCallback(async (): Promise<IAudit | undefined> => {
-    const audit: IAudit | IErrorResponse = await api(
+    const auditStatusOrError: IAudit | IErrorResponse = await api(
       `/election/${electionId}/audit/status`
     )
-    if (checkAndToast(audit)) {
+    if (checkAndToast(auditStatusOrError)) {
       return undefined
-    } else {
-      return audit
     }
+    return auditStatusOrError
   }, [electionId])
 
   const updateAudit = useCallback(async () => {
     setIsLoading(true)
-    const audit = await getStatus()
-    setAudit(audit)
+    const auditStatus = await getStatus()
+    setAudit(auditStatus)
     setIsLoading(false)
   }, [getStatus])
 
@@ -81,23 +80,22 @@ const AuditFlow: React.FC<IProps> = ({
       )
       if (checkAndToast(response)) {
         return []
-      } else {
-        return response.ballots
       }
-    } else {
-      return []
+      return response.ballots
     }
+    /* istanbul ignore next */
+    return []
   }, [electionId, audit, round, board])
 
   const updateBallots = useCallback(async () => {
     setIsLoading(true)
-    let ballots: IBallot[] = []
+    let polledBallots: IBallot[] = []
     poll(
       async () => {
-        ballots = await getBallots()
-        return !!ballots.length
+        polledBallots = await getBallots()
+        return !!polledBallots.length
       },
-      () => setBallots(ballots), // tested elsewhere
+      () => setBallots(polledBallots), // tested elsewhere
       /* istanbul ignore next */ (err: Error) => toast.error(err.message)
     )
     setIsLoading(false)
@@ -173,26 +171,27 @@ const AuditFlow: React.FC<IProps> = ({
         <Spinner />
       </Wrapper>
     )
-  } else if (board.members.length) {
+  }
+  if (board.members.length) {
     return (
       <Wrapper>
         <Switch>
           <Route
             exact
             path="/election/:electionId/board/:token"
-            render={({ match: { url } }) => (
+            render={({ match: { url: routeURL } }) => (
               <BoardTable
                 isLoading={isLoading}
                 setIsLoading={setIsLoading}
                 boardName={board.name}
                 ballots={ballots}
                 round={audit.rounds.length}
-                url={url}
+                url={routeURL}
               />
             )}
           />
           <Route
-            path={url + '/round/:roundIx/batch/:batchId/ballot/:ballotId'}
+            path={`${url}/round/:roundIx/batch/:batchId/ballot/:ballotId`}
             render={({
               match: {
                 params: { roundIx, batchId, ballotId },
@@ -219,20 +218,19 @@ const AuditFlow: React.FC<IProps> = ({
         </Switch>
       </Wrapper>
     )
-  } else {
-    return (
-      <Wrapper>
-        <MemberForm
-          updateAudit={updateAudit}
-          boardName={board.name}
-          boardId={board.id}
-          jurisdictionName={audit.jurisdictions[0].name}
-          jurisdictionId={audit.jurisdictions[0].id}
-          electionId={electionId}
-        />
-      </Wrapper>
-    )
   }
+  return (
+    <Wrapper>
+      <MemberForm
+        updateAudit={updateAudit}
+        boardName={board.name}
+        boardId={board.id}
+        jurisdictionName={audit.jurisdictions[0].name}
+        jurisdictionId={audit.jurisdictions[0].id}
+        electionId={electionId}
+      />
+    </Wrapper>
+  )
 }
 
 export default AuditFlow

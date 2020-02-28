@@ -1,5 +1,3 @@
-/* eslint-disable no-null */
-
 import React from 'react'
 import { toast } from 'react-toastify'
 import {
@@ -170,14 +168,14 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
       if (values.manifest) {
         const formData: FormData = new FormData()
         formData.append('manifest', values.manifest, values.manifest.name)
-        const response: IErrorResponse = await api(
+        const errorResponse: IErrorResponse = await api(
           `/election/${electionId}/jurisdiction/${jurisdictionID}/manifest`,
           {
             method: 'POST',
             body: formData,
           }
         )
-        if (checkAndToast(response)) return
+        if (checkAndToast(errorResponse)) return
       }
 
       updateAudit()
@@ -196,66 +194,67 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
         )
       : Array(numberOfBoards).fill('')
   const initialState: ISelectBallotsToAuditValues = {
-    auditBoards: '' + numberOfBoards,
+    auditBoards: `${numberOfBoards}`,
     auditNames,
-    manifest: null, // eslint-disable-line no-null/no-null
+    manifest: null,
     sampleSize: [...audit.rounds[0].contests].reduce(
-      (a: { [key: string]: string }, c) => {
-        a[c.id] =
-          c.sampleSizeOptions && c.sampleSizeOptions.length
-            ? c.sampleSizeOptions[0].size.toString()
-            : ''
-        if (c.sampleSize) {
-          a[c.id] = c.sampleSize.toString()
-        }
-        return a
-      },
+      (a: { [key: string]: string }, c) => ({
+        ...a,
+        [c.id]: c.sampleSize
+          ? c.sampleSize.toString()
+          : c.sampleSizeOptions && c.sampleSizeOptions.length
+          ? c.sampleSizeOptions[0].size.toString()
+          : '',
+      }),
       {}
     ),
     customSampleSize: [...audit.rounds[0].contests].reduce(
-      (a: { [key: string]: string }, c) => {
-        a[c.id] = ''
-        if (c.sampleSize) {
-          a[c.id] = c.sampleSize.toString()
-        }
-        return a
-      },
+      (a: { [key: string]: string }, c) => ({
+        ...a,
+        [c.id]: c.sampleSize ? c.sampleSize.toString() : '',
+      }),
       {}
     ),
   }
 
   const sampleSizeOptions = [...audit.rounds[0].contests].reduce<
     ISampleSizeOptionsByContest
-  >((acc, contest) => {
-    acc[contest.id] =
-      contest.sampleSizeOptions && contest.sampleSizeOptions.length
-        ? contest.sampleSizeOptions.reduce<ISampleSizeOption[]>(
-            (acc, option) => {
-              const duplicateOptionIndex: number = acc.findIndex(
-                v => Number(v.size) === option.size
-              )
-              const duplicateOption =
-                duplicateOptionIndex > -1 ? acc[duplicateOptionIndex] : false
-              if (duplicateOption) {
-                if (
-                  option.prob &&
-                  duplicateOption.prob &&
-                  Number(duplicateOption.prob) < option.prob
-                ) {
-                  duplicateOption.prob = option.prob
+  >((sampleSizeOptionsByContest, contest) => {
+    return {
+      ...sampleSizeOptionsByContest,
+      [contest.id]:
+        contest.sampleSizeOptions && contest.sampleSizeOptions.length
+          ? contest.sampleSizeOptions.reduce<ISampleSizeOption[]>(
+              (consolidatedSampleSizeOptions, option) => {
+                const duplicateOptionIndex: number = consolidatedSampleSizeOptions.findIndex(
+                  v => Number(v.size) === option.size
+                )
+                const duplicateOption =
+                  duplicateOptionIndex > -1
+                    ? consolidatedSampleSizeOptions[duplicateOptionIndex]
+                    : false
+                if (duplicateOption) {
+                  if (
+                    option.prob &&
+                    duplicateOption.prob &&
+                    Number(duplicateOption.prob) < option.prob
+                  ) {
+                    duplicateOption.prob = option.prob
+                  }
+                  return consolidatedSampleSizeOptions
                 }
-              } else {
-                acc.push({
-                  ...option,
-                  size: option.size.toString(),
-                })
-              }
-              return acc
-            },
-            []
-          )
-        : []
-    return acc
+                return [
+                  ...consolidatedSampleSizeOptions,
+                  {
+                    ...option,
+                    size: option.size.toString(),
+                  },
+                ]
+              },
+              []
+            )
+          : [],
+    }
   }, {})
 
   const percentFormatter = new Intl.NumberFormat(undefined, {

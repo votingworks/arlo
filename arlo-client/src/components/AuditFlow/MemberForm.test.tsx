@@ -59,15 +59,13 @@ describe('MemberForm', () => {
     const parties = queryAllByText('Democrat') as HTMLInputElement[]
     expect(names.length).toBe(2)
     expect(parties.length).toBe(2)
-    names &&
-      names.forEach(nameInput => {
-        fireEvent.change(nameInput, { target: { value: 'my name' } })
-        expect(nameInput.value)
-      })
-    parties &&
-      parties.forEach(partyInput => {
-        fireEvent.click(partyInput, { bubbles: true })
-      })
+    names.forEach(nameInput => {
+      fireEvent.change(nameInput, { target: { value: 'my name' } })
+      expect(nameInput.value)
+    })
+    parties.forEach(partyInput => {
+      fireEvent.click(partyInput, { bubbles: true })
+    })
 
     const nextButton = getByText('Next')
     fireEvent.click(nextButton, { bubbles: true })
@@ -91,11 +89,10 @@ describe('MemberForm', () => {
     )
 
     const names = queryAllByLabelText('Full Name') as HTMLInputElement[]
-    names &&
-      names.forEach(nameInput => {
-        fireEvent.change(nameInput, { target: { value: 'my name' } })
-        expect(nameInput.value)
-      })
+    names.forEach(nameInput => {
+      fireEvent.change(nameInput, { target: { value: 'my name' } })
+      expect(nameInput.value)
+    })
 
     const nextButton = getByText('Next')
     fireEvent.click(nextButton, { bubbles: true })

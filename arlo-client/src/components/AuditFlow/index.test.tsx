@@ -49,7 +49,7 @@ const routeProps = routerTestProps('/election/:electionId/board/:token', {
   token: '123',
 })
 
-const { history, ...staticRouteProps } = routeProps // eslint-disable-line @typescript-eslint/no-unused-vars
+const { history: staticHistory, ...staticRouteProps } = routeProps // eslint-disable-line @typescript-eslint/no-unused-vars
 
 describe('AuditFlow ballot interaction', () => {
   beforeEach(() => {
@@ -132,11 +132,10 @@ describe('AuditFlow ballot interaction', () => {
   })
 
   it('renders board table with large container size', async () => {
-    ;(jest
+    jest
       .spyOn(window.document, 'getElementsByClassName')
-      .mockReturnValue([
-        { clientWidth: 2000 },
-      ] as any) as any) as jest.SpyInstance<[{ clientWidth: number }]> // eslint-disable-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .mockReturnValue([{ clientWidth: 2000 }] as any)
     const { container } = render(
       <StaticRouter {...staticRouteProps}>
         <AuditFlow {...routeProps} />

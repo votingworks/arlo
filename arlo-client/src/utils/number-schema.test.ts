@@ -12,6 +12,7 @@ describe('parse', () => {
   })
 
   it('returns value of Number instances', () => {
+    // eslint-disable-next-line no-new-wrappers
     expect(parse(new Number(1))).toBe(1)
   })
 
@@ -46,6 +47,7 @@ describe('NumberSchema', () => {
 
   it('can type check a value', () => {
     expect(number().isType(1)).toBe(true)
+    // eslint-disable-next-line no-new-wrappers
     expect(number().isType(new Number(1))).toBe(true)
     expect(number().isType(NaN)).toBe(false)
     expect(number().isType('foo')).toBe(false)

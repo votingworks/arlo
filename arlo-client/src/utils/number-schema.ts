@@ -73,10 +73,13 @@ export class NumberSchema extends (MixedSchema as new (
     })
   }
 
-  protected _typeCheck(value: unknown): boolean {
-    if (value instanceof Number) value = value.valueOf()
+  protected _typeCheck(possiblyWrappedValue: unknown): boolean {
+    const value =
+      possiblyWrappedValue instanceof Number
+        ? possiblyWrappedValue.valueOf()
+        : possiblyWrappedValue
 
-    return typeof value === 'number' && !isNaN(value)
+    return typeof value === 'number' && !Number.isNaN(value)
   }
 
   public min(min: number, message = locale.min): this {
@@ -145,19 +148,23 @@ export class NumberSchema extends (MixedSchema as new (
 
   public truncate(): this {
     /* istanbul ignore next */
+    // eslint-disable-next-line no-bitwise
     return this.transform(value => (!isAbsent(value) ? value | 0 : value))
   }
 
-  public round(method?: RoundMethod): this {
+  public round(methodWithPossibleIncorrectCasing?: RoundMethod): this {
     const avail = ['ceil', 'floor', 'round', 'trunc']
-    method = (method && (method.toLowerCase() as RoundMethod)) || 'round'
+    const method =
+      (methodWithPossibleIncorrectCasing &&
+        (methodWithPossibleIncorrectCasing.toLowerCase() as RoundMethod)) ||
+      'round'
 
     // this exists for symemtry with the new Math.trunc
     if (method === 'trunc') return this.truncate()
 
     if (avail.indexOf(method.toLowerCase()) === -1)
       throw new TypeError(
-        'Only valid options for round() are: ' + avail.join(', ')
+        `Only valid options for round() are: ${avail.join(', ')}`
       )
 
     return this.transform(value =>

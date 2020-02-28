@@ -24,9 +24,8 @@ const ballotNext = (option: string) => {
   submit.click()
   if (lastBallot === ballot) {
     return false
-  } else {
-    return true
   }
+  return true
 }
 
 const ballotPrev = () => {
@@ -37,9 +36,8 @@ const ballotPrev = () => {
   $('.bp3-button-text=Back').click()
   if (ballot === 1) {
     return false
-  } else {
-    return true
   }
+  return true
 }
 
 const ballotSkip = (count: number) => {
@@ -68,7 +66,7 @@ beforeEach(() => {
 describe('audit flow', () => {
   it('has a happy path', () => {
     $('a=Start Auditing').click()
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 20; i += 1) {
       ballotNext('Choice One')
     }
     if (ballotNext('Choice One')) {

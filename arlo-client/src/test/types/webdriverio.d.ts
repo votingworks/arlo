@@ -1,1 +1,1 @@
-/// <reference types="@wdio/sync" />
+// / <reference types="@wdio/sync" />

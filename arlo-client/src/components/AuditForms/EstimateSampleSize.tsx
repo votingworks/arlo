@@ -128,11 +128,11 @@ const contestsSchema = Yup.array()
         .test(
           'is-sufficient',
           'Must be greater than or equal to the sum of votes for each candidate/choice',
-          function(value?: unknown) {
+          function testTotalBallotsCast(value?: unknown) {
             const ballots = parseNumber(value)
-            const choices: IChoiceValues[] = this.parent.choices
+            const { choices } = this.parent
             const totalVotes = choices.reduce(
-              (sum, choiceValue) =>
+              (sum: number, choiceValue: IChoiceValues) =>
                 sum + (parseNumber(choiceValue.numVotes) || 0),
               0
             )
@@ -347,14 +347,14 @@ const EstimateSampleSize: React.FC<IProps> = ({
                                 component={FormField}
                               />
                             </label>
-                            {/*values.contests.length > 1 &&
+                            {/* values.contests.length > 1 &&
                               !audit.contests.length && (
                                 <Action
                                   onClick={() => contestsArrayHelpers.remove(i)}
                                 >
                                   Remove Contest {i + 1}
                                 </Action>
-                              )*/}
+                              ) */}
                           </FormSection>
                           <FieldArray
                             name={`contests[${i}].choices`}
@@ -434,7 +434,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
                         </React.Fragment>
                       )
                     )}
-                    {/*<FormButtonBar>
+                    {/* <FormButtonBar>
                       {!audit.contests.length && (
                         <FormButton
                           type="button"
@@ -445,7 +445,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
                           Add another targeted contest
                         </FormButton>
                       )}
-                    </FormButtonBar>*/}
+                    </FormButtonBar> */}
                   </>
                 )}
               />
@@ -454,10 +454,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
                 <RadioGroup
                   name="online"
                   onChange={e =>
-                    setFieldValue(
-                      'online',
-                      e.currentTarget.value === 'online' ? true : false
-                    )
+                    setFieldValue('online', e.currentTarget.value === 'online')
                   }
                   selectedValue={values.online ? 'online' : 'offline'}
                   disabled={!canEstimateSampleSize}

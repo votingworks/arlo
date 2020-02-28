@@ -1,5 +1,3 @@
-/* eslint-disable no-null/no-null */
-
 import { IAudit, IBallot } from '../../types'
 
 export const statusStates: IAudit[] = [

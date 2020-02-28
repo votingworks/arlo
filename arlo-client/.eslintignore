@@ -1,3 +1,4 @@
 /build
 /cypress/plugins
 /cypress/integration/examples
+*.d.ts

@@ -33,20 +33,19 @@ const AuditForms: React.FC<IProps> = ({
   const [audit, setAudit] = useState(initialData)
 
   const getStatus = useCallback(async (): Promise<IAudit> => {
-    const audit: IAudit | IErrorResponse = await api(
+    const auditStatusOrError: IAudit | IErrorResponse = await api(
       `/election/${electionId}/audit/status`
     )
-    if (checkAndToast(audit)) {
+    if (checkAndToast(auditStatusOrError)) {
       return initialData
-    } else {
-      return audit
     }
+    return auditStatusOrError
   }, [electionId])
 
   const updateAudit = useCallback(async () => {
-    const audit = await getStatus()
+    const auditStatus = await getStatus()
     setIsLoading(true)
-    setAudit(audit)
+    setAudit(auditStatus)
     setIsLoading(false)
   }, [getStatus])
 
