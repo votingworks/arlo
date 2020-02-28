@@ -20,8 +20,7 @@ install-development:
 	yarn --cwd arlo-client install
 
 resettestdb:
-	sudo -u postgres psql -c "drop database if exists arlotest;"
-	sudo -u postgres psql -c "create database arlotest with owner arlo;"
+	FLASK_ENV=test make resetdb
 
 resetdb:
 	python3 -m pipenv run python resetdb.py
