@@ -8,12 +8,6 @@ export interface IUser {
   }
 }
 
-export interface IStatus {
-  isComplete: boolean
-  stage: string
-  jurisdictionUploads: [number, number]
-}
-
 export interface IErrorResponse {
   errors?: {
     message: string
@@ -142,4 +136,7 @@ export interface IAudit {
   contests: IContest[]
   jurisdictions: IJurisdiction[]
   rounds: IRound[]
+  launched?: boolean
+  started?: boolean
+  complete?: boolean
 }

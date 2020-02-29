@@ -4,12 +4,7 @@ import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api, checkAndToast } from '../utilities'
-import {
-  IAudit,
-  ICreateAuditParams,
-  IErrorResponse,
-  IStatus,
-} from '../../types'
+import { IAudit, ICreateAuditParams, IErrorResponse } from '../../types'
 import ResetButton from './ResetButton'
 import Wrapper from '../Atoms/Wrapper'
 import StatusBox from './StatusBox'
@@ -69,12 +64,6 @@ const AuditForms: React.FC<IProps> = ({
   const showCalculateRiskMeasurement =
     !!audit.rounds.length && audit.rounds[0].contests.every(c => !!c.sampleSize)
 
-  const status: IStatus = {
-    isComplete: false,
-    stage: 'somewhere',
-    jurisdictionUploads: [0, 15],
-  }
-
   return (
     <Wrapper>
       <ResetButton
@@ -83,7 +72,7 @@ const AuditForms: React.FC<IProps> = ({
         updateAudit={updateAudit}
       />
 
-      <StatusBox audit={audit} electionId={electionId} status={status} />
+      <StatusBox audit={audit} electionId={electionId} />
 
       <EstimateSampleSize
         audit={audit}
