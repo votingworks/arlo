@@ -83,7 +83,7 @@ const AuditForms: React.FC<IProps> = ({
         updateAudit={updateAudit}
       />
 
-      <StatusBox electionId={electionId} status={status} />
+      <StatusBox audit={audit} electionId={electionId} status={status} />
 
       <EstimateSampleSize
         audit={audit}
