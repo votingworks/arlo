@@ -46,7 +46,7 @@ const App: React.FC = () => {
       <ToastContainer />
       <UserContext.Provider value={user}>
         <Main>
-          <Route path="/" component={Header} />
+          <Route path="/:election?/:electionId?" component={Header} />
           {loading ? (
             <LoadingWrapper>
               <Button

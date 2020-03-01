@@ -6,10 +6,11 @@ import {
   NavbarHeading,
   Alignment,
 } from '@blueprintjs/core'
-import { Route } from 'react-router-dom'
+import { Route, Link } from 'react-router-dom'
 import { useAuth0, IAuth0Context } from '../react-auth0-spa'
 import FormButton from './Form/FormButton'
 import UserContext from '../UserContext'
+import { ICreateAuditParams } from '../types'
 
 const ButtonBar = styled.div`
   display: inline-block;
@@ -25,7 +26,17 @@ const Nav = styled(Navbar)`
   }
 `
 
-const Header: React.FC<{}> = () => {
+interface IProps {
+  match: {
+    params: ICreateAuditParams
+  }
+}
+
+const Header: React.FC<IProps> = ({
+  match: {
+    params: { electionId },
+  },
+}: IProps) => {
   const {
     isAuthenticated,
     loginWithRedirect,
@@ -39,11 +50,6 @@ const Header: React.FC<{}> = () => {
           <img src="/arlo.png" alt="Arlo, by VotingWorks" />
         </NavbarHeading>
       </NavbarGroup>
-      {isAuthenticated && (
-        <NavbarGroup align={Alignment.LEFT}>
-          <NavbarHeading>Welcome, {user.name}</NavbarHeading>
-        </NavbarGroup>
-      )}
       <NavbarGroup align={Alignment.RIGHT}>
         <ButtonBar id="reset-button-wrapper" />
         <Route
@@ -62,6 +68,41 @@ const Header: React.FC<{}> = () => {
           </FormButton>
         )}
       </NavbarGroup>
+      {isAuthenticated && (
+        <>
+          <NavbarGroup align={Alignment.LEFT}>
+            <NavbarHeading>Welcome, {user.name}</NavbarHeading>
+          </NavbarGroup>
+          {user.permissions['create:audits'] && (
+            <NavbarGroup align={Alignment.RIGHT}>
+              <NavbarHeading>
+                <Link to="/">New Audit</Link>
+              </NavbarHeading>
+            </NavbarGroup>
+          )}
+          {user.permissions['manage:audits'] && (
+            <NavbarGroup align={Alignment.RIGHT}>
+              <NavbarHeading>
+                <Link to="/">View Audits</Link>
+              </NavbarHeading>
+            </NavbarGroup>
+          )}
+          {user.permissions['manage:audits'] && electionId && (
+            <NavbarGroup align={Alignment.RIGHT}>
+              <NavbarHeading>
+                <Link to={`/election/${electionId}`}>Audit Progress</Link>
+              </NavbarHeading>
+            </NavbarGroup>
+          )}
+          {user.permissions['create:audits'] && electionId && (
+            <NavbarGroup align={Alignment.RIGHT}>
+              <NavbarHeading>
+                <Link to={`/election/${electionId}/setup`}>Audit Setup</Link>
+              </NavbarHeading>
+            </NavbarGroup>
+          )}
+        </>
+      )}
     </Nav>
   )
 }
