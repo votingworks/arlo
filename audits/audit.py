@@ -1,10 +1,10 @@
 import abc
 
+
 class RiskLimitingAudit(abc.ABC):
     '''
     An interface for a Risk Limiting Audit
     '''
-
 
     risk_limit: float
 
@@ -34,7 +34,6 @@ class RiskLimitingAudit(abc.ABC):
                     }
         """
         pass
-    
 
     @abc.abstractmethod
     def compute_risk(self, margins, sample_results):

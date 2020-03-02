@@ -8,11 +8,17 @@ from audits.audit import RiskLimitingAudit
 from audits.bravo import BRAVO
 from audits.macro import MACRO
 
+
 class Sampler:
 
     audit: RiskLimitingAudit
 
-    def __init__(self, audit_type, seed, risk_limit, contests, batch_results=None):
+    def __init__(self,
+                 audit_type,
+                 seed,
+                 risk_limit,
+                 contests,
+                 batch_results=None):
         """
         Initializes PRNG, computes margins, and returns initial sample
         sizes parameterized by likelihood that the initial sample will confirm the
@@ -112,14 +118,13 @@ class Sampler:
 
         margins = {}
         for contest in self.contests:
-            margins[contest] = {'winners':{}, 'losers':{}}
+            margins[contest] = {'winners': {}, 'losers': {}}
 
-            cand_vec = sorted(
-                    [(cand, self.contests[contest][cand]) 
-                        for cand in self.contests[contest]
-                            if cand not in ['numWinners', 'ballots']
-                    ], 
-            key=operator.itemgetter(1), reverse = True)
+            cand_vec = sorted([(cand, self.contests[contest][cand])
+                               for cand in self.contests[contest]
+                               if cand not in ['numWinners', 'ballots']],
+                              key=operator.itemgetter(1),
+                              reverse=True)
 
             if 'numWinners' not in self.contests[contest]:
                 num_winners = 1
@@ -135,32 +140,27 @@ class Sampler:
             margins[contest]['winners']: {}
             margins[contest]['losers']: {}
 
-
             for loser in losers:
                 margins[contest]['losers'][loser[0]] = {
-                    'p_l': loser[1]/ballots,
-                    's_l': loser[1]/v_wl
-
+                    'p_l': loser[1] / ballots,
+                    's_l': loser[1] / v_wl
                 }
 
             for winner in winners:
-                s_w = winner[1]/v_wl
+                s_w = winner[1] / v_wl
 
                 swl = {}
                 for loser in margins[contest]['losers']:
                     s_l = margins[contest]['losers'][loser]['s_l']
-                    swl[loser] = s_w/(s_w + s_l)
+                    swl[loser] = s_w / (s_w + s_l)
 
                 margins[contest]['winners'][winner[0]] = {
-                    'p_w': winner[1]/ballots,
+                    'p_w': winner[1] / ballots,
                     's_w': s_w,
-                    'swl' : swl
-
+                    'swl': swl
                 }
 
         return margins
-
-
 
     def draw_sample(self, manifest, sample_size, num_sampled=0):
         """
@@ -199,35 +199,36 @@ class Sampler:
             min_prob = 1
             # Get u_ps
             for batch in self.batch_results:
-                error = self.audit.compute_max_error(batch, self.contests, self.margins)
+                error = self.audit.compute_max_error(batch, self.contests,
+                                                     self.margins)
 
                 # Probability of being picked is directly related to how much this
                 # batch contributes to the overall possible error
-                batch_to_prob[batch] = error/U
+                batch_to_prob[batch] = error / U
 
-                if error/U < min_prob:
-                    min_prob = error/U
-
+                if error / U < min_prob:
+                    min_prob = error / U
 
             sample_from = []
             # Now build faux list of batches, where each batch appears a number of
             # times proportional to its prob
             for batch in batch_to_prob:
-                times = int(batch_to_prob[batch]/min_prob)
+                times = int(batch_to_prob[batch] / min_prob)
 
                 for i in range(times):
-                    # We have to create "unique" records for the sampler, so we add 
-                    # a '.n' to the batch name so we know which duplicate it is. 
+                    # We have to create "unique" records for the sampler, so we add
+                    # a '.n' to the batch name so we know which duplicate it is.
                     sample_from.append('{}.{}'.format(batch, i))
 
             # Now draw the sample
-            faux_sample = list(consistent_sampler.sampler(sample_from, 
-                                                      seed=self.seed, 
-                                                      take=sample_size + num_sampled, 
-                                                      with_replacement=True,
-                                                      output='id'))[num_sampled:]
+            faux_sample = list(
+                consistent_sampler.sampler(sample_from,
+                                           seed=self.seed,
+                                           take=sample_size + num_sampled,
+                                           with_replacement=True,
+                                           output='id'))[num_sampled:]
 
-            # here we take off the decimals. 
+            # here we take off the decimals.
             sample = []
             for i in faux_sample:
                 sample.append(i.split('.')[0])
@@ -241,12 +242,13 @@ class Sampler:
                 for i in range(manifest[batch]):
                     ballots.append((batch, i))
 
-            sample =  list(consistent_sampler.sampler(ballots, 
-                                seed=self.seed, 
-                                take=sample_size + num_sampled, 
-                                with_replacement=True,
-                                output='tuple'))[num_sampled:]
-        
+            sample = list(
+                consistent_sampler.sampler(ballots,
+                                           seed=self.seed,
+                                           take=sample_size + num_sampled,
+                                           with_replacement=True,
+                                           output='tuple'))[num_sampled:]
+
             return sample
 
     def get_sample_sizes(self, sample_results):
@@ -270,13 +272,13 @@ class Sampler:
                     }
         """
         if type(self.audit) == MACRO:
-            return self.audit.get_sample_sizes(contests=self.contests, 
-                                           margins=self.margins, 
-                                           sample_results=sample_results)
+            return self.audit.get_sample_sizes(contests=self.contests,
+                                               margins=self.margins,
+                                               sample_results=sample_results)
         else:
-            return self.audit.get_sample_sizes(contests=self.contests, 
-                                           margins=self.margins, 
-                                           sample_results=sample_results)
+            return self.audit.get_sample_sizes(contests=self.contests,
+                                               margins=self.margins,
+                                               sample_results=sample_results)
 
     def compute_risk(self, contest, sample_results):
         """

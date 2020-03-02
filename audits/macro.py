@@ -12,6 +12,7 @@ import math
 from typing import Dict
 from audits.audit import RiskLimitingAudit
 
+
 class MACRO(RiskLimitingAudit):
     """
     Concrete implementation of the RLA class implementing batch audits
@@ -46,19 +47,17 @@ class MACRO(RiskLimitingAudit):
                     v_wp = self.reported_results[batch_name][contest][winner]
                     v_lp = self.reported_results[batch_name][contest][loser]
 
-
                     a_wp = sampled_results[contest][winner]
                     a_lp = sampled_results[contest][loser]
 
                     V_wl = contests[contest][winner] - contests[contest][loser]
 
-                    e_pwl = ((v_wp - v_lp) - (a_wp - a_lp))/V_wl
+                    e_pwl = ((v_wp - v_lp) - (a_wp - a_lp)) / V_wl
 
                     if e_pwl > error:
                         error = e_pwl
 
         return error
-
 
     def compute_max_error(self, batch_name, contests, margins):
         """
@@ -80,11 +79,12 @@ class MACRO(RiskLimitingAudit):
                     v_wp = self.reported_results[batch_name][contest][winner]
                     v_lp = self.reported_results[batch_name][contest][loser]
 
-                    b_cp = self.reported_results[batch_name][contest]['ballots']
+                    b_cp = self.reported_results[batch_name][contest][
+                        'ballots']
 
                     V_wl = contests[contest][winner] - contests[contest][loser]
 
-                    u_pwl = ((v_wp - v_lp) + b_cp)/V_wl
+                    u_pwl = ((v_wp - v_lp) + b_cp) / V_wl
 
                     if u_pwl > error:
                         error = u_pwl
@@ -128,8 +128,7 @@ class MACRO(RiskLimitingAudit):
 
         U = self.compute_U(contests, margins)
 
-        return math.ceil(math.log(self.risk_limit)/(math.log(1 - (1/U))))
-
+        return math.ceil(math.log(self.risk_limit) / (math.log(1 - (1 / U))))
 
     def compute_risk(self, contests, margins, sample_results):
         """
@@ -155,7 +154,6 @@ class MACRO(RiskLimitingAudit):
 
         p = 1
 
-
         U = self.compute_U(contests, margins)
 
         for batch in sample_results:
@@ -166,9 +164,9 @@ class MACRO(RiskLimitingAudit):
 
             u_p = self.compute_max_error(batch, contests, margins)
 
-            taint = e_p/u_p
+            taint = e_p / u_p
 
-            p *= (1 - 1/U)/(1 - taint)
+            p *= (1 - 1 / U) / (1 - taint)
 
             if p < self.risk_limit:
                 return p, True

@@ -8,6 +8,7 @@ mypy = "*"
 numpy-stubs = {git = "https://github.com/numpy/numpy-stubs"}
 sqlalchemy-stubs = "*"
 pytest = "*"
+yapf = "*"
 
 [packages]
 consistent_sampler = "*"
