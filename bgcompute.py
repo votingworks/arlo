@@ -3,7 +3,7 @@ import time, json
 
 from flask import Flask
 
-from app import app, db, compute_sample_sizes
+from arlo_server import app, db, compute_sample_sizes
 from models import RoundContest
 
 def bgcompute():

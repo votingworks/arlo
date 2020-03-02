@@ -4,7 +4,7 @@ import json, csv, io
 
 import pytest
 
-import app
+from arlo_server import app, init_db, db
 import bgcompute
 
 manifest_file_path = os.path.join(os.path.dirname(__file__), "manifest.csv")
@@ -17,17 +17,17 @@ def post_json(client, url, obj):
 
 @pytest.fixture
 def client():
-    app.app.config['TESTING'] = True
-    client = app.app.test_client()
+    app.config['TESTING'] = True
+    client = app.test_client()
 
-    with app.app.app_context():
-        app.init_db()
+    with app.app_context():
+        init_db()
 
     yield client
 
     # clear database between test runs
-    app.db.drop_all()
-    app.db.create_all()
+    db.drop_all()
+    db.create_all()
 
 def test_index(client):
     rv = client.get('/')

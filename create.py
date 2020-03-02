@@ -1,4 +1,4 @@
-from app import init_db
+from arlo_server import init_db
 from config import DATABASE_URL
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database

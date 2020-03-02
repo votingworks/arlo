@@ -1,5 +1,5 @@
 # type: ignore
-from app import db
+from arlo_server import db
 from sqlalchemy.orm import relationship
 from typing import Union, List
 
