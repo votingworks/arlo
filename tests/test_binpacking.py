@@ -63,12 +63,9 @@ def balancedbucketlist():
 
 class TestBucket:
     def test_init(self, bucket):
-        assert bucket.name == '1', 'name failed, expected {}, got {}'.format(
-            '1', bucket.name)
-        assert not bucket.size, 'Initial bucket size was {}, not 0'.format(
-            bucket.size)
-        assert not bucket.batches, 'Initial batches were non-empty: {}'.format(
-            bucket.batches)
+        assert bucket.name == '1', 'name failed, expected {}, got {}'.format('1', bucket.name)
+        assert not bucket.size, 'Initial bucket size was {}, not 0'.format(bucket.size)
+        assert not bucket.batches, 'Initial batches were non-empty: {}'.format(bucket.batches)
         assert not bucket.largest_element, 'Initial largest element was not None'.format(
             bucket.largest_element)
 
@@ -141,28 +138,14 @@ class TestBucket:
             bucket.size, expected_size)
 
     def test_repr(self, bucket):
-        expected = {
-            'name': '1',
-            'size': 0,
-            'batches': {},
-            'largest element': None
-        }
-        assert str(bucket) == str(
-            expected), 'repr failed, expected {}, got {}'.format(
-                str(expected), str(bucket))
+        expected = {'name': '1', 'size': 0, 'batches': {}, 'largest element': None}
+        assert str(bucket) == str(expected), 'repr failed, expected {}, got {}'.format(
+            str(expected), str(bucket))
 
         bucket.add_batch('1', 100)
-        expected = {
-            'name': '1',
-            'size': 100,
-            'batches': {
-                '1': 100
-            },
-            'largest element': '1'
-        }
-        assert str(bucket) == str(
-            expected), 'repr failed, expected {}, got {}'.format(
-                str(expected), str(bucket))
+        expected = {'name': '1', 'size': 100, 'batches': {'1': 100}, 'largest element': '1'}
+        assert str(bucket) == str(expected), 'repr failed, expected {}, got {}'.format(
+            str(expected), str(bucket))
 
 
 class TestBucketList:
@@ -185,17 +168,13 @@ class TestBucketList:
 
         batches = set()
         [
-            batches.union(s) for s in [
-                set(batch.keys())
-                for batch in [b.batches for b in bucketlist.buckets]
-            ]
+            batches.union(s)
+            for s in [set(batch.keys()) for batch in [b.batches for b in bucketlist.buckets]]
         ]
         new_batches = set()
         [
-            new_batches.union(s) for s in [
-                set(batch.keys())
-                for batch in [b.batches for b in new_bl.buckets]
-            ]
+            new_batches.union(s)
+            for s in [set(batch.keys()) for batch in [b.batches for b in new_bl.buckets]]
         ]
 
         assert batches == new_batches, 'Balanced batches were not the same as original batches!'
@@ -225,15 +204,13 @@ class TestBalancedBucketList:
 
         batches = set()
         [
-            batches.union(s) for s in [
-                set(batch.keys())
-                for batch in [b.batches for b in bucketlist.buckets]
-            ]
+            batches.union(s)
+            for s in [set(batch.keys()) for batch in [b.batches for b in bucketlist.buckets]]
         ]
         new_batches = set()
         [
-            new_batches.union(s) for s in
-            [set(batch.keys()) for batch in [b.batches for b in bbl.buckets]]
+            new_batches.union(s)
+            for s in [set(batch.keys()) for batch in [b.batches for b in bbl.buckets]]
         ]
 
         assert batches == new_batches, 'Balanced batches were not the same as original batches!'

@@ -57,12 +57,10 @@ class BRAVO(RiskLimitingAudit):
                 p = p_w + s_l
 
                 T = min(
-                    self.get_test_statistics(margins[contest],
-                                             sample_results[contest]).values())
+                    self.get_test_statistics(margins[contest], sample_results[contest]).values())
 
                 weighted_alpha = math.log((1.0 / self.risk_limit) / T)
-                asns[contest] = math.ceil(
-                    (weighted_alpha + (z_w / 2.0)) / (p_w * z_w + p_l * z_l))
+                asns[contest] = math.ceil((weighted_alpha + (z_w / 2.0)) / (p_w * z_w + p_l * z_l))
 
         return asns
 
@@ -94,8 +92,7 @@ class BRAVO(RiskLimitingAudit):
         # set up the basic BRAVO math
         plus = math.log(p_w2 / 0.5)
         minus = math.log(p_r2 / 0.5)
-        threshold = math.log(
-            1 / self.risk_limit) - (sample_w * plus + sample_r * minus)
+        threshold = math.log(1 / self.risk_limit) - (sample_w * plus + sample_r * minus)
 
         # crude condition trapping:
         if threshold <= 0:
@@ -186,8 +183,7 @@ class BRAVO(RiskLimitingAudit):
         # set up the basic BRAVO math
         plus = math.log(p_w2 / 0.5)
         minus = math.log(p_r2 / 0.5)
-        threshold = math.log(
-            1 / self.risk_limit) - (sample_w * plus + sample_r * minus)
+        threshold = math.log(1 / self.risk_limit) - (sample_w * plus + sample_r * minus)
 
         # crude condition trapping:
         if threshold <= 0:
@@ -238,8 +234,7 @@ class BRAVO(RiskLimitingAudit):
 
         samples = {}
 
-        asns = self.get_expected_sample_sizes(margins, contests,
-                                              sample_results)
+        asns = self.get_expected_sample_sizes(margins, contests, sample_results)
         for contest in contests:
             samples[contest] = {}
 
@@ -250,14 +245,8 @@ class BRAVO(RiskLimitingAudit):
             worse_winner = ''
 
             # For multi-winner, do nothing
-            if 'numWinners' not in contests[
-                    contest] or contests[contest]['numWinners'] != 1:
-                samples[contest] = {
-                    'asn': {
-                        'size': asns[contest],
-                        'prob': None
-                    }
-                }
+            if 'numWinners' not in contests[contest] or contests[contest]['numWinners'] != 1:
+                samples[contest] = {'asn': {'size': asns[contest], 'prob': None}}
                 return samples
 
             margin = margins[contest]
@@ -299,15 +288,13 @@ class BRAVO(RiskLimitingAudit):
             sample_l = sample_results[contest][best_loser]
 
             samples[contest]['asn'] = {
-                'size':
-                asns[contest],
-                'prob':
-                self.expected_prob(p_w, p_l, sample_w, sample_l, asns[contest])
+                'size': asns[contest],
+                'prob': self.expected_prob(p_w, p_l, sample_w, sample_l, asns[contest])
             }
 
             for quant in quants:
-                samples[contest][quant] = self.bravo_sample_sizes(
-                    p_w, p_l, sample_w, sample_l, quant)
+                samples[contest][quant] = self.bravo_sample_sizes(p_w, p_l, sample_w, sample_l,
+                                                                  quant)
 
         return samples
 
@@ -348,12 +335,10 @@ class BRAVO(RiskLimitingAudit):
         for cand, votes in sample_results.items():
             if cand in winners:
                 for loser in losers:
-                    T[(cand,
-                       loser)] *= (winners[cand]['swl'][loser] / 0.5)**votes
+                    T[(cand, loser)] *= (winners[cand]['swl'][loser] / 0.5)**votes
             elif cand in losers:
                 for winner in winners:
-                    T[(winner, cand)] *= ((1 - winners[winner]['swl'][cand]) /
-                                          0.5)**votes
+                    T[(winner, cand)] *= ((1 - winners[winner]['swl'][cand]) / 0.5)**votes
 
         return T
 

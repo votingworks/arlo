@@ -8,14 +8,11 @@ from arlo_server import app, init_db, db
 import bgcompute
 
 manifest_file_path = os.path.join(os.path.dirname(__file__), "manifest.csv")
-small_manifest_file_path = os.path.join(os.path.dirname(__file__),
-                                        "small-manifest.csv")
+small_manifest_file_path = os.path.join(os.path.dirname(__file__), "small-manifest.csv")
 
 
 def post_json(client, url, obj):
-    return client.post(url,
-                       headers={'Content-Type': 'application/json'},
-                       data=json.dumps(obj))
+    return client.post(url, headers={'Content-Type': 'application/json'}, data=json.dumps(obj))
 
 
 @pytest.fixture
@@ -54,12 +51,10 @@ def test_whole_audit_flow(client):
     assert election_id_2
 
     print("running whole audit flow " + election_id_1)
-    run_whole_audit_flow(client, election_id_1, "Primary 2019", 10,
-                         "12345678901234567890")
+    run_whole_audit_flow(client, election_id_1, "Primary 2019", 10, "12345678901234567890")
 
     print("running whole audit flow " + election_id_2)
-    run_whole_audit_flow(client, election_id_2, "General 2019", 5,
-                         "12345678901234599999")
+    run_whole_audit_flow(client, election_id_2, "General 2019", 5, "12345678901234599999")
 
     # after resetting election 1, election 2 is still around
     run_election_reset(client, election_id_1)
@@ -166,24 +161,21 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
 
     # choose a sample size
     sample_size_90 = [
-        option
-        for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"]
+        option for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"]
         if option["prob"] == 0.9
     ]
     assert len(sample_size_90) == 1
     sample_size = sample_size_90[0]["size"]
 
     # set the sample_size
-    rv = post_json(client, '{}/audit/sample-size'.format(url_prefix),
-                   {"size": sample_size})
+    rv = post_json(client, '{}/audit/sample-size'.format(url_prefix), {"size": sample_size})
 
     assert json.loads(rv.data)["status"] == "ok"
 
     # upload the manifest
     data = {}
     data['manifest'] = (open(manifest_file_path, "rb"), 'manifest.csv')
-    rv = client.post('{}/jurisdiction/{}/manifest'.format(
-        url_prefix, jurisdiction_id),
+    rv = client.post('{}/jurisdiction/{}/manifest'.format(url_prefix, jurisdiction_id),
                      data=data,
                      content_type='multipart/form-data')
 
@@ -199,8 +191,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     assert manifest['uploadedAt']
 
     # delete the manifest and make sure that works
-    rv = client.delete('{}/jurisdiction/{}/manifest'.format(
-        url_prefix, jurisdiction_id))
+    rv = client.delete('{}/jurisdiction/{}/manifest'.format(url_prefix, jurisdiction_id))
     assert json.loads(rv.data)['status'] == "ok"
 
     rv = client.get('{}/audit/status'.format(url_prefix))
@@ -213,16 +204,14 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     # upload the manifest again
     data = {}
     data['manifest'] = (open(manifest_file_path, "rb"), 'manifest.csv')
-    rv = client.post('{}/jurisdiction/{}/manifest'.format(
-        url_prefix, jurisdiction_id),
+    rv = client.post('{}/jurisdiction/{}/manifest'.format(url_prefix, jurisdiction_id),
                      data=data,
                      content_type='multipart/form-data')
 
     assert json.loads(rv.data)['status'] == 'ok'
 
     # get the retrieval list for round 1
-    rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(
-        url_prefix, jurisdiction_id))
+    rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').splitlines()
     assert lines[
         0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board"
@@ -234,8 +223,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     return url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots
 
 
-def setup_whole_multi_winner_audit(client, election_id, name, risk_limit,
-                                   random_seed):
+def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random_seed):
     contest_id = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
     candidate_id_2 = str(uuid.uuid4())
@@ -340,24 +328,19 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit,
     assert jurisdiction["contests"] == [contest_id]
 
     # choose a sample size
-    sample_size_asn = [
-        option
-        for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"]
-    ]
+    sample_size_asn = [option for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"]]
     assert len(sample_size_asn) == 1
     sample_size = sample_size_asn[0]["size"]
 
     # set the sample_size
-    rv = post_json(client, '{}/audit/sample-size'.format(url_prefix),
-                   {"size": sample_size})
+    rv = post_json(client, '{}/audit/sample-size'.format(url_prefix), {"size": sample_size})
 
     assert json.loads(rv.data)["status"] == "ok"
 
     # upload the manifest
     data = {}
     data['manifest'] = (open(manifest_file_path, "rb"), 'manifest.csv')
-    rv = client.post('{}/jurisdiction/{}/manifest'.format(
-        url_prefix, jurisdiction_id),
+    rv = client.post('{}/jurisdiction/{}/manifest'.format(url_prefix, jurisdiction_id),
                      data=data,
                      content_type='multipart/form-data')
 
@@ -373,8 +356,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit,
     assert manifest['uploadedAt']
 
     # delete the manifest and make sure that works
-    rv = client.delete('{}/jurisdiction/{}/manifest'.format(
-        url_prefix, jurisdiction_id))
+    rv = client.delete('{}/jurisdiction/{}/manifest'.format(url_prefix, jurisdiction_id))
     assert json.loads(rv.data)['status'] == "ok"
 
     rv = client.get('{}/audit/status'.format(url_prefix))
@@ -387,16 +369,14 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit,
     # upload the manifest again
     data = {}
     data['manifest'] = (open(manifest_file_path, "rb"), 'manifest.csv')
-    rv = client.post('{}/jurisdiction/{}/manifest'.format(
-        url_prefix, jurisdiction_id),
+    rv = client.post('{}/jurisdiction/{}/manifest'.format(url_prefix, jurisdiction_id),
                      data=data,
                      content_type='multipart/form-data')
 
     assert json.loads(rv.data)['status'] == 'ok'
 
     # get the retrieval list for round 1
-    rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(
-        url_prefix, jurisdiction_id))
+    rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
     lines = rv.data.decode('utf-8').split("\r\n")
     assert lines[
         0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board"
@@ -416,8 +396,7 @@ def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
     num_for_winner = int(num_ballots * 0.56)
     num_for_loser = num_ballots - num_for_winner
     rv = post_json(
-        client,
-        '{}/jurisdiction/{}/1/results'.format(url_prefix, jurisdiction_id), {
+        client, '{}/jurisdiction/{}/1/results'.format(url_prefix, jurisdiction_id), {
             "contests": [{
                 "id": contest_id,
                 "results": {
@@ -553,25 +532,21 @@ def test_small_election(client):
 
     # choose a sample size
     sample_size_90 = [
-        option
-        for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"]
+        option for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"]
         if option["prob"] == 0.9
     ]
     assert len(sample_size_90) == 1
     sample_size = sample_size_90[0]["size"]
 
     # set the sample_size
-    rv = post_json(client, f'/election/{election_id}/audit/sample-size',
-                   {"size": sample_size})
+    rv = post_json(client, f'/election/{election_id}/audit/sample-size', {"size": sample_size})
 
     # upload the manifest
     data = {}
-    data['manifest'] = (open(small_manifest_file_path,
-                             "rb"), 'small-manifest.csv')
-    rv = client.post(
-        f'/election/{election_id}/jurisdiction/{jurisdiction_id}/manifest',
-        data=data,
-        content_type='multipart/form-data')
+    data['manifest'] = (open(small_manifest_file_path, "rb"), 'small-manifest.csv')
+    rv = client.post(f'/election/{election_id}/jurisdiction/{jurisdiction_id}/manifest',
+                     data=data,
+                     content_type='multipart/form-data')
 
     assert json.loads(rv.data)['status'] == 'ok'
 
@@ -585,13 +560,10 @@ def test_small_election(client):
     assert manifest['uploadedAt']
 
     # get the retrieval list for round 1
-    rv = client.get(
-        f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/retrieval-list'
-    )
+    rv = client.get(f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/retrieval-list')
 
     # deterministic sampling, should be the same every time, tweak for CRLF
-    assert rv.data.decode('utf-8').replace("\r\n",
-                                           "\n") == EXPECTED_RETRIEVAL_LIST
+    assert rv.data.decode('utf-8').replace("\r\n", "\n") == EXPECTED_RETRIEVAL_LIST
 
     lines = rv.data.decode('utf-8').splitlines()
     assert lines[
@@ -604,8 +576,7 @@ def test_small_election(client):
     num_for_winner = int(num_ballots * 0.61)
     num_for_loser = num_ballots - num_for_winner
     rv = post_json(
-        client,
-        f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/results', {
+        client, f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/results', {
             "contests": [{
                 "id": contest_id,
                 "results": {
@@ -677,8 +648,7 @@ def test_contest_choices_cannot_have_more_votes_than_allowed(client):
     response = json.loads(rv.data)
     assert response == {
         'errors': [{
-            'message':
-            'Too many votes cast in contest: Contest 1 (61 votes, 60 allowed)',
+            'message': 'Too many votes cast in contest: Contest 1 (61 votes, 60 allowed)',
             'errorType': 'TooManyVotes'
         }]
     }
@@ -732,8 +702,7 @@ def test_multi_round_audit(client):
     num_for_winner = int(num_ballots * 0.5)
     num_for_loser = num_ballots - num_for_winner
     rv = post_json(
-        client,
-        '{}/jurisdiction/{}/1/results'.format(url_prefix, jurisdiction_id), {
+        client, '{}/jurisdiction/{}/1/results'.format(url_prefix, jurisdiction_id), {
             "contests": [{
                 "id": contest_id,
                 "results": {
@@ -768,8 +737,7 @@ def test_multi_round_audit(client):
     assert status["rounds"][1]["contests"][0]["sampleSize"]
 
     # round 2 retrieval list should be ready
-    rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(
-        url_prefix, jurisdiction_id))
+    rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
 
     # Count the ticket numbers
     num_ballots = get_num_ballots_from_retrieval_list(rv)
@@ -877,25 +845,19 @@ def test_multi_winner_election(client):
     assert jurisdiction["contests"] == [contest_id]
 
     # choose a sample size
-    sample_size_asn = [
-        option
-        for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"]
-    ]
+    sample_size_asn = [option for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"]]
     assert len(sample_size_asn) == 1
     sample_size = sample_size_asn[0]["size"]
 
     # set the sample_size
-    rv = post_json(client, f'/election/{election_id}/audit/sample-size',
-                   {"size": sample_size})
+    rv = post_json(client, f'/election/{election_id}/audit/sample-size', {"size": sample_size})
 
     # upload the manifest
     data = {}
-    data['manifest'] = (open(small_manifest_file_path,
-                             "rb"), 'small-manifest.csv')
-    rv = client.post(
-        f'/election/{election_id}/jurisdiction/{jurisdiction_id}/manifest',
-        data=data,
-        content_type='multipart/form-data')
+    data['manifest'] = (open(small_manifest_file_path, "rb"), 'small-manifest.csv')
+    rv = client.post(f'/election/{election_id}/jurisdiction/{jurisdiction_id}/manifest',
+                     data=data,
+                     content_type='multipart/form-data')
 
     assert json.loads(rv.data)['status'] == 'ok'
 
@@ -909,9 +871,7 @@ def test_multi_winner_election(client):
     assert manifest['uploadedAt']
 
     # get the retrieval list for round 1
-    rv = client.get(
-        f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/retrieval-list'
-    )
+    rv = client.get(f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/retrieval-list')
     lines = rv.data.decode('utf-8').split("\r\n")
     assert lines[
         0] == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board"
@@ -924,8 +884,7 @@ def test_multi_winner_election(client):
     num_for_winner2 = int(num_ballots * 0.3)
     num_for_loser = num_ballots - num_for_winner - num_for_winner2
     rv = post_json(
-        client,
-        f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/results', {
+        client, f'/election/{election_id}/jurisdiction/{jurisdiction_id}/1/results', {
             "contests": [{
                 "id": contest_id,
                 "results": {
@@ -959,16 +918,14 @@ def test_multi_round_multi_winner_audit(client):
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(
-        client, election_id, 'Multi-Round Multi-winner Audit', 10,
-        '32423432423432')
+        client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
 
     # post results for round 1 with 50/50 split, should not complete.
     num_for_winner = int(num_ballots * 0.4)
     num_for_winner2 = int(num_ballots * 0.4)
     num_for_loser = num_ballots - num_for_winner - num_for_winner2
     rv = post_json(
-        client,
-        '{}/jurisdiction/{}/1/results'.format(url_prefix, jurisdiction_id), {
+        client, '{}/jurisdiction/{}/1/results'.format(url_prefix, jurisdiction_id), {
             "contests": [{
                 "id": contest_id,
                 "results": {
@@ -1005,8 +962,7 @@ def test_multi_round_multi_winner_audit(client):
     assert status["rounds"][1]["contests"][0]["sampleSize"]
 
     # round 2 retrieval list should be ready
-    rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(
-        url_prefix, jurisdiction_id))
+    rv = client.get('{}/jurisdiction/{}/2/retrieval-list'.format(url_prefix, jurisdiction_id))
     num_ballots = get_num_ballots_from_retrieval_list(rv)
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
 
@@ -1017,15 +973,12 @@ def test_ballot_set(client):
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(
-        client, election_id, 'Multi-Round Multi-winner Audit', 10,
-        '32423432423432')
+        client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
 
     ## find a sampled ballot to update
     rv = client.get('{}/audit/status'.format(url_prefix))
     response = json.loads(rv.data)
-    jurisdiction = [
-        j for j in response['jurisdictions'] if j['id'] == jurisdiction_id
-    ][0]
+    jurisdiction = [j for j in response['jurisdictions'] if j['id'] == jurisdiction_id][0]
     rounds = response['rounds']
     batch_id = None
     round_id = None
@@ -1050,25 +1003,20 @@ def test_ballot_set(client):
     assert ballot is not None
 
     ## set the ballot data
-    url = '{}/jurisdiction/{}/batch/{}/ballot/{}'.format(
-        url_prefix, jurisdiction_id, batch_id, ballot['position'])
+    url = '{}/jurisdiction/{}/batch/{}/ballot/{}'.format(url_prefix, jurisdiction_id, batch_id,
+                                                         ballot['position'])
 
-    rv = post_json(client, url, {
-        'vote': 'NO',
-        'comment': 'This one had a hanging chad.'
-    })
+    rv = post_json(client, url, {'vote': 'NO', 'comment': 'This one had a hanging chad.'})
     response = json.loads(rv.data)
 
     assert response['status'] == 'ok'
 
     ## verify the update actually did something
-    rv = client.get('{}/jurisdiction/{}/round/{}/ballot-list'.format(
-        url_prefix, jurisdiction_id, round_id))
+    rv = client.get('{}/jurisdiction/{}/round/{}/ballot-list'.format(url_prefix, jurisdiction_id,
+                                                                     round_id))
     response = json.loads(rv.data)
     ballot_position = ballot['position']
-    ballot = [
-        b for b in response['ballots'] if b['position'] == ballot_position
-    ][0]
+    ballot = [b for b in response['ballots'] if b['position'] == ballot_position][0]
 
     assert ballot['status'] == 'AUDITED'
     assert ballot['vote'] == 'NO'
@@ -1081,15 +1029,12 @@ def test_ballot_list_ordering(client):
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(
-        client, election_id, 'Multi-Round Multi-winner Audit', 10,
-        '32423432423432')
+        client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
 
     ## find all rounds for this jurisdiction
     rv = client.get('{}/audit/status'.format(url_prefix))
     response = json.loads(rv.data)
-    jurisdiction = [
-        j for j in response['jurisdictions'] if j['id'] == jurisdiction_id
-    ][0]
+    jurisdiction = [j for j in response['jurisdictions'] if j['id'] == jurisdiction_id][0]
     rounds = response['rounds']
 
     ## verify order of all returned ballots
@@ -1099,10 +1044,10 @@ def test_ballot_list_ordering(client):
         response = json.loads(rv.data)
 
         unsorted_ballots = response['ballots']
-        sorted_ballots = sorted(unsorted_ballots,
-                                key=lambda ballot:
-                                (ballot['auditBoard']['name'], ballot['batch'][
-                                    'name'], ballot['position']))
+        sorted_ballots = sorted(
+            unsorted_ballots,
+            key=lambda ballot:
+            (ballot['auditBoard']['name'], ballot['batch']['name'], ballot['position']))
 
         assert unsorted_ballots == sorted_ballots
 
@@ -1113,28 +1058,23 @@ def test_ballot_list_ordering_by_audit_board(client):
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(
-        client, election_id, 'Multi-Round Multi-winner Audit', 10,
-        '32423432423432')
+        client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
 
     ## find all rounds for this jurisdiction
     rv = client.get('{}/audit/status'.format(url_prefix))
     response = json.loads(rv.data)
-    jurisdiction = [
-        j for j in response['jurisdictions'] if j['id'] == jurisdiction_id
-    ][0]
+    jurisdiction = [j for j in response['jurisdictions'] if j['id'] == jurisdiction_id][0]
     rounds = response['rounds']
 
     ## verify order of all returned ballots
     for round in rounds:
-        rv = client.get(
-            '{}/jurisdiction/{}/audit-board/{}/round/{}/ballot-list'.format(
-                url_prefix, jurisdiction_id, audit_board_id_1, round['id']))
+        rv = client.get('{}/jurisdiction/{}/audit-board/{}/round/{}/ballot-list'.format(
+            url_prefix, jurisdiction_id, audit_board_id_1, round['id']))
         response = json.loads(rv.data)
 
         unsorted_ballots = response['ballots']
         sorted_ballots = sorted(unsorted_ballots,
-                                key=lambda ballot:
-                                (ballot['batch']['name'], ballot['position']))
+                                key=lambda ballot: (ballot['batch']['name'], ballot['position']))
 
         assert unsorted_ballots == sorted_ballots
 
@@ -1145,11 +1085,8 @@ def test_audit_board(client):
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(
-        client, election_id, 'Multi-Round Multi-winner Audit', 10,
-        '32423432423432')
-    url = '{}/jurisdiction/{}/audit-board/{}'.format(url_prefix,
-                                                     jurisdiction_id,
-                                                     audit_board_id_1)
+        client, election_id, 'Multi-Round Multi-winner Audit', 10, '32423432423432')
+    url = '{}/jurisdiction/{}/audit-board/{}'.format(url_prefix, jurisdiction_id, audit_board_id_1)
 
     ## check audit board
     rv = client.get(url)
@@ -1191,14 +1128,12 @@ def test_audit_board(client):
     }]
 
 
-EXPECTED_ALREADY_AUDITED_BALLOTS = [
-    ('112', '146'), ('136', '118'), ('240', '174'),
-    ('327', '85'), ('341', '52'), ('434', '101'), ('71', '46'), ('145', '134'),
-    ('146', '152'), ('189', '26'), ('197', '150'), ('22', '103'), ('222', '4'),
-    ('227', '147'), ('271', '6'), ('275', '162'), ('281', '30'), ('31', '13'),
-    ('323', '175'), ('354', '182'), ('446', '59'), ('46', '44'), ('483', '13'),
-    ('60', '11')
-]
+EXPECTED_ALREADY_AUDITED_BALLOTS = [('112', '146'), ('136', '118'), ('240', '174'), ('327', '85'),
+                                    ('341', '52'), ('434', '101'), ('71', '46'), ('145', '134'),
+                                    ('146', '152'), ('189', '26'), ('197', '150'), ('22', '103'),
+                                    ('222', '4'), ('227', '147'), ('271', '6'), ('275', '162'),
+                                    ('281', '30'), ('31', '13'), ('323', '175'), ('354', '182'),
+                                    ('446', '59'), ('46', '44'), ('483', '13'), ('60', '11')]
 
 EXPECTED_RETRIEVAL_LIST = """Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board
 2,1,,,0.051285890,N,Audit Board #1

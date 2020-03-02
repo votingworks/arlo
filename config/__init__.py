@@ -11,8 +11,7 @@ def read_database_url_config() -> str:
     if environment_database_url:
         return environment_database_url
 
-    database_cfg_path = os.path.normpath(
-        os.path.join(__file__, '..', 'database.cfg'))
+    database_cfg_path = os.path.normpath(os.path.join(__file__, '..', 'database.cfg'))
     database_config = configparser.ConfigParser()
     database_config.read(database_cfg_path)
 
@@ -36,6 +35,5 @@ def read_database_url_config() -> str:
 DATABASE_URL = read_database_url_config()
 
 STATIC_FOLDER = os.path.normpath(
-    os.path.join(
-        __file__, '..', '..', 'arlo-client',
-        'public' if os.environ.get('FLASK_ENV') == 'test' else 'build'))
+    os.path.join(__file__, '..', '..', 'arlo-client',
+                 'public' if os.environ.get('FLASK_ENV') == 'test' else 'build'))

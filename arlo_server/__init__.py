@@ -40,8 +40,7 @@ def contest_status(election):
     contests = {}
 
     for contest in election.contests:
-        contests[contest.id] = dict([[choice.id, choice.num_votes]
-                                     for choice in contest.choices])
+        contests[contest.id] = dict([[choice.id, choice.num_votes] for choice in contest.choices])
         contests[contest.id]['ballots'] = contest.total_ballots_cast
         contests[contest.id]['numWinners'] = contest.num_winners
         contests[contest.id]['votesAllowed'] = contest.votes_allowed
@@ -53,15 +52,13 @@ def sample_results(election):
     contests = {}
 
     for contest in election.contests:
-        contests[contest.id] = dict([[choice.id, 0]
-                                     for choice in contest.choices])
+        contests[contest.id] = dict([[choice.id, 0] for choice in contest.choices])
 
         round_contests = RoundContest.query.filter_by(
             contest_id=contest.id).order_by('round_id').all()
         for round_contest in round_contests:
             for result in round_contest.results:
-                contests[contest.id][
-                    result.targeted_contest_choice_id] += result.result
+                contests[contest.id][result.targeted_contest_choice_id] += result.result
 
     return contests
 
@@ -99,11 +96,7 @@ def compute_sample_sizes(round_contest):
 
         else:
             prob = prob_or_asn
-            sample_size_options.append({
-                "type": None,
-                "prob": prob,
-                "size": int(math.ceil(size))
-            })
+            sample_size_options.append({"type": None, "prob": prob, "size": int(math.ceil(size))})
 
             # stash this one away for later
             if prob == 0.9:
@@ -127,11 +120,9 @@ def setup_next_round(election):
     if len(election.contests) > 1:
         raise Exception("only supports one contest for now")
 
-    rounds = Round.query.filter_by(
-        election_id=election.id).order_by('round_num').all()
+    rounds = Round.query.filter_by(election_id=election.id).order_by('round_num').all()
 
-    print("adding round {:d} for election {:s}".format(
-        len(rounds) + 1, election.id))
+    print("adding round {:d} for election {:s}".format(len(rounds) + 1, election.id))
     round = Round(id=str(uuid.uuid4()),
                   election_id=election.id,
                   round_num=len(rounds) + 1,
@@ -152,8 +143,7 @@ def sample_ballots(election, round):
     jurisdiction = election.jurisdictions[0]
 
     num_sampled = db.session.query(SampledBallotDraw).join(
-        SampledBallotDraw.batch).filter_by(
-            jurisdiction_id=jurisdiction.id).count()
+        SampledBallotDraw.batch).filter_by(jurisdiction_id=jurisdiction.id).count()
     if not num_sampled:
         num_sampled = 0
 
@@ -170,9 +160,7 @@ def sample_ballots(election, round):
         manifest[batch.name] = batch.num_ballots
         batch_id_from_name[batch.name] = batch.id
 
-    sample = sampler.draw_sample(manifest,
-                                 chosen_sample_size,
-                                 num_sampled=num_sampled)
+    sample = sampler.draw_sample(manifest, chosen_sample_size, num_sampled=num_sampled)
 
     audit_boards = jurisdiction.audit_boards
 
@@ -190,12 +178,10 @@ def sample_ballots(election, round):
         if batch_name in batch_sizes:
             if sample_number == 1:  # if we've already seen it, it doesn't affect batch size
                 batch_sizes[batch_name] += 1
-            batches_to_ballots[batch_name].append(
-                (ballot_position, ticket_number, sample_number))
+            batches_to_ballots[batch_name].append((ballot_position, ticket_number, sample_number))
         else:
             batch_sizes[batch_name] = 1
-            batches_to_ballots[batch_name] = [(ballot_position, ticket_number,
-                                               sample_number)]
+            batches_to_ballots[batch_name] = [(ballot_position, ticket_number, sample_number)]
 
     # Create the buckets and initially assign batches
     buckets = [Bucket(audit_board.name) for audit_board in audit_boards]
@@ -219,17 +205,15 @@ def sample_ballots(election, round):
                 batch_id = batch_id_from_name[batch_name]
 
                 if sample_number == 1:
-                    sampled_ballot = SampledBallot(
-                        batch_id=batch_id,
-                        ballot_position=ballot_position,
-                        audit_board_id=audit_board.id)
+                    sampled_ballot = SampledBallot(batch_id=batch_id,
+                                                   ballot_position=ballot_position,
+                                                   audit_board_id=audit_board.id)
                     db.session.add(sampled_ballot)
 
-                sampled_ballot_draw = SampledBallotDraw(
-                    batch_id=batch_id,
-                    ballot_position=ballot_position,
-                    round_id=round.id,
-                    ticket_number=ticket_number)
+                sampled_ballot_draw = SampledBallotDraw(batch_id=batch_id,
+                                                        ballot_position=ballot_position,
+                                                        round_id=round.id,
+                                                        ticket_number=ticket_number)
 
                 db.session.add(sampled_ballot_draw)
 
@@ -246,9 +230,8 @@ def check_round(election, jurisdiction_id, round_id):
     sampler = get_sampler(election)
     current_sample_results = sample_results(election)
 
-    risk, is_complete = sampler.compute_risk(
-        round_contest.contest_id,
-        current_sample_results[round_contest.contest_id])
+    risk, is_complete = sampler.compute_risk(round_contest.contest_id,
+                                             current_sample_results[round_contest.contest_id])
 
     round.ended_at = datetime.datetime.utcnow()
     # TODO this is a hack, should we report pairwise p-values?
@@ -294,8 +277,7 @@ if ADMIN_PASSWORD:
     def verify_password(username, password):
         # use a comparison method that prevents timing attacks:
         # https://securitypitfalls.wordpress.com/2018/08/03/constant-time-compare-in-python/
-        return password is not None and hmac.compare_digest(
-            password, ADMIN_PASSWORD)
+        return password is not None and hmac.compare_digest(password, ADMIN_PASSWORD)
 
     @app.route('/admin', methods=["GET"])
     @auth.login_required
@@ -315,78 +297,76 @@ def election_new():
 def audit_status(election_id=None):
     election = get_election(election_id)
 
-    return jsonify(
-        name=election.name,
-        online=election.online,
-        riskLimit=election.risk_limit,
-        randomSeed=election.random_seed,
-        contests=[{
-            "id":
-            contest.id,
-            "name":
-            contest.name,
-            "choices": [{
-                "id": choice.id,
-                "name": choice.name,
-                "numVotes": choice.num_votes
-            } for choice in contest.choices],
-            "totalBallotsCast":
-            contest.total_ballots_cast,
-            "numWinners":
-            contest.num_winners,
-            "votesAllowed":
-            contest.votes_allowed
-        } for contest in election.contests],
-        jurisdictions=[{
-            "id":
-            j.id,
-            "name":
-            j.name,
-            "contests": [c.contest_id for c in j.contests],
-            "auditBoards": [{
-                "id": audit_board.id,
-                "name": audit_board.name,
-                "members": serialize_members(audit_board),
-                "passphrase": audit_board.passphrase
-            } for audit_board in j.audit_boards],
-            "ballotManifest": {
-                "filename": j.manifest_filename,
-                "numBallots": j.manifest_num_ballots,
-                "numBatches": j.manifest_num_batches,
-                "uploadedAt": j.manifest_uploaded_at
-            },
-            "batches":
-            [{
-                "id": batch.id,
-                "name": batch.name,
-                "numBallots": batch.num_ballots,
-                "storageLocation": batch.storage_location,
-                "tabulator": batch.tabulator
-            } for batch in j.batches]
-        } for j in election.jurisdictions],
-        rounds=[{
-            "id":
-            round.id,
-            "startedAt":
-            round.started_at,
-            "endedAt":
-            round.ended_at,
-            "contests": [{
-                "id":
-                round_contest.contest_id,
-                "endMeasurements": {
-                    "pvalue": round_contest.end_p_value,
-                    "isComplete": round_contest.is_complete
-                },
-                "results":
-                dict([[result.targeted_contest_choice_id, result.result]
-                      for result in round_contest.results]),
-                "sampleSizeOptions":
-                json.loads(round_contest.sample_size_options or 'null'),
-                "sampleSize":
-                round_contest.sample_size
-            } for round_contest in round.round_contests]
-        } for round in election.rounds])
+    return jsonify(name=election.name,
+                   online=election.online,
+                   riskLimit=election.risk_limit,
+                   randomSeed=election.random_seed,
+                   contests=[{
+                       "id":
+                       contest.id,
+                       "name":
+                       contest.name,
+                       "choices": [{
+                           "id": choice.id,
+                           "name": choice.name,
+                           "numVotes": choice.num_votes
+                       } for choice in contest.choices],
+                       "totalBallotsCast":
+                       contest.total_ballots_cast,
+                       "numWinners":
+                       contest.num_winners,
+                       "votesAllowed":
+                       contest.votes_allowed
+                   } for contest in election.contests],
+                   jurisdictions=[{
+                       "id":
+                       j.id,
+                       "name":
+                       j.name,
+                       "contests": [c.contest_id for c in j.contests],
+                       "auditBoards": [{
+                           "id": audit_board.id,
+                           "name": audit_board.name,
+                           "members": serialize_members(audit_board),
+                           "passphrase": audit_board.passphrase
+                       } for audit_board in j.audit_boards],
+                       "ballotManifest": {
+                           "filename": j.manifest_filename,
+                           "numBallots": j.manifest_num_ballots,
+                           "numBatches": j.manifest_num_batches,
+                           "uploadedAt": j.manifest_uploaded_at
+                       },
+                       "batches": [{
+                           "id": batch.id,
+                           "name": batch.name,
+                           "numBallots": batch.num_ballots,
+                           "storageLocation": batch.storage_location,
+                           "tabulator": batch.tabulator
+                       } for batch in j.batches]
+                   } for j in election.jurisdictions],
+                   rounds=[{
+                       "id":
+                       round.id,
+                       "startedAt":
+                       round.started_at,
+                       "endedAt":
+                       round.ended_at,
+                       "contests": [{
+                           "id":
+                           round_contest.contest_id,
+                           "endMeasurements": {
+                               "pvalue": round_contest.end_p_value,
+                               "isComplete": round_contest.is_complete
+                           },
+                           "results":
+                           dict([[result.targeted_contest_choice_id, result.result]
+                                 for result in round_contest.results]),
+                           "sampleSizeOptions":
+                           json.loads(round_contest.sample_size_options or 'null'),
+                           "sampleSize":
+                           round_contest.sample_size
+                       } for round_contest in round.round_contests]
+                   } for round in election.rounds])
 
 
 @app.route('/election/<election_id>/audit/basic', methods=["POST"])
@@ -399,20 +379,17 @@ def audit_basic_update(election_id):
     election.online = info['online']
 
     errors = []
-    db.session.query(TargetedContest).filter_by(
-        election_id=election.id).delete()
+    db.session.query(TargetedContest).filter_by(election_id=election.id).delete()
 
     for contest in info['contests']:
-        total_allowed_votes_in_contest = contest['totalBallotsCast'] * contest[
-            'votesAllowed']
+        total_allowed_votes_in_contest = contest['totalBallotsCast'] * contest['votesAllowed']
 
-        contest_obj = TargetedContest(
-            election_id=election.id,
-            id=contest['id'],
-            name=contest['name'],
-            total_ballots_cast=contest['totalBallotsCast'],
-            num_winners=contest['numWinners'],
-            votes_allowed=contest['votesAllowed'])
+        contest_obj = TargetedContest(election_id=election.id,
+                                      id=contest['id'],
+                                      name=contest['name'],
+                                      total_ballots_cast=contest['totalBallotsCast'],
+                                      num_winners=contest['numWinners'],
+                                      votes_allowed=contest['votesAllowed'])
         db.session.add(contest_obj)
 
         total_votes_in_all_choices = 0
@@ -474,16 +451,17 @@ def jurisdictions_set(election_id):
         db.session.add(jurisdiction_obj)
 
         for contest_id in jurisdiction["contests"]:
-            jurisdiction_contest = TargetedContestJurisdiction(
-                contest_id=contest_id, jurisdiction_id=jurisdiction_obj.id)
+            jurisdiction_contest = TargetedContestJurisdiction(contest_id=contest_id,
+                                                               jurisdiction_id=jurisdiction_obj.id)
             db.session.add(jurisdiction_contest)
 
         for audit_board in jurisdiction["auditBoards"]:
             audit_board_obj = AuditBoard(id=audit_board["id"],
                                          name=audit_board["name"],
                                          jurisdiction_id=jurisdiction_obj.id,
-                                         passphrase=xp.generate_xkcdpassword(
-                                             WORDS, numwords=4, delimiter="-"))
+                                         passphrase=xp.generate_xkcdpassword(WORDS,
+                                                                             numwords=4,
+                                                                             delimiter="-"))
             db.session.add(audit_board_obj)
 
     db.session.commit()
@@ -500,8 +478,7 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
     TABULATOR = 'Tabulator'
 
     election = get_election(election_id)
-    jurisdiction = Jurisdiction.query.filter_by(election_id=election.id,
-                                                id=jurisdiction_id).one()
+    jurisdiction = Jurisdiction.query.filter_by(election_id=election.id, id=jurisdiction_id).one()
 
     if not jurisdiction:
         return jsonify(errors=[{
@@ -532,8 +509,7 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
     manifest_csv = csv.DictReader(io.StringIO(manifest_string))
 
     missing_fields = [
-        field for field in [BATCH_NAME, NUMBER_OF_BALLOTS]
-        if field not in manifest_csv.fieldnames
+        field for field in [BATCH_NAME, NUMBER_OF_BALLOTS] if field not in manifest_csv.fieldnames
     ]
 
     if missing_fields:
@@ -577,9 +553,8 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
     return jsonify(status="ok")
 
 
-@app.route(
-    '/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>',
-    methods=["GET"])
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>',
+           methods=["GET"])
 def audit_board(election_id, jurisdiction_id, audit_board_id):
     audit_boards = AuditBoard.query.filter_by(id=audit_board_id) \
         .join(AuditBoard.jurisdiction).filter_by(id=jurisdiction_id, election_id=election_id) \
@@ -593,22 +568,16 @@ def audit_board(election_id, jurisdiction_id, audit_board_id):
 
     audit_board = audit_boards[0]
 
-    return jsonify(id=audit_board.id,
-                   name=audit_board.name,
-                   members=serialize_members(audit_board))
+    return jsonify(id=audit_board.id, name=audit_board.name, members=serialize_members(audit_board))
 
 
-@app.route(
-    '/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>',
-    methods=["POST"])
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>',
+           methods=["POST"])
 def set_audit_board(election_id, jurisdiction_id, audit_board_id):
     try:
         attributes = request.get_json()
     except:
-        return jsonify(errors=[{
-            'message': 'Could not parse JSON',
-            'errorType': 'BadRequest'
-        }]), 400
+        return jsonify(errors=[{'message': 'Could not parse JSON', 'errorType': 'BadRequest'}]), 400
 
     audit_boards = AuditBoard.query.filter_by(id=audit_board_id) \
         .join(Jurisdiction).filter_by(id=jurisdiction_id, election_id=election_id) \
@@ -639,8 +608,7 @@ def set_audit_board(election_id, jurisdiction_id, audit_board_id):
 
         for i in range(0, AUDIT_BOARD_MEMBER_COUNT):
             setattr(audit_board, f"member_{i + 1}", members[i]['name'])
-            setattr(audit_board, f"member_{i + 1}_affiliation",
-                    members[i]['affiliation'])
+            setattr(audit_board, f"member_{i + 1}_affiliation", members[i]['affiliation'])
 
     name = attributes.get('name', None)
 
@@ -652,9 +620,7 @@ def set_audit_board(election_id, jurisdiction_id, audit_board_id):
     return jsonify(status="ok")
 
 
-@app.route(
-    '/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballot-list'
-)
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballot-list')
 def ballot_list(election_id, jurisdiction_id, round_id):
     query = SampledBallotDraw.query \
                 .join(SampledBallot).join(SampledBallotDraw.batch).join(AuditBoard).join(Round) \
@@ -663,30 +629,28 @@ def ballot_list(election_id, jurisdiction_id, round_id):
                 .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position, SampledBallotDraw.ticket_number) \
                 .all()
 
-    return jsonify(
-        ballots=[{
-            "ticketNumber": ballot_draw.ticket_number,
-            "status": 'AUDITED' if ballot.vote is not None else None,
-            "vote": ballot.vote,
-            "comment": ballot.comment,
-            "position": ballot.ballot_position,
-            "batch": {
-                "id": batch.id,
-                "name": batch.name,
-                "tabulator": batch.tabulator
-            },
-            "auditBoard": {
-                "id": audit_board.id,
-                "name": audit_board.name
-            }
-        } for (ballot_draw, ballot, batch, audit_board) in query])
+    return jsonify(ballots=[{
+        "ticketNumber": ballot_draw.ticket_number,
+        "status": 'AUDITED' if ballot.vote is not None else None,
+        "vote": ballot.vote,
+        "comment": ballot.comment,
+        "position": ballot.ballot_position,
+        "batch": {
+            "id": batch.id,
+            "name": batch.name,
+            "tabulator": batch.tabulator
+        },
+        "auditBoard": {
+            "id": audit_board.id,
+            "name": audit_board.name
+        }
+    } for (ballot_draw, ballot, batch, audit_board) in query])
 
 
 @app.route(
     '/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>/round/<round_id>/ballot-list'
 )
-def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id,
-                               round_id):
+def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, round_id):
     query = SampledBallotDraw.query \
                 .join(Round).join(SampledBallot).join(Batch) \
                 .add_entity(SampledBallot).add_entity(Batch) \
@@ -694,19 +658,18 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id,
                 .filter(SampledBallot.audit_board_id == audit_board_id) \
                 .order_by(Batch.name, SampledBallot.ballot_position, SampledBallotDraw.ticket_number)
 
-    return jsonify(
-        ballots=[{
-            "ticketNumber": ballot_draw.ticket_number,
-            "status": 'AUDITED' if ballot.vote is not None else None,
-            "vote": ballot.vote,
-            "comment": ballot.comment,
-            "position": ballot.ballot_position,
-            "batch": {
-                "id": batch.id,
-                "name": batch.name,
-                "tabulator": batch.tabulator
-            }
-        } for (ballot_draw, ballot, batch) in query])
+    return jsonify(ballots=[{
+        "ticketNumber": ballot_draw.ticket_number,
+        "status": 'AUDITED' if ballot.vote is not None else None,
+        "vote": ballot.vote,
+        "comment": ballot.comment,
+        "position": ballot.ballot_position,
+        "batch": {
+            "id": batch.id,
+            "name": batch.name,
+            "tabulator": batch.tabulator
+        }
+    } for (ballot_draw, ballot, batch) in query])
 
 
 @app.route(
@@ -716,10 +679,7 @@ def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
     try:
         attributes = request.get_json()
     except:
-        return jsonify(errors=[{
-            'message': 'Could not parse JSON',
-            'errorType': 'BadRequest'
-        }]), 400
+        return jsonify(errors=[{'message': 'Could not parse JSON', 'errorType': 'BadRequest'}]), 400
 
     ballots = SampledBallot.query \
         .filter_by(batch_id=batch_id, ballot_position=ballot_position) \
@@ -753,23 +713,20 @@ def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
     return jsonify(status="ok")
 
 
-@app.route(
-    '/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list',
-    methods=["GET"])
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list',
+           methods=["GET"])
 def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     election = get_election(election_id)
 
     # check the jurisdiction and round
-    jurisdiction = Jurisdiction.query.filter_by(election_id=election.id,
-                                                id=jurisdiction_id).one()
-    round = Round.query.filter_by(election_id=election.id,
-                                  round_num=round_num).one()
+    jurisdiction = Jurisdiction.query.filter_by(election_id=election.id, id=jurisdiction_id).one()
+    round = Round.query.filter_by(election_id=election.id, round_num=round_num).one()
 
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)
     retrieval_list_writer.writerow([
-        "Batch Name", "Ballot Number", "Storage Location", "Tabulator",
-        "Ticket Numbers", "Already Audited", "Audit Board"
+        "Batch Name", "Ballot Number", "Storage Location", "Tabulator", "Ticket Numbers",
+        "Already Audited", "Audit Board"
     ])
 
     # Get previously sampled ballots as a separate query for clarity
@@ -778,10 +735,8 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
                         .join(SampledBallotDraw.round).filter(Round.round_num < round_num) \
                         .join(SampledBallotDraw.batch).filter_by(jurisdiction_id = jurisdiction_id)  \
                         .values(Batch.name, SampledBallotDraw.ballot_position)
-    previous_ballots = {
-        (batch_name, ballot_position)
-        for batch_name, ballot_position in previous_ballots_query
-    }
+    previous_ballots = {(batch_name, ballot_position)
+                        for batch_name, ballot_position in previous_ballots_query}
 
     # Get deduped sampled ballots
     ballots = SampledBallotDraw.query.filter_by(round_id = round.id) \
@@ -797,11 +752,10 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
                                             aggregate_order_by(",", SampledBallotDraw.ticket_number)))
 
     for batch_id, position, batch_name, storage_location, tabulator, audit_board, ticket_numbers in ballots:
-        previously_audited = "Y" if (batch_name,
-                                     position) in previous_ballots else "N"
+        previously_audited = "Y" if (batch_name, position) in previous_ballots else "N"
         retrieval_list_writer.writerow([
-            batch_name, position, storage_location, tabulator, ticket_numbers,
-            previously_audited, audit_board
+            batch_name, position, storage_location, tabulator, ticket_numbers, previously_audited,
+            audit_board
         ])
 
     response = Response(csv_io.getvalue())
@@ -810,29 +764,25 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     return response
 
 
-@app.route(
-    '/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/results',
-    methods=["POST"])
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/results',
+           methods=["POST"])
 def jurisdiction_results(election_id, jurisdiction_id, round_num):
     election = get_election(election_id)
     results = request.get_json()
 
     # check the round ownership
-    round = Round.query.filter_by(election_id=election.id,
-                                  round_num=round_num).one()
+    round = Round.query.filter_by(election_id=election.id, round_num=round_num).one()
 
     for contest in results["contests"]:
         round_contest = RoundContest.query.filter_by(contest_id=contest["id"],
                                                      round_id=round.id).one()
-        RoundContestResult.query.filter_by(contest_id=contest["id"],
-                                           round_id=round.id).delete()
+        RoundContestResult.query.filter_by(contest_id=contest["id"], round_id=round.id).delete()
 
         for choice_id, result in contest["results"].items():
-            contest_result = RoundContestResult(
-                round_id=round.id,
-                contest_id=contest["id"],
-                targeted_contest_choice_id=choice_id,
-                result=result)
+            contest_result = RoundContestResult(round_id=round.id,
+                                                contest_id=contest["id"],
+                                                targeted_contest_choice_id=choice_id,
+                                                result=result)
             db.session.add(contest_result)
 
     if not check_round(election, jurisdiction_id, round.id):
@@ -860,8 +810,7 @@ def audit_report(election_id):
     report_writer.writerow(["Total Ballots Cast", contest.total_ballots_cast])
 
     for choice in choices:
-        report_writer.writerow(
-            ["{:s} Votes".format(choice.name), choice.num_votes])
+        report_writer.writerow(["{:s} Votes".format(choice.name), choice.num_votes])
 
     report_writer.writerow(["Risk Limit", "{:d}%".format(election.risk_limit)])
     report_writer.writerow(["Random Seed", election.random_seed])
@@ -870,31 +819,25 @@ def audit_report(election_id):
         round_contest = round.round_contests[0]
         round_contest_results = round_contest.results
 
-        report_writer.writerow([
-            "Round {:d} Sample Size".format(round.round_num),
-            round_contest.sample_size
-        ])
+        report_writer.writerow(
+            ["Round {:d} Sample Size".format(round.round_num), round_contest.sample_size])
 
         for result in round_contest.results:
             report_writer.writerow([
-                "Round {:d} Audited Votes for {:s}".format(
-                    round.round_num, result.targeted_contest_choice.name),
+                "Round {:d} Audited Votes for {:s}".format(round.round_num,
+                                                           result.targeted_contest_choice.name),
                 result.result
             ])
 
-        report_writer.writerow([
-            "Round {:d} P-Value".format(round.round_num),
-            round_contest.end_p_value
-        ])
+        report_writer.writerow(
+            ["Round {:d} P-Value".format(round.round_num), round_contest.end_p_value])
         report_writer.writerow([
             "Round {:d} Risk Limit Met?".format(round.round_num),
             'Yes' if round_contest.is_complete else 'No'
         ])
 
-        report_writer.writerow(
-            ["Round {:d} Start".format(round.round_num), round.started_at])
-        report_writer.writerow(
-            ["Round {:d} End".format(round.round_num), round.ended_at])
+        report_writer.writerow(["Round {:d} Start".format(round.round_num), round.started_at])
+        report_writer.writerow(["Round {:d} End".format(round.round_num), round.ended_at])
 
         ballots = SampledBallotDraw.query \
                     .filter_by(round_id = round.id) \
@@ -904,9 +847,8 @@ def audit_report(election_id):
 
         report_writer.writerow([
             "Round {:d} Samples".format(round.round_num), " ".join([
-                "(Batch {:s}, #{:d}, Ticket #{:s})".format(
-                    batch.name, b.ballot_position, b.ticket_number)
-                for b, batch in ballots
+                "(Batch {:s}, #{:d}, Ticket #{:s})".format(batch.name, b.ballot_position,
+                                                           b.ticket_number) for b, batch in ballots
             ])
         ])
 
@@ -931,8 +873,7 @@ def audit_reset(election_id):
 @app.route('/auditboard/<passphrase>', methods=["GET"])
 def auditboard_passphrase(passphrase):
     auditboard = AuditBoard.query.filter_by(passphrase=passphrase).one()
-    return redirect("/election/%s/board/%s" %
-                    (auditboard.jurisdiction.election.id, auditboard.id))
+    return redirect("/election/%s/board/%s" % (auditboard.jurisdiction.election.id, auditboard.id))
 
 
 # React App
@@ -952,7 +893,4 @@ def handle_500(e):
         return e
 
     # wrapped unhandled error
-    return jsonify(errors=[{
-        'message': str(original),
-        'errorType': type(original).__name__
-    }]), 500
+    return jsonify(errors=[{'message': str(original), 'errorType': type(original).__name__}]), 500

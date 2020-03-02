@@ -27,8 +27,7 @@ class Bucket:
         if not self.size:
             self.largest_element = None
         elif batch_name == self.largest_element:
-            self.largest_element = max(self.batches.items(),
-                                       key=operator.itemgetter(1))[0]
+            self.largest_element = max(self.batches.items(), key=operator.itemgetter(1))[0]
 
         return ({batch_name: taken})
 
@@ -63,8 +62,7 @@ class BucketList:
         return cast(float, numpy.mean([s.size for s in self.buckets]))
 
     def deviation(self) -> float:
-        return sum([abs(self.avg_size - b.size)
-                    for b in self.buckets]) / self.avg_size
+        return sum([abs(self.avg_size - b.size) for b in self.buckets]) / self.avg_size
 
     def balance(self) -> 'BucketList':
         '''
@@ -100,8 +98,7 @@ class BucketList:
             if batch[1] > self.avg_size:
                 # Find the least-bad bucket
                 (min_idx, min_del) = min(enumerate(
-                    map(lambda bucket: bucket.size + batch[1] - self.avg_size,
-                        new_buckets)),
+                    map(lambda bucket: bucket.size + batch[1] - self.avg_size, new_buckets)),
                                          key=operator.itemgetter(1))
 
                 # Now add to the least-bad bucket
@@ -116,8 +113,7 @@ class BucketList:
         for batch in left_overs:
             # Find the least-bad bucket
             (min_idx, min_del) = min(enumerate(
-                map(lambda bucket: bucket.size + batch[1] - self.avg_size,
-                    new_buckets)),
+                map(lambda bucket: bucket.size + batch[1] - self.avg_size, new_buckets)),
                                      key=operator.itemgetter(1))
 
             # Now add to the least-bad bucket
@@ -178,8 +174,7 @@ class BalancedBucketList:
             if batch[1] > self.avg_size:
                 # Find the least-bad bucket
                 (min_idx, min_del) = min(enumerate(
-                    map(lambda bucket: bucket.size + batch[1] - self.avg_size,
-                        self.buckets)),
+                    map(lambda bucket: bucket.size + batch[1] - self.avg_size, self.buckets)),
                                          key=operator.itemgetter(1))
 
                 # Now add to the least-bad bucket
@@ -194,8 +189,7 @@ class BalancedBucketList:
         for batch in left_overs:
             # Find the least-bad bucket
             (min_idx, min_del) = min(enumerate(
-                map(lambda bucket: bucket.size + batch[1] - self.avg_size,
-                    self.buckets)),
+                map(lambda bucket: bucket.size + batch[1] - self.avg_size, self.buckets)),
                                      key=operator.itemgetter(1))
 
             # Now add to the least-bad bucket
@@ -205,8 +199,7 @@ class BalancedBucketList:
         return cast(float, numpy.mean([s.size for s in self.buckets]))
 
     def deviation(self) -> float:
-        return sum([abs(self.avg_size - b.size)
-                    for b in self.buckets]) / self.avg_size
+        return sum([abs(self.avg_size - b.size) for b in self.buckets]) / self.avg_size
 
     def __repr__(self) -> str:
         return str(self.buckets)

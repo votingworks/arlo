@@ -102,8 +102,8 @@ def test_expected_sample_sizes(sampler):
         'test10': 48,
     }
 
-    computed_asns = sampler.audit.get_expected_sample_sizes(
-        sampler.margins, sampler.contests, round0_sample_results)
+    computed_asns = sampler.audit.get_expected_sample_sizes(sampler.margins, sampler.contests,
+                                                            round0_sample_results)
     for contest in true_asns:
         expected = true_asns[contest]
         computed = computed_asns[contest]
@@ -128,8 +128,8 @@ def test_expected_sample_sizes_second_round(sampler):
         'test10': -52,
     }
 
-    computed_asns = sampler.audit.get_expected_sample_sizes(
-        sampler.margins, sampler.contests, round1_sample_results)
+    computed_asns = sampler.audit.get_expected_sample_sizes(sampler.margins, sampler.contests,
+                                                            round1_sample_results)
     for contest in true_asns:
         expected = true_asns[contest]
         computed = computed_asns[contest]
@@ -260,8 +260,7 @@ def test_bravo_sample_sizes(sampler):
                 # Check probs:
                 if sampler.contests[contest]['numWinners'] == 1:
                     expected_prob = true_sample_sizes[contest][key]['prob']
-                    computed_prob = round(
-                        computed_samples[contest][key]['prob'], 2)
+                    computed_prob = round(computed_samples[contest][key]['prob'], 2)
 
                     assert expected_prob == computed_prob, '{} expected_sample_size probabability check for {} failed: got {}, expected {}'.format(
                         key, contest, computed_prob, expected_prob)
@@ -473,42 +472,30 @@ def test_compute_margins(sampler):
         computed_margins_for_contest = margins[contest]
 
         for winner in true_margins_for_contest['winners']:
-            expected = round(
-                true_margins_for_contest['winners'][winner]['p_w'], 5)
-            computed = round(
-                computed_margins_for_contest['winners'][winner]['p_w'], 5)
+            expected = round(true_margins_for_contest['winners'][winner]['p_w'], 5)
+            computed = round(computed_margins_for_contest['winners'][winner]['p_w'], 5)
             assert expected == computed, '{} p_w failed: got {}, expected {}'.format(
                 contest, computed, expected)
 
-            expected = round(
-                true_margins_for_contest['winners'][winner]['s_w'], 5)
-            computed = round(
-                computed_margins_for_contest['winners'][winner]['s_w'], 5)
+            expected = round(true_margins_for_contest['winners'][winner]['s_w'], 5)
+            computed = round(computed_margins_for_contest['winners'][winner]['s_w'], 5)
             assert expected == computed, '{} s_w failed: got {}, expected {}'.format(
                 contest, computed, expected)
 
             for cand in true_margins_for_contest['winners'][winner]['swl']:
-                expected = round(
-                    true_margins_for_contest['winners'][winner]['swl'][cand],
-                    5)
-                computed = round(
-                    computed_margins_for_contest['winners'][winner]['swl']
-                    [cand], 5)
+                expected = round(true_margins_for_contest['winners'][winner]['swl'][cand], 5)
+                computed = round(computed_margins_for_contest['winners'][winner]['swl'][cand], 5)
                 assert expected == computed, '{} swl failed: got {}, expected {}'.format(
                     contest, computed, expected)
 
         for loser in true_margins_for_contest['losers']:
-            expected = round(true_margins_for_contest['losers'][loser]['p_l'],
-                             5)
-            computed = round(
-                computed_margins_for_contest['losers'][loser]['p_l'], 5)
+            expected = round(true_margins_for_contest['losers'][loser]['p_l'], 5)
+            computed = round(computed_margins_for_contest['losers'][loser]['p_l'], 5)
             assert expected == computed, '{} p_l failed: got {}, expected {}'.format(
                 contest, computed, expected)
 
-            expected = round(true_margins_for_contest['losers'][loser]['s_l'],
-                             5)
-            computed = round(
-                computed_margins_for_contest['losers'][loser]['s_l'], 5)
+            expected = round(true_margins_for_contest['losers'][loser]['s_l'], 5)
+            computed = round(computed_margins_for_contest['losers'][loser]['s_l'], 5)
             assert expected == computed, '{} s_l failed: got {}, expected {}'.format(
                 contest, computed, expected)
 
@@ -572,9 +559,7 @@ def test_compute_risk(sampler):
         expected_T = expected_Ts[contest]
         for pair in expected_T:
             diff = T[pair] - expected_T[pair]
-            assert abs(
-                diff
-            ) < .01, 'Risk compute for {} failed! Expected {}, got {}'.format(
+            assert abs(diff) < .01, 'Risk compute for {} failed! Expected {}, got {}'.format(
                 contest, expected_Ts[contest][pair], T[pair])
 
         expected_decision = expected_decisions[contest]

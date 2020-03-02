@@ -13,12 +13,7 @@ class Sampler:
 
     audit: RiskLimitingAudit
 
-    def __init__(self,
-                 audit_type,
-                 seed,
-                 risk_limit,
-                 contests,
-                 batch_results=None):
+    def __init__(self, audit_type, seed, risk_limit, contests, batch_results=None):
         """
         Initializes PRNG, computes margins, and returns initial sample
         sizes parameterized by likelihood that the initial sample will confirm the
@@ -120,11 +115,11 @@ class Sampler:
         for contest in self.contests:
             margins[contest] = {'winners': {}, 'losers': {}}
 
-            cand_vec = sorted([(cand, self.contests[contest][cand])
-                               for cand in self.contests[contest]
-                               if cand not in ['numWinners', 'ballots']],
-                              key=operator.itemgetter(1),
-                              reverse=True)
+            cand_vec = sorted(
+                [(cand, self.contests[contest][cand])
+                 for cand in self.contests[contest] if cand not in ['numWinners', 'ballots']],
+                key=operator.itemgetter(1),
+                reverse=True)
 
             if 'numWinners' not in self.contests[contest]:
                 num_winners = 1
@@ -199,8 +194,7 @@ class Sampler:
             min_prob = 1
             # Get u_ps
             for batch in self.batch_results:
-                error = self.audit.compute_max_error(batch, self.contests,
-                                                     self.margins)
+                error = self.audit.compute_max_error(batch, self.contests, self.margins)
 
                 # Probability of being picked is directly related to how much this
                 # batch contributes to the overall possible error

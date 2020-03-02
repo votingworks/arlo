@@ -79,8 +79,7 @@ class MACRO(RiskLimitingAudit):
                     v_wp = self.reported_results[batch_name][contest][winner]
                     v_lp = self.reported_results[batch_name][contest][loser]
 
-                    b_cp = self.reported_results[batch_name][contest][
-                        'ballots']
+                    b_cp = self.reported_results[batch_name][contest]['ballots']
 
                     V_wl = contests[contest][winner] - contests[contest][loser]
 
