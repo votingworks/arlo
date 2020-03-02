@@ -15,9 +15,7 @@ class Sampler:
 
     def __init__(self, audit_type, seed, risk_limit, contests, batch_results=None):
         """
-        Initializes PRNG, computes margins, and returns initial sample
-        sizes parameterized by likelihood that the initial sample will confirm the
-        election result, assuming no discrpancies.
+        Initializes PRNG, computes margins, and sets up the audit. 
 
         Inputs:
             seed - seed used to initialized random functions
@@ -252,7 +250,8 @@ class Sampler:
         """
         Computes initial sample sizes parameterized by likelihood that the
         initial sample will confirm the election result, assuming no
-        discrpancies.
+        discrepancies.
+
         Inputs:
             sample_results - if a sample has already been drawn, this will
                              contain its results. 
