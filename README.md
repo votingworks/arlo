@@ -90,6 +90,14 @@ Like any open-source software, Arlo welcomes suggested changes in the form of pu
 
 - we really want to know about anything that gets in the way of installing and using Arlo. Please file tickets, suggest changes to our installation instructions, etc.
 
+### Configuration
+
+Arlo is configured mostly through environment variables:
+
+* `ARLO_SESSION_SECRET`: the secret key used to encrypt/auth client-side cookie sessions
+* `ARLO_HTTP_ORIGIN`: the proper HTTP/HTTPS origin where this Arlo server is running, e.g. https://arlo.example.com:8443 (as any web origin, no trailing slash)
+* `ARLO_AUDITADMIN_AUTH0_BASE_URL`, `ARLO_AUDITADMIN_AUTH0_CLIENT_ID`, `ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the auth0 app used for audit admins.
+
 ### Setting up the dev environment
 
 #### Linux
