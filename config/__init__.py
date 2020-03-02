@@ -2,6 +2,8 @@ import configparser
 import os
 import sys
 
+from typing import Tuple
+
 DEFAULT_DATABASE_URL = 'postgres://postgres@localhost:5432/arlo'
 
 
@@ -55,3 +57,40 @@ def read_session_secret() -> str:
 
 
 SESSION_SECRET = read_session_secret()
+
+
+def read_http_origin() -> str:
+    http_origin = os.environ.get('ARLO_HTTP_ORIGIN', None)
+
+    if not http_origin:
+        flask_env = os.environ.get('FLASK_ENV', 'development')
+
+        if flask_env == 'development' or flask_env == 'test':
+            http_origin = 'http://localhost:3000'
+        else:
+            raise Exception("ARLO_HTTP_ORIGIN env var, e.g. https://arlo.example.com, is missing")
+
+    return http_origin
+
+
+HTTP_ORIGIN = read_http_origin()
+
+
+def read_auditadmin_auth0_creds() -> Tuple[str, str, str]:
+    return (os.environ.get('ARLO_AUDITADMIN_AUTH0_BASE_URL',
+                           ''), os.environ.get('ARLO_AUDITADMIN_AUTH0_CLIENT_ID', ''),
+            os.environ.get('ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET', ''))
+
+
+AUDITADMIN_AUTH0_BASE_URL, AUDITADMIN_AUTH0_CLIENT_ID, AUDITADMIN_AUTH0_CLIENT_SECRET = read_auditadmin_auth0_creds(
+)
+
+
+def read_jurisdictionadmin_auth0_creds() -> Tuple[str, str, str]:
+    return (os.environ.get('ARLO_JURISDICTIONADMIN_AUTH0_BASE_URL',
+                           ''), os.environ.get('ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_ID', ''),
+            os.environ.get('ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_SECRET', ''))
+
+
+JURISDICTIONADMIN_AUTH0_BASE_URL, JURISDICTIONADMIN_AUTH0_CLIENT_ID, JURISDICTIONADMIN_AUTH0_CLIENT_SECRET = read_jurisdictionadmin_auth0_creds(
+)

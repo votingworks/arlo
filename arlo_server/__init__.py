@@ -1,4 +1,6 @@
-import os, datetime, csv, io, math, json, uuid, locale, re, hmac
+import os, datetime, csv, io, math, json, uuid, locale, re, hmac, urllib.parse
+from enum import Enum, auto
+
 from flask import Flask, jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
@@ -9,14 +11,25 @@ from xkcdpass import xkcd_password as xp
 from sqlalchemy import event, func
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 
+from authlib.flask.client import OAuth
+
 from util.binpacking import Bucket, BalancedBucketList
 
 from arlo_server.base import app
 from arlo_server.db import db
 from models import *
 
+from config import HTTP_ORIGIN
+from config import AUDITADMIN_AUTH0_BASE_URL, AUDITADMIN_AUTH0_CLIENT_ID, AUDITADMIN_AUTH0_CLIENT_SECRET
+from config import JURISDICTIONADMIN_AUTH0_BASE_URL, JURISDICTIONADMIN_AUTH0_CLIENT_ID, JURISDICTIONADMIN_AUTH0_CLIENT_SECRET
+
 AUDIT_BOARD_MEMBER_COUNT = 2
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
+
+
+class UserType(str, Enum):
+    AUDIT_ADMIN = 'audit_admin'
+    JURISDICTION_ADMIN = 'jurisdiction_admin'
 
 
 def create_election(election_id=None, organization_id=None):
@@ -894,6 +907,113 @@ def incr():
         session['count'] = 1
 
     return jsonify(count=session['count'])
+
+
+##
+## Authentication
+##
+
+AUDITADMIN_OAUTH_CALLBACK_URL = '/auth/auditadmin/callback'
+JURISDICTIONADMIN_OAUTH_CALLBACK_URL = '/auth/jurisdictionadmin/callback'
+
+oauth = OAuth(app)
+
+auth0_aa = oauth.register(
+    'auth0_aa',
+    client_id=AUDITADMIN_AUTH0_CLIENT_ID,
+    client_secret=AUDITADMIN_AUTH0_CLIENT_SECRET,
+    api_base_url=AUDITADMIN_AUTH0_BASE_URL,
+    access_token_url=f"{AUDITADMIN_AUTH0_BASE_URL}/oauth/token",
+    authorize_url=f"{AUDITADMIN_AUTH0_BASE_URL}/authorize",
+    client_kwargs={'scope': 'openid profile email'},
+)
+
+auth0_ja = oauth.register(
+    'auth0_ja',
+    client_id=JURISDICTIONADMIN_AUTH0_CLIENT_ID,
+    client_secret=JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
+    api_base_url=JURISDICTIONADMIN_AUTH0_BASE_URL,
+    access_token_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/oauth/token",
+    authorize_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/authorize",
+    client_kwargs={'scope': 'openid profile email'},
+)
+
+
+def set_loggedin_user(user_type: UserType, user_email: str):
+    session['_user'] = {'type': user_type, 'email': user_email}
+
+
+def get_loggedin_user():
+    user = session.get('_user', None)
+    return (user['type'], user['email']) if user else (None, None)
+
+
+def clear_loggedin_user():
+    session['_user'] = None
+
+
+@app.route('/auth/me')
+def me():
+    user_type, user_email = get_loggedin_user()
+    if user_type:
+        return jsonify(type=user_type, email=user_email)
+    else:
+        return jsonify()
+
+
+@app.route('/auth/logout')
+def logout():
+    user_type, user_email = get_loggedin_user()
+    if not user_type:
+        return redirect("/")
+
+    clear_loggedin_user()
+
+    # request auth0 logout and come back here when that's done
+    return_url = f"{HTTP_ORIGIN}/"
+    params = urllib.parse.urlencode({'returnTo': return_url})
+
+    base_url = AUDITADMIN_AUTH0_BASE_URL if user_type == UserType.AUDIT_ADMIN else JURISDICTIONADMIN_AUTH0_BASE_URL
+    return redirect(f"{base_url}/v2/logout?{params}")
+
+
+@app.route('/auth/auditadmin/start')
+def auditadmin_login():
+    return auth0_aa.authorize_redirect(redirect_uri=f"{HTTP_ORIGIN}{AUDITADMIN_OAUTH_CALLBACK_URL}")
+
+
+@app.route(AUDITADMIN_OAUTH_CALLBACK_URL)
+def auditadmin_login_callback():
+    auth0_aa.authorize_access_token()
+    resp = auth0_aa.get('userinfo')
+    userinfo = resp.json()
+
+    if userinfo and userinfo['email']:
+        user = User.query.filter_by(email=userinfo['email']).first()
+        if user and len(user.audit_administrations) > 0:
+            set_loggedin_user(UserType.AUDIT_ADMIN, userinfo['email'])
+
+    return redirect('/')
+
+
+@app.route('/auth/jurisdictionadmin/start')
+def jurisdictionadmin_login():
+    return auth0_ja.authorize_redirect(
+        redirect_uri=f"{HTTP_ORIGIN}{JURISDICTIONADMIN_OAUTH_CALLBACK_URL}")
+
+
+@app.route(JURISDICTIONADMIN_OAUTH_CALLBACK_URL)
+def jurisdictionadmin_login_callback():
+    auth0_ja.authorize_access_token()
+    resp = auth0_ja.get('userinfo')
+    userinfo = resp.json()
+
+    if userinfo and userinfo['email']:
+        user = User.query.filter_by(email=userinfo['email']).first()
+        if user and len(user.jurisdiction_administrations) > 0:
+            set_loggedin_user(UserType.JURISDICTION_ADMIN, userinfo['email'])
+
+    return redirect('/')
 
 
 # React App
