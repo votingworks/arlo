@@ -1,12 +1,30 @@
 {
   "name": "arlo",
   "private": true,
-  "engines": {
-    "node": ">=10.15.3",
-    "yarn": "1.17.3"
-  },
   "scripts": {
     "build": "yarn --cwd arlo-client install && yarn --cwd arlo-client build",
     "heroku-postbuild": "yarn build"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn --cwd arlo-client tsc && lint-staged && yarn --cwd arlo-client lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.+(css|graphql|json|less|md|mdx|sass|scss|yaml|yml)": [
+      "prettier --write"
+    ],
+    "*.py": [
+      "python3 -m pipenv run yapf --in-place"
+    ],
+    "package.json": [
+      "sort-package-json"
+    ]
+  },
+  "devDependencies": {
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.8",
+    "prettier": "^1.19.1",
+    "sort-package-json": "^1.40.0"
   }
 }
