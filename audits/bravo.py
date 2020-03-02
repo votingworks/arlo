@@ -2,6 +2,7 @@ import math
 from scipy import stats
 from audits.audit import RiskLimitingAudit
 
+
 class BRAVO(RiskLimitingAudit):
     def __init__(self, risk_limit):
         super().__init__(risk_limit)
@@ -27,7 +28,7 @@ class BRAVO(RiskLimitingAudit):
         for contest in contests:
             margin = margins[contest]
             p_w = 10**7
-            s_w = 0 
+            s_w = 0
             p_l = 0
             # Get smallest p_w - p_l
             for winner in margin['winners']:
@@ -42,8 +43,7 @@ class BRAVO(RiskLimitingAudit):
                 if margin['losers'][loser]['p_l'] > p_l:
                     p_l = margin['losers'][loser]['p_l']
 
-
-            s_w = p_w/(p_w + p_l) 
+            s_w = p_w / (p_w + p_l)
             s_l = 1 - s_w
 
             if p_w == 1:
@@ -51,15 +51,16 @@ class BRAVO(RiskLimitingAudit):
                 asns[contest] = -1
             elif p_w == p_l:
                 asns[contest] = contests[contest]['ballots']
-            else: 
+            else:
                 z_w = math.log(2 * s_w)
                 z_l = math.log(2 - 2 * s_w)
                 p = p_w + s_l
 
-                T = min(self.get_test_statistics(margins[contest], sample_results[contest]).values())
+                T = min(
+                    self.get_test_statistics(margins[contest], sample_results[contest]).values())
 
-                weighted_alpha = math.log((1.0/self.risk_limit)/T)  
-                asns[contest] = math.ceil((weighted_alpha + (z_w / 2.0)) / (p_w*z_w + p_l*z_l))
+                weighted_alpha = math.log((1.0 / self.risk_limit) / T)
+                asns[contest] = math.ceil((weighted_alpha + (z_w / 2.0)) / (p_w * z_w + p_l * z_l))
 
         return asns
 
@@ -87,39 +88,39 @@ class BRAVO(RiskLimitingAudit):
         p_wr = p_w + p_r
         p_w2 = p_w / p_wr
         p_r2 = 1 - p_w2
-        
+
         # set up the basic BRAVO math
         plus = math.log(p_w2 / 0.5)
         minus = math.log(p_r2 / 0.5)
         threshold = math.log(1 / self.risk_limit) - (sample_w * plus + sample_r * minus)
-    
+
         # crude condition trapping:
         if threshold <= 0:
-            return 0 
-        
+            return 0
+
         z = -stats.norm.ppf(p_completion)
-        
-        # The basic equation is E_x = R_x where 
+
+        # The basic equation is E_x = R_x where
         # E_x: expected # of successes at the 1-p_completion quantile
         # R_x: smallest x (given n) that attains the risk limit
-        
+
         # E_x = n * p_w2 + z * sqrt(n * p_w2 * p_r2)
         # R_x = (threshold - minus * n) / (plus - minus)
-        
+
         # (Both sides are continuous approximations to discrete functions.)
         # We set these equal, rewrite as a quadratic in n, and take the
         # larger of the two zeros (roots).
-        
+
         # These parameters are useful in simplifying the quadratic.
         d = p_w2 * p_r2
         f = threshold / (plus - minus)
         g = minus / (plus - minus) + p_w2
-        
+
         # The three coefficients of the quadratic:
         q_a = g**2
         q_b = -(z**2 * d + 2 * f * g)
         q_c = f**2
-        
+
         # Apply the quadratic formula.
         # We want the larger root for p_completion > 0.5, the
         # smaller root for p_completion < 0.5; they are equal
@@ -128,15 +129,15 @@ class BRAVO(RiskLimitingAudit):
         # the base (content) of the radical is trivially
         # negative for p_completion very close to 0.5.
         radical = math.sqrt(max(0, q_b**2 - 4 * q_a * q_c))
-        
+
         if p_completion > 0.5:
             size = math.floor((-q_b + radical) / (2 * q_a))
         else:
-            size = math.floor((-q_b - radical) / (2 * q_a)) 
+            size = math.floor((-q_b - radical) / (2 * q_a))
 
         # This is a reasonable estimate, but is not guaranteed.
-        # Get a guarantee. (Perhaps contrary to intuition, using 
-        # math.ceil instead of math.floor can lead to a 
+        # Get a guarantee. (Perhaps contrary to intuition, using
+        # math.ceil instead of math.floor can lead to a
         # larger sample.)
         searching = True
         while searching:
@@ -146,13 +147,13 @@ class BRAVO(RiskLimitingAudit):
                 searching = False
             else:
                 size += 1
-                
+
         # The preceding fussiness notwithstanding, we use a simple
         # adjustment to account for "other" votes beyond p_w and p_r.
 
         size_adj = math.ceil(size / p_wr)
-                
-        return(size_adj)
+
+        return (size_adj)
 
     def expected_prob(self, p_w, p_r, sample_w, sample_r, asn):
         """ 
@@ -178,35 +179,35 @@ class BRAVO(RiskLimitingAudit):
         p_wr = p_w + p_r
         p_w2 = p_w / p_wr
         p_r2 = 1 - p_w2
-        
+
         # set up the basic BRAVO math
         plus = math.log(p_w2 / 0.5)
         minus = math.log(p_r2 / 0.5)
         threshold = math.log(1 / self.risk_limit) - (sample_w * plus + sample_r * minus)
-    
+
         # crude condition trapping:
         if threshold <= 0:
-            return 0 
-        
-        n = asn 
-        # The basic equation is E_x = R_x where 
+            return 0
+
+        n = asn
+        # The basic equation is E_x = R_x where
         # E_x: expected # of successes at the 1-p_completion quantile
         # R_x: smallest x (given n) that attains the risk limit
-        
+
         # E_x = n * p_w2 + z * sqrt(n * p_w2 * p_r2)
         # R_x = (threshold - minus * n) / (plus - minus)
-        
+
         # (Both sides are continuous approximations to discrete functions.)
         # We set these equal, and solve for z
 
         R_x = (threshold - minus * n) / (plus - minus)
 
-        print('R_x: {}, n*p_w2: {}'.format(R_x, n*p_w2))
+        print('R_x: {}, n*p_w2: {}'.format(R_x, n * p_w2))
 
-        z =  (R_x - n*p_w2)/math.sqrt(n*p_w2*p_r2)
+        z = (R_x - n * p_w2) / math.sqrt(n * p_w2 * p_r2)
 
         # Invert the PPF used to compute z from the sample prob
-        return stats.norm.cdf(-z)        
+        return stats.norm.cdf(-z)
 
     def get_sample_sizes(self, contests, margins, sample_results):
         """
@@ -238,20 +239,14 @@ class BRAVO(RiskLimitingAudit):
             samples[contest] = {}
 
             p_w = 10**7
-            s_w = 0 
+            s_w = 0
             p_l = 0
             best_loser = ''
             worse_winner = ''
 
-
             # For multi-winner, do nothing
             if 'numWinners' not in contests[contest] or contests[contest]['numWinners'] != 1:
-                samples[contest] = {
-                    'asn': {
-                        'size': asns[contest],
-                        'prob': None
-                    }
-                }
+                samples[contest] = {'asn': {'size': asns[contest], 'prob': None}}
                 return samples
 
             margin = margins[contest]
@@ -268,20 +263,16 @@ class BRAVO(RiskLimitingAudit):
 
             # If we're in a single-candidate race, set sample to 0
             if not margin['losers']:
-                samples[contest]['asn'] = {
-                    'size': -1,
-                    'prob': -1
-                }
+                samples[contest]['asn'] = {'size': -1, 'prob': -1}
                 for quant in quants:
                     samples[contest][quant] = -1
 
                 continue
-            s_w = p_w/(p_w + p_l) 
+            s_w = p_w / (p_w + p_l)
             s_l = 1 - s_w
 
-
             num_ballots = contests[contest]['ballots']
-            
+
             # Handles ties
             if p_w == p_l:
                 samples[contest]['asn'] = {
@@ -293,20 +284,19 @@ class BRAVO(RiskLimitingAudit):
                     samples[contest][quant] = num_ballots
                 continue
 
-
             sample_w = sample_results[contest][worse_winner]
             sample_l = sample_results[contest][best_loser]
-           
+
             samples[contest]['asn'] = {
                 'size': asns[contest],
                 'prob': self.expected_prob(p_w, p_l, sample_w, sample_l, asns[contest])
-                }
+            }
 
             for quant in quants:
-                samples[contest][quant] = self.bravo_sample_sizes(p_w, p_l, sample_w, sample_l, quant)
+                samples[contest][quant] = self.bravo_sample_sizes(p_w, p_l, sample_w, sample_l,
+                                                                  quant)
 
         return samples
-
 
     def get_test_statistics(self, margins, sample_results):
         """
@@ -340,18 +330,17 @@ class BRAVO(RiskLimitingAudit):
         # Handle the no-losers case
         if not losers:
             for winner in winners:
-                T[(winner,)] = 1
+                T[(winner, )] = 1
 
         for cand, votes in sample_results.items():
             if cand in winners:
                 for loser in losers:
-                    T[(cand, loser)] *= (winners[cand]['swl'][loser]/0.5)**votes
+                    T[(cand, loser)] *= (winners[cand]['swl'][loser] / 0.5)**votes
             elif cand in losers:
                 for winner in winners:
-                    T[(winner, cand)] *= ((1 - winners[winner]['swl'][cand])/0.5)**votes
+                    T[(winner, cand)] *= ((1 - winners[winner]['swl'][cand]) / 0.5)**votes
 
         return T
-
 
     def compute_risk(self, margins, sample_results):
         """
@@ -379,8 +368,7 @@ class BRAVO(RiskLimitingAudit):
         measurements = {}
         finished = True
         for pair in T:
-            measurements[pair] = 1/T[pair]
+            measurements[pair] = 1 / T[pair]
             if measurements[pair] > self.risk_limit:
                 finished = False
-        return measurements, finished 
-
+        return measurements, finished

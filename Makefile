@@ -30,6 +30,9 @@ dev-environment: deps initdevdb install-development resetdb
 typecheck:
 	python3 -m pipenv run mypy .
 
+format-python:
+	python3 -m pipenv run yapf --in-place --recursive .
+
 test-client:
 	yarn --cwd arlo-client lint
 	yarn --cwd arlo-client test

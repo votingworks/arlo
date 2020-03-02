@@ -31,6 +31,11 @@ jobs:
           command: |
             make typecheck
       - run:
+          name: check formatting
+          command: |
+            make format-python
+            git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
+      - run:
           name: backend tests
           command: |
             make test-server

@@ -3,14 +3,13 @@ import operator
 import numpy
 from typing import Dict, Optional, Tuple, List, cast
 
-class Bucket:
 
+class Bucket:
     def __init__(self, name: str):
         self.name = name
         self.size = 0
         self.batches: Dict[str, int] = {}
         self.largest_element: Optional[str] = None
-
 
     def add_batch(self, batch_name: str, batch_size: int) -> None:
         self.batches[batch_name] = batch_size
@@ -30,7 +29,7 @@ class Bucket:
         elif batch_name == self.largest_element:
             self.largest_element = max(self.batches.items(), key=operator.itemgetter(1))[0]
 
-        return({batch_name: taken})
+        return ({batch_name: taken})
 
     def __repr__(self) -> str:
         ret_str = {
@@ -43,29 +42,27 @@ class Bucket:
 
     def __gt__(self, other: 'Bucket') -> bool:
         return self.size > other.size
-    
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Bucket):
             return False
         return self.name == other.name
+
 
 class BucketList:
     '''
     A list of buckets that doesn't self-balance. For use in testing balancing
     algorithms.
     '''
-
     def __init__(self, buckets: List[Bucket]):
         self.buckets = buckets
-        self.avg_size = self.get_avg_size() 
+        self.avg_size = self.get_avg_size()
 
     def get_avg_size(self) -> float:
         return cast(float, numpy.mean([s.size for s in self.buckets]))
 
-
     def deviation(self) -> float:
-        return sum([abs(self.avg_size - b.size) for b in self.buckets])/self.avg_size
-
+        return sum([abs(self.avg_size - b.size) for b in self.buckets]) / self.avg_size
 
     def balance(self) -> 'BucketList':
         '''
@@ -86,28 +83,23 @@ class BucketList:
             for batch_name in bucket.batches:
                 batches.append((batch_name, bucket.batches[batch_name]))
 
-
         # Sort the list of batches
-        batches = sorted(batches, key = operator.itemgetter(1), reverse = True)
+        batches = sorted(batches, key=operator.itemgetter(1), reverse=True)
 
-        
         added = True
-        falses = [0]*len(new_buckets)
+        falses = [0] * len(new_buckets)
         left_overs: List[Tuple[str, int]] = []
         # Now assign batches
 
-    
         # Assign all the too-big batches first
         for i, batch in enumerate(batches):
 
             # Find the least-full bucket and assign this batch
             if batch[1] > self.avg_size:
                 # Find the least-bad bucket
-                (min_idx, min_del) = min(
-                    enumerate(map(
-                        lambda bucket: bucket.size + batch[1] - self.avg_size,
-                        new_buckets)),
-                    key=operator.itemgetter(1))
+                (min_idx, min_del) = min(enumerate(
+                    map(lambda bucket: bucket.size + batch[1] - self.avg_size, new_buckets)),
+                                         key=operator.itemgetter(1))
 
                 # Now add to the least-bad bucket
                 new_buckets[min_idx].add_batch(batch[0], batch[1])
@@ -116,19 +108,13 @@ class BucketList:
                 left_overs = batches[i:]
                 break
 
-        
-        
         # Now iterate through remaining batches and add them to the bucket
         # that will be _least_ over the average
         for batch in left_overs:
             # Find the least-bad bucket
-            (min_idx, min_del) = min(
-                enumerate(map(
-                    lambda bucket: bucket.size + batch[1] - self.avg_size,
-                    new_buckets
-                )),
-                key=operator.itemgetter(1)
-            )
+            (min_idx, min_del) = min(enumerate(
+                map(lambda bucket: bucket.size + batch[1] - self.avg_size, new_buckets)),
+                                     key=operator.itemgetter(1))
 
             # Now add to the least-bad bucket
             new_buckets[min_idx].add_batch(batch[0], batch[1])
@@ -144,6 +130,7 @@ class BucketList:
             for batch in bucket.batches:
                 print('\t', batch, bucket.batches[batch])
 
+
 class BalancedBucketList:
     '''
     A balanced list of buckets.
@@ -153,7 +140,6 @@ class BalancedBucketList:
     buckets: List[Bucket]
 
     def __init__(self, buckets):
-
         '''
         Assign all batches that are bigger than the average size to buckets, 
         minimizing the amount of size deviation from the average.
@@ -173,12 +159,11 @@ class BalancedBucketList:
             for batch_name in bucket.batches:
                 batches.append((batch_name, bucket.batches[batch_name]))
 
-
         # Sort the list of batches
-        batches = sorted(batches, key = operator.itemgetter(1), reverse = True)
-        
+        batches = sorted(batches, key=operator.itemgetter(1), reverse=True)
+
         added = True
-        falses = [0]*len(self.buckets)
+        falses = [0] * len(self.buckets)
         left_overs: List[Tuple[str, int]] = []
 
         # Now assign batches to buckets
@@ -188,13 +173,9 @@ class BalancedBucketList:
             # Find the least-full bucket and assign this batch
             if batch[1] > self.avg_size:
                 # Find the least-bad bucket
-                (min_idx, min_del) = min(
-                    enumerate(map(
-                        lambda bucket: bucket.size + batch[1] - self.avg_size,
-                        self.buckets
-                    )),
-                    key=operator.itemgetter(1)
-                )
+                (min_idx, min_del) = min(enumerate(
+                    map(lambda bucket: bucket.size + batch[1] - self.avg_size, self.buckets)),
+                                         key=operator.itemgetter(1))
 
                 # Now add to the least-bad bucket
                 self.buckets[min_idx].add_batch(batch[0], batch[1])
@@ -207,13 +188,9 @@ class BalancedBucketList:
         # that will be _least_ over the average
         for batch in left_overs:
             # Find the least-bad bucket
-            (min_idx, min_del) = min(
-                enumerate(map(
-                    lambda bucket: bucket.size + batch[1] - self.avg_size,
-                    self.buckets
-                )),
-                key=operator.itemgetter(1)
-            )
+            (min_idx, min_del) = min(enumerate(
+                map(lambda bucket: bucket.size + batch[1] - self.avg_size, self.buckets)),
+                                     key=operator.itemgetter(1))
 
             # Now add to the least-bad bucket
             self.buckets[min_idx].add_batch(batch[0], batch[1])
@@ -222,7 +199,7 @@ class BalancedBucketList:
         return cast(float, numpy.mean([s.size for s in self.buckets]))
 
     def deviation(self) -> float:
-        return sum([abs(self.avg_size - b.size) for b in self.buckets])/self.avg_size
+        return sum([abs(self.avg_size - b.size) for b in self.buckets]) / self.avg_size
 
     def __repr__(self) -> str:
         return str(self.buckets)
@@ -232,6 +209,7 @@ class BalancedBucketList:
             print(bucket.name, bucket.size)
             for batch in bucket.batches:
                 print('\t', batch, bucket.batches[batch])
+
 
 '''
 batches = {}
