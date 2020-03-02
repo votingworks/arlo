@@ -96,19 +96,19 @@ Like any open-source software, Arlo welcomes suggested changes in the form of pu
 
 We recommend Ubuntu 18.0.4.
 
-* Install Node10. See https://joshtronic.com/2018/05/08/how-to-install-nodejs-10-on-ubuntu-1804-lts/
-* `make dev-environment` or, if you prefer, look at individual make tasks like `deps`, `initdevdb`, `install-development`, and `resetdb`
-* `cp config/database.cfg.dev config/database.cfg`
-* `bash ./run-dev.sh`
+- Install Node10. See https://joshtronic.com/2018/05/08/how-to-install-nodejs-10-on-ubuntu-1804-lts/
+- `make dev-environment` or, if you prefer, look at individual make tasks like `deps`, `initdevdb`, `install-development`, and `resetdb`
+- `cp config/database.cfg.dev config/database.cfg`
+- `bash ./run-dev.sh`
 
 For testing:
 
-* `make resettestdb`
-* `make test-server`
-* `make test-client`
+- `make resettestdb`
+- `make test-server`
+- `make test-client`
 
+####
 
-#### 
 1. Download [`python-dev`](https://www.python.org/) >3.7
 2. Download [`pip`](https://pypi.org/project/pip/)
 3. Install `pipenv` (note: run `python3 -m pip install pipenv` to get a version that's compatible with your local python install if your system defaults to a python other than >3.7).
@@ -128,27 +128,3 @@ For testing:
 - A password may have to be set in `config/database.cfg` depending on your install of postgres. To do this, change `postgres://postgres@localhost:5432/arlo` to `postgres://postgres:{PASSWORD}@localhost:5432/arlo`, replacing `{PASSWORD}` with the password.
 - You may need to create `arlo` and `arlo-test` databases manually [via postgres](https://www.postgresql.org/docs/9.0/sql-createdatabase.html).
 - If you run into the error `fe_sendauth: no password supplied` when running `make dev-environment`, it means there's no password set for the default postgres user. You can change the postgres authentication method to not require a password by editing `/etc/postgresql/10/main/pg_hba.conf` and changing `md5` to `trust` for the IPv4 local connections setting.
-
-### Docker-based dev environment
-
-Alternatively, you can develop Arlo using [Docker](https://docs.docker.com/):
-
-1. Ensure both [`docker`](https://docs.docker.com/install/) and [`docker-compose`](https://docs.docker.com/compose/install/) are installed.
-2. Use the Docker-based database config: `cp config/database.cfg.docker config/database.cfg`.
-3. Run `docker-compose up`. This will take a while the first time ☕️.
-4. Visit http://localhost:3000/ in your browser.
-
-To run tests:
-
-```sh
-# ensure services are running first…
-$ docker-compose up
-# …then, in a separate terminal, run python server tests…
-$ docker-compose run server-tests make test-server
-# …or react client tests
-$ docker-compose run client-tests yarn test
-```
-
-#### Troubleshooting
-
-Make sure your `config/database.cfg` file is configured correctly. See the steps above for using the default config for Docker. If you need to start from scratch, run `docker-compose down --volumes`. This will clear all saved files, including the database and any installed dependencies. Then run `docker-compose up --build` to re-build the docker containers.
