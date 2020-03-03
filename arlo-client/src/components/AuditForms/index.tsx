@@ -6,6 +6,7 @@ import { api, checkAndToast } from '../utilities'
 import { IAudit, ICreateAuditParams, IErrorResponse } from '../../types'
 import ResetButton from './ResetButton'
 import Wrapper from '../Atoms/Wrapper'
+import StatusBox from './StatusBox'
 
 const initialData: IAudit = {
   name: '',
@@ -65,6 +66,13 @@ const AuditForms: React.FC<IProps> = ({
         electionId={electionId}
         disabled={!audit.contests.length}
         updateAudit={updateAudit}
+      />
+
+      <StatusBox
+        audit={audit}
+        electionId={electionId}
+        launched={showSelectBallotsToAudit}
+        started={showCalculateRiskMeasurement}
       />
 
       <EstimateSampleSize
