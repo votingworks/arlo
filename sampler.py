@@ -218,15 +218,12 @@ class Sampler:
                                            seed=self.seed,
                                            take=sample_size + num_sampled,
                                            with_replacement=True,
-                                           output='id'))[num_sampled:]
+                                           output='tuple'))[num_sampled:]
 
             # here we take off the decimals.
             sample = []
             for i in faux_sample:
-                sample.append(i.split('.')[0])
-
-            # TODO this is sort of a hack to get the list sorted right. Maybe it's okay?
-            return sorted(sample)
+                sample.append((i[0], i[1].split('.')[0], i[2]))
         else:
             ballots = []
             # First build a faux list of ballots
@@ -241,7 +238,7 @@ class Sampler:
                                            with_replacement=True,
                                            output='tuple'))[num_sampled:]
 
-            return sample
+        return sample
 
     def get_sample_sizes(self, sample_results):
         """
