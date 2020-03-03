@@ -41,6 +41,11 @@ def test_index(client):
     assert b'Arlo (by VotingWorks)' in rv.data
 
 
+def test_static_logo(client):
+    rv = client.get('/arlo.png')
+    assert rv.status_code == 200
+
+
 def test_session(client):
     rv = client.get('/incr')
     assert json.loads(rv.data) == {'count': 1}
