@@ -1,5 +1,5 @@
 import os, datetime, csv, io, math, json, uuid, locale, re, hmac
-from flask import Flask, jsonify, request, Response, redirect
+from flask import Flask, jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
 from sampler import Sampler
@@ -883,6 +883,17 @@ def audit_reset(election_id):
 def auditboard_passphrase(passphrase):
     auditboard = AuditBoard.query.filter_by(passphrase=passphrase).one()
     return redirect("/election/%s/board/%s" % (auditboard.jurisdiction.election.id, auditboard.id))
+
+
+# Test endpoint for the session.
+@app.route('/incr')
+def incr():
+    if 'count' in session:
+        session['count'] += 1
+    else:
+        session['count'] = 1
+
+    return jsonify(count=session['count'])
 
 
 # React App

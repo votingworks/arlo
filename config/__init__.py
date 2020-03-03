@@ -37,3 +37,21 @@ DATABASE_URL = read_database_url_config()
 STATIC_FOLDER = os.path.normpath(
     os.path.join(__file__, '..', '..', 'arlo-client',
                  'public' if os.environ.get('FLASK_ENV') == 'test' else 'build'))
+
+
+def read_session_secret() -> str:
+    session_secret = os.environ.get('ARLO_SESSION_SECRET', None)
+
+    if not session_secret:
+        flask_env = os.environ.get('FLASK_ENV', 'development')
+
+        if flask_env == 'development' or flask_env == 'test':
+            # Allow omitting in development, use a fixed secret instead.
+            session_secret = f'arlo-{flask_env}-session-secret-v1'
+        else:
+            raise Exception("ARLO_SESSION_SECRET env var for managing sessions is missing")
+
+    return session_secret
+
+
+SESSION_SECRET = read_session_secret()

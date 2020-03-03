@@ -41,6 +41,14 @@ def test_index(client):
     assert b'Arlo (by VotingWorks)' in rv.data
 
 
+def test_session(client):
+    rv = client.get('/incr')
+    assert json.loads(rv.data) == {'count': 1}
+
+    rv = client.get('/incr')
+    assert json.loads(rv.data) == {'count': 2}
+
+
 def test_whole_audit_flow(client):
     rv = post_json(client, '/election/new', {})
     election_id_1 = json.loads(rv.data)['electionId']
