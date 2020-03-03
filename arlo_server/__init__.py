@@ -841,6 +841,16 @@ def audit_report(election_id):
     report_writer.writerow(["Risk Limit", "{:d}%".format(election.risk_limit)])
     report_writer.writerow(["Random Seed", election.random_seed])
 
+    for audit_board in jurisdiction.audit_boards:
+        report_writer.writerow([
+            audit_board.name, audit_board.member_1,
+            pretty_affiliation(audit_board.member_1_affiliation)
+        ])
+        report_writer.writerow([
+            audit_board.name, audit_board.member_2,
+            pretty_affiliation(audit_board.member_2_affiliation)
+        ])
+
     for round in election.rounds:
         round_contest = round.round_contests[0]
         round_contest_results = round_contest.results
@@ -882,6 +892,17 @@ def audit_report(election_id):
     response.headers[
         'Content-Disposition'] = f'attachment; filename="audit-report-{election_timestamp_name(election)}.csv"'
     return response
+
+
+def pretty_affiliation(affiliation):
+    mapping = {
+        "DEM": "Democrat",
+        "REP": "Republican",
+        "LIB": "Libertarian",
+        "IND": "Independent",
+        "OTH": "Other",
+    }
+    return mapping.get(affiliation, None)
 
 
 @app.route('/election/<election_id>/audit/reset', methods=["POST"])
