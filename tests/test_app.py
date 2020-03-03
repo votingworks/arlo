@@ -77,6 +77,28 @@ def test_whole_audit_flow(client):
     assert result2["riskLimit"] == 5
 
 
+def setup_audit_board(client, election_id, jurisdiction_id, audit_board_id):
+    rv = post_json(
+        client, '/election/{}/jurisdiction/{}/audit-board/{}'.format(election_id, jurisdiction_id,
+                                                                     audit_board_id),
+        {
+            "name":
+            "Audit Board #1",
+            "members": [
+                {
+                    "name": "Joe Schmo",
+                    "affiliation": "REP"
+                },
+                {
+                    "name": "Jane Plain",
+                    "affiliation": ""
+                },
+            ]
+        })
+
+    assert json.loads(rv.data)['status'] == "ok"
+
+
 def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     contest_id = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
@@ -225,6 +247,8 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
                      content_type='multipart/form-data')
 
     assert json.loads(rv.data)['status'] == 'ok'
+
+    setup_audit_board(client, election_id, jurisdiction_id, audit_board_id_1)
 
     # get the retrieval list for round 1
     rv = client.get('{}/jurisdiction/{}/1/retrieval-list'.format(url_prefix, jurisdiction_id))
