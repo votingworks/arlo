@@ -36,7 +36,7 @@ DATABASE_URL = read_database_url_config()
 
 STATIC_FOLDER = os.path.normpath(
     os.path.join(__file__, '..', '..', 'arlo-client',
-                 'public' if os.environ.get('FLASK_ENV') == 'test' else 'build'))
+                 'public' if os.environ.get('FLASK_ENV') == 'test' else 'build')) + "/"
 
 
 def read_session_secret() -> str:
