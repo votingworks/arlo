@@ -2,6 +2,76 @@
   "name": "arlo-client",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "build": "react-scripts build",
+    "lint": "eslint --ext ts --ext tsx src",
+    "lint:fix": "yarn lint --fix",
+    "start": "react-scripts start",
+    "test": "is-ci \"test:ci\" \"test:watch\"",
+    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage && yarn test:wdio",
+    "test:coverage": "react-scripts test --coverage --watchAll=false",
+    "test:update": "react-scripts test -u  --watchAll=false",
+    "test:watch": "react-scripts test",
+    "test:wdio": "pipenv run python ../app.py & pipenv run python ../bgcompute.py & react-scripts start & wdio wdio.conf.js"
+  },
+  "lint-staged": {
+    "*.+(css|graphql|json|less|md|mdx|sass|scss|yaml|yml)": [
+      "prettier --write"
+    ],
+    "*.+(js|jsx|ts|tsx)": [
+      "stylelint",
+      "eslint --quiet --fix"
+    ],
+    "*.css": [
+      "stylelint --config .stylelintrc-css.js --fix"
+    ],
+    "package.json": [
+      "sort-package-json"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts",
+      "!src/index.tsx",
+      "!src/contexts/ballotContext.ts",
+      "!src/serviceWorker.ts"
+    ],
+    "coverageReporters": [
+      "text",
+      "text-summary",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 100,
+        "branches": 100,
+        "lines": 100,
+        "functions": 100
+      },
+      "./src/test/specs/": {
+        "statements": 0,
+        "branches": 0,
+        "lines": 0,
+        "functions": 0
+      }
+    }
+  },
   "dependencies": {
     "@babel/register": "^7.6.2",
     "@blueprintjs/core": "^3.20.0",
@@ -54,83 +124,6 @@
     "uuidv4": "^4.0.0",
     "yup": "^0.27.0"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "is-ci \"test:ci\" \"test:watch\"",
-    "test:watch": "react-scripts test",
-    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage && yarn test:wdio",
-    "test:update": "react-scripts test -u  --watchAll=false",
-    "test:coverage": "react-scripts test --coverage --watchAll=false",
-    "test:wdio": "pipenv run python ../app.py & pipenv run python ../bgcompute.py & react-scripts start & wdio wdio.conf.js",
-    "lint": "eslint --ext ts --ext tsx src",
-    "lint:fix": "yarn lint --fix"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsc && lint-staged"
-    }
-  },
-  "lint-staged": {
-    "linters": {
-      "*.+(js|jsx|ts|tsx)": [
-        "stylelint",
-        "eslint --quiet --fix",
-        "git add"
-      ],
-      "*.css": [
-        "stylelint --config .stylelintrc-css.js --fix",
-        "git add"
-      ],
-      "*.+(css|graphql|json|less|md|mdx|sass|scss|yaml|yml)": [
-        "prettier --write",
-        "git add"
-      ]
-    }
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "jest": {
-    "coverageReporters": [
-      "text",
-      "text-summary",
-      "html"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!src/**/*.d.ts",
-      "!src/index.tsx",
-      "!src/contexts/ballotContext.ts",
-      "!src/serviceWorker.ts"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 100,
-        "branches": 100,
-        "lines": 100,
-        "functions": 100
-      },
-      "./src/test/specs/": {
-        "statements": 0,
-        "branches": 0,
-        "lines": 0,
-        "functions": 0
-      }
-    }
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
     "@wdio/cli": "^5.14.4",
     "@wdio/dot-reporter": "^5.14.4",
@@ -138,13 +131,13 @@
     "@wdio/spec-reporter": "^5.16.11",
     "babel-jest": "^24.9.0",
     "chromedriver": "80.0.0",
-    "husky": "^2.3.0",
     "is-ci-cli": "^1.1.1",
     "jest-canvas-mock": "^2.1.1",
     "jest-fetch-mock": "^2.1.2",
     "jest-styled-components": "^6.3.1",
-    "lint-staged": "^8.1.7",
+    "lint-staged": "^10.0.8",
     "prettier": "^1.17.1",
+    "sort-package-json": "^1.40.0",
     "stylelint": "^10.0.1",
     "stylelint-config-palantir": "^4.0.0",
     "stylelint-config-prettier": "^5.1.0",

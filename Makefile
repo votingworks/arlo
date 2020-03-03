@@ -12,11 +12,13 @@ initdevdb:
 
 install:
 	python3 -m pipenv install
+	yarn install
 	yarn --cwd arlo-client install
 	yarn --cwd arlo-client build
 
 install-development:
 	python3 -m pipenv install --dev
+	yarn install
 	yarn --cwd arlo-client install
 
 resettestdb:
