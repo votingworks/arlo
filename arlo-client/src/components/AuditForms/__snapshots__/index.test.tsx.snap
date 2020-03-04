@@ -5,6 +5,39 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
   <div
     class="sc-hMqMXs dhuBfg"
   >
+    <div
+      class="bp3-callout sc-kEYyzF fLhWro"
+    >
+      <h4
+        class="bp3-heading"
+      >
+        The audit has not started.
+      </h4>
+      <div
+        class="details"
+      >
+        <p>
+          Audit setup is complete.
+        </p>
+      </div>
+      <div
+        class="wrapper"
+      >
+        <button
+          class="bp3-button bp3-disabled sc-EHOje fJvKPB"
+          disabled=""
+          tabindex="-1"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Reports 
+            (Incomplete)
+          </span>
+        </button>
+      </div>
+    </div>
     <form
       data-testid="form-one"
     >
@@ -708,6 +741,39 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
   <div
     class="sc-hMqMXs dhuBfg"
   >
+    <div
+      class="bp3-callout sc-kEYyzF fLhWro"
+    >
+      <h4
+        class="bp3-heading"
+      >
+        The audit has not launched.
+      </h4>
+      <div
+        class="details"
+      >
+        <p>
+          Audit setup is not complete.
+        </p>
+      </div>
+      <div
+        class="wrapper"
+      >
+        <button
+          class="bp3-button bp3-disabled sc-EHOje fJvKPB"
+          disabled=""
+          tabindex="-1"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Reports 
+            (Incomplete)
+          </span>
+        </button>
+      </div>
+    </div>
     <form
       data-testid="form-one"
     >
@@ -1172,6 +1238,39 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
   <div
     class="sc-hMqMXs dhuBfg"
   >
+    <div
+      class="bp3-callout sc-kEYyzF fLhWro"
+    >
+      <h4
+        class="bp3-heading"
+      >
+        The audit has not launched.
+      </h4>
+      <div
+        class="details"
+      >
+        <p>
+          Audit setup is not complete.
+        </p>
+      </div>
+      <div
+        class="wrapper"
+      >
+        <button
+          class="bp3-button bp3-disabled sc-EHOje fJvKPB"
+          disabled=""
+          tabindex="-1"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Reports 
+            (Incomplete)
+          </span>
+        </button>
+      </div>
+    </div>
     <form
       data-testid="form-one"
     >
@@ -1642,6 +1741,35 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
   <div
     class="sc-hMqMXs dhuBfg"
   >
+    <div
+      class="bp3-callout sc-kEYyzF fLhWro"
+    >
+      <h4
+        class="bp3-heading"
+      >
+        Round 1 of the audit is in progress.
+      </h4>
+      <div
+        class="details"
+      />
+      <div
+        class="wrapper"
+      >
+        <button
+          class="bp3-button bp3-disabled sc-EHOje fJvKPB"
+          disabled=""
+          tabindex="-1"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Reports 
+            (Incomplete)
+          </span>
+        </button>
+      </div>
+    </div>
     <form
       data-testid="form-one"
     >
@@ -2498,6 +2626,39 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
   <div
     class="sc-hMqMXs dhuBfg"
   >
+    <div
+      class="bp3-callout sc-kEYyzF fLhWro"
+    >
+      <h4
+        class="bp3-heading"
+      >
+        The audit has not started.
+      </h4>
+      <div
+        class="details"
+      >
+        <p>
+          Audit setup is complete.
+        </p>
+      </div>
+      <div
+        class="wrapper"
+      >
+        <button
+          class="bp3-button bp3-disabled sc-EHOje fJvKPB"
+          disabled=""
+          tabindex="-1"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Reports 
+            (Incomplete)
+          </span>
+        </button>
+      </div>
+    </div>
     <form
       data-testid="form-one"
     >
@@ -3201,6 +3362,39 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
   <div
     class="sc-hMqMXs dhuBfg"
   >
+    <div
+      class="bp3-callout sc-kEYyzF fLhWro"
+    >
+      <h4
+        class="bp3-heading"
+      >
+        The audit has not launched.
+      </h4>
+      <div
+        class="details"
+      >
+        <p>
+          Audit setup is not complete.
+        </p>
+      </div>
+      <div
+        class="wrapper"
+      >
+        <button
+          class="bp3-button bp3-disabled sc-EHOje fJvKPB"
+          disabled=""
+          tabindex="-1"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Download Audit Reports 
+            (Incomplete)
+          </span>
+        </button>
+      </div>
+    </div>
     <form
       data-testid="form-one"
     >

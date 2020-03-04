@@ -1,0 +1,66 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StatusBox renders a complete state 1`] = `
+<div>
+  <div
+    class="bp3-callout sc-bwzfXH kMxkCT"
+  >
+    <h4
+      class="bp3-heading"
+    >
+      The audit is complete.
+    </h4>
+    <div
+      class="details"
+    />
+    <div
+      class="wrapper"
+    >
+      <button
+        class="bp3-button bp3-intent-success sc-bdVaJa gLVjYw"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Audit Reports 
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StatusBox renders the rounds in progress state 1`] = `
+<div>
+  <div
+    class="bp3-callout sc-bwzfXH kMxkCT"
+  >
+    <h4
+      class="bp3-heading"
+    >
+      Round 1 of the audit is in progress.
+    </h4>
+    <div
+      class="details"
+    />
+    <div
+      class="wrapper"
+    >
+      <button
+        class="bp3-button bp3-disabled sc-bdVaJa gLVjYw"
+        disabled=""
+        tabindex="-1"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Audit Reports 
+          (Incomplete)
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;

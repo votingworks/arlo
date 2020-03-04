@@ -34,20 +34,19 @@ const generateStatuses = (
     ],
   }
 
-  if (!launched) {
-    // during setup before launch
-    return [STATUSES.audit[0], STATUSES.setup[0]]
-  } else if (launched && !started) {
-    // after setup before first round
-    return [STATUSES.audit[1], STATUSES.setup[1]]
+  if (complete) {
+    // all jurisdictions have completed the audit
+    return [STATUSES.audit[3], STATUSES.setup[2]]
   } else if (launched && started) {
     // rounds have started
     return [STATUSES.audit[2], STATUSES.setup[2]]
-  } else if (complete) {
-    // all jurisdictions have completed the audit
-    return [STATUSES.audit[3], STATUSES.setup[2]]
+  } else if (launched && !started) {
+    // after setup before first round
+    return [STATUSES.audit[1], STATUSES.setup[1]]
+  } else {
+    /* istanbul ignore next */
+    return [STATUSES.audit[0], STATUSES.setup[0]]
   }
-  return [STATUSES.audit[0], STATUSES.setup[0]]
 }
 
 interface IProps {
