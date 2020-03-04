@@ -43,10 +43,9 @@ const generateStatuses = (
   } else if (launched && !started) {
     // after setup before first round
     return [STATUSES.audit[1], STATUSES.setup[1]]
-  } else {
-    /* istanbul ignore next */
-    return [STATUSES.audit[0], STATUSES.setup[0]]
   }
+  /* istanbul ignore next */
+  return [STATUSES.audit[0], STATUSES.setup[0]]
 }
 
 interface IProps {
