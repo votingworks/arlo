@@ -508,8 +508,17 @@ def test_small_election(client):
 
     assert json.loads(rv.data)['status'] == "ok"
 
+    # not yet frozen
+    rv = client.get(f'/election/{election_id}/audit/status')
+    assert not json.loads(rv.data)["frozenAt"]
+
     rv = post_json(client, f"/election/{election_id}/audit/freeze", {})
     assert json.loads(rv.data)['status'] == "ok"
+
+    # now frozen
+    rv = client.get(f'/election/{election_id}/audit/status')
+    assert json.loads(rv.data)["frozenAt"]
+
     bgcompute.bgcompute()
 
     rv = client.get(f'/election/{election_id}/audit/status')
