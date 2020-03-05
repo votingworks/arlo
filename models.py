@@ -31,6 +31,8 @@ class Election(db.Model):
                                 db.ForeignKey('organization.id', ondelete='cascade'),
                                 nullable=False)
 
+    frozen_at = db.Column(db.DateTime(timezone=False), nullable=True)
+
     jurisdictions = relationship('Jurisdiction', backref='election', passive_deletes=True)
     contests = relationship('TargetedContest', backref='election', passive_deletes=True)
     rounds = relationship('Round', backref='election', passive_deletes=True)

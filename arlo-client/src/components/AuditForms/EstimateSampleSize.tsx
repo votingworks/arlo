@@ -215,6 +215,18 @@ const EstimateSampleSize: React.FC<IProps> = ({
         setIsLoading(false)
         return
       }
+
+      const freezeResponse: IErrorResponse = await api(
+        `/election/${electionId}/audit/freeze`,
+        {
+          method: 'POST',
+        }
+      )
+      if (checkAndToast(freezeResponse)) {
+        setIsLoading(false)
+        return
+      }
+
       const condition = async () => {
         const { rounds } = await getStatus()
         return (

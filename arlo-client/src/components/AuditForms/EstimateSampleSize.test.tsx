@@ -475,9 +475,12 @@ describe('EstimateSampleSize', () => {
     await wait(() => {
       const { body } = apiMock.mock.calls[0][1] as { body: string }
       expect(setIsLoadingMock).toBeCalledTimes(2)
-      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock).toBeCalledTimes(2)
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/basic/
+      )
+      expect(apiMock.mock.calls[1][0]).toMatch(
+        /\/election\/[^/]+\/audit\/freeze/
       )
       expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
       expect(getStatusMock).toBeCalledTimes(3)
