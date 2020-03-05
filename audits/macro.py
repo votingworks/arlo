@@ -9,162 +9,157 @@ MACRO was developed by Philip Stark
 """
 
 import math
-from typing import Dict
-from audits.audit import RiskLimitingAudit
 
 
-class MACRO(RiskLimitingAudit):
+def compute_error(batch_results, contest, sampled_results):
     """
-    Concrete implementation of the RLA class implementing batch audits
+    Computes the error in this batch
 
+    Inputs:
+        batch_results - the reported votes in this batch
+        contest - the contest to compute the error for
+        sampled_results - the actual votes in this batch after auditing
+
+    Outputs:
+        the maximum across-contest relative overstatement for batch p
     """
 
-    reported_results: Dict[str, Dict]
+    error = 0
+    margins = contest.margins
+    for winner in margins['winners']:
+        for loser in margins['losers']:
+            v_wp = batch_results[contest.name][winner]
+            v_lp = batch_results[contest.name][loser]
 
-    def __init__(self, risk_limit, reported_results):
-        super().__init__(risk_limit)
+            a_wp = sampled_results[contest.name][winner]
+            a_lp = sampled_results[contest.name][loser]
 
-        self.reported_results = reported_results
+            V_wl = contest.candidates[winner] - contest.candidates[loser]
 
-    def compute_error(self, batch_name, contests, margins, sampled_results):
-        """
-        Computes the error in this batch
+            e_pwl = ((v_wp - v_lp) - (a_wp - a_lp)) / V_wl
 
-        Inputs:
-            contests - the contests in the election
-            margins - the margins for the election
-            reported_results - the reported votes in this batch
-            sampled_results - the actual votes in this batch after auditing
+            if e_pwl > error:
+                error = e_pwl
 
-        Outputs:
-            the maximum across-contest relative overstatement for batch p
-        """
+    return error
 
-        error = 0
-        for contest in self.reported_results[batch_name]:
-            for winner in margins[contest]["winners"]:
-                for loser in margins[contest]["losers"]:
-                    v_wp = self.reported_results[batch_name][contest][winner]
-                    v_lp = self.reported_results[batch_name][contest][loser]
 
-                    a_wp = sampled_results[contest][winner]
-                    a_lp = sampled_results[contest][loser]
+def compute_max_error(batch_results, contest):
+    """
+    Computes the maximum possible error in this batch for this contest
 
-                    V_wl = contests[contest][winner] - contests[contest][loser]
+    Inputs:
+        batch_results - the results for this batch
+        margins - the margins for the election
+        reported_results - the reported votes in this batch
 
-                    e_pwl = ((v_wp - v_lp) - (a_wp - a_lp)) / V_wl
+    Outputs:
+        the maximum possible overstatement for batch p
+    """
 
-                    if e_pwl > error:
-                        error = e_pwl
+    error = 0
 
-        return error
+    # We only care about error in targeted contests
+    if contest.name not in batch_results:
+        return 0
 
-    def compute_max_error(self, batch_name, contests, margins):
-        """
-        Computes the maximum possible error in this batch
+    margins = contest.margins
+    for winner in margins['winners']:
+        for loser in margins['losers']:
+            v_wp = batch_results[contest.name][winner]
+            v_lp = batch_results[contest.name][loser]
 
-        Inputs:
-            batch_name - the name of this batch
-            margins - the margins for the election
-            reported_results - the reported votes in this batch
+            b_cp = batch_results[contest.name]['ballots']
 
-        Outputs:
-            the maximum possible overstatement for batch p
-        """
+            V_wl = contest.candidates[winner] - contest.candidates[loser]
 
-        error = 0
-        for contest in self.reported_results[batch_name]:
-            for winner in margins[contest]["winners"]:
-                for loser in margins[contest]["losers"]:
-                    v_wp = self.reported_results[batch_name][contest][winner]
-                    v_lp = self.reported_results[batch_name][contest][loser]
+            u_pwl = ((v_wp - v_lp) + b_cp) / V_wl
 
-                    b_cp = self.reported_results[batch_name][contest]["ballots"]
+            if u_pwl > error:
+                error = u_pwl
 
-                    V_wl = contests[contest][winner] - contests[contest][loser]
+    return error
 
-                    u_pwl = ((v_wp - v_lp) + b_cp) / V_wl
 
-                    if u_pwl > error:
-                        error = u_pwl
+def compute_U(reported_results, contest):
+    """
+    Computes U, the sum of the batch-wise relative overstatement limits,
+    i.e. the maximum amount of possible overstatement in a given election.
+    """
 
-        return error
+    U = 0
+    for batch in reported_results:
+        U += compute_max_error(reported_results[batch], contest)
 
-    def compute_U(self, contests, margins):
-        """
-        Computes U, the sum of the batch-wise relative overstatement limits,
-        i.e. the maximum amount of possible overstatement in a given election.
-        """
+    return U
 
-        U = 0
-        for batch in self.reported_results:
 
-            U += self.compute_max_error(batch, contests, margins)
+def get_sample_sizes(risk_limit, contest, reported_results, sample_results):
+    """
+    Computes initial sample sizes parameterized by likelihood that the
+    initial sample will confirm the election result, assuming no
+    discrepancies.
 
-        return U
+    Inputs:
+        sample_results - if a sample has already been drawn, this will
+                         contain its results.
 
-    def get_sample_sizes(self, contests, margins, sample_results):
-        """
-        Computes initial sample sizes parameterized by likelihood that the
-        initial sample will confirm the election result, assuming no
-        discrepancies.
-
-        Inputs:
-            sample_results - if a sample has already been drawn, this will
-                             contain its results.
-
-        Outputs:
-            samples - dictionary mapping confirmation likelihood to sample size:
-                    {
-                       contest1:  {
-                            likelihood1: sample_size,
-                            likelihood2: sample_size,
-                            ...
-                        },
+    Outputs:
+        samples - dictionary mapping confirmation likelihood to sample size:
+                {
+                   contest1:  {
+                        likelihood1: sample_size,
+                        likelihood2: sample_size,
                         ...
-                    }
-        """
+                    },
+                    ...
+                }
+    """
+    assert risk_limit < 1, 'The risk-limit must be less than one!'
 
-        U = self.compute_U(contests, margins)
+    U = compute_U(reported_results, contest)
 
-        return math.ceil(math.log(self.risk_limit) / (math.log(1 - (1 / U))))
+    return math.ceil(math.log(risk_limit) / (math.log(1 - (1 / U))))
 
-    def compute_risk(self, contests, margins, sample_results):
-        """
-        Computes the risk-value of <sample_results> based on results in <contest>.
 
-        Inputs:
-            contests       - the contests and results being audited
-            margins        - the margins for the contest being audited
-            sample_results - mapping of candidates to votes in the (cumulative)
-                             sample:
+def compute_risk(risk_limit, contest, batch_results, sample_results):
+    """
+    Computes the risk-value of <sample_results> based on results in <contest>.
 
-                    {
-                        candidate1: sampled_votes,
-                        candidate2: sampled_votes,
-                        ...
-                    }
+    Inputs:
+        margins        - the margins for the contest being audited
+        sample_results - mapping of candidates to votes in the (cumulative)
+                         sample:
 
-        Outputs:
-            measurements    - the p-value of the hypotheses that the election
-                              result is correct based on the sample, for each winner-loser pair.
-            confirmed       - a boolean indicating whether the audit can stop
-        """
+                {
+                    candidate1: sampled_votes,
+                    candidate2: sampled_votes,
+                    ...
+                }
 
-        p = 1
+    Outputs:
+        measurements    - the p-value of the hypotheses that the election
+                          result is correct based on the sample, for each winner-loser pair.
+        confirmed       - a boolean indicating whether the audit can stop
+    """
+    assert risk_limit < 1, 'The risk-limit must be less than one!'
 
-        U = self.compute_U(contests, margins)
+    p = 1
 
-        for batch in sample_results:
-            e_p = self.compute_error(batch, contests, margins, sample_results[batch])
+    U = compute_U(batch_results, contest)
 
-            u_p = self.compute_max_error(batch, contests, margins)
+    for batch in sample_results:
+        e_p = compute_error(batch_results[batch], \
+                                 contest, \
+                                 sample_results[batch])
 
-            taint = e_p / u_p
+        u_p = compute_max_error(batch_results[batch], contest)
 
-            p *= (1 - 1 / U) / (1 - taint)
+        taint = e_p / u_p
 
-            if p < self.risk_limit:
-                return p, True
+        p *= (1 - 1 / U) / (1 - taint)
 
-        return p, p < self.risk_limit
+        if p < risk_limit:
+            return p, True
+
+    return p, p < risk_limit

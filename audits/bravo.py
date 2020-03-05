@@ -1,380 +1,359 @@
+'''
+Library for performing a BRAVO-style ballot polling risk-limiting audit.
+'''
+
 import math
 from scipy import stats
-from audits.audit import RiskLimitingAudit
+
+from util.contest import Contest
 
 
-class BRAVO(RiskLimitingAudit):
-    def __init__(self, risk_limit):
-        super().__init__(risk_limit)
+def get_expected_sample_sizes(risk_limit, contest, sample_results):
+    """
+    Returns the expected sample size for a BRAVO audit of <contest>
 
-    def get_expected_sample_sizes(self, margins, contests, sample_results):
-        """
-        Returns the expected sample size for a BRAVO audit of each contest in contests.
+    Input:
+        contest - the contest to get the sample size for
+        sample_results - a dict of the sample results from the Sampler
 
-        Input:
-            margins - a dict of the margins for each contest passed from Sampler
-            contests - a dict of the contests passed in from Sampler
-            sample_results - a dict of the sample results from the Sampler
+    Output:
+        expected sample size - the expected sample size for the contest
+    """
 
-        Output:
-            expected sample sizes - dict of computed expected sample size for each contest:
+    margin = contest.margins
+    p_w = 10**7
+    s_w = 0
+    p_l = 0
+    # Get smallest p_w - p_l
+    for winner in margin['winners']:
+        if margin['winners'][winner]['p_w'] < p_w:
+            p_w = margin['winners'][winner]['p_w']
+
+    if not margin['losers']:
+        return -1
+
+    for loser in margin['losers']:
+        if margin['losers'][loser]['p_l'] > p_l:
+            p_l = margin['losers'][loser]['p_l']
+
+    s_w = p_w / (p_w + p_l)
+
+    if p_w == 1:
+        # Handle single-candidate or crazy landslides
+        return -1
+    elif p_w == p_l:
+        return contest.ballots
+    else:
+        z_w = math.log(2 * s_w)
+        z_l = math.log(2 - 2 * s_w)
+
+        T = min(get_test_statistics(contest.margins, sample_results[contest.name]).values())
+
+        weighted_alpha = math.log((1.0 / risk_limit) / T)
+        return math.ceil((weighted_alpha + (z_w / 2.0)) / (p_w * z_w + p_l * z_l))
+
+
+def get_test_statistics(margins, sample_results):
+    """
+    Computes T*, the test statistic from an existing sample.
+
+    Inputs:
+        margins        - the margins for the contest being audited
+        sample_results - mapping of candidates to votes in the (cumulative)
+                         sample:
                 {
-                    contest1: asn1,
-                    contest3: asn2,
+                    candidate1: sampled_votes,
+                    candidate2: sampled_votes,
                     ...
                 }
-        """
-        asns = {}
-        for contest in contests:
-            margin = margins[contest]
-            p_w = 10 ** 7
-            s_w = 0
-            p_l = 0
-            # Get smallest p_w - p_l
-            for winner in margin["winners"]:
-                if margin["winners"][winner]["p_w"] < p_w:
-                    p_w = margin["winners"][winner]["p_w"]
 
-            if not margin["losers"]:
-                asns[contest] = -1
-                continue
+    Outputs:
+        T - Mapping of (winner, loser) pairs to their test statistic based
+            on sample_results
+    """
+    winners = margins['winners']
+    losers = margins['losers']
 
-            for loser in margin["losers"]:
-                if margin["losers"][loser]["p_l"] > p_l:
-                    p_l = margin["losers"][loser]["p_l"]
+    T = {}
 
-            s_w = p_w / (p_w + p_l)
+    # Setup pair-wise Ts:
+    for winner in winners:
+        for loser in losers:
+            T[(winner, loser)] = 1
 
-            if p_w == 1:
-                # Handle single-candidate or crazy landslides
-                asns[contest] = -1
-            elif p_w == p_l:
-                asns[contest] = contests[contest]["ballots"]
-            else:
-                z_w = math.log(2 * s_w)
-                z_l = math.log(2 - 2 * s_w)
+    # Handle the no-losers case
+    if not losers:
+        for winner in winners:
+            T[(winner, )] = 1
 
-                T = min(
-                    self.get_test_statistics(
-                        margins[contest], sample_results[contest]
-                    ).values()
-                )
+    for cand, votes in sample_results.items():
+        if cand in winners:
+            for loser in losers:
+                T[(cand, loser)] *= (winners[cand]['swl'][loser] / 0.5)**votes
+        elif cand in losers:
+            for winner in winners:
+                T[(winner, cand)] *= ((1 - winners[winner]['swl'][cand]) / 0.5)**votes
 
-                weighted_alpha = math.log((1.0 / self.risk_limit) / T)
-                asns[contest] = math.ceil(
-                    (weighted_alpha + (z_w / 2.0)) / (p_w * z_w + p_l * z_l)
-                )
+    return T
 
-        return asns
 
-    def bravo_sample_sizes(self, p_w, p_r, sample_w, sample_r, p_completion):
-        """
-        Analytic calculation for BRAVO round completion assuming the election
-        outcome is correct. Written by Mark Lindeman. 
+def bravo_sample_sizes(risk_limit, p_w, p_r, sample_w, sample_r, p_completion):
+    """
+    Analytic calculation for BRAVO round completion assuming the election
+    outcome is correct. Written by Mark Lindeman.
 
-        Inputs:
-            p_w             - the fraction of vote share for the winner 
-            p_r             - the fraction of vote share for the loser 
-            sample_w        - the number of votes for the winner that have already 
-                              been sampled
-            sample_r        - the number of votes for the runner-up that have 
-                              already been sampled
-            p_completion    - the desired chance of completion in one round,
-                              if the outcome is correct
+    Inputs:
+        p_w             - the fraction of vote share for the winner
+        p_r             - the fraction of vote share for the loser
+        sample_w        - the number of votes for the winner that have already
+                          been sampled
+        sample_r        - the number of votes for the runner-up that have
+                          already been sampled
+        p_completion    - the desired chance of completion in one round,
+                          if the outcome is correct
 
-        Outputs:
-            sample_size     - the expected sample size for the given chance
-                              of completion in one round
-        """
+    Outputs:
+        sample_size     - the expected sample size for the given chance
+                          of completion in one round
+    """
 
-        # calculate the "two-way" share of p_w
-        p_wr = p_w + p_r
-        p_w2 = p_w / p_wr
-        p_r2 = 1 - p_w2
+    # calculate the "two-way" share of p_w
+    p_wr = p_w + p_r
+    p_w2 = p_w / p_wr
+    p_r2 = 1 - p_w2
 
-        # set up the basic BRAVO math
-        plus = math.log(p_w2 / 0.5)
-        minus = math.log(p_r2 / 0.5)
-        threshold = math.log(1 / self.risk_limit) - (sample_w * plus + sample_r * minus)
+    # set up the basic BRAVO math
+    plus = math.log(p_w2 / 0.5)
+    minus = math.log(p_r2 / 0.5)
+    threshold = math.log(1 / risk_limit) - (sample_w * plus + sample_r * minus)
 
-        # crude condition trapping:
-        if threshold <= 0:
-            return 0
+    # crude condition trapping:
+    if threshold <= 0:
+        return 0
 
-        z = -stats.norm.ppf(p_completion)
+    z = -stats.norm.ppf(p_completion)
 
-        # The basic equation is E_x = R_x where
-        # E_x: expected # of successes at the 1-p_completion quantile
-        # R_x: smallest x (given n) that attains the risk limit
+    # The basic equation is E_x = R_x where
+    # E_x: expected # of successes at the 1-p_completion quantile
+    # R_x: smallest x (given n) that attains the risk limit
 
-        # E_x = n * p_w2 + z * sqrt(n * p_w2 * p_r2)
-        # R_x = (threshold - minus * n) / (plus - minus)
+    # E_x = n * p_w2 + z * sqrt(n * p_w2 * p_r2)
+    # R_x = (threshold - minus * n) / (plus - minus)
 
-        # (Both sides are continuous approximations to discrete functions.)
-        # We set these equal, rewrite as a quadratic in n, and take the
-        # larger of the two zeros (roots).
+    # (Both sides are continuous approximations to discrete functions.)
+    # We set these equal, rewrite as a quadratic in n, and take the
+    # larger of the two zeros (roots).
 
-        # These parameters are useful in simplifying the quadratic.
-        d = p_w2 * p_r2
-        f = threshold / (plus - minus)
-        g = minus / (plus - minus) + p_w2
+    # These parameters are useful in simplifying the quadratic.
+    d = p_w2 * p_r2
+    f = threshold / (plus - minus)
+    g = minus / (plus - minus) + p_w2
 
-        # The three coefficients of the quadratic:
-        q_a = g ** 2
-        q_b = -(z ** 2 * d + 2 * f * g)
-        q_c = f ** 2
+    # The three coefficients of the quadratic:
+    q_a = g**2
+    q_b = -(z**2 * d + 2 * f * g)
+    q_c = f**2
 
-        # Apply the quadratic formula.
-        # We want the larger root for p_completion > 0.5, the
-        # smaller root for p_completion < 0.5; they are equal
-        # when p_completion = 0.
-        # max here handles cases where, due to rounding error,
-        # the base (content) of the radical is trivially
-        # negative for p_completion very close to 0.5.
-        radical = math.sqrt(max(0, q_b ** 2 - 4 * q_a * q_c))
+    # Apply the quadratic formula.
+    # We want the larger root for p_completion > 0.5, the
+    # smaller root for p_completion < 0.5; they are equal
+    # when p_completion = 0.
+    # max here handles cases where, due to rounding error,
+    # the base (content) of the radical is trivially
+    # negative for p_completion very close to 0.5.
+    radical = math.sqrt(max(0, q_b**2 - 4 * q_a * q_c))
 
-        if p_completion > 0.5:
-            size = math.floor((-q_b + radical) / (2 * q_a))
+    if p_completion > 0.5:
+        size = math.floor((-q_b + radical) / (2 * q_a))
+    else:
+        size = math.floor((-q_b - radical) / (2 * q_a))
+
+    # This is a reasonable estimate, but is not guaranteed.
+    # Get a guarantee. (Perhaps contrary to intuition, using
+    # math.ceil instead of math.floor can lead to a
+    # larger sample.)
+    searching = True
+    while searching:
+        x_c = stats.binom.ppf(1.0 - p_completion, size, p_w2)
+        test_stat = x_c * plus + (size - x_c) * minus
+        if test_stat > threshold:
+            searching = False
         else:
-            size = math.floor((-q_b - radical) / (2 * q_a))
+            size += 1
 
-        # This is a reasonable estimate, but is not guaranteed.
-        # Get a guarantee. (Perhaps contrary to intuition, using
-        # math.ceil instead of math.floor can lead to a
-        # larger sample.)
-        searching = True
-        while searching:
-            x_c = stats.binom.ppf(1.0 - p_completion, size, p_w2)
-            test_stat = x_c * plus + (size - x_c) * minus
-            if test_stat > threshold:
-                searching = False
-            else:
-                size += 1
+    # The preceding fussiness notwithstanding, we use a simple
+    # adjustment to account for "other" votes beyond p_w and p_r.
 
-        # The preceding fussiness notwithstanding, we use a simple
-        # adjustment to account for "other" votes beyond p_w and p_r.
+    size_adj = math.ceil(size / p_wr)
 
-        size_adj = math.ceil(size / p_wr)
+    return size_adj
 
-        return size_adj
 
-    def expected_prob(self, p_w, p_r, sample_w, sample_r, asn):
-        """ 
-        Analytic calculation for BRAVO round completion of the expected value, assuming
-        the election outcome is correct. Adapted from Mark Lindeman. 
+def expected_prob(risk_limit, p_w, p_r, sample_w, sample_r, asn):
+    """
+    Analytic calculation for BRAVO round completion of the expected value, assuming
+    the election outcome is correct. Adapted from Mark Lindeman.
 
-        Inputs:
-            asn             - the expected value
-            p_w             - the fraction of vote share for the winner 
-            p_r             - the fraction of vote share for the loser 
-            sample_w        - the number of votes for the winner that have already 
-                              been sampled
-            sample_r        - the number of votes for the runner-up that have 
-                              already been sampled
+    Inputs:
+        asn             - the expected value
+        p_w             - the fraction of vote share for the winner
+        p_r             - the fraction of vote share for the loser
+        sample_w        - the number of votes for the winner that have already
+                          been sampled
+        sample_r        - the number of votes for the runner-up that have
+                          already been sampled
 
-        Outputs:
-            sample_size     - the expected sample size for the given chance
-                              of completion in one round
+    Outputs:
+        sample_size     - the expected sample size for the given chance
+                          of completion in one round
 
-        """
+    """
 
-        # calculate the "two-way" share of p_w
-        p_wr = p_w + p_r
-        p_w2 = p_w / p_wr
-        p_r2 = 1 - p_w2
+    # calculate the "two-way" share of p_w
+    p_wr = p_w + p_r
+    p_w2 = p_w / p_wr
+    p_r2 = 1 - p_w2
 
-        # set up the basic BRAVO math
-        plus = math.log(p_w2 / 0.5)
-        minus = math.log(p_r2 / 0.5)
-        threshold = math.log(1 / self.risk_limit) - (sample_w * plus + sample_r * minus)
+    # set up the basic BRAVO math
+    plus = math.log(p_w2 / 0.5)
+    minus = math.log(p_r2 / 0.5)
+    threshold = math.log(1 / risk_limit) - (sample_w * plus + sample_r * minus)
 
-        # crude condition trapping:
-        if threshold <= 0:
-            return 0
+    # crude condition trapping:
+    if threshold <= 0:
+        return 0
 
-        n = asn
-        # The basic equation is E_x = R_x where
-        # E_x: expected # of successes at the 1-p_completion quantile
-        # R_x: smallest x (given n) that attains the risk limit
+    n = asn
+    # The basic equation is E_x = R_x where
+    # E_x: expected # of successes at the 1-p_completion quantile
+    # R_x: smallest x (given n) that attains the risk limit
 
-        # E_x = n * p_w2 + z * sqrt(n * p_w2 * p_r2)
-        # R_x = (threshold - minus * n) / (plus - minus)
+    # E_x = n * p_w2 + z * sqrt(n * p_w2 * p_r2)
+    # R_x = (threshold - minus * n) / (plus - minus)
 
-        # (Both sides are continuous approximations to discrete functions.)
-        # We set these equal, and solve for z
+    # (Both sides are continuous approximations to discrete functions.)
+    # We set these equal, and solve for z
 
-        R_x = (threshold - minus * n) / (plus - minus)
+    R_x = (threshold - minus * n) / (plus - minus)
 
-        print("R_x: {}, n*p_w2: {}".format(R_x, n * p_w2))
+    z = (R_x - n * p_w2) / math.sqrt(n * p_w2 * p_r2)
 
-        z = (R_x - n * p_w2) / math.sqrt(n * p_w2 * p_r2)
+    # Invert the PPF used to compute z from the sample prob
+    return stats.norm.cdf(-z)
 
-        # Invert the PPF used to compute z from the sample prob
-        return stats.norm.cdf(-z)
 
-    def get_sample_sizes(self, contests, margins, sample_results):
-        """
-        Computes initial sample sizes parameterized by likelihood that the
-        initial sample will confirm the election result, assuming no
-        discrepancies.
+def get_sample_size(risk_limit, contest, sample_results):
+    """
+    Computes initial sample size parameterized by likelihood that the
+    initial sample will confirm the election result, assuming no
+    discrepancies.
 
-        Inputs:
-            sample_results - if a sample has already been drawn, this will
-                             contain its results. 
+    Inputs:
+        sample_results - if a sample has already been drawn, this will
+                         contain its results.
 
-        Outputs:
-            samples - dictionary mapping confirmation likelihood to sample size:
-                    {
-                       contest1:  { 
-                            likelihood1: sample_size,
-                            likelihood2: sample_size,
-                            ...
-                        },
-                        ...
-                    }
-        """
-        quants = [0.7, 0.8, 0.9]
-
-        samples = {}
-
-        asns = self.get_expected_sample_sizes(margins, contests, sample_results)
-        for contest in contests:
-            samples[contest] = {}
-
-            p_w = 10 ** 7
-            p_l = 0
-            best_loser = ""
-            worse_winner = ""
-
-            # For multi-winner, do nothing
-            if (
-                "numWinners" not in contests[contest]
-                or contests[contest]["numWinners"] != 1
-            ):
-                samples[contest] = {"asn": {"size": asns[contest], "prob": None}}
-                return samples
-
-            margin = margins[contest]
-            # Get smallest p_w - p_l
-            for winner in margin["winners"]:
-                if margin["winners"][winner]["p_w"] < p_w:
-                    p_w = margin["winners"][winner]["p_w"]
-                    worse_winner = winner
-
-            for loser in margin["losers"]:
-                if margin["losers"][loser]["p_l"] > p_l:
-                    p_l = margin["losers"][loser]["p_l"]
-                    best_loser = loser
-
-            # If we're in a single-candidate race, set sample to 0
-            if not margin["losers"]:
-                samples[contest]["asn"] = {"size": -1, "prob": -1}
-                for quant in quants:
-                    samples[contest][quant] = -1
-
-                continue
-
-            num_ballots = contests[contest]["ballots"]
-
-            # Handles ties
-            if p_w == p_l:
-                samples[contest]["asn"] = {
-                    "size": num_ballots,
-                    "prob": 1,
+    Outputs:
+        samples - dictionary mapping confirmation likelihood to sample size:
+                {
+                    likelihood1: sample_size,
+                    likelihood2: sample_size,
+                    ...
                 }
+    """
+    assert risk_limit < 1, 'The risk-limit must be less than one!'
 
-                for quant in quants:
-                    samples[contest][quant] = num_ballots
-                continue
+    quants = [.7, .8, .9]
 
-            sample_w = sample_results[contest][worse_winner]
-            sample_l = sample_results[contest][best_loser]
+    samples = {}
 
-            samples[contest]["asn"] = {
-                "size": asns[contest],
-                "prob": self.expected_prob(p_w, p_l, sample_w, sample_l, asns[contest]),
-            }
+    asn = get_expected_sample_sizes(risk_limit, contest, sample_results)
+    samples = {}
 
-            for quant in quants:
-                samples[contest][quant] = self.bravo_sample_sizes(
-                    p_w, p_l, sample_w, sample_l, quant
-                )
+    p_w = 10**7
+    p_l = 0
+    best_loser = ''
+    worse_winner = ''
+
+    # For multi-winner, do nothing
+    if contest.numWinners != 1:
+        return {'asn': {'size': asn, 'prob': None}}
+
+    margin = contest.margins
+    # Get smallest p_w - p_l
+    for winner in margin['winners']:
+        if margin['winners'][winner]['p_w'] < p_w:
+            p_w = margin['winners'][winner]['p_w']
+            worse_winner = winner
+
+    for loser in margin['losers']:
+        if margin['losers'][loser]['p_l'] > p_l:
+            p_l = margin['losers'][loser]['p_l']
+            best_loser = loser
+
+    # If we're in a single-candidate race, set sample to 0
+    if not margin['losers']:
+        samples['asn'] = {'size': -1, 'prob': -1}
+        for quant in quants:
+            samples[quant] = -1
 
         return samples
 
-    def get_test_statistics(self, margins, sample_results):
-        """
-        Computes T*, the test statistic from an existing sample. 
+    num_ballots = contest.ballots
 
-        Inputs: 
-            margins        - the margins for the contest being audited
-            sample_results - mapping of candidates to votes in the (cumulative)
-                             sample:
+    # Handles ties
+    if p_w == p_l:
+        samples['asn'] = {
+            'size': num_ballots,
+            'prob': 1,
+        }
 
-                    {
-                        candidate1: sampled_votes,
-                        candidate2: sampled_votes,
-                        ...
-                    }
+        for quant in quants:
+            samples[quant] = num_ballots
 
-        Outputs:
-            T - Mapping of (winner, loser) pairs to their test statistic based
-                on sample_results
-        """
-        winners = margins["winners"]
-        losers = margins["losers"]
+        return samples
 
-        T = {}
+    sample_w = sample_results[contest.name][worse_winner]
+    sample_l = sample_results[contest.name][best_loser]
 
-        # Setup pair-wise Ts:
-        for winner in winners:
-            for loser in losers:
-                T[(winner, loser)] = 1
+    samples['asn'] = {
+        'size': asn,
+        'prob': expected_prob(risk_limit, p_w, p_l, sample_w, sample_l, asn)
+    }
 
-        # Handle the no-losers case
-        if not losers:
-            for winner in winners:
-                T[(winner,)] = 1
+    for quant in quants:
+        samples[quant] = bravo_sample_sizes(risk_limit, p_w, p_l, sample_w, sample_l, quant)
 
-        for cand, votes in sample_results.items():
-            if cand in winners:
-                for loser in losers:
-                    T[(cand, loser)] *= (winners[cand]["swl"][loser] / 0.5) ** votes
-            elif cand in losers:
-                for winner in winners:
-                    T[(winner, cand)] *= (
-                        (1 - winners[winner]["swl"][cand]) / 0.5
-                    ) ** votes
+    return samples
 
-        return T
 
-    def compute_risk(self, margins, sample_results):
-        """
-        Computes the risk-value of <sample_results> based on results in <contest>.
+def compute_risk(risk_limit, contest, sample_results):
+    """
+    Computes the risk-value of <sample_results> based on results in <contest>.
 
-        Inputs: 
-            margins        - the margins for the contest being audited
-            sample_results - mapping of candidates to votes in the (cumulative)
-                             sample:
+    Inputs:
+        contest - the contest being measured 
+        sample_results - mapping of candidates to votes in the (cumulative)
+                         sample:
 
-                    {
-                        candidate1: sampled_votes,
-                        candidate2: sampled_votes,
-                        ...
-                    }
+                {
+                    candidate1: sampled_votes,
+                    candidate2: sampled_votes,
+                    ...
+                }
 
-        Outputs:
-            measurements    - the p-value of the hypotheses that the election
-                              result is correct based on the sample, for each winner-loser pair. 
-            confirmed       - a boolean indicating whether the audit can stop
-        """
+    Outputs:
+        measurements    - the p-value of the hypotheses that the election
+                          result is correct based on the sample, for each winner-loser pair.
+        confirmed       - a boolean indicating whether the audit can stop
+    """
+    assert risk_limit < 1, 'The risk-limit must be less than one!'
 
-        T = self.get_test_statistics(margins, sample_results)
+    T = get_test_statistics(contest.margins, sample_results)
 
-        measurements = {}
-        finished = True
-        for pair in T:
-            measurements[pair] = 1 / T[pair]
-            if measurements[pair] > self.risk_limit:
-                finished = False
-        return measurements, finished
+    measurements = {}
+    finished = True
+    for pair in T:
+        measurements[pair] = 1 / T[pair]
+        if measurements[pair] > risk_limit:
+            finished = False
+    return measurements, finished
