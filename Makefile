@@ -42,3 +42,6 @@ test-client:
 # To run a specific test: TEST=<test name> make test-server
 test-server:
 	FLASK_ENV=test python3 -m pipenv run python -m pytest -k '${TEST}' --ignore=arlo-client
+
+test-server-coverage:
+	python3 -m pipenv run python -m pytest --cov=arlo_server/
