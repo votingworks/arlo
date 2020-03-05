@@ -548,7 +548,7 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
 
         try:
             num_ballots_in_batch = locale.atoi(num_ballots_in_batch_csv)
-        except:
+        except ValueError:
             return jsonify(errors=[{
                 'message':
                 f'Invalid value for "{NUMBER_OF_BALLOTS}" on line {manifest_csv.line_num}: {num_ballots_in_batch_csv}',
@@ -596,11 +596,7 @@ def audit_board(election_id, jurisdiction_id, audit_board_id):
 @app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>',
            methods=["POST"])
 def set_audit_board(election_id, jurisdiction_id, audit_board_id):
-    try:
-        attributes = request.get_json()
-    except:
-        return jsonify(errors=[{'message': 'Could not parse JSON', 'errorType': 'BadRequest'}]), 400
-
+    attributes = request.get_json()
     audit_boards = AuditBoard.query.filter_by(id=audit_board_id) \
         .join(Jurisdiction).filter_by(id=jurisdiction_id, election_id=election_id) \
         .all()
@@ -698,11 +694,7 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, rou
     '/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>',
     methods=["POST"])
 def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
-    try:
-        attributes = request.get_json()
-    except:
-        return jsonify(errors=[{'message': 'Could not parse JSON', 'errorType': 'BadRequest'}]), 400
-
+    attributes = request.get_json()
     ballots = SampledBallot.query \
         .filter_by(batch_id=batch_id, ballot_position=ballot_position) \
         .join(SampledBallot.batch) \
