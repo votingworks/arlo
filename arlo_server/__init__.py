@@ -4,7 +4,8 @@ from enum import Enum, auto
 from flask import Flask, jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
-from sampler import Sampler
+import sampler
+from audits import bravo as bravo
 from werkzeug.exceptions import InternalServerError
 from xkcdpass import xkcd_password as xp
 
@@ -30,6 +31,7 @@ from config import (
 )
 
 from util.binpacking import Bucket, BalancedBucketList
+from util.contest import Contest
 from util.jurisdiction_bulk_update import bulk_update_jurisdictions
 
 AUDIT_BOARD_MEMBER_COUNT = 2
@@ -71,12 +73,17 @@ def contest_status(election):
     contests = {}
 
     for contest in election.contests:
-        contests[contest.id] = dict(
-            [[choice.id, choice.num_votes] for choice in contest.choices]
-        )
-        contests[contest.id]["ballots"] = contest.total_ballots_cast
-        contests[contest.id]["numWinners"] = contest.num_winners
-        contests[contest.id]["votesAllowed"] = contest.votes_allowed
+        name = contest.id
+        info_dict = {
+            'ballots': contest.total_ballots_cast,
+            'numWinners': contest.num_winners,
+            'votesAllowed': contest.votes_allowed,
+        }
+
+        for choice in contest.choices:
+            info_dict[choice.id] = choice.num_votes
+
+        contests[name] = Contest(name, info_dict)
 
     return contests
 
@@ -99,59 +106,54 @@ def sample_results(election):
     return contests
 
 
-def get_sampler(election):
-    # TODO Change this to audit_type
-    return Sampler(
-        "BRAVO",
-        election.random_seed,
-        election.risk_limit / 100,
-        contest_status(election),
-    )
-
-
 def compute_sample_sizes(round_contest):
     the_round = round_contest.round
     election = the_round.election
-    sampler = get_sampler(election)
 
-    # format the options properly
-    raw_sample_size_options = sampler.get_sample_sizes(sample_results(election))[
-        election.contests[0].id
-    ]
-    sample_size_options = []
-    sample_size_90 = None
-    sample_size_backup = None
-    for (prob_or_asn, size) in raw_sample_size_options.items():
-        prob = None
+    contests = contest_status(election)
 
-        if prob_or_asn == "asn":
-            if size["prob"]:
-                prob = (round(size["prob"], 2),)  # round to the nearest hundreth
-            sample_size_options.append(
-                {"type": "ASN", "prob": prob, "size": int(math.ceil(size["size"]))}
-            )
-            sample_size_backup = int(math.ceil(size["size"]))
+    for contest in contests:
+        raw_sample_size_options = bravo.get_sample_size(election.risk_limit / 100,
+                                                        contests[contest], sample_results(election))
 
-        else:
-            prob = prob_or_asn
-            sample_size_options.append(
-                {"type": None, "prob": prob, "size": int(math.ceil(size))}
-            )
+        sample_size_options = []
+        sample_size_90 = None
+        sample_size_backup = None
+        for (prob_or_asn, size) in raw_sample_size_options.items():
+            prob = None
 
-            # stash this one away for later
-            if prob == 0.9:
-                sample_size_90 = size
+            if prob_or_asn == "asn":
+                if size["prob"]:
+                    prob = round(size["prob"], 2),  # round to the nearest hundreth
+                sample_size_options.append({
+                    "type": "ASN",
+                    "prob": prob,
+                    "size": int(math.ceil(size["size"]))
+                })
+                sample_size_backup = int(math.ceil(size["size"]))
 
-    round_contest.sample_size_options = json.dumps(sample_size_options)
+            else:
+                prob = prob_or_asn
+                sample_size_options.append({
+                    "type": None,
+                    "prob": prob,
+                    "size": int(math.ceil(size))
+                })
 
-    # if we are in multi-winner, there is no sample_size_90 so fix it
-    if not sample_size_90:
-        sample_size_90 = sample_size_backup
+                # stash this one away for later
+                if prob == 0.9:
+                    sample_size_90 = size
 
-    # for later rounds, we always pick 90%
-    if round_contest.round.round_num > 1:
-        round_contest.sample_size = sample_size_90
-        sample_ballots(election, the_round)
+        round_contest.sample_size_options = json.dumps(sample_size_options)
+
+        # if we are in multi-winner, there is no sample_size_90 so fix it
+        if not sample_size_90:
+            sample_size_90 = sample_size_backup
+
+        # for later rounds, we always pick 90%
+        if round_contest.round.round_num > 1:
+            round_contest.sample_size = sample_size_90
+            sample_ballots(election, the_round)
 
     db.session.commit()
 
@@ -194,7 +196,6 @@ def sample_ballots(election, round):
         num_sampled = 0
 
     chosen_sample_size = round_contest.sample_size
-    sampler = get_sampler(election)
 
     # the sampler needs to have the same inputs given the same manifest
     # so we use the batch name, rather than the batch id
@@ -206,7 +207,11 @@ def sample_ballots(election, round):
         manifest[batch.name] = batch.num_ballots
         batch_id_from_name[batch.name] = batch.id
 
-    sample = sampler.draw_sample(manifest, chosen_sample_size, num_sampled=num_sampled)
+    sample = sampler.draw_sample(election.random_seed,
+                                 contest_status(election),
+                                 manifest,
+                                 chosen_sample_size,
+                                 num_sampled=num_sampled)
 
     audit_boards = jurisdiction.audit_boards
 
@@ -280,12 +285,14 @@ def check_round(election, jurisdiction_id, round_id):
     # assume one contest
     round_contest = round.round_contests[0]
 
-    sampler = get_sampler(election)
     current_sample_results = sample_results(election)
 
-    risk, is_complete = sampler.compute_risk(
-        round_contest.contest_id, current_sample_results[round_contest.contest_id]
-    )
+    risk, is_complete = bravo.compute_risk(election.risk_limit / 100,
+                                           contest_status(election)[round_contest.contest_id],
+                                           current_sample_results[round_contest.contest_id])
+
+    print('Risk values: {}'.format(risk))
+    print('Audit is complete? {}'.format(is_complete))
 
     round.ended_at = datetime.datetime.utcnow()
     # TODO this is a hack, should we report pairwise p-values?

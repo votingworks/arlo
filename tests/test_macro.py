@@ -2,34 +2,52 @@ import pytest
 import math
 import numpy as np
 
-from sampler import Sampler
+import sampler
+import audits.macro as macro
+
+from util.contest import Contest as Contest
+
+seed = '12345678901234567890abcdefghijklmnopqrstuvwxyz😊'
+
+risk_limit = .25
+
+macro_contests = {
+    'Contest A': {
+        'winner': 60000,
+        'loser': 54000,
+        'ballots': 120000,
+        'numWinners': 1,
+        'votesAllowed': 1,
+    },
+    'Contest B': {
+        'winner': 30000,
+        'loser': 24000,
+        'ballots': 60000,
+        'numWinners': 1,
+        'votesAllowed': 1,
+    },
+    'Contest C': {
+        'winner': 18000,
+        'loser': 12600,
+        'ballots': 36000,
+        'numWinners': 1,
+        'votesAllowed': 1,
+    },
+}
 
 
 @pytest.fixture
-def sampler():
-    seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
+def contests():
+    contests = {}
 
-    risk_limit = 0.25
-    contests = {
-        "Contest A": {
-            "winner": 60000,
-            "loser": 54000,
-            "ballots": 120000,
-            "numWinners": 1,
-        },
-        "Contest B": {
-            "winner": 30000,
-            "loser": 24000,
-            "ballots": 60000,
-            "numWinners": 1,
-        },
-        "Contest C": {
-            "winner": 18000,
-            "loser": 12600,
-            "ballots": 36000,
-            "numWinners": 1,
-        },
-    }
+    for contest in macro_contests:
+        contests[contest] = Contest(contest, macro_contests[contest])
+
+    yield contests
+
+
+@pytest.fixture
+def batches():
 
     batches = {}
     for i in range(200):
@@ -83,52 +101,44 @@ def sampler():
             "numWinners": 1,
         }
 
-    yield Sampler("MACRO", seed, risk_limit, contests, batches)
+    yield batches
 
 
-def test_max_error(sampler):
+def test_max_error(contests, batches):
 
     # this is kind of a hacky way to do this but ¯\_(ツ)_/¯
-    expected_ups = {}
+    expected_ups = {'Contest A': {}, 'Contest B': {}, 'Contest C': {}}
     for i in range(200):
-        expected_ups["Batch {}".format(i)] = 0.0700
-        expected_ups["Batch {} AV".format(i)] = 0.035
+        expected_ups['Contest A']['Batch {}'.format(i)] = 0.0700
+        expected_ups['Contest A']['Batch {} AV'.format(i)] = 0.035
+        expected_ups['Contest B']['Batch {}'.format(i)] = 0
+        expected_ups['Contest B']['Batch {} AV'.format(i)] = 0
+        expected_ups['Contest C']['Batch {}'.format(i)] = 0
+        expected_ups['Contest C']['Batch {} AV'.format(i)] = 0
 
     for i in range(100):
-        expected_ups["Batch {}".format(i)] = 0.0733
-        expected_ups["Batch {} AV".format(i)] = 0.0367
+        expected_ups['Contest B']['Batch {}'.format(i)] = 0.0733
+        expected_ups['Contest B']['Batch {} AV'.format(i)] = 0.0367
 
     for i in range(30):
-        expected_ups["Batch {}".format(i)] = 0.0852
-        expected_ups["Batch {} AV".format(i)] = 0.0426
+        expected_ups['Contest C']['Batch {}'.format(i)] = 0.0852
+        expected_ups['Contest C']['Batch {} AV'.format(i)] = 0.0426
 
     for i in range(100, 130):
-        expected_ups["Batch {}".format(i)] = 0.0852
-        expected_ups["Batch {} AV".format(i)] = 0.0426
+        expected_ups['Contest C']['Batch {}'.format(i)] = 0.0852
+        expected_ups['Contest C']['Batch {} AV'.format(i)] = 0.0426
 
-    for batch in sampler.batch_results:
-        expected_up = expected_ups[batch]
-        computed_up = sampler.audit.compute_max_error(
-            batch, sampler.contests, sampler.margins
-        )
+    for contest in contests:
+        for batch in batches:
+            expected_up = expected_ups[contest][batch]
+            computed_up = macro.compute_max_error(batches[batch], contests[contest])
 
-        delta = abs(computed_up - expected_up)
-        assert (
-            delta < 0.001
-        ), "Got an incorrect maximum possible overstatement: {} should be {}".format(
-            computed_up, expected_up
-        )
+            delta = abs(computed_up - expected_up)
+            assert delta < 0.001, \
+                    'Got an incorrect maximum possible overstatement: {} should be {}'.format(computed_up, expected_up)
 
 
-def test_get_sample_sizes(sampler):
-    expected = 31
-    computed = sampler.get_sample_sizes({})
-    assert (
-        computed == expected
-    ), "Failed to compute sample sized: got {}, expected {}".format(computed, expected)
-
-
-def test_compute_risk(sampler):
+def test_compute_risk(contests, batches):
 
     sample = {}
 
@@ -148,16 +158,14 @@ def test_compute_risk(sampler):
             "Contest C": {"winner": 200, "loser": 140,},
         }
 
-    computed_p, result = sampler.audit.compute_risk(
-        sampler.contests, sampler.margins, sample
-    )
+    for contest in contests:
+        computed_p, result = macro.compute_risk(risk_limit, contests[contest], batches, sample)
 
-    expected_p = 0.247688222
+        expected_p = 0.247688222
 
-    delta = abs(expected_p - computed_p)
+        delta = abs(expected_p - computed_p)
 
-    assert delta < 10 ** -4, "Incorrect p-value: Got {}, expected {}".format(
-        computed_p, expected_p
-    )
+        assert delta < 10**-2, 'Incorrect p-value: Got {}, expected {}'.format(
+            computed_p, expected_p)
 
-    assert result, "Audit did not terminate but should have"
+        assert result, 'Audit did not terminate but should have'
