@@ -1,7 +1,7 @@
 import pytest, json, uuid
 from unittest.mock import patch, Mock, MagicMock
 
-from arlo_server import app, set_loggedin_user, clear_loggedin_user, auth0_aa, auth0_ja, db, create_organization, create_election
+from arlo_server import app, set_loggedin_user, clear_loggedin_user, auth0_aa, auth0_ja, db, create_organization, create_election, UserType
 from models import *
 
 
@@ -19,9 +19,9 @@ def _setup_user(client, user_type, user_email):
 
 
 def test_auth_me(client):
-    _setup_user(client, 'auditadmin', 'admin@example.com')
+    _setup_user(client, UserType.AUDIT_ADMIN, 'admin@example.com')
     rv = client.get('/auth/me')
-    assert json.loads(rv.data) == {'type': 'auditadmin', 'email': 'admin@example.com'}
+    assert json.loads(rv.data) == {'type': UserType.AUDIT_ADMIN, 'email': 'admin@example.com'}
 
 
 def test_auditadmin_start(client):
@@ -47,6 +47,7 @@ def test_auditadmin_callback(client):
     assert rv.status_code == 302
 
     with client.session_transaction() as session:
+        assert session['_user']['type'] == UserType.AUDIT_ADMIN
         assert session['_user']['email'] == 'foo@example.com'
 
     assert auth0_aa.authorize_access_token.called
@@ -82,6 +83,7 @@ def test_jurisdictionadmin_callback(client):
     assert rv.status_code == 302
 
     with client.session_transaction() as session:
+        assert session['_user']['type'] == UserType.JURISDICTION_ADMIN
         assert session['_user']['email'] == 'bar@example.com'
 
     assert auth0_ja.authorize_access_token.called
@@ -89,7 +91,7 @@ def test_jurisdictionadmin_callback(client):
 
 
 def test_logout(client):
-    _setup_user(client, 'auditadmin', 'admin@example.com')
+    _setup_user(client, UserType.AUDIT_ADMIN, 'admin@example.com')
 
     rv = client.get('/auth/logout')
 
