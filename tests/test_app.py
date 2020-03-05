@@ -122,6 +122,9 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
 
     assert json.loads(rv.data)['status'] == "ok"
 
+    rv = post_json(client, f"{url_prefix}/audit/freeze", {})
+    assert json.loads(rv.data)['status'] == "ok"
+
     # before background compute, should be null sample size options
     rv = client.get('{}/audit/status'.format(url_prefix))
     status = json.loads(rv.data)
@@ -288,6 +291,9 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
             }]
         })
 
+    assert json.loads(rv.data)['status'] == "ok"
+
+    rv = post_json(client, f"{url_prefix}/audit/freeze", {})
     assert json.loads(rv.data)['status'] == "ok"
 
     # before background compute, should be null sample size options
@@ -502,7 +508,10 @@ def test_small_election(client):
 
     assert json.loads(rv.data)['status'] == "ok"
 
+    rv = post_json(client, f"/election/{election_id}/audit/freeze", {})
+    assert json.loads(rv.data)['status'] == "ok"
     bgcompute.bgcompute()
+
     rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)
 
@@ -816,7 +825,6 @@ def test_multi_winner_election(client):
 
     assert json.loads(rv.data)['status'] == "ok"
 
-    bgcompute.bgcompute()
     rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)
 
@@ -847,6 +855,10 @@ def test_multi_winner_election(client):
         })
 
     assert json.loads(rv.data)['status'] == 'ok'
+
+    rv = post_json(client, f"/election/{election_id}/audit/freeze", {})
+    assert json.loads(rv.data)['status'] == "ok"
+    bgcompute.bgcompute()
 
     rv = client.get(f'/election/{election_id}/audit/status')
     status = json.loads(rv.data)

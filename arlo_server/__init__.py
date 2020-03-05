@@ -317,6 +317,7 @@ def audit_status(election_id=None):
 
     return jsonify(name=election.name,
                    online=election.online,
+                   frozenAt=election.frozen_at,
                    riskLimit=election.risk_limit,
                    randomSeed=election.random_seed,
                    contests=[{
@@ -431,9 +432,6 @@ def audit_basic_update(election_id):
     if errors:
         db.session.rollback()
         return jsonify(errors=errors), 400
-
-    # prepare the round, including sample sizes
-    setup_next_round(election)
 
     db.session.commit()
 
@@ -567,6 +565,25 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
 
     # draw the sample
     sample_ballots(election, election.rounds[0])
+
+    return jsonify(status="ok")
+
+
+@app.route('/election/<election_id>/audit/freeze', methods=["POST"])
+def audit_launch(election_id):
+    election = get_election(election_id)
+
+    # don't freeze an already frozen election
+    if election.frozen_at:
+        return jsonify(status="ok")
+
+    election.frozen_at = datetime.datetime.utcnow()
+    db.session.add(election)
+
+    # prepare the first round, including sample sizes
+    setup_next_round(election)
+
+    db.session.commit()
 
     return jsonify(status="ok")
 
