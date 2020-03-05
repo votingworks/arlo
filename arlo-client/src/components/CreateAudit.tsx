@@ -5,9 +5,10 @@ import { RouteComponentProps } from 'react-router-dom'
 import FormButton from './Form/FormButton'
 import { api, checkAndToast } from './utilities'
 import { ICreateAuditParams, IErrorResponse } from '../types'
+import { useAuthDataContext } from './UserContext'
 
 const Button = styled(FormButton)`
-  margin: 65px 0;
+  margin: 30px 0 0 0;
 `
 
 const Wrapper = styled.div`
@@ -22,6 +23,8 @@ const Wrapper = styled.div`
 `
 
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
+  const { isAuthenticated, meta } = useAuthDataContext()
+
   const [loading, setLoading] = useState(false)
   const onClick = async () => {
     try {
@@ -44,17 +47,48 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   return (
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      <Button
-        type="button"
-        intent="primary"
-        fill
-        large
-        onClick={onClick}
-        loading={loading}
-        disabled={loading}
-      >
-        Create a New Audit
-      </Button>
+      {isAuthenticated ? (
+        meta!.type === 'audit_admin' ? (
+          <Button
+            type="button"
+            intent="primary"
+            fill
+            large
+            onClick={onClick}
+            loading={loading}
+            disabled={loading}
+          >
+            Create a New Audit
+          </Button>
+        ) : null
+      ) : (
+        <>
+          <Button
+            type="button"
+            intent="primary"
+            fill
+            large
+            onClick={() => window.location.replace('/auth/auditadmin/start')}
+            loading={loading}
+            disabled={loading}
+          >
+            Log in as an Audit Admin
+          </Button>
+          <Button
+            type="button"
+            intent="primary"
+            fill
+            large
+            onClick={() =>
+              window.location.replace('/auth/jurisdictionadmin/start')
+            }
+            loading={loading}
+            disabled={loading}
+          >
+            Log in as a Jurisdiction Admin
+          </Button>
+        </>
+      )}
     </Wrapper>
   )
 }

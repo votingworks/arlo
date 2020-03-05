@@ -128,3 +128,28 @@ export interface IAudit {
   jurisdictions: IJurisdiction[]
   rounds: IRound[]
 }
+
+export interface IOrganizationMeta {
+  id: string
+  name: string
+}
+
+export interface IJurisdictionMeta {
+  id: string
+  name: string
+  // eslint-disable-next-line camelcase
+  election_id: string
+}
+
+export interface IUserMeta {
+  name: string
+  email: string
+  type: 'audit_admin' | 'jurisdiction_admin'
+  organizations: IOrganizationMeta[]
+  jurisdictions: IJurisdictionMeta[]
+}
+
+export interface IAuthData {
+  isAuthenticated: boolean
+  meta?: IUserMeta
+}
