@@ -517,7 +517,15 @@ def test_small_election(client):
 
     # now frozen
     rv = client.get(f'/election/{election_id}/audit/status')
-    assert json.loads(rv.data)["frozenAt"]
+    frozen_at = json.loads(rv.data)["frozenAt"]
+    assert frozen_at
+
+    # make sure freezing twice doesn't change frozen date
+    rv = post_json(client, f"/election/{election_id}/audit/freeze", {})
+    rv = client.get(f'/election/{election_id}/audit/status')
+    frozen_at_2 = json.loads(rv.data)["frozenAt"]
+
+    assert frozen_at == frozen_at_2
 
     bgcompute.bgcompute()
 
