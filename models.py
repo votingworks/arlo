@@ -1,6 +1,6 @@
 # type: ignore
 from arlo_server import db
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from typing import Union, List
 from enum import Enum
 
@@ -11,10 +11,6 @@ from enum import Enum
 class Organization(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     name = db.Column(db.String(200), nullable=False)
-
-    audit_administrations = relationship('AuditAdministration',
-                                         backref='organization',
-                                         passive_deletes=True)
 
 
 class Election(db.Model):
@@ -64,9 +60,6 @@ class Jurisdiction(db.Model):
     contests = relationship('TargetedContestJurisdiction',
                             backref='jurisdiction',
                             passive_deletes=True)
-    jurisdiction_administrations = relationship('JurisdictionAdministration',
-                                                backref='jurisdiction',
-                                                passive_deletes=True)
 
 
 class User(db.Model):
@@ -74,12 +67,8 @@ class User(db.Model):
     email = db.Column(db.String(200), unique=True, nullable=False)
     external_id = db.Column(db.String(200), unique=True, nullable=False)
 
-    audit_administrations = relationship('AuditAdministration',
-                                         backref='user',
-                                         passive_deletes=True)
-    jurisdiction_administrations = relationship('JurisdictionAdministration',
-                                                backref='user',
-                                                passive_deletes=True)
+    organizations = relationship("Organization", secondary="audit_administration")
+    jurisdictions = relationship("Jurisdiction", secondary="jurisdiction_administration")
 
 
 class AuditAdministration(db.Model):
@@ -89,6 +78,12 @@ class AuditAdministration(db.Model):
     user_id = db.Column(db.String(200),
                         db.ForeignKey('user.id', ondelete='cascade'),
                         nullable=False)
+
+    organization = relationship(Organization,
+                                backref=backref("audit_administrations",
+                                                cascade="all, delete-orphan"))
+    user = relationship(User,
+                        backref=backref("audit_administrations", cascade="all, delete-orphan"))
 
     __table_args__ = (db.PrimaryKeyConstraint('organization_id', 'user_id'), )
 
@@ -100,6 +95,13 @@ class JurisdictionAdministration(db.Model):
     jurisdiction_id = db.Column(db.String(200),
                                 db.ForeignKey('jurisdiction.id', ondelete='cascade'),
                                 nullable=True)
+
+    jurisdiction = relationship(Jurisdiction,
+                                backref=backref("jurisdiction_administrations",
+                                                cascade="all, delete-orphan"))
+    user = relationship(User,
+                        backref=backref("jurisdiction_administrations",
+                                        cascade="all, delete-orphan"))
 
     __table_args__ = (db.PrimaryKeyConstraint('user_id', 'jurisdiction_id'), )
 

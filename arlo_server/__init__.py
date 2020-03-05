@@ -944,11 +944,17 @@ def me():
     user_type, user_email = get_loggedin_user()
     if user_type:
         user = User.query.filter_by(email=user_email).one()
-        return jsonify(
-            type=user_type,
-            email=user_email,
-            organizations=[aa.organization_id for aa in user.audit_administrations],
-            jurisdictions=[ja.jurisdiction_id for ja in user.jurisdiction_administrations])
+        return jsonify(type=user_type,
+                       email=user_email,
+                       organizations=[{
+                           "id": org.id,
+                           "name": org.name
+                       } for org in user.organizations],
+                       jurisdictions=[{
+                           "id": j.id,
+                           "election_id": j.election_id,
+                           "name": j.name
+                       } for j in user.jurisdictions])
     else:
         return jsonify()
 
