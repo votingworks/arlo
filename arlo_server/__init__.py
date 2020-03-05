@@ -943,7 +943,12 @@ def clear_loggedin_user():
 def me():
     user_type, user_email = get_loggedin_user()
     if user_type:
-        return jsonify(type=user_type, email=user_email)
+        user = User.query.filter_by(email=user_email).one()
+        return jsonify(
+            type=user_type,
+            email=user_email,
+            organizations=[aa.organization_id for aa in user.audit_administrations],
+            jurisdictions=[ja.jurisdiction_id for ja in user.jurisdiction_administrations])
     else:
         return jsonify()
 

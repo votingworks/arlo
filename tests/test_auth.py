@@ -18,10 +18,39 @@ def _setup_user(client, user_type, user_email):
         session['_user'] = {'type': user_type, 'email': user_email}
 
 
+def _create_org_and_admin(org_name, user_email):
+    org = create_organization(org_name)
+    u = User(id=str(uuid.uuid4()), email=user_email, external_id=user_email)
+    db.session.add(u)
+    admin = AuditAdministration(organization_id=org.id, user_id=u.id)
+    db.session.add(admin)
+    db.session.commit()
+
+    return org.id, u.id
+
+
 def test_auth_me(client):
+    org_id, user_id = _create_org_and_admin("Test Org", "admin@example.com")
+    election_id = create_election(organization_id=org_id)
+    jurisdiction = Jurisdiction(election_id=election_id,
+                                id=str(uuid.uuid4()),
+                                name='Test Jurisdiction')
+    j_admin = JurisdictionAdministration(user_id=user_id, jurisdiction_id=jurisdiction.id)
+    j_id = jurisdiction.id
+
+    db.session.add(jurisdiction)
+    db.session.add(j_admin)
+    db.session.commit()
+
     _setup_user(client, UserType.AUDIT_ADMIN, 'admin@example.com')
+
     rv = client.get('/auth/me')
-    assert json.loads(rv.data) == {'type': UserType.AUDIT_ADMIN, 'email': 'admin@example.com'}
+    assert json.loads(rv.data) == {
+        'type': UserType.AUDIT_ADMIN,
+        'email': 'admin@example.com',
+        'organizations': [org_id],
+        'jurisdictions': [j_id]
+    }
 
 
 def test_auditadmin_start(client):
@@ -30,12 +59,7 @@ def test_auditadmin_start(client):
 
 
 def test_auditadmin_callback(client):
-    org = create_organization("Test Organization")
-    u = User(id=str(uuid.uuid4()), email='foo@example.com', external_id='foo@example.com')
-    db.session.add(u)
-    admin = AuditAdministration(organization_id=org.id, user_id=u.id)
-    db.session.add(admin)
-    db.session.commit()
+    org_id, user_id = _create_org_and_admin("Test Organization", "foo@example.com")
 
     auth0_aa.authorize_access_token = MagicMock(return_value=None)
 
