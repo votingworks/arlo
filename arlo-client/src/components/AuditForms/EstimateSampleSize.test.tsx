@@ -715,7 +715,7 @@ describe('EstimateSampleSize', () => {
 
   it('handles errors from the server side', async () => {
     apiMock.mockReset()
-    checkAndToastMock.mockReturnValueOnce(true) // checkAndToast returns true if there's an error from the server
+    checkAndToastMock.mockReturnValueOnce(true)
     const updateAuditMock = jest.fn()
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
@@ -741,6 +741,39 @@ describe('EstimateSampleSize', () => {
     await wait(() => {
       expect(checkAndToastMock).toBeCalledTimes(1)
       expect(apiMock).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledTimes(0)
+      expect(updateAuditMock).toBeCalledTimes(0)
+    })
+  })
+
+  it('handles errors from server side on freeze call', async () => {
+    apiMock.mockReset()
+    checkAndToastMock.mockReturnValueOnce(false).mockReturnValueOnce(true)
+    const updateAuditMock = jest.fn()
+    const { getByLabelText, getByText } = render(
+      <EstimateSampleSize
+        audit={statusStates[0]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={updateAuditMock}
+        getStatus={jest.fn()}
+        electionId="1"
+      />
+    )
+
+    estimateSampleSizeMocks.inputs.forEach(inputData => {
+      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
+        selector: 'input',
+      }) as HTMLInputElement
+      fireEvent.change(input, { target: { value: inputData.value } })
+      expect(input.value).toBe(inputData.value)
+    })
+
+    fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
+
+    await wait(() => {
+      expect(checkAndToastMock).toBeCalledTimes(2)
+      expect(apiMock).toBeCalledTimes(2)
       expect(toastSpy).toBeCalledTimes(0)
       expect(updateAuditMock).toBeCalledTimes(0)
     })
