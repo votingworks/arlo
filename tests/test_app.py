@@ -1047,7 +1047,7 @@ def test_ballot_list_ordering(client):
     ## find all rounds for this jurisdiction
     rv = client.get('{}/audit/status'.format(url_prefix))
     response = json.loads(rv.data)
-    jurisdiction = [j for j in response['jurisdictions'] if j['id'] == jurisdiction_id][0]
+    assert [j for j in response['jurisdictions'] if j['id'] == jurisdiction_id][0]
     rounds = response['rounds']
 
     ## verify order of all returned ballots

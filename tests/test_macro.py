@@ -172,7 +172,6 @@ def test_compute_risk(sampler):
 
     computed_p, result = sampler.audit.compute_risk(sampler.contests, sampler.margins, sample)
 
-    U = sampler.audit.compute_U(sampler.contests, sampler.margins)
     expected_p = 0.247688222
 
     delta = abs(expected_p - computed_p)

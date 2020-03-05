@@ -44,7 +44,6 @@ class BRAVO(RiskLimitingAudit):
                     p_l = margin['losers'][loser]['p_l']
 
             s_w = p_w / (p_w + p_l)
-            s_l = 1 - s_w
 
             if p_w == 1:
                 # Handle single-candidate or crazy landslides
@@ -54,7 +53,6 @@ class BRAVO(RiskLimitingAudit):
             else:
                 z_w = math.log(2 * s_w)
                 z_l = math.log(2 - 2 * s_w)
-                p = p_w + s_l
 
                 T = min(
                     self.get_test_statistics(margins[contest], sample_results[contest]).values())
@@ -239,7 +237,6 @@ class BRAVO(RiskLimitingAudit):
             samples[contest] = {}
 
             p_w = 10**7
-            s_w = 0
             p_l = 0
             best_loser = ''
             worse_winner = ''
@@ -268,8 +265,6 @@ class BRAVO(RiskLimitingAudit):
                     samples[contest][quant] = -1
 
                 continue
-            s_w = p_w / (p_w + p_l)
-            s_l = 1 - s_w
 
             num_ballots = contests[contest]['ballots']
 

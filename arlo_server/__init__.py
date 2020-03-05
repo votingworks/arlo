@@ -104,7 +104,6 @@ def compute_sample_sizes(round_contest):
     sample_size_backup = None
     for (prob_or_asn, size) in raw_sample_size_options.items():
         prob = None
-        type = None
 
         if prob_or_asn == "asn":
             if size["prob"]:
@@ -186,9 +185,6 @@ def sample_ballots(election, round):
 
     audit_boards = jurisdiction.audit_boards
 
-    last_sample = None
-    last_sampled_ballot = None
-
     batch_sizes = {}
     batches_to_ballots = {}
     # Build batch - batch_size map
@@ -243,7 +239,7 @@ def sample_ballots(election, round):
 
 
 def check_round(election, jurisdiction_id, round_id):
-    jurisdiction = Jurisdiction.query.get(jurisdiction_id)
+    assert Jurisdiction.query.get(jurisdiction_id)
     round = Round.query.get(round_id)
 
     # assume one contest
@@ -733,7 +729,7 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     election = get_election(election_id)
 
     # check the jurisdiction and round
-    jurisdiction = Jurisdiction.query.filter_by(election_id=election.id, id=jurisdiction_id).one()
+    Jurisdiction.query.filter_by(election_id=election.id, id=jurisdiction_id).one()
     round = Round.query.filter_by(election_id=election.id, round_num=round_num).one()
 
     csv_io = io.StringIO()
@@ -765,7 +761,7 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
                             func.string_agg(SampledBallotDraw.ticket_number,
                                             aggregate_order_by(",", SampledBallotDraw.ticket_number)))
 
-    for batch_id, position, batch_name, storage_location, tabulator, audit_board, ticket_numbers in ballots:
+    for _batch_id, position, batch_name, storage_location, tabulator, audit_board, ticket_numbers in ballots:
         previously_audited = "Y" if (batch_name, position) in previous_ballots else "N"
         retrieval_list_writer.writerow([
             batch_name, position, storage_location, tabulator, ticket_numbers, previously_audited,
@@ -788,8 +784,7 @@ def jurisdiction_results(election_id, jurisdiction_id, round_num):
     round = Round.query.filter_by(election_id=election.id, round_num=round_num).one()
 
     for contest in results["contests"]:
-        round_contest = RoundContest.query.filter_by(contest_id=contest["id"],
-                                                     round_id=round.id).one()
+        RoundContest.query.filter_by(contest_id=contest["id"], round_id=round.id).one()
         RoundContestResult.query.filter_by(contest_id=contest["id"], round_id=round.id).delete()
 
         for choice_id, result in contest["results"].items():
@@ -836,7 +831,7 @@ def audit_report(election_id):
         report_writer.writerow(
             ["Round {:d} Sample Size".format(round.round_num), round_contest.sample_size])
 
-        for result in round_contest.results:
+        for result in round_contest_results:
             report_writer.writerow([
                 "Round {:d} Audited Votes for {:s}".format(round.round_num,
                                                            result.targeted_contest_choice.name),
@@ -955,7 +950,7 @@ def me():
 
 @app.route('/auth/logout')
 def logout():
-    user_type, user_email = get_loggedin_user()
+    user_type, _user_email = get_loggedin_user()
     if not user_type:
         return redirect("/")
 
