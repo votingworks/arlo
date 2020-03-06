@@ -9,7 +9,6 @@ import AuditFlow from './components/AuditFlow'
 import CreateAudit from './components/CreateAudit'
 import 'react-toastify/dist/ReactToastify.css'
 import AuthDataProvider from './components/UserContext'
-import PrivateRoute from './components/PrivateRoute'
 
 const Main = styled.div`
   display: flex;
@@ -25,15 +24,15 @@ const App: React.FC = () => {
       <ToastContainer />
       <AuthDataProvider>
         <Main>
-          <Route path="/election" component={Header} />
+          <Route path="/" component={Header} />
           <Switch>
             <Route exact path="/" component={CreateAudit} />
-            <PrivateRoute
+            <Route
               path="/election/:electionId/board/:token"
               component={AuditFlow}
             />
-            <PrivateRoute path="/election/:electionId" component={AuditForms} />
-            <PrivateRoute path="/board/:token" component={AuditFlow} />
+            <Route path="/election/:electionId" component={AuditForms} />
+            <Route path="/board/:token" component={AuditFlow} />
             <Route>404</Route>
           </Switch>
         </Main>

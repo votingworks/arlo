@@ -23,7 +23,7 @@ const Wrapper = styled.div`
 `
 
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
-  const { isAuthenticated, meta } = useAuthDataContext()
+  const { isAuthenticated } = useAuthDataContext()
 
   const [loading, setLoading] = useState(false)
   const onClick = async () => {
@@ -47,21 +47,18 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   return (
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      {isAuthenticated ? (
-        meta!.type === 'audit_admin' ? (
-          <Button
-            type="button"
-            intent="primary"
-            fill
-            large
-            onClick={onClick}
-            loading={loading}
-            disabled={loading}
-          >
-            Create a New Audit
-          </Button>
-        ) : null
-      ) : (
+      <Button
+        type="button"
+        intent="primary"
+        fill
+        large
+        onClick={onClick}
+        loading={loading}
+        disabled={loading}
+      >
+        Create a New Audit
+      </Button>
+      {!isAuthenticated && (
         <>
           <Button
             type="button"

@@ -7,6 +7,8 @@ import {
   Alignment,
 } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
+import { useAuthDataContext } from './UserContext'
+import FormButton from './Form/FormButton'
 
 const ButtonBar = styled.div`
   display: inline-block;
@@ -22,19 +24,30 @@ const Nav = styled(Navbar)`
   }
 `
 
-const Header: React.FC<{}> = () => (
-  <Nav fixedToTop>
-    <NavbarGroup align={Alignment.LEFT}>
-      <NavbarHeading>
-        <Link to="/">
-          <img src="/arlo.png" alt="Arlo, by VotingWorks" />
-        </Link>
-      </NavbarHeading>
-    </NavbarGroup>
-    <NavbarGroup align={Alignment.RIGHT}>
-      <ButtonBar id="reset-button-wrapper" />
-    </NavbarGroup>
-  </Nav>
-)
+const Header: React.FC<{}> = () => {
+  const { isAuthenticated } = useAuthDataContext()
+  return (
+    <Nav fixedToTop>
+      <NavbarGroup align={Alignment.LEFT}>
+        <NavbarHeading>
+          <Link to="/">
+            <img src="/arlo.png" alt="Arlo, by VotingWorks" />
+          </Link>
+        </NavbarHeading>
+      </NavbarGroup>
+      <NavbarGroup align={Alignment.RIGHT}>
+        <ButtonBar id="reset-button-wrapper" />
+        {isAuthenticated && (
+          <FormButton
+            size="sm"
+            onClick={() => window.location.replace('/auth/logout')}
+          >
+            Log out
+          </FormButton>
+        )}
+      </NavbarGroup>
+    </Nav>
+  )
+}
 
 export default Header
