@@ -90,6 +90,8 @@ Like any open-source software, Arlo welcomes suggested changes in the form of pu
 
 - we really want to know about anything that gets in the way of installing and using Arlo. Please file tickets, suggest changes to our installation instructions, etc.
 
+Before submitting a pull request, please review our [Contribution Guidelines](./docs/contribution-guidelines.md).
+
 ### Configuration
 
 Arlo is configured mostly through environment variables:
