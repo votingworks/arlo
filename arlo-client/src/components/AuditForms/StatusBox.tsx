@@ -20,32 +20,23 @@ const generateStatuses = (
   started: boolean,
   complete: boolean
 ): [string, string | undefined] => {
-  const STATUSES = {
-    audit: [
-      'The audit has not launched.',
-      'The audit has not started.',
-      `Round ${audit.rounds.length} of the audit is in progress.`,
-      'The audit is complete.',
-    ],
-    setup: [
-      'Audit setup is not complete.',
-      'Audit setup is complete.',
-      undefined,
-    ],
-  }
-
   if (complete) {
     // all jurisdictions have completed the audit
-    return [STATUSES.audit[3], STATUSES.setup[2]]
-  } else if (launched && started) {
+    return ['The audit is complete.', undefined]
+  }
+  if (launched && started) {
     // rounds have started
-    return [STATUSES.audit[2], STATUSES.setup[2]]
-  } else if (launched && !started) {
+    return [
+      `Round ${audit.rounds.length} of the audit is in progress.`,
+      undefined,
+    ]
+  }
+  if (launched && !started) {
     // after setup before first round
-    return [STATUSES.audit[1], STATUSES.setup[1]]
+    return ['The audit has not started.', 'Audit setup is complete.']
   }
   /* istanbul ignore next */
-  return [STATUSES.audit[0], STATUSES.setup[0]]
+  return ['The audit has not launched.', 'Audit setup is not complete.']
 }
 
 interface IProps {
