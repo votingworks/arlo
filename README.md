@@ -94,9 +94,29 @@ Like any open-source software, Arlo welcomes suggested changes in the form of pu
 
 Arlo is configured mostly through environment variables:
 
-* `ARLO_SESSION_SECRET`: the secret key used to encrypt/auth client-side cookie sessions
-* `ARLO_HTTP_ORIGIN`: the proper HTTP/HTTPS origin where this Arlo server is running, e.g. https://arlo.example.com:8443 (as any web origin, no trailing slash)
-* `ARLO_AUDITADMIN_AUTH0_BASE_URL`, `ARLO_AUDITADMIN_AUTH0_CLIENT_ID`, `ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the auth0 app used for audit admins.
+- `ARLO_SESSION_SECRET`: the secret key used to encrypt/auth client-side cookie sessions
+- `ARLO_HTTP_ORIGIN`: the proper HTTP/HTTPS origin where this Arlo server is running, e.g. https://arlo.example.com:8443 (as any web origin, no trailing slash)
+- `ARLO_AUDITADMIN_AUTH0_BASE_URL`, `ARLO_AUDITADMIN_AUTH0_CLIENT_ID`, `ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the auth0 app used for audit admins.
+
+### Creating Organizations and Administrators
+
+Organizations are, for example, the State of
+Massachusetts. Administrators are individual users that administer
+audits for an organization. All authentication is done via auth0 with
+email addresses, so users in the Arlo database also need to be
+mirrored in the appropriate auth0 tenant user database.
+
+To create an organization in the database:
+
+`pipenv run python create-org.py <org_name>`
+
+which returns the `organization_id`.
+
+Then, to create an administrator for the organization:
+
+`pipenv run python create-admin.py <org_id> <admin_email>`
+
+which returns the `user_id`.
 
 ### Setting up the dev environment
 
