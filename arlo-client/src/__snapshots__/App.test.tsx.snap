@@ -9,6 +9,34 @@ exports[`App renders properly 1`] = `
     class="sc-fBuWsC eQKFyT"
   >
     <div
+      class="bp3-navbar bp3-fixed-top sc-htpNat ocefa"
+    >
+      <div
+        class="bp3-navbar-group bp3-align-left"
+      >
+        <div
+          class="bp3-navbar-heading"
+        >
+          <a
+            href="/"
+          >
+            <img
+              alt="Arlo, by VotingWorks"
+              src="/arlo.png"
+            />
+          </a>
+        </div>
+      </div>
+      <div
+        class="bp3-navbar-group bp3-align-right"
+      >
+        <div
+          class="sc-bwzfXH kwlduM"
+          id="reset-button-wrapper"
+        />
+      </div>
+    </div>
+    <div
       class="sc-jhAzac bIQzAv"
     >
       <img
@@ -17,13 +45,33 @@ exports[`App renders properly 1`] = `
         src="/arlo.png"
       />
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hzDkRC blBjGS sc-gzVnrw eLDrzZ"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hzDkRC lmRnSM sc-bdVaJa gLVjYw"
         type="button"
       >
         <span
           class="bp3-button-text"
         >
           Create a New Audit
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hzDkRC lmRnSM sc-bdVaJa gLVjYw"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Log in as an Audit Admin
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hzDkRC lmRnSM sc-bdVaJa gLVjYw"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Log in as a Jurisdiction Admin
         </span>
       </button>
     </div>

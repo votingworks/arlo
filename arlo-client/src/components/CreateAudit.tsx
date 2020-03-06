@@ -65,7 +65,10 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
             intent="primary"
             fill
             large
-            onClick={() => window.location.replace('/auth/auditadmin/start')}
+            onClick={
+              /* istanbul ignore next */
+              () => window.location.replace('/auth/auditadmin/start')
+            }
             loading={loading}
             disabled={loading}
           >
@@ -76,8 +79,9 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
             intent="primary"
             fill
             large
-            onClick={() =>
-              window.location.replace('/auth/jurisdictionadmin/start')
+            onClick={
+              /* istanbul ignore next */
+              () => window.location.replace('/auth/jurisdictionadmin/start')
             }
             loading={loading}
             disabled={loading}

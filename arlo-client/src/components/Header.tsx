@@ -37,10 +37,14 @@ const Header: React.FC<{}> = () => {
       </NavbarGroup>
       <NavbarGroup align={Alignment.RIGHT}>
         <ButtonBar id="reset-button-wrapper" />
-        {isAuthenticated && (
+        {/* istanbul ignore next */
+        isAuthenticated && (
           <FormButton
             size="sm"
-            onClick={() => window.location.replace('/auth/logout')}
+            onClick={
+              /* istanbul ignore next */
+              () => window.location.replace('/auth/logout')
+            }
           >
             Log out
           </FormButton>

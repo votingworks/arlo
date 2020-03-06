@@ -11,13 +11,33 @@ exports[`CreateAudit renders correctly 1`] = `
       src="/arlo.png"
     />
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH iEhHA sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH fdlCQb sc-bdVaJa gLVjYw"
       type="button"
     >
       <span
         class="bp3-button-text"
       >
         Create a New Audit
+      </span>
+    </button>
+    <button
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH fdlCQb sc-bdVaJa gLVjYw"
+      type="button"
+    >
+      <span
+        class="bp3-button-text"
+      >
+        Log in as an Audit Admin
+      </span>
+    </button>
+    <button
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH fdlCQb sc-bdVaJa gLVjYw"
+      type="button"
+    >
+      <span
+        class="bp3-button-text"
+      >
+        Log in as a Jurisdiction Admin
       </span>
     </button>
   </div>

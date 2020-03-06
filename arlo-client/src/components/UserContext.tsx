@@ -25,16 +25,17 @@ const AuthDataProvider = (props: any) => {
           isAuthenticated: true,
           meta: currentAuthData,
         })
+      } else {
+        setAuthData(initialAuthData)
       }
-      setAuthData(initialAuthData)
     })()
   }, [])
 
-  const onLogout = () => setAuthData(initialAuthData)
+  // const onLogout = () => setAuthData(initialAuthData)
 
   // const onLogin = (newAuthData: IAuthData) => setAuthData(newAuthData)
 
-  const authDataValue = useMemo(() => ({ ...authData, onLogout }), [authData])
+  const authDataValue = useMemo(() => ({ ...authData }), [authData])
 
   return <AuthDataContext.Provider value={authDataValue} {...props} />
 }
