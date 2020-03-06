@@ -985,8 +985,14 @@ def me():
         return jsonify(type=user_type,
                        email=user_email,
                        organizations=[{
-                           "id": org.id,
-                           "name": org.name
+                           "id":
+                           org.id,
+                           "name":
+                           org.name,
+                           "elections": [{
+                               "id": e.id,
+                               "name": e.name
+                           } for e in org.elections]
                        } for org in user.organizations],
                        jurisdictions=[{
                            "id": j.id,

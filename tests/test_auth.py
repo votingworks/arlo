@@ -46,11 +46,17 @@ def test_auth_me(client):
 
     rv = client.get('/auth/me')
     assert json.loads(rv.data) == {
-        'type': UserType.AUDIT_ADMIN,
-        'email': 'admin@example.com',
+        'type':
+        UserType.AUDIT_ADMIN,
+        'email':
+        'admin@example.com',
         'organizations': [{
             "name": "Test Org",
-            "id": org_id
+            "id": org_id,
+            "elections": [{
+                "id": election_id,
+                "name": ""
+            }]
         }],
         'jurisdictions': [{
             "id": j_id,
