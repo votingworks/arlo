@@ -12,6 +12,8 @@ class Organization(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     name = db.Column(db.String(200), nullable=False)
 
+    elections = relationship('Election', backref='organization', passive_deletes=True)
+
 
 class Election(db.Model):
     id = db.Column(db.String(200), primary_key=True)
