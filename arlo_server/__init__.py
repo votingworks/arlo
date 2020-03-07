@@ -466,15 +466,6 @@ def audit_status(election_id=None):
                 "id": j.id,
                 "name": j.name,
                 "contests": [c.contest_id for c in j.contests],
-                "auditBoards": [
-                    {
-                        "id": audit_board.id,
-                        "name": audit_board.name,
-                        "members": serialize_members(audit_board),
-                        "passphrase": audit_board.passphrase,
-                    }
-                    for audit_board in j.audit_boards
-                ],
                 "ballotManifest": {
                     "filename": j.manifest_filename,
                     "numBallots": j.manifest_num_ballots,
@@ -617,15 +608,6 @@ def jurisdictions_set(election_id):
             )
             db.session.add(jurisdiction_contest)
 
-        for audit_board in jurisdiction["auditBoards"]:
-            audit_board_obj = AuditBoard(
-                id=audit_board["id"],
-                name=audit_board["name"],
-                jurisdiction_id=jurisdiction_obj.id,
-                passphrase=xp.generate_xkcdpassword(WORDS, numwords=4, delimiter="-"),
-            )
-            db.session.add(audit_board_obj)
-
     db.session.commit()
 
     return jsonify(status="ok")
@@ -763,19 +745,63 @@ def audit_launch(election_id):
     return jsonify(status="ok")
 
 
-@app.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>",
-    methods=["GET"],
-)
-def audit_board(election_id, jurisdiction_id, audit_board_id):
-    audit_boards = (
-        AuditBoard.query.filter_by(id=audit_board_id)
-        .join(AuditBoard.jurisdiction)
-        .filter_by(id=jurisdiction_id, election_id=election_id)
-        .all()
-    )
+def get_audit_boards(election_id, jurisdiction_id, round_id):
+    jurisdiction = Jurisdiction.query.filter_by(id=jurisdiction_id).one()
+    round = Round.query.filter_by(id=round_id).one()
 
-    if not audit_boards:
+    assert jurisdiction.election_id == election_id
+    assert round.election_id == election_id
+
+    audit_boards = jurisdiction.audit_boards.filter_by(round_id=round_id)
+    return jurisdiction, round, audit_boards
+
+
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/',
+           methods=["POST"])
+def audit_boards_create(election_id, jurisdiction_id, round_id):
+    jurisdiction, round, audit_boards = get_audit_boards(election_id, jurisdiction_id, round_id)
+
+    audit_boards.delete()
+
+    audit_boards = request.get_json()['auditBoards']
+
+    for audit_board in audit_boards:
+        audit_board_obj = AuditBoard(id=audit_board["id"],
+                                     round_id=round_id,
+                                     name=audit_board["name"],
+                                     jurisdiction_id=jurisdiction.id,
+                                     passphrase=xp.generate_xkcdpassword(WORDS,
+                                                                         numwords=4,
+                                                                         delimiter="-"))
+        db.session.add(audit_board_obj)
+
+    db.session.commit()
+
+    return jsonify(status="ok")
+
+
+@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/',
+           methods=["GET"])
+def audit_boards_list(election_id, jurisdiction_id, round_id):
+    jurisdiction, round, audit_boards = get_audit_boards(election_id, jurisdiction_id, round_id)
+
+    return jsonify(auditBoards=[{
+        "id": audit_board.id,
+        "name": audit_board.name,
+        "members": serialize_members(audit_board),
+        "passphrase": audit_board.passphrase
+    } for audit_board in audit_boards])
+
+
+@app.route(
+    '/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>',
+    methods=["GET"])
+def audit_board(election_id, jurisdiction_id, round_id, audit_board_id):
+    jurisdiction, round, audit_boards_q = get_audit_boards(election_id, jurisdiction_id, round_id)
+
+    audit_boards = audit_boards_q.filter_by(id=audit_boards_id).all()
+
+    if len(audit_boards) == 0:
         return f"no audit board found with id={audit_board_id}", 404
 
     if len(audit_boards) > 1:
@@ -789,17 +815,13 @@ def audit_board(election_id, jurisdiction_id, audit_board_id):
 
 
 @app.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>",
-    methods=["POST"],
-)
-def set_audit_board(election_id, jurisdiction_id, audit_board_id):
+    '/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>',
+    methods=["POST"])
+def set_audit_board(election_id, jurisdiction_id, round_id, audit_board_id):
     attributes = request.get_json()
-    audit_boards = (
-        AuditBoard.query.filter_by(id=audit_board_id)
-        .join(Jurisdiction)
-        .filter_by(id=jurisdiction_id, election_id=election_id)
-        .all()
-    )
+    jurisdiction, round, audit_boards_q = get_audit_boards(election_id, jurisdiction_id, round_id)
+
+    audit_boards = audit_boards_q.filter_by(id=audit_boards_id).all()
 
     if not audit_boards:
         return (
@@ -904,9 +926,9 @@ def ballot_list(election_id, jurisdiction_id, round_id):
 
 
 @app.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>/round/<round_id>/ballot-list"
+    '/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/ballot-list'
 )
-def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, round_id):
+def ballot_list_by_audit_board(election_id, jurisdiction_id, round_id, audit_board_id):
     query = (
         SampledBallotDraw.query.join(Round)
         .join(SampledBallot)
@@ -1149,25 +1171,6 @@ def audit_report(election_id):
     report_writer.writerow(["Risk Limit", "{:d}%".format(election.risk_limit)])
     report_writer.writerow(["Random Seed", election.random_seed])
 
-    if election.online:
-        for audit_board in jurisdiction.audit_boards:
-            report_writer.writerow(
-                [
-                    audit_board.name,
-                    audit_board.member_1,
-                    pretty_affiliation(audit_board.member_1_affiliation),
-                ]
-            )
-            report_writer.writerow(
-                [
-                    audit_board.name,
-                    audit_board.member_2,
-                    pretty_affiliation(audit_board.member_2_affiliation),
-                ]
-            )
-
-    all_sampled_ballot_draws = []
-
     for round in election.rounds:
         round_contest = round.round_contests[0]
         round_contest_results = round_contest.results
@@ -1205,6 +1208,17 @@ def audit_report(election_id):
         report_writer.writerow(
             ["Round {:d} End".format(round.round_num), round.ended_at]
         )
+
+        for audit_board in jurisdiction.audit_boards.filter_by(round_id=round.id):
+            report_writer.writerow([
+                audit_board.name, audit_board.member_1,
+                pretty_affiliation(audit_board.member_1_affiliation)
+            ])
+            report_writer.writerow([
+                audit_board.name, audit_board.member_2,
+                pretty_affiliation(audit_board.member_2_affiliation)
+            ])
+
 
         ballot_draws = (
             SampledBallotDraw.query.filter_by(round_id=round.id)
