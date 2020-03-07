@@ -129,16 +129,24 @@ export interface IAudit {
   rounds: IRound[]
 }
 
+export interface IElectionMeta {
+  id: string
+  name: string
+  state: string
+  // eslint-disable-next-line camelcase
+  election_date: string
+}
+
 export interface IOrganizationMeta {
   id: string
   name: string
+  elections: IElectionMeta[]
 }
 
 export interface IJurisdictionMeta {
   id: string
   name: string
-  // eslint-disable-next-line camelcase
-  election_id: string
+  election: IElectionMeta
 }
 
 export interface IUserMeta {
