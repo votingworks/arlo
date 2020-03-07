@@ -51,17 +51,26 @@ def test_auth_me(client):
         'email':
         'admin@example.com',
         'organizations': [{
-            "name": "Test Org",
-            "id": org_id,
+            "name":
+            "Test Org",
+            "id":
+            org_id,
             "elections": [{
                 "id": election_id,
-                "name": ""
+                "name": "",
+                "state": None,
+                "election_date": None
             }]
         }],
         'jurisdictions': [{
             "id": j_id,
-            "election_id": election_id,
-            "name": "Test Jurisdiction"
+            "name": "Test Jurisdiction",
+            "election": {
+                "id": election_id,
+                "name": "",
+                "state": None,
+                "election_date": None
+            }
         }]
     }
 

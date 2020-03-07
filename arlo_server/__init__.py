@@ -977,6 +977,15 @@ def clear_loggedin_user():
     session['_user'] = None
 
 
+def serialize_election(election):
+    return {
+        "id": election.id,
+        "name": election.name,
+        "state": election.state,
+        "election_date": election.election_date
+    }
+
+
 @app.route('/auth/me')
 def me():
     user_type, user_email = get_loggedin_user()
@@ -985,19 +994,14 @@ def me():
         return jsonify(type=user_type,
                        email=user_email,
                        organizations=[{
-                           "id":
-                           org.id,
-                           "name":
-                           org.name,
-                           "elections": [{
-                               "id": e.id,
-                               "name": e.name
-                           } for e in org.elections]
+                           "id": org.id,
+                           "name": org.name,
+                           "elections": [serialize_election(e) for e in org.elections]
                        } for org in user.organizations],
                        jurisdictions=[{
                            "id": j.id,
-                           "election_id": j.election_id,
-                           "name": j.name
+                           "name": j.name,
+                           "election": serialize_election(j.election)
                        } for j in user.jurisdictions])
     else:
         return jsonify()
