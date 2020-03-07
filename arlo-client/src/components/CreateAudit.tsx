@@ -38,10 +38,14 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const onClick = async () => {
     try {
       setLoading(true)
+      const data = isAuthenticated
+        ? { organization: meta!.organizations[0].id }
+        : {}
       const response: { electionId: string } | IErrorResponse = await api(
         '/election/new',
         {
           method: 'POST',
+          body: JSON.stringify(data),
         }
       )
       if (checkAndToast(response)) {
