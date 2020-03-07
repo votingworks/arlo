@@ -8,6 +8,7 @@ import AuditForms from './components/AuditForms'
 import AuditFlow from './components/AuditFlow'
 import CreateAudit from './components/CreateAudit'
 import 'react-toastify/dist/ReactToastify.css'
+import AuthDataProvider from './components/UserContext'
 
 const Main = styled.div`
   display: flex;
@@ -21,19 +22,21 @@ const App: React.FC = () => {
   return (
     <Router>
       <ToastContainer />
-      <Main>
-        <Route path="/election" component={Header} />
-        <Switch>
-          <Route exact path="/" component={CreateAudit} />
-          <Route
-            path="/election/:electionId/board/:token"
-            component={AuditFlow}
-          />
-          <Route path="/election/:electionId" component={AuditForms} />
-          <Route path="/board/:token" component={AuditFlow} />
-          <Route>404</Route>
-        </Switch>
-      </Main>
+      <AuthDataProvider>
+        <Main>
+          <Route path="/" component={Header} />
+          <Switch>
+            <Route exact path="/" component={CreateAudit} />
+            <Route
+              path="/election/:electionId/board/:token"
+              component={AuditFlow}
+            />
+            <Route path="/election/:electionId" component={AuditForms} />
+            <Route path="/board/:token" component={AuditFlow} />
+            <Route>404</Route>
+          </Switch>
+        </Main>
+      </AuthDataProvider>
     </Router>
   )
 }

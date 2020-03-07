@@ -11,7 +11,7 @@ const proxy = require('http-proxy-middleware')
 const target = process.env.ARLO_BACKEND_URL || 'http://localhost:3001/'
 
 module.exports = function(app) {
-  app.use(proxy('/auth', { target }))
+  app.use(proxy('/auth/**', { target }))
   app.use(proxy('/admin', { target }))
   app.use(proxy('/election/new', { target }))
   app.use(proxy('/election/*/audit/**', { target }))

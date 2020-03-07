@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly 1`] = `
+exports[`Header renders correctly 1`] = `
 <div>
   <div
-    class="bp3-navbar bp3-fixed-top sc-bwzfXH rpDk"
+    class="bp3-navbar bp3-fixed-top sc-htpNat ocefa"
   >
     <div
       class="bp3-navbar-group bp3-align-left"
@@ -25,7 +25,7 @@ exports[`renders correctly 1`] = `
       class="bp3-navbar-group bp3-align-right"
     >
       <div
-        class="sc-bdVaJa bKktsd"
+        class="sc-bwzfXH kwlduM"
         id="reset-button-wrapper"
       />
     </div>
