@@ -70,6 +70,7 @@ interface IProps {
 }
 
 interface ISelectBallotsToAuditValues {
+  online: boolean
   auditBoards: string
   auditNames: string[]
   manifest: File | null
@@ -117,6 +118,23 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
           members: [],
         }
       })
+
+      // update 'online' for audit
+      const auditData = {
+        ...audit,
+        online: values.online,
+      }
+      const basicResponse: IErrorResponse = await api(
+        `/election/${electionId}/audit/basic`,
+        {
+          method: 'POST',
+          body: JSON.stringify(auditData),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      if (checkAndToast(basicResponse)) return
 
       // upload jurisdictions
       const data: IJurisdiction[] = [
@@ -194,6 +212,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
         )
       : Array(numberOfBoards).fill('')
   const initialState: ISelectBallotsToAuditValues = {
+    online: true,
     auditBoards: `${numberOfBoards}`,
     auditNames,
     manifest: null,
@@ -376,6 +395,22 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                     </label>
                     <FormSectionDescription>
                       Audit boards will enter data about each ballot:
+                      <FormSection>
+                        <RadioGroup
+                          name="online"
+                          onChange={e =>
+                            setFieldValue(
+                              'online',
+                              e.currentTarget.value === 'online'
+                            )
+                          }
+                          selectedValue={values.online ? 'online' : 'offline'}
+                          disabled={sampleSizeSelected}
+                        >
+                          <Radio value="online">Online</Radio>
+                          <Radio value="offline">Offline</Radio>
+                        </RadioGroup>
+                      </FormSection>
                     </FormSectionDescription>
                     <AuditBoardsWrapper>
                       {values.auditNames.map((name, i) => (
