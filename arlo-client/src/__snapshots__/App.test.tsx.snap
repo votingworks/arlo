@@ -9,6 +9,34 @@ exports[`App renders properly 1`] = `
     class="sc-fMiknA bGVoxC"
   >
     <div
+      class="bp3-navbar bp3-fixed-top sc-htpNat ocefa"
+    >
+      <div
+        class="bp3-navbar-group bp3-align-left"
+      >
+        <div
+          class="bp3-navbar-heading"
+        >
+          <a
+            href="/"
+          >
+            <img
+              alt="Arlo, by VotingWorks"
+              src="/arlo.png"
+            />
+          </a>
+        </div>
+      </div>
+      <div
+        class="bp3-navbar-group bp3-align-right"
+      >
+        <div
+          class="sc-bwzfXH kwlduM"
+          id="reset-button-wrapper"
+        />
+      </div>
+    </div>
+    <div
       class="sc-fBuWsC dXLkWZ"
     >
       <img
@@ -17,7 +45,7 @@ exports[`App renders properly 1`] = `
         src="/arlo.png"
       />
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-jhAzac fznXsW sc-gzVnrw eLDrzZ"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-jhAzac cBtFXF sc-bdVaJa gLVjYw"
         type="button"
       >
         <span
@@ -27,7 +55,7 @@ exports[`App renders properly 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hzDkRC lmRnSM sc-bdVaJa gLVjYw"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-jhAzac cBtFXF sc-bdVaJa gLVjYw"
         type="button"
       >
         <span
@@ -37,7 +65,7 @@ exports[`App renders properly 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hzDkRC lmRnSM sc-bdVaJa gLVjYw"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-jhAzac cBtFXF sc-bdVaJa gLVjYw"
         type="button"
       >
         <span
