@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import FormButton from './Form/FormButton'
 import { api, checkAndToast } from './utilities'
-import { ICreateAuditParams, IErrorResponse, IOrganizationMeta } from '../types'
+import { ICreateAuditParams, IErrorResponse } from '../types'
 import { useAuthDataContext } from './UserContext'
 
 const Button = styled(FormButton)`
@@ -105,25 +105,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
       ) : (
         <>
           {meta!.organizations.length > 0 &&
-            [
-              ...meta!.organizations,
-              {
-                id: 'oID',
-                name: 'Organization name',
-                elections: [
-                  {
-                    id: '542e2803-bd10-44d6-af1e-0858cda23432',
-                    name: 'Election name 1',
-                    state: 'WA',
-                  },
-                  {
-                    id: '542e2803-bd10-44d6-af1e-0858cda23432',
-                    name: 'Election name 2',
-                    state: '',
-                  },
-                ],
-              } as IOrganizationMeta,
-            ].map(o =>
+            meta!.organizations.map(o =>
               o.elections.map(election => (
                 <AuditLink
                   to={`/election/${election.id}`}

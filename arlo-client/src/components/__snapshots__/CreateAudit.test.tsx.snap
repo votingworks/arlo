@@ -1,5 +1,95 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CreateAudit lists associated elections for authenticated AA user 1`] = `
+<div>
+  <div
+    class="sc-htpNat dgtpPg"
+  >
+    <img
+      alt="Arlo, by VotingWorks"
+      height="50px"
+      src="/arlo.png"
+    />
+    <button
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH fdlCQb sc-bdVaJa gLVjYw"
+      type="button"
+    >
+      <span
+        class="bp3-button-text"
+      >
+        Create a New Audit
+      </span>
+    </button>
+    <a
+      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      href="/election/election-1"
+    >
+      Not named yet
+       (NY)
+    </a>
+    <a
+      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      href="/election/election-2"
+    >
+      Election Two
+       (FL)
+    </a>
+    <a
+      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      href="/election/election-3"
+    >
+      Election Three
+      
+    </a>
+    <a
+      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      href="/election/election-4"
+    >
+      Election Four
+       (WA)
+    </a>
+  </div>
+</div>
+`;
+
+exports[`CreateAudit lists associated elections for authenticated JA user 1`] = `
+<div>
+  <div
+    class="sc-htpNat dgtpPg"
+  >
+    <img
+      alt="Arlo, by VotingWorks"
+      height="50px"
+      src="/arlo.png"
+    />
+    <button
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH fdlCQb sc-bdVaJa gLVjYw"
+      type="button"
+    >
+      <span
+        class="bp3-button-text"
+      >
+        Create a New Audit
+      </span>
+    </button>
+    <a
+      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      href="/election/election-1"
+    >
+      Election One
+       (NY)
+    </a>
+    <a
+      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      href="/election/election-2"
+    >
+      Not named yet
+      
+    </a>
+  </div>
+</div>
+`;
+
 exports[`CreateAudit renders correctly 1`] = `
 <div>
   <div
