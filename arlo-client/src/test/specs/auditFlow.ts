@@ -54,9 +54,9 @@ const memberFill = () => {
 
 beforeEach(() => {
   start()
-  fillFormOne(true)
+  fillFormOne()
   submitFormOne()
-  fillFormTwo()
+  fillFormTwo(false)
   submitFormTwo()
   $('a=Audit Board #1').click()
   memberFill()

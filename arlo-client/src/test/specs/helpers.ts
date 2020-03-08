@@ -10,7 +10,7 @@ export const start = () => {
   $('.bp3-button-text=Create a New Audit').click()
   $('#audit-name').waitForExist(5000)
 }
-export const fillFormOne = (online: boolean) => {
+export const fillFormOne = () => {
   $('#audit-name').addValue('Election Name')
   $('input[name="contests[0].name"]').addValue('Contest Name')
   $('input[name="contests[0].choices[0].name"]').addValue('Choice One')
@@ -19,7 +19,6 @@ export const fillFormOne = (online: boolean) => {
   $('input[name="contests[0].choices[1].numVotes"]').addValue('1325')
   $('input[name="contests[0].totalBallotsCast"]').addValue('2123')
   $('#random-seed').addValue('1234567890')
-  if (online) $('label.bp3-radio*=Online').click()
 }
 
 export const submitFormOne = () => {
@@ -27,8 +26,9 @@ export const submitFormOne = () => {
   $('.bp3-heading=Select Ballots to Audit').waitForExist(10000)
 }
 
-export const fillFormTwo = () => {
+export const fillFormTwo = (offline: boolean) => {
   $('input[name="manifest"]').setValue(filePath)
+  if (offline) $('label.bp3-radio*=Offline').click()
 }
 
 export const submitFormTwo = () => {

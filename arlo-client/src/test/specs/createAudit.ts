@@ -25,7 +25,7 @@ describe('create audit page', () => {
 describe('form one', () => {
   it('should submit', () => {
     start()
-    fillFormOne(false)
+    fillFormOne()
     submitFormOne()
   })
 })
@@ -33,17 +33,17 @@ describe('form one', () => {
 describe('form two', () => {
   it('should submit', () => {
     start()
-    fillFormOne(false)
+    fillFormOne()
     submitFormOne()
-    fillFormTwo()
+    fillFormTwo(true)
     submitFormTwo()
   })
 
   // it('should accept custom audit board names', () => { // commented out until we decide to add it back in again
   //   start()
-  //   fillFormOne(false)
+  //   fillFormOne()
   //   submitFormOne()
-  //   fillFormTwo()
+  //   fillFormTwo(true)
   //   $('input[name="auditNames[0]"]').addValue('First Audit Board')
   //   submitFormTwo()
   //   expect($('a=First Audit Board')).toBeTruthy()
@@ -53,18 +53,18 @@ describe('form two', () => {
 describe('form three', () => {
   it('should go to the next round', () => {
     start()
-    fillFormOne(false)
+    fillFormOne()
     submitFormOne()
-    fillFormTwo()
+    fillFormTwo(true)
     submitFormTwo()
     formThreeNext()
   })
 
   it('should cycle through several rounds', () => {
     start()
-    fillFormOne(false)
+    fillFormOne()
     submitFormOne()
-    fillFormTwo()
+    fillFormTwo(true)
     submitFormTwo()
     formThreeNext()
     formThreeNext()
@@ -73,9 +73,9 @@ describe('form three', () => {
 
   it('should complete the audit', () => {
     start()
-    fillFormOne(false)
+    fillFormOne()
     submitFormOne()
-    fillFormTwo()
+    fillFormTwo(true)
     submitFormTwo()
     formThreeNext()
     const inputs = $$('.bp3-input')
@@ -87,13 +87,13 @@ describe('form three', () => {
 
   it('should display the same candidates/choices entered in form one', () => {
     start()
-    fillFormOne(false)
+    fillFormOne()
     $('p=Add a new candidate/choice').click()
     $('input[name="contests[0].totalBallotsCast"]').setValue('2436')
     $('input[name="contests[0].choices[2].name"]').addValue('Choice Three')
     $('input[name="contests[0].choices[2].numVotes"]').addValue('313')
     submitFormOne()
-    fillFormTwo()
+    fillFormTwo(true)
     submitFormTwo()
     expect($('label=Choice One')).toBeTruthy()
     expect($('label=Choice Two')).toBeTruthy()
