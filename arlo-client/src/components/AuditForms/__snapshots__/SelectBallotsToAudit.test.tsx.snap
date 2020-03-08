@@ -109,6 +109,39 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
           class="sc-bwzfXH izcbHX"
         >
           Audit boards will enter data about each ballot:
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  checked=""
+                  name="online"
+                  type="radio"
+                  value="online"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Online
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="online"
+                  type="radio"
+                  value="offline"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Offline
+              </label>
+            </div>
+          </div>
         </div>
         <div
           class="sc-jTzLTM jLWsng"
@@ -280,6 +313,39 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
           class="sc-bwzfXH izcbHX"
         >
           Audit boards will enter data about each ballot:
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  checked=""
+                  name="online"
+                  type="radio"
+                  value="online"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Online
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="online"
+                  type="radio"
+                  value="offline"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Offline
+              </label>
+            </div>
+          </div>
         </div>
         <div
           class="sc-jTzLTM jLWsng"
@@ -448,6 +514,39 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
           class="sc-bwzfXH izcbHX"
         >
           Audit boards will enter data about each ballot:
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  checked=""
+                  name="online"
+                  type="radio"
+                  value="online"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Online
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="online"
+                  type="radio"
+                  value="offline"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Offline
+              </label>
+            </div>
+          </div>
         </div>
         <div
           class="sc-jTzLTM jLWsng"
@@ -613,6 +712,39 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
           class="sc-bwzfXH izcbHX"
         >
           Audit boards will enter data about each ballot:
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  checked=""
+                  name="online"
+                  type="radio"
+                  value="online"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Online
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="online"
+                  type="radio"
+                  value="offline"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Offline
+              </label>
+            </div>
+          </div>
         </div>
         <div
           class="sc-jTzLTM jLWsng"

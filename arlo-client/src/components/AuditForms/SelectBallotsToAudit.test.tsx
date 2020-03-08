@@ -200,12 +200,22 @@ describe('SelectBallotsToAudit', () => {
     fireEvent.click(submitButton, { bubbles: true })
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(3)
+      expect(apiMock).toBeCalledTimes(4)
 
-      expect(apiMock.mock.calls[0][0]).toMatch(
-        /\/election\/[^/]+\/audit\/sample-size/
-      )
-      expect(apiMock.mock.calls[0][1]).toMatchObject({
+      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/basic', {
+        body: JSON.stringify({
+          contests: [],
+          online: true,
+          name: 'contest name',
+          riskLimit: '1',
+          randomSeed: '123456789',
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      })
+      expect(apiMock.mock.calls[1][1]).toMatchObject({
         method: 'POST',
         body: JSON.stringify({
           size: '11',
@@ -217,7 +227,7 @@ describe('SelectBallotsToAudit', () => {
 
       expect(getStatusMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(1)
-      expect(checkAndToastMock).toBeCalledTimes(3)
+      expect(checkAndToastMock).toBeCalledTimes(4)
     })
   })
 
@@ -240,6 +250,41 @@ describe('SelectBallotsToAudit', () => {
         '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
       ).hasAttribute('checked')
     ).toBeTruthy()
+  })
+
+  it('changes audits to be offline and online', () => {
+    const { getByLabelText } = render(
+      <SelectBallotsToAudit
+        audit={statusStates[1]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={jest.fn()}
+        getStatus={jest.fn()}
+        electionId="1"
+      />
+    )
+
+    const auditToggleOffline = getByLabelText(
+      new RegExp(regexpEscape('Offline')),
+      {
+        selector: 'select',
+      }
+    )
+    expect(auditToggleOffline).toBeInstanceOf(HTMLInputElement)
+    if (auditToggleOffline instanceof HTMLInputElement) {
+      fireEvent.click(auditToggleOffline, { bubbles: true })
+    }
+
+    const auditToggleOnline = getByLabelText(
+      new RegExp(regexpEscape('Online')),
+      {
+        selector: 'select',
+      }
+    )
+    expect(auditToggleOnline).toBeInstanceOf(HTMLInputElement)
+    if (auditToggleOnline instanceof HTMLInputElement) {
+      fireEvent.click(auditToggleOnline, { bubbles: true })
+    }
   })
 
   it('changes number of audits', () => {
@@ -276,10 +321,11 @@ describe('SelectBallotsToAudit', () => {
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(3)
+      expect(apiMock).toBeCalledTimes(4)
 
-      expect(apiMock.mock.calls[0]).toMatchObject([
-        expect.stringMatching(/\/election\/[^/]+\/audit\/sample-size/),
+      expect(apiMock).toHaveBeenNthCalledWith(
+        2,
+        '/election/1/audit/sample-size',
         {
           method: 'POST',
           body: JSON.stringify({
@@ -288,11 +334,11 @@ describe('SelectBallotsToAudit', () => {
           headers: {
             'Content-Type': 'application/json',
           },
-        },
-      ])
+        }
+      )
 
       {
-        const [url, options] = apiMock.mock.calls[1]
+        const [url, options] = apiMock.mock.calls[2]
         const body = options && JSON.parse(options.body as string)
 
         expect(url).toMatch(/\/election\/[^/]+\/audit\/jurisdictions/)
@@ -320,16 +366,16 @@ describe('SelectBallotsToAudit', () => {
         })
       }
 
-      expect(apiMock.mock.calls[2][0]).toMatch(
+      expect(apiMock.mock.calls[3][0]).toMatch(
         /\/election\/[^/]+\/jurisdiction\/jurisdiction-1\/manifest/
       )
 
-      expect((getStatusMock as jest.Mock).mock.calls.length).toBe(1)
-      expect((updateAuditMock as jest.Mock).mock.calls.length).toBe(1)
+      expect(getStatusMock).toHaveBeenCalledTimes(1)
+      expect(updateAuditMock).toHaveBeenCalledTimes(1)
     })
   })
 
-  it('handles api error on /audit/sample-size', async () => {
+  it('handles api error on /audit/basic', async () => {
     apiMock
       .mockRejectedValueOnce({ message: 'error' })
       .mockImplementation(async () => ({}))
@@ -345,11 +391,11 @@ describe('SelectBallotsToAudit', () => {
     })
   })
 
-  it('handles api error on /audit/jurisdictions', async () => {
+  it('handles api error on /audit/sample-size', async () => {
     apiMock
       .mockResolvedValueOnce(undefined)
       .mockRejectedValueOnce({ message: 'error' })
-      .mockResolvedValue(undefined)
+      .mockImplementation(async () => ({}))
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -362,11 +408,12 @@ describe('SelectBallotsToAudit', () => {
     })
   })
 
-  it('handles api error on /audit/jurisdiction/:id/manifest', async () => {
+  it('handles api error on /audit/jurisdictions', async () => {
     apiMock
       .mockResolvedValueOnce(undefined)
       .mockResolvedValueOnce(undefined)
       .mockRejectedValueOnce({ message: 'error' })
+      .mockResolvedValue(undefined)
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -374,12 +421,30 @@ describe('SelectBallotsToAudit', () => {
       expect(apiMock).toBeCalledTimes(3)
       expect(toastSpy).toBeCalledTimes(1)
 
+      expect(getStatusMock).toBeCalledTimes(0)
+      expect(updateAuditMock).toBeCalledTimes(0)
+    })
+  })
+
+  it('handles api error on /audit/jurisdiction/:id/manifest', async () => {
+    apiMock
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce({ message: 'error' })
+
+    const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(4)
+      expect(toastSpy).toBeCalledTimes(1)
+
       expect(getStatusMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(0)
     })
   })
 
-  it('handles server error on /audit/sample-size', async () => {
+  it('handles server error on /audit/basic', async () => {
     apiMock.mockResolvedValue(undefined)
     checkAndToastMock.mockReturnValueOnce(true).mockReturnValue(false)
 
@@ -394,7 +459,7 @@ describe('SelectBallotsToAudit', () => {
     })
   })
 
-  it('handles server error on /audit/jurisdictions', async () => {
+  it('handles server error on /audit/sample-size', async () => {
     apiMock.mockResolvedValue(undefined)
     checkAndToastMock
       .mockReturnValueOnce(false)
@@ -412,7 +477,7 @@ describe('SelectBallotsToAudit', () => {
     })
   })
 
-  it('handles server error on /audit/jurisdiction/:id/manifest', async () => {
+  it('handles server error on /audit/jurisdictions', async () => {
     apiMock.mockResolvedValue(undefined)
     checkAndToastMock
       .mockReturnValueOnce(false)
@@ -426,6 +491,26 @@ describe('SelectBallotsToAudit', () => {
       expect(apiMock).toBeCalledTimes(3)
       expect(toastSpy).toBeCalledTimes(0)
       expect(checkAndToastMock).toBeCalledTimes(3)
+      expect(getStatusMock).toBeCalledTimes(0)
+      expect(updateAuditMock).toBeCalledTimes(0)
+    })
+  })
+
+  it('handles server error on /audit/jurisdiction/:id/manifest', async () => {
+    apiMock.mockResolvedValue(undefined)
+    checkAndToastMock
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true)
+      .mockReturnValue(false)
+
+    const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(4)
+      expect(toastSpy).toBeCalledTimes(0)
+      expect(checkAndToastMock).toBeCalledTimes(4)
       expect(getStatusMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(0)
     })

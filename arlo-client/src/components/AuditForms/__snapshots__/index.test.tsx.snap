@@ -289,41 +289,6 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div>
-            <label
-              class="bp3-control bp3-radio bp3-disabled"
-            >
-              <input
-                checked=""
-                disabled=""
-                name="online"
-                type="radio"
-                value="online"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Online
-            </label>
-            <label
-              class="bp3-control bp3-radio bp3-disabled"
-            >
-              <input
-                disabled=""
-                name="online"
-                type="radio"
-                value="offline"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Offline
-            </label>
-          </div>
-        </div>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
@@ -646,6 +611,39 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
             class="sc-bwzfXH izcbHX"
           >
             Audit boards will enter data about each ballot:
+            <div
+              class="sc-bdVaJa fdbLH"
+            >
+              <div>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    checked=""
+                    name="online"
+                    type="radio"
+                    value="online"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Online
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="online"
+                    type="radio"
+                    value="offline"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Offline
+                </label>
+              </div>
+            </div>
           </div>
           <div
             class="sc-kGXeez bMTBGr"
@@ -989,41 +987,6 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
         >
           Audit Settings
         </h2>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
-          <div>
-            <label
-              class="bp3-control bp3-radio bp3-disabled"
-            >
-              <input
-                checked=""
-                disabled=""
-                name="online"
-                type="radio"
-                value="online"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Online
-            </label>
-            <label
-              class="bp3-control bp3-radio bp3-disabled"
-            >
-              <input
-                disabled=""
-                name="online"
-                type="radio"
-                value="offline"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Offline
-            </label>
-          </div>
-        </div>
         <div
           class="sc-bdVaJa fdbLH"
         >
@@ -1449,39 +1412,6 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
         >
           Audit Settings
         </h2>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
-          <div>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                checked=""
-                name="online"
-                type="radio"
-                value="online"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Online
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="online"
-                type="radio"
-                value="offline"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Offline
-            </label>
-          </div>
-        </div>
         <div
           class="sc-bdVaJa fdbLH"
         >
@@ -1926,41 +1856,6 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div>
-            <label
-              class="bp3-control bp3-radio bp3-disabled"
-            >
-              <input
-                checked=""
-                disabled=""
-                name="online"
-                type="radio"
-                value="online"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Online
-            </label>
-            <label
-              class="bp3-control bp3-radio bp3-disabled"
-            >
-              <input
-                disabled=""
-                name="online"
-                type="radio"
-                value="offline"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Offline
-            </label>
-          </div>
-        </div>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
@@ -2288,6 +2183,41 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             class="sc-bwzfXH izcbHX"
           >
             Audit boards will enter data about each ballot:
+            <div
+              class="sc-bdVaJa fdbLH"
+            >
+              <div>
+                <label
+                  class="bp3-control bp3-radio bp3-disabled"
+                >
+                  <input
+                    checked=""
+                    disabled=""
+                    name="online"
+                    type="radio"
+                    value="online"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Online
+                </label>
+                <label
+                  class="bp3-control bp3-radio bp3-disabled"
+                >
+                  <input
+                    disabled=""
+                    name="online"
+                    type="radio"
+                    value="offline"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Offline
+                </label>
+              </div>
+            </div>
           </div>
           <div
             class="sc-kGXeez bMTBGr"
@@ -2782,41 +2712,6 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         <div
           class="sc-bdVaJa fdbLH"
         >
-          <div>
-            <label
-              class="bp3-control bp3-radio bp3-disabled"
-            >
-              <input
-                checked=""
-                disabled=""
-                name="online"
-                type="radio"
-                value="online"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Online
-            </label>
-            <label
-              class="bp3-control bp3-radio bp3-disabled"
-            >
-              <input
-                disabled=""
-                name="online"
-                type="radio"
-                value="offline"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Offline
-            </label>
-          </div>
-        </div>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
           <h3
             class="bp3-heading sc-htpNat cNFUHJ"
           >
@@ -3139,6 +3034,39 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             class="sc-bwzfXH izcbHX"
           >
             Audit boards will enter data about each ballot:
+            <div
+              class="sc-bdVaJa fdbLH"
+            >
+              <div>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    checked=""
+                    name="online"
+                    type="radio"
+                    value="online"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Online
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="online"
+                    type="radio"
+                    value="offline"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Offline
+                </label>
+              </div>
+            </div>
           </div>
           <div
             class="sc-kGXeez bMTBGr"
@@ -3478,39 +3406,6 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
         >
           Audit Settings
         </h2>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
-          <div>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                checked=""
-                name="online"
-                type="radio"
-                value="online"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Online
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="online"
-                type="radio"
-                value="offline"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Offline
-            </label>
-          </div>
-        </div>
         <div
           class="sc-bdVaJa fdbLH"
         >
