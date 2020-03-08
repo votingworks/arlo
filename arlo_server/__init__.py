@@ -398,7 +398,8 @@ def audit_basic_update(election_id):
     election.online = info['online']
 
     errors = []
-    db.session.query(TargetedContest).filter_by(election_id=election.id).delete()
+    if info['contests']:
+        db.session.query(TargetedContest).filter_by(election_id=election.id).delete()
 
     for contest in info['contests']:
         total_allowed_votes_in_contest = contest['totalBallotsCast'] * contest['votesAllowed']

@@ -121,8 +121,11 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
 
       // update 'online' for audit
       const auditData = {
-        ...audit,
+        contests: [], // empty because we don't want to recreate them
         online: values.online,
+        name: audit.name,
+        riskLimit: audit.riskLimit,
+        randomSeed: audit.randomSeed,
       }
       const basicResponse: IErrorResponse = await api(
         `/election/${electionId}/audit/basic`,
