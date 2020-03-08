@@ -4,7 +4,7 @@ import json, csv, io
 
 import pytest
 
-from arlo_server import app, init_db, db
+from arlo_server import app, init_db, db, create_organization
 import bgcompute
 
 manifest_file_path = os.path.join(os.path.dirname(__file__), "manifest.csv")
@@ -55,11 +55,11 @@ def test_session(client):
 
 
 def test_whole_audit_flow(client):
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id_1 = json.loads(rv.data)['electionId']
     assert election_id_1
 
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id_2 = json.loads(rv.data)['electionId']
     assert election_id_2
 
@@ -144,7 +144,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
 
     assert json.loads(rv.data)['status'] == "ok"
 
-    rv = post_json(client, f"{url_prefix}/audit/freeze", {})
+    rv = client.post(f"{url_prefix}/audit/freeze")
     assert json.loads(rv.data)['status'] == "ok"
 
     # before background compute, should be null sample size options
@@ -317,7 +317,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
 
     assert json.loads(rv.data)['status'] == "ok"
 
-    rv = post_json(client, f"{url_prefix}/audit/freeze", {})
+    rv = client.post(f"{url_prefix}/audit/freeze")
     assert json.loads(rv.data)['status'] == "ok"
 
     # before background compute, should be null sample size options
@@ -489,8 +489,19 @@ def get_num_ballots_from_retrieval_list(rv):
     return sum([len(line['Ticket Numbers'].split(',')) for line in lines])
 
 
+def test_election_in_org(client):
+    org = create_organization(name="Test Org")
+    org_id = org.id
+    rv = post_json(client, '/election/new', {"organization_id": org_id})
+    election_id = json.loads(rv.data)['electionId']
+
+    rv = client.get(f'/election/{election_id}/audit/status')
+
+    assert json.loads(rv.data)['organizationId'] == org_id
+
+
 def test_small_election(client):
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id = json.loads(rv.data)['electionId']
 
     contest_id = str(uuid.uuid4())
@@ -536,7 +547,7 @@ def test_small_election(client):
     rv = client.get(f'/election/{election_id}/audit/status')
     assert not json.loads(rv.data)["frozenAt"]
 
-    rv = post_json(client, f"/election/{election_id}/audit/freeze", {})
+    rv = client.post(f"/election/{election_id}/audit/freeze")
     assert json.loads(rv.data)['status'] == "ok"
 
     # now frozen
@@ -545,7 +556,7 @@ def test_small_election(client):
     assert frozen_at
 
     # make sure freezing twice doesn't change frozen date
-    rv = post_json(client, f"/election/{election_id}/audit/freeze", {})
+    rv = client.post(f"/election/{election_id}/audit/freeze")
     rv = client.get(f'/election/{election_id}/audit/status')
     frozen_at_2 = json.loads(rv.data)["frozenAt"]
 
@@ -667,7 +678,7 @@ def test_small_election(client):
 
 
 def test_contest_choices_cannot_have_more_votes_than_allowed(client):
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id = json.loads(rv.data)['electionId']
 
     contest_id = str(uuid.uuid4())
@@ -755,7 +766,7 @@ def test_contest_choices_cannot_have_more_votes_than_allowed(client):
 
 
 def test_multi_round_audit(client):
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_audit(
@@ -815,7 +826,7 @@ def test_multi_round_audit(client):
 
 @pytest.mark.quick
 def test_multi_winner_election(client):
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id = json.loads(rv.data)['electionId']
 
     contest_id = str(uuid.uuid4())
@@ -897,7 +908,7 @@ def test_multi_winner_election(client):
 
     assert json.loads(rv.data)['status'] == 'ok'
 
-    rv = post_json(client, f"/election/{election_id}/audit/freeze", {})
+    rv = client.post(f"/election/{election_id}/audit/freeze")
     assert json.loads(rv.data)['status'] == "ok"
     bgcompute.bgcompute()
 
@@ -980,7 +991,7 @@ def test_multi_winner_election(client):
 
 
 def test_multi_round_multi_winner_audit(client):
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(
@@ -1035,7 +1046,7 @@ def test_multi_round_multi_winner_audit(client):
 
 def test_ballot_set(client):
     ## setup
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(
@@ -1091,7 +1102,7 @@ def test_ballot_set(client):
 
 def test_ballot_list_ordering(client):
     ## setup
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(
@@ -1120,7 +1131,7 @@ def test_ballot_list_ordering(client):
 
 def test_ballot_list_ordering_by_audit_board(client):
     ## setup
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(
@@ -1147,7 +1158,7 @@ def test_ballot_list_ordering_by_audit_board(client):
 
 def test_audit_board(client):
     ## setup
-    rv = post_json(client, '/election/new', {})
+    rv = client.post('/election/new')
     election_id = json.loads(rv.data)['electionId']
 
     url_prefix, contest_id, candidate_id_1, candidate_id_2, candidate_id_3, jurisdiction_id, audit_board_id_1, audit_board_id_2, num_ballots = setup_whole_multi_winner_audit(
