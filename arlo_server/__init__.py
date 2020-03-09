@@ -722,13 +722,13 @@ def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
     if not ballots:
         return jsonify(errors=[{
             'message':
-            f'No ballot found with election_id={election_id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}, round={round_id}',
+            f'No ballot found with election_id={election_id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}',
             'errorType': 'NotFoundError'
         }]), 404
     elif len(ballots) > 1:
         return jsonify(errors=[{
             'message':
-            f'Multiple ballots found with election_id={election_id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}, round={round_id}',
+            f'Multiple ballots found with election_id={election_id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}',
             'errorType': 'BadRequest'
         }]), 400
 
