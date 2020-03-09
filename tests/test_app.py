@@ -171,19 +171,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
                 {
                     "id": jurisdiction_id,
                     "name": "adams county",
-                    "contests": [contest_id],
-                    "auditBoards": [
-                        {
-                            "id": audit_board_id_1,
-                            "name": "audit board #1",
-                            "members": [],
-                        },
-                        {
-                            "id": audit_board_id_2,
-                            "name": "audit board #2",
-                            "members": [],
-                        },
-                    ],
+                    "contests": [contest_id]
                 }
             ]
         },
@@ -197,7 +185,6 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
     assert len(status["jurisdictions"]) == 1
     jurisdiction = status["jurisdictions"][0]
     assert jurisdiction["name"] == "adams county"
-    assert jurisdiction["auditBoards"][1]["name"] == "audit board #2"
     assert jurisdiction["contests"] == [contest_id]
 
     # choose a sample size
@@ -260,7 +247,23 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
 
     assert json.loads(rv.data)["status"] == "ok"
 
+    rv = post_json(
+        client, f"{url_prefix}/jurisdiction/{jurisdiction_id}/round/1/audit-board/", {
+            "auditBoards": [{
+                "id": audit_board_id_1,
+                "name": "audit board #1"
+            }, {
+                "id": audit_board_id_2,
+                "name": "audit board #2"
+            }]
+        })
+
     setup_audit_board(client, election_id, jurisdiction_id, audit_board_id_1)
+
+    rv = client.get('{}/audit/status'.format(url_prefix))
+    status = json.loads(rv.data)
+    jurisdiction = status["jurisdictions"][0]
+    assert jurisdiction["auditBoards"][1]["name"] == "audit board #2"
 
     # get the retrieval list for round 1
     rv = client.get(
@@ -391,7 +394,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     assert len(status["jurisdictions"]) == 1
     jurisdiction = status["jurisdictions"][0]
     assert jurisdiction["name"] == "adams county"
-    assert jurisdiction["auditBoards"][1]["name"] == "audit board #2"
+    #assert jurisdiction["auditBoards"][1]["name"] == "audit board #2"
     assert jurisdiction["contests"] == [contest_id]
 
     # choose a sample size
