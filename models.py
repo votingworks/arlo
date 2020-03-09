@@ -69,7 +69,7 @@ class Jurisdiction(db.Model):
 class User(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     email = db.Column(db.String(200), unique=True, nullable=False)
-    external_id = db.Column(db.String(200), unique=True, nullable=False)
+    external_id = db.Column(db.String(200), unique=True, nullable=True)
 
     organizations = relationship("Organization", secondary="audit_administration")
     jurisdictions = relationship("Jurisdiction", secondary="jurisdiction_administration")
