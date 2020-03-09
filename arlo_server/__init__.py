@@ -307,7 +307,11 @@ if ADMIN_PASSWORD:
 
 @app.route('/election/new', methods=["POST"])
 def election_new():
-    election_id = create_election()
+    info = request.get_json()
+
+    # TODO: check that the user is an admin of this organization
+    organization_id = info.get('organization_id', None) if info else None
+    election_id = create_election(organization_id=organization_id)
     return jsonify(electionId=election_id)
 
 
@@ -315,7 +319,8 @@ def election_new():
 def audit_status(election_id=None):
     election = get_election(election_id)
 
-    return jsonify(name=election.name,
+    return jsonify(organizationId=election.organization_id,
+                   name=election.name,
                    online=election.online,
                    frozenAt=election.frozen_at,
                    riskLimit=election.risk_limit,
