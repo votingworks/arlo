@@ -93,7 +93,8 @@ describe('CreateAudit', () => {
       expect(apiMock).toBeCalledTimes(2)
       expect(apiMock).toHaveBeenNthCalledWith(2, '/election/new', {
         method: 'POST',
-        body: JSON.stringify({ organization: 'org-id' }),
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        body: JSON.stringify({ organization_id: 'org-id' }),
       })
       expect(historySpy).toBeCalledTimes(1)
       expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1')
