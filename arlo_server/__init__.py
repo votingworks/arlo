@@ -13,8 +13,6 @@ from sqlalchemy.dialects.postgresql import aggregate_order_by
 
 from authlib.flask.client import OAuth
 
-from util.binpacking import Bucket, BalancedBucketList
-
 from arlo_server.base import app
 from arlo_server.db import db
 from models import *
@@ -22,6 +20,9 @@ from models import *
 from config import HTTP_ORIGIN
 from config import AUDITADMIN_AUTH0_BASE_URL, AUDITADMIN_AUTH0_CLIENT_ID, AUDITADMIN_AUTH0_CLIENT_SECRET
 from config import JURISDICTIONADMIN_AUTH0_BASE_URL, JURISDICTIONADMIN_AUTH0_CLIENT_ID, JURISDICTIONADMIN_AUTH0_CLIENT_SECRET
+
+from util.binpacking import Bucket, BalancedBucketList
+from util.jurisdiction_bulk_update import bulk_update_jurisdictions
 
 AUDIT_BOARD_MEMBER_COUNT = 2
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
@@ -313,6 +314,55 @@ def election_new():
     organization_id = info.get('organization_id', None) if info else None
     election_id = create_election(organization_id=organization_id)
     return jsonify(electionId=election_id)
+
+
+@app.route('/election/<election_id>/jurisdictions_file', methods=["GET"])
+def get_jurisdictions_file(election_id=None):
+    election = get_election(election_id)
+    return jsonify(content=election.jurisdictions_file,
+                   filename=election.jurisdictions_filename,
+                   uploaded_at=election.jurisdictions_file_uploaded_at)
+
+
+@app.route('/election/<election_id>/jurisdictions_file', methods=["POST"])
+def update_jurisdictions_file(election_id=None):
+    election = get_election(election_id)
+
+    if 'jurisdictions' not in request.files:
+        return jsonify(errors=[{
+            'message': 'Expected file parameter "jurisdictions" was missing',
+            'errorType': 'MissingFile'
+        }]), 400
+
+    jurisdictions_file = request.files['jurisdictions']
+    jurisdictions_file_string = jurisdictions_file.read().decode('utf-8-sig')
+
+    election.jurisdictions_file = jurisdictions_file_string
+    election.jurisdictions_filename = jurisdictions_file.filename
+    election.jurisdictions_file_uploaded_at = datetime.datetime.utcnow()
+    db.session.add(election)
+
+    jurisdictions_csv = csv.DictReader(io.StringIO(jurisdictions_file_string))
+    JURISDICTION_NAME = 'Jurisdiction'
+    ADMIN_EMAIL = 'Admin Email'
+
+    missing_fields = [
+        field for field in [JURISDICTION_NAME, ADMIN_EMAIL]
+        if field not in jurisdictions_csv.fieldnames
+    ]
+
+    if missing_fields:
+        return jsonify(errors=[{
+            'message': f'Missing required CSV field "{field}"',
+            'errorType': 'MissingRequiredCsvField',
+            'fieldName': field
+        } for field in missing_fields]), 400
+
+    bulk_update_jurisdictions(db.session, election, [(row[JURISDICTION_NAME], row[ADMIN_EMAIL])
+                                                     for row in jurisdictions_csv])
+    db.session.commit()
+
+    return jsonify(status='ok')
 
 
 @app.route('/election/<election_id>/audit/status', methods=["GET"])

@@ -39,6 +39,10 @@ class Election(db.Model):
     contests = relationship('TargetedContest', backref='election', passive_deletes=True)
     rounds = relationship('Round', backref='election', passive_deletes=True)
 
+    jurisdictions_file = db.Column(db.Text, nullable=True)
+    jurisdictions_filename = db.Column(db.String(250), nullable=True)
+    jurisdictions_file_uploaded_at = db.Column(db.DateTime(timezone=False), nullable=True)
+
 
 # these are typically counties
 class Jurisdiction(db.Model):
