@@ -711,6 +711,7 @@ def ballot_list(election_id, jurisdiction_id, round_id):
     query = SampledBallotDraw.query \
                 .join(SampledBallot).join(SampledBallotDraw.batch).join(AuditBoard).join(Round) \
                 .add_entity(SampledBallot).add_entity(Batch).add_entity(AuditBoard) \
+                .filter(Round.id == round_id) \
                 .filter(Batch.jurisdiction_id == jurisdiction_id) \
                 .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position, SampledBallotDraw.ticket_number) \
                 .all()
@@ -740,6 +741,7 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, rou
     query = SampledBallotDraw.query \
                 .join(Round).join(SampledBallot).join(Batch) \
                 .add_entity(SampledBallot).add_entity(Batch) \
+                .filter(Round.id == round_id) \
                 .filter(Batch.jurisdiction_id == jurisdiction_id) \
                 .filter(SampledBallot.audit_board_id == audit_board_id) \
                 .order_by(Batch.name, SampledBallot.ballot_position, SampledBallotDraw.ticket_number)
