@@ -96,7 +96,7 @@ def setup_audit_board(client, election_id, jurisdiction_id, audit_board_id):
     assert json.loads(rv.data)["status"] == "ok"
 
 
-def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
+def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online=False):
     contest_id = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
     candidate_id_2 = str(uuid.uuid4())
@@ -113,7 +113,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
             "name": name,
             "riskLimit": risk_limit,
             "randomSeed": random_seed,
-            "online": False,
+            "online": online,
             "contests": [
                 {
                     "id": contest_id,
@@ -147,7 +147,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed):
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
     assert status["rounds"][0]["contests"][0]["sampleSizeOptions"] is None
-    assert status["online"] == False
+    assert status["online"] == online
 
     # after background compute
     bgcompute.bgcompute()
