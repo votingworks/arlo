@@ -23,7 +23,7 @@ interface IProps {
   }
 }
 
-const AuditForms: React.FC<IProps> = ({
+const Audit: React.FC<IProps> = ({
   match: {
     params: { electionId },
   },
@@ -101,4 +101,4 @@ const AuditForms: React.FC<IProps> = ({
   )
 }
 
-export default AuditForms
+export default Audit

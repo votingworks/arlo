@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import MemberForm from './MemberForm'
-import { statusStates } from '../AuditForms/_mocks'
+import { statusStates } from '../Audit/_mocks'
 import { dummyBoard, dummyBallots } from './_mocks'
 import * as utilities from '../utilities'
 

@@ -4,7 +4,7 @@ import './App.css'
 import styled from 'styled-components'
 import { ToastContainer } from 'react-toastify'
 import Header from './components/Header'
-import AuditForms from './components/AuditForms'
+import Audit from './components/Audit'
 import DataEntry from './components/DataEntry'
 import CreateAudit from './components/CreateAudit'
 import 'react-toastify/dist/ReactToastify.css'
@@ -31,7 +31,7 @@ const App: React.FC = () => {
               path="/election/:electionId/board/:token"
               component={DataEntry}
             />
-            <Route path="/election/:electionId" component={AuditForms} />
+            <Route path="/election/:electionId" component={Audit} />
             <Route path="/board/:token" component={DataEntry} />
             <Route>404</Route>
           </Switch>

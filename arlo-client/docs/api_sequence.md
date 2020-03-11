@@ -18,7 +18,7 @@
 
 - `GET /election/{electionId}/audit/status`
 
-- `src/components/AuditForms/index.tsx` > `AuditForms` > `updateAudit()`
+- `src/components/Audit/index.tsx` > `Audit` > `updateAudit()`
 
 ```jsonc
 {
@@ -36,7 +36,7 @@
 
 - `POST /election/{electionId}/audit/basic`
 
-- `src/components/AuditForms/EstimateSampleSize.tsx` > `EstimateSampleSize` >
+- `src/components/Audit/EstimateSampleSize.tsx` > `EstimateSampleSize` >
   `handlePost()` > `api()`
 
 ```jsonc
@@ -70,7 +70,7 @@ Getting the new status and waiting for sample size calculations to complete:
 
 - `GET /election/{electionId}/audit/status`
 
-- `src/components/AuditForms/EstimateSampleSize.tsx` > `EstimateSampleSize` >
+- `src/components/Audit/EstimateSampleSize.tsx` > `EstimateSampleSize` >
   `handlePost()` > `poll()`
 
 ```jsonc
@@ -128,7 +128,7 @@ other than `null`, like so:
 
 - `GET /election/{electionId}/audit/status`
 
-- `src/components/AuditForms/EstimateSampleSize.tsx` > `EstimateSampleSize` >
+- `src/components/Audit/EstimateSampleSize.tsx` > `EstimateSampleSize` >
   `handlePost()` > `poll()`
 
 ```jsonc
@@ -194,8 +194,8 @@ Form two has three separate POST calls.
 
 - `POST /election/{electionId}/audit/sample-size`
 
-- `src/components/AuditForms/SelectBallotsToAudit.tsx` >
-  `SelectBallotsToAudit` > `handlePost()` > `api()`
+- `src/components/Audit/SelectBallotsToAudit.tsx` > `SelectBallotsToAudit` >
+  `handlePost()` > `api()`
 
 ```jsonc
 {
@@ -205,8 +205,8 @@ Form two has three separate POST calls.
 
 - `POST /election/{electionId}/audit/jurisdictions`
 
-- `src/components/AuditForms/SelectBallotsToAudit.tsx` >
-  `SelectBallotsToAudit` > `handlePost()` > `api()`
+- `src/components/Audit/SelectBallotsToAudit.tsx` > `SelectBallotsToAudit` >
+  `handlePost()` > `api()`
 
 ```jsonc
 {
@@ -237,8 +237,8 @@ status endpoint again.
 
 - `GET /election/{electionId}/audit/status`
 
-- `src/components/AuditForms/SelectBallotsToAudit.tsx` >
-  `SelectBallotsToAudit` > `handlePost()` > `getStatus()`
+- `src/components/Audit/SelectBallotsToAudit.tsx` > `SelectBallotsToAudit` >
+  `handlePost()` > `getStatus()`
 
 ```jsonc
 {
@@ -322,16 +322,15 @@ ballot manifest:
 
 - `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/manifest`
 
-- `src/components/AuditForms/SelectBallotsToAudit.tsx` >
-  `SelectBallotsToAudit` > `handlePost()` > `api()` Straight file upload
-  `multipart/form-data`
+- `src/components/Audit/SelectBallotsToAudit.tsx` > `SelectBallotsToAudit` >
+  `handlePost()` > `api()` Straight file upload `multipart/form-data`
 
 And then GET the updated status:
 
 - `GET /election/{electionId}/audit/status`
 
-- `src/components/AuditForms/SelectBallotsToAudit.tsx` >
-  `SelectBallotsToAudit` > `handlePost()` > `updateAudit()`
+- `src/components/Audit/SelectBallotsToAudit.tsx` > `SelectBallotsToAudit` >
+  `handlePost()` > `updateAudit()`
 
 ```jsonc
 {
@@ -429,7 +428,7 @@ posted:
 
 - `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/<round_num>/results`
 
-- `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+- `src/components/Audit/CalculateRiskMeasurement.tsx` >
   `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `api()`
 
 ```jsonc
@@ -453,7 +452,7 @@ Incomplete sample size calculations:
 
 - `GET /election/{electionId}/audit/status`
 
-- `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+- `src/components/Audit/CalculateRiskMeasurement.tsx` >
   `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `poll()`
 
 ```jsonc
@@ -555,7 +554,7 @@ Complete sample size calculations:
 
 - `GET /election/{electionId}/audit/status`
 
-- `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+- `src/components/Audit/CalculateRiskMeasurement.tsx` >
   `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `poll()`
 
 ```jsonc
@@ -663,7 +662,7 @@ happened on the first round, would look like this:
 
 - `GET /election/{electionId}/audit/status`
 
-- `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+- `src/components/Audit/CalculateRiskMeasurement.tsx` >
   `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `poll()`
 
 ```jsonc
@@ -752,7 +751,7 @@ ballots have been audited.
 
 - `GET /election/<electionId>/jurisdiction/<jurisdictionId>/round/<roundId>/ballot-list`
 
-- `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+- `src/components/Audit/CalculateRiskMeasurement.tsx` >
   `CalculateRiskMeasurement` > `getBallots(round)` > `api()`
 
 ```jsonc
@@ -784,7 +783,7 @@ show completion and allow the round to be submitted for risk calculation.
 
 - `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/<round_num>/results`
 
-- `src/components/AuditForms/CalculateRiskMeasurement.tsx` >
+- `src/components/Audit/CalculateRiskMeasurement.tsx` >
   `CalculateRiskMeasurement` > `calculateRiskMeasurement()` > `api()`
 
 ```jsonc
