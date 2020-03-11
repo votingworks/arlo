@@ -1,4 +1,4 @@
-import os, datetime, csv, io, math, json, uuid, locale, re, hmac, urllib.parse
+import os, datetime, csv, io, math, json, uuid, locale, re, hmac, urllib.parse, itertools
 from enum import Enum, auto
 from typing import Optional, Tuple, Union
 
@@ -1165,6 +1165,8 @@ def audit_report(election_id):
                 ]
             )
 
+    all_sampled_ballot_draws = []
+
     for round in election.rounds:
         round_contest = round.round_contests[0]
         round_contest_results = round_contest.results
@@ -1203,14 +1205,15 @@ def audit_report(election_id):
             ["Round {:d} End".format(round.round_num), round.ended_at]
         )
 
-        ballots = (
+        ballot_draws = (
             SampledBallotDraw.query.filter_by(round_id=round.id)
-            .join(SampledBallotDraw.batch)
-            .add_entity(Batch)
+            .join(SampledBallot)
+            .join(Batch)
             .filter_by(jurisdiction_id=jurisdiction.id)
             .order_by("batch_id", "ballot_position")
             .all()
         )
+        all_sampled_ballot_draws += ballot_draws
 
         report_writer.writerow(
             [
@@ -1218,19 +1221,64 @@ def audit_report(election_id):
                 " ".join(
                     [
                         "(Batch {:s}, #{:d}, Ticket #{:s})".format(
-                            batch.name, b.ballot_position, b.ticket_number
+                            b.batch.name, b.ballot_position, b.ticket_number
                         )
-                        for b, batch in ballots
+                        for b in ballot_draws
                     ]
                 ),
             ]
         )
+
+    if election.online:
+        report_writer.writerow(["All Sampled Ballots"])
+        report_writer.writerow(
+            ["Ballot", "Ticket Numbers", "Audited?", "Audit Result", "Comments"]
+        )
+        # Write a row for each ballot that looks like this:
+        # "Batch 1, #13",Round 1: 0.123,Audited,some_candidate_id,A comment
+        # The Ticket Numbers column is a bit tricky:
+        # If a ballot was sampled multiple times in a round: Round 1: 0.123, 0.456
+        # If a ballot was sampled in multiple rounds: Round 1: 0.123, Round 2: 0.456
+
+        # First group all the ballot draws by the actual ballot
+        for _, ballot_draws in group_by(
+            all_sampled_ballot_draws, key=lambda b: (b.batch_id, b.ballot_position)
+        ):
+            ballot_draws = list(ballot_draws)
+            b = ballot_draws[0]
+
+            # Then group the draws for this ballot by round
+            ticket_numbers = []
+            for round_num, round_draws in group_by(
+                ballot_draws, key=lambda b: b.round.round_num
+            ):
+                round_draws = list(round_draws)
+                ticket_numbers_str = ", ".join(
+                    sorted(d.ticket_number for d in round_draws)
+                )
+                ticket_numbers.append(
+                    "Round {:d}: {:s}".format(round_num, ticket_numbers_str)
+                )
+
+            report_writer.writerow(
+                [
+                    "Batch {:s}, #{:d}".format(b.batch.name, b.ballot_position),
+                    ", ".join(ticket_numbers),
+                    "Audited" if b.sampled_ballot.vote else "Not audited",
+                    b.sampled_ballot.vote,
+                    b.sampled_ballot.comment,
+                ]
+            )
 
     response = Response(csv_io.getvalue())
     response.headers[
         "Content-Disposition"
     ] = f'attachment; filename="audit-report-{election_timestamp_name(election)}.csv"'
     return response
+
+
+def group_by(xs, key=None):
+    return itertools.groupby(sorted(xs, key=key), key=key)
 
 
 def pretty_affiliation(affiliation):
