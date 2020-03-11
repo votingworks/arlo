@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
-import { RouteComponentProps } from 'react-router-dom'
+import { RouteComponentProps, Link } from 'react-router-dom'
 import FormButton from './Form/FormButton'
 import { api, checkAndToast } from './utilities'
 import { ICreateAuditParams, IErrorResponse } from '../types'
@@ -22,17 +22,31 @@ const Wrapper = styled.div`
   }
 `
 
+const AuditLink = styled(Link)`
+  display: block;
+  margin: 10px;
+
+  &:first-of-type {
+    margin-top: 30px;
+  }
+`
+
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
-  const { isAuthenticated } = useAuthDataContext()
+  const { isAuthenticated, meta } = useAuthDataContext()
 
   const [loading, setLoading] = useState(false)
   const onClick = async () => {
     try {
       setLoading(true)
+      const data = isAuthenticated
+        ? // eslint-disable-next-line @typescript-eslint/camelcase
+          { organization_id: meta!.organizations[0].id }
+        : {}
       const response: { electionId: string } | IErrorResponse = await api(
         '/election/new',
         {
           method: 'POST',
+          body: JSON.stringify(data),
         }
       )
       if (checkAndToast(response)) {
@@ -58,7 +72,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
       >
         Create a New Audit
       </Button>
-      {!isAuthenticated && (
+      {!isAuthenticated ? (
         <>
           <Button
             type="button"
@@ -88,6 +102,33 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
           >
             Log in as a Jurisdiction Admin
           </Button>
+        </>
+      ) : (
+        <>
+          {meta!.organizations.length > 0 &&
+            meta!.organizations.map(o =>
+              o.elections.map(election => (
+                <AuditLink
+                  to={`/election/${election.id}`}
+                  key={election.id}
+                  className="bp3-button bp3-intent-primary"
+                >
+                  {election.name || 'Not named yet'}
+                  {election.state && ` (${election.state})`}
+                </AuditLink>
+              ))
+            )}
+          {meta!.jurisdictions.length > 0 &&
+            meta!.jurisdictions.map(({ election }) => (
+              <AuditLink
+                to={`/election/${election.id}`}
+                key={election.id}
+                className="bp3-button bp3-intent-primary"
+              >
+                {election.name || 'Not named yet'}
+                {election.state && ` (${election.state})`}
+              </AuditLink>
+            ))}
         </>
       )}
     </Wrapper>
