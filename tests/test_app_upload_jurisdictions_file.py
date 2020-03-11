@@ -2,20 +2,16 @@ import os, math, uuid
 import tempfile
 import json, csv, io
 
+from flask.testing import FlaskClient
+from tests.helpers import post_json
 import pytest
 
 from models import Election, JurisdictionAdministration, User
 from arlo_server import app, db
 
 
-def post_json(client, url, obj):
-    return client.post(
-        url, headers={"Content-Type": "application/json"}, data=json.dumps(obj)
-    )
-
-
 @pytest.fixture
-def client():
+def client() -> FlaskClient:
     app.config["TESTING"] = True
     client = app.test_client()
 
