@@ -1,4 +1,14 @@
-from typing import Any, Hashable, Iterable, Union, overload, TypeVar, Tuple, NamedTuple, Generic
+from typing import (
+    Any,
+    Hashable,
+    Iterable,
+    Union,
+    overload,
+    TypeVar,
+    Tuple,
+    NamedTuple,
+    Generic,
+)
 from typing_extensions import Literal
 
 # The actual type signature of `sampler` does not seem possible to describe
@@ -7,7 +17,7 @@ from typing_extensions import Literal
 # 1. mypy seems incapable of choosing an overload based on `Literal` types with
 #    the same underlying type, which in this case is `str`. So we get these
 #    errors trying to type check:
-# 
+#
 #      Overloaded function signatures 1 and 2 overlap with incompatible return types
 #      Overloaded function signatures 1 and 3 overlap with incompatible return types
 #      Overloaded function signatures 2 and 3 overlap with incompatible return types
@@ -22,12 +32,12 @@ from typing_extensions import Literal
 # So this is what I'd like to do but can't (yet?):
 #
 #   Id = TypeVar('Id', bound=Hashable)
-# 
+#
 #   class Ticket(NamedTuple, Generic[Id]):
 #     ticket_number: str
 #     id: Id
 #     generation: int
-# 
+#
 #   @overload
 #   def sampler(
 #     id_list: Iterable[Id],
@@ -70,21 +80,20 @@ from typing_extensions import Literal
 # instead of `NamedTuple` and to handle the "named" part ourselves, which is a
 # bit annoying in an interface file but not as bad as the implmentation.
 
-Id = TypeVar('Id', bound=Hashable)
+Id = TypeVar("Id", bound=Hashable)
 
 class Ticket(tuple, Generic[Id]):
-  ticket_number: str
-  id: Id
-  generation: int
-
-  def __new__(cls, ticket_number: str, id: Id, generation: int): ...
+    ticket_number: str
+    id: Id
+    generation: int
+    def __new__(cls, ticket_number: str, id: Id, generation: int): ...
 
 def sampler(
-  id_list: Iterable[Id],
-  seed: Any,
-  with_replacement: bool = ...,
-  drop: int = ...,
-  take: int = ...,
-  output: Literal['id', 'tuple', 'ticket'] = ...,
-  digits: int = ...,
+    id_list: Iterable[Id],
+    seed: Any,
+    with_replacement: bool = ...,
+    drop: int = ...,
+    take: int = ...,
+    output: Literal["id", "tuple", "ticket"] = ...,
+    digits: int = ...,
 ) -> Union[Iterable[Id], Iterable[Tuple[str, str, int]], Iterable[Ticket]]: ...

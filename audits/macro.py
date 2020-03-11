@@ -42,8 +42,8 @@ class MACRO(RiskLimitingAudit):
 
         error = 0
         for contest in self.reported_results[batch_name]:
-            for winner in margins[contest]['winners']:
-                for loser in margins[contest]['losers']:
+            for winner in margins[contest]["winners"]:
+                for loser in margins[contest]["losers"]:
                     v_wp = self.reported_results[batch_name][contest][winner]
                     v_lp = self.reported_results[batch_name][contest][loser]
 
@@ -74,12 +74,12 @@ class MACRO(RiskLimitingAudit):
 
         error = 0
         for contest in self.reported_results[batch_name]:
-            for winner in margins[contest]['winners']:
-                for loser in margins[contest]['losers']:
+            for winner in margins[contest]["winners"]:
+                for loser in margins[contest]["losers"]:
                     v_wp = self.reported_results[batch_name][contest][winner]
                     v_lp = self.reported_results[batch_name][contest][loser]
 
-                    b_cp = self.reported_results[batch_name][contest]['ballots']
+                    b_cp = self.reported_results[batch_name][contest]["ballots"]
 
                     V_wl = contests[contest][winner] - contests[contest][loser]
 
@@ -156,10 +156,7 @@ class MACRO(RiskLimitingAudit):
         U = self.compute_U(contests, margins)
 
         for batch in sample_results:
-            e_p = self.compute_error(batch, \
-                                     contests, \
-                                     margins,  \
-                                     sample_results[batch])
+            e_p = self.compute_error(batch, contests, margins, sample_results[batch])
 
             u_p = self.compute_max_error(batch, contests, margins)
 

@@ -57,10 +57,10 @@ class Sampler:
         self.margins = self.compute_margins()
         self.audit_type = audit_type
 
-        if audit_type == 'BRAVO':
+        if audit_type == "BRAVO":
             self.audit = BRAVO(risk_limit)
-        elif audit_type == 'MACRO':
-            assert self.batch_results, 'Must have batch-level results to use MACRO'
+        elif audit_type == "MACRO":
+            assert self.batch_results, "Must have batch-level results to use MACRO"
             self.audit = MACRO(risk_limit, batch_results)
 
     def compute_margins(self):
@@ -111,46 +111,50 @@ class Sampler:
 
         margins = {}
         for contest in self.contests:
-            margins[contest] = {'winners': {}, 'losers': {}}
+            margins[contest] = {"winners": {}, "losers": {}}
 
             cand_vec = sorted(
-                [(cand, self.contests[contest][cand])
-                 for cand in self.contests[contest] if cand not in ['numWinners', 'ballots']],
+                [
+                    (cand, self.contests[contest][cand])
+                    for cand in self.contests[contest]
+                    if cand not in ["numWinners", "ballots"]
+                ],
                 key=operator.itemgetter(1),
-                reverse=True)
+                reverse=True,
+            )
 
-            if 'numWinners' not in self.contests[contest]:
+            if "numWinners" not in self.contests[contest]:
                 num_winners = 1
             else:
-                num_winners = self.contests[contest]['numWinners']
+                num_winners = self.contests[contest]["numWinners"]
             winners = cand_vec[:num_winners]
             losers = cand_vec[num_winners:]
 
-            ballots = self.contests[contest]['ballots']
+            ballots = self.contests[contest]["ballots"]
 
             v_wl = sum([c[1] for c in winners + losers])
 
-            margins[contest]['winners']: {}
-            margins[contest]['losers']: {}
+            margins[contest]["winners"]: {}
+            margins[contest]["losers"]: {}
 
             for loser in losers:
-                margins[contest]['losers'][loser[0]] = {
-                    'p_l': loser[1] / ballots,
-                    's_l': loser[1] / v_wl
+                margins[contest]["losers"][loser[0]] = {
+                    "p_l": loser[1] / ballots,
+                    "s_l": loser[1] / v_wl,
                 }
 
             for winner in winners:
                 s_w = winner[1] / v_wl
 
                 swl = {}
-                for loser in margins[contest]['losers']:
-                    s_l = margins[contest]['losers'][loser]['s_l']
+                for loser in margins[contest]["losers"]:
+                    s_l = margins[contest]["losers"][loser]["s_l"]
                     swl[loser] = s_w / (s_w + s_l)
 
-                margins[contest]['winners'][winner[0]] = {
-                    'p_w': winner[1] / ballots,
-                    's_w': s_w,
-                    'swl': swl
+                margins[contest]["winners"][winner[0]] = {
+                    "p_w": winner[1] / ballots,
+                    "s_w": s_w,
+                    "swl": swl,
                 }
 
         return margins
@@ -182,7 +186,7 @@ class Sampler:
                     ]
         """
 
-        if self.audit_type == 'MACRO':
+        if self.audit_type == "MACRO":
             # Here we do PPEB.
 
             U = self.audit.compute_U(self.contests, self.margins)
@@ -210,20 +214,23 @@ class Sampler:
                 for i in range(times):
                     # We have to create "unique" records for the sampler, so we add
                     # a '.n' to the batch name so we know which duplicate it is.
-                    sample_from.append('{}.{}'.format(batch, i))
+                    sample_from.append("{}.{}".format(batch, i))
 
             # Now draw the sample
             faux_sample = list(
-                consistent_sampler.sampler(sample_from,
-                                           seed=self.seed,
-                                           take=sample_size + num_sampled,
-                                           with_replacement=True,
-                                           output='tuple'))[num_sampled:]
+                consistent_sampler.sampler(
+                    sample_from,
+                    seed=self.seed,
+                    take=sample_size + num_sampled,
+                    with_replacement=True,
+                    output="tuple",
+                )
+            )[num_sampled:]
 
             # here we take off the decimals.
             sample = []
             for i in faux_sample:
-                sample.append((i[0], i[1].split('.')[0], i[2]))
+                sample.append((i[0], i[1].split(".")[0], i[2]))
         else:
             ballots = []
             # First build a faux list of ballots
@@ -232,11 +239,14 @@ class Sampler:
                     ballots.append((batch, i))
 
             sample = list(
-                consistent_sampler.sampler(ballots,
-                                           seed=self.seed,
-                                           take=sample_size + num_sampled,
-                                           with_replacement=True,
-                                           output='tuple'))[num_sampled:]
+                consistent_sampler.sampler(
+                    ballots,
+                    seed=self.seed,
+                    take=sample_size + num_sampled,
+                    with_replacement=True,
+                    output="tuple",
+                )
+            )[num_sampled:]
 
         return sample
 
@@ -262,13 +272,17 @@ class Sampler:
                     }
         """
         if type(self.audit) == MACRO:
-            return self.audit.get_sample_sizes(contests=self.contests,
-                                               margins=self.margins,
-                                               sample_results=sample_results)
+            return self.audit.get_sample_sizes(
+                contests=self.contests,
+                margins=self.margins,
+                sample_results=sample_results,
+            )
         else:
-            return self.audit.get_sample_sizes(contests=self.contests,
-                                               margins=self.margins,
-                                               sample_results=sample_results)
+            return self.audit.get_sample_sizes(
+                contests=self.contests,
+                margins=self.margins,
+                sample_results=sample_results,
+            )
 
     def compute_risk(self, contest, sample_results):
         """
