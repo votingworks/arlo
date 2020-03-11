@@ -8,7 +8,9 @@ import operator
 import audits.macro as macro
 
 
-def draw_sample(seed, contest, manifest, sample_size, num_sampled=0, batch_results=None):
+def draw_sample(
+    seed, contest, manifest, sample_size, num_sampled=0, batch_results=None
+):
     """
     Draws uniform random sample with replacement of size <sample_size> from the
     provided ballot manifest.
@@ -42,14 +44,19 @@ def draw_sample(seed, contest, manifest, sample_size, num_sampled=0, batch_resul
             ballots.append((batch, i))
 
     return list(
-        consistent_sampler.sampler(ballots,
-                                   seed=seed,
-                                   take=sample_size + num_sampled,
-                                   with_replacement=True,
-                                   output='tuple'))[num_sampled:]
+        consistent_sampler.sampler(
+            ballots,
+            seed=seed,
+            take=sample_size + num_sampled,
+            with_replacement=True,
+            output="tuple",
+        )
+    )[num_sampled:]
 
 
-def draw_ppeb_sample(seed, contest, manifest, sample_size, num_sampled=0, batch_results=None):
+def draw_ppeb_sample(
+    seed, contest, manifest, sample_size, num_sampled=0, batch_results=None
+):
     """
     Draws uniform random sample with replacement of size <sample_size> from the
     provided ballot manifest.
@@ -79,7 +86,7 @@ def draw_ppeb_sample(seed, contest, manifest, sample_size, num_sampled=0, batch_
     # Here we do PPEB.
     margins = contest.margins
 
-    assert batch_results, 'Must have batch-level results to use MACRO'
+    assert batch_results, "Must have batch-level results to use MACRO"
 
     U = macro.compute_U(batch_results, contest)
 
@@ -106,19 +113,22 @@ def draw_ppeb_sample(seed, contest, manifest, sample_size, num_sampled=0, batch_
         for i in range(times):
             # We have to create "unique" records for the sampler, so we add
             # a '.n' to the batch name so we know which duplicate it is.
-            sample_from.append('{}.{}'.format(batch, i))
+            sample_from.append("{}.{}".format(batch, i))
 
     # Now draw the sample
     faux_sample = list(
-        consistent_sampler.sampler(sample_from,
-                                   seed=seed,
-                                   take=sample_size + num_sampled,
-                                   with_replacement=True,
-                                   output='tuple'))[num_sampled:]
+        consistent_sampler.sampler(
+            sample_from,
+            seed=seed,
+            take=sample_size + num_sampled,
+            with_replacement=True,
+            output="tuple",
+        )
+    )[num_sampled:]
 
     # here we take off the decimals.
     sample = []
     for i in faux_sample:
-        sample.append((i[0], i[1].split('.')[0], i[2]))
+        sample.append((i[0], i[1].split(".")[0], i[2]))
 
     return sample

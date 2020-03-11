@@ -26,8 +26,8 @@ def compute_error(batch_results, contest, sampled_results):
 
     error = 0
     margins = contest.margins
-    for winner in margins['winners']:
-        for loser in margins['losers']:
+    for winner in margins["winners"]:
+        for loser in margins["losers"]:
             v_wp = batch_results[contest.name][winner]
             v_lp = batch_results[contest.name][loser]
 
@@ -64,12 +64,12 @@ def compute_max_error(batch_results, contest):
         return 0
 
     margins = contest.margins
-    for winner in margins['winners']:
-        for loser in margins['losers']:
+    for winner in margins["winners"]:
+        for loser in margins["losers"]:
             v_wp = batch_results[contest.name][winner]
             v_lp = batch_results[contest.name][loser]
 
-            b_cp = batch_results[contest.name]['ballots']
+            b_cp = batch_results[contest.name]["ballots"]
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
 
@@ -115,7 +115,7 @@ def get_sample_sizes(risk_limit, contest, reported_results, sample_results):
                     ...
                 }
     """
-    assert risk_limit < 1, 'The risk-limit must be less than one!'
+    assert risk_limit < 1, "The risk-limit must be less than one!"
 
     U = compute_U(reported_results, contest)
 
@@ -142,16 +142,14 @@ def compute_risk(risk_limit, contest, batch_results, sample_results):
                           result is correct based on the sample, for each winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
-    assert risk_limit < 1, 'The risk-limit must be less than one!'
+    assert risk_limit < 1, "The risk-limit must be less than one!"
 
     p = 1
 
     U = compute_U(batch_results, contest)
 
     for batch in sample_results:
-        e_p = compute_error(batch_results[batch], \
-                                 contest, \
-                                 sample_results[batch])
+        e_p = compute_error(batch_results[batch], contest, sample_results[batch])
 
         u_p = compute_max_error(batch_results[batch], contest)
 

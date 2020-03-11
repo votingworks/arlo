@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
 import sampler
-from audits import bravo as bravo
+from audits import bravo
 from werkzeug.exceptions import InternalServerError
 from xkcdpass import xkcd_password as xp
 
@@ -75,9 +75,9 @@ def contest_status(election):
     for contest in election.contests:
         name = contest.id
         info_dict = {
-            'ballots': contest.total_ballots_cast,
-            'numWinners': contest.num_winners,
-            'votesAllowed': contest.votes_allowed,
+            "ballots": contest.total_ballots_cast,
+            "numWinners": contest.num_winners,
+            "votesAllowed": contest.votes_allowed,
         }
 
         for choice in contest.choices:
@@ -113,8 +113,9 @@ def compute_sample_sizes(round_contest):
     contests = contest_status(election)
 
     for contest in contests:
-        raw_sample_size_options = bravo.get_sample_size(election.risk_limit / 100,
-                                                        contests[contest], sample_results(election))
+        raw_sample_size_options = bravo.get_sample_size(
+            election.risk_limit / 100, contests[contest], sample_results(election)
+        )
 
         sample_size_options = []
         sample_size_90 = None
@@ -124,21 +125,17 @@ def compute_sample_sizes(round_contest):
 
             if prob_or_asn == "asn":
                 if size["prob"]:
-                    prob = round(size["prob"], 2),  # round to the nearest hundreth
-                sample_size_options.append({
-                    "type": "ASN",
-                    "prob": prob,
-                    "size": int(math.ceil(size["size"]))
-                })
+                    prob = (round(size["prob"], 2),)  # round to the nearest hundreth
+                sample_size_options.append(
+                    {"type": "ASN", "prob": prob, "size": int(math.ceil(size["size"]))}
+                )
                 sample_size_backup = int(math.ceil(size["size"]))
 
             else:
                 prob = prob_or_asn
-                sample_size_options.append({
-                    "type": None,
-                    "prob": prob,
-                    "size": int(math.ceil(size))
-                })
+                sample_size_options.append(
+                    {"type": None, "prob": prob, "size": int(math.ceil(size))}
+                )
 
                 # stash this one away for later
                 if prob == 0.9:
@@ -207,11 +204,13 @@ def sample_ballots(election, round):
         manifest[batch.name] = batch.num_ballots
         batch_id_from_name[batch.name] = batch.id
 
-    sample = sampler.draw_sample(election.random_seed,
-                                 contest_status(election),
-                                 manifest,
-                                 chosen_sample_size,
-                                 num_sampled=num_sampled)
+    sample = sampler.draw_sample(
+        election.random_seed,
+        contest_status(election),
+        manifest,
+        chosen_sample_size,
+        num_sampled=num_sampled,
+    )
 
     audit_boards = jurisdiction.audit_boards
 
@@ -287,12 +286,11 @@ def check_round(election, jurisdiction_id, round_id):
 
     current_sample_results = sample_results(election)
 
-    risk, is_complete = bravo.compute_risk(election.risk_limit / 100,
-                                           contest_status(election)[round_contest.contest_id],
-                                           current_sample_results[round_contest.contest_id])
-
-    print('Risk values: {}'.format(risk))
-    print('Audit is complete? {}'.format(is_complete))
+    risk, is_complete = bravo.compute_risk(
+        election.risk_limit / 100,
+        contest_status(election)[round_contest.contest_id],
+        current_sample_results[round_contest.contest_id],
+    )
 
     round.ended_at = datetime.datetime.utcnow()
     # TODO this is a hack, should we report pairwise p-values?
