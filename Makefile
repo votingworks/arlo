@@ -33,7 +33,7 @@ typecheck:
 	python3 -m pipenv run mypy .
 
 format-python:
-	python3 -m pipenv run yapf --in-place --recursive .
+	python3 -m pipenv run black .
 
 test-client:
 	yarn --cwd arlo-client lint
