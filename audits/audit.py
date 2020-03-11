@@ -2,9 +2,9 @@ import abc
 
 
 class RiskLimitingAudit(abc.ABC):
-    '''
+    """
     An interface for a Risk Limiting Audit
-    '''
+    """
 
     risk_limit: float
 

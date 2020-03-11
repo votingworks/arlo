@@ -12,14 +12,21 @@ def bgcompute():
     round_contests = RoundContest.query.filter_by(sample_size_options=None)
 
     for round_contest in round_contests:
-        print("computing sample size options for round {:d} of election ID {:s}".format(
-            round_contest.round.round_num, round_contest.round.election_id))
+        print(
+            "computing sample size options for round {:d} of election ID {:s}".format(
+                round_contest.round.round_num, round_contest.round.election_id
+            )
+        )
 
         compute_sample_sizes(round_contest)
 
-        print("done computing sample size options for round {:d} of election ID {:s}: {:s}".format(
-            round_contest.round.round_num, round_contest.round.election_id,
-            round_contest.sample_size_options))
+        print(
+            "done computing sample size options for round {:d} of election ID {:s}: {:s}".format(
+                round_contest.round.round_num,
+                round_contest.round.election_id,
+                round_contest.sample_size_options,
+            )
+        )
 
 
 def bgcompute_forever():

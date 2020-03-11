@@ -27,21 +27,21 @@ class BRAVO(RiskLimitingAudit):
         asns = {}
         for contest in contests:
             margin = margins[contest]
-            p_w = 10**7
+            p_w = 10 ** 7
             s_w = 0
             p_l = 0
             # Get smallest p_w - p_l
-            for winner in margin['winners']:
-                if margin['winners'][winner]['p_w'] < p_w:
-                    p_w = margin['winners'][winner]['p_w']
+            for winner in margin["winners"]:
+                if margin["winners"][winner]["p_w"] < p_w:
+                    p_w = margin["winners"][winner]["p_w"]
 
-            if not margin['losers']:
+            if not margin["losers"]:
                 asns[contest] = -1
                 continue
 
-            for loser in margin['losers']:
-                if margin['losers'][loser]['p_l'] > p_l:
-                    p_l = margin['losers'][loser]['p_l']
+            for loser in margin["losers"]:
+                if margin["losers"][loser]["p_l"] > p_l:
+                    p_l = margin["losers"][loser]["p_l"]
 
             s_w = p_w / (p_w + p_l)
 
@@ -49,16 +49,21 @@ class BRAVO(RiskLimitingAudit):
                 # Handle single-candidate or crazy landslides
                 asns[contest] = -1
             elif p_w == p_l:
-                asns[contest] = contests[contest]['ballots']
+                asns[contest] = contests[contest]["ballots"]
             else:
                 z_w = math.log(2 * s_w)
                 z_l = math.log(2 - 2 * s_w)
 
                 T = min(
-                    self.get_test_statistics(margins[contest], sample_results[contest]).values())
+                    self.get_test_statistics(
+                        margins[contest], sample_results[contest]
+                    ).values()
+                )
 
                 weighted_alpha = math.log((1.0 / self.risk_limit) / T)
-                asns[contest] = math.ceil((weighted_alpha + (z_w / 2.0)) / (p_w * z_w + p_l * z_l))
+                asns[contest] = math.ceil(
+                    (weighted_alpha + (z_w / 2.0)) / (p_w * z_w + p_l * z_l)
+                )
 
         return asns
 
@@ -115,9 +120,9 @@ class BRAVO(RiskLimitingAudit):
         g = minus / (plus - minus) + p_w2
 
         # The three coefficients of the quadratic:
-        q_a = g**2
-        q_b = -(z**2 * d + 2 * f * g)
-        q_c = f**2
+        q_a = g ** 2
+        q_b = -(z ** 2 * d + 2 * f * g)
+        q_c = f ** 2
 
         # Apply the quadratic formula.
         # We want the larger root for p_completion > 0.5, the
@@ -126,7 +131,7 @@ class BRAVO(RiskLimitingAudit):
         # max here handles cases where, due to rounding error,
         # the base (content) of the radical is trivially
         # negative for p_completion very close to 0.5.
-        radical = math.sqrt(max(0, q_b**2 - 4 * q_a * q_c))
+        radical = math.sqrt(max(0, q_b ** 2 - 4 * q_a * q_c))
 
         if p_completion > 0.5:
             size = math.floor((-q_b + radical) / (2 * q_a))
@@ -151,7 +156,7 @@ class BRAVO(RiskLimitingAudit):
 
         size_adj = math.ceil(size / p_wr)
 
-        return (size_adj)
+        return size_adj
 
     def expected_prob(self, p_w, p_r, sample_w, sample_r, asn):
         """ 
@@ -200,7 +205,7 @@ class BRAVO(RiskLimitingAudit):
 
         R_x = (threshold - minus * n) / (plus - minus)
 
-        print('R_x: {}, n*p_w2: {}'.format(R_x, n * p_w2))
+        print("R_x: {}, n*p_w2: {}".format(R_x, n * p_w2))
 
         z = (R_x - n * p_w2) / math.sqrt(n * p_w2 * p_r2)
 
@@ -228,7 +233,7 @@ class BRAVO(RiskLimitingAudit):
                         ...
                     }
         """
-        quants = [.7, .8, .9]
+        quants = [0.7, 0.8, 0.9]
 
         samples = {}
 
@@ -236,43 +241,46 @@ class BRAVO(RiskLimitingAudit):
         for contest in contests:
             samples[contest] = {}
 
-            p_w = 10**7
+            p_w = 10 ** 7
             p_l = 0
-            best_loser = ''
-            worse_winner = ''
+            best_loser = ""
+            worse_winner = ""
 
             # For multi-winner, do nothing
-            if 'numWinners' not in contests[contest] or contests[contest]['numWinners'] != 1:
-                samples[contest] = {'asn': {'size': asns[contest], 'prob': None}}
+            if (
+                "numWinners" not in contests[contest]
+                or contests[contest]["numWinners"] != 1
+            ):
+                samples[contest] = {"asn": {"size": asns[contest], "prob": None}}
                 return samples
 
             margin = margins[contest]
             # Get smallest p_w - p_l
-            for winner in margin['winners']:
-                if margin['winners'][winner]['p_w'] < p_w:
-                    p_w = margin['winners'][winner]['p_w']
+            for winner in margin["winners"]:
+                if margin["winners"][winner]["p_w"] < p_w:
+                    p_w = margin["winners"][winner]["p_w"]
                     worse_winner = winner
 
-            for loser in margin['losers']:
-                if margin['losers'][loser]['p_l'] > p_l:
-                    p_l = margin['losers'][loser]['p_l']
+            for loser in margin["losers"]:
+                if margin["losers"][loser]["p_l"] > p_l:
+                    p_l = margin["losers"][loser]["p_l"]
                     best_loser = loser
 
             # If we're in a single-candidate race, set sample to 0
-            if not margin['losers']:
-                samples[contest]['asn'] = {'size': -1, 'prob': -1}
+            if not margin["losers"]:
+                samples[contest]["asn"] = {"size": -1, "prob": -1}
                 for quant in quants:
                     samples[contest][quant] = -1
 
                 continue
 
-            num_ballots = contests[contest]['ballots']
+            num_ballots = contests[contest]["ballots"]
 
             # Handles ties
             if p_w == p_l:
-                samples[contest]['asn'] = {
-                    'size': num_ballots,
-                    'prob': 1,
+                samples[contest]["asn"] = {
+                    "size": num_ballots,
+                    "prob": 1,
                 }
 
                 for quant in quants:
@@ -282,14 +290,15 @@ class BRAVO(RiskLimitingAudit):
             sample_w = sample_results[contest][worse_winner]
             sample_l = sample_results[contest][best_loser]
 
-            samples[contest]['asn'] = {
-                'size': asns[contest],
-                'prob': self.expected_prob(p_w, p_l, sample_w, sample_l, asns[contest])
+            samples[contest]["asn"] = {
+                "size": asns[contest],
+                "prob": self.expected_prob(p_w, p_l, sample_w, sample_l, asns[contest]),
             }
 
             for quant in quants:
-                samples[contest][quant] = self.bravo_sample_sizes(p_w, p_l, sample_w, sample_l,
-                                                                  quant)
+                samples[contest][quant] = self.bravo_sample_sizes(
+                    p_w, p_l, sample_w, sample_l, quant
+                )
 
         return samples
 
@@ -312,8 +321,8 @@ class BRAVO(RiskLimitingAudit):
             T - Mapping of (winner, loser) pairs to their test statistic based
                 on sample_results
         """
-        winners = margins['winners']
-        losers = margins['losers']
+        winners = margins["winners"]
+        losers = margins["losers"]
 
         T = {}
 
@@ -325,15 +334,17 @@ class BRAVO(RiskLimitingAudit):
         # Handle the no-losers case
         if not losers:
             for winner in winners:
-                T[(winner, )] = 1
+                T[(winner,)] = 1
 
         for cand, votes in sample_results.items():
             if cand in winners:
                 for loser in losers:
-                    T[(cand, loser)] *= (winners[cand]['swl'][loser] / 0.5)**votes
+                    T[(cand, loser)] *= (winners[cand]["swl"][loser] / 0.5) ** votes
             elif cand in losers:
                 for winner in winners:
-                    T[(winner, cand)] *= ((1 - winners[winner]['swl'][cand]) / 0.5)**votes
+                    T[(winner, cand)] *= (
+                        (1 - winners[winner]["swl"][cand]) / 0.5
+                    ) ** votes
 
         return T
 

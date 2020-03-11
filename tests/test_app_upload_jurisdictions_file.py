@@ -9,12 +9,14 @@ from arlo_server import app, db
 
 
 def post_json(client, url, obj):
-    return client.post(url, headers={'Content-Type': 'application/json'}, data=json.dumps(obj))
+    return client.post(
+        url, headers={"Content-Type": "application/json"}, data=json.dumps(obj)
+    )
 
 
 @pytest.fixture
 def client():
-    app.config['TESTING'] = True
+    app.config["TESTING"] = True
     client = app.test_client()
 
     with app.app_context():
@@ -27,87 +29,114 @@ def client():
 
 
 def test_missing_file(client):
-    rv = post_json(client, '/election/new', {})
-    election_id = json.loads(rv.data)['electionId']
+    rv = post_json(client, "/election/new", {})
+    election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(f'/election/{election_id}/jurisdictions_file')
+    rv = client.post(f"/election/{election_id}/jurisdictions_file")
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        'errors': [{
-            'message': 'Expected file parameter "jurisdictions" was missing',
-            'errorType': 'MissingFile'
-        }]
+        "errors": [
+            {
+                "message": 'Expected file parameter "jurisdictions" was missing',
+                "errorType": "MissingFile",
+            }
+        ]
     }
 
 
 def test_bad_csv_file(client):
-    rv = post_json(client, '/election/new', {})
-    election_id = json.loads(rv.data)['electionId']
+    rv = post_json(client, "/election/new", {})
+    election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(f'/election/{election_id}/jurisdictions_file',
-                     data={'jurisdictions': (io.BytesIO(b'not a CSV file'), 'random.txt')})
+    rv = client.post(
+        f"/election/{election_id}/jurisdictions_file",
+        data={"jurisdictions": (io.BytesIO(b"not a CSV file"), "random.txt")},
+    )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        'errors': [{
-            'message': 'Missing required CSV field "Jurisdiction"',
-            'errorType': 'MissingRequiredCsvField',
-            'fieldName': 'Jurisdiction'
-        }, {
-            'message': 'Missing required CSV field "Admin Email"',
-            'errorType': 'MissingRequiredCsvField',
-            'fieldName': 'Admin Email'
-        }]
+        "errors": [
+            {
+                "message": 'Missing required CSV field "Jurisdiction"',
+                "errorType": "MissingRequiredCsvField",
+                "fieldName": "Jurisdiction",
+            },
+            {
+                "message": 'Missing required CSV field "Admin Email"',
+                "errorType": "MissingRequiredCsvField",
+                "fieldName": "Admin Email",
+            },
+        ]
     }
 
 
 def test_missing_one_csv_field(client):
-    rv = post_json(client, '/election/new', {})
-    election_id = json.loads(rv.data)['electionId']
+    rv = post_json(client, "/election/new", {})
+    election_id = json.loads(rv.data)["electionId"]
 
     rv = client.post(
-        f'/election/{election_id}/jurisdictions_file',
-        data={'jurisdictions': (io.BytesIO(b'Jurisdiction\nJurisdiction #1'), 'jurisdictions.csv')})
+        f"/election/{election_id}/jurisdictions_file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(b"Jurisdiction\nJurisdiction #1"),
+                "jurisdictions.csv",
+            )
+        },
+    )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        'errors': [{
-            'message': 'Missing required CSV field "Admin Email"',
-            'errorType': 'MissingRequiredCsvField',
-            'fieldName': 'Admin Email'
-        }]
+        "errors": [
+            {
+                "message": 'Missing required CSV field "Admin Email"',
+                "errorType": "MissingRequiredCsvField",
+                "fieldName": "Admin Email",
+            }
+        ]
     }
 
 
 def test_metadata(client):
-    rv = post_json(client, '/election/new', {})
-    election_id = json.loads(rv.data)['electionId']
+    rv = post_json(client, "/election/new", {})
+    election_id = json.loads(rv.data)["electionId"]
 
     rv = client.post(
-        f'/election/{election_id}/jurisdictions_file',
-        data={'jurisdictions': (io.BytesIO(b'Jurisdiction,Admin Email'), 'jurisdictions.csv')})
+        f"/election/{election_id}/jurisdictions_file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(b"Jurisdiction,Admin Email"),
+                "jurisdictions.csv",
+            )
+        },
+    )
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {'status': 'ok'}
+    assert json.loads(rv.data) == {"status": "ok"}
 
     election = Election.query.filter_by(id=election_id).one()
-    assert election.jurisdictions_file == 'Jurisdiction,Admin Email'
-    assert election.jurisdictions_filename == 'jurisdictions.csv'
+    assert election.jurisdictions_file == "Jurisdiction,Admin Email"
+    assert election.jurisdictions_filename == "jurisdictions.csv"
     assert election.jurisdictions_file_uploaded_at
 
-    rv = client.get(f'/election/{election_id}/jurisdictions_file')
+    rv = client.get(f"/election/{election_id}/jurisdictions_file")
     jurisdictions_file = json.loads(rv.data)
-    assert jurisdictions_file['content'] == 'Jurisdiction,Admin Email'
-    assert jurisdictions_file['filename'] == 'jurisdictions.csv'
-    assert jurisdictions_file['uploaded_at']
+    assert jurisdictions_file["content"] == "Jurisdiction,Admin Email"
+    assert jurisdictions_file["filename"] == "jurisdictions.csv"
+    assert jurisdictions_file["uploaded_at"]
 
 
 def test_no_jurisdiction(client):
-    rv = post_json(client, '/election/new', {})
-    election_id = json.loads(rv.data)['electionId']
+    rv = post_json(client, "/election/new", {})
+    election_id = json.loads(rv.data)["electionId"]
 
     rv = client.post(
-        f'/election/{election_id}/jurisdictions_file',
-        data={'jurisdictions': (io.BytesIO(b'Jurisdiction,Admin Email'), 'jurisdictions.csv')})
+        f"/election/{election_id}/jurisdictions_file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(b"Jurisdiction,Admin Email"),
+                "jurisdictions.csv",
+            )
+        },
+    )
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {'status': 'ok'}
+    assert json.loads(rv.data) == {"status": "ok"}
 
     election = Election.query.filter_by(id=election_id).one()
     assert election.jurisdictions == []
@@ -116,64 +145,80 @@ def test_no_jurisdiction(client):
 
 
 def test_single_jurisdiction_single_admin(client):
-    rv = post_json(client, '/election/new', {})
-    election_id = json.loads(rv.data)['electionId']
+    rv = post_json(client, "/election/new", {})
+    election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(f'/election/{election_id}/jurisdictions_file',
-                     data={
-                         'jurisdictions':
-                         (io.BytesIO(b'Jurisdiction,Admin Email\nJ1,a1@example.com'),
-                          'jurisdictions.csv')
-                     })
+    rv = client.post(
+        f"/election/{election_id}/jurisdictions_file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com"),
+                "jurisdictions.csv",
+            )
+        },
+    )
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {'status': 'ok'}
+    assert json.loads(rv.data) == {"status": "ok"}
 
     election = Election.query.filter_by(id=election_id).one()
-    assert [j.name for j in election.jurisdictions] == ['J1']
+    assert [j.name for j in election.jurisdictions] == ["J1"]
 
     jurisdiction = election.jurisdictions[0]
-    assert [a.user.email for a in jurisdiction.jurisdiction_administrations] == ['a1@example.com']
+    assert [a.user.email for a in jurisdiction.jurisdiction_administrations] == [
+        "a1@example.com"
+    ]
 
 
 def test_single_jurisdiction_multiple_admins(client):
-    rv = post_json(client, '/election/new', {})
-    election_id = json.loads(rv.data)['electionId']
+    rv = post_json(client, "/election/new", {})
+    election_id = json.loads(rv.data)["electionId"]
 
     rv = client.post(
-        f'/election/{election_id}/jurisdictions_file',
+        f"/election/{election_id}/jurisdictions_file",
         data={
-            'jurisdictions':
-            (io.BytesIO(b'Jurisdiction,Admin Email\nJ1,a1@example.com\nJ1,a2@example.com'),
-             'jurisdictions.csv')
-        })
+            "jurisdictions": (
+                io.BytesIO(
+                    b"Jurisdiction,Admin Email\nJ1,a1@example.com\nJ1,a2@example.com"
+                ),
+                "jurisdictions.csv",
+            )
+        },
+    )
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {'status': 'ok'}
+    assert json.loads(rv.data) == {"status": "ok"}
 
     election = Election.query.filter_by(id=election_id).one()
-    assert [j.name for j in election.jurisdictions] == ['J1']
+    assert [j.name for j in election.jurisdictions] == ["J1"]
 
     jurisdiction = election.jurisdictions[0]
-    assert [a.user.email for a in jurisdiction.jurisdiction_administrations
-            ] == ['a1@example.com', 'a2@example.com']
+    assert [a.user.email for a in jurisdiction.jurisdiction_administrations] == [
+        "a1@example.com",
+        "a2@example.com",
+    ]
 
 
 def test_multiple_jurisdictions_single_admin(client):
-    rv = post_json(client, '/election/new', {})
-    election_id = json.loads(rv.data)['electionId']
+    rv = post_json(client, "/election/new", {})
+    election_id = json.loads(rv.data)["electionId"]
 
     rv = client.post(
-        f'/election/{election_id}/jurisdictions_file',
+        f"/election/{election_id}/jurisdictions_file",
         data={
-            'jurisdictions':
-            (io.BytesIO(b'Jurisdiction,Admin Email\nJ1,a1@example.com\nJ2,a1@example.com'),
-             'jurisdictions.csv')
-        })
+            "jurisdictions": (
+                io.BytesIO(
+                    b"Jurisdiction,Admin Email\nJ1,a1@example.com\nJ2,a1@example.com"
+                ),
+                "jurisdictions.csv",
+            )
+        },
+    )
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {'status': 'ok'}
+    assert json.loads(rv.data) == {"status": "ok"}
 
     election = Election.query.filter_by(id=election_id).one()
-    assert [j.name for j in election.jurisdictions] == ['J1', 'J2']
+    assert [j.name for j in election.jurisdictions] == ["J1", "J2"]
 
     for jurisdiction in election.jurisdictions:
-        assert [a.user.email
-                for a in jurisdiction.jurisdiction_administrations] == ['a1@example.com']
+        assert [a.user.email for a in jurisdiction.jurisdiction_administrations] == [
+            "a1@example.com"
+        ]

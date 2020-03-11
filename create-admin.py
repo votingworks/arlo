@@ -3,7 +3,7 @@ import sys, uuid
 
 from arlo_server import User, AuditAdministration, db
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: python create-admin.py <org_id> <user_email>")
         sys.exit(1)

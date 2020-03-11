@@ -6,15 +6,17 @@ from test_app import client, post_json, run_whole_audit_flow
 
 
 def test_basic_report(client):
-    rv = post_json(client, '/election/new', {})
-    election_id = json.loads(rv.data)['electionId']
+    rv = post_json(client, "/election/new", {})
+    election_id = json.loads(rv.data)["electionId"]
     assert election_id
 
     print("running whole audit flow " + election_id)
-    run_whole_audit_flow(client, election_id, "Primary 2019", 10, "12345678901234567890")
+    run_whole_audit_flow(
+        client, election_id, "Primary 2019", 10, "12345678901234567890"
+    )
 
-    rv = client.get(f'/election/{election_id}/audit/report')
-    lines = rv.data.decode('utf-8').splitlines()
+    rv = client.get(f"/election/{election_id}/audit/report")
+    lines = rv.data.decode("utf-8").splitlines()
     for line in EXPECTED_BASIC_REPORT:
         assert line in lines
     assert any(line.startswith("Round 1 Start,") for line in lines)

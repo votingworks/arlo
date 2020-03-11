@@ -17,14 +17,16 @@ def db():
 
 
 def test_first_update(db):
-    org = Organization(id=str(uuid.uuid4()), name='Test Org')
+    org = Organization(id=str(uuid.uuid4()), name="Test Org")
     election = Election(id=str(uuid.uuid4()), organization=org)
-    new_admins = bulk_update_jurisdictions(db.session, election,
-                                           [('Jurisdiction #1', 'bob.harris@ca.gov')])
+    new_admins = bulk_update_jurisdictions(
+        db.session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
+    )
     db.session.commit()
 
-    assert [(admin.jurisdiction.name, admin.user.email)
-            for admin in new_admins] == [('Jurisdiction #1', 'bob.harris@ca.gov')]
+    assert [(admin.jurisdiction.name, admin.user.email) for admin in new_admins] == [
+        ("Jurisdiction #1", "bob.harris@ca.gov")
+    ]
 
     assert User.query.count() == 1
     assert Jurisdiction.query.count() == 1
@@ -32,29 +34,35 @@ def test_first_update(db):
 
 
 def test_idempotent(db):
-    org = Organization(id=str(uuid.uuid4()), name='Test Org')
+    org = Organization(id=str(uuid.uuid4()), name="Test Org")
     election = Election(id=str(uuid.uuid4()), organization=org)
 
     # Do it once.
-    bulk_update_jurisdictions(db.session, election, [('Jurisdiction #1', 'bob.harris@ca.gov')])
+    bulk_update_jurisdictions(
+        db.session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
+    )
     db.session.commit()
 
     user = User.query.one()
     jurisdiction = Jurisdiction.query.one()
 
     # Do the same thing again.
-    bulk_update_jurisdictions(db.session, election, [('Jurisdiction #1', 'bob.harris@ca.gov')])
+    bulk_update_jurisdictions(
+        db.session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
+    )
 
     assert User.query.one() == user
     assert Jurisdiction.query.one() == jurisdiction
 
 
 def test_remove_outdated_jurisdictions(db):
-    org = Organization(id=str(uuid.uuid4()), name='Test Org')
+    org = Organization(id=str(uuid.uuid4()), name="Test Org")
     election = Election(id=str(uuid.uuid4()), organization=org)
 
     # Add jurisdictions.
-    bulk_update_jurisdictions(db.session, election, [('Jurisdiction #1', 'bob.harris@ca.gov')])
+    bulk_update_jurisdictions(
+        db.session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
+    )
     db.session.commit()
 
     # Delete jurisdictions.
