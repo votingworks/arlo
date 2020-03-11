@@ -7,8 +7,8 @@ import audits.bravo as bravo
 
 from util.contest import Contest as Contest
 
-seed = '12345678901234567890abcdefghijklmnopqrstuvwxyz😊'
-risk_limit = .1
+seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
+risk_limit = 0.1
 
 
 @pytest.fixture
@@ -38,8 +38,9 @@ def test_expected_sample_sizes(contests):
     }
 
     for contest in true_asns:
-        computed = bravo.get_expected_sample_sizes(risk_limit, contests[contest],
-                                                   round0_sample_results)
+        computed = bravo.get_expected_sample_sizes(
+            risk_limit, contests[contest], round0_sample_results
+        )
         expected = true_asns[contest]
 
         assert (
@@ -67,8 +68,9 @@ def test_expected_sample_sizes_second_round(contests):
 
     for contest in true_asns:
         expected = true_asns[contest]
-        computed = bravo.get_expected_sample_sizes(risk_limit, contests[contest],
-                                                   round1_sample_results)
+        computed = bravo.get_expected_sample_sizes(
+            risk_limit, contests[contest], round1_sample_results
+        )
 
         assert (
             expected == computed
@@ -85,12 +87,15 @@ def test_bravo_sample_sizes():
     r0_sample_rup = 0
 
     computed_size1 = math.ceil(
-        bravo.bravo_sample_sizes(risk_limit=risk_limit,
-                                 p_w=.4,
-                                 p_r=.32,
-                                 sample_w=r0_sample_win,
-                                 sample_r=r0_sample_rup,
-                                 p_completion=.9))
+        bravo.bravo_sample_sizes(
+            risk_limit=risk_limit,
+            p_w=0.4,
+            p_r=0.32,
+            sample_w=r0_sample_win,
+            sample_r=r0_sample_rup,
+            p_completion=0.9,
+        )
+    )
     delta = expected_size1 - computed_size1
 
     assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
@@ -100,12 +105,15 @@ def test_bravo_sample_sizes():
     expected_size1 = 6067
 
     computed_size1 = math.ceil(
-        bravo.bravo_sample_sizes(risk_limit=risk_limit,
-                                 p_w=.36,
-                                 p_r=.32,
-                                 sample_w=r0_sample_win,
-                                 sample_r=r0_sample_rup,
-                                 p_completion=.9))
+        bravo.bravo_sample_sizes(
+            risk_limit=risk_limit,
+            p_w=0.36,
+            p_r=0.32,
+            sample_w=r0_sample_win,
+            sample_r=r0_sample_rup,
+            p_completion=0.9,
+        )
+    )
     delta = expected_size1 - computed_size1
 
     assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
@@ -115,12 +123,15 @@ def test_bravo_sample_sizes():
     expected_size1 = 2475
 
     computed_size1 = math.ceil(
-        bravo.bravo_sample_sizes(risk_limit=risk_limit,
-                                 p_w=.36,
-                                 p_r=.32,
-                                 sample_w=r0_sample_win,
-                                 sample_r=r0_sample_rup,
-                                 p_completion=.6))
+        bravo.bravo_sample_sizes(
+            risk_limit=risk_limit,
+            p_w=0.36,
+            p_r=0.32,
+            sample_w=r0_sample_win,
+            sample_r=r0_sample_rup,
+            p_completion=0.6,
+        )
+    )
     delta = expected_size1 - computed_size1
 
     assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
@@ -130,12 +141,15 @@ def test_bravo_sample_sizes():
     expected_size1 = 5657
 
     computed_size1 = math.ceil(
-        bravo.bravo_sample_sizes(risk_limit=risk_limit,
-                                 p_w=.52,
-                                 p_r=.47,
-                                 sample_w=r0_sample_win,
-                                 sample_r=r0_sample_rup,
-                                 p_completion=.9))
+        bravo.bravo_sample_sizes(
+            risk_limit=risk_limit,
+            p_w=0.52,
+            p_r=0.47,
+            sample_w=r0_sample_win,
+            sample_r=r0_sample_rup,
+            p_completion=0.9,
+        )
+    )
     delta = expected_size1 - computed_size1
 
     assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
@@ -150,12 +164,15 @@ def test_bravo_sample_sizes_round1_finish():
     expected_size1 = 0
 
     computed_size1 = math.ceil(
-        bravo.bravo_sample_sizes(risk_limit,
-                                 p_w=.52,
-                                 p_r=.47,
-                                 sample_w=r0_sample_win,
-                                 sample_r=r0_sample_rup,
-                                 p_completion=.9))
+        bravo.bravo_sample_sizes(
+            risk_limit,
+            p_w=0.52,
+            p_r=0.47,
+            sample_w=r0_sample_win,
+            sample_r=r0_sample_rup,
+            p_completion=0.9,
+        )
+    )
     delta = expected_size1 - computed_size1
 
     assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
@@ -169,12 +186,15 @@ def test_bravo_sample_sizes_round1_incomplete():
     r0_sample_rup = 2735
 
     computed_size1 = math.ceil(
-        bravo.bravo_sample_sizes(risk_limit,
-                                 p_w=.52,
-                                 p_r=.47,
-                                 sample_w=r0_sample_win,
-                                 sample_r=r0_sample_rup,
-                                 p_completion=.9))
+        bravo.bravo_sample_sizes(
+            risk_limit,
+            p_w=0.52,
+            p_r=0.47,
+            sample_w=r0_sample_win,
+            sample_r=r0_sample_rup,
+            p_completion=0.9,
+        )
+    )
     delta = expected_size1 - computed_size1
 
     assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
@@ -186,33 +206,42 @@ def test_get_sample_size(contests):
 
     for contest in contests:
         print(contest)
-        computed = bravo.get_sample_size(risk_limit, contests[contest], round0_sample_results)
+        computed = bravo.get_sample_size(
+            risk_limit, contests[contest], round0_sample_results
+        )
 
         expected = true_sample_sizes[contest]
 
-        assert computed.keys() == expected.keys(
-        ), 'get_sample_sizes returning the wrong keys! got {}, expected {}'.format(
-            computed.keys(), expected.keys())
+        assert (
+            computed.keys() == expected.keys()
+        ), "get_sample_sizes returning the wrong keys! got {}, expected {}".format(
+            computed.keys(), expected.keys()
+        )
 
-        assert computed['asn']['size'] == expected['asn'][
-            'size'], 'get_sample_sizes returning the wrong ASN! got {}, expected {}'.format(
-                computed['asn']['size'], expected['asn']['size'])
+        assert (
+            computed["asn"]["size"] == expected["asn"]["size"]
+        ), "get_sample_sizes returning the wrong ASN! got {}, expected {}".format(
+            computed["asn"]["size"], expected["asn"]["size"]
+        )
 
-        if expected['asn']['prob']:
-            assert round(computed['asn']['prob'], 2) == expected['asn'][
-                'prob'], 'get_sample_sizes returning the wrong ASN probs! got {}, expected {}'.format(
-                    round(computed['asn']['prob'], 2), expected['asn']['prob'])
+        if expected["asn"]["prob"]:
+            assert (
+                round(computed["asn"]["prob"], 2) == expected["asn"]["prob"]
+            ), "get_sample_sizes returning the wrong ASN probs! got {}, expected {}".format(
+                round(computed["asn"]["prob"], 2), expected["asn"]["prob"]
+            )
 
         else:
-            assert not computed['asn'][
-                'prob'], 'Returned ASN probability when there shouldn\'t be one!'
+            assert not computed["asn"][
+                "prob"
+            ], "Returned ASN probability when there shouldn't be one!"
 
         for item in computed:
-            if item == 'asn':
+            if item == "asn":
                 continue
-            assert round(computed[item],
-                         2) == expected[item], 'get_sample_size failed! got {}, expected {}'.format(
-                             computed, expected)
+            assert (
+                round(computed[item], 2) == expected[item]
+            ), "get_sample_size failed! got {}, expected {}".format(computed, expected)
 
 
 def test_bravo_expected_prob():
@@ -223,12 +252,16 @@ def test_bravo_expected_prob():
     r0_sample_rup = round0_sample_results["test1"]["cand2"]
 
     computed_prob1 = round(
-        bravo.expected_prob(risk_limit,
-                            p_w=.6,
-                            p_r=.4,
-                            sample_w=r0_sample_win,
-                            sample_r=r0_sample_rup,
-                            asn=119), 2)
+        bravo.expected_prob(
+            risk_limit,
+            p_w=0.6,
+            p_r=0.4,
+            sample_w=r0_sample_win,
+            sample_r=r0_sample_rup,
+            asn=119,
+        ),
+        2,
+    )
     delta = expected_prob1 - computed_prob1
 
     assert not delta, "bravo_simulator failed: got {}, expected {}".format(
@@ -239,55 +272,29 @@ def test_bravo_expected_prob():
 def test_compute_risk(contests):
     # Test computing sample
     expected_Ts = {
-        'test1': {
-            ('cand1', 'cand2'): .07
-        },
-        'test2': {
-            ('cand1', 'cand2'): 10.38,
-            ('cand1', 'cand3'): 0,
-        },
-        'test3': {
-            ('cand1', ): 1
-        },
-        'test4': {
-            ('cand1', ): 1
-        },
-        'test5': {
-            ('cand1', 'cand2'): 1
-        },
-        'test6': {
-            ('cand1', 'cand2'): 0.08,
-            ('cand1', 'cand3'): 0.08,
-        },
-        'test7': {
-            ('cand1', 'cand3'): 0.01,
-            ('cand2', 'cand3'): 0.04,
-        },
-        'test8': {
-            ('cand1', 'cand3'): 0.0,
-            ('cand2', 'cand3'): 0.22,
-        },
-        'test9': {
-            ('cand1', ): 1,
-            ('cand2', ): 1,
-        },
-        'test10': {
-            ('cand1', 'cand3'): 0,
-            ('cand2', 'cand3'): 0.01,
-        },
+        "test1": {("cand1", "cand2"): 0.07},
+        "test2": {("cand1", "cand2"): 10.38, ("cand1", "cand3"): 0,},
+        "test3": {("cand1",): 1},
+        "test4": {("cand1",): 1},
+        "test5": {("cand1", "cand2"): 1},
+        "test6": {("cand1", "cand2"): 0.08, ("cand1", "cand3"): 0.08,},
+        "test7": {("cand1", "cand3"): 0.01, ("cand2", "cand3"): 0.04,},
+        "test8": {("cand1", "cand3"): 0.0, ("cand2", "cand3"): 0.22,},
+        "test9": {("cand1",): 1, ("cand2",): 1,},
+        "test10": {("cand1", "cand3"): 0, ("cand2", "cand3"): 0.01,},
     }
 
     expected_decisions = {
-        'test1': True,
-        'test2': False,
-        'test3': False,
-        'test4': False,
-        'test5': False,
-        'test6': True,
-        'test7': True,
-        'test8': False,
-        'test9': False,
-        'test10': True,
+        "test1": True,
+        "test2": False,
+        "test3": False,
+        "test4": False,
+        "test5": False,
+        "test6": True,
+        "test7": True,
+        "test8": False,
+        "test9": False,
+        "test10": True,
     }
 
     for contest in contests.values():
@@ -296,66 +303,46 @@ def test_compute_risk(contests):
         expected_T = expected_Ts[contest.name]
         for pair in expected_T:
             diff = T[pair] - expected_T[pair]
-            assert abs(diff) < .01, 'Risk compute for {} failed! Expected {}, got {}'.format(
-                contest.name, expected_Ts[contest.name][pair], T[pair])
+            assert (
+                abs(diff) < 0.01
+            ), "Risk compute for {} failed! Expected {}, got {}".format(
+                contest.name, expected_Ts[contest.name][pair], T[pair]
+            )
 
         expected_decision = expected_decisions[contest.name]
-        assert decision == expected_decision, 'Risk decision for {} failed! Expected {}, got{}'.format(
-            contest.name, expected_decision, decision)
+        assert (
+            decision == expected_decision
+        ), "Risk decision for {} failed! Expected {}, got{}".format(
+            contest.name, expected_decision, decision
+        )
 
 
 def test_compute_risk_empty(contests):
     # Test computing risk limit with no sample
     expected_Ts = {
-        'test1': {
-            ('cand1', 'cand2'): 1
-        },
-        'test2': {
-            ('cand1', 'cand2'): 1,
-            ('cand1', 'cand3'): 1,
-        },
-        'test3': {
-            ('cand1', ): 1
-        },
-        'test4': {
-            ('cand1', ): 1
-        },
-        'test5': {
-            ('cand1', 'cand2'): 1
-        },
-        'test6': {
-            ('cand1', 'cand2'): 1,
-            ('cand1', 'cand3'): 1,
-        },
-        'test7': {
-            ('cand1', 'cand3'): 1,
-            ('cand2', 'cand3'): 1,
-        },
-        'test8': {
-            ('cand1', 'cand3'): 1,
-            ('cand2', 'cand3'): 1,
-        },
-        'test9': {
-            ('cand1', ): 1,
-            ('cand2', ): 1,
-        },
-        'test10': {
-            ('cand1', 'cand3'): 1,
-            ('cand2', 'cand3'): 1,
-        },
+        "test1": {("cand1", "cand2"): 1},
+        "test2": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
+        "test3": {("cand1",): 1},
+        "test4": {("cand1",): 1},
+        "test5": {("cand1", "cand2"): 1},
+        "test6": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
+        "test7": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
+        "test8": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
+        "test9": {("cand1",): 1, ("cand2",): 1,},
+        "test10": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
     }
 
     expected_decisions = {
-        'test1': False,
-        'test2': False,
-        'test3': False,
-        'test4': False,
-        'test5': False,
-        'test6': False,
-        'test7': False,
-        'test8': False,
-        'test9': False,
-        'test10': False,
+        "test1": False,
+        "test2": False,
+        "test3": False,
+        "test4": False,
+        "test5": False,
+        "test6": False,
+        "test7": False,
+        "test8": False,
+        "test9": False,
+        "test10": False,
     }
 
     for contest in contests.values():
@@ -364,87 +351,83 @@ def test_compute_risk_empty(contests):
         expected_T = expected_Ts[contest.name]
         for pair in expected_T:
             diff = T[pair] - expected_T[pair]
-            assert abs(diff) < .01, 'Risk compute for {} failed! Expected {}, got {}'.format(
-                contest.name, expected_Ts[contest.name][pair], T[pair])
+            assert (
+                abs(diff) < 0.01
+            ), "Risk compute for {} failed! Expected {}, got {}".format(
+                contest.name, expected_Ts[contest.name][pair], T[pair]
+            )
 
         expected_decision = expected_decisions[contest.name]
-        assert decision == expected_decision, 'Risk decision for {} failed! Expected {}, got{}'.format(
-            contest.name, expected_decision, decision)
+        assert (
+            decision == expected_decision
+        ), "Risk decision for {} failed! Expected {}, got{}".format(
+            contest.name, expected_decision, decision
+        )
 
 
 bravo_contests = {
-    'test1': {
-        'cand1': 600,
-        'cand2': 400,
-        'ballots': 1000,
-        'numWinners': 1,
-        'votesAllowed': 1,
+    "test1": {
+        "cand1": 600,
+        "cand2": 400,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
     },
-    'test2': {
-        'cand1': 600,
-        'cand2': 200,
-        'cand3': 100,
-        'ballots': 900,
-        'votesAllowed': 1,
-        'numWinners': 1
+    "test2": {
+        "cand1": 600,
+        "cand2": 200,
+        "cand3": 100,
+        "ballots": 900,
+        "votesAllowed": 1,
+        "numWinners": 1,
     },
-    'test3': {
-        'cand1': 100,
-        'ballots': 100,
-        'votesAllowed': 1,
-        'numWinners': 1
+    "test3": {"cand1": 100, "ballots": 100, "votesAllowed": 1, "numWinners": 1},
+    "test4": {"cand1": 100, "ballots": 100, "votesAllowed": 1, "numWinners": 1},
+    "test5": {
+        "cand1": 500,
+        "cand2": 500,
+        "ballots": 1000,
+        "votesAllowed": 1,
+        "numWinners": 1,
     },
-    'test4': {
-        'cand1': 100,
-        'ballots': 100,
-        'votesAllowed': 1,
-        'numWinners': 1
+    "test6": {
+        "cand1": 300,
+        "cand2": 200,
+        "cand3": 200,
+        "ballots": 1000,
+        "votesAllowed": 1,
+        "numWinners": 1,
     },
-    'test5': {
-        'cand1': 500,
-        'cand2': 500,
-        'ballots': 1000,
-        'votesAllowed': 1,
-        'numWinners': 1
+    "test7": {
+        "cand1": 300,
+        "cand2": 200,
+        "cand3": 100,
+        "ballots": 700,
+        "votesAllowed": 1,
+        "numWinners": 2,
     },
-    'test6': {
-        'cand1': 300,
-        'cand2': 200,
-        'cand3': 200,
-        'ballots': 1000,
-        'votesAllowed': 1,
-        'numWinners': 1
+    "test8": {
+        "cand1": 300,
+        "cand2": 300,
+        "cand3": 100,
+        "ballots": 700,
+        "votesAllowed": 1,
+        "numWinners": 2,
     },
-    'test7': {
-        'cand1': 300,
-        'cand2': 200,
-        'cand3': 100,
-        'ballots': 700,
-        'votesAllowed': 1,
-        'numWinners': 2
+    "test9": {
+        "cand1": 300,
+        "cand2": 200,
+        "ballots": 700,
+        "votesAllowed": 1,
+        "numWinners": 2,
     },
-    'test8': {
-        'cand1': 300,
-        'cand2': 300,
-        'cand3': 100,
-        'ballots': 700,
-        'votesAllowed': 1,
-        'numWinners': 2
-    },
-    'test9': {
-        'cand1': 300,
-        'cand2': 200,
-        'ballots': 700,
-        'votesAllowed': 1,
-        'numWinners': 2
-    },
-    'test10': {
-        'cand1': 600,
-        'cand2': 300,
-        'cand3': 100,
-        'ballots': 1000,
-        'votesAllowed': 1,
-        'numWinners': 2
+    "test10": {
+        "cand1": 600,
+        "cand2": 300,
+        "cand3": 100,
+        "ballots": 1000,
+        "votesAllowed": 1,
+        "numWinners": 2,
     },
 }
 
@@ -476,82 +459,14 @@ round1_sample_results = {
 }
 
 true_sample_sizes = {
-    'test1': {
-        'asn': {
-            'size': 119,
-            'prob': .52
-        },
-        .7: 184,
-        .8: 244,
-        .9: 351,
-    },
-    'test2': {
-        'asn': {
-            'size': 22,
-            'prob': .6
-        },
-        .7: 32,
-        .8: 41,
-        .9: 57,
-    },
-    'test3': {
-        'asn': {
-            'size': -1,
-            'prob': -1
-        },
-        .7: -1,
-        .8: -1,
-        .9: -1,
-    },
-    'test4': {
-        'asn': {
-            'size': -1,
-            'prob': -1
-        },
-        .7: -1,
-        .8: -1,
-        .9: -1,
-    },
-    'test5': {
-        'asn': {
-            'size': 1000,
-            'prob': 1
-        },
-        .7: 1000,
-        .8: 1000,
-        .9: 1000
-    },
-    'test6': {
-        'asn': {
-            'size': 238,
-            'prob': .79
-        },
-        .7: 368,
-        .8: 488,
-        .9: 702
-    },
-    'test7': {
-        'asn': {
-            'size': 101,
-            'prob': None,
-        },
-    },
-    'test8': {
-        'asn': {
-            'size': 34,
-            'prob': None,
-        },
-    },
-    'test9': {
-        'asn': {
-            'size': -1,
-            'prob': None,
-        },
-    },
-    'test10': {
-        'asn': {
-            'size': 48,
-            'prob': None,
-        },
-    },
+    "test1": {"asn": {"size": 119, "prob": 0.52}, 0.7: 184, 0.8: 244, 0.9: 351,},
+    "test2": {"asn": {"size": 22, "prob": 0.6}, 0.7: 32, 0.8: 41, 0.9: 57,},
+    "test3": {"asn": {"size": -1, "prob": -1}, 0.7: -1, 0.8: -1, 0.9: -1,},
+    "test4": {"asn": {"size": -1, "prob": -1}, 0.7: -1, 0.8: -1, 0.9: -1,},
+    "test5": {"asn": {"size": 1000, "prob": 1}, 0.7: 1000, 0.8: 1000, 0.9: 1000},
+    "test6": {"asn": {"size": 238, "prob": 0.79}, 0.7: 368, 0.8: 488, 0.9: 702},
+    "test7": {"asn": {"size": 101, "prob": None,},},
+    "test8": {"asn": {"size": 34, "prob": None,},},
+    "test9": {"asn": {"size": -1, "prob": None,},},
+    "test10": {"asn": {"size": 48, "prob": None,},},
 }
