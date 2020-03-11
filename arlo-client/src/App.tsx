@@ -32,7 +32,6 @@ const App: React.FC = () => {
               component={DataEntry}
             />
             <Route path="/election/:electionId" component={Audit} />
-            <Route path="/board/:token" component={DataEntry} />
             <Route>404</Route>
           </Switch>
         </Main>
