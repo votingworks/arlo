@@ -1,12 +1,13 @@
 import os, datetime, csv, io, math, json, uuid, locale, re, hmac, urllib.parse
 from enum import Enum, auto
+from typing import Optional, Tuple, Union
 
 from flask import Flask, jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
 import sampler
 from audits import bravo
-from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import InternalServerError, Unauthorized, Forbidden
 from xkcdpass import xkcd_password as xp
 
 from sqlalchemy import event, func
@@ -46,8 +47,6 @@ class UserType(str, Enum):
 def create_election(election_id=None, organization_id=None):
     if not election_id:
         election_id = str(uuid.uuid4())
-    if not organization_id:
-        organization_id = create_organization().id
     e = Election(id=election_id, organization_id=organization_id, name="")
     db.session.add(e)
     db.session.commit()
@@ -346,12 +345,37 @@ if ADMIN_PASSWORD:
         return Response(result, content_type="text/plain")
 
 
+def require_audit_admin_for_organization(organization_id: Optional[str]):
+    if not organization_id:
+        return
+
+    user_type, user = get_loggedin_user_record()
+
+    if not user:
+        raise Unauthorized(
+            description=f"Anonymous users do not have access to organization {organization_id}"
+        )
+
+    if user_type != UserType.AUDIT_ADMIN:
+        raise Forbidden(
+            description=f"{user.email} is not logged in as an audit admin and so does not have access to organization {organization_id}"
+        )
+
+    for org in user.organizations:
+        if org.id == organization_id:
+            return
+    raise Forbidden(
+        description=f"{user.email} does not have access to organization {organization_id}"
+    )
+
+
 @app.route("/election/new", methods=["POST"])
 def election_new():
     info = request.get_json()
 
-    # TODO: check that the user is an admin of this organization
     organization_id = info.get("organization_id", None) if info else None
+    require_audit_admin_for_organization(organization_id)
+
     election_id = create_election(organization_id=organization_id)
     return jsonify(electionId=election_id)
 
@@ -359,6 +383,7 @@ def election_new():
 @app.route("/election/<election_id>/jurisdictions_file", methods=["GET"])
 def get_jurisdictions_file(election_id=None):
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
     return jsonify(
         content=election.jurisdictions_file,
         filename=election.jurisdictions_filename,
@@ -369,6 +394,7 @@ def get_jurisdictions_file(election_id=None):
 @app.route("/election/<election_id>/jurisdictions_file", methods=["POST"])
 def update_jurisdictions_file(election_id=None):
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
 
     if "jurisdictions" not in request.files:
         return (
@@ -1298,9 +1324,18 @@ def set_loggedin_user(user_type: UserType, user_email: str):
     session["_user"] = {"type": user_type, "email": user_email}
 
 
-def get_loggedin_user():
+def get_loggedin_user() -> Union[Tuple[UserType, str], Tuple[None, None]]:
     user = session.get("_user", None)
     return (user["type"], user["email"]) if user else (None, None)
+
+
+def get_loggedin_user_record():
+    user_type, user_email = get_loggedin_user()
+    return (
+        (user_type, User.query.filter_by(email=user_email).one())
+        if user_email
+        else (None, None)
+    )
 
 
 def clear_loggedin_user():
@@ -1318,12 +1353,11 @@ def serialize_election(election):
 
 @app.route("/auth/me")
 def me():
-    user_type, user_email = get_loggedin_user()
-    if user_type:
-        user = User.query.filter_by(email=user_email).one()
+    user_type, user = get_loggedin_user_record()
+    if user:
         return jsonify(
             type=user_type,
-            email=user_email,
+            email=user.email,
             organizations=[
                 {
                     "id": org.id,
@@ -1411,6 +1445,22 @@ def serve(election_id=None, board_id=None):
     return app.send_static_file("index.html")
 
 
+@app.errorhandler(Unauthorized)
+def handle_401(e):
+    return (
+        jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
+        Unauthorized.code,
+    )
+
+
+@app.errorhandler(Forbidden)
+def handle_403(e):
+    return (
+        jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
+        Forbidden.code,
+    )
+
+
 @app.errorhandler(InternalServerError)
 def handle_500(e):
     original = getattr(e, "original_exception", None)
@@ -1424,5 +1474,5 @@ def handle_500(e):
         jsonify(
             errors=[{"message": str(original), "errorType": type(original).__name__}]
         ),
-        500,
+        InternalServerError.code,
     )

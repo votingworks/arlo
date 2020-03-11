@@ -13,6 +13,7 @@ from arlo_server import (
     UserType,
 )
 from models import *
+from tests.helpers import create_org_and_admin
 
 
 @pytest.fixture
@@ -28,19 +29,8 @@ def _setup_user(client, user_type, user_email):
         session["_user"] = {"type": user_type, "email": user_email}
 
 
-def _create_org_and_admin(org_name, user_email):
-    org = create_organization(org_name)
-    u = User(id=str(uuid.uuid4()), email=user_email, external_id=user_email)
-    db.session.add(u)
-    admin = AuditAdministration(organization_id=org.id, user_id=u.id)
-    db.session.add(admin)
-    db.session.commit()
-
-    return org.id, u.id
-
-
 def test_auth_me(client):
-    org_id, user_id = _create_org_and_admin("Test Org", "admin@example.com")
+    org_id, user_id = create_org_and_admin("Test Org", "admin@example.com")
     election_id = create_election(organization_id=org_id)
     jurisdiction = Jurisdiction(
         election_id=election_id, id=str(uuid.uuid4()), name="Test Jurisdiction"
@@ -95,7 +85,7 @@ def test_auditadmin_start(client):
 
 
 def test_auditadmin_callback(client):
-    org_id, user_id = _create_org_and_admin("Test Organization", "foo@example.com")
+    create_org_and_admin("Test Organization", "foo@example.com")
 
     auth0_aa.authorize_access_token = MagicMock(return_value=None)
 

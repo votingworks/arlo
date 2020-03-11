@@ -2,34 +2,29 @@ import os, math, uuid
 import tempfile
 import json, csv, io
 
+from flask.testing import FlaskClient
 import pytest
 
-from arlo_server import app, init_db, db, create_organization
+from arlo_server import app, db
+from tests.helpers import post_json
 import bgcompute
 
 manifest_file_path = os.path.join(os.path.dirname(__file__), "manifest.csv")
 small_manifest_file_path = os.path.join(os.path.dirname(__file__), "small-manifest.csv")
 
 
-def post_json(client, url, obj):
-    return client.post(
-        url, headers={"Content-Type": "application/json"}, data=json.dumps(obj)
-    )
-
-
 @pytest.fixture
-def client():
+def client() -> FlaskClient:
     app.config["TESTING"] = True
     client = app.test_client()
 
     with app.app_context():
-        init_db()
+        db.drop_all()
+        db.create_all()
 
     yield client
 
-    # clear database between test runs
-    db.drop_all()
-    db.create_all()
+    db.session.commit()
 
 
 def test_index(client):
@@ -551,17 +546,6 @@ def get_lines_from_retrieval_list(rv):
 def get_num_ballots_from_retrieval_list(rv):
     lines = get_lines_from_retrieval_list(rv)
     return sum([len(line["Ticket Numbers"].split(",")) for line in lines])
-
-
-def test_election_in_org(client):
-    org = create_organization(name="Test Org")
-    org_id = org.id
-    rv = post_json(client, "/election/new", {"organization_id": org_id})
-    election_id = json.loads(rv.data)["electionId"]
-
-    rv = client.get(f"/election/{election_id}/audit/status")
-
-    assert json.loads(rv.data)["organizationId"] == org_id
 
 
 def test_small_election(client):

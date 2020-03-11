@@ -32,7 +32,7 @@ class Election(db.Model):
     organization_id = db.Column(
         db.String(200),
         db.ForeignKey("organization.id", ondelete="cascade"),
-        nullable=False,
+        nullable=True,
     )
 
     frozen_at = db.Column(db.DateTime(timezone=False), nullable=True)
