@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AuditFlow initial load fetches initial state from api 1`] = `
+exports[`DataEntry initial load fetches initial state from api 1`] = `
 <div>
   <div
     class="sc-hMqMXs dhuBfg"
@@ -271,7 +271,7 @@ exports[`AuditFlow initial load fetches initial state from api 1`] = `
 </div>
 `;
 
-exports[`AuditFlow initial load renders correctly 1`] = `
+exports[`DataEntry initial load renders correctly 1`] = `
 <div>
   <div
     class="sc-hMqMXs dhuBfg"
@@ -542,7 +542,7 @@ exports[`AuditFlow initial load renders correctly 1`] = `
 </div>
 `;
 
-exports[`AuditFlow initial load renders member form 1`] = `
+exports[`DataEntry initial load renders member form 1`] = `
 <div>
   <div
     class="sc-hMqMXs dhuBfg"

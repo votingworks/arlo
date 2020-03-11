@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AuditFlow ballot interaction renders ballot route 1`] = `
+exports[`DataEntry ballot interaction renders ballot route 1`] = `
 <div>
   <div
     class="sc-hMqMXs dhuBfg"
@@ -272,7 +272,7 @@ exports[`AuditFlow ballot interaction renders ballot route 1`] = `
 </div>
 `;
 
-exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
+exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
     class="sc-hMqMXs dhuBfg"
@@ -837,7 +837,7 @@ exports[`AuditFlow ballot interaction renders board table with ballots 1`] = `
 </div>
 `;
 
-exports[`AuditFlow ballot interaction renders board table with large container size 1`] = `
+exports[`DataEntry ballot interaction renders board table with large container size 1`] = `
 <div>
   <div
     class="sc-hMqMXs dhuBfg"

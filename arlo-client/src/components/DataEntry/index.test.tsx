@@ -2,7 +2,7 @@ import React from 'react'
 import { render, wait, fireEvent } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
 import { routerTestProps, asyncActRender } from '../testUtilities'
-import AuditFlow from './index'
+import DataEntry from './index'
 import { dummyBoard, dummyBallots } from './_mocks'
 import { statusStates } from '../AuditForms/_mocks'
 import * as utilities from '../utilities'
@@ -51,7 +51,7 @@ const routeProps = routerTestProps('/election/:electionId/board/:token', {
 
 const { history: staticHistory, ...staticRouteProps } = routeProps // eslint-disable-line @typescript-eslint/no-unused-vars
 
-describe('AuditFlow ballot interaction', () => {
+describe('DataEntry ballot interaction', () => {
   beforeEach(() => {
     apiMock.mockImplementation(ballotingMock)
   })
@@ -78,7 +78,7 @@ describe('AuditFlow ballot interaction', () => {
     )
     const { queryByText } = await asyncActRender(
       <StaticRouter {...staticRouteProps}>
-        <AuditFlow {...routeProps} />
+        <DataEntry {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -91,7 +91,7 @@ describe('AuditFlow ballot interaction', () => {
   it('renders board table with ballots', async () => {
     const { container, getByText } = render(
       <StaticRouter {...staticRouteProps}>
-        <AuditFlow {...routeProps} />
+        <DataEntry {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -106,7 +106,7 @@ describe('AuditFlow ballot interaction', () => {
     checkAndToastMock.mockReturnValueOnce(true).mockReturnValue(false)
     render(
       <StaticRouter {...staticRouteProps}>
-        <AuditFlow {...routeProps} />
+        <DataEntry {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -122,7 +122,7 @@ describe('AuditFlow ballot interaction', () => {
       .mockReturnValue(false)
     render(
       <StaticRouter {...staticRouteProps}>
-        <AuditFlow {...routeProps} />
+        <DataEntry {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -138,7 +138,7 @@ describe('AuditFlow ballot interaction', () => {
       .mockReturnValue([{ clientWidth: 2000 }] as any)
     const { container } = render(
       <StaticRouter {...staticRouteProps}>
-        <AuditFlow {...routeProps} />
+        <DataEntry {...routeProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -161,7 +161,7 @@ describe('AuditFlow ballot interaction', () => {
     ballotRouteProps.match.url = '/election/1/board/123'
     const { container, getByText } = render(
       <StaticRouter {...staticBallotRouteProps}>
-        <AuditFlow {...ballotRouteProps} />
+        <DataEntry {...ballotRouteProps} />
       </StaticRouter>
     )
     await wait(() => {
@@ -189,7 +189,7 @@ describe('AuditFlow ballot interaction', () => {
     ballotRouteProps.match.url = '/election/1/board/123'
     const { getByText } = await asyncActRender(
       <StaticRouter {...staticBallotRouteProps}>
-        <AuditFlow {...ballotRouteProps} />
+        <DataEntry {...ballotRouteProps} />
       </StaticRouter>
     )
 
@@ -228,7 +228,7 @@ describe('AuditFlow ballot interaction', () => {
     ballotRouteProps.match.url = '/election/1/board/123'
     const { getByText, getByTestId } = await asyncActRender(
       <StaticRouter {...staticBallotRouteProps}>
-        <AuditFlow {...ballotRouteProps} />
+        <DataEntry {...ballotRouteProps} />
       </StaticRouter>
     )
 

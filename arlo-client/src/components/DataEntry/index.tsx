@@ -25,7 +25,7 @@ interface IProps {
   history: History
 }
 
-const AuditFlow: React.FC<IProps> = ({
+const DataEntry: React.FC<IProps> = ({
   match: {
     params: { electionId, token },
     url,
@@ -233,4 +233,4 @@ const AuditFlow: React.FC<IProps> = ({
   )
 }
 
-export default AuditFlow
+export default DataEntry

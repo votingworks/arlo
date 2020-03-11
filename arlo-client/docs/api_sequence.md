@@ -814,7 +814,7 @@ GET the updated status:
 
 - `GET /election/{electionId}/audit/status`
 
-- `src/components/AuditFlow/index.tsx` > `AuditFlow` > `getSTatus()` > `api()`
+- `src/components/DataEntry/index.tsx` > `DataEntry` > `getSTatus()` > `api()`
 
 ```jsonc
 {
@@ -906,7 +906,7 @@ the `auditBoard` property):
 
 - `GET /election/<electionId>/jurisdiction/<jurisdictionId>/audit-board/<board.id>/round/<roundId>/ballot-list`
 
-- `src/components/AuditFlow/index.tsx` > `AuditFlow` > `getBallots()` > `api()`
+- `src/components/DataEntry/index.tsx` > `DataEntry` > `getBallots()` > `api()`
 
 ```jsonc
 {
@@ -936,7 +936,7 @@ data to the backend.
 
 - `POST /election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${boardId}`
 
-- `src/components/AuditFlow/MemberForm.tsx` > `Formik` > `onSubmit` > `api()`
+- `src/components/DataEntry/MemberForm.tsx` > `Formik` > `onSubmit` > `api()`
 
 ```jsonc
 {
@@ -962,7 +962,7 @@ GET the updated status:
 
 - `GET /election/{electionId}/audit/status`
 
-- `src/components/AuditFlow/index.tsx` > `AuditFlow` > `getSTatus()` > `api()`
+- `src/components/DataEntry/index.tsx` > `DataEntry` > `getSTatus()` > `api()`
 
 ```jsonc
 {
@@ -1064,7 +1064,7 @@ the `auditBoard` property):
 
 - `GET /election/<electionId>/jurisdiction/<jurisdictionId>/audit-board/<board.id>/round/<roundId>/ballot-list`
 
-- `src/components/AuditFlow/index.tsx` > `AuditFlow` > `getBallots()` > `api()`
+- `src/components/DataEntry/index.tsx` > `DataEntry` > `getBallots()` > `api()`
 
 ```jsonc
 {
@@ -1096,7 +1096,7 @@ submitted.
 
 - `POST /election/<electionId>/jurisdiction/<jurisdictionId>/batch/<batchId>/round/<roundId>/ballot/<position>`
 
-- `src/components/AuditFlow/index.tsx` > `AuditFlow` >
+- `src/components/DataEntry/index.tsx` > `DataEntry` >
   `submitBallot(roundIx, batch, position, data)` > `api()`
 
 ```jsonc

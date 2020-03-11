@@ -8,7 +8,7 @@ Starting ChromeDriver 78.0.3904.70 (edb9c9f3de0247fd912a77b7f6cae7447f6d3ad5-ref
 Only local connections are allowed.
 Please protect ports used by ChromeDriver and related test frameworks to prevent access by malicious code.
 2020-01-20T04:26:40.752Z INFO @wdio/local-runner: Start worker 0-0 with arg: 
-[0-0] RUNNING in chrome - /src/test/specs/auditFlow.ts
+[0-0] RUNNING in chrome - /src/test/specs/dataEntry.ts
 2020-01-20T04:26:40.768Z INFO @wdio/local-runner: Start worker 0-1 with arg: 
 [0-1] RUNNING in chrome - /src/test/specs/createAudit.ts
 2020-01-20T04:26:40.780Z INFO @wdio/local-runner: Start worker 0-2 with arg: 
@@ -6234,7 +6234,7 @@ Please protect ports used by ChromeDriver and related test frameworks to prevent
 }
 [0-0] 2020-01-20T04:27:41.686Z INFO webdriver: COMMAND deleteSession()
 [0-0] 2020-01-20T04:27:41.687Z INFO webdriver: [DELETE] http://127.0.0.1:4444/session/dd4c8e5946ebc7ce012b3f71675c9dc2
-[0-0] PASSED in chrome - /src/test/specs/auditFlow.ts
+[0-0] PASSED in chrome - /src/test/specs/dataEntry.ts
 2020-01-20T04:27:41.861Z INFO @wdio/cli:launcher: Run onComplete hook
 
  "dot" Reporter:

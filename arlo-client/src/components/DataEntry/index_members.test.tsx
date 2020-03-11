@@ -2,7 +2,7 @@ import React from 'react'
 import { wait } from '@testing-library/react'
 import { Router } from 'react-router-dom'
 import { routerTestProps, asyncActRender } from '../testUtilities'
-import AuditFlow from './index'
+import DataEntry from './index'
 import { dummyBoard, dummyBallots } from './_mocks'
 import { statusStates } from '../AuditForms/_mocks'
 import * as utilities from '../utilities'
@@ -36,7 +36,7 @@ const routeProps = routerTestProps('/election/:electionId/board/:token', {
   token: '123',
 })
 
-describe('AuditFlow initial load', () => {
+describe('DataEntry initial load', () => {
   beforeEach(() => {
     apiMock.mockImplementation(memberingMock)
   })
@@ -44,7 +44,7 @@ describe('AuditFlow initial load', () => {
   it('renders correctly', async () => {
     const { container } = await asyncActRender(
       <Router {...routeProps}>
-        <AuditFlow {...routeProps} />
+        <DataEntry {...routeProps} />
       </Router>
     )
     expect(container).toMatchSnapshot()
@@ -53,7 +53,7 @@ describe('AuditFlow initial load', () => {
   it('fetches initial state from api', async () => {
     const { container } = await asyncActRender(
       <Router {...routeProps}>
-        <AuditFlow {...routeProps} />
+        <DataEntry {...routeProps} />
       </Router>
     )
     await wait(() => {
@@ -65,7 +65,7 @@ describe('AuditFlow initial load', () => {
   it('renders member form', async () => {
     const { container, getByText } = await asyncActRender(
       <Router {...routeProps}>
-        <AuditFlow {...routeProps} />
+        <DataEntry {...routeProps} />
       </Router>
     )
     await wait(() => {

@@ -5,7 +5,7 @@ import {
   submitFormOne,
   submitFormTwo,
 } from './helpers'
-// import { voteValue } from '../../components/AuditFlow/BlockRadio'
+// import { voteValue } from '../../components/DataEntry/BlockRadio'
 
 const ballotNext = (option: string) => {
   const calloutElement = $('.bp3-callout*=auditing ballot')
