@@ -140,12 +140,7 @@ def setup_next_round(election):
     rounds = Round.query.filter_by(election_id=election.id).order_by("round_num").all()
 
     print("adding round {:d} for election {:s}".format(len(rounds) + 1, election.id))
-    round = Round(
-        id=str(uuid.uuid4()),
-        election_id=election.id,
-        round_num=len(rounds) + 1,
-        started_at=datetime.datetime.utcnow(),
-    )
+    round = Round(id=str(uuid.uuid4()), election_id=election.id, round_num=len(rounds) + 1)
 
     db.session.add(round)
 
