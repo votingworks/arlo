@@ -6,6 +6,20 @@ from typing import Dict, Optional, Tuple, List, cast
 import operator
 
 
+def from_db_contest(db_contest):
+    name = db_contest.id
+    info_dict = {
+        "ballots": db_contest.total_ballots_cast,
+        "numWinners": db_contest.num_winners,
+        "votesAllowed": db_contest.votes_allowed,
+    }
+
+    for choice in db_contest.choices:
+        info_dict[choice.id] = choice.num_votes
+
+    return Contest(name, info_dict)
+
+
 class Contest:
     """
     An object for storing per-contest information, including total number of

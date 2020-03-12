@@ -1,6 +1,6 @@
 import pytest
 
-from util.contest import Contest
+from audits.sampler_contest import Contest
 
 
 @pytest.fixture

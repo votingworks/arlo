@@ -5,8 +5,7 @@ from typing import Optional, Tuple, Union
 from flask import Flask, jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
-import sampler
-from audits import bravo
+from audits import sampler, bravo, sampler_contest
 from werkzeug.exceptions import InternalServerError, Unauthorized, Forbidden
 from xkcdpass import xkcd_password as xp
 
@@ -32,7 +31,6 @@ from config import (
 )
 
 from util.binpacking import Bucket, BalancedBucketList
-from util.contest import Contest as SamplerContest
 from util.jurisdiction_bulk_update import bulk_update_jurisdictions
 
 AUDIT_BOARD_MEMBER_COUNT = 2
@@ -68,25 +66,6 @@ def get_election(election_id):
     return Election.query.filter_by(id=election_id).one()
 
 
-def contest_status(election):
-    contests = {}
-
-    for contest in election.contests:
-        name = contest.id
-        info_dict = {
-            "ballots": contest.total_ballots_cast,
-            "numWinners": contest.num_winners,
-            "votesAllowed": contest.votes_allowed,
-        }
-
-        for choice in contest.choices:
-            info_dict[choice.id] = choice.num_votes
-
-        contests[name] = SamplerContest(name, info_dict)
-
-    return contests
-
-
 def sample_results(election):
     contests = {}
 
@@ -109,11 +88,11 @@ def compute_sample_sizes(round_contest):
     the_round = round_contest.round
     election = the_round.election
 
-    contests = contest_status(election)
-
-    for contest in contests:
+    for contest in election.contests:
         raw_sample_size_options = bravo.get_sample_size(
-            election.risk_limit / 100, contests[contest], sample_results(election)
+            election.risk_limit / 100,
+            sampler_contest.from_db_contest(contest),
+            sample_results(election),
         )
 
         sample_size_options = []
@@ -203,9 +182,12 @@ def sample_ballots(election, round):
         manifest[batch.name] = batch.num_ballots
         batch_id_from_name[batch.name] = batch.id
 
+    contests = [
+        sampler_contest.from_db_contest(contest) for contest in election.contests
+    ]
     sample = sampler.draw_sample(
         election.random_seed,
-        contest_status(election),
+        contests,
         manifest,
         chosen_sample_size,
         num_sampled=num_sampled,
@@ -282,12 +264,13 @@ def check_round(election, jurisdiction_id, round_id):
 
     # assume one contest
     round_contest = round.round_contests[0]
+    contest = next(c for c in election.contests if c.id == round_contest.contest_id)
 
     current_sample_results = sample_results(election)
 
     risk, is_complete = bravo.compute_risk(
         election.risk_limit / 100,
-        contest_status(election)[round_contest.contest_id],
+        sampler_contest.from_db_contest(contest),
         current_sample_results[round_contest.contest_id],
     )
 
