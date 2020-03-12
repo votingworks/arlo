@@ -40,7 +40,7 @@ class Election(db.Model):
     jurisdictions = relationship(
         "Jurisdiction", backref="election", passive_deletes=True
     )
-    contests = relationship("TargetedContest", backref="election", passive_deletes=True)
+    contests = relationship("Contest", backref="election", passive_deletes=True)
     rounds = relationship("Round", backref="election", passive_deletes=True)
 
     jurisdictions_file = db.Column(db.Text, nullable=True)
@@ -74,7 +74,7 @@ class Jurisdiction(db.Model):
         "AuditBoard", backref="jurisdiction", passive_deletes=True
     )
     contests = relationship(
-        "TargetedContestJurisdiction", backref="jurisdiction", passive_deletes=True
+        "ContestJurisdiction", backref="jurisdiction", passive_deletes=True
     )
 
 
@@ -150,44 +150,40 @@ class Batch(db.Model):
     )
 
 
-class TargetedContest(db.Model):
+class Contest(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     election_id = db.Column(
         db.String(200), db.ForeignKey("election.id", ondelete="cascade"), nullable=False
     )
     name = db.Column(db.String(200), nullable=False)
+    # is_targeted = True for targeted contests, False for opportunistic contests
+    is_targeted = db.Column(db.Boolean, nullable=False)
     total_ballots_cast = db.Column(db.Integer, nullable=False)
     num_winners = db.Column(db.Integer, nullable=False)
     votes_allowed = db.Column(db.Integer, nullable=False)
 
-    choices = relationship(
-        "TargetedContestChoice", backref="contest", passive_deletes=True
-    )
+    choices = relationship("ContestChoice", backref="contest", passive_deletes=True)
     results = relationship(
         "RoundContestResult", backref="contest", passive_deletes=True
     )
 
 
-class TargetedContestChoice(db.Model):
+class ContestChoice(db.Model):
     id = db.Column(db.String(200), primary_key=True)
     contest_id = db.Column(
-        db.String(200),
-        db.ForeignKey("targeted_contest.id", ondelete="cascade"),
-        nullable=False,
+        db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False,
     )
     name = db.Column(db.String(200), nullable=False)
     num_votes = db.Column(db.Integer, nullable=False)
 
     results = relationship(
-        "RoundContestResult", backref="targeted_contest_choice", passive_deletes=True
+        "RoundContestResult", backref="contest_choice", passive_deletes=True
     )
 
 
-class TargetedContestJurisdiction(db.Model):
+class ContestJurisdiction(db.Model):
     contest_id = db.Column(
-        db.String(200),
-        db.ForeignKey("targeted_contest.id", ondelete="cascade"),
-        nullable=False,
+        db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False,
     )
     jurisdiction_id = db.Column(
         db.String(200),
@@ -285,9 +281,7 @@ class RoundContest(db.Model):
         db.String(200), db.ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
     contest_id = db.Column(
-        db.String(200),
-        db.ForeignKey("targeted_contest.id", ondelete="cascade"),
-        nullable=False,
+        db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False,
     )
 
     sample_size_options = db.Column(db.String(1000), nullable=True)
@@ -308,12 +302,10 @@ class RoundContestResult(db.Model):
         db.String(200), db.ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
     contest_id = db.Column(
-        db.String(200),
-        db.ForeignKey("targeted_contest.id", ondelete="cascade"),
-        nullable=False,
+        db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False,
     )
     __table_args__ = (
-        db.PrimaryKeyConstraint("round_id", "targeted_contest_choice_id"),
+        db.PrimaryKeyConstraint("round_id", "contest_choice_id"),
         db.ForeignKeyConstraint(
             ["round_id", "contest_id"],
             ["round_contest.round_id", "round_contest.contest_id"],
@@ -321,9 +313,9 @@ class RoundContestResult(db.Model):
         ),
     )
 
-    targeted_contest_choice_id = db.Column(
+    contest_choice_id = db.Column(
         db.String(200),
-        db.ForeignKey("targeted_contest_choice.id", ondelete="cascade"),
+        db.ForeignKey("contest_choice.id", ondelete="cascade"),
         nullable=False,
     )
     result = db.Column(db.Integer)

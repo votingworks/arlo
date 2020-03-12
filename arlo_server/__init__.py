@@ -32,7 +32,7 @@ from config import (
 )
 
 from util.binpacking import Bucket, BalancedBucketList
-from util.contest import Contest
+from util.contest import Contest as SamplerContest
 from util.jurisdiction_bulk_update import bulk_update_jurisdictions
 
 AUDIT_BOARD_MEMBER_COUNT = 2
@@ -82,7 +82,7 @@ def contest_status(election):
         for choice in contest.choices:
             info_dict[choice.id] = choice.num_votes
 
-        contests[name] = Contest(name, info_dict)
+        contests[name] = SamplerContest(name, info_dict)
 
     return contests
 
@@ -100,7 +100,7 @@ def sample_results(election):
         )
         for round_contest in round_contests:
             for result in round_contest.results:
-                contests[contest.id][result.targeted_contest_choice_id] += result.result
+                contests[contest.id][result.contest_choice_id] += result.result
 
     return contests
 
@@ -524,7 +524,7 @@ def audit_status(election_id=None):
                         },
                         "results": dict(
                             [
-                                [result.targeted_contest_choice_id, result.result]
+                                [result.contest_choice_id, result.result]
                                 for result in round_contest.results
                             ]
                         ),
@@ -551,17 +551,18 @@ def audit_basic_update(election_id):
     election.online = info["online"]
 
     errors = []
-    db.session.query(TargetedContest).filter_by(election_id=election.id).delete()
+    db.session.query(Contest).filter_by(election_id=election.id).delete()
 
     for contest in info["contests"]:
         total_allowed_votes_in_contest = (
             contest["totalBallotsCast"] * contest["votesAllowed"]
         )
 
-        contest_obj = TargetedContest(
+        contest_obj = Contest(
             election_id=election.id,
             id=contest["id"],
             name=contest["name"],
+            is_targeted=True,
             total_ballots_cast=contest["totalBallotsCast"],
             num_winners=contest["numWinners"],
             votes_allowed=contest["votesAllowed"],
@@ -573,7 +574,7 @@ def audit_basic_update(election_id):
         for choice in contest["choices"]:
             total_votes_in_all_choices += choice["numVotes"]
 
-            choice_obj = TargetedContestChoice(
+            choice_obj = ContestChoice(
                 id=choice["id"],
                 contest_id=contest_obj.id,
                 name=choice["name"],
@@ -627,7 +628,7 @@ def jurisdictions_set(election_id):
         db.session.add(jurisdiction_obj)
 
         for contest_id in jurisdiction["contests"]:
-            jurisdiction_contest = TargetedContestJurisdiction(
+            jurisdiction_contest = ContestJurisdiction(
                 contest_id=contest_id, jurisdiction_id=jurisdiction_obj.id
             )
             db.session.add(jurisdiction_contest)
@@ -1129,7 +1130,7 @@ def jurisdiction_results(election_id, jurisdiction_id, round_num):
             contest_result = RoundContestResult(
                 round_id=round.id,
                 contest_id=contest["id"],
-                targeted_contest_choice_id=choice_id,
+                contest_choice_id=choice_id,
                 result=result,
             )
             db.session.add(contest_result)
@@ -1195,7 +1196,7 @@ def audit_report(election_id):
             report_writer.writerow(
                 [
                     "Round {:d} Audited Votes for {:s}".format(
-                        round.round_num, result.targeted_contest_choice.name
+                        round.round_num, result.contest_choice.name
                     ),
                     result.result,
                 ]
