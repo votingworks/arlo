@@ -118,6 +118,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
                 {
                     "id": contest_id,
                     "name": "contest 1",
+                    "isTargeted": True,
                     "choices": [
                         {
                             "id": candidate_id_1,
@@ -310,6 +311,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
                 {
                     "id": contest_id,
                     "name": "contest 1",
+                    "isTargeted": True,
                     "choices": [
                         {
                             "id": candidate_id_1,
@@ -568,6 +570,7 @@ def test_small_election(client):
                 {
                     "id": contest_id,
                     "name": "Contest 1",
+                    "isTargeted": True,
                     "choices": [
                         {"id": candidate_id_1, "name": "Candidate 1", "numVotes": 1325},
                         {"id": candidate_id_2, "name": "Candidate 2", "numVotes": 792},
@@ -757,6 +760,7 @@ def test_contest_choices_cannot_have_more_votes_than_allowed(client):
                 {
                     "id": contest_id,
                     "name": "Contest 1",
+                    "isTargeted": True,
                     "choices": [
                         {"id": candidate_id_1, "name": "Candidate 1", "numVotes": 21},
                         {"id": candidate_id_2, "name": "Candidate 2", "numVotes": 40},
@@ -792,6 +796,7 @@ def test_contest_choices_cannot_have_more_votes_than_allowed(client):
                 {
                     "id": contest_id,
                     "name": "Contest 1",
+                    "isTargeted": True,
                     "choices": [
                         {"id": candidate_id_1, "name": "Candidate 1", "numVotes": 20},
                         {"id": candidate_id_2, "name": "Candidate 2", "numVotes": 40},
@@ -909,6 +914,7 @@ def test_multi_winner_election(client):
                 {
                     "id": contest_id,
                     "name": "Contest 1",
+                    "isTargeted": True,
                     "choices": [
                         {"id": candidate_id_1, "name": "Candidate 1", "numVotes": 1000},
                         {"id": candidate_id_2, "name": "Candidate 2", "numVotes": 792},

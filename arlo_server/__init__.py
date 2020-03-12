@@ -450,6 +450,7 @@ def audit_status(election_id=None):
             {
                 "id": contest.id,
                 "name": contest.name,
+                "isTargeted": contest.is_targeted,
                 "choices": [
                     {"id": choice.id, "name": choice.name, "numVotes": choice.num_votes}
                     for choice in contest.choices
@@ -545,7 +546,7 @@ def audit_basic_update(election_id):
             election_id=election.id,
             id=contest["id"],
             name=contest["name"],
-            is_targeted=True,
+            is_targeted=contest.get("isTargeted", True),
             total_ballots_cast=contest["totalBallotsCast"],
             num_winners=contest["numWinners"],
             votes_allowed=contest["votesAllowed"],
