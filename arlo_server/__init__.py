@@ -6,7 +6,7 @@ from flask import Flask, jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
 from audits import sampler, bravo, sampler_contest
-from werkzeug.exceptions import InternalServerError, Unauthorized, Forbidden
+from werkzeug.exceptions import InternalServerError, BadRequest, Unauthorized, Forbidden
 from xkcdpass import xkcd_password as xp
 
 from sqlalchemy import event, func
@@ -17,6 +17,7 @@ from authlib.flask.client import OAuth
 from arlo_server.base import app
 from arlo_server.db import db
 from models import *
+from .validation import check_required_fields_for_contest
 
 from config import HTTP_ORIGIN
 from config import (
@@ -538,6 +539,8 @@ def audit_basic_update(election_id):
     db.session.query(Contest).filter_by(election_id=election.id).delete()
 
     for contest in info["contests"]:
+        check_required_fields_for_contest(contest)
+
         total_allowed_votes_in_contest = (
             contest["totalBallotsCast"] * contest["votesAllowed"]
         )
@@ -546,7 +549,7 @@ def audit_basic_update(election_id):
             election_id=election.id,
             id=contest["id"],
             name=contest["name"],
-            is_targeted=contest.get("isTargeted", True),
+            is_targeted=contest["isTargeted"],
             total_ballots_cast=contest["totalBallotsCast"],
             num_winners=contest["numWinners"],
             votes_allowed=contest["votesAllowed"],
@@ -1477,6 +1480,14 @@ def jurisdictionadmin_login_callback():
 @app.route("/election/<election_id>/board/<board_id>")
 def serve(election_id=None, board_id=None):
     return app.send_static_file("index.html")
+
+
+@app.errorhandler(BadRequest)
+def handle_400(e):
+    return (
+        jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
+        BadRequest.code,
+    )
 
 
 @app.errorhandler(Unauthorized)
