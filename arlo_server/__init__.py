@@ -438,6 +438,7 @@ def update_jurisdictions_file(election_id=None):
 @app.route("/election/<election_id>/audit/status", methods=["GET"])
 def audit_status(election_id=None):
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
 
     return jsonify(
         organizationId=election.organization_id,
@@ -527,6 +528,7 @@ def audit_status(election_id=None):
 @app.route("/election/<election_id>/audit/basic", methods=["POST"])
 def audit_basic_update(election_id):
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
     info = request.get_json()
     election.name = info["name"]
     election.risk_limit = info["riskLimit"]
@@ -585,6 +587,7 @@ def audit_basic_update(election_id):
 @app.route("/election/<election_id>/audit/sample-size", methods=["POST"])
 def samplesize_set(election_id):
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
 
     # only works if there's only one round
     rounds = election.rounds
@@ -600,6 +603,7 @@ def samplesize_set(election_id):
 @app.route("/election/<election_id>/audit/jurisdictions", methods=["POST"])
 def jurisdictions_set(election_id):
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
     jurisdictions = request.get_json()["jurisdictions"]
 
     db.session.query(Jurisdiction).filter_by(election_id=election.id).delete()
@@ -641,6 +645,7 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
     TABULATOR = "Tabulator"
 
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
     jurisdiction = Jurisdiction.query.filter_by(
         election_id=election.id, id=jurisdiction_id
     ).one()
@@ -746,6 +751,7 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
 @app.route("/election/<election_id>/audit/freeze", methods=["POST"])
 def audit_launch(election_id):
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
 
     # don't freeze an already frozen election
     if election.frozen_at:
@@ -998,6 +1004,7 @@ def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
 )
 def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
 
     # check the jurisdiction and round
     Jurisdiction.query.filter_by(election_id=election.id, id=jurisdiction_id).one()
@@ -1098,6 +1105,7 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
 )
 def jurisdiction_results(election_id, jurisdiction_id, round_num):
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
     results = request.get_json()
 
     # check the round ownership
@@ -1129,6 +1137,7 @@ def jurisdiction_results(election_id, jurisdiction_id, round_num):
 @app.route("/election/<election_id>/audit/report", methods=["GET"])
 def audit_report(election_id):
     election = get_election(election_id)
+    require_audit_admin_for_organization(election.organization_id)
     jurisdiction = election.jurisdictions[0]
 
     csv_io = io.StringIO()
