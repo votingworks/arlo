@@ -1,12 +1,19 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import EstimateSampleSize from './EstimateSampleSize'
-import SelectBallotsToAudit from './SelectBallotsToAudit'
-import CalculateRiskMeasurement from './CalculateRiskMeasurement'
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useContext,
+} from 'react'
+// import EstimateSampleSize from './EstimateSampleSize'
+// import SelectBallotsToAudit from './SelectBallotsToAudit'
+// import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api, checkAndToast } from '../utilities'
 import { IAudit, ICreateAuditParams, IErrorResponse } from '../../types'
 import ResetButton from './ResetButton'
 import Wrapper from '../Atoms/Wrapper'
 import Sidebar, { ISidebarMenuItem } from '../Atoms/Sidebar'
+import { AuthDataContext } from '../UserContext'
 
 const initialData: IAudit = {
   name: '',
@@ -29,6 +36,8 @@ const Audit: React.FC<IProps> = ({
     params: { electionId },
   },
 }: IProps) => {
+  const { isAuthenticated, meta } = useContext(AuthDataContext)
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [audit, setAudit] = useState(initialData)
@@ -54,11 +63,11 @@ const Audit: React.FC<IProps> = ({
     updateAudit()
   }, [updateAudit])
 
-  const showSelectBallotsToAudit =
-    !!audit.contests.length &&
-    audit.rounds[0].contests.every(c => !!c.sampleSizeOptions)
-  const showCalculateRiskMeasurement =
-    !!audit.rounds.length && audit.rounds[0].contests.every(c => !!c.sampleSize)
+  // const showSelectBallotsToAudit =
+  //   !!audit.contests.length &&
+  //   audit.rounds[0].contests.every(c => !!c.sampleSizeOptions)
+  // const showCalculateRiskMeasurement =
+  //   !!audit.rounds.length && audit.rounds[0].contests.every(c => !!c.sampleSize)
 
   const setupStages = [
     'Participants',
@@ -88,17 +97,30 @@ const Audit: React.FC<IProps> = ({
     [setupStages, stage]
   )
 
+  const stagedForm = (s => {
+    switch (s) {
+      case 'Participants':
+        return <p>Participants</p>
+      default:
+        return <p>N/A</p>
+    }
+  })(stage)
+
   return (
     <Wrapper>
       <ResetButton
         electionId={electionId}
-        disabled={!audit.contests.length}
+        disabled={!audit.contests.length || isLoading}
         updateAudit={updateAudit}
       />
 
-      <Sidebar title="Audit Setup" menuItems={menuItems} />
+      {(!isAuthenticated || meta!.type === 'audit_admin') && (
+        <Sidebar title="Audit Setup" menuItems={menuItems} />
+      )}
 
-      <EstimateSampleSize
+      {stagedForm}
+
+      {/* <EstimateSampleSize
         audit={audit}
         isLoading={isLoading && !showSelectBallotsToAudit}
         setIsLoading={setIsLoading}
@@ -127,7 +149,7 @@ const Audit: React.FC<IProps> = ({
           getStatus={getStatus}
           electionId={electionId}
         />
-      )}
+      )} */}
     </Wrapper>
   )
 }
