@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import styled from 'styled-components'
-import FormTitle from './FormTitle'
+import H2Title from '../Atoms/H2Title'
 
 const StyledFormWrapper = styled.div`
   display: block;
@@ -16,7 +16,7 @@ interface IProps {
 
 const FormWrapper: React.FC<IProps> = ({ children, title }: IProps) => (
   <StyledFormWrapper>
-    <FormTitle>{title}</FormTitle>
+    <H2Title>{title}</H2Title>
     {children}
   </StyledFormWrapper>
 )

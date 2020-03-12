@@ -20,7 +20,7 @@ import {
 } from '@blueprintjs/core'
 import FormSection, { FormSectionDescription } from '../Form/FormSection'
 import FormWrapper from '../Form/FormWrapper'
-import FormTitle from '../Form/FormTitle'
+import H2Title from '../Atoms/H2Title'
 import FormButton from '../Form/FormButton'
 import FormField from '../Form/FormField'
 import FormButtonBar from '../Form/FormButtonBar'
@@ -461,7 +461,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
                   </>
                 )}
               />
-              <FormTitle>Audit Settings</FormTitle>
+              <H2Title>Audit Settings</H2Title>
               <FormSection>
                 <RadioGroup
                   name="online"

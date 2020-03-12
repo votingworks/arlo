@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -6,6 +6,7 @@ import { api, checkAndToast } from '../utilities'
 import { IAudit, ICreateAuditParams, IErrorResponse } from '../../types'
 import ResetButton from './ResetButton'
 import Wrapper from '../Atoms/Wrapper'
+import Sidebar, { ISidebarMenuItem } from '../Atoms/Sidebar'
 
 const initialData: IAudit = {
   name: '',
@@ -59,6 +60,34 @@ const Audit: React.FC<IProps> = ({
   const showCalculateRiskMeasurement =
     !!audit.rounds.length && audit.rounds[0].contests.every(c => !!c.sampleSize)
 
+  const setupStages = [
+    'Participants',
+    'Target Contests',
+    'Opportunistic Contests',
+    'Audit Settings',
+    'Review & Launch',
+    'Round Options',
+  ] as const
+  type ElementType<
+    T extends readonly unknown[]
+  > = T extends readonly (infer ElementType)[] ? ElementType : never
+
+  const [stage, setStage] = useState<ElementType<typeof setupStages>>(
+    'Participants'
+  )
+
+  const menuItems = useMemo(
+    () =>
+      setupStages.map(
+        (s: ElementType<typeof setupStages>): ISidebarMenuItem => ({
+          title: s,
+          active: s === stage,
+          action: () => setStage(s),
+        })
+      ),
+    [setupStages, stage]
+  )
+
   return (
     <Wrapper>
       <ResetButton
@@ -66,6 +95,8 @@ const Audit: React.FC<IProps> = ({
         disabled={!audit.contests.length}
         updateAudit={updateAudit}
       />
+
+      <Sidebar title="Audit Setup" menuItems={menuItems} />
 
       <EstimateSampleSize
         audit={audit}

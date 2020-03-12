@@ -35,7 +35,7 @@ import {
 } from '../../types'
 import { api, testNumber, checkAndToast } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
-import FormTitle from '../Form/FormTitle'
+import H2Title from '../Atoms/H2Title'
 import FormField from '../Form/FormField'
 import number, { parse as parseNumber } from '../../utils/number-schema'
 import { formattedUpTo } from '../../utils/indexes'
@@ -279,7 +279,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
         <form onSubmit={handleSubmit} id="fillFormTwo" data-testid="form-two">
           <hr />
           <FormWrapper>
-            <FormTitle>Select Ballots to Audit</FormTitle>
+            <H2Title>Select Ballots to Audit</H2Title>
             {Object.keys(sampleSizeOptions).length &&
               Object.values(sampleSizeOptions).some(v => !!v.length) && (
                 <FormSection>

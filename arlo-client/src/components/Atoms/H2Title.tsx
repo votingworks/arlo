@@ -3,7 +3,7 @@ import { H2 } from '@blueprintjs/core'
 import styled from 'styled-components'
 
 /* stylelint-disable declaration-no-important */
-const StyledFormTitle = styled(H2)`
+const StyledH2 = styled(H2)`
   margin: 40px 0 25px 0;
   font-size: 21px !important;
 `
@@ -13,8 +13,8 @@ interface IProps {
   children: React.ReactNode
 }
 
-const FormTitle: React.FC<IProps> = ({ children }: IProps) => (
-  <StyledFormTitle>{children}</StyledFormTitle>
+const H2Title: React.FC<IProps> = ({ children }: IProps) => (
+  <StyledH2>{children}</StyledH2>
 )
 
-export default FormTitle
+export default H2Title
