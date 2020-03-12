@@ -2,10 +2,8 @@ import pytest
 import math
 import numpy as np
 
-import sampler
-import audits.bravo as bravo
-
-from util.contest import Contest as Contest
+from audits import bravo, sampler
+from audits.sampler_contest import Contest
 
 seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
 risk_limit = 0.1

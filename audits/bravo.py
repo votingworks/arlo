@@ -5,7 +5,7 @@ Library for performing a BRAVO-style ballot polling risk-limiting audit.
 import math
 from scipy import stats
 
-from util.contest import Contest
+from .sampler_contest import Contest
 
 
 def get_expected_sample_sizes(risk_limit, contest, sample_results):
