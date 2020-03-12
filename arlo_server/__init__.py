@@ -65,7 +65,9 @@ def init_db():
 
 
 def get_election(election_id):
-    return Election.query.filter_by(id=election_id).one()
+    election = Election.query.filter_by(id=election_id).one()
+    require_audit_admin_for_organization(election.organization_id)
+    return election
 
 
 def contest_status(election):
@@ -383,7 +385,6 @@ def election_new():
 @app.route("/election/<election_id>/jurisdictions_file", methods=["GET"])
 def get_jurisdictions_file(election_id=None):
     election = get_election(election_id)
-    require_audit_admin_for_organization(election.organization_id)
     return jsonify(
         content=election.jurisdictions_file,
         filename=election.jurisdictions_filename,
@@ -394,7 +395,6 @@ def get_jurisdictions_file(election_id=None):
 @app.route("/election/<election_id>/jurisdictions_file", methods=["POST"])
 def update_jurisdictions_file(election_id=None):
     election = get_election(election_id)
-    require_audit_admin_for_organization(election.organization_id)
 
     if "jurisdictions" not in request.files:
         return (
