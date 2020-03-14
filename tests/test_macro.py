@@ -139,6 +139,25 @@ def test_max_error(contests, batches):
             )
 
 
+def test_compute_U(contests, batches):
+
+    # Values from Stark
+    expected_Us = {
+        "Contest A": 21.0,
+        "Contest B": 11.0,
+        "Contest C": 7.666667,
+    }
+
+    for contest in expected_Us:
+        computed = round(macro.compute_U(batches, contests[contest]), 6)
+
+        assert (
+            computed == expected_Us[contest]
+        ), "U computation was incorrect for contest {}! Expected{}, got {}".format(
+            contest, expected_Us[contest], computed
+        )
+
+
 def test_compute_risk(contests, batches):
 
     sample = {}
@@ -148,28 +167,42 @@ def test_compute_risk(contests, batches):
         sample["Batch {}".format(i)] = {
             "Contest A": {"winner": 200, "loser": 180,},
             "Contest B": {"winner": 200, "loser": 160,},
-            "Contest C": {"winner": 200, "loser": 140,},
+            "Contest C": {"winner": 170, "loser": 170,},
         }
 
-    # draws with taint of 0.04047619
+    # draws with taint of 0.047619 for Contest A,  for the others
     for i in range(100, 106):
         sample["Batch {}".format(i)] = {
             "Contest A": {"winner": 190, "loser": 190,},
-            "Contest B": {"winner": 200, "loser": 160,},
             "Contest C": {"winner": 200, "loser": 140,},
         }
+
+    expected_ps = {
+        "Contest A": 0.22035947,
+        "Contest B": 0.052098685,
+        "Contest C": 0.432327595,
+    }
+
+    expected_results = {"Contest A": True, "Contest B": True, "Contest C": False}
 
     for contest in contests:
         computed_p, result = macro.compute_risk(
             risk_limit, contests[contest], batches, sample
         )
 
-        expected_p = 0.247688222
+        expected_p = expected_ps[contest]
 
         delta = abs(expected_p - computed_p)
 
-        assert delta < 10 ** -2, "Incorrect p-value: Got {}, expected {}".format(
-            computed_p, expected_p
+        assert (
+            delta < 10 ** -6
+        ), "Incorrect p-value: Got {}, expected {} in contest {}".format(
+            computed_p, expected_p, contest
         )
 
-        assert result, "Audit did not terminate but should have"
+        if expected_results[contest]:
+            assert result, "Audit on {} did not terminate but should have".format(
+                contest
+            )
+        else:
+            assert not result, "Audit terminated but should't have"

@@ -25,6 +25,10 @@ def compute_error(batch_results, contest, sampled_results):
     """
 
     error = 0
+
+    if contest.name not in batch_results:
+        return error
+
     margins = contest.margins
     for winner in margins["winners"]:
         for loser in margins["losers"]:
@@ -149,6 +153,10 @@ def compute_risk(risk_limit, contest, batch_results, sample_results):
     U = compute_U(batch_results, contest)
 
     for batch in sample_results:
+
+        if contest.name not in batch_results[batch]:
+            continue
+
         e_p = compute_error(batch_results[batch], contest, sample_results[batch])
 
         u_p = compute_max_error(batch_results[batch], contest)
@@ -156,8 +164,5 @@ def compute_risk(risk_limit, contest, batch_results, sample_results):
         taint = e_p / u_p
 
         p *= (1 - 1 / U) / (1 - taint)
-
-        if p < risk_limit:
-            return p, True
 
     return p, p < risk_limit
