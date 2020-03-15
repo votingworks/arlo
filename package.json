@@ -15,7 +15,7 @@
       "prettier --write"
     ],
     "*.py": [
-      "black"
+      "python3 -m pipenv run black"
     ],
     "package.json": [
       "sort-package-json"
