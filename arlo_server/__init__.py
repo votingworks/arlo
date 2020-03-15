@@ -140,7 +140,9 @@ def setup_next_round(election):
     rounds = Round.query.filter_by(election_id=election.id).order_by("round_num").all()
 
     print("adding round {:d} for election {:s}".format(len(rounds) + 1, election.id))
-    round = Round(id=str(uuid.uuid4()), election_id=election.id, round_num=len(rounds) + 1)
+    round = Round(
+        id=str(uuid.uuid4()), election_id=election.id, round_num=len(rounds) + 1
+    )
 
     db.session.add(round)
 
@@ -721,7 +723,7 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
     return jsonify(status="ok")
 
 
-@app.route('/election/<election_id>/audit/freeze', methods=["POST"])
+@app.route("/election/<election_id>/audit/freeze", methods=["POST"])
 def audit_freeze(election_id):
     election = get_election(election_id)
 
@@ -749,23 +751,27 @@ def get_audit_boards(election_id, jurisdiction_id, round_num):
     return jurisdiction, round, audit_boards
 
 
-@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/audit-board/',
-           methods=["POST"])
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/audit-board/",
+    methods=["POST"],
+)
 def audit_boards_create(election_id, jurisdiction_id, round_num):
-    jurisdiction, round, audit_boards = get_audit_boards(election_id, jurisdiction_id, round_num)
+    jurisdiction, round, audit_boards = get_audit_boards(
+        election_id, jurisdiction_id, round_num
+    )
 
     audit_boards.delete()
 
-    audit_boards = request.get_json()['auditBoards']
+    audit_boards = request.get_json()["auditBoards"]
 
     for audit_board in audit_boards:
-        audit_board_obj = AuditBoard(id=audit_board["id"],
-                                     round_id=round_id,
-                                     name=audit_board["name"],
-                                     jurisdiction_id=jurisdiction.id,
-                                     passphrase=xp.generate_xkcdpassword(WORDS,
-                                                                         numwords=4,
-                                                                         delimiter="-"))
+        audit_board_obj = AuditBoard(
+            id=audit_board["id"],
+            round_id=round_id,
+            name=audit_board["name"],
+            jurisdiction_id=jurisdiction.id,
+            passphrase=xp.generate_xkcdpassword(WORDS, numwords=4, delimiter="-"),
+        )
         db.session.add(audit_board_obj)
 
     db.session.commit()
@@ -773,24 +779,36 @@ def audit_boards_create(election_id, jurisdiction_id, round_num):
     return jsonify(status="ok")
 
 
-@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/audit-board/',
-           methods=["GET"])
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/audit-board/",
+    methods=["GET"],
+)
 def audit_boards_list(election_id, jurisdiction_id, round_num):
-    jurisdiction, round, audit_boards = get_audit_boards(election_id, jurisdiction_id, round_num)
+    jurisdiction, round, audit_boards = get_audit_boards(
+        election_id, jurisdiction_id, round_num
+    )
 
-    return jsonify(auditBoards=[{
-        "id": audit_board.id,
-        "name": audit_board.name,
-        "members": serialize_members(audit_board),
-        "passphrase": audit_board.passphrase
-    } for audit_board in audit_boards])
+    return jsonify(
+        auditBoards=[
+            {
+                "id": audit_board.id,
+                "name": audit_board.name,
+                "members": serialize_members(audit_board),
+                "passphrase": audit_board.passphrase,
+            }
+            for audit_board in audit_boards
+        ]
+    )
 
 
 @app.route(
-    '/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/audit-board/<audit_board_id>',
-    methods=["GET"])
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/audit-board/<audit_board_id>",
+    methods=["GET"],
+)
 def audit_board(election_id, jurisdiction_id, round_num, audit_board_id):
-    jurisdiction, round, audit_boards_q = get_audit_boards(election_id, jurisdiction_id, round_num)
+    jurisdiction, round, audit_boards_q = get_audit_boards(
+        election_id, jurisdiction_id, round_num
+    )
 
     audit_boards = audit_boards_q.filter_by(id=audit_boards_id).all()
 
@@ -808,11 +826,14 @@ def audit_board(election_id, jurisdiction_id, round_num, audit_board_id):
 
 
 @app.route(
-    '/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/audit-board/<audit_board_id>',
-    methods=["POST"])
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/audit-board/<audit_board_id>",
+    methods=["POST"],
+)
 def set_audit_board(election_id, jurisdiction_id, round_num, audit_board_id):
     attributes = request.get_json()
-    jurisdiction, round, audit_boards_q = get_audit_boards(election_id, jurisdiction_id, round_num)
+    jurisdiction, round, audit_boards_q = get_audit_boards(
+        election_id, jurisdiction_id, round_num
+    )
 
     audit_boards = audit_boards_q.filter_by(id=audit_boards_id).all()
 
@@ -875,58 +896,84 @@ def set_audit_board(election_id, jurisdiction_id, round_num, audit_board_id):
     return jsonify(status="ok")
 
 
-@app.route('/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/ballot-list')
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/ballot-list"
+)
 def ballot_list(election_id, jurisdiction_id, round_num):
-    query = SampledBallotDraw.query \
-                .join(SampledBallot).join(SampledBallotDraw.batch).join(AuditBoard).join(Round) \
-                .add_entity(SampledBallot).add_entity(Batch).add_entity(AuditBoard) \
-                .filter(Batch.jurisdiction_id == jurisdiction_id) \
-                .filter(Round.round_num == round_num) \
-                .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position, SampledBallotDraw.ticket_number) \
-                .all()
+    query = (
+        SampledBallotDraw.query.join(SampledBallot)
+        .join(SampledBallotDraw.batch)
+        .join(AuditBoard)
+        .join(Round)
+        .add_entity(SampledBallot)
+        .add_entity(Batch)
+        .add_entity(AuditBoard)
+        .filter(Batch.jurisdiction_id == jurisdiction_id)
+        .filter(Round.round_num == round_num)
+        .order_by(
+            AuditBoard.name,
+            Batch.name,
+            SampledBallot.ballot_position,
+            SampledBallotDraw.ticket_number,
+        )
+        .all()
+    )
 
-    return jsonify(ballots=[{
-        "ticketNumber": ballot_draw.ticket_number,
-        "status": 'AUDITED' if ballot.vote is not None else None,
-        "vote": ballot.vote,
-        "comment": ballot.comment,
-        "position": ballot.ballot_position,
-        "batch": {
-            "id": batch.id,
-            "name": batch.name,
-            "tabulator": batch.tabulator
-        },
-        "auditBoard": {
-            "id": audit_board.id,
-            "name": audit_board.name
-        }
-    } for (ballot_draw, ballot, batch, audit_board) in query])
+    return jsonify(
+        ballots=[
+            {
+                "ticketNumber": ballot_draw.ticket_number,
+                "status": "AUDITED" if ballot.vote is not None else None,
+                "vote": ballot.vote,
+                "comment": ballot.comment,
+                "position": ballot.ballot_position,
+                "batch": {
+                    "id": batch.id,
+                    "name": batch.name,
+                    "tabulator": batch.tabulator,
+                },
+                "auditBoard": {"id": audit_board.id, "name": audit_board.name},
+            }
+            for (ballot_draw, ballot, batch, audit_board) in query
+        ]
+    )
 
 
 @app.route(
-    '/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/audit-board/<audit_board_id>/ballot-list'
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_num>/audit-board/<audit_board_id>/ballot-list"
 )
 def ballot_list_by_audit_board(election_id, jurisdiction_id, round_num, audit_board_id):
-    query = SampledBallotDraw.query \
-                .join(Round).join(SampledBallot).join(Batch) \
-                .add_entity(SampledBallot).add_entity(Batch) \
-                .filter(Batch.jurisdiction_id == jurisdiction_id) \
-                .filter(Round.round_num == round_num) \
-                .filter(SampledBallot.audit_board_id == audit_board_id) \
-                .order_by(Batch.name, SampledBallot.ballot_position, SampledBallotDraw.ticket_number)
+    query = (
+        SampledBallotDraw.query.join(Round)
+        .join(SampledBallot)
+        .join(Batch)
+        .add_entity(SampledBallot)
+        .add_entity(Batch)
+        .filter(Batch.jurisdiction_id == jurisdiction_id)
+        .filter(Round.round_num == round_num)
+        .filter(SampledBallot.audit_board_id == audit_board_id)
+        .order_by(
+            Batch.name, SampledBallot.ballot_position, SampledBallotDraw.ticket_number
+        )
+    )
 
-    return jsonify(ballots=[{
-        "ticketNumber": ballot_draw.ticket_number,
-        "status": 'AUDITED' if ballot.vote is not None else None,
-        "vote": ballot.vote,
-        "comment": ballot.comment,
-        "position": ballot.ballot_position,
-        "batch": {
-            "id": batch.id,
-            "name": batch.name,
-            "tabulator": batch.tabulator
-        }
-    } for (ballot_draw, ballot, batch) in query])
+    return jsonify(
+        ballots=[
+            {
+                "ticketNumber": ballot_draw.ticket_number,
+                "status": "AUDITED" if ballot.vote is not None else None,
+                "vote": ballot.vote,
+                "comment": ballot.comment,
+                "position": ballot.ballot_position,
+                "batch": {
+                    "id": batch.id,
+                    "name": batch.name,
+                    "tabulator": batch.tabulator,
+                },
+            }
+            for (ballot_draw, ballot, batch) in query
+        ]
+    )
 
 
 @app.route(
@@ -1177,15 +1224,20 @@ def audit_report(election_id):
         )
 
         for audit_board in jurisdiction.audit_boards.filter_by(round_id=round.id):
-            report_writer.writerow([
-                audit_board.name, audit_board.member_1,
-                pretty_affiliation(audit_board.member_1_affiliation)
-            ])
-            report_writer.writerow([
-                audit_board.name, audit_board.member_2,
-                pretty_affiliation(audit_board.member_2_affiliation)
-            ])
-
+            report_writer.writerow(
+                [
+                    audit_board.name,
+                    audit_board.member_1,
+                    pretty_affiliation(audit_board.member_1_affiliation),
+                ]
+            )
+            report_writer.writerow(
+                [
+                    audit_board.name,
+                    audit_board.member_2,
+                    pretty_affiliation(audit_board.member_2_affiliation),
+                ]
+            )
 
         ballot_draws = (
             SampledBallotDraw.query.filter_by(round_id=round.id)
