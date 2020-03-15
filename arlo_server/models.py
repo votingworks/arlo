@@ -203,6 +203,10 @@ class AuditBoard(db.Model):
         db.ForeignKey("jurisdiction.id", ondelete="cascade"),
         nullable=False,
     )
+    round_id = db.Column(
+        db.String(200), db.ForeignKey("round.id", ondelete="cascade"), nullable=True
+    )
+
     name = db.Column(db.String(200))
     member_1 = db.Column(db.String(200), nullable=True)
     member_1_affiliation = db.Column(db.String(200), nullable=True)
@@ -230,6 +234,7 @@ class Round(db.Model):
     sampled_ballot_draws = relationship(
         "SampledBallotDraw", backref="round", passive_deletes=True
     )
+    audit_boards = relationship("AuditBoard", backref="round", passive_deletes=True)
 
 
 class SampledBallot(db.Model):

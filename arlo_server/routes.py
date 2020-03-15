@@ -866,8 +866,8 @@ def ballot_list(election_id, jurisdiction_id, round_id):
     query = (
         SampledBallotDraw.query.join(SampledBallot)
         .join(SampledBallotDraw.batch)
-        .join(AuditBoard)
         .join(Round)
+        .join(AuditBoard, AuditBoard.id == SampledBallot.audit_board_id)
         .add_entity(SampledBallot)
         .add_entity(Batch)
         .add_entity(AuditBoard)
