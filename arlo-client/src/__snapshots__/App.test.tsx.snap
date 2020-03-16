@@ -6,7 +6,7 @@ exports[`App renders properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-fAjcbJ dUOePp"
+    class="sc-caSCKo brQMae"
   >
     <div
       class="bp3-navbar bp3-fixed-top sc-bxivhb dGpCch"
@@ -44,8 +44,34 @@ exports[`App renders properly 1`] = `
         height="50px"
         src="/arlo.png"
       />
+      <div
+        class="sc-ifAKCX iKQdjg"
+      >
+        <label
+          for="audit-name"
+          id="audit-name-label"
+        >
+          Give your new audit a unique name.
+          <div
+            class="sc-fAjcbJ gSXBFL sc-dnqmqq dOkpOn"
+          >
+            <div
+              class="bp3-input-group sc-iwsKbI hebCva"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                id="audit-name"
+                name="auditName"
+                style="padding-right: 10px;"
+                value=""
+              />
+            </div>
+          </div>
+        </label>
+      </div>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fMiknA hoQSCm sc-bdVaJa gLVjYw"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fMiknA hoQSCm sc-bwzfXH eBfcXh"
         type="button"
       >
         <span

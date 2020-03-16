@@ -45,7 +45,13 @@ describe('CreateAudit', () => {
 
   it('calls the /election/new endpoint for nonauthenticated user', async () => {
     apiMock.mockImplementation(async () => ({ electionId: '1' }))
-    const { getByText } = render(<CreateAudit {...routeProps} />)
+    const { getByText, getByLabelText } = render(
+      <CreateAudit {...routeProps} />
+    )
+
+    fireEvent.change(getByLabelText('Give your new audit a unique name.'), {
+      target: { value: 'Audit Name' },
+    })
 
     fireEvent.click(getByText('Create a New Audit'), { bubbles: true })
 
@@ -53,10 +59,22 @@ describe('CreateAudit', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/new', {
         method: 'POST',
-        body: JSON.stringify({}),
+        body: JSON.stringify({ auditName: 'Audit Name' }),
       })
       expect(historySpy).toBeCalledTimes(1)
       expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1')
+    })
+  })
+
+  it('requires an audit name', async () => {
+    apiMock.mockImplementation(async () => ({ electionId: '1' }))
+    const { getByText } = render(<CreateAudit {...routeProps} />)
+
+    fireEvent.click(getByText('Create a New Audit'), { bubbles: true })
+
+    await wait(() => {
+      expect(getByText('Required')).toBeTruthy()
+      expect(apiMock).toBeCalledTimes(0)
     })
   })
 
@@ -76,7 +94,7 @@ describe('CreateAudit', () => {
         ],
       }))
       .mockImplementationOnce(async () => ({ electionId: '1' }))
-    const { getByText } = render(
+    const { getByText, getByLabelText } = render(
       <AuthDataProvider>
         <CreateAudit {...routeProps} />
       </AuthDataProvider>
@@ -86,14 +104,19 @@ describe('CreateAudit', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
     })
-
+    fireEvent.change(getByLabelText('Give your new audit a unique name.'), {
+      target: { value: 'Audit Name' },
+    })
     fireEvent.click(getByText('Create a New Audit'), { bubbles: true })
 
     await wait(() => {
       expect(apiMock).toBeCalledTimes(2)
       expect(apiMock).toHaveBeenNthCalledWith(2, '/election/new', {
         method: 'POST',
-        body: JSON.stringify({ organizationId: 'org-id' }),
+        body: JSON.stringify({
+          organizationId: 'org-id',
+          auditName: 'Audit Name',
+        }),
       })
       expect(historySpy).toBeCalledTimes(1)
       expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1')
@@ -195,8 +218,13 @@ describe('CreateAudit', () => {
   it('handles error responses from server', async () => {
     apiMock.mockImplementation(async () => ({ electionId: '1' }))
     checkAndToastMock.mockReturnValue(true)
-    const { getByText } = render(<CreateAudit {...routeProps} />)
+    const { getByText, getByLabelText } = render(
+      <CreateAudit {...routeProps} />
+    )
 
+    fireEvent.change(getByLabelText('Give your new audit a unique name.'), {
+      target: { value: 'Audit Name' },
+    })
     fireEvent.click(getByText('Create a New Audit'), { bubbles: true })
 
     await wait(() => {
@@ -213,8 +241,13 @@ describe('CreateAudit', () => {
       throw new Error('404')
     })
     checkAndToastMock.mockReturnValue(true)
-    const { getByText } = render(<CreateAudit {...routeProps} />)
+    const { getByText, getByLabelText } = render(
+      <CreateAudit {...routeProps} />
+    )
 
+    fireEvent.change(getByLabelText('Give your new audit a unique name.'), {
+      target: { value: 'Audit Name' },
+    })
     fireEvent.click(getByText('Create a New Audit'), { bubbles: true })
 
     await wait(() => {
