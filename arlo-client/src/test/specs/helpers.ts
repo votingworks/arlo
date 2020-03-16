@@ -7,6 +7,7 @@ const filePath = path.join(
 
 export const start = () => {
   browser.url('/')
+  $('#audit-name').addValue('Audit Name')
   $('.bp3-button-text=Create a New Audit').click()
   $('#audit-name').waitForExist(5000)
 }
