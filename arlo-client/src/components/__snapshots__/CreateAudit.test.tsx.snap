@@ -3,15 +3,41 @@
 exports[`CreateAudit lists associated elections for authenticated AA user 1`] = `
 <div>
   <div
-    class="sc-bxivhb jKhLAa"
+    class="sc-gZMcBi coLhGN"
   >
     <img
       alt="Arlo, by VotingWorks"
       height="50px"
       src="/arlo.png"
     />
+    <div
+      class="sc-htpNat kLGmUl"
+    >
+      <label
+        for="audit-name"
+        id="audit-name-label"
+      >
+        Give your new audit a unique name.
+        <div
+          class="sc-VigVT kxLHnZ sc-EHOje bXavad"
+        >
+          <div
+            class="bp3-input-group sc-bZQynM fFGKEg"
+          >
+            <input
+              aria-labelledby="audit-name-label"
+              class="bp3-input"
+              id="audit-name"
+              name="auditName"
+              style="padding-right: 10px;"
+              value=""
+            />
+          </div>
+        </div>
+      </label>
+    </div>
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-htpNat grdNVh sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-iwsKbI kljBkO sc-bwzfXH eBfcXh"
       type="button"
     >
       <span
@@ -21,28 +47,28 @@ exports[`CreateAudit lists associated elections for authenticated AA user 1`] = 
       </span>
     </button>
     <a
-      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
+      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
       href="/election/election-1"
     >
       Not named yet
        (NY)
     </a>
     <a
-      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
+      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
       href="/election/election-2"
     >
       Election Two
        (FL)
     </a>
     <a
-      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
+      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
       href="/election/election-3"
     >
       Election Three
       
     </a>
     <a
-      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
+      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
       href="/election/election-4"
     >
       Election Four
@@ -55,15 +81,41 @@ exports[`CreateAudit lists associated elections for authenticated AA user 1`] = 
 exports[`CreateAudit lists associated elections for authenticated JA user 1`] = `
 <div>
   <div
-    class="sc-bxivhb jKhLAa"
+    class="sc-gZMcBi coLhGN"
   >
     <img
       alt="Arlo, by VotingWorks"
       height="50px"
       src="/arlo.png"
     />
+    <div
+      class="sc-htpNat kLGmUl"
+    >
+      <label
+        for="audit-name"
+        id="audit-name-label"
+      >
+        Give your new audit a unique name.
+        <div
+          class="sc-VigVT kxLHnZ sc-EHOje bXavad"
+        >
+          <div
+            class="bp3-input-group sc-bZQynM fFGKEg"
+          >
+            <input
+              aria-labelledby="audit-name-label"
+              class="bp3-input"
+              id="audit-name"
+              name="auditName"
+              style="padding-right: 10px;"
+              value=""
+            />
+          </div>
+        </div>
+      </label>
+    </div>
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-htpNat grdNVh sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-iwsKbI kljBkO sc-bwzfXH eBfcXh"
       type="button"
     >
       <span
@@ -73,14 +125,14 @@ exports[`CreateAudit lists associated elections for authenticated JA user 1`] = 
       </span>
     </button>
     <a
-      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
+      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
       href="/election/election-1"
     >
       Election One
        (NY)
     </a>
     <a
-      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
+      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
       href="/election/election-2"
     >
       Not named yet
@@ -93,15 +145,41 @@ exports[`CreateAudit lists associated elections for authenticated JA user 1`] = 
 exports[`CreateAudit renders correctly 1`] = `
 <div>
   <div
-    class="sc-bxivhb jKhLAa"
+    class="sc-gZMcBi coLhGN"
   >
     <img
       alt="Arlo, by VotingWorks"
       height="50px"
       src="/arlo.png"
     />
+    <div
+      class="sc-htpNat kLGmUl"
+    >
+      <label
+        for="audit-name"
+        id="audit-name-label"
+      >
+        Give your new audit a unique name.
+        <div
+          class="sc-VigVT kxLHnZ sc-EHOje bXavad"
+        >
+          <div
+            class="bp3-input-group sc-bZQynM fFGKEg"
+          >
+            <input
+              aria-labelledby="audit-name-label"
+              class="bp3-input"
+              id="audit-name"
+              name="auditName"
+              style="padding-right: 10px;"
+              value=""
+            />
+          </div>
+        </div>
+      </label>
+    </div>
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-htpNat grdNVh sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-iwsKbI kljBkO sc-bwzfXH eBfcXh"
       type="button"
     >
       <span
@@ -111,7 +189,7 @@ exports[`CreateAudit renders correctly 1`] = `
       </span>
     </button>
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-htpNat grdNVh sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-iwsKbI kljBkO sc-bdVaJa gLVjYw"
       type="button"
     >
       <span
@@ -121,7 +199,7 @@ exports[`CreateAudit renders correctly 1`] = `
       </span>
     </button>
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-htpNat grdNVh sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-iwsKbI kljBkO sc-bdVaJa gLVjYw"
       type="button"
     >
       <span
