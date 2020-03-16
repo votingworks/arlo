@@ -25,6 +25,7 @@ const contest = {
   numWinners: '1',
   votesAllowed: '1',
   totalBallotsCast: '2123',
+  isTargeted: true,
 }
 
 describe('Ballot', () => {

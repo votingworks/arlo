@@ -32,6 +32,7 @@ export interface ISampleSizeOption {
 
 export interface IContest {
   id: string
+  isTargeted: boolean
   name: string
   numWinners: string
   votesAllowed: string
@@ -131,6 +132,7 @@ export interface IAudit {
   contests: IContest[]
   jurisdictions: IJurisdiction[]
   rounds: IRound[]
+  frozenAt: string | null
 }
 
 export interface IElectionMeta {

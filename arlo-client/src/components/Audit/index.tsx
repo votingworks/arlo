@@ -23,6 +23,7 @@ import Setup, { setupStages } from './Setup'
 
 const initialData: IAudit = {
   name: '',
+  frozenAt: null,
   online: true,
   riskLimit: '',
   randomSeed: '',
@@ -88,7 +89,7 @@ const Audit: React.FC<IProps> = ({
           action: () => setStage(s),
         })
       ),
-    [setupStages, stage]
+    [stage]
   )
 
   return (

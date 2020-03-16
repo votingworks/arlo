@@ -4,6 +4,7 @@ export const statusStates: IAudit[] = [
   {
     name: '',
     riskLimit: '',
+    frozenAt: null,
     online: true,
     randomSeed: '',
     contests: [],
@@ -30,6 +31,7 @@ export const statusStates: IAudit[] = [
         numWinners: '1',
         votesAllowed: '1',
         totalBallotsCast: '2123',
+        isTargeted: true,
       },
     ],
     jurisdictions: [],
@@ -55,6 +57,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    frozenAt: null,
     online: true,
   },
   {
@@ -77,6 +80,7 @@ export const statusStates: IAudit[] = [
         numWinners: '1',
         votesAllowed: '1',
         totalBallotsCast: '2123',
+        isTargeted: true,
       },
     ],
     jurisdictions: [],
@@ -106,6 +110,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '123456789',
     riskLimit: '1',
+    frozenAt: null,
     online: true,
   },
   {
@@ -126,6 +131,7 @@ export const statusStates: IAudit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
+        isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
       },
@@ -185,6 +191,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    frozenAt: null,
     online: true,
   },
   {
@@ -207,6 +214,7 @@ export const statusStates: IAudit[] = [
         numWinners: '1',
         votesAllowed: '1',
         totalBallotsCast: '2123',
+        isTargeted: true,
       },
     ],
     jurisdictions: [
@@ -256,6 +264,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    frozenAt: null,
     online: true,
   },
   {
@@ -278,6 +287,7 @@ export const statusStates: IAudit[] = [
         numWinners: '1',
         votesAllowed: '1',
         totalBallotsCast: '2123',
+        isTargeted: true,
       },
     ],
     jurisdictions: [
@@ -329,6 +339,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    frozenAt: null,
     online: true,
   },
   {
@@ -349,6 +360,7 @@ export const statusStates: IAudit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
+        isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
       },
@@ -395,6 +407,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    frozenAt: null,
     online: true,
   },
   {
@@ -415,6 +428,7 @@ export const statusStates: IAudit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
+        isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
       },
@@ -484,6 +498,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    frozenAt: null,
     online: true,
   },
   {
@@ -504,6 +519,7 @@ export const statusStates: IAudit[] = [
         id: 'contest-1',
         name: 'contest name',
         totalBallotsCast: '2123',
+        isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
       },
@@ -597,6 +613,7 @@ export const statusStates: IAudit[] = [
     name: 'contest name',
     randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
     riskLimit: '1',
+    frozenAt: null,
     online: true,
   },
 ]

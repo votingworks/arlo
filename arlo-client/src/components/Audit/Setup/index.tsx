@@ -2,6 +2,7 @@
 import React from 'react'
 import { ElementType, IAudit } from '../../../types'
 import FormButton from '../../Form/FormButton'
+import Participants from './Participants'
 
 export const setupStages = [
   'Participants',
@@ -17,7 +18,7 @@ interface IProps {
   setStage: (stage: ElementType<typeof setupStages>) => void
 }
 
-const Setup: React.FC<IProps> = ({ stage, setStage }) => {
+const Setup: React.FC<IProps> = ({ stage, setStage, audit }) => {
   const currentIndex = setupStages.indexOf(stage)
   const nextStageButton = () => {
     if (currentIndex < setupStages.length - 1) {
@@ -43,7 +44,7 @@ const Setup: React.FC<IProps> = ({ stage, setStage }) => {
   const step = (() => {
     switch (stage) {
       case 'Participants':
-        return <p>Participants</p>
+        return <Participants audit={audit} />
       case 'Target Contests':
         return <p>Target Contests</p>
       case 'Opportunistic Contests':
