@@ -5,6 +5,7 @@ import Audit from './index'
 import { statusStates, dummyBallots } from './_mocks'
 import * as utilities from '../utilities'
 import { routerTestProps, asyncActRender } from '../testUtilities'
+import AuthDataProvider from '../UserContext'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -132,6 +133,39 @@ describe('RiskLimitingAuditForm', () => {
         /\/election\/[^/]+\/audit\/status/
       )
       expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[4])
+    })
+  })
+
+  it('renders sidebar when authenticated', async () => {
+    apiMock
+      .mockImplementationOnce(async () => statusStates[2])
+      .mockImplementationOnce(async () => ({
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      }))
+    const { container, queryAllByText } = await asyncActRender(
+      <AuthDataProvider>
+        <Router>
+          <Audit {...routeProps} />
+        </Router>
+      </AuthDataProvider>
+    )
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(2)
+      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
+      expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
+      expect(queryAllByText('Participants').length).toBe(2)
+      expect(container).toMatchSnapshot()
     })
   })
 })

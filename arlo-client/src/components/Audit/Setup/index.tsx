@@ -56,6 +56,7 @@ const Setup: React.FC<IProps> = ({ stage, setStage, audit }) => {
       return <p>Audit Settings</p>
     case 'Review & Launch':
       return <p>Review &amp; Launch</p>
+    /* istanbul ignore next */
     default:
       return null
   }

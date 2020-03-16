@@ -31,7 +31,7 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-VigVT gtiHtv"
+            class="bp3-html-select sc-jTzLTM dgTHzL"
           >
             <select
               field="[object Object]"
@@ -111,16 +111,16 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
           Audit boards will enter data about each ballot:
         </div>
         <div
-          class="sc-jTzLTM jLWsng"
+          class="sc-fjdhpX kFhZUw"
         >
           <div
-            class="sc-fjdhpX dlakeG"
+            class="sc-jzJRlG jYRjzo"
           />
           <div
-            class="sc-fjdhpX dlakeG"
+            class="sc-jzJRlG jYRjzo"
           />
           <div
-            class="sc-fjdhpX dlakeG"
+            class="sc-jzJRlG jYRjzo"
           />
         </div>
       </div>
@@ -154,10 +154,10 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
       </div>
     </div>
     <div
-      class="sc-bZQynM gIxRNR"
+      class="sc-gzVnrw ecjOPR"
     >
       <button
-        class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
+        class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
         type="button"
       >
         <span
@@ -202,7 +202,7 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-VigVT gtiHtv"
+            class="bp3-html-select sc-jTzLTM dgTHzL"
           >
             <select
               field="[object Object]"
@@ -282,13 +282,13 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
           Audit boards will enter data about each ballot:
         </div>
         <div
-          class="sc-jTzLTM jLWsng"
+          class="sc-fjdhpX kFhZUw"
         >
           <div
-            class="sc-fjdhpX dlakeG"
+            class="sc-jzJRlG jYRjzo"
           />
           <div
-            class="sc-fjdhpX dlakeG"
+            class="sc-jzJRlG jYRjzo"
           />
         </div>
       </div>
@@ -322,10 +322,10 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
       </div>
     </div>
     <div
-      class="sc-bZQynM gIxRNR"
+      class="sc-gzVnrw ecjOPR"
     >
       <button
-        class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
+        class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
         type="button"
       >
         <span
@@ -370,7 +370,7 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-VigVT gtiHtv"
+            class="bp3-html-select sc-jTzLTM dgTHzL"
           >
             <select
               field="[object Object]"
@@ -450,10 +450,10 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
           Audit boards will enter data about each ballot:
         </div>
         <div
-          class="sc-jTzLTM jLWsng"
+          class="sc-fjdhpX kFhZUw"
         >
           <div
-            class="sc-fjdhpX dlakeG"
+            class="sc-jzJRlG jYRjzo"
           />
         </div>
       </div>
@@ -487,10 +487,10 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="sc-bZQynM gIxRNR"
+      class="sc-gzVnrw ecjOPR"
     >
       <button
-        class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
+        class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
         type="button"
       >
         <span
@@ -535,7 +535,7 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-VigVT gtiHtv"
+            class="bp3-html-select sc-jTzLTM dgTHzL"
           >
             <select
               field="[object Object]"
@@ -615,10 +615,10 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
           Audit boards will enter data about each ballot:
         </div>
         <div
-          class="sc-jTzLTM jLWsng"
+          class="sc-fjdhpX kFhZUw"
         >
           <div
-            class="sc-fjdhpX dlakeG"
+            class="sc-jzJRlG jYRjzo"
           />
         </div>
       </div>

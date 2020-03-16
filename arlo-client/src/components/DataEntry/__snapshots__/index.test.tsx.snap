@@ -3,13 +3,13 @@
 exports[`DataEntry ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <div
-      class="sc-jKJlTe cJqkLF"
+      class="sc-eNQAEJ gXOgPQ"
     >
       <h1
-        class="bp3-heading sc-ckVGcZ ipbdjm"
+        class="bp3-heading sc-jKJlTe kvCNHB"
       >
         Audit Board #1
         : Ballot Card Data Entry
@@ -20,7 +20,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
         Enter Ballot Information
       </h3>
       <div
-        class="bp3-callout sc-eNQAEJ TJXrb"
+        class="bp3-callout sc-hMqMXs JJPwL"
       >
         Round 
         1
@@ -30,7 +30,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
         27
       </div>
       <div
-        class="sc-gqjmRU kTzBLL"
+        class="sc-VigVT bRucap"
       >
         <div
           class="ballot-side"
@@ -53,7 +53,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           </div>
         </div>
         <div
-          class="bp3-divider sc-gZMcBi jbSoiK"
+          class="bp3-divider sc-gqjmRU jzQiLP"
         />
         <div
           class="ballot-main"
@@ -91,7 +91,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
         </div>
       </div>
       <div
-        class="sc-gqjmRU kTzBLL"
+        class="sc-VigVT bRucap"
       >
         <div
           class="ballot-side"
@@ -118,7 +118,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             If the audit board cannot agree, select "No audit board consensus." You may add a comment for additional information about the disagreement.
           </p>
           <form
-            class="sc-VigVT dMoKhi"
+            class="sc-jTzLTM sVjEv"
           >
             <h3
               class="bp3-heading"
@@ -126,13 +126,13 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
               contest name
             </h3>
             <div
-              class="bp3-divider sc-gZMcBi jbSoiK"
+              class="bp3-divider sc-gqjmRU jzQiLP"
             />
             <div
-              class="sc-jTzLTM iLZJqT"
+              class="sc-fjdhpX hkfWXo"
             >
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                class=" bp3-control bp3-radio sc-cSHVUG cZsRbk"
               >
                 <input
                   data-testid="choice one"
@@ -151,7 +151,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                class=" bp3-control bp3-radio sc-cSHVUG cZsRbk"
               >
                 <input
                   data-testid="choice two"
@@ -170,7 +170,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                class=" bp3-control bp3-radio sc-cSHVUG cZsRbk"
               >
                 <input
                   data-testid="Audit board can't agree"
@@ -189,7 +189,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </span>
               </label>
               <label
-                class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                class=" bp3-control bp3-radio sc-cSHVUG cZsRbk"
               >
                 <input
                   data-testid="Blank vote/no mark"
@@ -239,10 +239,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </button>
           </form>
           <div
-            class="sc-fjdhpX hGGYTz"
+            class="sc-jzJRlG kDmaPS"
           >
             <button
-              class="bp3-button bp3-disabled bp3-intent-success sc-htoDjs eellYq"
+              class="bp3-button bp3-disabled bp3-intent-success sc-dnqmqq iQfLYL"
               data-testid="disabled-review"
               disabled=""
               tabindex="-1"
@@ -275,7 +275,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
 exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <div
       class="board-table-container"
@@ -840,7 +840,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 exports[`DataEntry ballot interaction renders board table with large container size 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <div
       class="board-table-container"

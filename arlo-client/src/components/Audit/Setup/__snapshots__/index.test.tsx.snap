@@ -1,0 +1,819 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Setup renders Audit Settings stage 1`] = `
+<div>
+  <p>
+    Audit Settings
+  </p>
+</div>
+`;
+
+exports[`Setup renders Opportunistic Contests stage 1`] = `
+<div>
+  <form
+    data-testid="form-one"
+  >
+    <div
+      class="sc-bwzfXH hfheQC"
+    >
+      <h2
+        class="bp3-heading sc-bdVaJa ibVpPq"
+      >
+        Opportunistic Contests
+      </h2>
+      <div
+        class="sc-gzVnrw coBAaV"
+      >
+        <h3
+          class="bp3-heading sc-dnqmqq hlcOhg"
+        >
+          Contest  Info
+        </h3>
+        <div
+          class="sc-htoDjs GlcDy"
+        >
+          Enter the name of the contest that will drive the audit.
+        </div>
+        <label
+          for="contests[0].name"
+        >
+          Contest
+           
+          
+           
+          Name
+          <div
+            class="sc-iwsKbI dvOqsv"
+          >
+            <div
+              class="bp3-input-group sc-gZMcBi fkRAtG"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                value="contest name"
+              />
+            </div>
+          </div>
+        </label>
+        <div
+          class="sc-htoDjs GlcDy"
+        >
+          Enter the number of winners for the contest.
+        </div>
+        <label
+          for="contests[0].numWinners"
+        >
+          Winners
+          <div
+            class="sc-iwsKbI dvOqsv"
+          >
+            <div
+              class="bp3-input-group sc-gZMcBi fkRAtG"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].numWinners"
+                name="contests[0].numWinners"
+                style="padding-right: 10px;"
+                value="1"
+              />
+            </div>
+          </div>
+        </label>
+        <div
+          class="sc-htoDjs GlcDy"
+        >
+          Number of selections the voter can make in the contest.
+        </div>
+        <label
+          for="contests[0].votesAllowed"
+        >
+          Votes Allowed
+          <div
+            class="sc-iwsKbI dvOqsv"
+          >
+            <div
+              class="bp3-input-group sc-gZMcBi fkRAtG"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
+                style="padding-right: 10px;"
+                value="1"
+              />
+            </div>
+          </div>
+        </label>
+      </div>
+      <div
+        class="sc-gzVnrw coBAaV"
+      >
+        <h3
+          class="bp3-heading sc-dnqmqq hlcOhg"
+        >
+          Candidates/Choices & Vote Totals
+        </h3>
+        <div
+          class="sc-htoDjs GlcDy"
+        >
+          Enter the name of each candidate choice that appears on the ballot for this contest.
+        </div>
+        <div
+          class="sc-jzJRlG hqJpHa"
+        >
+          <div
+            class="sc-kAzzGY gvpNKy"
+          >
+            <label
+              class="bp3-label sc-kgoBCf eKfxQS"
+            >
+              Name of Candidate/Choice 
+              1
+              <div
+                class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
+              >
+                <div
+                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                >
+                  <input
+                    class="bp3-input"
+                    name="contests[0].choices[0].name"
+                    style="padding-right: 10px;"
+                    value="choice one"
+                  />
+                </div>
+              </div>
+            </label>
+            <label
+              class="bp3-label sc-kgoBCf eKfxQS"
+            >
+              Votes for Candidate/Choice 
+              1
+              <div
+                class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
+              >
+                <div
+                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                >
+                  <input
+                    class="bp3-input"
+                    name="contests[0].choices[0].numVotes"
+                    style="padding-right: 10px;"
+                    value="792"
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
+          <div
+            class="sc-kAzzGY gvpNKy"
+          >
+            <label
+              class="bp3-label sc-kgoBCf eKfxQS"
+            >
+              Name of Candidate/Choice 
+              2
+              <div
+                class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
+              >
+                <div
+                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                >
+                  <input
+                    class="bp3-input"
+                    name="contests[0].choices[1].name"
+                    style="padding-right: 10px;"
+                    value="choice two"
+                  />
+                </div>
+              </div>
+            </label>
+            <label
+              class="bp3-label sc-kgoBCf eKfxQS"
+            >
+              Votes for Candidate/Choice 
+              2
+              <div
+                class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
+              >
+                <div
+                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                >
+                  <input
+                    class="bp3-input"
+                    name="contests[0].choices[1].numVotes"
+                    style="padding-right: 10px;"
+                    value="1325"
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-gzVnrw coBAaV"
+      >
+        <h3
+          class="bp3-heading sc-dnqmqq hlcOhg"
+        >
+          Total Ballots Cast
+        </h3>
+        <div
+          class="sc-htoDjs GlcDy"
+        >
+          Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+        </div>
+        <label
+          for="contests[0].totalBallotsCast"
+        >
+          Total Ballots for Contest
+           
+          
+          <div
+            class="sc-iwsKbI dvOqsv"
+          >
+            <div
+              class="bp3-input-group sc-gZMcBi fkRAtG"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].totalBallotsCast"
+                name="contests[0].totalBallotsCast"
+                style="padding-right: 10px;"
+                value="2123"
+              />
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </form>
+</div>
+`;
+
+exports[`Setup renders Participants stage 1`] = `
+<div>
+  <form
+    data-testid="form-one"
+  >
+    <div
+      class="sc-bwzfXH hfheQC"
+    >
+      <h2
+        class="bp3-heading sc-bdVaJa ibVpPq"
+      >
+        Participants
+      </h2>
+      <label
+        for="state"
+      >
+        Choose your state from the options below
+        <br />
+        <div
+          class="bp3-html-select sc-bZQynM imeWhx"
+        >
+          <select
+            field="[object Object]"
+            form="[object Object]"
+            id="state"
+          >
+            <option
+              value=""
+            />
+            <option
+              value="Alabama"
+            >
+              Alabama
+            </option>
+            <option
+              value="Alaska"
+            >
+              Alaska
+            </option>
+            <option
+              value="Arizona"
+            >
+              Arizona
+            </option>
+            <option
+              value="Arkansas"
+            >
+              Arkansas
+            </option>
+            <option
+              value="California"
+            >
+              California
+            </option>
+            <option
+              value="Colorado"
+            >
+              Colorado
+            </option>
+            <option
+              value="Connecticut"
+            >
+              Connecticut
+            </option>
+            <option
+              value="Delaware"
+            >
+              Delaware
+            </option>
+            <option
+              value="Florida"
+            >
+              Florida
+            </option>
+            <option
+              value="Georgia"
+            >
+              Georgia
+            </option>
+            <option
+              value="Hawaii"
+            >
+              Hawaii
+            </option>
+            <option
+              value="Idaho"
+            >
+              Idaho
+            </option>
+            <option
+              value="Illinois"
+            >
+              Illinois
+            </option>
+            <option
+              value="Indiana"
+            >
+              Indiana
+            </option>
+            <option
+              value="Iowa"
+            >
+              Iowa
+            </option>
+            <option
+              value="Kansas"
+            >
+              Kansas
+            </option>
+            <option
+              value="Kentucky"
+            >
+              Kentucky
+            </option>
+            <option
+              value="Louisiana"
+            >
+              Louisiana
+            </option>
+            <option
+              value="Maine"
+            >
+              Maine
+            </option>
+            <option
+              value="Maryland"
+            >
+              Maryland
+            </option>
+            <option
+              value="Massachusetts"
+            >
+              Massachusetts
+            </option>
+            <option
+              value="Michigan"
+            >
+              Michigan
+            </option>
+            <option
+              value="Minnesota"
+            >
+              Minnesota
+            </option>
+            <option
+              value="Mississippi"
+            >
+              Mississippi
+            </option>
+            <option
+              value="Missouri"
+            >
+              Missouri
+            </option>
+            <option
+              value="Montana"
+            >
+              Montana
+            </option>
+            <option
+              value="Nebraska"
+            >
+              Nebraska
+            </option>
+            <option
+              value="Nevada"
+            >
+              Nevada
+            </option>
+            <option
+              value="New Hampshire"
+            >
+              New Hampshire
+            </option>
+            <option
+              value="New Jersey"
+            >
+              New Jersey
+            </option>
+            <option
+              value="New Mexico"
+            >
+              New Mexico
+            </option>
+            <option
+              value="New York"
+            >
+              New York
+            </option>
+            <option
+              value="North Carolina"
+            >
+              North Carolina
+            </option>
+            <option
+              value="North Dakota"
+            >
+              North Dakota
+            </option>
+            <option
+              value="Ohio"
+            >
+              Ohio
+            </option>
+            <option
+              value="Oklahoma"
+            >
+              Oklahoma
+            </option>
+            <option
+              value="Oregon"
+            >
+              Oregon
+            </option>
+            <option
+              value="Pennsylvania"
+            >
+              Pennsylvania
+            </option>
+            <option
+              value="Rhode Island"
+            >
+              Rhode Island
+            </option>
+            <option
+              value="South Carolina"
+            >
+              South Carolina
+            </option>
+            <option
+              value="South Dakota"
+            >
+              South Dakota
+            </option>
+            <option
+              value="Tennessee"
+            >
+              Tennessee
+            </option>
+            <option
+              value="Texas"
+            >
+              Texas
+            </option>
+            <option
+              value="Utah"
+            >
+              Utah
+            </option>
+            <option
+              value="Vermont"
+            >
+              Vermont
+            </option>
+            <option
+              value="Virginia"
+            >
+              Virginia
+            </option>
+            <option
+              value="Washington"
+            >
+              Washington
+            </option>
+            <option
+              value="West Virginia"
+            >
+              West Virginia
+            </option>
+            <option
+              value="Wisconsin"
+            >
+              Wisconsin
+            </option>
+            <option
+              value="Wyoming"
+            >
+              Wyoming
+            </option>
+          </select>
+          <span
+            class="bp3-icon bp3-icon-double-caret-vertical"
+            icon="double-caret-vertical"
+          >
+            <svg
+              data-icon="double-caret-vertical"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+            >
+              <desc>
+                double-caret-vertical
+              </desc>
+              <path
+                d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                fill-rule="evenodd"
+              />
+            </svg>
+          </span>
+        </div>
+      </label>
+    </div>
+  </form>
+</div>
+`;
+
+exports[`Setup renders Review & Launch stage 1`] = `
+<div>
+  <p>
+    Review & Launch
+  </p>
+</div>
+`;
+
+exports[`Setup renders Target Contests stage 1`] = `
+<div>
+  <form
+    data-testid="form-one"
+  >
+    <div
+      class="sc-bwzfXH hfheQC"
+    >
+      <h2
+        class="bp3-heading sc-bdVaJa ibVpPq"
+      >
+        Target Contests
+      </h2>
+      <div
+        class="sc-gzVnrw coBAaV"
+      >
+        <h3
+          class="bp3-heading sc-dnqmqq hlcOhg"
+        >
+          Contest  Info
+        </h3>
+        <div
+          class="sc-htoDjs GlcDy"
+        >
+          Enter the name of the contest that will drive the audit.
+        </div>
+        <label
+          for="contests[0].name"
+        >
+          Contest
+           
+          
+           
+          Name
+          <div
+            class="sc-iwsKbI dvOqsv"
+          >
+            <div
+              class="bp3-input-group sc-gZMcBi fkRAtG"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].name"
+                name="contests[0].name"
+                style="padding-right: 10px;"
+                value="contest name"
+              />
+            </div>
+          </div>
+        </label>
+        <div
+          class="sc-htoDjs GlcDy"
+        >
+          Enter the number of winners for the contest.
+        </div>
+        <label
+          for="contests[0].numWinners"
+        >
+          Winners
+          <div
+            class="sc-iwsKbI dvOqsv"
+          >
+            <div
+              class="bp3-input-group sc-gZMcBi fkRAtG"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].numWinners"
+                name="contests[0].numWinners"
+                style="padding-right: 10px;"
+                value="1"
+              />
+            </div>
+          </div>
+        </label>
+        <div
+          class="sc-htoDjs GlcDy"
+        >
+          Number of selections the voter can make in the contest.
+        </div>
+        <label
+          for="contests[0].votesAllowed"
+        >
+          Votes Allowed
+          <div
+            class="sc-iwsKbI dvOqsv"
+          >
+            <div
+              class="bp3-input-group sc-gZMcBi fkRAtG"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].votesAllowed"
+                name="contests[0].votesAllowed"
+                style="padding-right: 10px;"
+                value="1"
+              />
+            </div>
+          </div>
+        </label>
+      </div>
+      <div
+        class="sc-gzVnrw coBAaV"
+      >
+        <h3
+          class="bp3-heading sc-dnqmqq hlcOhg"
+        >
+          Candidates/Choices & Vote Totals
+        </h3>
+        <div
+          class="sc-htoDjs GlcDy"
+        >
+          Enter the name of each candidate choice that appears on the ballot for this contest.
+        </div>
+        <div
+          class="sc-jzJRlG hqJpHa"
+        >
+          <div
+            class="sc-kAzzGY gvpNKy"
+          >
+            <label
+              class="bp3-label sc-kgoBCf eKfxQS"
+            >
+              Name of Candidate/Choice 
+              1
+              <div
+                class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
+              >
+                <div
+                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                >
+                  <input
+                    class="bp3-input"
+                    name="contests[0].choices[0].name"
+                    style="padding-right: 10px;"
+                    value="choice one"
+                  />
+                </div>
+              </div>
+            </label>
+            <label
+              class="bp3-label sc-kgoBCf eKfxQS"
+            >
+              Votes for Candidate/Choice 
+              1
+              <div
+                class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
+              >
+                <div
+                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                >
+                  <input
+                    class="bp3-input"
+                    name="contests[0].choices[0].numVotes"
+                    style="padding-right: 10px;"
+                    value="792"
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
+          <div
+            class="sc-kAzzGY gvpNKy"
+          >
+            <label
+              class="bp3-label sc-kgoBCf eKfxQS"
+            >
+              Name of Candidate/Choice 
+              2
+              <div
+                class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
+              >
+                <div
+                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                >
+                  <input
+                    class="bp3-input"
+                    name="contests[0].choices[1].name"
+                    style="padding-right: 10px;"
+                    value="choice two"
+                  />
+                </div>
+              </div>
+            </label>
+            <label
+              class="bp3-label sc-kgoBCf eKfxQS"
+            >
+              Votes for Candidate/Choice 
+              2
+              <div
+                class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
+              >
+                <div
+                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                >
+                  <input
+                    class="bp3-input"
+                    name="contests[0].choices[1].numVotes"
+                    style="padding-right: 10px;"
+                    value="1325"
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-gzVnrw coBAaV"
+      >
+        <h3
+          class="bp3-heading sc-dnqmqq hlcOhg"
+        >
+          Total Ballots Cast
+        </h3>
+        <div
+          class="sc-htoDjs GlcDy"
+        >
+          Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+        </div>
+        <label
+          for="contests[0].totalBallotsCast"
+        >
+          Total Ballots for Contest
+           
+          
+          <div
+            class="sc-iwsKbI dvOqsv"
+          >
+            <div
+              class="bp3-input-group sc-gZMcBi fkRAtG"
+            >
+              <input
+                class="bp3-input"
+                id="contests[0].totalBallotsCast"
+                name="contests[0].totalBallotsCast"
+                style="padding-right: 10px;"
+                value="2123"
+              />
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </form>
+</div>
+`;

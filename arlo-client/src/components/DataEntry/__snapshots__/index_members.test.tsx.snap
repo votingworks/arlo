@@ -3,7 +3,7 @@
 exports[`DataEntry initial load fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <h1
       class="bp3-heading"
@@ -37,12 +37,12 @@ exports[`DataEntry initial load fetches initial state from api 1`] = `
             for="[0]name"
           >
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Full Name
             </span>
             <input
-              class="sc-iwsKbI jnBmwk"
+              class="sc-gZMcBi bZTBmE"
               id="[0]name"
               name="[0]name"
               value=""
@@ -50,7 +50,7 @@ exports[`DataEntry initial load fetches initial state from api 1`] = `
           </label>
           <div>
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Party Affiliation 
               <i>
@@ -152,12 +152,12 @@ exports[`DataEntry initial load fetches initial state from api 1`] = `
             for="[1]name"
           >
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Full Name
             </span>
             <input
-              class="sc-iwsKbI jnBmwk"
+              class="sc-gZMcBi bZTBmE"
               id="[1]name"
               name="[1]name"
               value=""
@@ -165,7 +165,7 @@ exports[`DataEntry initial load fetches initial state from api 1`] = `
           </label>
           <div>
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Party Affiliation 
               <i>
@@ -256,7 +256,7 @@ exports[`DataEntry initial load fetches initial state from api 1`] = `
           </div>
         </div>
         <button
-          class="bp3-button bp3-intent-primary sc-htoDjs eellYq"
+          class="bp3-button bp3-intent-primary sc-dnqmqq iQfLYL"
           type="button"
         >
           <span
@@ -274,7 +274,7 @@ exports[`DataEntry initial load fetches initial state from api 1`] = `
 exports[`DataEntry initial load renders correctly 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <h1
       class="bp3-heading"
@@ -308,12 +308,12 @@ exports[`DataEntry initial load renders correctly 1`] = `
             for="[0]name"
           >
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Full Name
             </span>
             <input
-              class="sc-iwsKbI jnBmwk"
+              class="sc-gZMcBi bZTBmE"
               id="[0]name"
               name="[0]name"
               value=""
@@ -321,7 +321,7 @@ exports[`DataEntry initial load renders correctly 1`] = `
           </label>
           <div>
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Party Affiliation 
               <i>
@@ -423,12 +423,12 @@ exports[`DataEntry initial load renders correctly 1`] = `
             for="[1]name"
           >
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Full Name
             </span>
             <input
-              class="sc-iwsKbI jnBmwk"
+              class="sc-gZMcBi bZTBmE"
               id="[1]name"
               name="[1]name"
               value=""
@@ -436,7 +436,7 @@ exports[`DataEntry initial load renders correctly 1`] = `
           </label>
           <div>
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Party Affiliation 
               <i>
@@ -527,7 +527,7 @@ exports[`DataEntry initial load renders correctly 1`] = `
           </div>
         </div>
         <button
-          class="bp3-button bp3-intent-primary sc-htoDjs eellYq"
+          class="bp3-button bp3-intent-primary sc-dnqmqq iQfLYL"
           type="button"
         >
           <span
@@ -545,7 +545,7 @@ exports[`DataEntry initial load renders correctly 1`] = `
 exports[`DataEntry initial load renders member form 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <h1
       class="bp3-heading"
@@ -579,12 +579,12 @@ exports[`DataEntry initial load renders member form 1`] = `
             for="[0]name"
           >
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Full Name
             </span>
             <input
-              class="sc-iwsKbI jnBmwk"
+              class="sc-gZMcBi bZTBmE"
               id="[0]name"
               name="[0]name"
               value=""
@@ -592,7 +592,7 @@ exports[`DataEntry initial load renders member form 1`] = `
           </label>
           <div>
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Party Affiliation 
               <i>
@@ -694,12 +694,12 @@ exports[`DataEntry initial load renders member form 1`] = `
             for="[1]name"
           >
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Full Name
             </span>
             <input
-              class="sc-iwsKbI jnBmwk"
+              class="sc-gZMcBi bZTBmE"
               id="[1]name"
               name="[1]name"
               value=""
@@ -707,7 +707,7 @@ exports[`DataEntry initial load renders member form 1`] = `
           </label>
           <div>
             <span
-              class="sc-dnqmqq kSLuZR"
+              class="sc-iwsKbI haXKLx"
             >
               Party Affiliation 
               <i>
@@ -798,7 +798,7 @@ exports[`DataEntry initial load renders member form 1`] = `
           </div>
         </div>
         <button
-          class="bp3-button bp3-intent-primary sc-htoDjs eellYq"
+          class="bp3-button bp3-intent-primary sc-dnqmqq iQfLYL"
           type="button"
         >
           <span

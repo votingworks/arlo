@@ -3,7 +3,7 @@
 exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <form
       data-testid="form-one"
@@ -25,10 +25,10 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           >
             Election Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="audit-name-label"
@@ -65,10 +65,10 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
              
             Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -91,10 +91,10 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           >
             Winners
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -117,10 +117,10 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           >
             Votes Allowed
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -148,21 +148,21 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jTzLTM fdGQsk"
+            class="sc-fjdhpX ixwLIj"
           >
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -175,15 +175,15 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -197,18 +197,18 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
               </label>
             </div>
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -221,15 +221,15 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -264,10 +264,10 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
              
             
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -334,7 +334,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           >
             Set the risk for the audit as a percentage (e.g. "5" = 5%)
             <div
-              class="bp3-html-select bp3-disabled sc-VigVT gtiHtv"
+              class="bp3-html-select bp3-disabled sc-jTzLTM dgTHzL"
             >
               <select
                 disabled=""
@@ -439,10 +439,10 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           >
             Enter the random characters to seed the pseudo-random number generator.
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="random-seed-label"
@@ -568,7 +568,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           >
             Set the number of audit boards you wish to use.
             <div
-              class="bp3-html-select sc-kgoBCf eMgYUl"
+              class="bp3-html-select sc-kGXeez gdFBeY"
             >
               <select
                 field="[object Object]"
@@ -648,10 +648,10 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
             Audit boards will enter data about each ballot:
           </div>
           <div
-            class="sc-kGXeez bMTBGr"
+            class="sc-kpOJdX mfXlX"
           >
             <div
-              class="sc-kpOJdX efRQKK"
+              class="sc-dxgOiQ kEWBcr"
             />
           </div>
         </div>
@@ -685,10 +685,10 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
         </div>
       </div>
       <div
-        class="sc-gZMcBi DmELe"
+        class="sc-gqjmRU bEkPjh"
       >
         <button
-          class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
+          class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
           type="button"
         >
           <span
@@ -706,7 +706,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
 exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/status is processing samplesizes 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <form
       data-testid="form-one"
@@ -728,10 +728,10 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           >
             Election Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="audit-name-label"
@@ -768,10 +768,10 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
              
             Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -794,10 +794,10 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           >
             Winners
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -820,10 +820,10 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           >
             Votes Allowed
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -851,21 +851,21 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jTzLTM fdGQsk"
+            class="sc-fjdhpX ixwLIj"
           >
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -878,15 +878,15 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -900,18 +900,18 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
               </label>
             </div>
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -924,15 +924,15 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -967,10 +967,10 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
              
             
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -1037,7 +1037,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           >
             Set the risk for the audit as a percentage (e.g. "5" = 5%)
             <div
-              class="bp3-html-select bp3-disabled sc-VigVT gtiHtv"
+              class="bp3-html-select bp3-disabled sc-jTzLTM dgTHzL"
             >
               <select
                 disabled=""
@@ -1142,10 +1142,10 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           >
             Enter the random characters to seed the pseudo-random number generator.
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="random-seed-label"
@@ -1170,7 +1170,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
 exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <form
       data-testid="form-one"
@@ -1192,10 +1192,10 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
           >
             Election Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="audit-name-label"
@@ -1231,10 +1231,10 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
              
             Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -1256,10 +1256,10 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
           >
             Winners
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -1281,10 +1281,10 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -1311,21 +1311,21 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jTzLTM fdGQsk"
+            class="sc-fjdhpX ixwLIj"
           >
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -1337,15 +1337,15 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -1358,18 +1358,18 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
               </label>
             </div>
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -1381,15 +1381,15 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -1402,7 +1402,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
               </label>
             </div>
             <p
-              class="sc-chPdSV loppqH"
+              class="sc-kgoBCf jCkIWs"
             >
               Add a new candidate/choice
             </p>
@@ -1428,10 +1428,10 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
              
             
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -1495,7 +1495,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
           >
             Set the risk for the audit as a percentage (e.g. "5" = 5%)
             <div
-              class="bp3-html-select sc-VigVT gtiHtv"
+              class="bp3-html-select sc-jTzLTM dgTHzL"
             >
               <select
                 field="[object Object]"
@@ -1599,10 +1599,10 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
           >
             Enter the random characters to seed the pseudo-random number generator.
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="random-seed-label"
@@ -1619,10 +1619,10 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
         </div>
       </div>
       <div
-        class="sc-gZMcBi DmELe"
+        class="sc-gqjmRU bEkPjh"
       >
         <button
-          class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
+          class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
           type="submit"
         >
           <span
@@ -1640,7 +1640,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <form
       data-testid="form-one"
@@ -1662,10 +1662,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           >
             Election Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="audit-name-label"
@@ -1702,10 +1702,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
              
             Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -1728,10 +1728,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           >
             Winners
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -1754,10 +1754,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           >
             Votes Allowed
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -1785,21 +1785,21 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jTzLTM fdGQsk"
+            class="sc-fjdhpX ixwLIj"
           >
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -1812,15 +1812,15 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -1834,18 +1834,18 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
               </label>
             </div>
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -1858,15 +1858,15 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -1901,10 +1901,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
              
             
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -1971,7 +1971,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           >
             Set the risk for the audit as a percentage (e.g. "5" = 5%)
             <div
-              class="bp3-html-select bp3-disabled sc-VigVT gtiHtv"
+              class="bp3-html-select bp3-disabled sc-jTzLTM dgTHzL"
             >
               <select
                 disabled=""
@@ -2076,10 +2076,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           >
             Enter the random characters to seed the pseudo-random number generator.
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="random-seed-label"
@@ -2209,7 +2209,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           >
             Set the number of audit boards you wish to use.
             <div
-              class="bp3-html-select bp3-disabled sc-kgoBCf eMgYUl"
+              class="bp3-html-select bp3-disabled sc-kGXeez gdFBeY"
             >
               <select
                 disabled=""
@@ -2290,10 +2290,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             Audit boards will enter data about each ballot:
           </div>
           <div
-            class="sc-kGXeez bMTBGr"
+            class="sc-kpOJdX mfXlX"
           >
             <div
-              class="sc-kpOJdX efRQKK"
+              class="sc-dxgOiQ kEWBcr"
             >
               <a
                 class="bp3-text-small"
@@ -2346,7 +2346,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
       data-testid="form-three-1"
     >
       <div
-        class="sc-eNQAEJ jlmWxR"
+        class="sc-hMqMXs eSemHE"
         id="qr-root"
       >
         <span
@@ -2387,7 +2387,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           </p>
         </div>
         <button
-          class="bp3-button sc-EHOje fJvKPB"
+          class="bp3-button sc-bZQynM iFVUEu"
           type="button"
         >
           <span
@@ -2397,7 +2397,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           </span>
         </button>
         <button
-          class="bp3-button sc-EHOje fJvKPB"
+          class="bp3-button sc-bZQynM iFVUEu"
           type="button"
         >
           <span
@@ -2408,7 +2408,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           </span>
         </button>
         <button
-          class="bp3-button sc-EHOje fJvKPB"
+          class="bp3-button sc-bZQynM iFVUEu"
           type="button"
         >
           <span
@@ -2419,7 +2419,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           </span>
         </button>
         <button
-          class="bp3-button sc-EHOje fJvKPB"
+          class="bp3-button sc-bZQynM iFVUEu"
           type="button"
         >
           <span
@@ -2471,10 +2471,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           </h3>
         </div>
         <div
-          class="sc-gZMcBi DmELe"
+          class="sc-gqjmRU bEkPjh"
         >
           <button
-            class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
+            class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
             type="button"
           >
             <span
@@ -2496,7 +2496,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
 exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status returns contest data 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <form
       data-testid="form-one"
@@ -2518,10 +2518,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           >
             Election Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="audit-name-label"
@@ -2558,10 +2558,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
              
             Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -2584,10 +2584,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           >
             Winners
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -2610,10 +2610,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           >
             Votes Allowed
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -2641,21 +2641,21 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jTzLTM fdGQsk"
+            class="sc-fjdhpX ixwLIj"
           >
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -2668,15 +2668,15 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -2690,18 +2690,18 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
               </label>
             </div>
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -2714,15 +2714,15 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                    class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -2757,10 +2757,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
              
             
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -2827,7 +2827,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           >
             Set the risk for the audit as a percentage (e.g. "5" = 5%)
             <div
-              class="bp3-html-select bp3-disabled sc-VigVT gtiHtv"
+              class="bp3-html-select bp3-disabled sc-jTzLTM dgTHzL"
             >
               <select
                 disabled=""
@@ -2932,10 +2932,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           >
             Enter the random characters to seed the pseudo-random number generator.
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gzVnrw htprzv"
+                class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="random-seed-label"
@@ -3061,7 +3061,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           >
             Set the number of audit boards you wish to use.
             <div
-              class="bp3-html-select sc-kgoBCf eMgYUl"
+              class="bp3-html-select sc-kGXeez gdFBeY"
             >
               <select
                 field="[object Object]"
@@ -3141,10 +3141,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
             Audit boards will enter data about each ballot:
           </div>
           <div
-            class="sc-kGXeez bMTBGr"
+            class="sc-kpOJdX mfXlX"
           >
             <div
-              class="sc-kpOJdX efRQKK"
+              class="sc-dxgOiQ kEWBcr"
             />
           </div>
         </div>
@@ -3178,10 +3178,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
         </div>
       </div>
       <div
-        class="sc-gZMcBi DmELe"
+        class="sc-gqjmRU bEkPjh"
       >
         <button
-          class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
+          class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
           type="button"
         >
           <span
@@ -3199,7 +3199,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
 exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
 <div>
   <div
-    class="sc-hMqMXs dhuBfg"
+    class="sc-kEYyzF dLLIBs"
   >
     <form
       data-testid="form-one"
@@ -3221,10 +3221,10 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
           >
             Election Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="audit-name-label"
@@ -3260,10 +3260,10 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
              
             Name
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -3285,10 +3285,10 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
           >
             Winners
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -3310,10 +3310,10 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -3340,21 +3340,21 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jTzLTM fdGQsk"
+            class="sc-fjdhpX ixwLIj"
           >
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -3366,15 +3366,15 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -3387,18 +3387,18 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
               </label>
             </div>
             <div
-              class="sc-jzJRlG dRtOsa"
+              class="sc-cSHVUG jUKlPT"
             >
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -3410,15 +3410,15 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-kAzzGY kQOXij"
+                class="bp3-label sc-chPdSV ewyFtw"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-cSHVUG gnWAUj sc-bZQynM iEAxBy"
+                  class="sc-kAzzGY ekBBqo sc-gzVnrw jXfEBS"
                 >
                   <div
-                    class="bp3-input-group sc-gzVnrw htprzv"
+                    class="bp3-input-group sc-htoDjs jVvDPF"
                   >
                     <input
                       class="bp3-input"
@@ -3431,7 +3431,7 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
               </label>
             </div>
             <p
-              class="sc-chPdSV loppqH"
+              class="sc-kgoBCf jCkIWs"
             >
               Add a new candidate/choice
             </p>
@@ -3457,10 +3457,10 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
              
             
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   class="bp3-input"
@@ -3524,7 +3524,7 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
           >
             Set the risk for the audit as a percentage (e.g. "5" = 5%)
             <div
-              class="bp3-html-select sc-VigVT gtiHtv"
+              class="bp3-html-select sc-jTzLTM dgTHzL"
             >
               <select
                 field="[object Object]"
@@ -3628,10 +3628,10 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
           >
             Enter the random characters to seed the pseudo-random number generator.
             <div
-              class="sc-bZQynM iEAxBy"
+              class="sc-gzVnrw jXfEBS"
             >
               <div
-                class="bp3-input-group sc-gzVnrw htprzv"
+                class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
                   aria-labelledby="random-seed-label"
@@ -3648,10 +3648,10 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
         </div>
       </div>
       <div
-        class="sc-gZMcBi DmELe"
+        class="sc-gqjmRU bEkPjh"
       >
         <button
-          class="bp3-button bp3-intent-primary sc-EHOje fJvKPB"
+          class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
           type="submit"
         >
           <span
@@ -3660,6 +3660,406 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
             Estimate Sample Size
           </span>
         </button>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
+exports[`RiskLimitingAuditForm renders sidebar when authenticated 1`] = `
+<div>
+  <div
+    class="sc-kEYyzF dLLIBs"
+  >
+    <div
+      class="sc-kkGfuU jgdXat"
+    >
+      <h2
+        class="bp3-heading sc-bxivhb jFEWwS"
+      >
+        Audit Setup
+      </h2>
+      <ul
+        class="bp3-menu"
+      >
+        <li
+          class=""
+        >
+          <a
+            class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
+          >
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Participants
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
+        >
+          <a
+            class="bp3-menu-item bp3-popover-dismiss"
+          >
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Target Contests
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
+        >
+          <a
+            class="bp3-menu-item bp3-popover-dismiss"
+          >
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Opportunistic Contests
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
+        >
+          <a
+            class="bp3-menu-item bp3-popover-dismiss"
+          >
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Audit Settings
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
+        >
+          <a
+            class="bp3-menu-item bp3-popover-dismiss"
+          >
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Review & Launch
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <form
+      data-testid="form-one"
+    >
+      <div
+        class="sc-ifAKCX dUfgxM"
+      >
+        <h2
+          class="bp3-heading sc-bxivhb jFEWwS"
+        >
+          Participants
+        </h2>
+        <label
+          for="state"
+        >
+          Choose your state from the options below
+          <br />
+          <div
+            class="bp3-html-select sc-iAyFgw hQSkFJ"
+          >
+            <select
+              field="[object Object]"
+              form="[object Object]"
+              id="state"
+            >
+              <option
+                value=""
+              />
+              <option
+                value="Alabama"
+              >
+                Alabama
+              </option>
+              <option
+                value="Alaska"
+              >
+                Alaska
+              </option>
+              <option
+                value="Arizona"
+              >
+                Arizona
+              </option>
+              <option
+                value="Arkansas"
+              >
+                Arkansas
+              </option>
+              <option
+                value="California"
+              >
+                California
+              </option>
+              <option
+                value="Colorado"
+              >
+                Colorado
+              </option>
+              <option
+                value="Connecticut"
+              >
+                Connecticut
+              </option>
+              <option
+                value="Delaware"
+              >
+                Delaware
+              </option>
+              <option
+                value="Florida"
+              >
+                Florida
+              </option>
+              <option
+                value="Georgia"
+              >
+                Georgia
+              </option>
+              <option
+                value="Hawaii"
+              >
+                Hawaii
+              </option>
+              <option
+                value="Idaho"
+              >
+                Idaho
+              </option>
+              <option
+                value="Illinois"
+              >
+                Illinois
+              </option>
+              <option
+                value="Indiana"
+              >
+                Indiana
+              </option>
+              <option
+                value="Iowa"
+              >
+                Iowa
+              </option>
+              <option
+                value="Kansas"
+              >
+                Kansas
+              </option>
+              <option
+                value="Kentucky"
+              >
+                Kentucky
+              </option>
+              <option
+                value="Louisiana"
+              >
+                Louisiana
+              </option>
+              <option
+                value="Maine"
+              >
+                Maine
+              </option>
+              <option
+                value="Maryland"
+              >
+                Maryland
+              </option>
+              <option
+                value="Massachusetts"
+              >
+                Massachusetts
+              </option>
+              <option
+                value="Michigan"
+              >
+                Michigan
+              </option>
+              <option
+                value="Minnesota"
+              >
+                Minnesota
+              </option>
+              <option
+                value="Mississippi"
+              >
+                Mississippi
+              </option>
+              <option
+                value="Missouri"
+              >
+                Missouri
+              </option>
+              <option
+                value="Montana"
+              >
+                Montana
+              </option>
+              <option
+                value="Nebraska"
+              >
+                Nebraska
+              </option>
+              <option
+                value="Nevada"
+              >
+                Nevada
+              </option>
+              <option
+                value="New Hampshire"
+              >
+                New Hampshire
+              </option>
+              <option
+                value="New Jersey"
+              >
+                New Jersey
+              </option>
+              <option
+                value="New Mexico"
+              >
+                New Mexico
+              </option>
+              <option
+                value="New York"
+              >
+                New York
+              </option>
+              <option
+                value="North Carolina"
+              >
+                North Carolina
+              </option>
+              <option
+                value="North Dakota"
+              >
+                North Dakota
+              </option>
+              <option
+                value="Ohio"
+              >
+                Ohio
+              </option>
+              <option
+                value="Oklahoma"
+              >
+                Oklahoma
+              </option>
+              <option
+                value="Oregon"
+              >
+                Oregon
+              </option>
+              <option
+                value="Pennsylvania"
+              >
+                Pennsylvania
+              </option>
+              <option
+                value="Rhode Island"
+              >
+                Rhode Island
+              </option>
+              <option
+                value="South Carolina"
+              >
+                South Carolina
+              </option>
+              <option
+                value="South Dakota"
+              >
+                South Dakota
+              </option>
+              <option
+                value="Tennessee"
+              >
+                Tennessee
+              </option>
+              <option
+                value="Texas"
+              >
+                Texas
+              </option>
+              <option
+                value="Utah"
+              >
+                Utah
+              </option>
+              <option
+                value="Vermont"
+              >
+                Vermont
+              </option>
+              <option
+                value="Virginia"
+              >
+                Virginia
+              </option>
+              <option
+                value="Washington"
+              >
+                Washington
+              </option>
+              <option
+                value="West Virginia"
+              >
+                West Virginia
+              </option>
+              <option
+                value="Wisconsin"
+              >
+                Wisconsin
+              </option>
+              <option
+                value="Wyoming"
+              >
+                Wyoming
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
+            >
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
       </div>
     </form>
   </div>
