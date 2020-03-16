@@ -1,6 +1,6 @@
 import sys
 
-from arlo_server import create_organization
+from arlo_server.routes import create_organization
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:

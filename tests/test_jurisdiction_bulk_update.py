@@ -1,5 +1,5 @@
 from util.jurisdiction_bulk_update import bulk_update_jurisdictions
-from models import Election, Jurisdiction, JurisdictionAdministration, Organization, User  # type: ignore
+from arlo_server.models import Election, Jurisdiction, JurisdictionAdministration, Organization, User  # type: ignore
 import arlo_server
 import pytest
 import uuid

@@ -1,5 +1,5 @@
 import uuid
-from models import Election, JurisdictionAdministration, User, Jurisdiction  # type: ignore
+from arlo_server.models import Election, JurisdictionAdministration, User, Jurisdiction  # type: ignore
 from typing import Tuple, List
 from sqlalchemy import func
 

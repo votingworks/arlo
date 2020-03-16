@@ -1,7 +1,7 @@
 # type: ignore
 import sys, uuid
 
-from arlo_server import User, AuditAdministration, db
+from arlo_server.models import User, AuditAdministration, db
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:

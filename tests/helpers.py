@@ -3,8 +3,8 @@ from email.utils import parsedate_to_datetime
 from typing import Any, Optional
 from flask.testing import FlaskClient
 
-from arlo_server import create_organization, db, UserType
-from models import AuditAdministration, User  # type: ignore
+from arlo_server.routes import create_organization, UserType
+from arlo_server.models import db, AuditAdministration, User  # type: ignore
 
 DEFAULT_USER_EMAIL = "admin@example.com"
 
