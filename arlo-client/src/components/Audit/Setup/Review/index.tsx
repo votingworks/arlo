@@ -7,8 +7,8 @@ interface IProps {
   prevStage: () => void
 }
 
-const Participants: React.FC<IProps> = () => {
-  return <p>Participants</p>
+const Review: React.FC<IProps> = () => {
+  return <p>Review &amp; Launch</p>
 }
 
-export default Participants
+export default Review

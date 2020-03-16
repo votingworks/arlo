@@ -15,29 +15,14 @@ import {
 } from '../../EstimateSampleSize'
 import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
-
-interface IChoiceValues {
-  id?: string
-  name: string
-  numVotes: string | number
-}
-
-interface IContestValues {
-  name: string
-  isTargeted: boolean
-  totalBallotsCast: string
-  numWinners: string
-  votesAllowed: string
-  choices: IChoiceValues[]
-}
-
-interface IValues {
-  contests: IContestValues[]
-}
+import { IContestValues, IValues, IChoiceValues } from './types'
+import schema from './schema'
 
 interface IProps {
   audit: IAudit
   isTargeted: boolean
+  nextStage: () => void
+  prevStage: () => void
 }
 
 const contestValues: { contests: IContestValues[] } = {
@@ -62,7 +47,12 @@ const contestValues: { contests: IContestValues[] } = {
   ],
 }
 
-const Contests: React.FC<IProps> = ({ isTargeted, audit }) => {
+const Contests: React.FC<IProps> = ({
+  isTargeted,
+  audit,
+  nextStage,
+  prevStage,
+}) => {
   const [isLoading, setIsLoading] = useState(false)
   const initialValues: IValues = {
     contests: audit.contests.length ? audit.contests : contestValues.contests,
@@ -70,9 +60,11 @@ const Contests: React.FC<IProps> = ({ isTargeted, audit }) => {
   return (
     <Formik
       initialValues={initialValues}
+      validationSchema={schema}
       onSubmit={v => {
         setIsLoading(true)
         console.log(v)
+        nextStage()
       }}
     >
       {({ values, handleSubmit }: FormikProps<IValues>) => (
@@ -242,13 +234,14 @@ const Contests: React.FC<IProps> = ({ isTargeted, audit }) => {
           {isLoading && <Spinner />}
           {!audit.contests.length && !isLoading && (
             <FormButtonBar>
+              <FormButton onClick={prevStage}>Back</FormButton>
               <FormButton
                 type="submit"
                 intent="primary"
                 disabled={!!audit.frozenAt}
                 onClick={handleSubmit}
               >
-                Estimate Sample Size
+                Submit &amp; Next
               </FormButton>
             </FormButtonBar>
           )}

@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
 import { ElementType, IAudit } from '../../../types'
-import FormButton from '../../Form/FormButton'
 import Participants from './Participants'
+import Contests from './Contests'
 
 export const setupStages = [
   'Participants',
@@ -20,51 +20,51 @@ interface IProps {
 
 const Setup: React.FC<IProps> = ({ stage, setStage, audit }) => {
   const currentIndex = setupStages.indexOf(stage)
-  const nextStageButton = () => {
-    if (currentIndex < setupStages.length - 1) {
-      return (
-        <FormButton onClick={() => setStage(setupStages[currentIndex + 1])}>
-          Next
-        </FormButton>
-      )
-    }
-    return null
+  const nextStage = () => {
+    if (currentIndex < setupStages.length - 1)
+      setStage(setupStages[currentIndex + 1])
   }
-  const prevStageButton = () => {
-    if (currentIndex > 0) {
-      return (
-        <FormButton onClick={() => setStage(setupStages[currentIndex - 1])}>
-          Previous
-        </FormButton>
-      )
-    }
-    return null
+  const prevStage = () => {
+    // modal warn that form data may be lost
+    if (currentIndex > 0) setStage(setupStages[currentIndex - 1])
   }
 
-  const step = (() => {
-    switch (stage) {
-      case 'Participants':
-        return <Participants audit={audit} />
-      case 'Target Contests':
-        return <p>Target Contests</p>
-      case 'Opportunistic Contests':
-        return <p>Opportunistic Contests</p>
-      case 'Audit Settings':
-        return <p>Audit Settings</p>
-      case 'Review & Launch':
-        return <p>Review &amp; Launch</p>
-      default:
-        return null
-    }
-  })()
-
-  return (
-    <form>
-      {step}
-      {prevStageButton()}
-      {nextStageButton()}
-    </form>
-  )
+  switch (stage) {
+    case 'Participants':
+      return (
+        <Participants
+          audit={audit}
+          nextStage={nextStage}
+          prevStage={prevStage}
+        />
+      )
+    case 'Target Contests':
+      return (
+        <Contests
+          isTargeted
+          key="targeted"
+          audit={audit}
+          nextStage={nextStage}
+          prevStage={prevStage}
+        />
+      )
+    case 'Opportunistic Contests':
+      return (
+        <Contests
+          isTargeted={false}
+          key="opportunistic"
+          audit={audit}
+          nextStage={nextStage}
+          prevStage={prevStage}
+        />
+      )
+    case 'Audit Settings':
+      return <p>Audit Settings</p>
+    case 'Review & Launch':
+      return <p>Review &amp; Launch</p>
+    default:
+      return null
+  }
 }
 
 export default Setup
