@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { RouteComponentProps, Link } from 'react-router-dom'
+import { Formik, FormikProps, Field } from 'formik'
 import FormButton from './Form/FormButton'
 import { api, checkAndToast } from './utilities'
 import { ICreateAuditParams, IErrorResponse } from '../types'
 import { useAuthDataContext } from './UserContext'
+import FormSection from './Form/FormSection'
+import FormField from './Form/FormField'
 
 const Button = styled(FormButton)`
   margin: 30px 0 0 0;
@@ -31,16 +34,24 @@ const AuditLink = styled(Link)`
   }
 `
 
+const CenterField = styled(FormField)`
+  width: 100%;
+`
+
+interface IValues {
+  auditName: string
+}
+
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const { isAuthenticated, meta } = useAuthDataContext()
 
   const [loading, setLoading] = useState(false)
-  const onClick = async () => {
+  const onSubmit = async ({ auditName }: IValues) => {
     try {
       setLoading(true)
       const data = isAuthenticated
-        ? { organizationId: meta!.organizations[0].id }
-        : {}
+        ? { organizationId: meta!.organizations[0].id, auditName }
+        : { auditName }
       const response: { electionId: string } | IErrorResponse = await api(
         '/election/new',
         {
@@ -60,18 +71,37 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   return (
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      <Button
-        verticalSpaced
-        type="button"
-        intent="primary"
-        fill
-        large
-        onClick={onClick}
-        loading={loading}
-        disabled={loading}
-      >
-        Create a New Audit
-      </Button>
+      <Formik onSubmit={onSubmit} initialValues={{ auditName: '' }}>
+        {({ handleSubmit }: FormikProps<IValues>) => (
+          <>
+            <FormSection>
+              {/* eslint-disable jsx-a11y/label-has-associated-control */}
+              <label htmlFor="audit-name" id="audit-name-label">
+                Give your new audit a unique name.
+                <Field
+                  id="audit-name"
+                  aria-labelledby="audit-name-label"
+                  name="auditName"
+                  disabled={loading}
+                  validate={(v: string) => (v ? undefined : 'Required')}
+                  component={CenterField}
+                />
+              </label>
+            </FormSection>
+            <Button
+              type="button"
+              intent="primary"
+              fill
+              large
+              onClick={handleSubmit}
+              loading={loading}
+              disabled={loading}
+            >
+              Create a New Audit
+            </Button>
+          </>
+        )}
+      </Formik>
       {!isAuthenticated ? (
         <>
           <Button
