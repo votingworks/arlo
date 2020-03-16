@@ -1,18 +1,17 @@
 import pytest, json, uuid
 from unittest.mock import patch, Mock, MagicMock
 
-from arlo_server import (
-    app,
+from arlo_server import app
+from arlo_server.routes import (
     set_loggedin_user,
     clear_loggedin_user,
     auth0_aa,
     auth0_ja,
-    db,
     create_organization,
     create_election,
     UserType,
 )
-from models import *
+from arlo_server.models import *
 from tests.helpers import create_org_and_admin
 
 

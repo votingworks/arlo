@@ -1,8 +1,10 @@
 # type: ignore
-from arlo_server import db
 from sqlalchemy.orm import relationship, backref
 from typing import Union, List
 from enum import Enum
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 # on-delete-cascade is done in SQLAlchemy like this:
 # https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete

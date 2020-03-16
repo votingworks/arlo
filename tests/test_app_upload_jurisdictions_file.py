@@ -6,8 +6,8 @@ from flask.testing import FlaskClient
 from tests.helpers import post_json
 import pytest
 
-from models import Election, JurisdictionAdministration, User
 from arlo_server import app, db
+from arlo_server.models import Election, JurisdictionAdministration, User
 
 
 @pytest.fixture
