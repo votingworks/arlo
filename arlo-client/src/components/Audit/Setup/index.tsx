@@ -31,13 +31,7 @@ const Setup: React.FC<IProps> = ({ stage, setStage, audit }) => {
 
   switch (stage) {
     case 'Participants':
-      return (
-        <Participants
-          audit={audit}
-          nextStage={nextStage}
-          prevStage={prevStage}
-        />
-      )
+      return <Participants audit={audit} nextStage={nextStage} />
     case 'Target Contests':
       return (
         <Contests
