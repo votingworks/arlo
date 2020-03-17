@@ -366,11 +366,18 @@ def election_new():
 def get_jurisdictions_file(election_id=None):
     election = get_election(election_id)
     require_audit_admin_for_organization(election.organization_id)
-    return jsonify(
-        content=election.jurisdictions_file,
-        filename=election.jurisdictions_filename,
-        uploaded_at=election.jurisdictions_file_uploaded_at,
-    )
+    jurisdictions_file = election.jurisdictions_file
+
+    if jurisdictions_file:
+        return jsonify(
+            file={
+                "contents": jurisdictions_file.contents,
+                "name": jurisdictions_file.name,
+                "uploadedAt": jurisdictions_file.uploaded_at,
+            }
+        )
+    else:
+        return jsonify(file=None)
 
 
 @app.route("/election/<election_id>/jurisdictions_file", methods=["POST"])
@@ -394,9 +401,15 @@ def update_jurisdictions_file(election_id=None):
     jurisdictions_file = request.files["jurisdictions"]
     jurisdictions_file_string = jurisdictions_file.read().decode("utf-8-sig")
 
-    election.jurisdictions_file = jurisdictions_file_string
-    election.jurisdictions_filename = jurisdictions_file.filename
-    election.jurisdictions_file_uploaded_at = datetime.datetime.utcnow()
+    if election.jurisdictions_file:
+        db.session.delete(election.jurisdictions_file)
+
+    election.jurisdictions_file = File(
+        id=str(uuid.uuid4()),
+        name=jurisdictions_file.filename,
+        contents=jurisdictions_file_string,
+        uploaded_at=datetime.datetime.utcnow(),
+    )
     db.session.add(election)
 
     jurisdictions_csv = csv.DictReader(io.StringIO(jurisdictions_file_string))
