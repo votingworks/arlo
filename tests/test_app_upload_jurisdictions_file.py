@@ -28,7 +28,7 @@ def test_missing_file(client):
     rv = post_json(client, "/election/new", {})
     election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(f"/election/{election_id}/jurisdictions_file")
+    rv = client.put(f"/election/{election_id}/jurisdictions/file")
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
@@ -44,8 +44,8 @@ def test_bad_csv_file(client):
     rv = post_json(client, "/election/new", {})
     election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(
-        f"/election/{election_id}/jurisdictions_file",
+    rv = client.put(
+        f"/election/{election_id}/jurisdictions/file",
         data={"jurisdictions": (io.BytesIO(b"not a CSV file"), "random.txt")},
     )
     assert rv.status_code == 400
@@ -69,8 +69,8 @@ def test_missing_one_csv_field(client):
     rv = post_json(client, "/election/new", {})
     election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(
-        f"/election/{election_id}/jurisdictions_file",
+    rv = client.put(
+        f"/election/{election_id}/jurisdictions/file",
         data={
             "jurisdictions": (
                 io.BytesIO(b"Jurisdiction\nJurisdiction #1"),
@@ -94,8 +94,8 @@ def test_metadata(client):
     rv = post_json(client, "/election/new", {})
     election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(
-        f"/election/{election_id}/jurisdictions_file",
+    rv = client.put(
+        f"/election/{election_id}/jurisdictions/file",
         data={
             "jurisdictions": (
                 io.BytesIO(b"Jurisdiction,Admin Email"),
@@ -111,7 +111,7 @@ def test_metadata(client):
     assert election.jurisdictions_file.name == "jurisdictions.csv"
     assert election.jurisdictions_file.uploaded_at
 
-    rv = client.get(f"/election/{election_id}/jurisdictions_file")
+    rv = client.get(f"/election/{election_id}/jurisdictions/file")
     jurisdictions_file = json.loads(rv.data)["file"]
     assert jurisdictions_file["contents"] == "Jurisdiction,Admin Email"
     assert jurisdictions_file["name"] == "jurisdictions.csv"
@@ -122,8 +122,8 @@ def test_no_jurisdiction(client):
     rv = post_json(client, "/election/new", {})
     election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(
-        f"/election/{election_id}/jurisdictions_file",
+    rv = client.put(
+        f"/election/{election_id}/jurisdictions/file",
         data={
             "jurisdictions": (
                 io.BytesIO(b"Jurisdiction,Admin Email"),
@@ -144,8 +144,8 @@ def test_single_jurisdiction_single_admin(client):
     rv = post_json(client, "/election/new", {})
     election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(
-        f"/election/{election_id}/jurisdictions_file",
+    rv = client.put(
+        f"/election/{election_id}/jurisdictions/file",
         data={
             "jurisdictions": (
                 io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com"),
@@ -169,8 +169,8 @@ def test_single_jurisdiction_multiple_admins(client):
     rv = post_json(client, "/election/new", {})
     election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(
-        f"/election/{election_id}/jurisdictions_file",
+    rv = client.put(
+        f"/election/{election_id}/jurisdictions/file",
         data={
             "jurisdictions": (
                 io.BytesIO(
@@ -197,8 +197,8 @@ def test_multiple_jurisdictions_single_admin(client):
     rv = post_json(client, "/election/new", {})
     election_id = json.loads(rv.data)["electionId"]
 
-    rv = client.post(
-        f"/election/{election_id}/jurisdictions_file",
+    rv = client.put(
+        f"/election/{election_id}/jurisdictions/file",
         data={
             "jurisdictions": (
                 io.BytesIO(
