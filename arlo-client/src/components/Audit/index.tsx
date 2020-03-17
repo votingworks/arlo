@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useContext,
 } from 'react'
+import { useRouteMatch } from 'react-router-dom'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -92,6 +93,9 @@ const Audit: React.FC<IProps> = ({
     [stage]
   )
 
+  const setupMatch = useRouteMatch('/election/:electionId/setup')
+  const progressMatch = useRouteMatch('/election/:electionId/progress')
+
   return (
     <Wrapper className={!isAuthenticated ? 'single-page' : ''}>
       <ResetButton
@@ -100,7 +104,7 @@ const Audit: React.FC<IProps> = ({
         updateAudit={updateAudit}
       />
 
-      {isAuthenticated ? (
+      {isAuthenticated && (setupMatch || progressMatch) ? (
         <>
           {meta!.type === 'audit_admin' && (
             <Sidebar title="Audit Setup" menuItems={menuItems} />
