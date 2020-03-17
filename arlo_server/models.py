@@ -45,11 +45,10 @@ class Election(db.Model):
     contests = relationship("Contest", backref="election", passive_deletes=True)
     rounds = relationship("Round", backref="election", passive_deletes=True)
 
-    jurisdictions_file = db.Column(db.Text, nullable=True)
-    jurisdictions_filename = db.Column(db.String(250), nullable=True)
-    jurisdictions_file_uploaded_at = db.Column(
-        db.DateTime(timezone=False), nullable=True
+    jurisdictions_file_id = db.Column(
+        db.String(200), db.ForeignKey("file.id", ondelete="set null"), nullable=True
     )
+    jurisdictions_file = relationship("File")
 
 
 # these are typically counties
@@ -326,3 +325,10 @@ class RoundContestResult(db.Model):
         nullable=False,
     )
     result = db.Column(db.Integer)
+
+
+class File(db.Model):
+    id = db.Column(db.String(200), primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+    contents = db.Column(db.Text, nullable=False)
+    uploaded_at = db.Column(db.DateTime(timezone=False), nullable=False)

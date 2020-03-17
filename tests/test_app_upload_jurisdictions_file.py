@@ -107,15 +107,15 @@ def test_metadata(client):
     assert json.loads(rv.data) == {"status": "ok"}
 
     election = Election.query.filter_by(id=election_id).one()
-    assert election.jurisdictions_file == "Jurisdiction,Admin Email"
-    assert election.jurisdictions_filename == "jurisdictions.csv"
-    assert election.jurisdictions_file_uploaded_at
+    assert election.jurisdictions_file.contents == "Jurisdiction,Admin Email"
+    assert election.jurisdictions_file.name == "jurisdictions.csv"
+    assert election.jurisdictions_file.uploaded_at
 
     rv = client.get(f"/election/{election_id}/jurisdictions_file")
-    jurisdictions_file = json.loads(rv.data)
-    assert jurisdictions_file["content"] == "Jurisdiction,Admin Email"
-    assert jurisdictions_file["filename"] == "jurisdictions.csv"
-    assert jurisdictions_file["uploaded_at"]
+    jurisdictions_file = json.loads(rv.data)["file"]
+    assert jurisdictions_file["contents"] == "Jurisdiction,Admin Email"
+    assert jurisdictions_file["name"] == "jurisdictions.csv"
+    assert jurisdictions_file["uploadedAt"]
 
 
 def test_no_jurisdiction(client):
