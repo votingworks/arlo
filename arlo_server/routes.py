@@ -355,7 +355,7 @@ def require_audit_admin_for_organization(organization_id: Optional[str]):
 def election_new():
     info = request.get_json()
 
-    organization_id = info.get("organization_id", None) if info else None
+    organization_id = info.get("organizationId", None) if info else None
     require_audit_admin_for_organization(organization_id)
 
     election_id = create_election(organization_id=organization_id)
