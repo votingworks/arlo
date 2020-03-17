@@ -65,12 +65,6 @@ class Jurisdiction(db.Model):
     manifest_num_ballots = db.Column(db.Integer)
     manifest_num_batches = db.Column(db.Integer)
 
-    # any error in the upload? null == none
-    manifest_errors = db.Column(db.Text, nullable=True)
-
-    # a JSON array of field names that are included in the CSV
-    manifest_fields = db.Column(db.Text, nullable=True)
-
     batches = relationship("Batch", backref="jurisdiction", passive_deletes=True)
     audit_boards = relationship(
         "AuditBoard", backref="jurisdiction", passive_deletes=True
