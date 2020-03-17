@@ -7,7 +7,14 @@ from tests.helpers import post_json
 import pytest
 
 from arlo_server import app, db
-from arlo_server.models import Election, JurisdictionAdministration, User
+from arlo_server.models import (
+    Election,
+    File,
+    JurisdictionAdministration,
+    ProcessingStatus,
+    User,
+)
+from bgcompute import bgcompute_update_election_jurisdictions_file
 
 
 @pytest.fixture
@@ -111,11 +118,67 @@ def test_metadata(client):
     assert election.jurisdictions_file.name == "jurisdictions.csv"
     assert election.jurisdictions_file.uploaded_at
 
+    # Get the file data before processing.
     rv = client.get(f"/election/{election_id}/jurisdictions/file")
-    jurisdictions_file = json.loads(rv.data)["file"]
-    assert jurisdictions_file["contents"] == "Jurisdiction,Admin Email"
-    assert jurisdictions_file["name"] == "jurisdictions.csv"
-    assert jurisdictions_file["uploadedAt"]
+    response = json.loads(rv.data)
+    file = response["file"]
+    processing = response["processing"]
+    assert file["contents"] == "Jurisdiction,Admin Email"
+    assert file["name"] == "jurisdictions.csv"
+    assert file["uploadedAt"]
+    assert processing["status"] == ProcessingStatus.READY_TO_PROCESS
+    assert processing["startedAt"] == None
+    assert processing["completedAt"] == None
+    assert processing["error"] == None
+
+    # Actually process the file.
+    assert bgcompute_update_election_jurisdictions_file() == 1
+
+    # Now there should be data.
+    rv = client.get(f"/election/{election_id}/jurisdictions/file")
+    response = json.loads(rv.data)
+    file = response["file"]
+    processing = response["processing"]
+    assert file["contents"] == "Jurisdiction,Admin Email"
+    assert file["name"] == "jurisdictions.csv"
+    assert file["uploadedAt"]
+    assert processing["status"] == ProcessingStatus.PROCESSED
+    assert processing["startedAt"]
+    assert processing["completedAt"]
+    assert processing["error"] == None
+
+
+def test_replace_jurisdictions_file(client):
+    rv = post_json(client, "/election/new", {})
+    election_id = json.loads(rv.data)["electionId"]
+
+    # Create the initial file.
+    rv = client.put(
+        f"/election/{election_id}/jurisdictions/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(b"Jurisdiction,Admin Email"),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == {"status": "ok"}
+    assert File.query.count() == 1, "the file should exist before a response is sent"
+
+    # Replace it with another file.
+    rv = client.put(
+        f"/election/{election_id}/jurisdictions/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(b"Jurisdiction,Admin Email"),
+                "jurisdictions2.csv",
+            )
+        },
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == {"status": "ok"}
+    assert File.query.count() == 1, "the old file should have been deleted"
 
 
 def test_no_jurisdiction(client):
@@ -133,6 +196,9 @@ def test_no_jurisdiction(client):
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {"status": "ok"}
+
+    # Process the file in the background.
+    assert bgcompute_update_election_jurisdictions_file() == 1
 
     election = Election.query.filter_by(id=election_id).one()
     assert election.jurisdictions == []
@@ -155,6 +221,9 @@ def test_single_jurisdiction_single_admin(client):
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {"status": "ok"}
+
+    # Process the file in the background.
+    assert bgcompute_update_election_jurisdictions_file() == 1
 
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1"]
@@ -183,6 +252,9 @@ def test_single_jurisdiction_multiple_admins(client):
     assert rv.status_code == 200
     assert json.loads(rv.data) == {"status": "ok"}
 
+    # Process the file in the background.
+    assert bgcompute_update_election_jurisdictions_file() == 1
+
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1"]
 
@@ -210,6 +282,9 @@ def test_multiple_jurisdictions_single_admin(client):
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {"status": "ok"}
+
+    # Process the file in the background.
+    assert bgcompute_update_election_jurisdictions_file() == 1
 
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1", "J2"]
