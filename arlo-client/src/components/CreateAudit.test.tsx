@@ -56,7 +56,7 @@ describe('CreateAudit', () => {
         body: JSON.stringify({}),
       })
       expect(historySpy).toBeCalledTimes(1)
-      expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1')
+      expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1/setup')
     })
   })
 
@@ -96,7 +96,7 @@ describe('CreateAudit', () => {
         body: JSON.stringify({ organizationId: 'org-id' }),
       })
       expect(historySpy).toBeCalledTimes(1)
-      expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1')
+      expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1/setup')
     })
   })
 

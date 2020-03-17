@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useContext,
 } from 'react'
-import { useRouteMatch } from 'react-router-dom'
+import { useRouteMatch, RouteComponentProps } from 'react-router-dom'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -37,6 +37,11 @@ interface IProps {
   match: {
     params: ICreateAuditParams
   }
+}
+
+interface TParams {
+  electionId: string
+  stage: string
 }
 
 const Audit: React.FC<IProps> = ({
@@ -93,8 +98,11 @@ const Audit: React.FC<IProps> = ({
     [stage]
   )
 
-  const setupMatch = useRouteMatch('/election/:electionId/setup')
-  const progressMatch = useRouteMatch('/election/:electionId/progress')
+  const match: RouteComponentProps<TParams>['match'] | null = useRouteMatch(
+    '/election/:electionId/:stage?'
+  )
+  /* istanbul ignore next */
+  const stageMatch = match ? match.params.stage : undefined
 
   return (
     <Wrapper className={!isAuthenticated ? 'single-page' : ''}>
@@ -104,7 +112,9 @@ const Audit: React.FC<IProps> = ({
         updateAudit={updateAudit}
       />
 
-      {isAuthenticated && (setupMatch || progressMatch) ? (
+      {isAuthenticated &&
+      /* istanbul ignore next */
+      (stageMatch === 'setup' || stageMatch === 'progress') ? (
         <>
           {meta!.type === 'audit_admin' && (
             <Sidebar title="Audit Setup" menuItems={menuItems} />

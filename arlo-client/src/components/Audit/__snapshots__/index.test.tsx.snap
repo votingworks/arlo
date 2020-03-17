@@ -3666,7 +3666,7 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
 </div>
 `;
 
-exports[`RiskLimitingAuditForm renders sidebar when authenticated 1`] = `
+exports[`RiskLimitingAuditForm renders sidebar when authenticated on /setup 1`] = `
 <div>
   <div
     class="sc-kEYyzF kuUIJj"

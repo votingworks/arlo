@@ -15,6 +15,16 @@ const checkAndToastMock: jest.SpyInstance<
   Parameters<typeof utilities.checkAndToast>
 > = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
+  useRouteMatch: () => ({
+    url: '/election/1',
+    params: {
+      electionId: '1',
+    },
+  }),
+}))
+
 checkAndToastMock.mockReturnValue(false)
 
 afterEach(() => {
@@ -91,5 +101,31 @@ describe('Header', () => {
       expect(apiMock).toHaveBeenCalledWith('/auth/me')
       expect(loginButton).toBeFalsy()
     })
+  })
+
+  it('shows the nav bar when authenticated and there is an electionId', async () => {
+    checkAndToastMock.mockReturnValue(false)
+    apiMock.mockImplementation(async () => ({
+      type: 'audit_admin',
+      name: 'Joe',
+      email: 'test@email.org',
+      jurisdictions: [],
+      organizations: [],
+    }))
+    const { container, getByText } = render(
+      <Router>
+        <AuthDataProvider>
+          <Header />
+        </AuthDataProvider>
+      </Router>
+    )
+    await wait(() => {
+      expect(getByText('Audit Setup')).toBeTruthy()
+      expect(getByText('Audit Progress')).toBeTruthy()
+      expect(getByText('View Audits')).toBeTruthy()
+      expect(getByText('New Audit')).toBeTruthy()
+      expect(container).toMatchSnapshot()
+    })
+    // jest.unmock('react-router-dom')
   })
 })

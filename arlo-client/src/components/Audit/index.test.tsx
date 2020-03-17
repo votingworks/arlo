@@ -18,7 +18,21 @@ const checkAndToastMock: jest.SpyInstance<
 
 checkAndToastMock.mockReturnValue(false)
 
-const routeProps = routerTestProps('/election/:electionId', { electionId: '1' })
+const routeProps = routerTestProps('/election/:electionId/:stage', {
+  electionId: '1',
+  stage: 'setup',
+})
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
+  useRouteMatch: () => ({
+    url: '/election/1/setup',
+    params: {
+      electionId: '1',
+      stage: 'setup',
+    },
+  }),
+}))
 
 afterEach(() => {
   apiMock.mockClear()
@@ -28,7 +42,11 @@ afterEach(() => {
 describe('RiskLimitingAuditForm', () => {
   it('fetches initial state from api', async () => {
     apiMock.mockImplementation(async () => statusStates[0])
-    const { container } = await asyncActRender(<Audit {...routeProps} />)
+    const { container } = await asyncActRender(
+      <Router>
+        <Audit {...routeProps} />
+      </Router>
+    )
 
     expect(container).toMatchSnapshot()
     await wait(() => {
@@ -41,20 +59,30 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('renders correctly with initialData', async () => {
-    const { container } = await asyncActRender(<Audit {...routeProps} />)
+    const { container } = await asyncActRender(
+      <Router>
+        <Audit {...routeProps} />
+      </Router>
+    )
     expect(container).toMatchSnapshot()
   })
 
   it('still renders if there is a server error', async () => {
     checkAndToastMock.mockReturnValueOnce(true)
-    await asyncActRender(<Audit {...routeProps} />)
+    await asyncActRender(
+      <Router>
+        <Audit {...routeProps} />
+      </Router>
+    )
     expect(checkAndToastMock).toBeCalledTimes(1)
   })
 
   it('does not render SelectBallotsToAudit when /audit/status is processing samplesizes', async () => {
     apiMock.mockImplementation(async () => statusStates[1])
     const { container, queryByTestId } = await asyncActRender(
-      <Audit {...routeProps} />
+      <Router>
+        <Audit {...routeProps} />
+      </Router>
     )
 
     expect(queryByTestId('form-two')).toBeNull()
@@ -71,7 +99,9 @@ describe('RiskLimitingAuditForm', () => {
   it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
     apiMock.mockImplementation(async () => statusStates[2])
     const { container, getByTestId } = await asyncActRender(
-      <Audit {...routeProps} />
+      <Router>
+        <Audit {...routeProps} />
+      </Router>
     )
 
     const fillFormTwo = await waitForElement(() => getByTestId('form-two'), {
@@ -92,7 +122,9 @@ describe('RiskLimitingAuditForm', () => {
   it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
     apiMock.mockImplementation(async () => statusStates[3])
     const { container, getByTestId, queryByTestId } = await asyncActRender(
-      <Audit {...routeProps} />
+      <Router>
+        <Audit {...routeProps} />
+      </Router>
     ) // this one will not have the first empty round
 
     const fillFormTwo = await waitForElement(() => getByTestId('form-two'), {
@@ -136,7 +168,7 @@ describe('RiskLimitingAuditForm', () => {
     })
   })
 
-  it('renders sidebar when authenticated', async () => {
+  it('renders sidebar when authenticated on /setup', async () => {
     apiMock
       .mockImplementationOnce(async () => statusStates[2])
       .mockImplementationOnce(async () => ({
