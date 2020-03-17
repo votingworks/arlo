@@ -39,8 +39,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
     try {
       setLoading(true)
       const data = isAuthenticated
-        ? // eslint-disable-next-line @typescript-eslint/camelcase
-          { organization_id: meta!.organizations[0].id }
+        ? { organizationId: meta!.organizations[0].id }
         : {}
       const response: { electionId: string } | IErrorResponse = await api(
         '/election/new',

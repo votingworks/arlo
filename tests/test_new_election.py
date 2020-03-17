@@ -30,7 +30,7 @@ def test_without_org_with_anonymous_user(client: FlaskClient):
 
 def test_in_org_with_anonymous_user(client: FlaskClient):
     org = create_organization()
-    rv = post_json(client, "/election/new", {"organization_id": org.id})
+    rv = post_json(client, "/election/new", {"organizationId": org.id})
     assert json.loads(rv.data) == {
         "errors": [
             {
@@ -48,7 +48,7 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
         client, user_type=UserType.AUDIT_ADMIN, user_email="admin@example.com"
     )
 
-    rv = post_json(client, "/election/new", {"organization_id": org_id})
+    rv = post_json(client, "/election/new", {"organizationId": org_id})
     response = json.loads(rv.data)
     election_id = response.get("electionId", None)
     assert election_id, response
@@ -65,7 +65,7 @@ def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
         client, user_type=UserType.AUDIT_ADMIN, user_email="admin1@example.com"
     )
 
-    rv = post_json(client, "/election/new", {"organization_id": org2_id})
+    rv = post_json(client, "/election/new", {"organizationId": org2_id})
     assert json.loads(rv.data) == {
         "errors": [
             {
@@ -83,7 +83,7 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
         client, user_type=UserType.JURISDICTION_ADMIN, user_email="admin@example.com"
     )
 
-    rv = post_json(client, "/election/new", {"organization_id": org_id})
+    rv = post_json(client, "/election/new", {"organizationId": org_id})
     assert json.loads(rv.data) == {
         "errors": [
             {
