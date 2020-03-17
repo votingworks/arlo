@@ -26,6 +26,7 @@ xkcdpass = "*"
 psycopg2-binary = "*"
 authlib = "*"
 requests = "*"
+jsonschema = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,12 +1,13 @@
 import os, datetime, csv, io, math, json, uuid, locale, re, hmac, urllib.parse, itertools
 from enum import Enum, auto
 from typing import Optional, Tuple, Union
+from jsonschema.exceptions import ValidationError
 
 from flask import Flask, jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
 from audits import sampler, bravo, sampler_contest
-from werkzeug.exceptions import InternalServerError, Unauthorized, Forbidden
+from werkzeug.exceptions import InternalServerError, Unauthorized, Forbidden, BadRequest
 from xkcdpass import xkcd_password as xp
 
 from sqlalchemy import event, func
@@ -1491,6 +1492,22 @@ def jurisdictionadmin_login_callback():
 @app.route("/election/<election_id>/board/<board_id>")
 def serve(election_id=None, board_id=None):
     return app.send_static_file("index.html")
+
+
+@app.errorhandler(ValidationError)
+def handle_validation_error(e):
+    return (
+        jsonify(errors=[{"message": e.message, "errorType": "Bad Request"}]),
+        BadRequest.code,
+    )
+
+
+@app.errorhandler(BadRequest)
+def handle_400(e):
+    return (
+        jsonify(errors=[{"message": e.description, "errorType": "Bad Request"}]),
+        BadRequest.code,
+    )
 
 
 @app.errorhandler(Unauthorized)

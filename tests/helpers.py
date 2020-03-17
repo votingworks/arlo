@@ -15,6 +15,12 @@ def post_json(client: FlaskClient, url: str, obj) -> Any:
     )
 
 
+def put_json(client: FlaskClient, url: str, obj) -> Any:
+    return client.put(
+        url, headers={"Content-Type": "application/json"}, data=json.dumps(obj)
+    )
+
+
 def set_logged_in_user(
     client: FlaskClient, user_type: UserType, user_email=DEFAULT_USER_EMAIL
 ):
