@@ -1,23 +1,27 @@
-# type: ignore
 from sqlalchemy.orm import relationship, backref
 from typing import Union, List
 from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy.model import DefaultMeta
+
 
 db = SQLAlchemy()
+
+# Typing workaround from https://github.com/dropbox/sqlalchemy-stubs/issues/76#issuecomment-595839159
+BaseModel: DefaultMeta = db.Model
 
 # on-delete-cascade is done in SQLAlchemy like this:
 # https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete
 
 
-class Organization(db.Model):
+class Organization(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     name = db.Column(db.String(200), nullable=False)
 
     elections = relationship("Election", backref="organization", passive_deletes=True)
 
 
-class Election(db.Model):
+class Election(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     name = db.Column(db.String(200), nullable=True)
     state = db.Column(db.String(100), nullable=True)
@@ -52,7 +56,7 @@ class Election(db.Model):
 
 
 # these are typically counties
-class Jurisdiction(db.Model):
+class Jurisdiction(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     election_id = db.Column(
         db.String(200), db.ForeignKey("election.id", ondelete="cascade"), nullable=False
@@ -79,7 +83,7 @@ class Jurisdiction(db.Model):
     )
 
 
-class User(db.Model):
+class User(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     email = db.Column(db.String(200), unique=True, nullable=False)
     external_id = db.Column(db.String(200), unique=True, nullable=True)
@@ -90,7 +94,7 @@ class User(db.Model):
     )
 
 
-class AuditAdministration(db.Model):
+class AuditAdministration(BaseModel):
     organization_id = db.Column(
         db.String(200),
         db.ForeignKey("organization.id", ondelete="cascade"),
@@ -111,7 +115,7 @@ class AuditAdministration(db.Model):
     __table_args__ = (db.PrimaryKeyConstraint("organization_id", "user_id"),)
 
 
-class JurisdictionAdministration(db.Model):
+class JurisdictionAdministration(BaseModel):
     user_id = db.Column(
         db.String(200), db.ForeignKey("user.id", ondelete="cascade"), nullable=False
     )
@@ -133,7 +137,7 @@ class JurisdictionAdministration(db.Model):
     __table_args__ = (db.PrimaryKeyConstraint("user_id", "jurisdiction_id"),)
 
 
-class Batch(db.Model):
+class Batch(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     jurisdiction_id = db.Column(
         db.String(200),
@@ -151,7 +155,7 @@ class Batch(db.Model):
     )
 
 
-class Contest(db.Model):
+class Contest(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     election_id = db.Column(
         db.String(200), db.ForeignKey("election.id", ondelete="cascade"), nullable=False
@@ -169,7 +173,7 @@ class Contest(db.Model):
     )
 
 
-class ContestChoice(db.Model):
+class ContestChoice(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     contest_id = db.Column(
         db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False,
@@ -195,7 +199,7 @@ class ContestJurisdiction(db.Model):
     __table_args__ = (db.PrimaryKeyConstraint("contest_id", "jurisdiction_id"),)
 
 
-class AuditBoard(db.Model):
+class AuditBoard(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     jurisdiction_id = db.Column(
         db.String(200),
@@ -218,7 +222,7 @@ class AuditBoard(db.Model):
     )
 
 
-class Round(db.Model):
+class Round(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     election_id = db.Column(
         db.String(200), db.ForeignKey("election.id", ondelete="cascade"), nullable=False
@@ -236,7 +240,7 @@ class Round(db.Model):
     audit_boards = relationship("AuditBoard", backref="round", passive_deletes=True)
 
 
-class SampledBallot(db.Model):
+class SampledBallot(BaseModel):
     batch_id = db.Column(
         db.String(200), db.ForeignKey("batch.id", ondelete="cascade"), nullable=False
     )
@@ -259,7 +263,7 @@ class SampledBallot(db.Model):
     comment = db.Column(db.Text, nullable=True)
 
 
-class SampledBallotDraw(db.Model):
+class SampledBallotDraw(BaseModel):
     batch_id = db.Column(
         db.String(200), db.ForeignKey("batch.id", ondelete="cascade"), nullable=False
     )
@@ -282,7 +286,7 @@ class SampledBallotDraw(db.Model):
     )
 
 
-class RoundContest(db.Model):
+class RoundContest(BaseModel):
     round_id = db.Column(
         db.String(200), db.ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
@@ -303,7 +307,7 @@ class RoundContest(db.Model):
     sample_size = db.Column(db.Integer)
 
 
-class RoundContestResult(db.Model):
+class RoundContestResult(BaseModel):
     round_id = db.Column(
         db.String(200), db.ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
@@ -327,7 +331,7 @@ class RoundContestResult(db.Model):
     result = db.Column(db.Integer)
 
 
-class File(db.Model):
+class File(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     name = db.Column(db.String(250), nullable=False)
     contents = db.Column(db.Text, nullable=False)

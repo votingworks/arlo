@@ -477,7 +477,7 @@ def audit_status(election_id=None):
             {
                 "id": j.id,
                 "name": j.name,
-                "contests": [c.contest_id for c in j.contests],
+                "contests": [c.id for c in j.contests],
                 "auditBoards": [
                     {
                         "id": audit_board.id,
@@ -618,16 +618,18 @@ def jurisdictions_set(election_id):
     db.session.query(Jurisdiction).filter_by(election_id=election.id).delete()
 
     for jurisdiction in jurisdictions:
+        contests = (
+            Contest.query.filter_by(election_id=election.id)
+            .filter(Contest.id.in_(jurisdiction["contests"]))
+            .all()
+        )
         jurisdiction_obj = Jurisdiction(
-            election_id=election.id, id=jurisdiction["id"], name=jurisdiction["name"]
+            election_id=election.id,
+            id=jurisdiction["id"],
+            name=jurisdiction["name"],
+            contests=contests,
         )
         db.session.add(jurisdiction_obj)
-
-        for contest_id in jurisdiction["contests"]:
-            jurisdiction_contest = ContestJurisdiction(
-                contest_id=contest_id, jurisdiction_id=jurisdiction_obj.id
-            )
-            db.session.add(jurisdiction_contest)
 
         for audit_board in jurisdiction["auditBoards"]:
             audit_board_obj = AuditBoard(
