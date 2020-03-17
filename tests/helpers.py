@@ -4,7 +4,7 @@ from typing import Any, Optional
 from flask.testing import FlaskClient
 
 from arlo_server.routes import create_organization, UserType
-from arlo_server.models import db, AuditAdministration, User  # type: ignore
+from arlo_server.models import db, AuditAdministration, User
 
 DEFAULT_USER_EMAIL = "admin@example.com"
 

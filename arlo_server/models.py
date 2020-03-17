@@ -343,3 +343,15 @@ class File(BaseModel):
     name = db.Column(db.String(250), nullable=False)
     contents = db.Column(db.Text, nullable=False)
     uploaded_at = db.Column(db.DateTime(timezone=False), nullable=False)
+
+    # Metadata for processing files in the background.
+    processing_started_at = db.Column(db.DateTime(timezone=False), nullable=True)
+    processing_completed_at = db.Column(db.DateTime(timezone=False), nullable=True)
+    processing_error = db.Column(db.Text, nullable=True)
+
+
+class ProcessingStatus(str, Enum):
+    READY_TO_PROCESS = "READY_TO_PROCESS"
+    PROCESSING = "PROCESSING"
+    PROCESSED = "PROCESSED"
+    ERRORED = "ERRORED"

@@ -32,6 +32,7 @@ from config import (
 
 from util.binpacking import Bucket, BalancedBucketList
 from util.jurisdiction_bulk_update import bulk_update_jurisdictions
+from util.process_file import process_file
 
 AUDIT_BOARD_MEMBER_COUNT = 2
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
@@ -305,6 +306,13 @@ def serialize_members(audit_board):
     return members
 
 
+def isoformat(datetime: Optional[datetime.datetime]) -> Optional[str]:
+    if datetime is not None:
+        return datetime.isoformat()
+    else:
+        return None
+
+
 ADMIN_PASSWORD = os.environ.get("ARLO_ADMIN_PASSWORD", None)
 
 # this is a temporary approach to getting all running audits
@@ -369,16 +377,31 @@ def get_jurisdictions_file(election_id=None):
     require_audit_admin_for_organization(election.organization_id)
     jurisdictions_file = election.jurisdictions_file
 
+    if jurisdictions_file.processing_error:
+        status = ProcessingStatus.ERRORED
+    elif jurisdictions_file.processing_completed_at:
+        status = ProcessingStatus.PROCESSED
+    elif jurisdictions_file.processing_started_at:
+        status = ProcessingStatus.PROCESSING
+    else:
+        status = ProcessingStatus.READY_TO_PROCESS
+
     if jurisdictions_file:
         return jsonify(
             file={
                 "contents": jurisdictions_file.contents,
                 "name": jurisdictions_file.name,
-                "uploadedAt": jurisdictions_file.uploaded_at,
-            }
+                "uploadedAt": isoformat(jurisdictions_file.uploaded_at),
+            },
+            processing={
+                "status": status,
+                "startedAt": isoformat(jurisdictions_file.processing_started_at),
+                "completedAt": isoformat(jurisdictions_file.processing_completed_at),
+                "error": jurisdictions_file.processing_error,
+            },
         )
     else:
-        return jsonify(file=None)
+        return jsonify(file=None, processing=None)
 
 
 @app.route("/election/<election_id>/jurisdictions/file", methods=["PUT"])
@@ -402,16 +425,13 @@ def update_jurisdictions_file(election_id=None):
     jurisdictions_file = request.files["jurisdictions"]
     jurisdictions_file_string = jurisdictions_file.read().decode("utf-8-sig")
 
-    if election.jurisdictions_file:
-        db.session.delete(election.jurisdictions_file)
-
+    old_jurisdictions_file = election.jurisdictions_file
     election.jurisdictions_file = File(
         id=str(uuid.uuid4()),
         name=jurisdictions_file.filename,
         contents=jurisdictions_file_string,
         uploaded_at=datetime.datetime.utcnow(),
     )
-    db.session.add(election)
 
     jurisdictions_csv = csv.DictReader(io.StringIO(jurisdictions_file_string))
     JURISDICTION_NAME = "Jurisdiction"
@@ -438,11 +458,9 @@ def update_jurisdictions_file(election_id=None):
             400,
         )
 
-    bulk_update_jurisdictions(
-        db.session,
-        election,
-        [(row[JURISDICTION_NAME], row[ADMIN_EMAIL]) for row in jurisdictions_csv],
-    )
+    if old_jurisdictions_file:
+        db.session.delete(old_jurisdictions_file)
+    db.session.add(election)
     db.session.commit()
 
     return jsonify(status="ok")

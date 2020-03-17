@@ -1,7 +1,36 @@
+import csv
+import io
 import uuid
-from arlo_server.models import Election, JurisdictionAdministration, User, Jurisdiction  # type: ignore
-from typing import Tuple, List
 from sqlalchemy import func
+from typing import Tuple, List
+
+from arlo_server.models import (
+    Election,
+    File,
+    JurisdictionAdministration,
+    User,
+    Jurisdiction,
+)
+from util.process_file import process_file
+
+
+JURISDICTION_NAME = "Jurisdiction"
+ADMIN_EMAIL = "Admin Email"
+
+
+def process_jurisdictions_file(session, election: Election, file: File) -> None:
+    assert election.jurisdictions_file_id == file.id
+
+    def process():
+        jurisdictions_csv = csv.DictReader(io.StringIO(file.contents))
+
+        bulk_update_jurisdictions(
+            session,
+            election,
+            [(row[JURISDICTION_NAME], row[ADMIN_EMAIL]) for row in jurisdictions_csv],
+        )
+
+    process_file(session, file, process)
 
 
 def bulk_update_jurisdictions(
