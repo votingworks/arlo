@@ -93,7 +93,7 @@ const Audit: React.FC<IProps> = ({
   )
 
   return (
-    <Wrapper>
+    <Wrapper className={!isAuthenticated ? 'single-page' : ''}>
       <ResetButton
         electionId={electionId}
         disabled={!audit.contests.length || isLoading}
