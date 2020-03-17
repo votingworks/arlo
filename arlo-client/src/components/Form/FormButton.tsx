@@ -2,9 +2,14 @@ import React from 'react'
 import { Button } from '@blueprintjs/core'
 import styled from 'styled-components'
 
-const SpacedButton = styled(Button)`
+const VerticalSpacedButton = styled(Button)`
   & + & {
     margin-top: 10px;
+  }
+`
+const HorizontalSpacedButton = styled(Button)`
+  & + & {
+    margin-left: 10px;
   }
 `
 
@@ -19,6 +24,7 @@ interface IProps {
   fill?: boolean
   loading?: boolean
   large?: boolean
+  verticalSpaced?: boolean
 }
 const FormButton: React.FC<IProps> = ({
   disabled,
@@ -27,16 +33,27 @@ const FormButton: React.FC<IProps> = ({
   // should we use this?
   inline, // eslint-disable-line @typescript-eslint/no-unused-vars
   children,
+  verticalSpaced,
   ...rest
-}: IProps) => (
-  <SpacedButton
-    onClick={onClick}
-    disabled={disabled}
-    small={size === 'sm'}
-    {...rest}
-  >
-    {children}
-  </SpacedButton>
-)
+}: IProps) =>
+  verticalSpaced ? (
+    <VerticalSpacedButton
+      onClick={onClick}
+      disabled={disabled}
+      small={size === 'sm'}
+      {...rest}
+    >
+      {children}
+    </VerticalSpacedButton>
+  ) : (
+    <HorizontalSpacedButton
+      onClick={onClick}
+      disabled={disabled}
+      small={size === 'sm'}
+      {...rest}
+    >
+      {children}
+    </HorizontalSpacedButton>
+  )
 
 export default FormButton

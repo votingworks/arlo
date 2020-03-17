@@ -3,7 +3,7 @@
 exports[`CreateAudit lists associated elections for authenticated AA user 1`] = `
 <div>
   <div
-    class="sc-htpNat dgtpPg"
+    class="sc-bxivhb jKhLAa"
   >
     <img
       alt="Arlo, by VotingWorks"
@@ -11,7 +11,7 @@ exports[`CreateAudit lists associated elections for authenticated AA user 1`] = 
       src="/arlo.png"
     />
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH fdlCQb sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-htpNat grdNVh sc-bdVaJa gLVjYw"
       type="button"
     >
       <span
@@ -21,28 +21,28 @@ exports[`CreateAudit lists associated elections for authenticated AA user 1`] = 
       </span>
     </button>
     <a
-      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
       href="/election/election-1"
     >
       Not named yet
        (NY)
     </a>
     <a
-      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
       href="/election/election-2"
     >
       Election Two
        (FL)
     </a>
     <a
-      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
       href="/election/election-3"
     >
       Election Three
       
     </a>
     <a
-      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
       href="/election/election-4"
     >
       Election Four
@@ -55,7 +55,7 @@ exports[`CreateAudit lists associated elections for authenticated AA user 1`] = 
 exports[`CreateAudit lists associated elections for authenticated JA user 1`] = `
 <div>
   <div
-    class="sc-htpNat dgtpPg"
+    class="sc-bxivhb jKhLAa"
   >
     <img
       alt="Arlo, by VotingWorks"
@@ -63,7 +63,7 @@ exports[`CreateAudit lists associated elections for authenticated JA user 1`] = 
       src="/arlo.png"
     />
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH fdlCQb sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-htpNat grdNVh sc-bdVaJa gLVjYw"
       type="button"
     >
       <span
@@ -73,14 +73,14 @@ exports[`CreateAudit lists associated elections for authenticated JA user 1`] = 
       </span>
     </button>
     <a
-      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
       href="/election/election-1"
     >
       Election One
        (NY)
     </a>
     <a
-      class="bp3-button bp3-intent-primary sc-bxivhb cQgiba"
+      class="bp3-button bp3-intent-primary sc-ifAKCX ebxkuH"
       href="/election/election-2"
     >
       Not named yet
@@ -93,7 +93,7 @@ exports[`CreateAudit lists associated elections for authenticated JA user 1`] = 
 exports[`CreateAudit renders correctly 1`] = `
 <div>
   <div
-    class="sc-htpNat dgtpPg"
+    class="sc-bxivhb jKhLAa"
   >
     <img
       alt="Arlo, by VotingWorks"
@@ -101,7 +101,7 @@ exports[`CreateAudit renders correctly 1`] = `
       src="/arlo.png"
     />
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH fdlCQb sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-htpNat grdNVh sc-bdVaJa gLVjYw"
       type="button"
     >
       <span
@@ -111,7 +111,7 @@ exports[`CreateAudit renders correctly 1`] = `
       </span>
     </button>
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH fdlCQb sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-htpNat grdNVh sc-bdVaJa gLVjYw"
       type="button"
     >
       <span
@@ -121,7 +121,7 @@ exports[`CreateAudit renders correctly 1`] = `
       </span>
     </button>
     <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH fdlCQb sc-bdVaJa gLVjYw"
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-htpNat grdNVh sc-bdVaJa gLVjYw"
       type="button"
     >
       <span

@@ -62,6 +62,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
       <Button
+        verticalSpaced
         type="button"
         intent="primary"
         fill
@@ -75,6 +76,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
       {!isAuthenticated ? (
         <>
           <Button
+            verticalSpaced
             type="button"
             intent="primary"
             fill
@@ -89,6 +91,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
             Log in as an Audit Admin
           </Button>
           <Button
+            verticalSpaced
             type="button"
             intent="primary"
             fill

@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
+  display: flex;
   flex-grow: 1;
   margin-top: 20px;
   margin-right: auto;
@@ -9,6 +10,11 @@ const Wrapper = styled.div`
   max-width: 1020px;
   padding-right: 15px;
   padding-left: 15px;
+
+  &.single-page {
+    flex-direction: column;
+    align-items: center;
+  }
 `
 
 export default Wrapper

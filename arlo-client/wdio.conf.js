@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 exports.config = {
   //
   // ====================
@@ -21,7 +22,7 @@ exports.config = {
   //
   specs: ['./src/test/specs/**/*.ts'],
   suites: {
-    audit: ['./src/test/specs/auditFlow.ts'],
+    audit: ['./src/test/specs/dataEntry.ts'],
     createAudit: ['./src/test/specs/createAudit.ts'],
   },
   // Patterns to exclude.
@@ -176,7 +177,7 @@ exports.config = {
    */
   // before: function (capabilities, specs) {
   // },
-  before: function() {
+  before() {
     require('ts-node').register({ files: true }) // TODO figure out how to only use ts-node or @babel/register
     require('@babel/register')({
       extensions: ['.ts'],
@@ -275,6 +276,6 @@ exports.config = {
    * @param {String} oldSessionId session ID of the old session
    * @param {String} newSessionId session ID of the new session
    */
-  //onReload: function(oldSessionId, newSessionId) {
-  //}
+  // onReload: function(oldSessionId, newSessionId) {
+  // }
 }
