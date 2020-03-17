@@ -3781,6 +3781,7 @@ exports[`RiskLimitingAuditForm renders sidebar when authenticated 1`] = `
             class="bp3-html-select sc-iAyFgw hQSkFJ"
           >
             <select
+              data-testid="state-field"
               field="[object Object]"
               form="[object Object]"
               id="state"

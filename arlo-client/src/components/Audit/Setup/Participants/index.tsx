@@ -46,6 +46,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
               <Field
                 component={Select}
                 id="state"
+                data-testid="state-field"
                 name="state"
                 onChange={(e: React.FormEvent<HTMLSelectElement>) =>
                   setFieldValue('state', e.currentTarget.value)

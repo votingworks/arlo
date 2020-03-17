@@ -3,6 +3,8 @@ import React from 'react'
 import { ElementType, IAudit } from '../../../types'
 import Participants from './Participants'
 import Contests from './Contests'
+import Settings from './Settings'
+import Review from './Review'
 
 export const setupStages = [
   'Participants',
@@ -21,11 +23,13 @@ interface IProps {
 const Setup: React.FC<IProps> = ({ stage, setStage, audit }) => {
   const currentIndex = setupStages.indexOf(stage)
   const nextStage = () => {
+    /* istanbul ignore else */
     if (currentIndex < setupStages.length - 1)
       setStage(setupStages[currentIndex + 1])
   }
   const prevStage = () => {
     // modal warn that form data may be lost
+    /* istanbul ignore else */
     if (currentIndex > 0) setStage(setupStages[currentIndex - 1])
   }
 
@@ -53,9 +57,13 @@ const Setup: React.FC<IProps> = ({ stage, setStage, audit }) => {
         />
       )
     case 'Audit Settings':
-      return <p>Audit Settings</p>
+      return (
+        <Settings audit={audit} nextStage={nextStage} prevStage={prevStage} />
+      )
     case 'Review & Launch':
-      return <p>Review &amp; Launch</p>
+      return (
+        <Review audit={audit} nextStage={nextStage} prevStage={prevStage} />
+      )
     /* istanbul ignore next */
     default:
       return null

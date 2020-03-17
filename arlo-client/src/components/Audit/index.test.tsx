@@ -1,5 +1,5 @@
 import React from 'react'
-import { waitForElement, wait } from '@testing-library/react'
+import { waitForElement, wait, fireEvent } from '@testing-library/react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import Audit from './index'
 import { statusStates, dummyBallots } from './_mocks'
@@ -167,5 +167,88 @@ describe('RiskLimitingAuditForm', () => {
       expect(queryAllByText('Participants').length).toBe(2)
       expect(container).toMatchSnapshot()
     })
+  })
+
+  it('sidebar changes stages', async () => {
+    apiMock
+      .mockImplementationOnce(async () => statusStates[2])
+      .mockImplementationOnce(async () => ({
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      }))
+    const { queryAllByText, getByText } = await asyncActRender(
+      <AuthDataProvider>
+        <Router>
+          <Audit {...routeProps} />
+        </Router>
+      </AuthDataProvider>
+    )
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(2)
+      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
+      expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
+      expect(queryAllByText('Participants').length).toBe(2)
+    })
+
+    fireEvent.click(getByText('Target Contests'), { bubbles: true })
+
+    await wait(() => {
+      expect(queryAllByText('Target Contests').length).toBe(2)
+    })
+  })
+
+  it('next and back buttons change stages', async () => {
+    apiMock
+      .mockImplementationOnce(async () => statusStates[2])
+      .mockImplementationOnce(async () => ({
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      }))
+    const { queryAllByText, getByText } = await asyncActRender(
+      <AuthDataProvider>
+        <Router>
+          <Audit {...routeProps} />
+        </Router>
+      </AuthDataProvider>
+    )
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(2)
+      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
+      expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
+      expect(queryAllByText('Participants').length).toBe(2)
+    })
+
+    fireEvent.click(getByText('Audit Settings'), { bubbles: true })
+
+    await wait(() => {
+      expect(queryAllByText('Audit Settings').length).toBe(2)
+    })
+
+    fireEvent.click(getByText('Next'))
+    await wait(() => {
+      expect(queryAllByText('Review').length).toBe(1)
+    })
+    fireEvent.click(getByText('Back'))
+    expect(queryAllByText('Audit Settings').length).toBe(2)
   })
 })

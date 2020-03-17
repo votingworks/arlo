@@ -2,9 +2,35 @@
 
 exports[`Setup renders Audit Settings stage 1`] = `
 <div>
-  <p>
-    Audit Settings
-  </p>
+  <div>
+    <p>
+      Audit Settings
+    </p>
+    <div
+      class="sc-htpNat gtULUV"
+    >
+      <button
+        class="bp3-button sc-ifAKCX zdCNs"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Back
+        </span>
+      </button>
+      <button
+        class="bp3-button sc-ifAKCX zdCNs"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Next
+        </span>
+      </button>
+    </div>
+  </div>
 </div>
 `;
 
@@ -278,6 +304,7 @@ exports[`Setup renders Participants stage 1`] = `
           class="bp3-html-select sc-bZQynM imeWhx"
         >
           <select
+            data-testid="state-field"
             field="[object Object]"
             form="[object Object]"
             id="state"
@@ -564,9 +591,25 @@ exports[`Setup renders Participants stage 1`] = `
 
 exports[`Setup renders Review & Launch stage 1`] = `
 <div>
-  <p>
-    Review & Launch
-  </p>
+  <div>
+    <p>
+      Review
+    </p>
+    <div
+      class="sc-htpNat gtULUV"
+    >
+      <button
+        class="bp3-button sc-ifAKCX zdCNs"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Back
+        </span>
+      </button>
+    </div>
+  </div>
 </div>
 `;
 
