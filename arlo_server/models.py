@@ -79,7 +79,10 @@ class Jurisdiction(BaseModel):
         "AuditBoard", backref="jurisdiction", passive_deletes=True
     )
     contests = relationship(
-        "ContestJurisdiction", backref="jurisdiction", passive_deletes=True
+        "Contest",
+        secondary="contest_jurisdiction",
+        backref="jurisdictions",
+        passive_deletes=True,
     )
 
 
@@ -186,17 +189,21 @@ class ContestChoice(BaseModel):
     )
 
 
-class ContestJurisdiction(db.Model):
-    contest_id = db.Column(
-        db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False,
-    )
-    jurisdiction_id = db.Column(
+contest_jurisdiction = db.Table(
+    "contest_jurisdiction",
+    db.Column(
+        "contest_id",
         db.String(200),
-        db.ForeignKey("jurisdiction.id", ondelete="cascade"),
+        db.ForeignKey("contest.id", primary_key=True, ondelete="cascade"),
         nullable=False,
-    )
-
-    __table_args__ = (db.PrimaryKeyConstraint("contest_id", "jurisdiction_id"),)
+    ),
+    db.Column(
+        "jurisdiction_id",
+        db.String(200),
+        db.ForeignKey("jurisdiction.id", primary_key=True, ondelete="cascade"),
+        nullable=False,
+    ),
+)
 
 
 class AuditBoard(BaseModel):
