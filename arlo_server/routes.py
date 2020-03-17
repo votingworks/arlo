@@ -753,8 +753,12 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
     jurisdiction.manifest_num_batches = num_batches
     db.session.commit()
 
-    # draw the sample
-    sample_ballots(election, election.rounds[0])
+    # If we're in the single-jurisdiction flow, posting the ballot manifest
+    # starts the first round, so we need to sample the ballots.
+    # In the multi-jurisdiction flow, this happens after all jurisdictions
+    # upload manifests, and is triggered by a different endpoint.
+    if not election.organization_id:
+        sample_ballots(election, election.rounds[0])
 
     return jsonify(status="ok")
 

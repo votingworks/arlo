@@ -13,3 +13,4 @@ db.init_app(app)
 
 import arlo_server.routes
 import arlo_server.contests
+import arlo_server.jurisdictions

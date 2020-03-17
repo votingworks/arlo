@@ -77,4 +77,6 @@ def compare_json(actual_json, expected_json):
     elif callable(expected_json):
         expected_json(actual_json)
     else:
-        assert actual_json == expected_json
+        assert (
+            actual_json == expected_json
+        ), f"Actual: {actual_json}\nExpected: {expected_json}"
