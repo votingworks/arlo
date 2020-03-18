@@ -12,18 +12,18 @@ New routes are in **bold**.
 
 ![](./create-audit.png)
 
+- GET /auth/me - get user info and all of their audits
 - POST /election/new - create new audit
-- **GET /election** - get all audits
 
-![](upload-jurisdiction-file.png)
+![](upload-jurisdictions-file.png)
 
-- POST /election/<election_id>/jurisdiction/csv - upload CSV file of jurisdictions with JAs
-- GET /election/<election_id>/jurisdiction/csv - download CSV file of jurisdictions with JAs
+- PUT /election/<election_id>/jurisdiction/file - upload CSV file of jurisdictions with JAs
+- GET /election/<election_id>/jurisdiction/file - download CSV file of jurisdictions with JAs
 
 ![](contests.png)
 
-- **PUT /election/<election_id>/contests** - create/update all contests, including contest universe
-- **GET /election/<election_id>/contests** - get all contests
+- **PUT /election/<election_id>/contest** - create/update all contests, including contest universe
+- **GET /election/<election_id>/contest** - get all contests
 
 ![](audit-settings.png)
 
@@ -32,32 +32,32 @@ New routes are in **bold**.
 
 ![](review-and-launch.png)
 
-- **GET /election/<election_id>/round** - check if we have created the first round object yet
+- **GET /election/<election_id>/round** - get all rounds
 - **POST /election/<election_id>/round** - create the first round object, if we need to
-- **GET /election/<election_id>/round/<round_id>** - poll the round, which will eventually have the estimated sample sizes on it
-- **PUT /election/<election_id>/round/<round_id>** - set the sample size, which starts the round
+- **POST /election/<election_id>/round/<round_id>/start** - start the round, setting the sample size in the process
 
 # Audit Admin: Running the audit
 
 ![](jurisdiction-status.png)
 
 - **GET /election/<election_id>/round** - get all rounds to figure out what round we're on
-- **GET /election/<election_id>/round/<round_id>/jurisdiction** - get round status by jurisdiction
+- **GET /election/<election_id>/jurisdiction** - get round status for all jurisdictions
 
 ![](contest-status.png)
 
 - **GET /election/<election_id>/round** - get all rounds to figure out what round we're on
-- **GET /election/<election_id>/round/<round_id>/contest** - get round status by contest
+- **GET /election/<election_id>/contest** - get round status for all contests
 
 ![](start-round2.png)
 
-- **POST /election/<election_id>/round** - start a new round
+- **POST /election/<election_id>/round** - create a new round
+- **POST /election/<election_id>/round/<round_id>/start** - start the new round (the backend will pick the sample size)
 
 # Jurisdiction Admin: Audit setup
 
 ![](ja-select-audit.png)
 
-- **GET /election** - get all audits
+- GET /auth/me - get user info and all their audits
 
 ![](ja-upload-manifest.png)
 
@@ -66,11 +66,10 @@ New routes are in **bold**.
 ![](ja-create-audit-boards.png)
 
 - **GET /election/<election_id>/jurisdiction/<jurisdiction_id>/round** - figure out what round we're on
-- **POST /election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board** - create audit boards for this round (could potentially reuse existing audit-board endpoint, but it doesn't know anything about rounds currently)
+- **POST /election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board** - create audit boards for this round
 
 ![](ja-run-audit.png)
 
-- **GET /election/<election_id>/jurisdiction/<jurisdiction_id>/round** - figure out what round we're on
-- **GET /election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>** - get round status
-- GET /election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/retrieval-list - get the retrieval list (technically the existing endpoint is /election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list, which is painfully inconsistent, but I guess we can reuse it)
+- **GET /election/<election_id>/jurisdiction/<jurisdiction_id>/round** - list all the rounds
+- **GET /election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/retrieval-list** - get the retrieval list
 - GET /election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballot-list - get the ballots
