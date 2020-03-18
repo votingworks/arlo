@@ -1,4 +1,4 @@
-import json
+import json, uuid
 import pytest
 from flask.testing import FlaskClient
 from typing import Any
@@ -9,29 +9,17 @@ from arlo_server.routes import create_organization
 from tests.helpers import create_org_and_admin, set_logged_in_user, post_json
 
 
-@pytest.fixture
-def client() -> FlaskClient:
-    app.config["TESTING"] = True
-    client = app.test_client()
-
-    with app.app_context():
-        db.drop_all()
-        db.create_all()
-
-    yield client
-
-    db.session.commit()
-
-
 def test_without_org_with_anonymous_user(client: FlaskClient):
-    rv = client.post("/election/new")
-    assert json.loads(rv.data)["electionId"]
+    rv = post_json(client, "/election/new", {"auditName": "Test Audit"})
     assert rv.status_code == 200
+    assert json.loads(rv.data)["electionId"]
 
 
 def test_in_org_with_anonymous_user(client: FlaskClient):
     org = create_organization()
-    rv = post_json(client, "/election/new", {"organizationId": org.id})
+    rv = post_json(
+        client, "/election/new", {"auditName": "Test Audit", "organizationId": org.id}
+    )
     assert json.loads(rv.data) == {
         "errors": [
             {
@@ -49,7 +37,9 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
         client, user_type=UserType.AUDIT_ADMIN, user_email="admin@example.com"
     )
 
-    rv = post_json(client, "/election/new", {"organizationId": org_id})
+    rv = post_json(
+        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id}
+    )
     response = json.loads(rv.data)
     election_id = response.get("electionId", None)
     assert election_id, response
@@ -66,7 +56,9 @@ def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
         client, user_type=UserType.AUDIT_ADMIN, user_email="admin1@example.com"
     )
 
-    rv = post_json(client, "/election/new", {"organizationId": org2_id})
+    rv = post_json(
+        client, "/election/new", {"auditName": "Test Audit", "organizationId": org2_id}
+    )
     assert json.loads(rv.data) == {
         "errors": [
             {
@@ -84,7 +76,9 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
         client, user_type=UserType.JURISDICTION_ADMIN, user_email="admin@example.com"
     )
 
-    rv = post_json(client, "/election/new", {"organizationId": org_id})
+    rv = post_json(
+        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id}
+    )
     assert json.loads(rv.data) == {
         "errors": [
             {
@@ -94,3 +88,95 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
         ]
     }
     assert rv.status_code == 403
+
+
+def test_missing_audit_name(client: FlaskClient):
+    rv = post_json(client, "/election/new", {})
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "'auditName' is a required property",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+
+def test_without_org_duplicate_audit_name(client: FlaskClient):
+    rv = post_json(client, "/election/new", {"auditName": "Test Audit"})
+    assert rv.status_code == 200
+    assert json.loads(rv.data)["electionId"]
+
+    rv = post_json(client, "/election/new", {"auditName": "Test Audit"})
+    assert rv.status_code == 200
+    assert json.loads(rv.data)["electionId"]
+
+
+def test_in_org_duplicate_audit_name(client: FlaskClient):
+    org_id, _user_id = create_org_and_admin(user_email="admin@example.com")
+    set_logged_in_user(
+        client, user_type=UserType.AUDIT_ADMIN, user_email="admin@example.com"
+    )
+
+    rv = post_json(
+        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id}
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data)["electionId"]
+
+    rv = post_json(
+        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id}
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": f"An audit with name 'Test Audit' already exists within your organization",
+                "errorType": "Conflict",
+            }
+        ]
+    }
+
+
+def test_two_orgs_same_name(client: FlaskClient):
+    org_id_1, _ = create_org_and_admin(user_email="admin1@example.com")
+    org_id_2, _ = create_org_and_admin(user_email="admin2@example.com")
+    set_logged_in_user(
+        client, user_type=UserType.AUDIT_ADMIN, user_email="admin1@example.com"
+    )
+
+    rv = post_json(
+        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id_1}
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data)["electionId"]
+
+    set_logged_in_user(
+        client, user_type=UserType.AUDIT_ADMIN, user_email="admin2@example.com"
+    )
+
+    rv = post_json(
+        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id_2}
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data)["electionId"]
+
+
+def test_election_reset(client, election_id):
+    rv = client.post(f"/election/{election_id}/audit/reset")
+    assert json.loads(rv.data) == {"status": "ok"}
+
+    rv = client.get(f"/election/{election_id}/audit/status")
+    status = json.loads(rv.data)
+
+    assert status["riskLimit"] == None
+    assert status["randomSeed"] == None
+    assert status["contests"] == []
+    assert status["jurisdictions"] == []
+    assert status["rounds"] == []
+
+
+def test_election_reset_not_found(client, election_id):
+    rv = client.post(f"/election/{str(uuid.uuid4())}/audit/reset")
+    assert rv.status_code == 404

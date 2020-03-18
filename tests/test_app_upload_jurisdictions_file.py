@@ -17,24 +17,7 @@ from arlo_server.models import (
 from bgcompute import bgcompute_update_election_jurisdictions_file
 
 
-@pytest.fixture
-def client() -> FlaskClient:
-    app.config["TESTING"] = True
-    client = app.test_client()
-
-    with app.app_context():
-        db.drop_all()
-        db.create_all()
-
-    yield client
-
-    db.session.commit()
-
-
-def test_missing_file(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_missing_file(client, election_id):
     rv = client.put(f"/election/{election_id}/jurisdictions/file")
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -47,10 +30,7 @@ def test_missing_file(client):
     }
 
 
-def test_bad_csv_file(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_bad_csv_file(client, election_id):
     rv = client.put(
         f"/election/{election_id}/jurisdictions/file",
         data={"jurisdictions": (io.BytesIO(b"not a CSV file"), "random.txt")},
@@ -72,10 +52,7 @@ def test_bad_csv_file(client):
     }
 
 
-def test_missing_one_csv_field(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_missing_one_csv_field(client, election_id):
     rv = client.put(
         f"/election/{election_id}/jurisdictions/file",
         data={
@@ -97,10 +74,7 @@ def test_missing_one_csv_field(client):
     }
 
 
-def test_metadata(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_metadata(client, election_id):
     rv = client.put(
         f"/election/{election_id}/jurisdictions/file",
         data={
@@ -148,10 +122,7 @@ def test_metadata(client):
     assert processing["error"] == None
 
 
-def test_replace_jurisdictions_file(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_replace_jurisdictions_file(client, election_id):
     # Create the initial file.
     rv = client.put(
         f"/election/{election_id}/jurisdictions/file",
@@ -181,10 +152,7 @@ def test_replace_jurisdictions_file(client):
     assert File.query.count() == 1, "the old file should have been deleted"
 
 
-def test_no_jurisdiction(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_no_jurisdiction(client, election_id):
     rv = client.put(
         f"/election/{election_id}/jurisdictions/file",
         data={
@@ -206,10 +174,7 @@ def test_no_jurisdiction(client):
     assert User.query.count() == 0
 
 
-def test_single_jurisdiction_single_admin(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_single_jurisdiction_single_admin(client, election_id):
     rv = client.put(
         f"/election/{election_id}/jurisdictions/file",
         data={
@@ -234,10 +199,7 @@ def test_single_jurisdiction_single_admin(client):
     ]
 
 
-def test_single_jurisdiction_multiple_admins(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_single_jurisdiction_multiple_admins(client, election_id):
     rv = client.put(
         f"/election/{election_id}/jurisdictions/file",
         data={
@@ -265,10 +227,7 @@ def test_single_jurisdiction_multiple_admins(client):
     ]
 
 
-def test_multiple_jurisdictions_single_admin(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_multiple_jurisdictions_single_admin(client, election_id):
     rv = client.put(
         f"/election/{election_id}/jurisdictions/file",
         data={

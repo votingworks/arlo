@@ -139,8 +139,7 @@ export interface IElectionMeta {
   id: string
   name: string
   state: string
-  // eslint-disable-next-line camelcase
-  election_date: string
+  electionDate: string
 }
 
 export interface IOrganizationMeta {

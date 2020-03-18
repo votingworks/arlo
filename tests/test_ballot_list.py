@@ -3,7 +3,6 @@ import json
 import pytest
 
 from test_app import (
-    client,
     post_json,
     setup_whole_audit,
     setup_whole_multi_winner_audit,
@@ -11,11 +10,7 @@ from test_app import (
 import bgcompute
 
 
-def test_ballot_list_jurisdiction_two_rounds(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-
+def test_ballot_list_jurisdiction_two_rounds(client, election_id):
     (
         url_prefix,
         contest_id,
@@ -79,11 +74,7 @@ def test_ballot_list_jurisdiction_two_rounds(client):
     assert len(ballot_list) == sample_size
 
 
-def test_ballot_list_audit_board_two_rounds(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-
+def test_ballot_list_audit_board_two_rounds(client, election_id):
     (
         url_prefix,
         contest_id,
@@ -155,11 +146,7 @@ def test_ballot_list_audit_board_two_rounds(client):
     assert len(ballot_list) == sample_size
 
 
-def test_ballot_list_jurisdiction_ordering(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-
+def test_ballot_list_jurisdiction_ordering(client, election_id):
     (
         url_prefix,
         contest_id,
@@ -197,11 +184,7 @@ def test_ballot_list_jurisdiction_ordering(client):
     assert unsorted_ballots == sorted_ballots
 
 
-def test_ballot_list_audit_board_ordering(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-
+def test_ballot_list_audit_board_ordering(client, election_id):
     (
         url_prefix,
         contest_id,

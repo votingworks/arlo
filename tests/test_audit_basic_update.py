@@ -2,14 +2,9 @@ import json, uuid
 import pytest
 
 from helpers import post_json
-from test_app import client
 
 
-def test_audit_basic_update_create_contest(client):
-    rv = client.post("/election/new")
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-
+def test_audit_basic_update_create_contest(client, election_id):
     contest_id = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
     candidate_id_2 = str(uuid.uuid4())
@@ -42,11 +37,7 @@ def test_audit_basic_update_create_contest(client):
     assert json.loads(rv.data)["status"] == "ok"
 
 
-def test_audit_basic_update_sets_default_for_contest_is_targeted(client):
-    rv = client.post("/election/new")
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-
+def test_audit_basic_update_sets_default_for_contest_is_targeted(client, election_id):
     contest_id = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
     candidate_id_2 = str(uuid.uuid4())
