@@ -16,6 +16,14 @@ from sqlalchemy.dialects.postgresql import aggregate_order_by
 from authlib.flask.client import OAuth
 
 from arlo_server import app
+from arlo_server.auth import (
+    clear_loggedin_user,
+    get_loggedin_user,
+    get_loggedin_user_record,
+    require_audit_admin_for_organization,
+    set_loggedin_user,
+    UserType,
+)
 from arlo_server.models import *
 
 from config import HTTP_ORIGIN
@@ -36,11 +44,6 @@ from util.process_file import process_file
 
 AUDIT_BOARD_MEMBER_COUNT = 2
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
-
-
-class UserType(str, Enum):
-    AUDIT_ADMIN = "audit_admin"
-    JURISDICTION_ADMIN = "jurisdiction_admin"
 
 
 def create_election(election_id=None, organization_id=None):
@@ -334,30 +337,6 @@ if ADMIN_PASSWORD:
         elections = Election.query.all()
         result = "\n".join(["%s - %s" % (e.id, e.name) for e in elections])
         return Response(result, content_type="text/plain")
-
-
-def require_audit_admin_for_organization(organization_id: Optional[str]):
-    if not organization_id:
-        return
-
-    user_type, user = get_loggedin_user_record()
-
-    if not user:
-        raise Unauthorized(
-            description=f"Anonymous users do not have access to organization {organization_id}"
-        )
-
-    if user_type != UserType.AUDIT_ADMIN:
-        raise Forbidden(
-            description=f"{user.email} is not logged in as an audit admin and so does not have access to organization {organization_id}"
-        )
-
-    for org in user.organizations:
-        if org.id == organization_id:
-            return
-    raise Forbidden(
-        description=f"{user.email} does not have access to organization {organization_id}"
-    )
 
 
 @app.route("/election/new", methods=["POST"])
@@ -1389,28 +1368,6 @@ auth0_ja = oauth.register(
     authorize_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/authorize",
     client_kwargs={"scope": "openid profile email"},
 )
-
-
-def set_loggedin_user(user_type: UserType, user_email: str):
-    session["_user"] = {"type": user_type, "email": user_email}
-
-
-def get_loggedin_user() -> Union[Tuple[UserType, str], Tuple[None, None]]:
-    user = session.get("_user", None)
-    return (user["type"], user["email"]) if user else (None, None)
-
-
-def get_loggedin_user_record():
-    user_type, user_email = get_loggedin_user()
-    return (
-        (user_type, User.query.filter_by(email=user_email).one())
-        if user_email
-        else (None, None)
-    )
-
-
-def clear_loggedin_user():
-    session["_user"] = None
 
 
 def serialize_election(election):
