@@ -7,6 +7,7 @@ from helpers import post_json, compare_json, assert_is_date, create_org_and_admi
 from test_app import client
 from arlo_server.routes import create_election, UserType
 from arlo_server.models import Jurisdiction
+from bgcompute import bgcompute_update_election_jurisdictions_file
 
 
 @pytest.fixture()
@@ -43,6 +44,7 @@ def jurisdiction_ids(client, election_id: str) -> List[str]:
         },
     )
     assert json.loads(rv.data) == {"status": "ok"}
+    bgcompute_update_election_jurisdictions_file()
     jurisdictions = Jurisdiction.query.filter_by(election_id=election_id).all()
     yield [j.id for j in jurisdictions]
 
