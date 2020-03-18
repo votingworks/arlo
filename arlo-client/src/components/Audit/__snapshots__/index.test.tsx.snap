@@ -3666,6 +3666,407 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
 </div>
 `;
 
+exports[`RiskLimitingAuditForm renders sidebar when authenticated on /progress 1`] = `
+<div>
+  <div
+    class="sc-kEYyzF kuUIJj"
+  >
+    <div
+      class="sc-kkGfuU jgdXat"
+    >
+      <h2
+        class="bp3-heading sc-bxivhb jFEWwS"
+      >
+        Audit Setup
+      </h2>
+      <ul
+        class="bp3-menu"
+      >
+        <li
+          class=""
+        >
+          <a
+            class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
+          >
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Participants
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
+        >
+          <a
+            class="bp3-menu-item bp3-popover-dismiss"
+          >
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Target Contests
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
+        >
+          <a
+            class="bp3-menu-item bp3-popover-dismiss"
+          >
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Opportunistic Contests
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
+        >
+          <a
+            class="bp3-menu-item bp3-popover-dismiss"
+          >
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Audit Settings
+            </div>
+          </a>
+        </li>
+        <li
+          class="bp3-menu-divider"
+        />
+        <li
+          class=""
+        >
+          <a
+            class="bp3-menu-item bp3-popover-dismiss"
+          >
+            <div
+              class="bp3-text-overflow-ellipsis bp3-fill"
+            >
+              Review & Launch
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <form
+      data-testid="form-one"
+    >
+      <div
+        class="sc-ifAKCX dUfgxM"
+      >
+        <h2
+          class="bp3-heading sc-bxivhb jFEWwS"
+        >
+          Participants
+        </h2>
+        <label
+          for="state"
+        >
+          Choose your state from the options below
+          <br />
+          <div
+            class="bp3-html-select sc-iAyFgw hQSkFJ"
+          >
+            <select
+              data-testid="state-field"
+              field="[object Object]"
+              form="[object Object]"
+              id="state"
+            >
+              <option
+                value=""
+              />
+              <option
+                value="Alabama"
+              >
+                Alabama
+              </option>
+              <option
+                value="Alaska"
+              >
+                Alaska
+              </option>
+              <option
+                value="Arizona"
+              >
+                Arizona
+              </option>
+              <option
+                value="Arkansas"
+              >
+                Arkansas
+              </option>
+              <option
+                value="California"
+              >
+                California
+              </option>
+              <option
+                value="Colorado"
+              >
+                Colorado
+              </option>
+              <option
+                value="Connecticut"
+              >
+                Connecticut
+              </option>
+              <option
+                value="Delaware"
+              >
+                Delaware
+              </option>
+              <option
+                value="Florida"
+              >
+                Florida
+              </option>
+              <option
+                value="Georgia"
+              >
+                Georgia
+              </option>
+              <option
+                value="Hawaii"
+              >
+                Hawaii
+              </option>
+              <option
+                value="Idaho"
+              >
+                Idaho
+              </option>
+              <option
+                value="Illinois"
+              >
+                Illinois
+              </option>
+              <option
+                value="Indiana"
+              >
+                Indiana
+              </option>
+              <option
+                value="Iowa"
+              >
+                Iowa
+              </option>
+              <option
+                value="Kansas"
+              >
+                Kansas
+              </option>
+              <option
+                value="Kentucky"
+              >
+                Kentucky
+              </option>
+              <option
+                value="Louisiana"
+              >
+                Louisiana
+              </option>
+              <option
+                value="Maine"
+              >
+                Maine
+              </option>
+              <option
+                value="Maryland"
+              >
+                Maryland
+              </option>
+              <option
+                value="Massachusetts"
+              >
+                Massachusetts
+              </option>
+              <option
+                value="Michigan"
+              >
+                Michigan
+              </option>
+              <option
+                value="Minnesota"
+              >
+                Minnesota
+              </option>
+              <option
+                value="Mississippi"
+              >
+                Mississippi
+              </option>
+              <option
+                value="Missouri"
+              >
+                Missouri
+              </option>
+              <option
+                value="Montana"
+              >
+                Montana
+              </option>
+              <option
+                value="Nebraska"
+              >
+                Nebraska
+              </option>
+              <option
+                value="Nevada"
+              >
+                Nevada
+              </option>
+              <option
+                value="New Hampshire"
+              >
+                New Hampshire
+              </option>
+              <option
+                value="New Jersey"
+              >
+                New Jersey
+              </option>
+              <option
+                value="New Mexico"
+              >
+                New Mexico
+              </option>
+              <option
+                value="New York"
+              >
+                New York
+              </option>
+              <option
+                value="North Carolina"
+              >
+                North Carolina
+              </option>
+              <option
+                value="North Dakota"
+              >
+                North Dakota
+              </option>
+              <option
+                value="Ohio"
+              >
+                Ohio
+              </option>
+              <option
+                value="Oklahoma"
+              >
+                Oklahoma
+              </option>
+              <option
+                value="Oregon"
+              >
+                Oregon
+              </option>
+              <option
+                value="Pennsylvania"
+              >
+                Pennsylvania
+              </option>
+              <option
+                value="Rhode Island"
+              >
+                Rhode Island
+              </option>
+              <option
+                value="South Carolina"
+              >
+                South Carolina
+              </option>
+              <option
+                value="South Dakota"
+              >
+                South Dakota
+              </option>
+              <option
+                value="Tennessee"
+              >
+                Tennessee
+              </option>
+              <option
+                value="Texas"
+              >
+                Texas
+              </option>
+              <option
+                value="Utah"
+              >
+                Utah
+              </option>
+              <option
+                value="Vermont"
+              >
+                Vermont
+              </option>
+              <option
+                value="Virginia"
+              >
+                Virginia
+              </option>
+              <option
+                value="Washington"
+              >
+                Washington
+              </option>
+              <option
+                value="West Virginia"
+              >
+                West Virginia
+              </option>
+              <option
+                value="Wisconsin"
+              >
+                Wisconsin
+              </option>
+              <option
+                value="Wyoming"
+              >
+                Wyoming
+              </option>
+            </select>
+            <span
+              class="bp3-icon bp3-icon-double-caret-vertical"
+              icon="double-caret-vertical"
+            >
+              <svg
+                data-icon="double-caret-vertical"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  double-caret-vertical
+                </desc>
+                <path
+                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </label>
+      </div>
+    </form>
+  </div>
+</div>
+`;
+
 exports[`RiskLimitingAuditForm renders sidebar when authenticated on /setup 1`] = `
 <div>
   <div

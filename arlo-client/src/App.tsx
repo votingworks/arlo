@@ -31,7 +31,7 @@ const App: React.FC = () => {
               path="/election/:electionId/board/:token"
               component={DataEntry}
             />
-            <Route path="/election/:electionId/:stage?" component={Audit} />
+            <Route path="/election/:electionId" component={Audit} />
             <Route>404</Route>
           </Switch>
         </Main>
