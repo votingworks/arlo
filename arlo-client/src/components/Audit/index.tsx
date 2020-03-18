@@ -41,7 +41,7 @@ interface IProps {
 
 interface TParams {
   electionId: string
-  stage: string
+  stage: 'setup' | 'progress'
 }
 
 const Audit: React.FC<IProps> = ({
