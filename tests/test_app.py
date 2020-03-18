@@ -2,7 +2,6 @@ import os, math, uuid
 import tempfile
 import json, csv, io
 
-from flask.testing import FlaskClient
 import pytest
 
 from arlo_server import app, db
@@ -11,20 +10,6 @@ import bgcompute
 
 manifest_file_path = os.path.join(os.path.dirname(__file__), "manifest.csv")
 small_manifest_file_path = os.path.join(os.path.dirname(__file__), "small-manifest.csv")
-
-
-@pytest.fixture
-def client() -> FlaskClient:
-    app.config["TESTING"] = True
-    client = app.test_client()
-
-    with app.app_context():
-        db.drop_all()
-        db.create_all()
-
-    yield client
-
-    db.session.commit()
 
 
 def test_index(client):
@@ -52,11 +37,11 @@ def test_session(client):
 
 
 def test_whole_audit_flow(client):
-    rv = client.post("/election/new")
+    rv = post_json(client, "/election/new", {"auditName": "Audit 1"})
     election_id_1 = json.loads(rv.data)["electionId"]
     assert election_id_1
 
-    rv = client.post("/election/new")
+    rv = post_json(client, "/election/new", {"auditName": "Audit 2"})
     election_id_2 = json.loads(rv.data)["electionId"]
     assert election_id_2
 
@@ -550,10 +535,7 @@ def get_num_ballots_from_retrieval_list(rv):
     return sum([len(line["Ticket Numbers"].split(",")) for line in lines])
 
 
-def test_small_election(client):
-    rv = client.post("/election/new")
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_small_election(client, election_id):
     contest_id = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
     candidate_id_2 = str(uuid.uuid4())
@@ -739,10 +721,7 @@ def test_small_election(client):
     assert "attachment" in rv.headers["Content-Disposition"]
 
 
-def test_contest_choices_cannot_have_more_votes_than_allowed(client):
-    rv = client.post("/election/new")
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_contest_choices_cannot_have_more_votes_than_allowed(client, election_id):
     contest_id = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
     candidate_id_2 = str(uuid.uuid4())
@@ -813,10 +792,7 @@ def test_contest_choices_cannot_have_more_votes_than_allowed(client):
     assert response == {"status": "ok"}
 
 
-def test_multi_round_audit(client):
-    rv = client.post("/election/new")
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_multi_round_audit(client, election_id):
     (
         url_prefix,
         contest_id,
@@ -893,10 +869,7 @@ def test_multi_round_audit(client):
 
 
 @pytest.mark.quick
-def test_multi_winner_election(client):
-    rv = client.post("/election/new")
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_multi_winner_election(client, election_id):
     contest_id = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
     candidate_id_2 = str(uuid.uuid4())
@@ -1064,10 +1037,7 @@ def test_multi_winner_election(client):
     assert "attachment" in rv.headers["Content-Disposition"]
 
 
-def test_multi_round_multi_winner_audit(client):
-    rv = client.post("/election/new")
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_multi_round_multi_winner_audit(client, election_id):
     (
         url_prefix,
         contest_id,
@@ -1136,11 +1106,7 @@ def test_multi_round_multi_winner_audit(client):
     assert num_ballots == status["rounds"][1]["contests"][0]["sampleSize"]
 
 
-def test_ballot_set(client):
-    ## setup
-    rv = client.post("/election/new")
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_ballot_set(client, election_id):
     (
         url_prefix,
         contest_id,
@@ -1214,11 +1180,7 @@ def test_ballot_set(client):
     assert ballot["comment"] == "This one had a hanging chad."
 
 
-def test_audit_board(client):
-    ## setup
-    rv = client.post("/election/new")
-    election_id = json.loads(rv.data)["electionId"]
-
+def test_audit_board(client, election_id):
     (
         url_prefix,
         contest_id,

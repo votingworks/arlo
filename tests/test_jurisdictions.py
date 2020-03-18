@@ -1,17 +1,17 @@
 import pytest
+from flask.testing import FlaskClient
 
 import json, io, uuid
 from typing import List
 
 from helpers import post_json, compare_json, assert_is_date, create_org_and_admin
-from test_app import client
-from arlo_server.routes import create_election, UserType
+from arlo_server.routes import UserType
 from arlo_server.models import Jurisdiction
 from bgcompute import bgcompute_update_election_jurisdictions_file
 
 
 @pytest.fixture()
-def audit_admin_email(client) -> str:
+def audit_admin_email(client: FlaskClient) -> str:
     user_email = "admin@example.com"
     with client.session_transaction() as session:
         session["_user"] = {"type": UserType.AUDIT_ADMIN, "email": user_email}
@@ -19,14 +19,17 @@ def audit_admin_email(client) -> str:
 
 
 @pytest.fixture()
-def election_id(client, audit_admin_email) -> str:
+def election_id(client: FlaskClient, audit_admin_email: str) -> str:
     org_id, _ = create_org_and_admin("Test Org", audit_admin_email)
-    election_id = create_election(organization_id=org_id)
+    rv = post_json(
+        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id}
+    )
+    election_id = json.loads(rv.data)["electionId"]
     yield election_id
 
 
 @pytest.fixture()
-def jurisdiction_ids(client, election_id: str) -> List[str]:
+def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     # We expect the list endpoint to order the jurisdictions by name, so we
     # upload them out of order.
     rv = client.put(

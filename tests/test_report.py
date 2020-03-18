@@ -3,7 +3,7 @@ import json, random
 import pytest
 
 from helpers import post_json
-from test_app import client, setup_whole_audit, run_whole_audit_flow
+from test_app import setup_whole_audit, run_whole_audit_flow
 import bgcompute
 
 
@@ -62,11 +62,7 @@ def run_audit_round(
     return len(ballot_list)
 
 
-def test_offline_audit_report(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-
+def test_offline_audit_report(client, election_id):
     run_whole_audit_flow(
         client, election_id, "Primary 2019", 10, "12345678901234567890"
     )
@@ -104,11 +100,7 @@ def test_offline_audit_report(client):
     assert len(lines) == len(expected) + 3
 
 
-def test_one_round_audit_report(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-
+def test_one_round_audit_report(client, election_id):
     (
         url_prefix,
         contest_id,
@@ -201,11 +193,7 @@ def test_one_round_audit_report(client):
     assert len(lines) == len(expected) + 3 + num_ballots - NUM_BALLOTS_SAMPLED_TWICE
 
 
-def test_two_round_audit_report(client):
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-
+def test_two_round_audit_report(client, election_id):
     (
         url_prefix,
         contest_id,

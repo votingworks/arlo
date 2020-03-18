@@ -1,17 +1,25 @@
 import os, datetime, csv, io, math, json, uuid, locale, re, hmac, urllib.parse, itertools
 from enum import Enum, auto
 from typing import Optional, Tuple, Union
+from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
 from flask import Flask, jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
 from audits import sampler, bravo, sampler_contest
-from werkzeug.exceptions import InternalServerError, Unauthorized, Forbidden, BadRequest
+from werkzeug.exceptions import (
+    InternalServerError,
+    Unauthorized,
+    Forbidden,
+    BadRequest,
+    Conflict,
+)
 from xkcdpass import xkcd_password as xp
 
 from sqlalchemy import event, func
 from sqlalchemy.dialects.postgresql import aggregate_order_by
+from sqlalchemy.exc import IntegrityError
 
 from authlib.flask.client import OAuth
 
@@ -41,15 +49,6 @@ WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 class UserType(str, Enum):
     AUDIT_ADMIN = "audit_admin"
     JURISDICTION_ADMIN = "jurisdiction_admin"
-
-
-def create_election(election_id=None, organization_id=None):
-    if not election_id:
-        election_id = str(uuid.uuid4())
-    e = Election(id=election_id, organization_id=organization_id, name="")
-    db.session.add(e)
-    db.session.commit()
-    return election_id
 
 
 def create_organization(name=""):
@@ -286,7 +285,7 @@ def check_round(election, jurisdiction_id, round_id):
 
 
 def election_timestamp_name(election) -> str:
-    clean_election_name = re.sub(r"[^a-zA-Z0-9]+", r"-", election.name)
+    clean_election_name = re.sub(r"[^a-zA-Z0-9]+", r"-", election.election_name)
     now = datetime.datetime.utcnow().isoformat(timespec="minutes")
     return f"{clean_election_name}-{now}"
 
@@ -306,7 +305,9 @@ def serialize_members(audit_board):
     return members
 
 
-def isoformat(datetime: Optional[datetime.datetime]) -> Optional[str]:
+def isoformat(
+    datetime: Optional[Union[datetime.datetime, datetime.date]]
+) -> Optional[str]:
     if datetime is not None:
         return datetime.isoformat()
     else:
@@ -360,15 +361,42 @@ def require_audit_admin_for_organization(organization_id: Optional[str]):
     )
 
 
+ELECTION_NEW_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "auditName": {"type": "string"},
+        "organizationId": {"type": "string"},
+    },
+    "required": ["auditName"],
+}
+
+
 @app.route("/election/new", methods=["POST"])
 def election_new():
-    info = request.get_json()
+    election = request.get_json()
+    validate(election, ELECTION_NEW_SCHEMA)
 
-    organization_id = info.get("organizationId", None) if info else None
+    organization_id = election.get("organizationId", None)
     require_audit_admin_for_organization(organization_id)
 
-    election_id = create_election(organization_id=organization_id)
-    return jsonify(electionId=election_id)
+    election = Election(
+        id=str(uuid.uuid4()),
+        audit_name=election["auditName"],
+        organization_id=organization_id,
+    )
+    db.session.add(election)
+
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        if e.orig.diag.constraint_name == "election_organization_id_audit_name_key":
+            raise Conflict(
+                f"An audit with name '{election.audit_name}' already exists within your organization"
+            )
+        else:
+            raise e
+
+    return jsonify(electionId=election.id)
 
 
 @app.route("/election/<election_id>/jurisdictions/file", methods=["GET"])
@@ -472,7 +500,7 @@ def audit_status(election_id=None):
 
     return jsonify(
         organizationId=election.organization_id,
-        name=election.name,
+        name=election.election_name,
         online=election.online,
         frozenAt=election.frozen_at,
         riskLimit=election.risk_limit,
@@ -560,7 +588,7 @@ def audit_status(election_id=None):
 def audit_basic_update(election_id):
     election = get_election(election_id)
     info = request.get_json()
-    election.name = info["name"]
+    election.election_name = info["name"]
     election.risk_limit = info["riskLimit"]
     election.random_seed = info["randomSeed"]
     election.online = info["online"]
@@ -1332,11 +1360,17 @@ def pretty_affiliation(affiliation):
 
 @app.route("/election/<election_id>/audit/reset", methods=["POST"])
 def audit_reset(election_id):
+    election = Election.query.get_or_404(election_id)
     # deleting the election cascades to all the data structures
-    Election.query.filter_by(id=election_id).delete()
+    db.session.delete(election)
     db.session.commit()
 
-    create_election(election_id)
+    election = Election(
+        id=election_id,
+        audit_name=election.audit_name,
+        organization_id=election.organization_id,
+    )
+    db.session.add(election)
     db.session.commit()
 
     return jsonify(status="ok")
@@ -1416,9 +1450,10 @@ def clear_loggedin_user():
 def serialize_election(election):
     return {
         "id": election.id,
-        "name": election.name,
+        "auditName": election.audit_name,
+        "electionName": election.election_name,
         "state": election.state,
-        "election_date": election.election_date,
+        "electionDate": isoformat(election.election_date),
     }
 
 
@@ -1537,6 +1572,14 @@ def handle_401(e):
     return (
         jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
         Unauthorized.code,
+    )
+
+
+@app.errorhandler(Conflict)
+def handle_409(e):
+    return (
+        jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
+        Conflict.code,
     )
 
 
