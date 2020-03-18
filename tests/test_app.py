@@ -6,7 +6,14 @@ from flask.testing import FlaskClient
 import pytest
 
 from arlo_server import app, db
-from tests.helpers import post_json
+from arlo_server.routes import UserType
+from tests.helpers import (
+    clear_logged_in_user,
+    create_org_and_admin,
+    create_organization,
+    post_json,
+    set_logged_in_user,
+)
 import bgcompute
 
 manifest_file_path = os.path.join(os.path.dirname(__file__), "manifest.csv")
@@ -76,6 +83,22 @@ def test_whole_audit_flow(client):
     rv = client.get("/election/{}/audit/status".format(election_id_2))
     result2 = json.loads(rv.data)
     assert result2["riskLimit"] == 5
+
+
+def test_reset_election(client):
+    org_id, _admin_id = create_org_and_admin(user_email="admin@example.com")
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin@example.com")
+
+    rv = post_json(
+        client, "/election/new", {"auditName": "Audit", "organizationId": org_id}
+    )
+    election_id = json.loads(rv.data)["electionId"]
+    assert election_id
+
+    clear_logged_in_user(client)
+
+    rv = client.post(f"/election/{election_id}/audit/reset")
+    assert rv.status_code == 401
 
 
 def setup_audit_board(client, election_id, jurisdiction_id, audit_board_id):

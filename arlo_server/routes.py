@@ -1311,8 +1311,11 @@ def pretty_affiliation(affiliation):
 
 @app.route("/election/<election_id>/audit/reset", methods=["POST"])
 def audit_reset(election_id):
+    election = Election.query.filter_by(id=election_id).one()
+    require_audit_admin_for_organization(election.organization_id)
+
     # deleting the election cascades to all the data structures
-    Election.query.filter_by(id=election_id).delete()
+    db.session.delete(election)
     db.session.commit()
 
     create_election(election_id)

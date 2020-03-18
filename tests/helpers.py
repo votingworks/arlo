@@ -29,6 +29,11 @@ def set_logged_in_user(
         session["_user"] = {"type": user_type, "email": user_email}
 
 
+def clear_logged_in_user(client: FlaskClient):
+    with client.session_transaction() as session:
+        session.pop("_user")
+
+
 def create_user(email=DEFAULT_USER_EMAIL):
     user = User(id=str(uuid.uuid4()), email=email, external_id=email)
     db.session.add(user)
