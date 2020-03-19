@@ -59,7 +59,10 @@ describe('CreateAudit', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/new', {
         method: 'POST',
-        body: JSON.stringify({ auditName: 'Audit Name' }),
+        body: JSON.stringify({
+          auditName: 'Audit Name',
+          isMultiJurisdiction: false,
+        }),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -119,6 +122,7 @@ describe('CreateAudit', () => {
         body: JSON.stringify({
           organizationId: 'org-id',
           auditName: 'Audit Name',
+          isMultiJurisdiction: true,
         }),
         headers: {
           'Content-Type': 'application/json',

@@ -50,8 +50,12 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
     try {
       setLoading(true)
       const data = isAuthenticated
-        ? { organizationId: meta!.organizations[0].id, auditName }
-        : { auditName }
+        ? {
+            organizationId: meta!.organizations[0].id,
+            auditName,
+            isMultiJurisdiction: true,
+          }
+        : { auditName, isMultiJurisdiction: false }
       const response: { electionId: string } | IErrorResponse = await api(
         '/election/new',
         {
