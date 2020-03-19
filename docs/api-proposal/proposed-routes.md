@@ -27,8 +27,8 @@ New routes are in **bold**.
 
 ![](audit-settings.png)
 
-- **GET /election/<election_id>** - get audit settings (risk limit, name, etc)
-- **PUT /election/<election_id>** - update audit settings
+- **GET /election/<election_id>/settings** - get audit settings (risk limit, name, etc)
+- **PUT /election/<election_id>/settings** - update audit settings
 
 ![](review-and-launch.png)
 
