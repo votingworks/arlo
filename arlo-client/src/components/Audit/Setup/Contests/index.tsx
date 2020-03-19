@@ -63,6 +63,7 @@ const Contests: React.FC<IProps> = ({
       validationSchema={schema}
       onSubmit={v => {
         setIsLoading(true)
+        // eslint-disable-next-line no-console
         console.log(v)
         nextStage()
       }}

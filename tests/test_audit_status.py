@@ -8,17 +8,10 @@ from helpers import (
     assert_is_date,
     assert_is_passphrase,
 )
-from test_app import (
-    client,
-    setup_whole_audit,
-)
+from test_app import setup_whole_audit
 
 
-def test_audit_status(client):
-    rv = client.post("/election/new")
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-
+def test_audit_status(client, election_id):
     (
         url_prefix,
         contest_id,

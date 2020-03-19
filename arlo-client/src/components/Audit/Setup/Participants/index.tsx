@@ -33,6 +33,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
       validationSchema={schema}
       onSubmit={v => {
         setIsLoading(true)
+        // eslint-disable-next-line no-console
         console.log(v)
         nextStage()
       }}

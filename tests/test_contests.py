@@ -1,23 +1,15 @@
 import pytest
+from flask.testing import FlaskClient
 
 import json, uuid, io
 from typing import List
 
 from helpers import post_json, put_json
-from test_app import client
 from arlo_server.models import Jurisdiction
 
 
 @pytest.fixture()
-def election_id(client) -> str:
-    rv = post_json(client, "/election/new", {})
-    election_id = json.loads(rv.data)["electionId"]
-    assert election_id
-    yield election_id
-
-
-@pytest.fixture()
-def jurisdiction_ids(client, election_id: str) -> List[str]:
+def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     rv = client.put(
         f"/election/{election_id}/jurisdictions/file",
         data={

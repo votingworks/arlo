@@ -1,24 +1,14 @@
 import pytest, json, uuid
 from unittest.mock import patch, Mock, MagicMock
 
-from arlo_server import app
 from arlo_server.auth import set_loggedin_user, clear_loggedin_user, UserType
 from arlo_server.routes import (
     auth0_aa,
     auth0_ja,
     create_organization,
-    create_election,
 )
 from arlo_server.models import *
 from tests.helpers import create_org_and_admin
-
-
-@pytest.fixture
-def client():
-    app.config["TESTING"] = True
-    client = app.test_client()
-
-    yield client
 
 
 def _setup_user(client, user_type, user_email):
@@ -28,15 +18,19 @@ def _setup_user(client, user_type, user_email):
 
 def test_auth_me(client):
     org_id, user_id = create_org_and_admin("Test Org", "admin@example.com")
-    election_id = create_election(organization_id=org_id)
+    election = Election(
+        id=str(uuid.uuid4()), audit_name="Test /auth/me", organization_id=org_id
+    )
     jurisdiction = Jurisdiction(
-        election_id=election_id, id=str(uuid.uuid4()), name="Test Jurisdiction"
+        election_id=election.id, id=str(uuid.uuid4()), name="Test Jurisdiction"
     )
     j_admin = JurisdictionAdministration(
         user_id=user_id, jurisdiction_id=jurisdiction.id
     )
+    election_id = election.id
     j_id = jurisdiction.id
 
+    db.session.add(election)
     db.session.add(jurisdiction)
     db.session.add(j_admin)
     db.session.commit()
@@ -54,9 +48,10 @@ def test_auth_me(client):
                 "elections": [
                     {
                         "id": election_id,
-                        "name": "",
+                        "auditName": "Test /auth/me",
+                        "electionName": None,
                         "state": None,
-                        "election_date": None,
+                        "electionDate": None,
                     }
                 ],
             }
@@ -67,9 +62,10 @@ def test_auth_me(client):
                 "name": "Test Jurisdiction",
                 "election": {
                     "id": election_id,
-                    "name": "",
+                    "auditName": "Test /auth/me",
+                    "electionName": None,
                     "state": None,
-                    "election_date": None,
+                    "electionDate": None,
                 },
             }
         ],
@@ -108,15 +104,18 @@ def test_jurisdictionadmin_start(client):
 
 def test_jurisdictionadmin_callback(client):
     org = create_organization("Test Organization")
-    election_id = create_election(organization_id=org.id)
+    election = Election(
+        id=str(uuid.uuid4()), audit_name="Test JA callback", organization_id=org.id
+    )
     jurisdiction = Jurisdiction(
-        election_id=election_id, id=str(uuid.uuid4()), name="Test Jurisdiction"
+        election_id=election.id, id=str(uuid.uuid4()), name="Test Jurisdiction"
     )
     u = User(
         id=str(uuid.uuid4()), email="bar@example.com", external_id="bar@example.com"
     )
     j_admin = JurisdictionAdministration(user_id=u.id, jurisdiction_id=jurisdiction.id)
 
+    db.session.add(election)
     db.session.add(jurisdiction)
     db.session.add(u)
     db.session.add(j_admin)

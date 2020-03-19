@@ -21,9 +21,13 @@ class Organization(BaseModel):
     elections = relationship("Election", backref="organization", passive_deletes=True)
 
 
+# Election is a slight misnomer - this model represents an audit.
 class Election(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
-    name = db.Column(db.String(200), nullable=True)
+    # audit_name must be unique within each Organization
+    audit_name = db.Column(db.String(200), nullable=False)
+    # election_name can be the same across audits
+    election_name = db.Column(db.String(200), nullable=True)
     state = db.Column(db.String(100), nullable=True)
     election_date = db.Column(db.Date, nullable=True)
     election_type = db.Column(db.String(200), nullable=True)
@@ -53,6 +57,8 @@ class Election(BaseModel):
         db.String(200), db.ForeignKey("file.id", ondelete="set null"), nullable=True
     )
     jurisdictions_file = relationship("File")
+
+    __table_args__ = (db.UniqueConstraint("organization_id", "audit_name"),)
 
 
 # these are typically counties
