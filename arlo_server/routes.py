@@ -54,11 +54,6 @@ AUDIT_BOARD_MEMBER_COUNT = 2
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 
 
-class UserType(str, Enum):
-    AUDIT_ADMIN = "audit_admin"
-    JURISDICTION_ADMIN = "jurisdiction_admin"
-
-
 def create_organization(name=""):
     org = Organization(id=str(uuid.uuid4()), name=name)
     db.session.add(org)
