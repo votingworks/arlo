@@ -3,6 +3,7 @@ import { render, fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import ResetButton from './ResetButton'
 import * as utilities from '../utilities'
+import AuthDataProvider from '../UserContext'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -13,7 +14,7 @@ const checkAndToastMock: jest.SpyInstance<
   Parameters<typeof utilities.checkAndToast>
 > = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
-apiMock.mockImplementationOnce(async () => '{}')
+apiMock.mockImplementationOnce(async () => ({}))
 checkAndToastMock.mockReturnValue(false)
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
@@ -29,6 +30,30 @@ describe('ResetButton', () => {
     const { container } = render(
       <ResetButton electionId="1" updateAudit={updateAuditMock} />
     )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('does not render when authenticated', () => {
+    apiMock.mockImplementation(async () => ({
+      type: 'audit_admin',
+      name: 'Joe',
+      email: 'test@email.org',
+      jurisdictions: [],
+      organizations: [
+        {
+          id: 'org-id',
+          name: 'State',
+          elections: [],
+        },
+      ],
+    }))
+    const updateAuditMock = jest.fn()
+    const { container, queryAllByText } = render(
+      <AuthDataProvider>
+        <ResetButton electionId="1" updateAudit={updateAuditMock} />
+      </AuthDataProvider>
+    )
+    expect(queryAllByText('Clear & Restart').length).toBe(0)
     expect(container).toMatchSnapshot()
   })
 
