@@ -10,7 +10,11 @@ from tests.helpers import create_org_and_admin, set_logged_in_user, post_json
 
 
 def test_without_org_with_anonymous_user(client: FlaskClient):
-    rv = post_json(client, "/election/new", {"auditName": "Test Audit"})
+    rv = post_json(
+        client,
+        "/election/new",
+        {"auditName": "Test Audit", "isMultiJurisdiction": False},
+    )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
 
@@ -18,7 +22,13 @@ def test_without_org_with_anonymous_user(client: FlaskClient):
 def test_in_org_with_anonymous_user(client: FlaskClient):
     org = create_organization()
     rv = post_json(
-        client, "/election/new", {"auditName": "Test Audit", "organizationId": org.id}
+        client,
+        "/election/new",
+        {
+            "auditName": "Test Audit",
+            "organizationId": org.id,
+            "isMultiJurisdiction": True,
+        },
     )
     assert json.loads(rv.data) == {
         "errors": [
@@ -38,7 +48,13 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
     )
 
     rv = post_json(
-        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id}
+        client,
+        "/election/new",
+        {
+            "auditName": "Test Audit",
+            "organizationId": org_id,
+            "isMultiJurisdiction": True,
+        },
     )
     response = json.loads(rv.data)
     election_id = response.get("electionId", None)
@@ -57,7 +73,13 @@ def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
     )
 
     rv = post_json(
-        client, "/election/new", {"auditName": "Test Audit", "organizationId": org2_id}
+        client,
+        "/election/new",
+        {
+            "auditName": "Test Audit",
+            "organizationId": org2_id,
+            "isMultiJurisdiction": True,
+        },
     )
     assert json.loads(rv.data) == {
         "errors": [
@@ -77,7 +99,13 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
     )
 
     rv = post_json(
-        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id}
+        client,
+        "/election/new",
+        {
+            "auditName": "Test Audit",
+            "organizationId": org_id,
+            "isMultiJurisdiction": True,
+        },
     )
     assert json.loads(rv.data) == {
         "errors": [
@@ -104,11 +132,19 @@ def test_missing_audit_name(client: FlaskClient):
 
 
 def test_without_org_duplicate_audit_name(client: FlaskClient):
-    rv = post_json(client, "/election/new", {"auditName": "Test Audit"})
+    rv = post_json(
+        client,
+        "/election/new",
+        {"auditName": "Test Audit", "isMultiJurisdiction": False},
+    )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
 
-    rv = post_json(client, "/election/new", {"auditName": "Test Audit"})
+    rv = post_json(
+        client,
+        "/election/new",
+        {"auditName": "Test Audit", "isMultiJurisdiction": False},
+    )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
 
@@ -120,13 +156,25 @@ def test_in_org_duplicate_audit_name(client: FlaskClient):
     )
 
     rv = post_json(
-        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id}
+        client,
+        "/election/new",
+        {
+            "auditName": "Test Audit",
+            "organizationId": org_id,
+            "isMultiJurisdiction": True,
+        },
     )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
 
     rv = post_json(
-        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id}
+        client,
+        "/election/new",
+        {
+            "auditName": "Test Audit",
+            "organizationId": org_id,
+            "isMultiJurisdiction": True,
+        },
     )
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -147,7 +195,13 @@ def test_two_orgs_same_name(client: FlaskClient):
     )
 
     rv = post_json(
-        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id_1}
+        client,
+        "/election/new",
+        {
+            "auditName": "Test Audit",
+            "organizationId": org_id_1,
+            "isMultiJurisdiction": True,
+        },
     )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
@@ -157,7 +211,13 @@ def test_two_orgs_same_name(client: FlaskClient):
     )
 
     rv = post_json(
-        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id_2}
+        client,
+        "/election/new",
+        {
+            "auditName": "Test Audit",
+            "organizationId": org_id_2,
+            "isMultiJurisdiction": True,
+        },
     )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]

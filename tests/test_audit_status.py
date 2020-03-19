@@ -1,5 +1,6 @@
 import json
 import pytest
+from flask.testing import FlaskClient
 
 from helpers import (
     post_json,
@@ -7,8 +8,15 @@ from helpers import (
     assert_is_id,
     assert_is_date,
     assert_is_passphrase,
+    create_election,
 )
 from test_app import setup_whole_audit
+
+
+@pytest.fixture()
+def election_id(client: FlaskClient) -> str:
+    election_id = create_election(client, is_multi_jurisdiction=False)
+    yield election_id
 
 
 def test_audit_status(client, election_id):

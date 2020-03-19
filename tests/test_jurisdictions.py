@@ -11,24 +11,6 @@ from bgcompute import bgcompute_update_election_jurisdictions_file
 
 
 @pytest.fixture()
-def audit_admin_email(client: FlaskClient) -> str:
-    user_email = "admin@example.com"
-    with client.session_transaction() as session:
-        session["_user"] = {"type": UserType.AUDIT_ADMIN, "email": user_email}
-    return user_email
-
-
-@pytest.fixture()
-def election_id(client: FlaskClient, audit_admin_email: str) -> str:
-    org_id, _ = create_org_and_admin("Test Org", audit_admin_email)
-    rv = post_json(
-        client, "/election/new", {"auditName": "Test Audit", "organizationId": org_id}
-    )
-    election_id = json.loads(rv.data)["electionId"]
-    yield election_id
-
-
-@pytest.fixture()
 def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     # We expect the list endpoint to order the jurisdictions by name, so we
     # upload them out of order.
@@ -49,6 +31,7 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     assert json.loads(rv.data) == {"status": "ok"}
     bgcompute_update_election_jurisdictions_file()
     jurisdictions = Jurisdiction.query.filter_by(election_id=election_id).all()
+    assert len(jurisdictions) == 3
     yield [j.id for j in jurisdictions]
 
 

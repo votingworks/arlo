@@ -344,9 +344,11 @@ ELECTION_NEW_SCHEMA = {
     "type": "object",
     "properties": {
         "auditName": {"type": "string"},
-        "organizationId": {"type": "string"},
+        "organizationId": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "isMultiJurisdiction": {"type": "boolean"},
     },
-    "required": ["auditName"],
+    "required": ["auditName", "isMultiJurisdiction"],
+    "additionalProperties": False,
 }
 
 
@@ -362,6 +364,7 @@ def election_new():
         id=str(uuid.uuid4()),
         audit_name=election["auditName"],
         organization_id=organization_id,
+        is_multi_jurisdiction=election["isMultiJurisdiction"],
     )
     db.session.add(election)
 
@@ -782,7 +785,7 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
     # starts the first round, so we need to sample the ballots.
     # In the multi-jurisdiction flow, this happens after all jurisdictions
     # upload manifests, and is triggered by a different endpoint.
-    if not election.organization_id:
+    if not election.is_multi_jurisdiction:
         sample_ballots(election, election.rounds[0])
 
     return jsonify(status="ok")
@@ -1348,6 +1351,7 @@ def audit_reset(election_id):
         id=election_id,
         audit_name=election.audit_name,
         organization_id=election.organization_id,
+        is_multi_jurisdiction=election.is_multi_jurisdiction,
     )
     db.session.add(election)
     db.session.commit()
@@ -1411,6 +1415,7 @@ def serialize_election(election):
         "electionName": election.election_name,
         "state": election.state,
         "electionDate": isoformat(election.election_date),
+        "isMultiJurisdiction": election.is_multi_jurisdiction,
     }
 
 

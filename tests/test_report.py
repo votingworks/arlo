@@ -1,10 +1,17 @@
 import json, random
+from flask.testing import FlaskClient
 
 import pytest
 
-from helpers import post_json
+from helpers import post_json, create_election
 from test_app import setup_whole_audit, run_whole_audit_flow
 import bgcompute
+
+
+@pytest.fixture()
+def election_id(client: FlaskClient) -> str:
+    election_id = create_election(client, is_multi_jurisdiction=False)
+    yield election_id
 
 
 def run_audit_round(

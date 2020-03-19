@@ -38,6 +38,10 @@ class Election(BaseModel):
     # an election is "online" if every ballot is entered online, vs. offline in a tally sheet.
     online = db.Column(db.Boolean, nullable=False, default=False)
 
+    # False for our old single-jurisdiction flow,
+    # True for our new multi-jurisdiction flow
+    is_multi_jurisdiction = db.Column(db.Boolean, nullable=False)
+
     # Who does this election belong to?
     organization_id = db.Column(
         db.String(200),

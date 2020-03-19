@@ -1,13 +1,17 @@
 import json
+from flask.testing import FlaskClient
 
 import pytest
 
-from test_app import (
-    post_json,
-    setup_whole_audit,
-    setup_whole_multi_winner_audit,
-)
+from helpers import post_json, create_election
+from test_app import setup_whole_audit, setup_whole_multi_winner_audit
 import bgcompute
+
+
+@pytest.fixture()
+def election_id(client: FlaskClient) -> str:
+    election_id = create_election(client, is_multi_jurisdiction=False)
+    yield election_id
 
 
 def test_ballot_list_jurisdiction_two_rounds(client, election_id):

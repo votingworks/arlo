@@ -24,7 +24,12 @@ def db():
 
 def test_first_update(db):
     org = Organization(id=str(uuid.uuid4()), name="Test Org")
-    election = Election(id=str(uuid.uuid4()), audit_name="Test Audit", organization=org)
+    election = Election(
+        id=str(uuid.uuid4()),
+        audit_name="Test Audit",
+        organization=org,
+        is_multi_jurisdiction=True,
+    )
     new_admins = bulk_update_jurisdictions(
         db.session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
     )
@@ -41,7 +46,12 @@ def test_first_update(db):
 
 def test_idempotent(db):
     org = Organization(id=str(uuid.uuid4()), name="Test Org")
-    election = Election(id=str(uuid.uuid4()), audit_name="Test Audit", organization=org)
+    election = Election(
+        id=str(uuid.uuid4()),
+        audit_name="Test Audit",
+        organization=org,
+        is_multi_jurisdiction=True,
+    )
 
     # Do it once.
     bulk_update_jurisdictions(
@@ -63,7 +73,12 @@ def test_idempotent(db):
 
 def test_remove_outdated_jurisdictions(db):
     org = Organization(id=str(uuid.uuid4()), name="Test Org")
-    election = Election(id=str(uuid.uuid4()), audit_name="Test Audit", organization=org)
+    election = Election(
+        id=str(uuid.uuid4()),
+        audit_name="Test Audit",
+        organization=org,
+        is_multi_jurisdiction=True,
+    )
 
     # Add jurisdictions.
     bulk_update_jurisdictions(
