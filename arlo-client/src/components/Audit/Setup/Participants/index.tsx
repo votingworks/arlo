@@ -10,7 +10,7 @@ import FormWrapper from '../../../Form/FormWrapper'
 import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
 import { IValues } from './types'
-import states from './states'
+import { labelValueStates } from './states'
 import schema from './schema'
 import { ErrorLabel } from '../../../Form/_helpers'
 import FormSection, { FormSectionDescription } from '../../../Form/FormSection'
@@ -82,7 +82,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                   setFieldValue('state', e.currentTarget.value)
                 }
                 disabled={!!audit.frozenAt}
-                options={states}
+                options={labelValueStates}
               />
             </label>
             <ErrorMessage name="state" component={ErrorLabel} />
