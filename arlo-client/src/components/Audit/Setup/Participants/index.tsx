@@ -36,23 +36,6 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   const submit = async (values: IValues) => {
     try {
       setIsLoading(true)
-      // const data = {
-      //   state: values.state,
-      // }
-      // const response: IErrorResponse = await api(
-      //   `/election/${electionId}/audit/basic`,
-      //   {
-      //     method: 'POST',
-      //     body: JSON.stringify(data),
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //   }
-      // )
-      // if (checkAndToast(response)) {
-      //   setIsLoading(false)
-      //   return
-      // }
       /* istanbul ignore else */
       if (values.csv) {
         const formData: FormData = new FormData()
@@ -106,8 +89,8 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
             {/* When one is already uploaded, this will be toggled to show its details, with a button to reveal the form to replace it */}
             <FormSection>
               <FormSectionDescription>
-                Click &quot;Browse&quot; to choose the appropriate field from
-                your computer. This file should be a comma-ceparated list of all
+                Click &quot;Browse&quot; to choose the appropriate file from
+                your computer. This file should be a comma-separated list of all
                 the jurisdictions participating in the audit, plus email
                 addresses for audit administrators in each participating
                 jurisdiction.
@@ -136,7 +119,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                   )
                 }}
                 hasSelection={!!values.csv}
-                text={values.csv ? values.csv.name : 'Select csv...'}
+                text={values.csv ? values.csv.name : 'Select CSV...'}
                 onBlur={handleBlur}
               />
               {errors.csv && touched.csv && (
