@@ -60,6 +60,9 @@ describe('CreateAudit', () => {
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/new', {
         method: 'POST',
         body: JSON.stringify({ auditName: 'Audit Name' }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
       expect(historySpy).toBeCalledTimes(1)
       expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1')
@@ -117,6 +120,9 @@ describe('CreateAudit', () => {
           organizationId: 'org-id',
           auditName: 'Audit Name',
         }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
       expect(historySpy).toBeCalledTimes(1)
       expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1')
