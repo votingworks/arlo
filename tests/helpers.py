@@ -62,6 +62,14 @@ def assert_is_passphrase(x):
     assert re.match(r"[a-z]+-[a-z]+-[a-z]+-[a-z]+", x)
 
 
+def asserts_startswith(prefix: str):
+    def assert_startswith(x: str):
+        assert isinstance(x, str)
+        assert x.startswith(prefix), f"expected:\n\n{x}\n\nto start with: {prefix}"
+
+    return assert_startswith
+
+
 # Checks that a json blob (represented as a Python dict) is equal-ish to an expected
 # dict. The expected dict can contain assertion functions in place of any non-deterministic values.
 def compare_json(actual_json, expected_json):
