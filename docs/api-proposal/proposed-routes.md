@@ -32,9 +32,8 @@ New routes are in **bold**.
 
 ![](review-and-launch.png)
 
-- **GET /election/<election_id>/round** - get all rounds
-- **POST /election/<election_id>/round** - create the first round object, if we need to
-- **POST /election/<election_id>/round/<round_id>/start** - start the round, setting the sample size in the process
+- **GET /election/<election_id>/sample-sizes** - get the estimated sample sizes
+- **POST /election/<election_id>/round** - create the first round, setting the sample size, which starts the audit
 
 # Audit Admin: Running the audit
 
@@ -50,8 +49,7 @@ New routes are in **bold**.
 
 ![](start-round2.png)
 
-- **POST /election/<election_id>/round** - create a new round
-- **POST /election/<election_id>/round/<round_id>/start** - start the new round (the backend will pick the sample size)
+- **POST /election/<election_id>/round** - create the new round
 
 # Jurisdiction Admin: Audit setup
 
