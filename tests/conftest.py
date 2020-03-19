@@ -3,7 +3,7 @@ import json
 from flask.testing import FlaskClient
 
 from arlo_server import app, db
-from helpers import post_json
+from helpers import post_json, create_election
 
 # The fixtures in this module are available in any test via dependency
 # injection.
@@ -24,11 +24,6 @@ def client() -> FlaskClient:
 
 
 @pytest.fixture
-def election_id(client: FlaskClient, request) -> str:
-    rv = post_json(
-        client,
-        "/election/new",
-        {"auditName": f"Test Audit {request.function.__name__}"},
-    )
-    election_id = json.loads(rv.data)["electionId"]
+def election_id(client: FlaskClient) -> str:
+    election_id = create_election(client)
     yield election_id

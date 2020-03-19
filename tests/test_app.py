@@ -1,15 +1,22 @@
 import os, math, uuid
 import tempfile
 import json, csv, io
+from flask.testing import FlaskClient
 
 import pytest
 
 from arlo_server import app, db
-from tests.helpers import post_json
+from tests.helpers import post_json, create_election
 import bgcompute
 
 manifest_file_path = os.path.join(os.path.dirname(__file__), "manifest.csv")
 small_manifest_file_path = os.path.join(os.path.dirname(__file__), "small-manifest.csv")
+
+
+@pytest.fixture()
+def election_id(client: FlaskClient) -> str:
+    election_id = create_election(client, is_multi_jurisdiction=False)
+    yield election_id
 
 
 def test_index(client):
@@ -36,14 +43,13 @@ def test_session(client):
     assert json.loads(rv.data) == {"count": 2}
 
 
-def test_whole_audit_flow(client):
-    rv = post_json(client, "/election/new", {"auditName": "Audit 1"})
-    election_id_1 = json.loads(rv.data)["electionId"]
-    assert election_id_1
-
-    rv = post_json(client, "/election/new", {"auditName": "Audit 2"})
-    election_id_2 = json.loads(rv.data)["electionId"]
-    assert election_id_2
+def test_whole_audit_flow(client: FlaskClient):
+    election_id_1 = create_election(
+        client, audit_name="Audit 1", is_multi_jurisdiction=False
+    )
+    election_id_2 = create_election(
+        client, audit_name="Audit 2", is_multi_jurisdiction=False
+    )
 
     print("running whole audit flow " + election_id_1)
     run_whole_audit_flow(

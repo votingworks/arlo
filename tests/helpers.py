@@ -47,6 +47,24 @@ def create_org_and_admin(org_name="Test Org", user_email=DEFAULT_USER_EMAIL):
     return org.id, u.id
 
 
+def create_election(
+    client: FlaskClient,
+    audit_name: str = "Test Audit",
+    organization_id: str = None,
+    is_multi_jurisdiction: bool = True,
+):
+    rv = post_json(
+        client,
+        "/election/new",
+        {
+            "auditName": audit_name,
+            "organizationId": organization_id,
+            "isMultiJurisdiction": is_multi_jurisdiction,
+        },
+    )
+    return json.loads(rv.data)["electionId"]
+
+
 def assert_is_id(x):
     assert isinstance(x, str)
     uuid.UUID(x, version=4)  # Will raise exception on non-UUID strings

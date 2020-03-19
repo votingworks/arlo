@@ -19,7 +19,10 @@ def _setup_user(client, user_type, user_email):
 def test_auth_me(client):
     org_id, user_id = create_org_and_admin("Test Org", "admin@example.com")
     election = Election(
-        id=str(uuid.uuid4()), audit_name="Test /auth/me", organization_id=org_id
+        id=str(uuid.uuid4()),
+        audit_name="Test /auth/me",
+        organization_id=org_id,
+        is_multi_jurisdiction=True,
     )
     jurisdiction = Jurisdiction(
         election_id=election.id, id=str(uuid.uuid4()), name="Test Jurisdiction"
@@ -52,6 +55,7 @@ def test_auth_me(client):
                         "electionName": None,
                         "state": None,
                         "electionDate": None,
+                        "isMultiJurisdiction": True,
                     }
                 ],
             }
@@ -66,6 +70,7 @@ def test_auth_me(client):
                     "electionName": None,
                     "state": None,
                     "electionDate": None,
+                    "isMultiJurisdiction": True,
                 },
             }
         ],
@@ -105,7 +110,10 @@ def test_jurisdictionadmin_start(client):
 def test_jurisdictionadmin_callback(client):
     org = create_organization("Test Organization")
     election = Election(
-        id=str(uuid.uuid4()), audit_name="Test JA callback", organization_id=org.id
+        id=str(uuid.uuid4()),
+        audit_name="Test JA callback",
+        organization_id=org.id,
+        is_multi_jurisdiction=True,
     )
     jurisdiction = Jurisdiction(
         election_id=election.id, id=str(uuid.uuid4()), name="Test Jurisdiction"
