@@ -57,6 +57,9 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
         {
           method: 'POST',
           body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/json',
+          },
         }
       )
       if (checkAndToast(response)) {
