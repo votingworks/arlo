@@ -381,7 +381,7 @@ def election_new():
     return jsonify(electionId=election.id)
 
 
-@app.route("/election/<election_id>/jurisdictions/file", methods=["GET"])
+@app.route("/election/<election_id>/jurisdiction/file", methods=["GET"])
 def get_jurisdictions_file(election_id=None):
     election = get_election(election_id)
     require_audit_admin_for_organization(election.organization_id)
@@ -414,7 +414,7 @@ def get_jurisdictions_file(election_id=None):
         return jsonify(file=None, processing=None)
 
 
-@app.route("/election/<election_id>/jurisdictions/file", methods=["PUT"])
+@app.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
 def update_jurisdictions_file(election_id=None):
     election = get_election(election_id)
     require_audit_admin_for_organization(election.organization_id)
