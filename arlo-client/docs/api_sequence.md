@@ -113,7 +113,7 @@ Getting the new status and waiting for sample size calculations to complete:
       ],
       "id": "round-1",
       "endedAt": null,
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "startedAt": "2019-07-18T16:34:07.000Z"
     }
   ],
   "name": "contest name",
@@ -176,7 +176,7 @@ other than `null`, like so:
       ],
       "id": "round-1",
       "endedAt": null,
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "startedAt": "2019-07-18T16:34:07.000Z"
     }
   ],
   "name": "contest name",
@@ -307,7 +307,7 @@ status endpoint again.
       ],
       "id": "round-1",
       "endedAt": null,
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "startedAt": "2019-07-18T16:34:07.000Z"
     }
   ],
   "name": "contest name",
@@ -370,7 +370,7 @@ And then GET the updated status:
         "filename": "Ballot Manifest May 2019 Election - WYNADOTTE.csv",
         "numBallots": 2117,
         "numBatches": 10,
-        "uploadedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+        "uploadedAt": "2019-07-18T16:34:07.000Z"
       },
       "batches": [
         // there should now also be a populated array of batches
@@ -408,7 +408,7 @@ And then GET the updated status:
       ],
       "id": "round-1",
       "endedAt": null,
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "startedAt": "2019-07-18T16:34:07.000Z"
     }
   ],
   "name": "contest name",
@@ -492,7 +492,7 @@ Incomplete sample size calculations:
         "filename": "Ballot Manifest May 2019 Election - WYNADOTTE.csv",
         "numBallots": 2117,
         "numBatches": 10,
-        "uploadedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+        "uploadedAt": "2019-07-18T16:34:07.000Z"
       },
       "batches": [],
       "contests": ["contest-1"],
@@ -522,8 +522,8 @@ Incomplete sample size calculations:
           ]
         }
       ],
-      "endedAt": "Thu, 18 Jul 2019 16:59:34 GMT",
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "endedAt": "2019-07-18T16:59:34.000Z",
+      "startedAt": "2019-07-18T16:34:07.000Z"
     },
     {
       "contests": [
@@ -540,7 +540,7 @@ Incomplete sample size calculations:
       ],
       "id": "round-1",
       "endedAt": null,
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "startedAt": "2019-07-18T16:34:07.000Z"
     }
   ],
   "name": "contest name",
@@ -594,7 +594,7 @@ Complete sample size calculations:
         "filename": "Ballot Manifest May 2019 Election - WYNADOTTE.csv",
         "numBallots": 2117,
         "numBatches": 10,
-        "uploadedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+        "uploadedAt": "2019-07-18T16:34:07.000Z"
       },
       "batches": [],
       "contests": ["contest-1"],
@@ -624,8 +624,8 @@ Complete sample size calculations:
           ]
         }
       ],
-      "endedAt": "Thu, 18 Jul 2019 16:59:34 GMT",
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "endedAt": "2019-07-18T16:59:34.000Z",
+      "startedAt": "2019-07-18T16:34:07.000Z"
     },
     {
       "contests": [
@@ -646,7 +646,7 @@ Complete sample size calculations:
       ],
       "id": "round-1",
       "endedAt": null,
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "startedAt": "2019-07-18T16:34:07.000Z"
     }
   ],
   "name": "contest name",
@@ -702,7 +702,7 @@ happened on the first round, would look like this:
         "filename": "Ballot Manifest May 2019 Election - WYNADOTTE.csv",
         "numBallots": 2117,
         "numBatches": 10,
-        "uploadedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+        "uploadedAt": "2019-07-18T16:34:07.000Z"
       },
       "batches": [],
       "contests": ["contest-1"],
@@ -731,8 +731,8 @@ happened on the first round, would look like this:
           ]
         }
       ],
-      "endedAt": "Thu, 18 Jul 2019 16:59:34 GMT",
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "endedAt": "2019-07-18T16:59:34.000Z",
+      "startedAt": "2019-07-18T16:34:07.000Z"
     }
   ],
   "name": "contest name",
@@ -852,7 +852,7 @@ GET the updated status:
         "filename": "Ballot Manifest May 2019 Election - WYNADOTTE.csv",
         "numBallots": 2117,
         "numBatches": 10,
-        "uploadedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+        "uploadedAt": "2019-07-18T16:34:07.000Z"
       },
       "batches": [
         {
@@ -889,7 +889,7 @@ GET the updated status:
       ],
       "id": "round-1",
       "endedAt": null,
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "startedAt": "2019-07-18T16:34:07.000Z"
     }
   ],
   "name": "contest name",
@@ -1010,7 +1010,7 @@ GET the updated status:
         "filename": "Ballot Manifest May 2019 Election - WYNADOTTE.csv",
         "numBallots": 2117,
         "numBatches": 10,
-        "uploadedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+        "uploadedAt": "2019-07-18T16:34:07.000Z"
       },
       "batches": [
         {
@@ -1047,7 +1047,7 @@ GET the updated status:
       ],
       "id": "round-1",
       "endedAt": null,
-      "startedAt": "Thu, 18 Jul 2019 16:34:07 GMT"
+      "startedAt": "2019-07-18T16:34:07.000Z"
     }
   ],
   "name": "contest name",

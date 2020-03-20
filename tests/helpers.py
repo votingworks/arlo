@@ -1,7 +1,7 @@
 import uuid, json, re
 import pytest
-from email.utils import parsedate_to_datetime
-from typing import Any, List, Optional, Union
+import datetime
+from typing import Any, List, Union
 from flask.testing import FlaskClient
 
 from arlo_server.auth import UserType
@@ -72,8 +72,15 @@ def assert_is_id(x):
 
 
 def assert_is_date(x):
+    """
+    Asserts that a value is a string formatted as an ISO-8601 string
+    specifically as formatted by `datetime.datetime.isoformat`. Not all
+    ISO-8601 strings are supported.
+    
+    See https://docs.python.org/3.8/library/datetime.html#datetime.date.fromisoformat.
+    """
     assert isinstance(x, str)
-    parsedate_to_datetime(x)  # Will raise exception on non-HTTP-date strings
+    datetime.datetime.fromisoformat(x)
 
 
 def assert_is_passphrase(x):
