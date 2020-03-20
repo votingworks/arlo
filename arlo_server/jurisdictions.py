@@ -1,7 +1,11 @@
 from flask import jsonify
 
 from arlo_server import app, db
-from arlo_server.routes import get_election, require_audit_admin_for_organization
+from arlo_server.routes import (
+    get_election,
+    require_audit_admin_for_organization,
+    isoformat,
+)
 from arlo_server.models import Jurisdiction
 
 
@@ -13,7 +17,7 @@ def serialize_jurisdiction(db_jurisdiction: Jurisdiction) -> dict:
             "filename": db_jurisdiction.manifest_filename,
             "numBallots": db_jurisdiction.manifest_num_ballots,
             "numBatches": db_jurisdiction.manifest_num_batches,
-            "uploadedAt": db_jurisdiction.manifest_uploaded_at,
+            "uploadedAt": isoformat(db_jurisdiction.manifest_uploaded_at),
         },
     }
 

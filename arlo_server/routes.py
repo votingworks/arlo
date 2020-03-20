@@ -484,7 +484,7 @@ def audit_status(election_id=None):
         organizationId=election.organization_id,
         name=election.election_name,
         online=election.online,
-        frozenAt=election.frozen_at,
+        frozenAt=isoformat(election.frozen_at),
         riskLimit=election.risk_limit,
         randomSeed=election.random_seed,
         contests=[
@@ -520,7 +520,7 @@ def audit_status(election_id=None):
                     "filename": j.manifest_filename,
                     "numBallots": j.manifest_num_ballots,
                     "numBatches": j.manifest_num_batches,
-                    "uploadedAt": j.manifest_uploaded_at,
+                    "uploadedAt": isoformat(j.manifest_uploaded_at),
                 },
                 "batches": [
                     {
@@ -538,8 +538,8 @@ def audit_status(election_id=None):
         rounds=[
             {
                 "id": round.id,
-                "startedAt": round.started_at,
-                "endedAt": round.ended_at,
+                "startedAt": isoformat(round.started_at),
+                "endedAt": isoformat(round.ended_at),
                 "contests": [
                     {
                         "id": round_contest.contest_id,
