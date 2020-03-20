@@ -72,17 +72,16 @@ class Jurisdiction(BaseModel):
         db.String(200), db.ForeignKey("election.id", ondelete="cascade"), nullable=False
     )
     name = db.Column(db.String(200), nullable=False)
-    manifest = db.Column(db.Text, nullable=True)
-    manifest_filename = db.Column(db.String(250), nullable=True)
-    manifest_uploaded_at = db.Column(db.DateTime(timezone=False), nullable=True)
     manifest_num_ballots = db.Column(db.Integer)
     manifest_num_batches = db.Column(db.Integer)
 
+    manifest_file_id = db.Column(
+        db.String(200), db.ForeignKey("file.id", ondelete="set null"), nullable=True
+    )
+    manifest_file = relationship("File")
+
     # any error in the upload? null == none
     manifest_errors = db.Column(db.Text, nullable=True)
-
-    # a JSON array of field names that are included in the CSV
-    manifest_fields = db.Column(db.Text, nullable=True)
 
     batches = relationship("Batch", backref="jurisdiction", passive_deletes=True)
     audit_boards = relationship(

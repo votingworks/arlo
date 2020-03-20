@@ -517,10 +517,12 @@ def audit_status(election_id=None):
                     for audit_board in j.audit_boards
                 ],
                 "ballotManifest": {
-                    "filename": j.manifest_filename,
+                    "filename": j.manifest_file.name if j.manifest_file else None,
                     "numBallots": j.manifest_num_ballots,
                     "numBatches": j.manifest_num_batches,
-                    "uploadedAt": isoformat(j.manifest_uploaded_at),
+                    "uploadedAt": isoformat(j.manifest_file.uploaded_at)
+                    if j.manifest_file
+                    else None,
                 },
                 "batches": [
                     {
@@ -703,12 +705,11 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
         )
 
     if request.method == "DELETE":
-        jurisdiction.manifest = None
-        jurisdiction.manifest_filename = None
-        jurisdiction.manifest_uploaded_at = None
         jurisdiction.manifest_num_ballots = None
         jurisdiction.manifest_num_batches = None
 
+        if jurisdiction.manifest_file_id:
+            File.query.filter_by(id=jurisdiction.manifest_file_id).delete()
         Batch.query.filter_by(jurisdiction=jurisdiction).delete()
 
         db.session.commit()
@@ -717,10 +718,12 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
 
     manifest = request.files["manifest"]
     manifest_string = manifest.read().decode("utf-8-sig")
-    jurisdiction.manifest = manifest_string
-
-    jurisdiction.manifest_filename = manifest.filename
-    jurisdiction.manifest_uploaded_at = datetime.datetime.utcnow()
+    jurisdiction.manifest_file = File(
+        id=str(uuid.uuid4()),
+        name=manifest.filename,
+        contents=manifest_string,
+        uploaded_at=datetime.datetime.utcnow(),
+    )
 
     manifest_csv = csv.DictReader(io.StringIO(manifest_string))
 
