@@ -14,10 +14,14 @@ def serialize_jurisdiction(db_jurisdiction: Jurisdiction) -> dict:
         "id": db_jurisdiction.id,
         "name": db_jurisdiction.name,
         "ballotManifest": {
-            "filename": db_jurisdiction.manifest_filename,
+            "filename": db_jurisdiction.manifest_file.name
+            if db_jurisdiction.manifest_file
+            else None,
             "numBallots": db_jurisdiction.manifest_num_ballots,
             "numBatches": db_jurisdiction.manifest_num_batches,
-            "uploadedAt": isoformat(db_jurisdiction.manifest_uploaded_at),
+            "uploadedAt": isoformat(db_jurisdiction.manifest_file.uploaded_at)
+            if db_jurisdiction.manifest_file
+            else None,
         },
     }
 
