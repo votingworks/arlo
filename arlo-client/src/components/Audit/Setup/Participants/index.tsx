@@ -34,10 +34,13 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   const { electionId } = useParams()
   const [isLoading, setIsLoading] = useState(false)
   const submit = async (values: IValues) => {
+    console.log('SUBMIT')
     try {
       setIsLoading(true)
+      console.log('Is this posting?')
       /* istanbul ignore else */
       if (values.csv) {
+        console.log('Should post!')
         const formData: FormData = new FormData()
         formData.append('jurisdictions', values.csv, values.csv.name)
         const errorResponse: IErrorResponse = await api(
@@ -58,7 +61,10 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
     <Formik
       initialValues={initialValues}
       validationSchema={schema}
-      onSubmit={submit}
+      onSubmit={v => {
+        console.log('ONSUBMIT')
+        submit(v)
+      }}
     >
       {({
         handleSubmit,
@@ -82,7 +88,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                   setFieldValue('state', e.currentTarget.value)
                 }
                 disabled={!!audit.frozenAt}
-                options={labelValueStates}
+                options={[{ value: '' }, ...labelValueStates]}
               />
             </label>
             <ErrorMessage name="state" component={ErrorLabel} />
@@ -119,7 +125,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                   )
                 }}
                 hasSelection={!!values.csv}
-                text={values.csv ? values.csv.name : 'Select CSV...'}
+                text={values.csv ? values.csv.name : 'Select a CSV...'}
                 onBlur={handleBlur}
               />
               {errors.csv && touched.csv && (
@@ -134,7 +140,10 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                 type="submit"
                 intent="primary"
                 disabled={!!audit.frozenAt}
-                onClick={handleSubmit}
+                onClick={e => {
+                  console.log('CLICK')
+                  handleSubmit(e)
+                }}
               >
                 Submit &amp; Next
               </FormButton>

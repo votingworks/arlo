@@ -1,4 +1,5 @@
 import React from 'react'
+import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { statusStates } from '../_mocks'
 import * as utilities from '../../utilities'
 import { asyncActRender } from '../../testUtilities'
@@ -15,6 +16,16 @@ const checkAndToastMock: jest.SpyInstance<
 
 checkAndToastMock.mockReturnValue(false)
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
+  useParams: jest.fn(),
+}))
+const routeMock = useParams as jest.Mock
+routeMock.mockReturnValue({
+  electionId: '1',
+  view: 'setup',
+})
+
 afterEach(() => {
   apiMock.mockClear()
   checkAndToastMock.mockClear()
@@ -23,11 +34,13 @@ afterEach(() => {
 describe('Setup', () => {
   it('renders Participants stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        audit={statusStates[2]}
-        stage="Participants"
-        setStage={jest.fn()}
-      />
+      <Router>
+        <Setup
+          audit={statusStates[2]}
+          stage="Participants"
+          setStage={jest.fn()}
+        />
+      </Router>
     )
     expect(container).toMatchSnapshot()
   })
