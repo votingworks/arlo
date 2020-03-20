@@ -11,7 +11,7 @@ from arlo_server.models import Jurisdiction
 @pytest.fixture()
 def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(

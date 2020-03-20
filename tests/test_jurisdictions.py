@@ -15,7 +15,7 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     # We expect the list endpoint to order the jurisdictions by name, so we
     # upload them out of order.
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(

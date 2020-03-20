@@ -18,7 +18,7 @@ from bgcompute import bgcompute_update_election_jurisdictions_file
 
 
 def test_missing_file(client, election_id):
-    rv = client.put(f"/election/{election_id}/jurisdictions/file")
+    rv = client.put(f"/election/{election_id}/jurisdiction/file")
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
@@ -32,7 +32,7 @@ def test_missing_file(client, election_id):
 
 def test_bad_csv_file(client, election_id):
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={"jurisdictions": (io.BytesIO(b"not a CSV file"), "random.txt")},
     )
     assert rv.status_code == 400
@@ -54,7 +54,7 @@ def test_bad_csv_file(client, election_id):
 
 def test_missing_one_csv_field(client, election_id):
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(b"Jurisdiction\nJurisdiction #1"),
@@ -76,7 +76,7 @@ def test_missing_one_csv_field(client, election_id):
 
 def test_metadata(client, election_id):
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(b"Jurisdiction,Admin Email"),
@@ -93,7 +93,7 @@ def test_metadata(client, election_id):
     assert election.jurisdictions_file.uploaded_at
 
     # Get the file data before processing.
-    rv = client.get(f"/election/{election_id}/jurisdictions/file")
+    rv = client.get(f"/election/{election_id}/jurisdiction/file")
     response = json.loads(rv.data)
     file = response["file"]
     processing = response["processing"]
@@ -109,7 +109,7 @@ def test_metadata(client, election_id):
     assert bgcompute_update_election_jurisdictions_file() == 1
 
     # Now there should be data.
-    rv = client.get(f"/election/{election_id}/jurisdictions/file")
+    rv = client.get(f"/election/{election_id}/jurisdiction/file")
     response = json.loads(rv.data)
     file = response["file"]
     processing = response["processing"]
@@ -125,7 +125,7 @@ def test_metadata(client, election_id):
 def test_replace_jurisdictions_file(client, election_id):
     # Create the initial file.
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(b"Jurisdiction,Admin Email"),
@@ -139,7 +139,7 @@ def test_replace_jurisdictions_file(client, election_id):
 
     # Replace it with another file.
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(b"Jurisdiction,Admin Email"),
@@ -154,7 +154,7 @@ def test_replace_jurisdictions_file(client, election_id):
 
 def test_no_jurisdiction(client, election_id):
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(b"Jurisdiction,Admin Email"),
@@ -176,7 +176,7 @@ def test_no_jurisdiction(client, election_id):
 
 def test_single_jurisdiction_single_admin(client, election_id):
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(b"Jurisdiction,Admin Email\nJ1,a1@example.com"),
@@ -201,7 +201,7 @@ def test_single_jurisdiction_single_admin(client, election_id):
 
 def test_single_jurisdiction_multiple_admins(client, election_id):
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(
@@ -229,7 +229,7 @@ def test_single_jurisdiction_multiple_admins(client, election_id):
 
 def test_multiple_jurisdictions_single_admin(client, election_id):
     rv = client.put(
-        f"/election/{election_id}/jurisdictions/file",
+        f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(
