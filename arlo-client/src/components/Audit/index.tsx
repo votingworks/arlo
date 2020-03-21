@@ -82,11 +82,20 @@ const Audit: React.FC<{}> = () => {
   const menuItems = useMemo(
     () =>
       setupStages.map(
-        (s: ElementType<typeof setupStages>): ISidebarMenuItem => ({
-          title: s,
-          active: s === stage,
-          action: () => setStage(s),
-        })
+        (s: ElementType<typeof setupStages>): ISidebarMenuItem => {
+          return (() => {
+            switch (s) {
+              case 'Participants':
+              default:
+                return {
+                  title: s,
+                  active: s === stage,
+                  action: () => setStage(s),
+                  state: 'live', // dynamic functions to query the state of the data needed
+                } as ISidebarMenuItem
+            }
+          })()
+        }
       ),
     [stage]
   )
