@@ -4,6 +4,9 @@ import { regexpEscape } from '../../../testUtilities'
 import { statusStates } from '../../_mocks'
 import * as utilities from '../../../utilities'
 import Contests from './index'
+import relativeStages from '../_mocks'
+
+const { nextStage, prevStage } = relativeStages('Target Contests')
 
 const ContestsMocks = {
   inputs: [
@@ -95,8 +98,7 @@ describe('Audit Setup > Contests', () => {
       <Contests
         audit={statusStates[0]}
         isTargeted
-        nextStage={jest.fn()}
-        prevStage={jest.fn()}
+        {...relativeStages('Target Contests')}
       />
     )
     expect(container).toMatchSnapshot()
@@ -108,8 +110,7 @@ describe('Audit Setup > Contests', () => {
       <Contests
         audit={statusStates[0]}
         isTargeted
-        nextStage={jest.fn()}
-        prevStage={jest.fn()}
+        {...relativeStages('Target Contests')}
       />
     )
 
@@ -140,8 +141,7 @@ describe('Audit Setup > Contests', () => {
       <Contests
         audit={statusStates[0]}
         isTargeted
-        nextStage={jest.fn()}
-        prevStage={jest.fn()}
+        {...relativeStages('Target Contests')}
       />
     )
 
@@ -161,13 +161,12 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('is able to submit the form successfully', async () => {
-    const nextStageMock = jest.fn()
     const { getByLabelText, getByText } = render(
       <Contests
         audit={statusStates[0]}
         isTargeted
-        nextStage={nextStageMock}
-        prevStage={jest.fn()}
+        nextStage={nextStage}
+        prevStage={prevStage}
       />
     )
 
@@ -181,18 +180,17 @@ describe('Audit Setup > Contests', () => {
 
     fireEvent.click(getByText('Submit & Next'), { bubbles: true })
     await wait(() => {
-      expect(nextStageMock).toHaveBeenCalledTimes(1)
+      expect(nextStage.activate).toHaveBeenCalledTimes(1)
     })
   })
 
   it('displays errors', async () => {
-    const nextStageMock = jest.fn()
     const { getByLabelText, getByTestId, getByText } = render(
       <Contests
         audit={statusStates[0]}
         isTargeted
-        nextStage={nextStageMock}
-        prevStage={jest.fn()}
+        nextStage={nextStage}
+        prevStage={prevStage}
       />
     )
 
@@ -219,7 +217,7 @@ describe('Audit Setup > Contests', () => {
 
     fireEvent.click(getByText('Submit & Next'), { bubbles: true })
     await wait(() => {
-      expect(nextStageMock).toHaveBeenCalledTimes(0)
+      expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })
   })
 
@@ -228,8 +226,7 @@ describe('Audit Setup > Contests', () => {
       <Contests
         audit={statusStates[0]}
         isTargeted
-        nextStage={jest.fn()}
-        prevStage={jest.fn()}
+        {...relativeStages('Target Contests')}
       />
     )
 
@@ -273,8 +270,7 @@ describe('Audit Setup > Contests', () => {
       <Contests
         audit={statusStates[0]}
         isTargeted
-        nextStage={jest.fn()}
-        prevStage={jest.fn()}
+        {...relativeStages('Target Contests')}
       />
     )
 

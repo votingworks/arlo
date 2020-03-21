@@ -1,9 +1,10 @@
 import React from 'react'
-import { BrowserRouter as Router, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { statusStates } from '../_mocks'
 import * as utilities from '../../utilities'
 import { asyncActRender } from '../../testUtilities'
 import Setup from './index'
+import relativeStages from './_mocks'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -34,13 +35,11 @@ afterEach(() => {
 describe('Setup', () => {
   it('renders Participants stage', async () => {
     const { container } = await asyncActRender(
-      <Router>
-        <Setup
-          audit={statusStates[2]}
-          stage="Participants"
-          setStage={jest.fn()}
-        />
-      </Router>
+      <Setup
+        audit={statusStates[2]}
+        stage="Participants"
+        {...relativeStages('Participants')}
+      />
     )
     expect(container).toMatchSnapshot()
   })
@@ -50,7 +49,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Target Contests"
-        setStage={jest.fn()}
+        {...relativeStages('Target Contests')}
       />
     )
     expect(container).toMatchSnapshot()
@@ -61,7 +60,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Opportunistic Contests"
-        setStage={jest.fn()}
+        {...relativeStages('Opportunistic Contests')}
       />
     )
     expect(container).toMatchSnapshot()
@@ -72,7 +71,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Audit Settings"
-        setStage={jest.fn()}
+        {...relativeStages('Audit Settings')}
       />
     )
     expect(container).toMatchSnapshot()
@@ -83,7 +82,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Review & Launch"
-        setStage={jest.fn()}
+        {...relativeStages('Review & Launch')}
       />
     )
     expect(container).toMatchSnapshot()

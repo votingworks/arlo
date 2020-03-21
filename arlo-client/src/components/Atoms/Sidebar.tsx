@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 `
 
 export interface ISidebarMenuItem {
-  action: () => void
+  activate: () => void
   title: string
   active: boolean
   state: 'live' | 'processing' | 'locked'
@@ -33,7 +33,7 @@ const Sidebar = ({ menuItems, title }: IProps) => (
         <React.Fragment key={item.title}>
           {i > 0 && <Menu.Divider />}
           <Menu.Item
-            onClick={item.action}
+            onClick={item.activate}
             active={item.active}
             text={item.title}
             disabled={item.state !== 'live'}

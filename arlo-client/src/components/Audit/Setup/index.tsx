@@ -5,6 +5,7 @@ import Participants from './Participants'
 import Contests from './Contests'
 import Settings from './Settings'
 import Review from './Review'
+import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 
 export const setupStages = [
   'Participants',
@@ -17,22 +18,11 @@ export const setupStages = [
 interface IProps {
   stage: ElementType<typeof setupStages>
   audit: IAudit
-  setStage: (stage: ElementType<typeof setupStages>) => void
+  prevStage: ISidebarMenuItem
+  nextStage: ISidebarMenuItem
 }
 
-const Setup: React.FC<IProps> = ({ stage, setStage, audit }) => {
-  const currentIndex = setupStages.indexOf(stage)
-  const nextStage = () => {
-    /* istanbul ignore else */
-    if (currentIndex < setupStages.length - 1)
-      setStage(setupStages[currentIndex + 1])
-  }
-  const prevStage = () => {
-    // modal warn that form data may be lost
-    /* istanbul ignore else */
-    if (currentIndex > 0) setStage(setupStages[currentIndex - 1])
-  }
-
+const Setup: React.FC<IProps> = ({ stage, prevStage, audit, nextStage }) => {
   switch (stage) {
     case 'Participants':
       return <Participants audit={audit} nextStage={nextStage} />

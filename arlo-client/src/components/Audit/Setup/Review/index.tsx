@@ -2,11 +2,12 @@ import React from 'react'
 import { IAudit } from '../../../../types'
 import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
+import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 
 interface IProps {
   audit: IAudit
-  nextStage: () => void
-  prevStage: () => void
+  nextStage: ISidebarMenuItem
+  prevStage: ISidebarMenuItem
 }
 
 const Review: React.FC<IProps> = ({ prevStage }: IProps) => {
@@ -14,7 +15,7 @@ const Review: React.FC<IProps> = ({ prevStage }: IProps) => {
     <div>
       <p>Review</p>
       <FormButtonBar>
-        <FormButton onClick={prevStage}>Back</FormButton>
+        <FormButton onClick={prevStage.activate}>Back</FormButton>
       </FormButtonBar>
     </div>
   )

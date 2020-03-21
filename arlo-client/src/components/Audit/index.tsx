@@ -79,26 +79,41 @@ const Audit: React.FC<{}> = () => {
     'Participants'
   )
 
-  const menuItems = useMemo(
+  const menuItems: ISidebarMenuItem[] = useMemo(
     () =>
-      setupStages.map(
-        (s: ElementType<typeof setupStages>): ISidebarMenuItem => {
-          return (() => {
-            switch (s) {
-              case 'Participants':
-              default:
-                return {
-                  title: s,
-                  active: s === stage,
-                  action: () => setStage(s),
-                  state: 'live', // dynamic functions to query the state of the data needed
-                } as ISidebarMenuItem
-            }
-          })()
+      setupStages.map((s: ElementType<typeof setupStages>) => {
+        const state = (() => {
+          switch (s) {
+            case 'Participants':
+              return 'live'
+            case 'Target Contests':
+              return 'processing'
+            case 'Opportunistic Contests':
+              return 'locked'
+            case 'Audit Settings':
+              return 'locked'
+            case 'Review & Launch':
+              return 'live'
+            /* istanbul ignoe next */
+            default:
+              return 'locked'
+          }
+        })()
+        return {
+          title: s,
+          active: s === stage,
+          activate: () => {
+            if (state === 'live') setStage(s)
+          },
+          state,
         }
-      ),
-    [stage]
+      }),
+    [stage, setupStages]
   )
+
+  const activeStage = menuItems.find(m => m.title === stage)
+  const nextStage = menuItems[menuItems.indexOf(activeStage!) + 1]
+  const prevStage = menuItems[menuItems.indexOf(activeStage!) - 1]
 
   return (
     <Wrapper className={!isAuthenticated ? 'single-page' : ''}>
@@ -114,7 +129,12 @@ const Audit: React.FC<{}> = () => {
           {meta!.type === 'audit_admin' && (
             <Sidebar title="Audit Setup" menuItems={menuItems} />
           )}
-          <Setup stage={stage} audit={audit} setStage={setStage} />
+          <Setup
+            stage={stage}
+            audit={audit}
+            nextStage={nextStage}
+            prevStage={prevStage}
+          />
         </>
       ) : (
         <>
