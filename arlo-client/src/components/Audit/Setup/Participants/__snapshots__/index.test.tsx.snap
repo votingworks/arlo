@@ -43,12 +43,6 @@ exports[`Audit Setup > Contests renders empty state correctly 1`] = `
               Alaska
             </option>
             <option
-              label="American Samoa"
-              value="AS"
-            >
-              American Samoa
-            </option>
-            <option
               label="Arizona"
               value="AZ"
             >
@@ -91,12 +85,6 @@ exports[`Audit Setup > Contests renders empty state correctly 1`] = `
               District Of Columbia
             </option>
             <option
-              label="Federated States Of Micronesia"
-              value="FM"
-            >
-              Federated States Of Micronesia
-            </option>
-            <option
               label="Florida"
               value="FL"
             >
@@ -107,12 +95,6 @@ exports[`Audit Setup > Contests renders empty state correctly 1`] = `
               value="GA"
             >
               Georgia
-            </option>
-            <option
-              label="Guam"
-              value="GU"
-            >
-              Guam
             </option>
             <option
               label="Hawaii"
@@ -167,12 +149,6 @@ exports[`Audit Setup > Contests renders empty state correctly 1`] = `
               value="ME"
             >
               Maine
-            </option>
-            <option
-              label="Marshall Islands"
-              value="MH"
-            >
-              Marshall Islands
             </option>
             <option
               label="Maryland"
@@ -265,12 +241,6 @@ exports[`Audit Setup > Contests renders empty state correctly 1`] = `
               North Dakota
             </option>
             <option
-              label="Northern Mariana Islands"
-              value="MP"
-            >
-              Northern Mariana Islands
-            </option>
-            <option
               label="Ohio"
               value="OH"
             >
@@ -289,22 +259,10 @@ exports[`Audit Setup > Contests renders empty state correctly 1`] = `
               Oregon
             </option>
             <option
-              label="Palau"
-              value="PW"
-            >
-              Palau
-            </option>
-            <option
               label="Pennsylvania"
               value="PA"
             >
               Pennsylvania
-            </option>
-            <option
-              label="Puerto Rico"
-              value="PR"
-            >
-              Puerto Rico
             </option>
             <option
               label="Rhode Island"
@@ -347,12 +305,6 @@ exports[`Audit Setup > Contests renders empty state correctly 1`] = `
               value="VT"
             >
               Vermont
-            </option>
-            <option
-              label="Virgin Islands"
-              value="VI"
-            >
-              Virgin Islands
             </option>
             <option
               label="Virginia"
