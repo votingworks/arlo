@@ -70,7 +70,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
         return
       }
       const { electionId } = response
-      history.push(`/election/${electionId}`)
+      history.push(`/election/${electionId}/setup`)
     } catch (err) {
       toast.error(err.message)
     }

@@ -68,7 +68,7 @@ describe('CreateAudit', () => {
         },
       })
       expect(historySpy).toBeCalledTimes(1)
-      expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1')
+      expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1/setup')
     })
   })
 
@@ -129,7 +129,7 @@ describe('CreateAudit', () => {
         },
       })
       expect(historySpy).toBeCalledTimes(1)
-      expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1')
+      expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1/setup')
     })
   })
 

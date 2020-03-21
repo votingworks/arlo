@@ -5,16 +5,12 @@ import React, {
   useMemo,
   useContext,
 } from 'react'
+import { useRouteMatch, RouteComponentProps } from 'react-router-dom'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api, checkAndToast } from '../utilities'
-import {
-  IAudit,
-  ICreateAuditParams,
-  IErrorResponse,
-  ElementType,
-} from '../../types'
+import { IAudit, IErrorResponse, ElementType } from '../../types'
 import ResetButton from './ResetButton'
 import Wrapper from '../Atoms/Wrapper'
 import Sidebar, { ISidebarMenuItem } from '../Atoms/Sidebar'
@@ -32,17 +28,20 @@ const initialData: IAudit = {
   rounds: [],
 }
 
-interface IProps {
-  match: {
-    params: ICreateAuditParams
-  }
+interface IParams {
+  electionId: string
+  view: 'setup' | 'progress'
 }
 
-const Audit: React.FC<IProps> = ({
-  match: {
-    params: { electionId },
-  },
-}: IProps) => {
+const Audit: React.FC<{}> = () => {
+  const match: RouteComponentProps<IParams>['match'] | null = useRouteMatch(
+    '/election/:electionId/:view?'
+  )
+  /* istanbul ignore next */
+  const viewMatch = match ? match.params.view : undefined
+  /* istanbul ignore next */
+  const electionId = match ? match.params.electionId : ''
+
   const { isAuthenticated, meta } = useContext(AuthDataContext)
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -100,7 +99,8 @@ const Audit: React.FC<IProps> = ({
         updateAudit={updateAudit}
       />
 
-      {isAuthenticated ? (
+      {isAuthenticated &&
+      (viewMatch === 'setup' || viewMatch === 'progress') ? (
         <>
           {meta!.type === 'audit_admin' && (
             <Sidebar title="Audit Setup" menuItems={menuItems} />

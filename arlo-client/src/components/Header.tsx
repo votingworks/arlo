@@ -5,8 +5,9 @@ import {
   NavbarGroup,
   NavbarHeading,
   Alignment,
+  NavbarDivider,
 } from '@blueprintjs/core'
-import { Link } from 'react-router-dom'
+import { Link, useRouteMatch, RouteComponentProps } from 'react-router-dom'
 import { useAuthDataContext } from './UserContext'
 import FormButton from './Form/FormButton'
 
@@ -22,10 +23,23 @@ const Nav = styled(Navbar)`
     height: 35px;
     padding-top: 8px;
   }
+
+  .bp3-navbar-divider {
+    margin-right: 15px;
+    margin-left: 0;
+  }
 `
 
+interface TParams {
+  electionId: string
+}
+
 const Header: React.FC<{}> = () => {
-  const { isAuthenticated } = useAuthDataContext()
+  const match: RouteComponentProps<TParams>['match'] | null = useRouteMatch(
+    '/election/:electionId'
+  )
+  const electionId = match ? match.params.electionId : undefined
+  const { isAuthenticated, meta } = useAuthDataContext()
   return (
     <Nav fixedToTop>
       <NavbarGroup align={Alignment.LEFT}>
@@ -36,6 +50,27 @@ const Header: React.FC<{}> = () => {
         </NavbarHeading>
       </NavbarGroup>
       <NavbarGroup align={Alignment.RIGHT}>
+        {isAuthenticated && electionId && meta!.type === 'audit_admin' && (
+          <>
+            <NavbarHeading>
+              <Link to={`/election/${electionId}/setup`}>Audit Setup</Link>
+            </NavbarHeading>
+            <NavbarDivider />
+            <NavbarHeading>
+              <Link to={`/election/${electionId}/progress`}>
+                Audit Progress
+              </Link>
+            </NavbarHeading>
+            <NavbarDivider />
+            <NavbarHeading>
+              <Link to="/">View Audits</Link>
+            </NavbarHeading>
+            <NavbarDivider />
+            <NavbarHeading>
+              <Link to="/">New Audit</Link>
+            </NavbarHeading>
+          </>
+        )}
         <ButtonBar id="reset-button-wrapper" />
         {/* istanbul ignore next */
         isAuthenticated && (
