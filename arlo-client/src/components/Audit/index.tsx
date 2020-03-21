@@ -87,14 +87,14 @@ const Audit: React.FC<{}> = () => {
             case 'Participants':
               return 'live'
             case 'Target Contests':
-              return 'processing'
+              return 'live'
             case 'Opportunistic Contests':
-              return 'locked'
+              return 'live'
             case 'Audit Settings':
-              return 'locked'
+              return 'live'
             case 'Review & Launch':
               return 'live'
-            /* istanbul ignoe next */
+            /* istanbul ignore next */
             default:
               return 'locked'
           }
@@ -102,8 +102,13 @@ const Audit: React.FC<{}> = () => {
         return {
           title: s,
           active: s === stage,
-          activate: () => {
-            if (state === 'live') setStage(s)
+          activate: (_, force = false) => {
+            if (state === 'live') {
+              if (!force) {
+                // launch confirm dialog
+              }
+              setStage(s)
+            }
           },
           state,
         }

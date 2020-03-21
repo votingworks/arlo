@@ -14,7 +14,7 @@ const Wrapper = styled.div`
 `
 
 export interface ISidebarMenuItem {
-  activate: () => void
+  activate: (e?: unknown | null, force?: boolean) => void
   title: string
   active: boolean
   state: 'live' | 'processing' | 'locked'

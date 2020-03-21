@@ -92,6 +92,10 @@ function typeInto(input: Element, value: string): void {
   fireEvent.blur(input)
 }
 
+afterEach(() => {
+  ;(nextStage.activate as jest.Mock).mockClear()
+})
+
 describe('Audit Setup > Contests', () => {
   it('renders empty state correctly', () => {
     const { container } = render(
