@@ -28,6 +28,9 @@ routeMock.mockReturnValue({
   view: 'setup',
 })
 
+const formData: FormData = new FormData()
+formData.append('jurisdictions', jurisdictionFile, jurisdictionFile.name)
+
 const fillAndSubmit = async () => {
   const nextStageMock = jest.fn()
   const {
@@ -43,7 +46,7 @@ const fillAndSubmit = async () => {
   )
 
   fireEvent.change(getByTestId('state-field'), {
-    target: { value: 'Alabama' },
+    target: { value: 'WA' },
   })
 
   const csvInput = getByLabelText('Select a CSV...')
@@ -82,7 +85,8 @@ describe('Audit Setup > Contests', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock).toHaveBeenNthCalledWith(
         1,
-        /\/election\/[^/]+\/jurisdictions\/file/
+        expect.stringMatching(/\/election\/[^/]+\/jurisdictions\/file/),
+        { body: formData, method: 'PUT' }
       )
       expect(nextStageMock).toHaveBeenCalledTimes(1)
     })
@@ -96,7 +100,7 @@ describe('Audit Setup > Contests', () => {
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(1)
-      expect(nextStageMock).toHaveBeenCalledTimes(1)
+      expect(nextStageMock).toHaveBeenCalledTimes(0)
     })
   })
 
@@ -110,7 +114,7 @@ describe('Audit Setup > Contests', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(0)
       expect(checkAndToastMock).toBeCalledTimes(1)
-      expect(nextStageMock).toHaveBeenCalledTimes(1)
+      expect(nextStageMock).toHaveBeenCalledTimes(0)
     })
   })
 })

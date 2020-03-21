@@ -34,13 +34,10 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   const { electionId } = useParams()
   const [isLoading, setIsLoading] = useState(false)
   const submit = async (values: IValues) => {
-    console.log('SUBMIT')
     try {
       setIsLoading(true)
-      console.log('Is this posting?')
       /* istanbul ignore else */
       if (values.csv) {
-        console.log('Should post!')
         const formData: FormData = new FormData()
         formData.append('jurisdictions', values.csv, values.csv.name)
         const errorResponse: IErrorResponse = await api(
@@ -62,7 +59,6 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
       initialValues={initialValues}
       validationSchema={schema}
       onSubmit={v => {
-        console.log('ONSUBMIT')
         submit(v)
       }}
     >
@@ -141,7 +137,6 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                 intent="primary"
                 disabled={!!audit.frozenAt}
                 onClick={e => {
-                  console.log('CLICK')
                   handleSubmit(e)
                 }}
               >
