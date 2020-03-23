@@ -8,14 +8,13 @@ import operator
 import audits.macro as macro
 
 
-def draw_sample(
-    seed, contest, manifest, sample_size, num_sampled=0, batch_results=None
-):
+def draw_sample(seed, manifest, sample_size, num_sampled=0):
     """
     Draws uniform random sample with replacement of size <sample_size> from the
     provided ballot manifest.
 
     Inputs:
+        seed - random seed
         sample_size - number of ballots to randomly draw
         num_sampled - number of ballots that have already been sampled
         manifest - mapping of batches to the ballots they contain:

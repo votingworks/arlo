@@ -48,7 +48,7 @@ def test_draw_sample():
         "pct 4": 25,
     }
 
-    sample = sampler.draw_sample(seed, bravo_contests, manifest, 20)
+    sample = sampler.draw_sample(seed, manifest, 20)
 
     for i, item in enumerate(sample):
         expected = expected_sample[i]
@@ -67,7 +67,7 @@ def test_draw_more_samples():
     }
 
     samp_size = 10
-    sample = sampler.draw_sample(seed, bravo_contests, manifest, 10)
+    sample = sampler.draw_sample(seed, manifest, 10)
     assert samp_size == len(sample), "Received sample of size {}, expected {}".format(
         samp_size, len(sample)
     )
@@ -79,7 +79,7 @@ def test_draw_more_samples():
         )
 
     samp_size = 10
-    sample = sampler.draw_sample(seed, bravo_contests, manifest, 10, num_sampled=10)
+    sample = sampler.draw_sample(seed, manifest, 10, num_sampled=10)
     assert samp_size == len(sample), "Received sample of size {}, expected {}".format(
         samp_size, len(sample)
     )
@@ -132,49 +132,6 @@ def test_draw_more_macro_sample(macro_batches, macro_contest):
             item, expected
         )
 
-
-bravo_contests = {
-    "test1": {"cand1": 600, "cand2": 400, "ballots": 1000, "numWinners": 1},
-    "test2": {
-        "cand1": 600,
-        "cand2": 200,
-        "cand3": 100,
-        "ballots": 900,
-        "numWinners": 1,
-    },
-    "test3": {"cand1": 100, "ballots": 100, "numWinners": 1},
-    "test4": {"cand1": 100, "ballots": 100, "numWinners": 1},
-    "test5": {"cand1": 500, "cand2": 500, "ballots": 1000, "numWinners": 1},
-    "test6": {
-        "cand1": 300,
-        "cand2": 200,
-        "cand3": 200,
-        "ballots": 1000,
-        "numWinners": 1,
-    },
-    "test7": {
-        "cand1": 300,
-        "cand2": 200,
-        "cand3": 100,
-        "ballots": 700,
-        "numWinners": 2,
-    },
-    "test8": {
-        "cand1": 300,
-        "cand2": 300,
-        "cand3": 100,
-        "ballots": 700,
-        "numWinners": 2,
-    },
-    "test9": {"cand1": 300, "cand2": 200, "ballots": 700, "numWinners": 2},
-    "test10": {
-        "cand1": 600,
-        "cand2": 300,
-        "cand3": 100,
-        "ballots": 1000,
-        "numWinners": 2,
-    },
-}
 
 expected_sample = [
     ("0.000617786", ("pct 2", 3), 1),
