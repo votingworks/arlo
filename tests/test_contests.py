@@ -1,33 +1,10 @@
 import pytest
 from flask.testing import FlaskClient
 
-import json, uuid, io
-from typing import List
+import json, uuid
 
 from helpers import post_json, put_json
 from arlo_server.models import Jurisdiction
-
-
-@pytest.fixture()
-def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
-    rv = client.put(
-        f"/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    b"Jurisdiction,Admin Email\n"
-                    b"J1,a1@example.com\n"
-                    b"J2,a2@example.com\n"
-                    b"J3,a3@example.com"
-                ),
-                "jurisdictions.csv",
-            )
-        },
-    )
-    assert json.loads(rv.data) == {"status": "ok"}
-    # TODO use the /elections/<election_id>/jurisdictions endpoint here once it's built
-    jurisdictions = Jurisdiction.query.filter_by(election_id=election_id).all()
-    yield [j.id for j in jurisdictions]
 
 
 def test_contests_list_empty(client, election_id):
