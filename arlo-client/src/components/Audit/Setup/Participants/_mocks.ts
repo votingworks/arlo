@@ -1,9 +1,15 @@
+import { readFileSync } from 'fs'
+import { join } from 'path'
+
 const jurisdictionFile = new File(
   [
-    'Jurisdiction","Admin Email"',
-    '"Death Star","wtarkin@empire.gov"',
-    '"Hoth","admin@rebelalliance.ninja"',
-    '"Tatooine","jabba@hutt.biz"',
+    readFileSync(
+      join(
+        __dirname,
+        '../../../../../public/sample_jurisdiction_filesheet.csv'
+      ),
+      'utf8'
+    ),
   ],
   'jurisdictions.csv',
   { type: 'text/csv' }
