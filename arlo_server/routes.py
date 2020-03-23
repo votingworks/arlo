@@ -46,9 +46,11 @@ from config import (
     JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
 )
 
+from util.ballot_manifest import sample_ballots
 from util.binpacking import Bucket, BalancedBucketList
+from util.isoformat import isoformat
 from util.jurisdiction_bulk_update import bulk_update_jurisdictions
-from util.process_file import process_file
+from util.process_file import process_file, serialize_file, serialize_file_processing
 
 AUDIT_BOARD_MEMBER_COUNT = 2
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
@@ -131,7 +133,7 @@ def compute_sample_sizes(round_contest):
         # for later rounds, we always pick 90%
         if round_contest.round.round_num > 1:
             round_contest.sample_size = sample_size_90
-            sample_ballots(election, the_round)
+            sample_ballots(db.session, election, the_round)
 
     db.session.commit()
 
@@ -157,101 +159,6 @@ def setup_next_round(election):
     round_contest = RoundContest(round_id=round.id, contest_id=contest.id)
 
     db.session.add(round_contest)
-
-
-def sample_ballots(election, round):
-    # assume only one contest
-    round_contest = round.round_contests[0]
-    jurisdiction = election.jurisdictions[0]
-
-    num_sampled = (
-        db.session.query(SampledBallotDraw)
-        .join(SampledBallotDraw.batch)
-        .filter_by(jurisdiction_id=jurisdiction.id)
-        .count()
-    )
-    if not num_sampled:
-        num_sampled = 0
-
-    chosen_sample_size = round_contest.sample_size
-
-    # the sampler needs to have the same inputs given the same manifest
-    # so we use the batch name, rather than the batch id
-    # (because the batch ID is an internally generated uuid
-    #  that changes from one run to the next.)
-    manifest = {}
-    batch_id_from_name = {}
-    for batch in jurisdiction.batches:
-        manifest[batch.name] = batch.num_ballots
-        batch_id_from_name[batch.name] = batch.id
-
-    sample = sampler.draw_sample(
-        election.random_seed, manifest, chosen_sample_size, num_sampled=num_sampled,
-    )
-
-    audit_boards = jurisdiction.audit_boards
-
-    batch_sizes = {}
-    batches_to_ballots = {}
-    # Build batch - batch_size map
-    for item in sample:
-        batch_name, ballot_position = item[1]
-        sample_number = item[2]
-        ticket_number = item[0]
-
-        if batch_name in batch_sizes:
-            if (
-                sample_number == 1
-            ):  # if we've already seen it, it doesn't affect batch size
-                batch_sizes[batch_name] += 1
-            batches_to_ballots[batch_name].append(
-                (ballot_position, ticket_number, sample_number)
-            )
-        else:
-            batch_sizes[batch_name] = 1
-            batches_to_ballots[batch_name] = [
-                (ballot_position, ticket_number, sample_number)
-            ]
-
-    # Create the buckets and initially assign batches
-    buckets = [Bucket(audit_board.name) for audit_board in audit_boards]
-    for i, batch in enumerate(batch_sizes):
-        buckets[i % len(audit_boards)].add_batch(batch, batch_sizes[batch])
-
-    # Now assign batchest fairly
-    bl = BalancedBucketList(buckets)
-
-    # read audit board and batch info out
-    for audit_board_num, bucket in enumerate(bl.buckets):
-        audit_board = audit_boards[audit_board_num]
-        for batch_name in bucket.batches:
-
-            for item in batches_to_ballots[batch_name]:
-                ballot_position, ticket_number, sample_number = item
-
-                # sampler is 0-indexed, we're 1-indexing here
-                ballot_position += 1
-
-                batch_id = batch_id_from_name[batch_name]
-
-                if sample_number == 1:
-                    sampled_ballot = SampledBallot(
-                        batch_id=batch_id,
-                        ballot_position=ballot_position,
-                        audit_board_id=audit_board.id,
-                    )
-                    db.session.add(sampled_ballot)
-
-                sampled_ballot_draw = SampledBallotDraw(
-                    batch_id=batch_id,
-                    ballot_position=ballot_position,
-                    round_id=round.id,
-                    ticket_number=ticket_number,
-                )
-
-                db.session.add(sampled_ballot_draw)
-
-    db.session.commit()
 
 
 def check_round(election, jurisdiction_id, round_id):
@@ -299,15 +206,6 @@ def serialize_members(audit_board):
         members.append({"name": name, "affiliation": affiliation})
 
     return members
-
-
-def isoformat(
-    datetime: Optional[Union[datetime.datetime, datetime.date]]
-) -> Optional[str]:
-    if datetime is not None:
-        return datetime.isoformat()
-    else:
-        return None
 
 
 ADMIN_PASSWORD = os.environ.get("ARLO_ADMIN_PASSWORD", None)
@@ -380,28 +278,10 @@ def get_jurisdictions_file(election_id=None):
     require_audit_admin_for_organization(election.organization_id)
     jurisdictions_file = election.jurisdictions_file
 
-    if jurisdictions_file.processing_error:
-        status = ProcessingStatus.ERRORED
-    elif jurisdictions_file.processing_completed_at:
-        status = ProcessingStatus.PROCESSED
-    elif jurisdictions_file.processing_started_at:
-        status = ProcessingStatus.PROCESSING
-    else:
-        status = ProcessingStatus.READY_TO_PROCESS
-
     if jurisdictions_file:
         return jsonify(
-            file={
-                "contents": jurisdictions_file.contents,
-                "name": jurisdictions_file.name,
-                "uploadedAt": isoformat(jurisdictions_file.uploaded_at),
-            },
-            processing={
-                "status": status,
-                "startedAt": isoformat(jurisdictions_file.processing_started_at),
-                "completedAt": isoformat(jurisdictions_file.processing_completed_at),
-                "error": jurisdictions_file.processing_error,
-            },
+            file=serialize_file(jurisdictions_file, contents=True),
+            processing=serialize_file_processing(jurisdictions_file),
         )
     else:
         return jsonify(file=None, processing=None)
@@ -510,9 +390,16 @@ def audit_status(election_id=None):
                     for audit_board in j.audit_boards
                 ],
                 "ballotManifest": {
-                    "filename": j.manifest_file.name if j.manifest_file else None,
+                    "file": serialize_file(j.manifest_file)
+                    if j.manifest_file
+                    else None,
+                    "processing": serialize_file_processing(j.manifest_file)
+                    if j.manifest_file
+                    else None,
                     "numBallots": j.manifest_num_ballots,
                     "numBatches": j.manifest_num_batches,
+                    # Deprecated fields.
+                    "filename": j.manifest_file.name if j.manifest_file else None,
                     "uploadedAt": isoformat(j.manifest_file.uploaded_at)
                     if j.manifest_file
                     else None,
@@ -671,14 +558,9 @@ def jurisdictions_set(election_id):
 
 @app.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/manifest",
-    methods=["DELETE", "POST"],
+    methods=["DELETE", "PUT"],
 )
 def jurisdiction_manifest(jurisdiction_id, election_id):
-    BATCH_NAME = "Batch Name"
-    NUMBER_OF_BALLOTS = "Number of Ballots"
-    STORAGE_LOCATION = "Storage Location"
-    TABULATOR = "Tabulator"
-
     election = get_election(election_id)
     jurisdiction = Jurisdiction.query.filter_by(
         election_id=election.id, id=jurisdiction_id
@@ -718,71 +600,8 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
         uploaded_at=datetime.datetime.utcnow(),
     )
 
-    manifest_csv = csv.DictReader(io.StringIO(manifest_string))
-
-    missing_fields = [
-        field
-        for field in [BATCH_NAME, NUMBER_OF_BALLOTS]
-        if field not in manifest_csv.fieldnames
-    ]
-
-    if missing_fields:
-        return (
-            jsonify(
-                errors=[
-                    {
-                        "message": f'Missing required CSV field "{field}"',
-                        "errorType": "MissingRequiredCsvField",
-                        "fieldName": field,
-                    }
-                    for field in missing_fields
-                ]
-            ),
-            400,
-        )
-
-    num_batches = 0
-    num_ballots = 0
-    for row in manifest_csv:
-        num_ballots_in_batch_csv = row[NUMBER_OF_BALLOTS]
-
-        try:
-            num_ballots_in_batch = locale.atoi(num_ballots_in_batch_csv)
-        except ValueError:
-            return (
-                jsonify(
-                    errors=[
-                        {
-                            "message": f'Invalid value for "{NUMBER_OF_BALLOTS}" on line {manifest_csv.line_num}: {num_ballots_in_batch_csv}',
-                            "errorType": "InvalidCsvIntegerField",
-                        }
-                    ]
-                ),
-                400,
-            )
-
-        batch = Batch(
-            id=str(uuid.uuid4()),
-            name=row[BATCH_NAME],
-            jurisdiction_id=jurisdiction.id,
-            num_ballots=num_ballots_in_batch,
-            storage_location=row.get(STORAGE_LOCATION, None),
-            tabulator=row.get(TABULATOR, None),
-        )
-        db.session.add(batch)
-        num_batches += 1
-        num_ballots += batch.num_ballots
-
-    jurisdiction.manifest_num_ballots = num_ballots
-    jurisdiction.manifest_num_batches = num_batches
+    db.session.add(jurisdiction)
     db.session.commit()
-
-    # If we're in the single-jurisdiction flow, posting the ballot manifest
-    # starts the first round, so we need to sample the ballots.
-    # In the multi-jurisdiction flow, this happens after all jurisdictions
-    # upload manifests, and is triggered by a different endpoint.
-    if not election.is_multi_jurisdiction:
-        sample_ballots(election, election.rounds[0])
 
     return jsonify(status="ok")
 

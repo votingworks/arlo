@@ -171,7 +171,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
         const errorResponse: IErrorResponse = await api(
           `/election/${electionId}/jurisdiction/${jurisdictionID}/manifest`,
           {
-            method: 'POST',
+            method: 'PUT',
             body: formData,
           }
         )

@@ -5,14 +5,17 @@ from flask import Flask
 from sqlalchemy.orm import joinedload
 
 from arlo_server import app, db
-from arlo_server.models import Election, File, RoundContest
+from arlo_server.models import Election, File, Jurisdiction, RoundContest
 from arlo_server.routes import compute_sample_sizes
+from util.ballot_manifest import process_ballot_manifest_file
 from util.jurisdiction_bulk_update import process_jurisdictions_file
+from util.process_file import process_file
 
 
 def bgcompute():
     bgcompute_compute_round_contests_sample_sizes()
     bgcompute_update_election_jurisdictions_file()
+    bgcompute_update_ballot_manifest_file()
 
 
 def bgcompute_compute_round_contests_sample_sizes():
@@ -49,6 +52,20 @@ def bgcompute_update_election_jurisdictions_file() -> int:
         print(f"updating jurisdictions file for election ID {election.id}")
         process_jurisdictions_file(db.session, election, file)
         print(f"done updating jurisdictions file for election ID {election.id}")
+
+    return len(files)
+
+
+def bgcompute_update_ballot_manifest_file() -> int:
+    files = (
+        File.query.join(Jurisdiction, File.id == Jurisdiction.manifest_file_id)
+        .filter(File.processing_started_at == None)
+        .all()
+    )
+
+    for file in files:
+        jurisdiction = Jurisdiction.query.filter_by(manifest_file_id=file.id).one()
+        process_ballot_manifest_file(db.session, jurisdiction, file)
 
     return len(files)
 

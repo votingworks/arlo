@@ -2,13 +2,16 @@
 import math
 import numpy as np
 from scipy import stats
+from typing import cast, Any, Dict, List, Tuple
 import consistent_sampler
 import operator
 
 import audits.macro as macro
 
 
-def draw_sample(seed, manifest, sample_size, num_sampled=0):
+def draw_sample(
+    seed: str, manifest: Dict[str, int], sample_size: int, num_sampled=0
+) -> List[Tuple[str, Tuple[str, int], int]]:
     """
     Draws uniform random sample with replacement of size <sample_size> from the
     provided ballot manifest.
@@ -42,15 +45,21 @@ def draw_sample(seed, manifest, sample_size, num_sampled=0):
         for i in range(manifest[batch]):
             ballots.append((batch, i))
 
-    return list(
-        consistent_sampler.sampler(
-            ballots,
-            seed=seed,
-            take=sample_size + num_sampled,
-            with_replacement=True,
-            output="tuple",
-        )
-    )[num_sampled:]
+    return cast(
+        # The signature of `consistent_sampler.sampler` can't be represented by
+        # mypy yet, so it is typed as a less specific version of what it really
+        # is. This casts it back to the more specific version.
+        List[Tuple[str, Tuple[str, int], int]],
+        list(
+            consistent_sampler.sampler(
+                ballots,
+                seed=seed,
+                take=sample_size + num_sampled,
+                with_replacement=True,
+                output="tuple",
+            )
+        )[num_sampled:],
+    )
 
 
 def draw_ppeb_sample(
@@ -81,9 +90,6 @@ def draw_ppeb_sample(
                     ...
                 ]
     """
-
-    # Here we do PPEB.
-    margins = contest.margins
 
     assert batch_results, "Must have batch-level results to use MACRO"
 

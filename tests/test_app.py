@@ -210,22 +210,23 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
     # upload the manifest
     data = {}
     data["manifest"] = (open(manifest_file_path, "rb"), "manifest.csv")
-    rv = client.post(
+    rv = client.put(
         "{}/jurisdiction/{}/manifest".format(url_prefix, jurisdiction_id),
         data=data,
         content_type="multipart/form-data",
     )
 
     assert json.loads(rv.data)["status"] == "ok"
+    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
     manifest = status["jurisdictions"][0]["ballotManifest"]
 
-    assert manifest["filename"] == "manifest.csv"
     assert manifest["numBallots"] == 86147
     assert manifest["numBatches"] == 484
-    assert manifest["uploadedAt"]
+    assert manifest["file"]["name"] == "manifest.csv"
+    assert manifest["file"]["uploadedAt"]
 
     # delete the manifest and make sure that works
     rv = client.delete(
@@ -237,19 +238,19 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
     status = json.loads(rv.data)
     manifest = status["jurisdictions"][0]["ballotManifest"]
 
-    assert manifest["filename"] is None
-    assert manifest["uploadedAt"] is None
+    assert manifest["file"] is None
 
     # upload the manifest again
     data = {}
     data["manifest"] = (open(manifest_file_path, "rb"), "manifest.csv")
-    rv = client.post(
+    rv = client.put(
         "{}/jurisdiction/{}/manifest".format(url_prefix, jurisdiction_id),
         data=data,
         content_type="multipart/form-data",
     )
 
     assert json.loads(rv.data)["status"] == "ok"
+    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     setup_audit_board(client, election_id, jurisdiction_id, audit_board_id_1)
 
@@ -402,22 +403,23 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     # upload the manifest
     data = {}
     data["manifest"] = (open(manifest_file_path, "rb"), "manifest.csv")
-    rv = client.post(
+    rv = client.put(
         "{}/jurisdiction/{}/manifest".format(url_prefix, jurisdiction_id),
         data=data,
         content_type="multipart/form-data",
     )
 
     assert json.loads(rv.data)["status"] == "ok"
+    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
     manifest = status["jurisdictions"][0]["ballotManifest"]
 
-    assert manifest["filename"] == "manifest.csv"
     assert manifest["numBallots"] == 86147
     assert manifest["numBatches"] == 484
-    assert manifest["uploadedAt"]
+    assert manifest["file"]["name"] == "manifest.csv"
+    assert manifest["file"]["uploadedAt"]
 
     # delete the manifest and make sure that works
     rv = client.delete(
@@ -429,19 +431,19 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     status = json.loads(rv.data)
     manifest = status["jurisdictions"][0]["ballotManifest"]
 
-    assert manifest["filename"] is None
-    assert manifest["uploadedAt"] is None
+    assert manifest["file"] is None
 
     # upload the manifest again
     data = {}
     data["manifest"] = (open(manifest_file_path, "rb"), "manifest.csv")
-    rv = client.post(
+    rv = client.put(
         "{}/jurisdiction/{}/manifest".format(url_prefix, jurisdiction_id),
         data=data,
         content_type="multipart/form-data",
     )
 
     assert json.loads(rv.data)["status"] == "ok"
+    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     # get the retrieval list for round 1
     rv = client.get(
@@ -657,22 +659,23 @@ def test_small_election(client, election_id):
     # upload the manifest
     data = {}
     data["manifest"] = (open(small_manifest_file_path, "rb"), "small-manifest.csv")
-    rv = client.post(
+    rv = client.put(
         f"/election/{election_id}/jurisdiction/{jurisdiction_id}/manifest",
         data=data,
         content_type="multipart/form-data",
     )
 
     assert json.loads(rv.data)["status"] == "ok"
+    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     rv = client.get(f"/election/{election_id}/audit/status")
     status = json.loads(rv.data)
     manifest = status["jurisdictions"][0]["ballotManifest"]
 
-    assert manifest["filename"] == "small-manifest.csv"
     assert manifest["numBallots"] == 2117
     assert manifest["numBatches"] == 10
-    assert manifest["uploadedAt"]
+    assert manifest["file"]["name"] == "small-manifest.csv"
+    assert manifest["file"]["uploadedAt"]
 
     # get the retrieval list for round 1
     rv = client.get(
@@ -974,22 +977,23 @@ def test_multi_winner_election(client, election_id):
     # upload the manifest
     data = {}
     data["manifest"] = (open(small_manifest_file_path, "rb"), "small-manifest.csv")
-    rv = client.post(
+    rv = client.put(
         f"/election/{election_id}/jurisdiction/{jurisdiction_id}/manifest",
         data=data,
         content_type="multipart/form-data",
     )
 
     assert json.loads(rv.data)["status"] == "ok"
+    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     rv = client.get(f"/election/{election_id}/audit/status")
     status = json.loads(rv.data)
     manifest = status["jurisdictions"][0]["ballotManifest"]
 
-    assert manifest["filename"] == "small-manifest.csv"
     assert manifest["numBallots"] == 2117
     assert manifest["numBatches"] == 10
-    assert manifest["uploadedAt"]
+    assert manifest["file"]["name"] == "small-manifest.csv"
+    assert manifest["file"]["uploadedAt"]
 
     # get the retrieval list for round 1
     rv = client.get(
