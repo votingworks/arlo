@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useContext,
-} from 'react'
+import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { useRouteMatch, RouteComponentProps } from 'react-router-dom'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
@@ -13,9 +7,10 @@ import { api, checkAndToast } from '../utilities'
 import { IAudit, IErrorResponse, ElementType } from '../../types'
 import ResetButton from './ResetButton'
 import Wrapper from '../Atoms/Wrapper'
-import Sidebar, { ISidebarMenuItem } from '../Atoms/Sidebar'
+import Sidebar from '../Atoms/Sidebar'
 import { AuthDataContext } from '../UserContext'
 import Setup, { setupStages } from './Setup'
+import useSetupMenuItems from './useSetupMenuItems'
 
 const initialData: IAudit = {
   name: '',
@@ -79,42 +74,7 @@ const Audit: React.FC<{}> = () => {
     'Participants'
   )
 
-  const menuItems: ISidebarMenuItem[] = useMemo(
-    () =>
-      setupStages.map((s: ElementType<typeof setupStages>) => {
-        const state = (() => {
-          switch (s) {
-            case 'Participants':
-              return 'live'
-            case 'Target Contests':
-              return 'live'
-            case 'Opportunistic Contests':
-              return 'live'
-            case 'Audit Settings':
-              return 'live'
-            case 'Review & Launch':
-              return 'live'
-            /* istanbul ignore next */
-            default:
-              return 'locked'
-          }
-        })()
-        return {
-          title: s,
-          active: s === stage,
-          activate: (_, force = false) => {
-            if (state === 'live') {
-              if (!force) {
-                // launch confirm dialog
-              }
-              setStage(s)
-            }
-          },
-          state,
-        }
-      }),
-    [stage, setupStages]
-  )
+  const [menuItems] = useSetupMenuItems(stage, setStage)
 
   const activeStage = menuItems.find(m => m.title === stage)
   const nextStage = menuItems[menuItems.indexOf(activeStage!) + 1]
