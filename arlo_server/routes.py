@@ -185,15 +185,8 @@ def sample_ballots(election, round):
         manifest[batch.name] = batch.num_ballots
         batch_id_from_name[batch.name] = batch.id
 
-    contests = [
-        sampler_contest.from_db_contest(contest) for contest in election.contests
-    ]
     sample = sampler.draw_sample(
-        election.random_seed,
-        contests,
-        manifest,
-        chosen_sample_size,
-        num_sampled=num_sampled,
+        election.random_seed, manifest, chosen_sample_size, num_sampled=num_sampled,
     )
 
     audit_boards = jurisdiction.audit_boards
