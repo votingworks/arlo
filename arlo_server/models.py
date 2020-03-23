@@ -270,7 +270,7 @@ class SampledBallot(BaseModel):
     audit_board_id = db.Column(
         db.String(200),
         db.ForeignKey("audit_board.id", ondelete="cascade"),
-        nullable=False,
+        nullable=True,
     )
     vote = db.Column(db.String(200), nullable=True)
     comment = db.Column(db.Text, nullable=True)

@@ -10,9 +10,7 @@ from arlo_server.auth import with_election_access, UserType
 from audits import bravo, sampler_contest
 
 
-@app.route("/election/<election_id>/sample-sizes", methods=["GET"])
-@with_election_access(UserType.AUDIT_ADMIN)
-def get_sample_sizes(election: Election):
+def sample_size_options(election: Election) -> dict:
     if not election.contests:
         raise BadRequest("Cannot compute sample sizes until contests are set")
     if not election.risk_limit:
@@ -28,11 +26,18 @@ def get_sample_sizes(election: Election):
     results_so_far = {contest.id: results_by_choice}
 
     # Do the math!
-    sample_sizes = bravo.get_sample_size(
+    sample_sizes: dict = bravo.get_sample_size(
         election.risk_limit / 100,
         sampler_contest.from_db_contest(contest),
         results_so_far,
     )
+    return sample_sizes
+
+
+@app.route("/election/<election_id>/sample-sizes", methods=["GET"])
+@with_election_access(UserType.AUDIT_ADMIN)
+def get_sample_sizes(election: Election):
+    sample_sizes = sample_size_options(election)
 
     # Convert the results into a slightly more regular format
     json_sizes = []

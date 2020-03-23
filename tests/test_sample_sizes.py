@@ -4,40 +4,6 @@ from typing import List
 import json, uuid
 
 from helpers import put_json
-from arlo_server.models import USState
-
-
-@pytest.fixture
-def contest(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]) -> str:
-    contest = {
-        "id": str(uuid.uuid4()),
-        "name": "Contest 1",
-        "isTargeted": True,
-        "choices": [
-            {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
-            {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
-        ],
-        "totalBallotsCast": 1000,
-        "numWinners": 1,
-        "votesAllowed": 1,
-        "jurisdictionIds": jurisdiction_ids,
-    }
-    rv = put_json(client, f"/election/{election_id}/contest", [contest])
-    assert json.loads(rv.data) == {"status": "ok"}
-    yield contest
-
-
-@pytest.fixture
-def election_settings(client: FlaskClient, election_id: str) -> None:
-    settings = {
-        "electionName": "Test Election",
-        "online": True,
-        "randomSeed": "1234567890",
-        "riskLimit": 10,
-        "state": USState.California,
-    }
-    rv = put_json(client, f"/election/{election_id}/settings", settings)
-    assert json.loads(rv.data) == {"status": "ok"}
 
 
 def test_sample_sizes_without_contests(client: FlaskClient, election_id: str):
