@@ -7,6 +7,15 @@ import operator
 
 
 def from_db_contest(db_contest):
+    """
+    Builds sampler_contest object from the database
+
+    Inputs:
+        db_contest - a contest object as defined in arlo_server/model.py
+
+    Outputs:
+        Contest - A contest object
+    """
     name = db_contest.id
     info_dict = {
         "ballots": db_contest.total_ballots_cast,
@@ -14,6 +23,7 @@ def from_db_contest(db_contest):
         "votesAllowed": db_contest.votes_allowed,
     }
 
+    # Initialize the choices in this contest and how many votes each received
     for choice in db_contest.choices:
         info_dict[choice.id] = choice.num_votes
 
@@ -65,36 +75,35 @@ class Contest:
                 continue
 
             self.candidates[cand] = contest_info_dict[cand]
-        """
-        Output:
-            margins - dictionary of diluted margin info:
-                        {
-                            contest: {
-                                'winners': {
-                                    winner1: {
-                                              'p_w': p_w,     # Proportion of ballots for this winner
-                                              's_w': 's_w'    # proportion of votes for this winner
-                                              'swl': {      # fraction of votes for w among (w, l)
-                                                    'loser1':  s_w/(s_w + s_l1),
-                                                    ...,
-                                                    'losern':  s_w/(s_w + s_ln)
-                                                }
-                                              },
-                                    ...,
-                                    winnern: {...} ]
-                                'losers': {
-                                    loser1: {
-                                              'p_l': p_l,     # Proportion of votes for this loser
-                                              's_l': s_l,     # Proportion of ballots for this loser
-                                              },
-                                    ...,
-                                    losern: {...} ]
-
-                            }
-                        }
 
         """
+        Initialize a dictionary of diluted margin info:
+        {
+            contest: {
+                'winners': {
+                    winner1: {
+                              'p_w': p_w,     # Proportion of ballots for this winner
+                              's_w': 's_w'    # proportion of votes for this winner
+                              'swl': {      # fraction of votes for w among (w, l)
+                                    'loser1':  s_w/(s_w + s_l1),
+                                    ...,
+                                    'losern':  s_w/(s_w + s_ln)
+                                }
+                              },
+                    ...,
+                    winnern: {...} ]
+                'losers': {
+                    loser1: {
+                              'p_l': p_l,     # Proportion of votes for this loser
+                              's_l': s_l,     # Proportion of ballots for this loser
+                              },
+                    ...,
+                    losern: {...} ]
 
+            }
+        }
+
+        """
         self.margins = {"winners": {}, "losers": {}}
 
         cand_vec = sorted(
@@ -129,6 +138,9 @@ class Contest:
             }
 
     def __repr__(self):
+        """ 
+        Generates a string representation of this object, for debugging. 
+        """
         return "Contest({}): numWinners: {}, votesAllowed: {}, total ballots: {}, candidates: {}".format(
             self.name, self.numWinners, self.votesAllowed, self.ballots, self.candidates
         )
