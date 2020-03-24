@@ -3,10 +3,10 @@ from flask import jsonify
 from arlo_server import app, db
 from arlo_server.routes import (
     get_election,
-    require_audit_admin_for_organization,
     isoformat,
 )
-from arlo_server.models import Jurisdiction
+from arlo_server.models import Election, Jurisdiction
+from arlo_server.auth import with_election_access, UserType
 from util.process_file import serialize_file, serialize_file_processing
 
 
@@ -28,10 +28,8 @@ def serialize_jurisdiction(db_jurisdiction: Jurisdiction) -> dict:
 
 
 @app.route("/election/<election_id>/jurisdiction", methods=["GET"])
-def list_jurisdictions(election_id: str = None):
-    election = get_election(election_id)
-    require_audit_admin_for_organization(election.organization_id)
-
+@with_election_access(UserType.AUDIT_ADMIN)
+def list_jurisdictions(election: Election):
     jurisdictions = (
         Jurisdiction.query.filter_by(election_id=election.id)
         .order_by(Jurisdiction.name)

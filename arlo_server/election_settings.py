@@ -2,7 +2,7 @@ from flask import jsonify, request
 from jsonschema import validate
 
 from arlo_server import app, db
-from arlo_server.auth import require_audit_admin_for_organization
+from arlo_server.auth import with_election_access, UserType
 from arlo_server.models import Election, USState
 
 from util.jsonschema import nullable, Enum, Obj, Str, Bool, Int, IntRange
@@ -20,10 +20,8 @@ PUT_ELECTION_SETTINGS_REQUEST_SCHEMA = GET_ELECTION_SETTINGS_RESPONSE_SCHEMA
 
 
 @app.route("/election/<election_id>/settings", methods=["GET"])
-def get_election_settings(election_id: str):
-    election = Election.query.get_or_404(election_id)
-    require_audit_admin_for_organization(election.organization_id)
-
+@with_election_access(UserType.AUDIT_ADMIN)
+def get_election_settings(election: Election):
     response_data = {
         "electionName": election.election_name,
         "online": election.online,
@@ -38,10 +36,8 @@ def get_election_settings(election_id: str):
 
 
 @app.route("/election/<election_id>/settings", methods=["PUT"])
-def put_election_settings(election_id: str):
-    election = Election.query.get_or_404(election_id)
-    require_audit_admin_for_organization(election.organization_id)
-
+@with_election_access(UserType.AUDIT_ADMIN)
+def put_election_settings(election: Election):
     settings = request.get_json()
     validate(schema=PUT_ELECTION_SETTINGS_REQUEST_SCHEMA, instance=settings)
 

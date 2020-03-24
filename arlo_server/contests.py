@@ -4,8 +4,8 @@ from jsonschema import validate
 from werkzeug.exceptions import BadRequest
 
 from arlo_server import app, db
-from arlo_server.routes import get_election, require_audit_admin_for_organization
-from arlo_server.models import Contest, ContestChoice, Jurisdiction
+from arlo_server.routes import get_election, with_election_access, UserType
+from arlo_server.models import Contest, ContestChoice, Election, Jurisdiction
 
 contest_choice_schema = {
     "type": "object",
@@ -111,10 +111,8 @@ def validate_contests(json_contests: List[dict]) -> None:
 
 
 @app.route("/election/<election_id>/contest", methods=["PUT"])
-def create_or_update_all_contests(election_id: str = None):
-    election = get_election(election_id)
-    require_audit_admin_for_organization(election.organization_id)
-
+@with_election_access(UserType.AUDIT_ADMIN)
+def create_or_update_all_contests(election: Election):
     json_contests = request.get_json()
     validate_contests(json_contests)
 
@@ -130,10 +128,6 @@ def create_or_update_all_contests(election_id: str = None):
 
 
 @app.route("/election/<election_id>/contest", methods=["GET"])
-def list_contests(election_id: str = None):
-    election = get_election(election_id)
-    require_audit_admin_for_organization(election.organization_id)
-
-    contests = Contest.query.filter_by(election_id=election_id).all()
-
-    return jsonify([serialize_contest(c) for c in contests])
+@with_election_access(UserType.AUDIT_ADMIN)
+def list_contests(election: Election):
+    return jsonify([serialize_contest(c) for c in election.contests])

@@ -1,9 +1,10 @@
+import functools
 from enum import Enum
 from flask import session
-from typing import Optional, Tuple, Union
+from typing import Callable, Optional, Tuple, Union
 from werkzeug.exceptions import Unauthorized, Forbidden
 
-from arlo_server.models import User
+from arlo_server.models import Election, User
 
 
 class UserType(str, Enum):
@@ -55,3 +56,29 @@ def require_audit_admin_for_organization(organization_id: Optional[str]):
     raise Forbidden(
         description=f"{user.email} does not have access to organization {organization_id}"
     )
+
+
+def with_election_access(user_type: UserType):
+    """
+    Flask route decorator that restricts access to a route based on the current
+    logged-in user's access to the election at the route's path.
+
+    To use this, you must have a path component named `election_id` and a route
+    parameter named `election`.
+    """
+    if user_type != UserType.AUDIT_ADMIN:
+        raise Exception(f"user type {user_type} is not yet supported")
+
+    def decorator(route: Callable):
+        @functools.wraps(route)
+        def wrapper(*args, **kwargs):
+            if "election_id" not in kwargs:
+                raise Exception(f"expected 'election_id' in kwargs but got: {kwargs}")
+            election = Election.query.get_or_404(kwargs.pop("election_id"))
+            require_audit_admin_for_organization(election.organization_id)
+            kwargs["election"] = election
+            return route(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
