@@ -11,6 +11,7 @@ from helpers import (
     create_election,
 )
 from test_app import setup_whole_audit
+from util.process_file import ProcessingStatus
 
 
 @pytest.fixture()
@@ -80,9 +81,16 @@ def test_audit_status(client, election_id):
                         },
                     ],
                     "ballotManifest": {
-                        "filename": "manifest.csv",
+                        "file": {"name": "manifest.csv", "uploadedAt": assert_is_date},
+                        "processing": {
+                            "status": ProcessingStatus.PROCESSED,
+                            "startedAt": assert_is_date,
+                            "completedAt": assert_is_date,
+                            "error": None,
+                        },
                         "numBallots": 86147,
                         "numBatches": 484,
+                        "filename": "manifest.csv",
                         "uploadedAt": assert_is_date,
                     },
                     "batches": lambda x: x,  # pass

@@ -7,7 +7,10 @@ from typing import List
 from helpers import post_json, compare_json, assert_is_date, create_org_and_admin
 from arlo_server.auth import UserType
 from arlo_server.models import Jurisdiction
-from bgcompute import bgcompute_update_election_jurisdictions_file
+from bgcompute import (
+    bgcompute_update_election_jurisdictions_file,
+    bgcompute_update_ballot_manifest_file,
+)
 
 
 @pytest.fixture()
@@ -49,37 +52,37 @@ def test_jurisdictions_list_no_manifest(client, election_id, jurisdiction_ids):
             "id": jurisdiction_ids[2],
             "name": "J1",
             "ballotManifest": {
-                "filename": None,
+                "file": None,
+                "processing": None,
                 "numBallots": None,
                 "numBatches": None,
-                "uploadedAt": None,
             },
         },
         {
             "id": jurisdiction_ids[0],
             "name": "J2",
             "ballotManifest": {
-                "filename": None,
+                "file": None,
+                "processing": None,
                 "numBallots": None,
                 "numBatches": None,
-                "uploadedAt": None,
             },
         },
         {
             "id": jurisdiction_ids[1],
             "name": "J3",
             "ballotManifest": {
-                "filename": None,
+                "file": None,
+                "processing": None,
                 "numBallots": None,
                 "numBatches": None,
-                "uploadedAt": None,
             },
         },
     ]
 
 
 def test_jurisdictions_list_with_manifest(client, election_id, jurisdiction_ids):
-    rv = client.post(
+    rv = client.put(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[2]}/manifest",
         data={
             "manifest": (
@@ -95,6 +98,7 @@ def test_jurisdictions_list_with_manifest(client, election_id, jurisdiction_ids)
         },
     )
     assert json.loads(rv.data) == {"status": "ok"}
+    assert bgcompute_update_ballot_manifest_file() == 1
 
     rv = client.get(f"/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)
@@ -103,30 +107,35 @@ def test_jurisdictions_list_with_manifest(client, election_id, jurisdiction_ids)
             "id": jurisdiction_ids[2],
             "name": "J1",
             "ballotManifest": {
-                "filename": "manifest.csv",
+                "file": {"name": "manifest.csv", "uploadedAt": assert_is_date},
+                "processing": {
+                    "status": "PROCESSED",
+                    "startedAt": assert_is_date,
+                    "completedAt": assert_is_date,
+                    "error": None,
+                },
                 "numBallots": 23 + 101 + 122 + 400,
                 "numBatches": 4,
-                "uploadedAt": assert_is_date,
             },
         },
         {
             "id": jurisdiction_ids[0],
             "name": "J2",
             "ballotManifest": {
-                "filename": None,
+                "file": None,
+                "processing": None,
                 "numBallots": None,
                 "numBatches": None,
-                "uploadedAt": None,
             },
         },
         {
             "id": jurisdiction_ids[1],
             "name": "J3",
             "ballotManifest": {
-                "filename": None,
+                "file": None,
+                "processing": None,
                 "numBallots": None,
                 "numBatches": None,
-                "uploadedAt": None,
             },
         },
     ]

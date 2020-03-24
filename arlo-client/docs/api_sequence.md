@@ -317,15 +317,15 @@ status endpoint again.
 }
 ```
 
-Now that the front end has the `jurisdiction_id` available, it can POST the
+Now that the front end has the `jurisdiction_id` available, it can PUT the
 ballot manifest:
 
-- `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/manifest`
+- `PUT /election/{electionId}/jurisdiction/<jurisdiction_id>/manifest`
 
 - `src/components/Audit/SelectBallotsToAudit.tsx` > `SelectBallotsToAudit` >
   `handlePost()` > `api()` Straight file upload `multipart/form-data`
 
-And then GET the updated status:
+And then GET the updated status.:
 
 - `GET /election/{electionId}/audit/status`
 

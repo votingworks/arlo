@@ -7,6 +7,7 @@ from arlo_server.routes import (
     isoformat,
 )
 from arlo_server.models import Jurisdiction
+from util.process_file import serialize_file, serialize_file_processing
 
 
 def serialize_jurisdiction(db_jurisdiction: Jurisdiction) -> dict:
@@ -14,14 +15,14 @@ def serialize_jurisdiction(db_jurisdiction: Jurisdiction) -> dict:
         "id": db_jurisdiction.id,
         "name": db_jurisdiction.name,
         "ballotManifest": {
-            "filename": db_jurisdiction.manifest_file.name
+            "file": serialize_file(db_jurisdiction.manifest_file)
+            if db_jurisdiction.manifest_file
+            else None,
+            "processing": serialize_file_processing(db_jurisdiction.manifest_file)
             if db_jurisdiction.manifest_file
             else None,
             "numBallots": db_jurisdiction.manifest_num_ballots,
             "numBatches": db_jurisdiction.manifest_num_batches,
-            "uploadedAt": isoformat(db_jurisdiction.manifest_file.uploaded_at)
-            if db_jurisdiction.manifest_file
-            else None,
         },
     }
 

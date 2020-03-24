@@ -55,9 +55,20 @@ poll until those values are filled.
         }
       ],
       "ballotManifest": {
-        "filename": "Adams_County_Manifest.csv",
+        "file": {
+          "name": "Adams_County_Manifest.csv",
+          "uploadedAt": "2019-06-17 11:45:00"
+        },
+        "processing": {
+          "status": "PROCESSED",
+          "startedAt": "2019-06-17 11:45:00",
+          "completedAt": "2019-06-17 11:45:03",
+          "error": null
+        },
         "numBallots": 123456,
         "numBatches": 560,
+        // Deprecated fields.
+        "filename": "Adams_County_Manifest.csv",
         "uploadedAt": "2019-06-17 11:45:00"
       }
     }
@@ -177,7 +188,7 @@ poll until those values are filled.
 }
 ```
 
-- `POST /election/{electionId}/jurisdiction/<jurisdiction_id>/manifest` -- the ballot manifest
+- `PUT /election/{electionId}/jurisdiction/<jurisdiction_id>/manifest` -- the ballot manifest
 
 straight file upload `multipart/form-data`
 

@@ -80,9 +80,6 @@ class Jurisdiction(BaseModel):
     )
     manifest_file = relationship("File")
 
-    # any error in the upload? null == none
-    manifest_errors = db.Column(db.Text, nullable=True)
-
     batches = relationship("Batch", backref="jurisdiction", passive_deletes=True)
     audit_boards = relationship(
         "AuditBoard", backref="jurisdiction", passive_deletes=True
