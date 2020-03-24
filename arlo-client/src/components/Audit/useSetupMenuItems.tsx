@@ -56,7 +56,9 @@ function useSetupMenuItems(
           title: s,
           active: s === stage,
           activate: (_, force = false) => {
+            /* istanbul ignore else */
             if (state === 'live') {
+              /* istanbul ignore next */
               if (!force) {
                 // launch confirm dialog
               }

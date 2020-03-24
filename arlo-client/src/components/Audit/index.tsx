@@ -74,7 +74,11 @@ const Audit: React.FC<{}> = () => {
     'Participants'
   )
 
-  const [menuItems] = useSetupMenuItems(stage, setStage)
+  const [menuItems, refresh] = useSetupMenuItems(stage, setStage)
+
+  useEffect(() => {
+    refresh()
+  }, [])
 
   const activeStage = menuItems.find(m => m.title === stage)
   const nextStage = menuItems[menuItems.indexOf(activeStage!) + 1]
