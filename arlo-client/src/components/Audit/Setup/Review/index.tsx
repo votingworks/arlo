@@ -6,7 +6,6 @@ import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 
 interface IProps {
   audit: IAudit
-  nextStage: ISidebarMenuItem
   prevStage: ISidebarMenuItem
 }
 

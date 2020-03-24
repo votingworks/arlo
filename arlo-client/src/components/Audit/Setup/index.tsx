@@ -18,22 +18,23 @@ export const setupStages = [
 interface IProps {
   stage: ElementType<typeof setupStages>
   audit: IAudit
-  prevStage: ISidebarMenuItem
-  nextStage: ISidebarMenuItem
+  prevStage: ISidebarMenuItem | undefined
+  nextStage: ISidebarMenuItem | undefined
 }
 
 const Setup: React.FC<IProps> = ({ stage, prevStage, audit, nextStage }) => {
   switch (stage) {
     case 'Participants':
-      return <Participants audit={audit} nextStage={nextStage} />
+      // prevStage === undefined, so don't send it
+      return <Participants audit={audit} nextStage={nextStage!} />
     case 'Target Contests':
       return (
         <Contests
           isTargeted
           key="targeted"
           audit={audit}
-          nextStage={nextStage}
-          prevStage={prevStage}
+          nextStage={nextStage!}
+          prevStage={prevStage!}
         />
       )
     case 'Opportunistic Contests':
@@ -42,18 +43,17 @@ const Setup: React.FC<IProps> = ({ stage, prevStage, audit, nextStage }) => {
           isTargeted={false}
           key="opportunistic"
           audit={audit}
-          nextStage={nextStage}
-          prevStage={prevStage}
+          nextStage={nextStage!}
+          prevStage={prevStage!}
         />
       )
     case 'Audit Settings':
       return (
-        <Settings audit={audit} nextStage={nextStage} prevStage={prevStage} />
+        <Settings audit={audit} nextStage={nextStage!} prevStage={prevStage!} />
       )
     case 'Review & Launch':
-      return (
-        <Review audit={audit} nextStage={nextStage} prevStage={prevStage} />
-      )
+      // nextStage === undefined, so don't send it
+      return <Review audit={audit} prevStage={prevStage!} />
     /* istanbul ignore next */
     default:
       return null
