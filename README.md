@@ -120,6 +120,22 @@ Then, to create an administrator for the organization:
 
 which returns the `user_id`.
 
+### Resetting the Database When Upgrading Arlo
+
+If you're upgrading Arlo, right now the only way is to destroy and
+recreate the database. The easiest way to do that, if your database
+connection is set up properly, is:
+
+`pipenv run python resetdb.py`
+
+If you're running on Heroku or on another system where database
+destruction and recreation cannot be done from Python, because the
+database is provisioned externally, the steps are then:
+
+- clear the database, e.g. on heroku `heroku pg:reset -a <app_name>`
+- create just the data model, e.g. on heroku `heroku run -a <app_name> python resetdb.py --skip-db-creation`
+- you may need to restart serveres, e.g. on heroku `heroku restart -a <app_name>`
+
 ### Setting up the dev environment
 
 #### Linux
