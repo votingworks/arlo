@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useContext,
-} from 'react'
+import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { useRouteMatch, RouteComponentProps } from 'react-router-dom'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
@@ -16,6 +10,7 @@ import Wrapper from '../Atoms/Wrapper'
 import Sidebar, { ISidebarMenuItem } from '../Atoms/Sidebar'
 import { AuthDataContext } from '../UserContext'
 import Setup, { setupStages } from './Setup'
+import useSetupMenuItems from './useSetupMenuItems'
 
 const initialData: IAudit = {
   name: '',
@@ -79,17 +74,17 @@ const Audit: React.FC<{}> = () => {
     'Participants'
   )
 
-  const menuItems = useMemo(
-    () =>
-      setupStages.map(
-        (s: ElementType<typeof setupStages>): ISidebarMenuItem => ({
-          title: s,
-          active: s === stage,
-          action: () => setStage(s),
-        })
-      ),
-    [stage]
-  )
+  const [menuItems, refresh] = useSetupMenuItems(stage, setStage)
+
+  useEffect(() => {
+    refresh()
+  }, [refresh])
+
+  const activeStage = menuItems.find(m => m.title === stage)
+  const nextStage: ISidebarMenuItem | undefined =
+    menuItems[menuItems.indexOf(activeStage!) + 1]
+  const prevStage: ISidebarMenuItem | undefined =
+    menuItems[menuItems.indexOf(activeStage!) - 1]
 
   return (
     <Wrapper className={!isAuthenticated ? 'single-page' : ''}>
@@ -105,7 +100,12 @@ const Audit: React.FC<{}> = () => {
           {meta!.type === 'audit_admin' && (
             <Sidebar title="Audit Setup" menuItems={menuItems} />
           )}
-          <Setup stage={stage} audit={audit} setStage={setStage} />
+          <Setup
+            stage={stage}
+            audit={audit}
+            nextStage={nextStage}
+            prevStage={prevStage}
+          />
         </>
       ) : (
         <>

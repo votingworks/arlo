@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Menu } from '@blueprintjs/core'
+import { Menu, Spinner } from '@blueprintjs/core'
 import H2Title from './H2Title'
 
 const Wrapper = styled.div`
@@ -14,9 +14,10 @@ const Wrapper = styled.div`
 `
 
 export interface ISidebarMenuItem {
-  action: () => void
+  activate: (e?: unknown | null, force?: boolean) => void
   title: string
   active: boolean
+  state: 'live' | 'processing' | 'locked'
 }
 
 interface IProps {
@@ -32,9 +33,15 @@ const Sidebar = ({ menuItems, title }: IProps) => (
         <React.Fragment key={item.title}>
           {i > 0 && <Menu.Divider />}
           <Menu.Item
-            onClick={item.action}
+            onClick={item.activate}
             active={item.active}
             text={item.title}
+            disabled={item.state !== 'live'}
+            labelElement={
+              item.state === 'processing' ? (
+                <Spinner size={Spinner.SIZE_SMALL} />
+              ) : null
+            }
           />
         </React.Fragment>
       ))}

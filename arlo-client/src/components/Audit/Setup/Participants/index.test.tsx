@@ -3,6 +3,7 @@ import { render, fireEvent, wait } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { statusStates } from '../../_mocks'
+import relativeStages from '../_mocks'
 import Participants from './index'
 import jurisdictionFile from './_mocks'
 import * as utilities from '../../../utilities'
@@ -31,8 +32,9 @@ routeMock.mockReturnValue({
 const formData: FormData = new FormData()
 formData.append('jurisdictions', jurisdictionFile, jurisdictionFile.name)
 
+const { nextStage } = relativeStages('Participants')
+
 const fillAndSubmit = async () => {
-  const nextStageMock = jest.fn()
   const {
     getByText,
     getByLabelText,
@@ -41,7 +43,7 @@ const fillAndSubmit = async () => {
     getByTestId,
   } = render(
     <Router>
-      <Participants audit={statusStates[0]} nextStage={nextStageMock} />
+      <Participants audit={statusStates[0]} nextStage={nextStage} />
     </Router>
   )
 
@@ -59,7 +61,6 @@ const fillAndSubmit = async () => {
   await wait(() => expect(queryByLabelText('jurisdictions.csv')).toBeTruthy())
 
   fireEvent.click(getByText('Submit & Next'), { bubbles: true })
-  return nextStageMock
 }
 
 beforeEach(() => {
@@ -67,54 +68,55 @@ beforeEach(() => {
   toastSpy.mockClear()
   checkAndToastMock.mockClear()
   routeMock.mockClear()
+  ;(nextStage.activate as jest.Mock).mockClear()
 })
 
 describe('Audit Setup > Contests', () => {
   it('renders empty state correctly', () => {
     const { container } = render(
       <Router>
-        <Participants audit={statusStates[0]} nextStage={jest.fn()} />
+        <Participants audit={statusStates[0]} nextStage={nextStage} />
       </Router>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('selects a state and submits it', async () => {
-    const nextStageMock = await fillAndSubmit()
+    await fillAndSubmit()
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock).toHaveBeenNthCalledWith(
         1,
-        expect.stringMatching(/\/election\/[^/]+\/jurisdictions\/file/),
+        expect.stringMatching(/\/election\/[^/]+\/jurisdiction\/file/),
         { body: formData, method: 'PUT' }
       )
-      expect(nextStageMock).toHaveBeenCalledTimes(1)
+      expect(nextStage.activate).toHaveBeenCalledTimes(1)
     })
   })
 
-  it('handles api error on /election/:electionId/jurisdictions/file', async () => {
+  it('handles api error on /election/:electionId/jurisdiction/file', async () => {
     apiMock.mockRejectedValue({ message: 'error' })
 
-    const nextStageMock = await fillAndSubmit()
+    await fillAndSubmit()
 
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(1)
-      expect(nextStageMock).toHaveBeenCalledTimes(0)
+      expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })
   })
 
-  it('handles server error on /election/:electionId/jurisdictions/file', async () => {
+  it('handles server error on /election/:electionId/jurisdiction/file', async () => {
     apiMock.mockResolvedValue(undefined)
     checkAndToastMock.mockReturnValue(true)
 
-    const nextStageMock = await fillAndSubmit()
+    await fillAndSubmit()
 
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(0)
       expect(checkAndToastMock).toBeCalledTimes(1)
-      expect(nextStageMock).toHaveBeenCalledTimes(0)
+      expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })
   })
 })

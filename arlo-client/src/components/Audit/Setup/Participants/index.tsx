@@ -15,6 +15,7 @@ import schema from './schema'
 import { ErrorLabel } from '../../../Form/_helpers'
 import FormSection, { FormSectionDescription } from '../../../Form/FormSection'
 import { api, checkAndToast } from '../../../utilities'
+import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -27,7 +28,7 @@ const initialValues = {
 
 interface IProps {
   audit: IAudit
-  nextStage: () => void
+  nextStage: ISidebarMenuItem
 }
 
 const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
@@ -41,7 +42,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
         const formData: FormData = new FormData()
         formData.append('jurisdictions', values.csv, values.csv.name)
         const errorResponse: IErrorResponse = await api(
-          `/election/${electionId}/jurisdictions/file`,
+          `/election/${electionId}/jurisdiction/file`,
           {
             method: 'PUT',
             body: formData,
@@ -49,7 +50,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
         )
         if (checkAndToast(errorResponse)) return
       }
-      nextStage()
+      nextStage.activate()
     } catch (err) {
       toast.error(err.message)
     }
@@ -58,9 +59,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
     <Formik
       initialValues={initialValues}
       validationSchema={schema}
-      onSubmit={v => {
-        submit(v)
-      }}
+      onSubmit={submit}
     >
       {({
         handleSubmit,

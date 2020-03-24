@@ -17,12 +17,13 @@ import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
 import { IContestValues, IValues, IChoiceValues } from './types'
 import schema from './schema'
+import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 
 interface IProps {
   audit: IAudit
   isTargeted: boolean
-  nextStage: () => void
-  prevStage: () => void
+  nextStage: ISidebarMenuItem
+  prevStage: ISidebarMenuItem
 }
 
 const contestValues: { contests: IContestValues[] } = {
@@ -65,7 +66,7 @@ const Contests: React.FC<IProps> = ({
         setIsLoading(true)
         // eslint-disable-next-line no-console
         console.log(v)
-        nextStage()
+        nextStage.activate()
       }}
     >
       {({ values, handleSubmit }: FormikProps<IValues>) => (
@@ -235,7 +236,7 @@ const Contests: React.FC<IProps> = ({
           {isLoading && <Spinner />}
           {!audit.contests.length && !isLoading && (
             <FormButtonBar>
-              <FormButton onClick={prevStage}>Back</FormButton>
+              <FormButton onClick={prevStage.activate}>Back</FormButton>
               <FormButton
                 type="submit"
                 intent="primary"
