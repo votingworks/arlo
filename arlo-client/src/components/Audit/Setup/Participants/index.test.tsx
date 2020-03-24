@@ -87,14 +87,14 @@ describe('Audit Setup > Contests', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock).toHaveBeenNthCalledWith(
         1,
-        expect.stringMatching(/\/election\/[^/]+\/jurisdictions\/file/),
+        expect.stringMatching(/\/election\/[^/]+\/jurisdiction\/file/),
         { body: formData, method: 'PUT' }
       )
       expect(nextStage.activate).toHaveBeenCalledTimes(1)
     })
   })
 
-  it('handles api error on /election/:electionId/jurisdictions/file', async () => {
+  it('handles api error on /election/:electionId/jurisdiction/file', async () => {
     apiMock.mockRejectedValue({ message: 'error' })
 
     await fillAndSubmit()
@@ -106,7 +106,7 @@ describe('Audit Setup > Contests', () => {
     })
   })
 
-  it('handles server error on /election/:electionId/jurisdictions/file', async () => {
+  it('handles server error on /election/:electionId/jurisdiction/file', async () => {
     apiMock.mockResolvedValue(undefined)
     checkAndToastMock.mockReturnValue(true)
 

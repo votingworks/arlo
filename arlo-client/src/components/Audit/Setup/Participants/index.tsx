@@ -42,7 +42,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
         const formData: FormData = new FormData()
         formData.append('jurisdictions', values.csv, values.csv.name)
         const errorResponse: IErrorResponse = await api(
-          `/election/${electionId}/jurisdictions/file`,
+          `/election/${electionId}/jurisdiction/file`,
           {
             method: 'PUT',
             body: formData,
