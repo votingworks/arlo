@@ -25,12 +25,13 @@ from authlib.flask.client import OAuth
 
 from arlo_server import app
 from arlo_server.auth import (
+    UserType,
     clear_loggedin_user,
     get_loggedin_user,
     get_loggedin_user_record,
     require_audit_admin_for_organization,
     set_loggedin_user,
-    UserType,
+    with_election_access,
 )
 from arlo_server.models import *
 
@@ -273,9 +274,8 @@ def election_new():
 
 
 @app.route("/election/<election_id>/jurisdiction/file", methods=["GET"])
-def get_jurisdictions_file(election_id=None):
-    election = get_election(election_id)
-    require_audit_admin_for_organization(election.organization_id)
+@with_election_access(UserType.AUDIT_ADMIN)
+def get_jurisdictions_file(election: Election):
     jurisdictions_file = election.jurisdictions_file
 
     if jurisdictions_file:
@@ -288,10 +288,8 @@ def get_jurisdictions_file(election_id=None):
 
 
 @app.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
-def update_jurisdictions_file(election_id=None):
-    election = get_election(election_id)
-    require_audit_admin_for_organization(election.organization_id)
-
+@with_election_access(UserType.AUDIT_ADMIN)
+def update_jurisdictions_file(election: Election):
     if "jurisdictions" not in request.files:
         return (
             jsonify(
@@ -323,7 +321,7 @@ def update_jurisdictions_file(election_id=None):
     missing_fields = [
         field
         for field in [JURISDICTION_NAME, ADMIN_EMAIL]
-        if field not in jurisdictions_csv.fieldnames
+        if field not in (jurisdictions_csv.fieldnames or [])
     ]
 
     if missing_fields:

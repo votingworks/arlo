@@ -6,15 +6,13 @@ from typing import Dict
 
 from arlo_server import app, db
 from arlo_server.models import Election, Contest
-from arlo_server.routes import require_audit_admin_for_organization
+from arlo_server.auth import with_election_access, UserType
 from audits import bravo, sampler_contest
 
 
 @app.route("/election/<election_id>/sample-sizes", methods=["GET"])
-def get_sample_sizes(election_id: str):
-    election = Election.query.get_or_404(election_id)
-    require_audit_admin_for_organization(election.organization_id)
-
+@with_election_access(UserType.AUDIT_ADMIN)
+def get_sample_sizes(election: Election):
     if not election.contests:
         raise BadRequest("Cannot compute sample sizes until contests are set")
     if not election.risk_limit:
