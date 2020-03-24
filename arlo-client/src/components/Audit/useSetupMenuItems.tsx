@@ -12,15 +12,15 @@ function useSetupMenuItems(
   )
   const [targetContests, setTargetContests] = useState<
     ISidebarMenuItem['state']
-  >('locked')
+  >('live')
   const [opportunisticContests, setOpportunisticContests] = useState<
     ISidebarMenuItem['state']
-  >('locked')
+  >('live')
   const [auditSettings, setAuditSettings] = useState<ISidebarMenuItem['state']>(
-    'locked'
+    'live'
   )
   const [reviewLaunch, setReviewLaunch] = useState<ISidebarMenuItem['state']>(
-    'locked'
+    'live'
   )
 
   const refresh = () => {
