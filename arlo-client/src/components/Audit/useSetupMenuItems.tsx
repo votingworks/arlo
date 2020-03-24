@@ -68,7 +68,15 @@ function useSetupMenuItems(
           state,
         }
       }),
-    [stage, setupStages]
+    [
+      stage,
+      setStage,
+      participants,
+      targetContests,
+      opportunisticContests,
+      auditSettings,
+      reviewLaunch,
+    ]
   )
   return [menuItems, refresh]
 }

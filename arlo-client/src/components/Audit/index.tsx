@@ -78,7 +78,7 @@ const Audit: React.FC<{}> = () => {
 
   useEffect(() => {
     refresh()
-  }, [])
+  }, [refresh])
 
   const activeStage = menuItems.find(m => m.title === stage)
   const nextStage = menuItems[menuItems.indexOf(activeStage!) + 1]
