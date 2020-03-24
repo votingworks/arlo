@@ -1,13 +1,12 @@
 """
-
-An implemenation of MACRO for batch comparison audits.
+An implemenation of per-contest batch comparison audits, loosely based on MACRO. 
+Since MACRO applies to all contests being audited (hence across-contest), this
+code acts as if each contest is independently audited according it its maximum
+relative overstatement (as if we did MACRO only one one contest).
 
 MACRO was developed by Philip Stark
 (see https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the publication).
-
-
 """
-
 import math
 
 
@@ -16,9 +15,19 @@ def compute_error(batch_results, contest, sampled_results):
     Computes the error in this batch
 
     Inputs:
-        batch_results - the reported votes in this batch
-        contest - the contest to compute the error for
-        sampled_results - the actual votes in this batch after auditing
+        batch_results   - the reported votes in this batch
+                          {
+                              'contest': {
+                                  'cand1': votes,
+                                  'cand2': votes,
+                                  ...
+                              },
+                              ...
+                          }
+        contest         - a sampler_contest object of the contest to compute 
+                          the error for
+        sampled_results - the actual votes in this batch after auditing, of the
+                          same form as batch_results
 
     Outputs:
         the maximum across-contest relative overstatement for batch p
@@ -49,9 +58,17 @@ def compute_max_error(batch_results, contest):
     Computes the maximum possible error in this batch for this contest
 
     Inputs:
-        batch_results - the results for this batch
-        margins - the margins for the election
-        reported_results - the reported votes in this batch
+        batch_results   - the reported votes in this batch
+                          {
+                              'contest': {
+                                  'cand1': votes,
+                                  'cand2': votes,
+                                  ...
+                              },
+                              ...
+                          }
+        contest         - a sampler_contest object of the contest to compute 
+                          the error for
 
     Outputs:
         the maximum possible overstatement for batch p
@@ -85,8 +102,25 @@ def compute_U(reported_results, contest):
     """
     Computes U, the sum of the batch-wise relative overstatement limits,
     i.e. the maximum amount of possible overstatement in a given election.
-    """
+    Inputs:
+        reported_results - the reported votes in every batch
+                           { 
+                               'batch': {
+                                 'contest': {
+                                     'cand1': votes,
+                                     'cand2': votes,
+                                     ...
+                                 },
+                                 ...
+                               }
+                               ...
+                           }
+        contest         - a sampler_contest object of the contest to compute 
+                          the error for
 
+    Outputs:
+        U - the sum of the maximum possible overstatement for each batch
+    """
     U = 0
     for batch in reported_results:
         U += compute_max_error(reported_results[batch], contest)
@@ -101,8 +135,24 @@ def get_sample_sizes(risk_limit, contest, reported_results, sample_results):
     discrepancies.
 
     Inputs:
+        risk_limit       - the risk-limit for this audit
+        contest          - a sampler_contest object of the contest to compute 
+                           the error for
+        reported_results - the reported votes in every batch
+                           { 
+                               'batch': {
+                                 'contest': {
+                                     'cand1': votes,
+                                     'cand2': votes,
+                                     ...
+                                 },
+                                 ...
+                               }
+                               ...
+                           }
         sample_results - if a sample has already been drawn, this will
-                         contain its results.
+                         contain its results, of the same form as 
+                         reported_results
 
     Outputs:
         samples - dictionary mapping confirmation likelihood to sample size:
@@ -117,41 +167,52 @@ def get_sample_sizes(risk_limit, contest, reported_results, sample_results):
     """
     assert risk_limit < 1, "The risk-limit must be less than one!"
 
+    # TODO: actually use past batch results
+
     U = compute_U(reported_results, contest)
 
     return math.ceil(math.log(risk_limit) / (math.log(1 - (1 / U))))
 
 
-def compute_risk(risk_limit, contest, batch_results, sample_results):
+def compute_risk(risk_limit, contest, reported_results, sample_results):
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 
     Inputs:
-        margins        - the margins for the contest being audited
-        sample_results - mapping of candidates to votes in the (cumulative)
-                         sample:
-
-                {
-                    candidate1: sampled_votes,
-                    candidate2: sampled_votes,
-                    ...
-                }
-
+        risk_limit       - the risk-limit for this audit
+        contest          - a sampler_contest object of the contest to compute 
+                           the error for
+        reported_results - the reported votes in every batch
+                           { 
+                               'batch': {
+                                 'contest': {
+                                     'cand1': votes,
+                                     'cand2': votes,
+                                     ...
+                                 },
+                                 ...
+                               }
+                               ...
+                           }
+        sample_results - if a sample has already been drawn, this will
+                         contain its results, of the same form as 
+                         reported_results
     Outputs:
         measurements    - the p-value of the hypotheses that the election
-                          result is correct based on the sample, for each winner-loser pair.
+                          result is correct based on the sample for each 
+                          winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
     assert risk_limit < 1, "The risk-limit must be less than one!"
 
     p = 1
 
-    U = compute_U(batch_results, contest)
+    U = compute_U(reported_results, contest)
 
     for batch in sample_results:
-        e_p = compute_error(batch_results[batch], contest, sample_results[batch])
+        e_p = compute_error(reported_results[batch], contest, sample_results[batch])
 
-        u_p = compute_max_error(batch_results[batch], contest)
+        u_p = compute_max_error(reported_results[batch], contest)
 
         taint = e_p / u_p
 

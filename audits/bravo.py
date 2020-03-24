@@ -1,7 +1,10 @@
 """
-Library for performing a BRAVO-style ballot polling risk-limiting audit.
-"""
+Library for performing a BRAVO-style ballot polling risk-limiting audit,
+as described by Lindeman and Stark here: https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf
 
+Note that this library works for one contest at a time, as if each contest being 
+targeted is being audited completely independently. 
+"""
 import math
 from scipy import stats
 
@@ -13,8 +16,15 @@ def get_expected_sample_sizes(risk_limit, contest, sample_results):
     Returns the expected sample size for a BRAVO audit of <contest>
 
     Input:
-        contest - the contest to get the sample size for
-        sample_results - a dict of the sample results from the Sampler
+        risk_limit      - the risk-limit for this audit
+        contest         - the contest to get the sample size for
+        sample_results  - mapping of candidates to votes in the (cumulative)
+                          sample:
+                        {
+                            candidate1: sampled_votes,
+                            candidate2: sampled_votes,
+                            ...
+                        }
 
     Output:
         expected sample size - the expected sample size for the contest
@@ -105,6 +115,7 @@ def bravo_sample_sizes(risk_limit, p_w, p_r, sample_w, sample_r, p_completion):
     outcome is correct. Written by Mark Lindeman.
 
     Inputs:
+        risk_limit      - the risk-limit for this audit
         p_w             - the fraction of vote share for the winner
         p_r             - the fraction of vote share for the loser
         sample_w        - the number of votes for the winner that have already
@@ -118,7 +129,6 @@ def bravo_sample_sizes(risk_limit, p_w, p_r, sample_w, sample_r, p_completion):
         sample_size     - the expected sample size for the given chance
                           of completion in one round
     """
-
     # calculate the "two-way" share of p_w
     p_wr = p_w + p_r
     p_w2 = p_w / p_wr
@@ -197,13 +207,14 @@ def expected_prob(risk_limit, p_w, p_r, sample_w, sample_r, asn):
     the election outcome is correct. Adapted from Mark Lindeman.
 
     Inputs:
-        asn             - the expected value
+        risk_limit      - the risk-limit for this audit
         p_w             - the fraction of vote share for the winner
         p_r             - the fraction of vote share for the loser
         sample_w        - the number of votes for the winner that have already
                           been sampled
         sample_r        - the number of votes for the runner-up that have
                           already been sampled
+        asn             - the expected value
 
     Outputs:
         sample_size     - the expected sample size for the given chance
@@ -251,8 +262,15 @@ def get_sample_size(risk_limit, contest, sample_results):
     discrepancies.
 
     Inputs:
-        sample_results - if a sample has already been drawn, this will
-                         contain its results.
+        risk_limit     - the risk-limit for this audit
+        contest        - a sampler_contest object of the contest being audited
+        sample_results - mapping of candidates to votes in the (cumulative)
+                         sample:
+                        {
+                            candidate1: sampled_votes,
+                            candidate2: sampled_votes,
+                            ...
+                        }
 
     Outputs:
         samples - dictionary mapping confirmation likelihood to sample size:
@@ -260,6 +278,12 @@ def get_sample_size(risk_limit, contest, sample_results):
                     likelihood1: sample_size,
                     likelihood2: sample_size,
                     ...
+                    asn: {
+                        "size": sample_size,
+                        "prob": prob       # the probability the asn terminates 
+                                           # in one round
+                    }
+
                 }
     """
     assert risk_limit < 1, "The risk-limit must be less than one!"
@@ -335,10 +359,10 @@ def compute_risk(risk_limit, contest, sample_results):
     Computes the risk-value of <sample_results> based on results in <contest>.
 
     Inputs:
-        contest - the contest being measured 
+        risk_limit     - the risk-limit for this audit
+        contest        - a sampler_contest object for the contest being measured 
         sample_results - mapping of candidates to votes in the (cumulative)
                          sample:
-
                 {
                     candidate1: sampled_votes,
                     candidate2: sampled_votes,
@@ -347,7 +371,8 @@ def compute_risk(risk_limit, contest, sample_results):
 
     Outputs:
         measurements    - the p-value of the hypotheses that the election
-                          result is correct based on the sample, for each winner-loser pair.
+                          result is correct based on the sample, for each 
+                          winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
     assert risk_limit < 1, "The risk-limit must be less than one!"

@@ -18,20 +18,20 @@ def draw_sample(
 
     Inputs:
         seed - random seed
-        sample_size - number of ballots to randomly draw
-        num_sampled - number of ballots that have already been sampled
         manifest - mapping of batches to the ballots they contain:
                     {
                         batch1: num_balots,
                         batch2: num_ballots,
                         ...
                     }
+        sample_size - number of tickets to randomly draw
+        num_sampled - number of tickets that have already been sampled
 
     Outputs:
         sample - list of 'tickets', consisting of:
                 [
                     (
-                        '0.235789114', # ticket number
+                        '0.235789114',              # ticket number
                         (<batch>, <ballot number>), # id, here a tuple (batch, ballot)
                         1                           # number of times this item has been picked
                     ),
@@ -66,8 +66,11 @@ def draw_ppeb_sample(
     seed, contest, manifest, sample_size, num_sampled=0, batch_results=None
 ):
     """
-    Draws uniform random sample with replacement of size <sample_size> from the
-    provided ballot manifest.
+    Draws sample with replacement of size <sample_size> from the
+    provided ballot manifest using proportional-with-error-bound (PPEB) sampling.
+    PPEB was developed by Aslam, Popa and Rivest here: https://www.usenix.org/legacy/event/evt08/tech/full_papers/aslam/aslam.pdf
+    Stark further applied PPEB to batch audits here: https://www.stat.berkeley.edu/~stark/Preprints/ppebwrwd08.pdf 
+    For use with batch audits like MACRO. 
 
     Inputs:
         sample_size - number of ballots to randomly draw
