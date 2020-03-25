@@ -5,7 +5,7 @@ from arlo_server import app, db
 from arlo_server.auth import with_election_access, UserType
 from arlo_server.models import Election, USState
 
-from util.jsonschema import nullable, Enum, Obj, Str, Bool, Int, IntRange
+from util.jsonschema import nullable, Enum, Obj, Str, Bool, IntRange
 
 GET_ELECTION_SETTINGS_RESPONSE_SCHEMA = Obj(
     electionName=nullable(Str),

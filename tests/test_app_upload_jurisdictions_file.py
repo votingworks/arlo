@@ -1,12 +1,7 @@
-import os, math, uuid
-import tempfile
-import json, csv, io
+import json, io
 
 from flask.testing import FlaskClient
-from tests.helpers import post_json
-import pytest
 
-from arlo_server import app, db
 from arlo_server.models import (
     Election,
     File,
@@ -17,7 +12,7 @@ from arlo_server.models import (
 from bgcompute import bgcompute_update_election_jurisdictions_file
 
 
-def test_missing_file(client, election_id):
+def test_missing_file(client: FlaskClient, election_id: str):
     rv = client.put(f"/election/{election_id}/jurisdiction/file")
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -30,7 +25,7 @@ def test_missing_file(client, election_id):
     }
 
 
-def test_bad_csv_file(client, election_id):
+def test_bad_csv_file(client: FlaskClient, election_id: str):
     rv = client.put(
         f"/election/{election_id}/jurisdiction/file",
         data={"jurisdictions": (io.BytesIO(b"not a CSV file"), "random.txt")},

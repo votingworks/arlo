@@ -1,13 +1,11 @@
-import os, datetime, csv, io, math, json, uuid, locale, re, hmac, urllib.parse, itertools
-from enum import Enum, auto
-from typing import Optional, Tuple, Union
+import os, datetime, csv, io, json, uuid, re, hmac, urllib.parse, itertools
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-from flask import Flask, jsonify, request, Response, redirect, session
+from flask import jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
-from audit_math import sampler, bravo, sampler_contest
+from audit_math import bravo, sampler_contest
 from werkzeug.exceptions import (
     InternalServerError,
     Unauthorized,
@@ -17,7 +15,7 @@ from werkzeug.exceptions import (
 )
 from xkcdpass import xkcd_password as xp
 
-from sqlalchemy import event, func
+from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from sqlalchemy.exc import IntegrityError
 
@@ -48,10 +46,8 @@ from config import (
 )
 
 from util.ballot_manifest import sample_ballots
-from util.binpacking import Bucket, BalancedBucketList
 from util.isoformat import isoformat
-from util.jurisdiction_bulk_update import bulk_update_jurisdictions
-from util.process_file import process_file, serialize_file, serialize_file_processing
+from util.process_file import serialize_file, serialize_file_processing
 
 AUDIT_BOARD_MEMBER_COUNT = 2
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())

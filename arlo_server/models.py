@@ -1,5 +1,4 @@
 from sqlalchemy.orm import relationship, backref
-from typing import Union, List
 from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.model import DefaultMeta

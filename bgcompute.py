@@ -1,15 +1,10 @@
-# type: ignore
-import time, json
+import time
 
-from flask import Flask
-from sqlalchemy.orm import joinedload
-
-from arlo_server import app, db
+from arlo_server import db
 from arlo_server.models import Election, File, Jurisdiction, RoundContest
 from arlo_server.routes import compute_sample_sizes
 from util.ballot_manifest import process_ballot_manifest_file
 from util.jurisdiction_bulk_update import process_jurisdictions_file
-from util.process_file import process_file
 
 
 def bgcompute():

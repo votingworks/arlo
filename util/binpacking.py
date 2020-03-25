@@ -1,4 +1,3 @@
-import csv
 import operator
 import numpy
 from typing import Dict, Optional, Tuple, List, cast

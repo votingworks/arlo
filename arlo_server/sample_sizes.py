@@ -1,11 +1,10 @@
-from flask import jsonify, request
+from flask import jsonify
 from collections import defaultdict
-import math
 from werkzeug.exceptions import BadRequest
 from typing import Dict
 
-from arlo_server import app, db
-from arlo_server.models import Election, Contest
+from arlo_server import app
+from arlo_server.models import Election
 from arlo_server.auth import with_election_access, UserType
 from audit_math import bravo, sampler_contest
 

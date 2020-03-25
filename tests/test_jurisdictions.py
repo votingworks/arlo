@@ -1,11 +1,10 @@
 import pytest
 from flask.testing import FlaskClient
 
-import json, io, uuid
+import json, io
 from typing import List
 
-from helpers import post_json, compare_json, assert_is_date, create_org_and_admin
-from arlo_server.auth import UserType
+from helpers import compare_json, assert_is_date
 from arlo_server.models import Jurisdiction
 from bgcompute import (
     bgcompute_update_election_jurisdictions_file,
