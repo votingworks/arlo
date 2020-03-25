@@ -10,8 +10,8 @@ import audits.macro as macro
 
 
 def draw_sample(
-    seed: str, manifest: Dict[str, int], sample_size: int, num_sampled=0
-) -> List[Tuple[str, Tuple[str, int], int]]:
+    seed: str, manifest: Dict[Any, int], sample_size: int, num_sampled=0
+) -> List[Tuple[str, Tuple[Any, int], int]]:
     """
     Draws uniform random sample with replacement of size <sample_size> from the
     provided ballot manifest.
