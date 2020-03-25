@@ -9,7 +9,7 @@ from helpers import put_json
 def test_contests_list_empty(client: FlaskClient, election_id: str):
     rv = client.get(f"/election/{election_id}/contest")
     contests = json.loads(rv.data)
-    assert contests == []
+    assert contests == {"contests": []}
 
 
 def test_contests_create_get_update_one(
@@ -33,7 +33,7 @@ def test_contests_create_get_update_one(
 
     rv = client.get(f"/election/{election_id}/contest")
     contests = json.loads(rv.data)
-    assert contests == [contest]
+    assert contests == {"contests": [contest]}
 
     contest["totalBallotsCast"] = contest["totalBallotsCast"] + 21
     contest["numWinners"] = 2
@@ -42,12 +42,11 @@ def test_contests_create_get_update_one(
     )
 
     rv = put_json(client, f"/election/{election_id}/contest", [contest])
-    print(json.loads(rv.data))
     assert json.loads(rv.data) == {"status": "ok"}
 
     rv = client.get(f"/election/{election_id}/contest")
     contests = json.loads(rv.data)
-    assert contests == [contest]
+    assert contests == {"contests": [contest]}
 
 
 def test_contests_create_get_update_multiple(
@@ -100,7 +99,7 @@ def test_contests_create_get_update_multiple(
 
     rv = client.get(f"/election/{election_id}/contest")
     json_contests = json.loads(rv.data)
-    assert contests == json_contests
+    assert json_contests == {"contests": contests}
 
     contests[0]["name"] = "Changed name"
     contests[1]["isTargeted"] = True
@@ -111,7 +110,7 @@ def test_contests_create_get_update_multiple(
 
     rv = client.get(f"/election/{election_id}/contest")
     json_contests = json.loads(rv.data)
-    assert contests == json_contests
+    assert json_contests == {"contests": contests}
 
 
 def test_contests_missing_field(
