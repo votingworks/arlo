@@ -7,7 +7,7 @@ from arlo_server import app, db
 from arlo_server.routes import with_election_access, UserType
 from arlo_server.models import Contest, ContestChoice, Election, Jurisdiction
 
-contest_choice_schema = {
+CONTEST_CHOICE_SCHEMA = {
     "type": "object",
     "properties": {
         "id": {"type": "string"},
@@ -17,13 +17,13 @@ contest_choice_schema = {
     "required": ["id", "name", "numVotes"],
 }
 
-contest_schema = {
+CONTEST_SCHEMA = {
     "type": "object",
     "properties": {
         "id": {"type": "string"},
         "name": {"type": "string"},
         "isTargeted": {"type": "boolean"},
-        "choices": {"type": "array", "items": contest_choice_schema},
+        "choices": {"type": "array", "items": CONTEST_CHOICE_SCHEMA},
         "totalBallotsCast": {"type": "integer", "minimum": 0},
         "numWinners": {"type": "integer", "minimum": 1},
         "votesAllowed": {"type": "integer", "minimum": 1},
@@ -42,65 +42,62 @@ contest_schema = {
 }
 
 
-def serialize_contest_choice(db_contest_choice: ContestChoice) -> dict:
+def serialize_contest_choice(contest_choice: ContestChoice) -> dict:
     return {
-        "id": db_contest_choice.id,
-        "name": db_contest_choice.name,
-        "numVotes": db_contest_choice.num_votes,
+        "id": contest_choice.id,
+        "name": contest_choice.name,
+        "numVotes": contest_choice.num_votes,
     }
 
 
-def serialize_contest(db_contest: Contest) -> dict:
+def serialize_contest(contest: Contest) -> dict:
     return {
-        "id": db_contest.id,
-        "name": db_contest.name,
-        "isTargeted": db_contest.is_targeted,
-        "choices": [serialize_contest_choice(c) for c in db_contest.choices],
-        "totalBallotsCast": db_contest.total_ballots_cast,
-        "numWinners": db_contest.num_winners,
-        "votesAllowed": db_contest.votes_allowed,
-        "jurisdictionIds": [j.id for j in db_contest.jurisdictions],
+        "id": contest.id,
+        "name": contest.name,
+        "isTargeted": contest.is_targeted,
+        "choices": [serialize_contest_choice(c) for c in contest.choices],
+        "totalBallotsCast": contest.total_ballots_cast,
+        "numWinners": contest.num_winners,
+        "votesAllowed": contest.votes_allowed,
+        "jurisdictionIds": [j.id for j in contest.jurisdictions],
     }
 
 
-def deserialize_contest_choice(json_contest_choice: dict, contest_id: str) -> Contest:
+def deserialize_contest_choice(contest_choice: dict, contest_id: str) -> Contest:
     return ContestChoice(
-        id=json_contest_choice["id"],
+        id=contest_choice["id"],
         contest_id=contest_id,
-        name=json_contest_choice["name"],
-        num_votes=json_contest_choice["numVotes"],
+        name=contest_choice["name"],
+        num_votes=contest_choice["numVotes"],
     )
 
 
-def deserialize_contest(json_contest: dict, election_id: str) -> Contest:
+def deserialize_contest(contest: dict, election_id: str) -> Contest:
     jurisdictions = (
         db.session.query(Jurisdiction)
         .filter_by(election_id=election_id)
-        .filter(Jurisdiction.id.in_(json_contest["jurisdictionIds"]))
+        .filter(Jurisdiction.id.in_(contest["jurisdictionIds"]))
         .all()
     )
-    choices = [
-        deserialize_contest_choice(c, json_contest["id"])
-        for c in json_contest["choices"]
-    ]
+    choices = [deserialize_contest_choice(c, contest["id"]) for c in contest["choices"]]
     return Contest(
         election_id=election_id,
-        id=json_contest["id"],
-        name=json_contest["name"],
-        is_targeted=json_contest["isTargeted"],
+        id=contest["id"],
+        name=contest["name"],
+        is_targeted=contest["isTargeted"],
         choices=choices,
-        total_ballots_cast=json_contest["totalBallotsCast"],
-        num_winners=json_contest["numWinners"],
-        votes_allowed=json_contest["votesAllowed"],
+        total_ballots_cast=contest["totalBallotsCast"],
+        num_winners=contest["numWinners"],
+        votes_allowed=contest["votesAllowed"],
         jurisdictions=jurisdictions,
     )
 
 
 # Raises if invalid
-def validate_contests(json_contests: List[dict]) -> None:
-    validate(json_contests, {"type": "array", "items": contest_schema})
+def validate_contests(contests: List[dict]) -> None:
+    validate(contests, {"type": "array", "items": CONTEST_SCHEMA})
 
-    for contest in json_contests:
+    for contest in contests:
         total_votes = sum(c["numVotes"] for c in contest["choices"])
         total_allowed_votes = contest["totalBallotsCast"] * contest["votesAllowed"]
         if total_votes > total_allowed_votes:
