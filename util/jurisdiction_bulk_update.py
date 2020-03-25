@@ -79,7 +79,7 @@ def bulk_update_jurisdictions(
             .outerjoin(JurisdictionAdministration)
             .filter(
                 Jurisdiction.election == election,
-                JurisdictionAdministration.jurisdiction_id == None,
+                JurisdictionAdministration.jurisdiction_id.is_(None),
             )
             .with_entities(Jurisdiction.id)
             .all()

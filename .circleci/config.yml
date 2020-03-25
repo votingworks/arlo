@@ -27,6 +27,10 @@ jobs:
           command: |
             make resetdb
       - run:
+          name: lint server (pylint)
+          command: |
+            make lint-server
+      - run:
           name: type check
           command: |
             make typecheck

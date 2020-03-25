@@ -230,8 +230,8 @@ def test_election_reset(client, election_id):
     rv = client.get(f"/election/{election_id}/audit/status")
     status = json.loads(rv.data)
 
-    assert status["riskLimit"] == None
-    assert status["randomSeed"] == None
+    assert status["riskLimit"] is None
+    assert status["randomSeed"] is None
     assert status["contests"] == []
     assert status["jurisdictions"] == []
     assert status["rounds"] == []

@@ -101,9 +101,9 @@ def test_metadata(client, election_id):
     assert file["name"] == "jurisdictions.csv"
     assert file["uploadedAt"]
     assert processing["status"] == ProcessingStatus.READY_TO_PROCESS
-    assert processing["startedAt"] == None
-    assert processing["completedAt"] == None
-    assert processing["error"] == None
+    assert processing["startedAt"] is None
+    assert processing["completedAt"] is None
+    assert processing["error"] is None
 
     # Actually process the file.
     assert bgcompute_update_election_jurisdictions_file() == 1
@@ -119,7 +119,7 @@ def test_metadata(client, election_id):
     assert processing["status"] == ProcessingStatus.PROCESSED
     assert processing["startedAt"]
     assert processing["completedAt"]
-    assert processing["error"] == None
+    assert processing["error"] is None
 
 
 def test_replace_jurisdictions_file(client, election_id):

@@ -35,6 +35,9 @@ typecheck:
 format-python:
 	python3.7 -m pipenv run black .
 
+lint-server:
+	find . -name '*.py' | xargs python3.7 -m pipenv run pylint
+
 test-client:
 	yarn --cwd arlo-client lint
 	yarn --cwd arlo-client test

@@ -42,19 +42,19 @@ def test_success(db):
         while_processing_completed_at = file.processing_completed_at
         while_processing_error = file.processing_error
 
-    assert file.processing_started_at == None
-    assert file.processing_completed_at == None
-    assert file.processing_error == None
+    assert file.processing_started_at is None
+    assert file.processing_completed_at is None
+    assert file.processing_error is None
 
     process_file(db.session, file, process)
 
     assert isinstance(while_processing_started_at, datetime.datetime)
-    assert while_processing_completed_at == None
-    assert while_processing_error == None
+    assert while_processing_completed_at is None
+    assert while_processing_error is None
 
     assert isinstance(file.processing_started_at, datetime.datetime)
     assert isinstance(file.processing_completed_at, datetime.datetime)
-    assert file.processing_error == None
+    assert file.processing_error is None
 
 
 def test_error(db):
@@ -82,9 +82,9 @@ def test_error(db):
 
         raise Exception("NOPE")
 
-    assert file.processing_started_at == None
-    assert file.processing_completed_at == None
-    assert file.processing_error == None
+    assert file.processing_started_at is None
+    assert file.processing_completed_at is None
+    assert file.processing_error is None
 
     try:
         process_file(db.session, file, process)
@@ -92,8 +92,8 @@ def test_error(db):
         assert str(error) == "NOPE"
 
     assert isinstance(while_processing_started_at, datetime.datetime)
-    assert while_processing_completed_at == None
-    assert while_processing_error == None
+    assert while_processing_completed_at is None
+    assert while_processing_error is None
 
     assert isinstance(file.processing_started_at, datetime.datetime)
     assert isinstance(file.processing_completed_at, datetime.datetime)
