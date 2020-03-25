@@ -48,14 +48,14 @@ test-server:
 
 # Only tests audit_math
 test-math:
-	FLASK_ENV=test python3.7 -m pipenv run python -m pytest tests/audit_math_tests -k '${TEST}' --ignore=arlo-client
+	FLASK_ENV=test python3.7 -m pipenv run python -m pytest tests/audit_math_tests -k '${TEST}' 
 
 
 # Only tests utils
 test-utils:
-	FLASK_ENV=test python3.7 -m pipenv run python -m pytest tests/util_tests -k '${TEST}' --ignore=arlo-client
+	FLASK_ENV=test python3.7 -m pipenv run python -m pytest tests/util_tests -k '${TEST}' 
 
 
 # Only tests routes
 test-routes:
-	FLASK_ENV=test python3.7 -m pipenv run python -m pytest tests/routes_tests -k '${TEST}' --ignore=arlo-client
+	FLASK_ENV=test python3.7 -m pipenv run python -m pytest tests/routes_tests -k '${TEST}' 
