@@ -127,4 +127,5 @@ def create_or_update_all_contests(election: Election):
 @app.route("/election/<election_id>/contest", methods=["GET"])
 @with_election_access(UserType.AUDIT_ADMIN)
 def list_contests(election: Election):
-    return jsonify([serialize_contest(c) for c in election.contests])
+    json_contests = [serialize_contest(c) for c in election.contests]
+    return jsonify({"contests": json_contests})
