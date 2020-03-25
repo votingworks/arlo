@@ -126,7 +126,7 @@ If you're upgrading Arlo, right now the only way is to destroy and
 recreate the database. The easiest way to do that, if your database
 connection is set up properly, is:
 
-`pipenv run python resetdb.py`
+`make resetdb`
 
 If you're running on Heroku or on another system where database
 destruction and recreation cannot be done from Python, because the
