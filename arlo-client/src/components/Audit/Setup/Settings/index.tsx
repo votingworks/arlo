@@ -1,8 +1,24 @@
 import React from 'react'
+import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
+import { RadioGroup, Radio } from '@blueprintjs/core'
 import { IAudit } from '../../../../types'
 import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
+import { IValues } from './types'
+import FormWrapper from '../../../Form/FormWrapper'
+import FormSection from '../../../Form/FormSection'
+import { Select } from '../../EstimateSampleSize'
+import { generateOptions, ErrorLabel } from '../../../Form/_helpers'
+import FormField from '../../../Form/FormField'
+import schema from './schema'
+
+const initialValues = {
+  electionName: '',
+  randomSeed: '',
+  riskLimit: 10,
+  online: true,
+}
 
 interface IProps {
   audit: IAudit
@@ -10,15 +26,95 @@ interface IProps {
   prevStage: ISidebarMenuItem
 }
 
-const Settings: React.FC<IProps> = ({ nextStage, prevStage }: IProps) => {
+const Settings: React.FC<IProps> = ({
+  nextStage,
+  prevStage,
+  audit,
+}: IProps) => {
+  const submit = async (values: IValues) => {
+    console.log(values)
+    nextStage.activate()
+  }
   return (
-    <div>
-      <p>Audit Settings</p>
-      <FormButtonBar>
-        <FormButton onClick={prevStage.activate}>Back</FormButton>
-        <FormButton onClick={nextStage.activate}>Next</FormButton>
-      </FormButtonBar>
-    </div>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={schema}
+      onSubmit={submit}
+      enableReinitialize
+    >
+      {({ handleSubmit, setFieldValue, values }: FormikProps<IValues>) => (
+        <Form data-testid="form-one">
+          <FormWrapper title="Audit Settings">
+            <FormSection>
+              {/* eslint-disable jsx-a11y/label-has-associated-control */}
+              <label htmlFor="audit-name" id="audit-name-label">
+                Election Name
+                <Field
+                  id="election-name"
+                  aria-labelledby="election-name-label"
+                  name="electionName"
+                  disabled={!!audit.frozenAt}
+                  component={FormField}
+                />
+              </label>
+            </FormSection>
+            <FormSection>
+              <label htmlFor="online">
+                Audit boards will enter data about each audited ballot:
+                <RadioGroup
+                  name="online"
+                  onChange={e =>
+                    setFieldValue('online', e.currentTarget.value === 'online')
+                  }
+                  selectedValue={values.online ? 'online' : 'offline'}
+                  disabled={!!audit.frozenAt}
+                >
+                  <Radio value="online">Online</Radio>
+                  <Radio value="offline">Offline</Radio>
+                </RadioGroup>
+              </label>
+            </FormSection>
+            <FormSection label="Desired Risk Limit">
+              <label htmlFor="risk-limit">
+                {`Set the risk for the audit as a percentage (e.g. "5" = 5%)`}
+                <Field
+                  id="risk-limit"
+                  name="riskLimit"
+                  disabled={!!audit.frozenAt}
+                  component={Select}
+                  value={values.riskLimit}
+                  onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                    setFieldValue('riskLimit', e.currentTarget.value)
+                  }
+                >
+                  {generateOptions(20)}
+                </Field>
+                <ErrorMessage name="riskLimit" component={ErrorLabel} />
+              </label>
+            </FormSection>
+            <FormSection label="Random Seed">
+              {/* eslint-disable jsx-a11y/label-has-associated-control */}
+              <label htmlFor="random-seed" id="random-seed-label">
+                Enter the random characters to seed the pseudo-random number
+                generator.
+                <Field
+                  id="random-seed"
+                  aria-labelledby="random-seed-label"
+                  type="text"
+                  name="randomSeed"
+                  disabled={!!audit.frozenAt}
+                  component={FormField}
+                />
+              </label>
+            </FormSection>
+          </FormWrapper>
+          <FormButtonBar>
+            <FormButton onClick={prevStage.activate}>Back</FormButton>
+            <FormButton onClick={handleSubmit}>Save &amp; Next</FormButton>
+          </FormButtonBar>
+        </Form>
+      )}
+    </Formik>
   )
 }
 

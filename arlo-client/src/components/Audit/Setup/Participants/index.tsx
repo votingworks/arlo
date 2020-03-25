@@ -82,7 +82,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                   setFieldValue('state', e.currentTarget.value)
                 }
                 disabled={!!audit.frozenAt}
-                value={values.state}
+                value={values.state || ''}
                 options={[{ value: '' }, ...labelValueStates]}
               />
             </label>
