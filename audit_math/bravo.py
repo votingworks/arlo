@@ -7,7 +7,7 @@ targeted is being audited completely independently.
 """
 import math
 from scipy import stats
-from typing import Dict, Tuple, Any, Union, Optional
+from typing import Dict, Tuple, Union, Optional
 
 from .sampler_contest import Contest
 

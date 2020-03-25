@@ -1,19 +1,20 @@
-import pytest
 from flask.testing import FlaskClient
+from typing import List
 
 import json, uuid
 
-from helpers import post_json, put_json
-from arlo_server.models import Jurisdiction
+from helpers import put_json
 
 
-def test_contests_list_empty(client, election_id):
+def test_contests_list_empty(client: FlaskClient, election_id: str):
     rv = client.get(f"/election/{election_id}/contest")
     contests = json.loads(rv.data)
     assert contests == []
 
 
-def test_contests_create_get_update_one(client, election_id, jurisdiction_ids):
+def test_contests_create_get_update_one(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
     contest = {
         "id": str(uuid.uuid4()),
         "name": "Contest 1",
@@ -49,7 +50,9 @@ def test_contests_create_get_update_one(client, election_id, jurisdiction_ids):
     assert contests == [contest]
 
 
-def test_contests_create_get_update_multiple(client, election_id, jurisdiction_ids):
+def test_contests_create_get_update_multiple(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
     contests = [
         {
             "id": str(uuid.uuid4()),
@@ -111,7 +114,9 @@ def test_contests_create_get_update_multiple(client, election_id, jurisdiction_i
     assert contests == json_contests
 
 
-def test_contests_missing_field(client, election_id, jurisdiction_ids):
+def test_contests_missing_field(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
     contest = {
         "id": str(uuid.uuid4()),
         "name": "Contest 1",
@@ -159,7 +164,7 @@ def test_contests_missing_field(client, election_id, jurisdiction_ids):
         }
 
 
-def test_contest_too_many_votes(client, election_id):
+def test_contest_too_many_votes(client: FlaskClient, election_id: str):
     contest = {
         "id": str(uuid.uuid4()),
         "name": "Contest 1",

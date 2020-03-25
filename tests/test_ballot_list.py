@@ -4,7 +4,7 @@ from flask.testing import FlaskClient
 import pytest
 
 from helpers import post_json, create_election
-from test_app import setup_whole_audit, setup_whole_multi_winner_audit
+from test_app import setup_whole_audit
 import bgcompute
 
 

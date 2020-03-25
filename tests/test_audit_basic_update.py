@@ -1,5 +1,4 @@
 import json, uuid
-import pytest
 
 from helpers import post_json
 

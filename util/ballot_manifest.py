@@ -4,9 +4,8 @@ import locale
 import uuid
 from sqlalchemy.orm.session import Session
 from typing import Dict, List, Tuple
-from werkzeug.exceptions import BadRequest
 
-from audit_math import sampler, sampler_contest
+from audit_math import sampler
 from arlo_server.models import (
     Batch,
     Election,

@@ -1,22 +1,18 @@
-import pytest, json, uuid
-from unittest.mock import patch, Mock, MagicMock
+from flask.testing import FlaskClient
+import json, uuid
+from unittest.mock import Mock, MagicMock
 
-from arlo_server.auth import set_loggedin_user, clear_loggedin_user, UserType
+from arlo_server.auth import UserType
 from arlo_server.routes import (
     auth0_aa,
     auth0_ja,
     create_organization,
 )
 from arlo_server.models import *
-from tests.helpers import create_org_and_admin
+from tests.helpers import create_org_and_admin, set_logged_in_user
 
 
-def _setup_user(client, user_type, user_email):
-    with client.session_transaction() as session:
-        session["_user"] = {"type": user_type, "email": user_email}
-
-
-def test_auth_me(client):
+def test_auth_me(client: FlaskClient):
     org_id, user_id = create_org_and_admin("Test Org", "admin@example.com")
     election = Election(
         id=str(uuid.uuid4()),
@@ -38,7 +34,7 @@ def test_auth_me(client):
     db.session.add(j_admin)
     db.session.commit()
 
-    _setup_user(client, UserType.AUDIT_ADMIN, "admin@example.com")
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin@example.com")
 
     rv = client.get("/auth/me")
     assert json.loads(rv.data) == {
@@ -77,12 +73,12 @@ def test_auth_me(client):
     }
 
 
-def test_auditadmin_start(client):
+def test_auditadmin_start(client: FlaskClient):
     rv = client.get("/auth/auditadmin/start")
     assert rv.status_code == 302
 
 
-def test_auditadmin_callback(client):
+def test_auditadmin_callback(client: FlaskClient):
     create_org_and_admin("Test Organization", "foo@example.com")
 
     auth0_aa.authorize_access_token = MagicMock(return_value=None)
@@ -102,12 +98,12 @@ def test_auditadmin_callback(client):
     assert auth0_aa.get.called
 
 
-def test_jurisdictionadmin_start(client):
+def test_jurisdictionadmin_start(client: FlaskClient):
     rv = client.get("/auth/jurisdictionadmin/start")
     assert rv.status_code == 302
 
 
-def test_jurisdictionadmin_callback(client):
+def test_jurisdictionadmin_callback(client: FlaskClient):
     org = create_organization("Test Organization")
     election = Election(
         id=str(uuid.uuid4()),
@@ -146,8 +142,8 @@ def test_jurisdictionadmin_callback(client):
     assert auth0_ja.get.called
 
 
-def test_logout(client):
-    _setup_user(client, UserType.AUDIT_ADMIN, "admin@example.com")
+def test_logout(client: FlaskClient):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin@example.com")
 
     rv = client.get("/auth/logout")
 

@@ -1,9 +1,5 @@
-import pytest
 from flask.testing import FlaskClient
-from typing import List
-import json, uuid
-
-from helpers import put_json
+import json
 
 
 def test_sample_sizes_without_contests(client: FlaskClient, election_id: str):

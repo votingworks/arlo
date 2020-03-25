@@ -1,5 +1,4 @@
 import json
-import pytest
 from flask.testing import FlaskClient
 
 from arlo_server.models import Election, USState

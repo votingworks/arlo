@@ -1,7 +1,6 @@
 import csv
 import io
 import uuid
-from sqlalchemy import func
 from typing import Tuple, List
 
 from arlo_server.models import (

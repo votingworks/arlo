@@ -5,7 +5,7 @@ from typing import List
 
 from arlo_server import app, db
 from arlo_server.models import Jurisdiction, USState
-from helpers import post_json, put_json, create_election
+from helpers import put_json, create_election
 from bgcompute import bgcompute_update_election_jurisdictions_file
 
 # The fixtures in this module are available in any test via dependency

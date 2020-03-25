@@ -1,10 +1,6 @@
 from flask import jsonify
 
-from arlo_server import app, db
-from arlo_server.routes import (
-    get_election,
-    isoformat,
-)
+from arlo_server import app
 from arlo_server.models import Election, Jurisdiction
 from arlo_server.auth import with_election_access, UserType
 from util.process_file import serialize_file, serialize_file_processing

@@ -1,8 +1,6 @@
 import pytest
-import math
-import numpy as np
 
-from audit_math import sampler, macro
+from audit_math import macro
 from audit_math.sampler_contest import Contest
 
 seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"

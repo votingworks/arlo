@@ -1,10 +1,6 @@
 # Handles generating sample sizes and taking samples
-import math
-import numpy as np
-from scipy import stats
 from typing import cast, Any, Dict, List, Tuple
 import consistent_sampler
-import operator
 
 import audit_math.macro as macro
 from .sampler_contest import Contest

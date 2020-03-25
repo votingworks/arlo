@@ -10,7 +10,7 @@ MACRO was developed by Philip Stark
 import math
 from .sampler_contest import Contest
 
-from typing import Any, Dict, List, Tuple
+from typing import Dict, Tuple
 
 
 def compute_error(

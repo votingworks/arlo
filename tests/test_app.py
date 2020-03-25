@@ -1,11 +1,9 @@
 import os, math, uuid
-import tempfile
 import json, csv, io
 from flask.testing import FlaskClient
 
 import pytest
 
-from arlo_server import app, db
 from tests.helpers import post_json, create_election
 import bgcompute
 

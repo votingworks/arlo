@@ -3,7 +3,6 @@ import pytest
 from flask.testing import FlaskClient
 
 from helpers import (
-    post_json,
     compare_json,
     assert_is_id,
     assert_is_date,
