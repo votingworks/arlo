@@ -14,7 +14,7 @@ from arlo_server.models import (
 from arlo_server.auth import with_election_access, UserType
 from arlo_server.sample_sizes import sample_size_options
 from util.isoformat import isoformat
-from audits import sampler
+from audit_math import sampler
 
 
 CREATE_ROUND_REQUEST_SCHEMA = {
@@ -132,7 +132,7 @@ def create_round(election: Election):
     sample_size = (
         json_round["sampleSize"]
         if json_round["roundNum"] == 1
-        else sample_size_options(election)[0.9]
+        else sample_size_options(election)["0.9"]["size"]
     )
 
     round = Round(
