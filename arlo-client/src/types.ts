@@ -166,3 +166,11 @@ export interface IAuthData {
   isAuthenticated: boolean
   meta?: IUserMeta
 }
+
+export interface IAuditSettings {
+  state: string | null
+  electionName: string | null
+  online: boolean | null
+  randomSeed: string | null
+  riskLimit: number | null
+}

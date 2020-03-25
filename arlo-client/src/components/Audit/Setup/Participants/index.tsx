@@ -16,15 +16,11 @@ import { ErrorLabel } from '../../../Form/_helpers'
 import FormSection, { FormSectionDescription } from '../../../Form/FormSection'
 import { api, checkAndToast } from '../../../utilities'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
+import useAuditSettings from '../useAuditSettings'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
 `
-
-const initialValues = {
-  state: '',
-  csv: null,
-}
 
 interface IProps {
   audit: IAudit
@@ -34,9 +30,11 @@ interface IProps {
 const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   const { electionId } = useParams()
   const [isLoading, setIsLoading] = useState(false)
+  const [{ state = '' }, updateState] = useAuditSettings(electionId!)
   const submit = async (values: IValues) => {
     try {
       setIsLoading(true)
+      updateState({ state: values.state })
       /* istanbul ignore else */
       if (values.csv) {
         const formData: FormData = new FormData()
@@ -57,9 +55,10 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   }
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={{ state, csv: null }}
       validationSchema={schema}
       onSubmit={submit}
+      enableReinitialize
     >
       {({
         handleSubmit,
@@ -83,6 +82,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                   setFieldValue('state', e.currentTarget.value)
                 }
                 disabled={!!audit.frozenAt}
+                value={values.state}
                 options={[{ value: '' }, ...labelValueStates]}
               />
             </label>
@@ -129,7 +129,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
             </FormSection>
           </FormWrapper>
           {isLoading && <Spinner />}
-          {!audit.contests.length && !isLoading && (
+          {!isLoading && (
             <FormButtonBar>
               <FormButton
                 type="submit"

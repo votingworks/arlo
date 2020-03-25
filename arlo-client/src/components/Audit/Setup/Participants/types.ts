@@ -1,4 +1,6 @@
+import { IAuditSettings } from '../../../../types'
+
 export interface IValues {
-  state: string
   csv: File | null
+  state: IAuditSettings['state']
 }
