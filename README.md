@@ -134,7 +134,7 @@ database is provisioned externally, the steps are then:
 
 - clear the database, e.g. on heroku `heroku pg:reset -a <app_name>`
 - create just the data model, e.g. on heroku `heroku run -a <app_name> python resetdb.py --skip-db-creation`
-- you may need to restart serveres, e.g. on heroku `heroku restart -a <app_name>`
+- you may need to restart servers, e.g. on heroku `heroku restart -a <app_name>`
 
 ### Setting up the dev environment
 
