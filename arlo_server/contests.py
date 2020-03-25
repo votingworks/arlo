@@ -1,11 +1,25 @@
-from typing import List
+from typing import List, Dict, Any, Optional
 from flask import request, jsonify
 from werkzeug.exceptions import BadRequest
+from sqlalchemy import func
 
 from arlo_server import app, db
-from arlo_server.routes import with_election_access, UserType
-from arlo_server.models import Contest, ContestChoice, Election, Jurisdiction
+from arlo_server.auth import with_election_access, UserType
+from arlo_server.models import (
+    Contest,
+    ContestChoice,
+    Election,
+    Jurisdiction,
+    Round,
+    RoundContest,
+    SampledBallotDraw,
+    Batch,
+)
+from arlo_server.rounds import get_current_round
 from util.jsonschema import validate
+
+# An approximation of a JSON object type, since we can't do recursive types
+JSONDict = Dict[str, Any]
 
 CONTEST_CHOICE_SCHEMA = {
     "type": "object",
@@ -14,6 +28,7 @@ CONTEST_CHOICE_SCHEMA = {
         "name": {"type": "string"},
         "numVotes": {"type": "integer", "minimum": 0},
     },
+    "additionalProperties": False,
     "required": ["id", "name", "numVotes"],
     "additionalProperties": False,
 }
@@ -30,6 +45,7 @@ CONTEST_SCHEMA = {
         "votesAllowed": {"type": "integer", "minimum": 1},
         "jurisdictionIds": {"type": "array", "items": {"type": "string"}},
     },
+    "additionalProperties": False,
     "required": [
         "id",
         "name",
@@ -44,7 +60,7 @@ CONTEST_SCHEMA = {
 }
 
 
-def serialize_contest_choice(contest_choice: ContestChoice) -> dict:
+def serialize_contest_choice(contest_choice: ContestChoice) -> JSONDict:
     return {
         "id": contest_choice.id,
         "name": contest_choice.name,
@@ -52,7 +68,8 @@ def serialize_contest_choice(contest_choice: ContestChoice) -> dict:
     }
 
 
-def serialize_contest(contest: Contest) -> dict:
+def serialize_contest(contest: Contest, round_status: Optional[JSONDict]) -> JSONDict:
+    jurisdictions = sorted(contest.jurisdictions, key=lambda j: j.name)
     return {
         "id": contest.id,
         "name": contest.name,
@@ -61,11 +78,12 @@ def serialize_contest(contest: Contest) -> dict:
         "totalBallotsCast": contest.total_ballots_cast,
         "numWinners": contest.num_winners,
         "votesAllowed": contest.votes_allowed,
-        "jurisdictionIds": [j.id for j in contest.jurisdictions],
+        "jurisdictionIds": [j.id for j in jurisdictions],
+        "currentRoundStatus": round_status,
     }
 
 
-def deserialize_contest_choice(contest_choice: dict, contest_id: str) -> Contest:
+def deserialize_contest_choice(contest_choice: JSONDict, contest_id: str) -> Contest:
     return ContestChoice(
         id=contest_choice["id"],
         contest_id=contest_id,
@@ -74,7 +92,7 @@ def deserialize_contest_choice(contest_choice: dict, contest_id: str) -> Contest
     )
 
 
-def deserialize_contest(contest: dict, election_id: str) -> Contest:
+def deserialize_contest(contest: JSONDict, election_id: str) -> Contest:
     jurisdictions = (
         db.session.query(Jurisdiction)
         .filter_by(election_id=election_id)
@@ -96,7 +114,7 @@ def deserialize_contest(contest: dict, election_id: str) -> Contest:
 
 
 # Raises if invalid
-def validate_contests(contests: List[dict]) -> None:
+def validate_contests(contests: List[JSONDict]):
     validate(contests, {"type": "array", "items": CONTEST_SCHEMA})
 
     for contest in contests:
@@ -109,13 +127,46 @@ def validate_contests(contests: List[dict]) -> None:
             )
 
 
+def round_status_by_contest(
+    round: Optional[Round], contests: List[Contest]
+) -> Dict[str, Optional[JSONDict]]:
+    if not round:
+        return {c.id: None for c in contests}
+
+    sampled_ballot_count_by_contest = dict(
+        SampledBallotDraw.query.filter_by(round_id=round.id)
+        .join(Batch)
+        .join(Jurisdiction)
+        .join(Jurisdiction.contests)
+        .group_by(Contest.id)
+        .values(Contest.id, func.count())
+    )
+    round_is_complete_by_contest = dict(
+        RoundContest.query.filter_by(round_id=round.id).values(
+            RoundContest.contest_id, RoundContest.is_complete
+        )
+    )
+
+    # isRiskLimitMet will be None until we have computed the risk measurement
+    # for that contest, which happens once we're done auditing its sampled
+    # ballots. Once the risk measurement is calculated, isRiskLimitMet will be
+    # a boolean.
+    return {
+        c.id: {
+            "isRiskLimitMet": round_is_complete_by_contest[c.id],
+            "numBallotsSampled": sampled_ballot_count_by_contest.get(c.id, 0),
+        }
+        for c in contests
+    }
+
+
 @app.route("/election/<election_id>/contest", methods=["PUT"])
 @with_election_access(UserType.AUDIT_ADMIN)
 def create_or_update_all_contests(election: Election):
     json_contests = request.get_json()
     validate_contests(json_contests)
 
-    db.session.query(Contest).filter_by(election_id=election.id).delete()
+    Contest.query.filter_by(election_id=election.id).delete()
 
     for json_contest in json_contests:
         contest = deserialize_contest(json_contest, election.id)
@@ -129,5 +180,10 @@ def create_or_update_all_contests(election: Election):
 @app.route("/election/<election_id>/contest", methods=["GET"])
 @with_election_access(UserType.AUDIT_ADMIN)
 def list_contests(election: Election):
-    json_contests = [serialize_contest(c) for c in election.contests]
+    current_round = get_current_round(election)
+    round_status = round_status_by_contest(current_round, election.contests)
+
+    json_contests = [
+        serialize_contest(c, round_status[c.id]) for c in election.contests
+    ]
     return jsonify({"contests": json_contests})
