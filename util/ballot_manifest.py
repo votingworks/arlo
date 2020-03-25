@@ -6,7 +6,7 @@ from sqlalchemy.orm.session import Session
 from typing import Dict, List, Tuple
 from werkzeug.exceptions import BadRequest
 
-from audits import sampler, sampler_contest
+from audit_math import sampler, sampler_contest
 from arlo_server.models import (
     Batch,
     Election,

@@ -8,9 +8,14 @@ MACRO was developed by Philip Stark
 (see https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the publication).
 """
 import math
+from .sampler_contest import Contest
+
+from typing import Any, Dict, List, Tuple
 
 
-def compute_error(batch_results, contest, sampled_results):
+def compute_error(
+    batch_results: Dict[str, int], contest: Contest, sampled_results: Dict[str, int]
+) -> float:
     """
     Computes the error in this batch
 
@@ -53,7 +58,7 @@ def compute_error(batch_results, contest, sampled_results):
     return error
 
 
-def compute_max_error(batch_results, contest):
+def compute_max_error(batch_results: Dict[str, int], contest: Contest) -> float:
     """
     Computes the maximum possible error in this batch for this contest
 
@@ -98,7 +103,7 @@ def compute_max_error(batch_results, contest):
     return error
 
 
-def compute_U(reported_results, contest):
+def compute_U(reported_results: Dict[str, Dict[str, int]], contest: Contest) -> float:
     """
     Computes U, the sum of the batch-wise relative overstatement limits,
     i.e. the maximum amount of possible overstatement in a given election.
@@ -128,7 +133,12 @@ def compute_U(reported_results, contest):
     return U
 
 
-def get_sample_sizes(risk_limit, contest, reported_results, sample_results):
+def get_sample_sizes(
+    risk_limit: float,
+    contest: Contest,
+    reported_results: Dict[str, Dict[str, int]],
+    sample_results: Dict[str, Dict[str, int]],
+) -> float:
     """
     Computes initial sample sizes parameterized by likelihood that the
     initial sample will confirm the election result, assuming no
@@ -174,7 +184,12 @@ def get_sample_sizes(risk_limit, contest, reported_results, sample_results):
     return math.ceil(math.log(risk_limit) / (math.log(1 - (1 / U))))
 
 
-def compute_risk(risk_limit, contest, reported_results, sample_results):
+def compute_risk(
+    risk_limit: float,
+    contest: Contest,
+    reported_results: Dict[str, Dict[str, int]],
+    sample_results: Dict[str, Dict[str, int]],
+) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 

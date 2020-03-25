@@ -7,7 +7,7 @@ from jsonschema.exceptions import ValidationError
 from flask import Flask, jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
-from audits import sampler, bravo, sampler_contest
+from audit_math import sampler, bravo, sampler_contest
 from werkzeug.exceptions import (
     InternalServerError,
     Unauthorized,

@@ -7,7 +7,7 @@ from typing import Dict
 from arlo_server import app, db
 from arlo_server.models import Election, Contest
 from arlo_server.auth import with_election_access, UserType
-from audits import bravo, sampler_contest
+from audit_math import bravo, sampler_contest
 
 
 def sample_size_options(election: Election) -> dict:
