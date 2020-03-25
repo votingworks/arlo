@@ -7,11 +7,14 @@ targeted is being audited completely independently.
 """
 import math
 from scipy import stats
+from typing import Dict, Tuple, Any
 
 from .sampler_contest import Contest
 
 
-def get_expected_sample_sizes(risk_limit, contest, sample_results):
+def get_expected_sample_sizes(
+    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
+) -> float:
     """
     Returns the expected sample size for a BRAVO audit of <contest>
 
@@ -65,7 +68,9 @@ def get_expected_sample_sizes(risk_limit, contest, sample_results):
         return math.ceil((weighted_alpha + (z_w / 2.0)) / (p_w * z_w + p_l * z_l))
 
 
-def get_test_statistics(margins, sample_results):
+def get_test_statistics(
+    margins: Dict[str, Dict], sample_results: Dict[str, int]
+) -> Dict[Tuple[str, str], float]:
     """
     Computes T*, the test statistic from an existing sample.
 
@@ -109,7 +114,14 @@ def get_test_statistics(margins, sample_results):
     return T
 
 
-def bravo_sample_sizes(risk_limit, p_w, p_r, sample_w, sample_r, p_completion):
+def bravo_sample_sizes(
+    risk_limit: float,
+    p_w: float,
+    p_r: float,
+    sample_w: int,
+    sample_r: int,
+    p_completion: float,
+) -> int:
     """
     Analytic calculation for BRAVO round completion assuming the election
     outcome is correct. Written by Mark Lindeman.
@@ -201,7 +213,10 @@ def bravo_sample_sizes(risk_limit, p_w, p_r, sample_w, sample_r, p_completion):
     return size_adj
 
 
-def expected_prob(risk_limit, p_w, p_r, sample_w, sample_r, asn):
+def expected_prob(
+    risk_limit: float, p_w: float, p_r: float, sample_w: int, sample_r: int, asn: int
+) -> float:
+
     """
     Analytic calculation for BRAVO round completion of the expected value, assuming
     the election outcome is correct. Adapted from Mark Lindeman.
@@ -217,8 +232,8 @@ def expected_prob(risk_limit, p_w, p_r, sample_w, sample_r, asn):
         asn             - the expected value
 
     Outputs:
-        sample_size     - the expected sample size for the given chance
-                          of completion in one round
+        sample_size     - the expected chance of completion in one round for the
+                          given expected value (asn)
 
     """
 
@@ -255,7 +270,9 @@ def expected_prob(risk_limit, p_w, p_r, sample_w, sample_r, asn):
     return stats.norm.cdf(-z)
 
 
-def get_sample_size(risk_limit, contest, sample_results):
+def get_sample_size(
+    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
+) -> Dict:
     """
     Computes initial sample size parameterized by likelihood that the
     initial sample will confirm the election result, assuming no
@@ -354,7 +371,9 @@ def get_sample_size(risk_limit, contest, sample_results):
     return samples
 
 
-def compute_risk(risk_limit, contest, sample_results):
+def compute_risk(
+    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
+) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 

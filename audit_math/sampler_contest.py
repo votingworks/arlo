@@ -47,7 +47,7 @@ class Contest:
 
     margins: Dict[str, Dict]  # Dict of the margins for this contest
 
-    def __init__(self, name, contest_info_dict):
+    def __init__(self, name: str, contest_info_dict: Dict[str, int]):
         """
         Initializes the contest info from a dict of the form:
             {
@@ -137,7 +137,7 @@ class Contest:
                 "swl": swl,
             }
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """ 
         Generates a string representation of this object, for debugging. 
         """

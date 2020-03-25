@@ -6,7 +6,8 @@ from typing import cast, Any, Dict, List, Tuple
 import consistent_sampler
 import operator
 
-import audits.macro as macro
+import audit_math.macro as macro
+from audit_math import sampler_contest
 
 
 def draw_sample(
@@ -39,7 +40,7 @@ def draw_sample(
                 ]
     """
 
-    ballots = []
+    ballots: List[Tuple[str, int]] = []
     # First build a faux list of ballots
     for batch in manifest:
         for i in range(manifest[batch]):
@@ -63,8 +64,13 @@ def draw_sample(
 
 
 def draw_ppeb_sample(
-    seed, contest, manifest, sample_size, num_sampled=0, batch_results=None
-):
+    seed: str,
+    contest: sampler_contest,
+    manifest: Dict[str, int],
+    sample_size: int,
+    num_sampled: int,
+    batch_results: Dict[str, Dict[str, int]],
+) -> List[Tuple[str, Tuple[str, int], int]]:
     """
     Draws sample with replacement of size <sample_size> from the
     provided ballot manifest using proportional-with-error-bound (PPEB) sampling.
@@ -73,14 +79,24 @@ def draw_ppeb_sample(
     For use with batch audits like MACRO. 
 
     Inputs:
-        sample_size - number of ballots to randomly draw
-        num_sampled - number of ballots that have already been sampled
+        seed    - the random seed to use in sampling
         manifest - mapping of batches to the ballots they contain:
                     {
                         batch1: num_balots,
                         batch2: num_ballots,
                         ...
                     }
+        sample_size - number of ballots to randomly draw
+        num_sampled - number of ballots that have already been sampled
+        batch_results - the result of the election, per batch:
+                        { 
+                            'batch': {
+                                'cand1': votes,
+                                ...
+                                'ballots': ballots,
+                            }
+                            ...
+                        }
 
     Outputs:
         sample - list of 'tickets', consisting of:
