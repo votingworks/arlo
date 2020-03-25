@@ -2,6 +2,7 @@ from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
 import uuid, datetime
+from typing import Optional
 
 from arlo_server import app, db
 from arlo_server.models import (
@@ -37,12 +38,16 @@ def serialize_round(r: Round) -> dict:
     }
 
 
+def get_current_round(election: Election) -> Optional[Round]:
+    rounds = sorted(election.rounds, key=lambda r: r.round_num, reverse=True)
+    return next(iter(rounds), None)
+
+
 # Raises if invalid
 def validate_round(r: dict, election: Election):
     validate(r, CREATE_ROUND_REQUEST_SCHEMA)
 
-    rounds = sorted(election.rounds, key=lambda r: r.round_num, reverse=True)
-    current_round = next(iter(rounds), None)
+    current_round = get_current_round(election)
     next_round_num = current_round.round_num + 1 if current_round else 1
     if r["roundNum"] != next_round_num:
         raise BadRequest(f"The next round should be round number {next_round_num}")

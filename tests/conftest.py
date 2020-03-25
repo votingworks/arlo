@@ -6,7 +6,10 @@ from typing import List
 from arlo_server import app, db
 from arlo_server.models import Jurisdiction, USState
 from helpers import put_json, create_election
-from bgcompute import bgcompute_update_election_jurisdictions_file
+from bgcompute import (
+    bgcompute_update_election_jurisdictions_file,
+    bgcompute_update_ballot_manifest_file,
+)
 
 # The fixtures in this module are available in any test via dependency
 # injection.
@@ -85,3 +88,40 @@ def election_settings(client: FlaskClient, election_id: str) -> None:
     }
     rv = put_json(client, f"/election/{election_id}/settings", settings)
     assert json.loads(rv.data) == {"status": "ok"}
+
+
+@pytest.fixture
+def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+    rv = client.put(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Batch Name,Number of Ballots\n"
+                    b"1,23\n"
+                    b"2,101\n"
+                    b"3,122\n"
+                    b"4,400"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert rv.status_code == 200
+    rv = client.put(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Batch Name,Number of Ballots\n"
+                    b"1,20\n"
+                    b"2,10\n"
+                    b"3,220\n"
+                    b"4,40"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert rv.status_code == 200
+    bgcompute_update_ballot_manifest_file()

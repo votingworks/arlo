@@ -1,7 +1,6 @@
-import pytest
 from flask.testing import FlaskClient
 from typing import List
-import json, io, datetime
+import json, datetime, uuid
 
 from arlo_server import db
 from arlo_server.models import (
@@ -12,45 +11,7 @@ from arlo_server.models import (
     RoundContestResult,
     Batch,
 )
-from bgcompute import bgcompute_update_ballot_manifest_file
-from helpers import post_json, compare_json, assert_is_id, assert_is_date
-
-
-@pytest.fixture
-def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
-    rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"1,23\n"
-                    b"2,101\n"
-                    b"3,122\n"
-                    b"4,400"
-                ),
-                "manifest.csv",
-            )
-        },
-    )
-    assert rv.status_code == 200
-    rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"1,20\n"
-                    b"2,10\n"
-                    b"3,220\n"
-                    b"4,40"
-                ),
-                "manifest.csv",
-            )
-        },
-    )
-    assert rv.status_code == 200
-    bgcompute_update_ballot_manifest_file()
+from helpers import post_json, put_json, compare_json, assert_is_id, assert_is_date
 
 
 def test_rounds_list_empty(client: FlaskClient, election_id: str):
@@ -123,12 +84,33 @@ def test_rounds_create_two(
     manifests,
     election_settings,
 ):
+    contests = [
+        contest,
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 2",
+            "isTargeted": False,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 300,},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 200,},
+            ],
+            "totalBallotsCast": 5000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+            "jurisdictionIds": [jurisdiction_ids[0], jurisdiction_ids[2]],
+        },
+    ]
+    rv = put_json(client, f"/election/{election_id}/contest", contests)
+    assert rv.status_code == 200
+
     rv = post_json(
         client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 119,},
     )
     assert rv.status_code == 200
 
-    # Fake that the first round got completed
+    # Fake that the first round got completed by setting Round.ended_at.
+    # We also need to add RoundContestResults so that the next round sample
+    # size can get computed.
     round = Round.query.filter_by(election_id=election_id).one()
     round.ended_at = datetime.datetime.utcnow()
     db.session.add(
@@ -200,6 +182,7 @@ def test_rounds_create_two(
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
     sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in ballot_draws}
     assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
+    rv = client.get(f"/election/{election_id}/contest")
 
 
 def test_rounds_create_before_previous_round_complete(

@@ -1,58 +1,17 @@
+import pytest
 from flask.testing import FlaskClient
 from typing import List
-
 import json, uuid
 
-from helpers import put_json
+from helpers import post_json, put_json
+from arlo_server.models import RoundContest
+from arlo_server.contests import JSONDict
+from arlo_server import db
 
 
-def test_contests_list_empty(client: FlaskClient, election_id: str):
-    rv = client.get(f"/election/{election_id}/contest")
-    contests = json.loads(rv.data)
-    assert contests == {"contests": []}
-
-
-def test_contests_create_get_update_one(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-):
-    contest = {
-        "id": str(uuid.uuid4()),
-        "name": "Contest 1",
-        "isTargeted": True,
-        "choices": [
-            {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 48121,},
-            {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 38026,},
-        ],
-        "totalBallotsCast": 86147,
-        "numWinners": 1,
-        "votesAllowed": 1,
-        "jurisdictionIds": jurisdiction_ids,
-    }
-    rv = put_json(client, f"/election/{election_id}/contest", [contest])
-    assert json.loads(rv.data) == {"status": "ok"}
-
-    rv = client.get(f"/election/{election_id}/contest")
-    contests = json.loads(rv.data)
-    assert contests == {"contests": [contest]}
-
-    contest["totalBallotsCast"] = contest["totalBallotsCast"] + 21
-    contest["numWinners"] = 2
-    contest["choices"].append(
-        {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 21,}
-    )
-
-    rv = put_json(client, f"/election/{election_id}/contest", [contest])
-    assert json.loads(rv.data) == {"status": "ok"}
-
-    rv = client.get(f"/election/{election_id}/contest")
-    contests = json.loads(rv.data)
-    assert contests == {"contests": [contest]}
-
-
-def test_contests_create_get_update_multiple(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-):
-    contests = [
+@pytest.fixture
+def json_contests(jurisdiction_ids: List[str]) -> List[JSONDict]:
+    return [
         {
             "id": str(uuid.uuid4()),
             "name": "Contest 1",
@@ -64,7 +23,7 @@ def test_contests_create_get_update_multiple(
             "totalBallotsCast": 86147,
             "numWinners": 1,
             "votesAllowed": 1,
-            "jurisdictionIds": [],
+            "jurisdictionIds": jurisdiction_ids,
         },
         {
             "id": str(uuid.uuid4()),
@@ -77,7 +36,7 @@ def test_contests_create_get_update_multiple(
             "totalBallotsCast": 500,
             "numWinners": 1,
             "votesAllowed": 1,
-            "jurisdictionIds": jurisdiction_ids,
+            "jurisdictionIds": [],
         },
         {
             "id": str(uuid.uuid4()),
@@ -94,23 +53,131 @@ def test_contests_create_get_update_multiple(
             "jurisdictionIds": jurisdiction_ids[:1],
         },
     ]
-    rv = put_json(client, f"/election/{election_id}/contest", contests)
+
+
+def test_contests_list_empty(client, election_id):
+    rv = client.get(f"/election/{election_id}/contest")
+    contests = json.loads(rv.data)
+    assert contests == {"contests": []}
+
+
+def test_contests_create_get_update_one(client, election_id, json_contests):
+    contest = json_contests[0]
+    rv = put_json(client, f"/election/{election_id}/contest", [contest])
     assert json.loads(rv.data) == {"status": "ok"}
 
     rv = client.get(f"/election/{election_id}/contest")
-    json_contests = json.loads(rv.data)
-    assert json_contests == {"contests": contests}
+    contests = json.loads(rv.data)
+    expected_contest = {**contest, "currentRoundStatus": None}
+    assert contests == {"contests": [expected_contest]}
 
-    contests[0]["name"] = "Changed name"
-    contests[1]["isTargeted"] = True
-    contests[2]["jurisdictionIds"] = jurisdiction_ids[1:]
+    contest["totalBallotsCast"] = contest["totalBallotsCast"] + 21
+    contest["numWinners"] = 2
+    contest["choices"].append(
+        {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 21,}
+    )
 
-    rv = put_json(client, f"/election/{election_id}/contest", contests)
+    rv = put_json(client, f"/election/{election_id}/contest", [contest])
     assert json.loads(rv.data) == {"status": "ok"}
 
     rv = client.get(f"/election/{election_id}/contest")
-    json_contests = json.loads(rv.data)
-    assert json_contests == {"contests": contests}
+    contests = json.loads(rv.data)
+    expected_contest = {**contest, "currentRoundStatus": None}
+    assert contests == {"contests": [expected_contest]}
+
+
+def test_contests_create_get_update_multiple(
+    client: FlaskClient,
+    election_id: str,
+    json_contests: List[JSONDict],
+    jurisdiction_ids: List[str],
+):
+    rv = put_json(client, f"/election/{election_id}/contest", json_contests)
+    assert json.loads(rv.data) == {"status": "ok"}
+
+    rv = client.get(f"/election/{election_id}/contest")
+    contests = json.loads(rv.data)
+    expected_contests = [
+        {**contest, "currentRoundStatus": None} for contest in json_contests
+    ]
+    assert contests == {"contests": expected_contests}
+
+    json_contests[0]["name"] = "Changed name"
+    json_contests[1]["isTargeted"] = True
+    json_contests[2]["jurisdictionIds"] = jurisdiction_ids[1:]
+
+    rv = put_json(client, f"/election/{election_id}/contest", json_contests)
+    assert json.loads(rv.data) == {"status": "ok"}
+
+    rv = client.get(f"/election/{election_id}/contest")
+    contests = json.loads(rv.data)
+    expected_contests = [
+        {**contest, "currentRoundStatus": None} for contest in json_contests
+    ]
+    assert contests == {"contests": expected_contests}
+
+
+def test_contests_round_status(
+    client: FlaskClient,
+    election_id: str,
+    json_contests: List[JSONDict],
+    election_settings,
+    manifests,
+):
+    rv = put_json(client, f"/election/{election_id}/contest", json_contests)
+    assert rv.status_code == 200
+
+    SAMPLE_SIZE = 119  # Bravo sample size
+    rv = post_json(
+        client,
+        f"/election/{election_id}/round",
+        {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
+    )
+    assert rv.status_code == 200
+
+    rv = client.get(f"/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+
+    assert contests[0]["currentRoundStatus"] == {
+        "isRiskLimitMet": None,
+        "numBallotsSampled": SAMPLE_SIZE,
+    }
+    assert contests[1]["currentRoundStatus"] == {
+        "isRiskLimitMet": None,
+        "numBallotsSampled": 0,
+    }
+    assert contests[2]["currentRoundStatus"] == {
+        "isRiskLimitMet": None,
+        "numBallotsSampled": 81,
+    }
+
+    # Fake that one opportunistic contest met its risk limit, but the targeted
+    # contest did not
+    opportunistic_round_contest = RoundContest.query.filter_by(
+        contest_id=contests[1]["id"]
+    ).one()
+    opportunistic_round_contest.is_complete = True
+    targeted_round_contest = RoundContest.query.filter_by(
+        contest_id=contests[0]["id"]
+    ).one()
+    targeted_round_contest.is_complete = False
+    db.session.commit()
+
+    rv = client.get(f"/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+
+    assert contests[0]["currentRoundStatus"] == {
+        "isRiskLimitMet": False,
+        "numBallotsSampled": SAMPLE_SIZE,
+    }
+    assert contests[1]["currentRoundStatus"] == {
+        "isRiskLimitMet": True,
+        "numBallotsSampled": 0,
+    }
+    assert contests[2]["currentRoundStatus"] == {
+        "isRiskLimitMet": None,
+        "numBallotsSampled": 81,
+    }
 
 
 def test_contests_missing_field(
