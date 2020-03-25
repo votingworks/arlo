@@ -101,29 +101,13 @@ def compute_sample_sizes(round_contest):
             sample_results(election),
         )
 
-        sample_size_options = []
-        sample_size_90 = None
-        sample_size_backup = None
-        for (prob_or_asn, size) in raw_sample_size_options.items():
-            prob = None
-
-            if prob_or_asn == "asn":
-                if size["prob"]:
-                    prob = (round(size["prob"], 2),)  # round to the nearest hundreth
-                sample_size_options.append(
-                    {"type": "ASN", "prob": prob, "size": int(math.ceil(size["size"]))}
-                )
-                sample_size_backup = int(math.ceil(size["size"]))
-
-            else:
-                prob = prob_or_asn
-                sample_size_options.append(
-                    {"type": None, "prob": prob, "size": int(math.ceil(size))}
-                )
-
-                # stash this one away for later
-                if prob == 0.9:
-                    sample_size_90 = size
+        sample_size_options = list(raw_sample_size_options.values())
+        sample_size_backup = raw_sample_size_options["asn"]["size"]
+        sample_size_90 = (
+            raw_sample_size_options["0.9"]["size"]
+            if "0.9" in raw_sample_size_options
+            else None
+        )
 
         round_contest.sample_size_options = json.dumps(sample_size_options)
 

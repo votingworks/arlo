@@ -203,7 +203,6 @@ def test_bravo_sample_sizes_round1_incomplete():
 def test_get_sample_size(contests):
 
     for contest in contests:
-        print(contest)
         computed = bravo.get_sample_size(
             risk_limit, contests[contest], round0_sample_results
         )
@@ -235,11 +234,17 @@ def test_get_sample_size(contests):
             ], "Returned ASN probability when there shouldn't be one!"
 
         for item in computed:
-            if item == "asn":
-                continue
             assert (
-                round(computed[item], 2) == expected[item]
-            ), "get_sample_size failed! got {}, expected {}".format(computed, expected)
+                computed[item]["type"] == expected[item]["type"]
+                and computed[item]["size"] == expected[item]["size"]
+                and (
+                    round(computed[item]["prob"], 2) == expected[item]["prob"]
+                    if expected[item]["prob"]
+                    else not computed[item]["prob"]
+                )
+            ), "get_sample_size failed! got {}, expected {}".format(
+                computed[item], expected[item]
+            )
 
 
 def test_bravo_expected_prob():
@@ -272,13 +277,13 @@ def test_compute_risk(contests):
     expected_Ts = {
         "test1": {("cand1", "cand2"): 0.07},
         "test2": {("cand1", "cand2"): 10.38, ("cand1", "cand3"): 0,},
-        "test3": {("cand1",): 1},
-        "test4": {("cand1",): 1},
+        "test3": {("cand1", ""): 1},
+        "test4": {("cand1", ""): 1},
         "test5": {("cand1", "cand2"): 1},
         "test6": {("cand1", "cand2"): 0.08, ("cand1", "cand3"): 0.08,},
         "test7": {("cand1", "cand3"): 0.01, ("cand2", "cand3"): 0.04,},
         "test8": {("cand1", "cand3"): 0.0, ("cand2", "cand3"): 0.22,},
-        "test9": {("cand1",): 1, ("cand2",): 1,},
+        "test9": {("cand1", ""): 1, ("cand2", ""): 1,},
         "test10": {("cand1", "cand3"): 0, ("cand2", "cand3"): 0.01,},
     }
 
@@ -320,13 +325,13 @@ def test_compute_risk_empty(contests):
     expected_Ts = {
         "test1": {("cand1", "cand2"): 1},
         "test2": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
-        "test3": {("cand1",): 1},
-        "test4": {("cand1",): 1},
+        "test3": {("cand1", ""): 1},
+        "test4": {("cand1", ""): 1},
         "test5": {("cand1", "cand2"): 1},
         "test6": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
         "test7": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
         "test8": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
-        "test9": {("cand1",): 1, ("cand2",): 1,},
+        "test9": {("cand1", ""): 1, ("cand2", ""): 1,},
         "test10": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
     }
 
@@ -457,14 +462,44 @@ round1_sample_results = {
 }
 
 true_sample_sizes = {
-    "test1": {"asn": {"size": 119, "prob": 0.52}, 0.7: 184, 0.8: 244, 0.9: 351,},
-    "test2": {"asn": {"size": 22, "prob": 0.6}, 0.7: 32, 0.8: 41, 0.9: 57,},
-    "test3": {"asn": {"size": -1, "prob": -1}, 0.7: -1, 0.8: -1, 0.9: -1,},
-    "test4": {"asn": {"size": -1, "prob": -1}, 0.7: -1, 0.8: -1, 0.9: -1,},
-    "test5": {"asn": {"size": 1000, "prob": 1}, 0.7: 1000, 0.8: 1000, 0.9: 1000},
-    "test6": {"asn": {"size": 238, "prob": 0.79}, 0.7: 368, 0.8: 488, 0.9: 702},
-    "test7": {"asn": {"size": 101, "prob": None,},},
-    "test8": {"asn": {"size": 34, "prob": None,},},
-    "test9": {"asn": {"size": -1, "prob": None,},},
-    "test10": {"asn": {"size": 48, "prob": None,},},
+    "test1": {
+        "asn": {"type": "ASN", "size": 119, "prob": 0.52},
+        "0.7": {"type": None, "size": 184, "prob": 0.7},
+        "0.8": {"type": None, "size": 244, "prob": 0.8},
+        "0.9": {"type": None, "size": 351, "prob": 0.9},
+    },
+    "test2": {
+        "asn": {"type": "ASN", "size": 22, "prob": 0.6},
+        "0.7": {"type": None, "size": 32, "prob": 0.7},
+        "0.8": {"type": None, "size": 41, "prob": 0.8},
+        "0.9": {"type": None, "size": 57, "prob": 0.9},
+    },
+    "test3": {
+        "asn": {"type": "ASN", "size": -1, "prob": -1},
+        "0.7": {"type": None, "size": -1, "prob": 0.7},
+        "0.8": {"type": None, "size": -1, "prob": 0.8},
+        "0.9": {"type": None, "size": -1, "prob": 0.9},
+    },
+    "test4": {
+        "asn": {"type": "ASN", "size": -1, "prob": -1},
+        "0.7": {"type": None, "size": -1, "prob": 0.7},
+        "0.8": {"type": None, "size": -1, "prob": 0.8},
+        "0.9": {"type": None, "size": -1, "prob": 0.9},
+    },
+    "test5": {
+        "asn": {"type": "ASN", "size": 1000, "prob": 1},
+        "0.7": {"type": None, "size": 1000, "prob": 0.7},
+        "0.8": {"type": None, "size": 1000, "prob": 0.8},
+        "0.9": {"type": None, "size": 1000, "prob": 0.9},
+    },
+    "test6": {
+        "asn": {"type": "ASN", "size": 238, "prob": 0.79},
+        "0.7": {"type": None, "size": 368, "prob": 0.7},
+        "0.8": {"type": None, "size": 488, "prob": 0.8},
+        "0.9": {"type": None, "size": 702, "prob": 0.9},
+    },
+    "test7": {"asn": {"type": "ASN", "size": 101, "prob": None,},},
+    "test8": {"asn": {"type": "ASN", "size": 34, "prob": None,},},
+    "test9": {"asn": {"type": "ASN", "size": -1, "prob": None,},},
+    "test10": {"asn": {"type": "ASN", "size": 48, "prob": None,},},
 }

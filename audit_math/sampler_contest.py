@@ -42,8 +42,8 @@ class Contest:
     ballots: int  # The total number of ballots cast in this contest
     name: str  # The name of the contest
 
-    winners: List[str]  # List of all the winners
-    losers: List[str]  # List of all the losers
+    winners: List[Tuple[str, int]]  # List of all the winners
+    losers: List[Tuple[str, int]]  # List of all the losers
 
     margins: Dict[str, Dict]  # Dict of the margins for this contest
 
@@ -67,8 +67,8 @@ class Contest:
 
         self.candidates = {}
 
-        self.winners = []
-        self.losers = []
+        self.winners: List[Tuple[str, int]] = []
+        self.losers: List[Tuple[str, int]] = []
 
         for cand in contest_info_dict:
             if cand in ["ballots", "numWinners", "votesAllowed"]:
@@ -112,7 +112,7 @@ class Contest:
             reverse=True,
         )
 
-        self.winners = cand_vec[: self.numWinners]
+        self.winners = cast(List[Tuple[str, int]], cand_vec[: self.numWinners])
         self.losers = cand_vec[self.numWinners :]
 
         v_wl = sum([c[1] for c in self.winners + self.losers])

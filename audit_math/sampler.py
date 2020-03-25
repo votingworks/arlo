@@ -7,7 +7,7 @@ import consistent_sampler
 import operator
 
 import audit_math.macro as macro
-from audit_math import sampler_contest
+from .sampler_contest import Contest
 
 
 def draw_sample(
@@ -65,11 +65,11 @@ def draw_sample(
 
 def draw_ppeb_sample(
     seed: str,
-    contest: sampler_contest,
+    contest: Contest,
     manifest: Dict[str, int],
     sample_size: int,
     num_sampled: int,
-    batch_results: Dict[str, Dict[str, int]],
+    batch_results: Dict[str, Dict[str, Dict[str, int]]],
 ) -> List[Tuple[str, Tuple[str, int], int]]:
     """
     Draws sample with replacement of size <sample_size> from the
@@ -91,9 +91,10 @@ def draw_ppeb_sample(
         batch_results - the result of the election, per batch:
                         { 
                             'batch': {
-                                'cand1': votes,
-                                ...
-                                'ballots': ballots,
+                                'contest': {
+                                    'cand1': votes,
+                                    ...
+                                }
                             }
                             ...
                         }
@@ -116,7 +117,7 @@ def draw_ppeb_sample(
 
     # Map each batch to its weighted probability of being picked
     batch_to_prob = {}
-    min_prob = 1
+    min_prob = 1.0
     # Get u_ps
     for batch in batch_results:
         error = macro.compute_max_error(batch_results[batch], contest)
@@ -152,7 +153,7 @@ def draw_ppeb_sample(
 
     # here we take off the decimals.
     sample = []
-    for i in faux_sample:
-        sample.append((i[0], i[1].split(".")[0], i[2]))
+    for item in faux_sample:
+        sample.append((item[0], item[1].split(".")[0], item[2]))
 
     return sample

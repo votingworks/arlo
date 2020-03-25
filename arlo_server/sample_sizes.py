@@ -40,19 +40,6 @@ def get_sample_sizes(election: Election):
     sample_sizes = sample_size_options(election)
 
     # Convert the results into a slightly more regular format
-    json_sizes = []
-    for prob, size in sample_sizes.items():
-        if prob == "asn":
-            json_sizes.append(
-                {
-                    "type": "ASN",
-                    "prob": round(size["prob"], 2),
-                    "size": int(math.ceil(size["size"])),
-                }
-            )
-        else:
-            json_sizes.append(
-                {"type": None, "prob": prob, "size": int(math.ceil(size)),}
-            )
+    json_sizes = list(sample_sizes.values())
 
     return jsonify({"sampleSizes": json_sizes})
