@@ -30,11 +30,11 @@ interface IProps {
 const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   const { electionId } = useParams()
   const [isLoading, setIsLoading] = useState(false)
-  const [{ state = '' }, updateState] = useAuditSettings(electionId!)
+  const [{ state = '' }, updateSettings] = useAuditSettings(electionId!)
   const submit = async (values: IValues) => {
     try {
       setIsLoading(true)
-      const responseOne = updateState({ state: values.state })
+      const responseOne = updateSettings({ state: values.state })
       if (!responseOne) return
       /* istanbul ignore else */
       if (values.csv) {
