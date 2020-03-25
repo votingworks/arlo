@@ -7,14 +7,14 @@ targeted is being audited completely independently.
 """
 import math
 from scipy import stats
-from typing import Dict, Tuple, Any
+from typing import Dict, Tuple, Any, Union, Optional
 
 from .sampler_contest import Contest
 
 
 def get_expected_sample_sizes(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
-) -> float:
+    risk_limit: float, contest: Contest, sample_results: Dict[str, Dict[str, int]]
+) -> int:
     """
     Returns the expected sample size for a BRAVO audit of <contest>
 
@@ -34,9 +34,9 @@ def get_expected_sample_sizes(
     """
 
     margin = contest.margins
-    p_w = 10 ** 7
-    s_w = 0
-    p_l = 0
+    p_w = 10.0 ** 7
+    s_w = 0.0
+    p_l = 0.0
     # Get smallest p_w - p_l
     for winner in margin["winners"]:
         if margin["winners"][winner]["p_w"] < p_w:
@@ -51,7 +51,7 @@ def get_expected_sample_sizes(
 
     s_w = p_w / (p_w + p_l)
 
-    if p_w == 1:
+    if p_w == 1.0:
         # Handle single-candidate or crazy landslides
         return -1
     elif p_w == p_l:
@@ -96,12 +96,12 @@ def get_test_statistics(
     # Setup pair-wise Ts:
     for winner in winners:
         for loser in losers:
-            T[(winner, loser)] = 1
+            T[(winner, loser)] = 1.0
 
     # Handle the no-losers case
     if not losers:
         for winner in winners:
-            T[(winner,)] = 1
+            T[(winner, "")] = 1.0
 
     for cand, votes in sample_results.items():
         if cand in winners:
@@ -267,12 +267,12 @@ def expected_prob(
     z = (R_x - n * p_w2) / math.sqrt(n * p_w2 * p_r2)
 
     # Invert the PPF used to compute z from the sample prob
-    return stats.norm.cdf(-z)
+    return round(float(stats.norm.cdf(-z)), 2)
 
 
 def get_sample_size(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
-) -> Dict:
+    risk_limit: float, contest: Contest, sample_results: Dict[str, Dict[str, int]]
+) -> Dict[str, Dict[str, Optional[Union[float, int, str]]]]:
     """
     Computes initial sample size parameterized by likelihood that the
     initial sample will confirm the election result, assuming no
@@ -307,19 +307,18 @@ def get_sample_size(
 
     quants = [0.7, 0.8, 0.9]
 
-    samples = {}
+    samples: Dict = {}
 
     asn = get_expected_sample_sizes(risk_limit, contest, sample_results)
-    samples = {}
 
-    p_w = 10 ** 7
-    p_l = 0
+    p_w = 10.0 ** 7
+    p_l = 0.0
     best_loser = ""
     worse_winner = ""
 
     # For multi-winner, do nothing
     if contest.numWinners != 1:
-        return {"asn": {"size": asn, "prob": None}}
+        return {"asn": {"type": "ASN", "size": asn, "prob": None}}
 
     margin = contest.margins
     # Get smallest p_w - p_l
@@ -335,9 +334,9 @@ def get_sample_size(
 
     # If we're in a single-candidate race, set sample to 0
     if not margin["losers"]:
-        samples["asn"] = {"size": -1, "prob": -1}
+        samples["asn"] = {"type": "ASN", "size": -1, "prob": -1.0}
         for quant in quants:
-            samples[quant] = -1
+            samples[str(quant)] = {"type": None, "size": -1.0, "prob": quant}
 
         return samples
 
@@ -346,12 +345,13 @@ def get_sample_size(
     # Handles ties
     if p_w == p_l:
         samples["asn"] = {
+            "type": "ASN",
             "size": num_ballots,
-            "prob": 1,
+            "prob": 1.0,
         }
 
         for quant in quants:
-            samples[quant] = num_ballots
+            samples[str(quant)] = {"type": None, "size": num_ballots, "prob": quant}
 
         return samples
 
@@ -359,21 +359,21 @@ def get_sample_size(
     sample_l = sample_results[contest.name][best_loser]
 
     samples["asn"] = {
+        "type": "ASN",
         "size": asn,
         "prob": expected_prob(risk_limit, p_w, p_l, sample_w, sample_l, asn),
     }
 
     for quant in quants:
-        samples[quant] = bravo_sample_sizes(
-            risk_limit, p_w, p_l, sample_w, sample_l, quant
-        )
+        size = bravo_sample_sizes(risk_limit, p_w, p_l, sample_w, sample_l, quant)
+        samples[str(quant)] = {"type": None, "size": size, "prob": quant}
 
     return samples
 
 
 def compute_risk(
     risk_limit: float, contest: Contest, sample_results: Dict[str, int]
-) -> Tuple[float, bool]:
+) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 

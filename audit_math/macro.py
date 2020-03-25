@@ -14,7 +14,9 @@ from typing import Any, Dict, List, Tuple
 
 
 def compute_error(
-    batch_results: Dict[str, int], contest: Contest, sampled_results: Dict[str, int]
+    batch_results: Dict[str, Dict[str, int]],
+    contest: Contest,
+    sampled_results: Dict[str, Dict[str, int]],
 ) -> float:
     """
     Computes the error in this batch
@@ -38,7 +40,7 @@ def compute_error(
         the maximum across-contest relative overstatement for batch p
     """
 
-    error = 0
+    error = 0.0
     margins = contest.margins
     for winner in margins["winners"]:
         for loser in margins["losers"]:
@@ -58,7 +60,9 @@ def compute_error(
     return error
 
 
-def compute_max_error(batch_results: Dict[str, int], contest: Contest) -> float:
+def compute_max_error(
+    batch_results: Dict[str, Dict[str, int]], contest: Contest
+) -> float:
     """
     Computes the maximum possible error in this batch for this contest
 
@@ -79,11 +83,11 @@ def compute_max_error(batch_results: Dict[str, int], contest: Contest) -> float:
         the maximum possible overstatement for batch p
     """
 
-    error = 0
+    error = 0.0
 
     # We only care about error in targeted contests
     if contest.name not in batch_results:
-        return 0
+        return 0.0
 
     margins = contest.margins
     for winner in margins["winners"]:
@@ -103,7 +107,9 @@ def compute_max_error(batch_results: Dict[str, int], contest: Contest) -> float:
     return error
 
 
-def compute_U(reported_results: Dict[str, Dict[str, int]], contest: Contest) -> float:
+def compute_U(
+    reported_results: Dict[str, Dict[str, Dict[str, int]]], contest: Contest
+) -> float:
     """
     Computes U, the sum of the batch-wise relative overstatement limits,
     i.e. the maximum amount of possible overstatement in a given election.
@@ -126,7 +132,7 @@ def compute_U(reported_results: Dict[str, Dict[str, int]], contest: Contest) -> 
     Outputs:
         U - the sum of the maximum possible overstatement for each batch
     """
-    U = 0
+    U = 0.0
     for batch in reported_results:
         U += compute_max_error(reported_results[batch], contest)
 
@@ -136,8 +142,8 @@ def compute_U(reported_results: Dict[str, Dict[str, int]], contest: Contest) -> 
 def get_sample_sizes(
     risk_limit: float,
     contest: Contest,
-    reported_results: Dict[str, Dict[str, int]],
-    sample_results: Dict[str, Dict[str, int]],
+    reported_results: Dict[str, Dict[str, Dict[str, int]]],
+    sample_results: Dict[str, Dict[str, Dict[str, int]]],
 ) -> float:
     """
     Computes initial sample sizes parameterized by likelihood that the
@@ -187,8 +193,8 @@ def get_sample_sizes(
 def compute_risk(
     risk_limit: float,
     contest: Contest,
-    reported_results: Dict[str, Dict[str, int]],
-    sample_results: Dict[str, Dict[str, int]],
+    reported_results: Dict[str, Dict[str, Dict[str, int]]],
+    sample_results: Dict[str, Dict[str, Dict[str, int]]],
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -220,7 +226,7 @@ def compute_risk(
     """
     assert risk_limit < 1, "The risk-limit must be less than one!"
 
-    p = 1
+    p = 1.0
 
     U = compute_U(reported_results, contest)
 
