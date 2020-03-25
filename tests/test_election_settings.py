@@ -37,7 +37,7 @@ def test_update_election(client: FlaskClient, election_id: str):
 
     election_record = Election.query.filter_by(id=election_id).one()
     assert election_record.election_name == "An Updated Name"
-    assert election_record.online == True
+    assert election_record.online is True
     assert election_record.random_seed == "a new random seed"
     assert election_record.risk_limit == 15
     assert election_record.state == USState.Mississippi

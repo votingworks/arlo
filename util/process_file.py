@@ -17,7 +17,7 @@ def process_file(session: Session, file: File, callback: Callable[[], None]) -> 
     result = session.execute(
         update(File.__table__)
         .where(File.id == file.id)
-        .where(File.processing_started_at == None)
+        .where(File.processing_started_at.is_(None))
         .values(processing_started_at=file.processing_started_at)
     )
     if result.rowcount == 0:

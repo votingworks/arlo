@@ -43,7 +43,7 @@ def bgcompute_compute_round_contests_sample_sizes():
 def bgcompute_update_election_jurisdictions_file() -> int:
     files = (
         File.query.join(Election, File.id == Election.jurisdictions_file_id)
-        .filter(File.processing_started_at == None)
+        .filter(File.processing_started_at.is_(None))
         .all()
     )
 
@@ -59,7 +59,7 @@ def bgcompute_update_election_jurisdictions_file() -> int:
 def bgcompute_update_ballot_manifest_file() -> int:
     files = (
         File.query.join(Jurisdiction, File.id == Jurisdiction.manifest_file_id)
-        .filter(File.processing_started_at == None)
+        .filter(File.processing_started_at.is_(None))
         .all()
     )
 

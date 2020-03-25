@@ -69,4 +69,4 @@ def test_audit_basic_update_sets_default_for_contest_is_targeted(client, electio
     assert json.loads(rv.data)["status"] == "ok"
 
     rv = client.get(f"/election/{election_id}/audit/status")
-    assert json.loads(rv.data)["contests"][0]["isTargeted"] == True
+    assert json.loads(rv.data)["contests"][0]["isTargeted"] is True
