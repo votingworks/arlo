@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { toast } from 'react-toastify'
+import { useParams } from 'react-router-dom'
 import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
 import { RadioGroup, Radio } from '@blueprintjs/core'
 import { IAudit } from '../../../../types'
@@ -10,15 +12,10 @@ import FormWrapper from '../../../Form/FormWrapper'
 import FormSection from '../../../Form/FormSection'
 import { Select } from '../../EstimateSampleSize'
 import { generateOptions, ErrorLabel } from '../../../Form/_helpers'
+import { parse as parseNumber } from '../../../../utils/number-schema'
 import FormField from '../../../Form/FormField'
 import schema from './schema'
-
-const initialValues = {
-  electionName: '',
-  randomSeed: '',
-  riskLimit: 10,
-  online: true,
-}
+import useAuditSettings from '../useAuditSettings'
 
 interface IProps {
   audit: IAudit
@@ -31,13 +28,33 @@ const Settings: React.FC<IProps> = ({
   prevStage,
   audit,
 }: IProps) => {
+  const { electionId } = useParams()
+  const [isLoading, setIsLoading] = useState(false)
+  const [
+    { electionName = '', randomSeed = '', riskLimit = 10, online = true },
+    updateState,
+  ] = useAuditSettings(electionId!)
   const submit = async (values: IValues) => {
-    console.log(values)
-    nextStage.activate()
+    try {
+      setIsLoading(true)
+      const response = updateState({
+        ...values,
+        riskLimit: parseNumber(values.riskLimit), // Formik stringifies internally
+      })
+      if (!response) return
+      nextStage.activate()
+    } catch (err) {
+      toast.error(err.message)
+    }
   }
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={{
+        electionName,
+        randomSeed,
+        riskLimit,
+        online,
+      }}
       validationSchema={schema}
       onSubmit={submit}
       enableReinitialize
@@ -109,8 +126,20 @@ const Settings: React.FC<IProps> = ({
             </FormSection>
           </FormWrapper>
           <FormButtonBar>
-            <FormButton onClick={prevStage.activate}>Back</FormButton>
-            <FormButton onClick={handleSubmit}>Save &amp; Next</FormButton>
+            <FormButton
+              loading={isLoading}
+              disabled={isLoading}
+              onClick={prevStage.activate}
+            >
+              Back
+            </FormButton>
+            <FormButton
+              loading={isLoading}
+              disabled={isLoading}
+              onClick={handleSubmit}
+            >
+              Save &amp; Next
+            </FormButton>
           </FormButtonBar>
         </Form>
       )}

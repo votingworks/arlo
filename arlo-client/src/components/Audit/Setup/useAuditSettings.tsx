@@ -23,7 +23,7 @@ type TNewSettings =
 
 const useAuditSettings = (
   electionId: string
-): [IAuditSettings, (arg0: TNewSettings) => void] => {
+): [IAuditSettings, (arg0: TNewSettings) => Promise<boolean>] => {
   const [settings, setSettings] = useState(defaultValues)
 
   const getSettings = useCallback(async (): Promise<IAuditSettings> => {
@@ -36,7 +36,9 @@ const useAuditSettings = (
     return settingsOrError
   }, [electionId])
 
-  const updateSettings = async (newSettings: TNewSettings) => {
+  const updateSettings = async (
+    newSettings: TNewSettings
+  ): Promise<boolean> => {
     const oldSettings = await getSettings()
     const mergedSettings = {
       ...oldSettings,
@@ -53,9 +55,10 @@ const useAuditSettings = (
       }
     )
     if (checkAndToast(response)) {
-      return
+      return false
     }
     setSettings(mergedSettings)
+    return true
   }
 
   useEffect(() => {

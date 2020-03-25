@@ -34,7 +34,8 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   const submit = async (values: IValues) => {
     try {
       setIsLoading(true)
-      updateState({ state: values.state })
+      const responseOne = updateState({ state: values.state })
+      if (!responseOne) return
       /* istanbul ignore else */
       if (values.csv) {
         const formData: FormData = new FormData()
