@@ -121,8 +121,8 @@ def test_contests_round_status(
     client: FlaskClient,
     election_id: str,
     json_contests: List[JSONDict],
-    election_settings,
-    manifests,
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
 ):
     rv = put_json(client, f"/election/{election_id}/contest", json_contests)
     assert rv.status_code == 200
