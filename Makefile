@@ -1,3 +1,4 @@
+PIPENV=python3.7 -m pipenv
 
 deps:
 	sudo apt install python3.7 python3-pip nodejs libpython3.7-dev libpq-dev
@@ -11,13 +12,13 @@ initdevdb:
 	sudo -u postgres psql -c "create database arlo with owner arlo;"
 
 install:
-	python3.7 -m pipenv install
+	${PIPENV} install
 	yarn install
 	yarn --cwd arlo-client install
 	yarn --cwd arlo-client build
 
 install-development:
-	python3.7 -m pipenv install --dev
+	${PIPENV} install --dev
 	yarn install
 	yarn --cwd arlo-client install
 
@@ -25,37 +26,38 @@ resettestdb:
 	FLASK_ENV=test make resetdb
 
 resetdb:
-	python3.7 -m pipenv run python resetdb.py
+	${PIPENV} run python resetdb.py
 
 dev-environment: deps initdevdb install-development resetdb
 
-typecheck:
-	python3.7 -m pipenv run mypy .
+typecheck-server:
+	${PIPENV} run mypy .
 
-format-python:
-	python3.7 -m pipenv run black .
+format-server:
+	${PIPENV} run black .
 
 lint-server:
-	find . -name '*.py' | xargs python3.7 -m pipenv run pylint
+	find . -name '*.py' | xargs ${PIPENV} run pylint
 
 test-client:
 	yarn --cwd arlo-client lint
 	yarn --cwd arlo-client test
 
-# To run a specific test: TEST=<test name> make test-server
+# To run tests matching a search string: TEST=<search string> make test-server
+# To run specific test files: FILE=<file path> make test-server
+# To pass in additional flags to pytest: FLAGS=<extra flags> make test-server
 test-server:
-	FLASK_ENV=test python3.7 -m pipenv run python -m pytest -k '${TEST}' --ignore=arlo-client -vv
+	FLASK_ENV=test ${PIPENV} run python -m pytest ${FILE} \
+		-k '${TEST}' --ignore=arlo-client -vv ${FLAGS}
 
-# Only tests audit_math
 test-math:
-	FLASK_ENV=test python3.7 -m pipenv run python -m pytest tests/audit_math_tests -k '${TEST}' 
+	FILE=tests/audit_math_tests make test-server
 
-
-# Only tests utils
 test-utils:
-	FLASK_ENV=test python3.7 -m pipenv run python -m pytest tests/util_tests -k '${TEST}' 
+	FILE=tests/util_tests make test-server
 
-
-# Only tests routes
 test-routes:
-	FLASK_ENV=test python3.7 -m pipenv run python -m pytest tests/routes_tests -k '${TEST}' 
+	FILE=tests/routes_tests make test-server
+
+python-shell:
+	${PIPENV} run python
