@@ -1,19 +1,34 @@
 from flask import jsonify, request
-from jsonschema import validate
 
 from arlo_server import app, db
 from arlo_server.auth import with_election_access, UserType
 from arlo_server.models import Election, USState
 
-from util.jsonschema import nullable, Enum, Obj, Str, Bool, IntRange
+from util.jsonschema import validate
 
-GET_ELECTION_SETTINGS_RESPONSE_SCHEMA = Obj(
-    electionName=nullable(Str),
-    online=Bool,
-    randomSeed=nullable(Str),
-    riskLimit=nullable(IntRange(1, 20)),
-    state=nullable(Enum([state.value for state in USState])),
-)
+
+GET_ELECTION_SETTINGS_RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "electionName": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "online": {"type": "boolean"},
+        "randomSeed": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "riskLimit": {
+            "anyOf": [
+                {"type": "integer", "minimum": 1, "maximum": 20},
+                {"type": "null"},
+            ]
+        },
+        "state": {
+            "anyOf": [
+                {"type": "string", "enum": [state.value for state in USState]},
+                {"type": "null"},
+            ]
+        },
+    },
+    "additionalProperties": False,
+    "required": ["electionName", "online", "randomSeed", "riskLimit", "state"],
+}
 
 
 PUT_ELECTION_SETTINGS_REQUEST_SCHEMA = GET_ELECTION_SETTINGS_RESPONSE_SCHEMA

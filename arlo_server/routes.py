@@ -1,5 +1,4 @@
 import os, datetime, csv, io, json, uuid, re, hmac, urllib.parse, itertools
-from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
 from flask import jsonify, request, Response, redirect, session
@@ -47,6 +46,7 @@ from config import (
 
 from util.ballot_manifest import sample_ballots
 from util.isoformat import isoformat
+from util.jsonschema import validate
 from util.process_file import serialize_file, serialize_file_processing
 
 AUDIT_BOARD_MEMBER_COUNT = 2

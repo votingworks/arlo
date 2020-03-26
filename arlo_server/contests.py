@@ -1,11 +1,11 @@
 from typing import List
 from flask import request, jsonify
-from jsonschema import validate
 from werkzeug.exceptions import BadRequest
 
 from arlo_server import app, db
 from arlo_server.routes import with_election_access, UserType
 from arlo_server.models import Contest, ContestChoice, Election, Jurisdiction
+from util.jsonschema import validate
 
 CONTEST_CHOICE_SCHEMA = {
     "type": "object",
@@ -15,6 +15,7 @@ CONTEST_CHOICE_SCHEMA = {
         "numVotes": {"type": "integer", "minimum": 0},
     },
     "required": ["id", "name", "numVotes"],
+    "additionalProperties": False,
 }
 
 CONTEST_SCHEMA = {
@@ -39,6 +40,7 @@ CONTEST_SCHEMA = {
         "votesAllowed",
         "jurisdictionIds",
     ],
+    "additionalProperties": False,
 }
 
 

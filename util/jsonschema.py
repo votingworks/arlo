@@ -1,42 +1,63 @@
-from typing import Any, Dict, List
+import jsonschema
+import jsonschema.validators
+from typing import Any, Dict, List, Union
 
-JSONSchema = Any
-Str = {"type": "string"}
-Int = {"type": "integer"}
-Bool = {"type": "boolean"}
-
-
-def nullable(schema: JSONSchema) -> JSONSchema:
-    return {"anyOf": [schema, {"type": "null"}]}
+JSONSchema = Dict[str, Any]
 
 
-def Obj(**properties: Dict[str, JSONSchema]) -> JSONSchema:
-    return {
-        "type": "object",
-        "properties": properties,
-        "additionalProperties": False,
-        "required": list(properties.keys()),
-    }
+def validate(instance: Any, schema: JSONSchema):
+    jsonschema.validators.validator_for(schema).check_schema(schema)
+    validate_schema(schema)
+    jsonschema.validate(instance=instance, schema=schema)
 
 
-def Enum(values: List[str]) -> JSONSchema:
-    return {
-        "type": "string",
-        "enum": values,
-    }
+def validate_schema(schema: JSONSchema):
+    def validate_schema_node(node: JSONSchema, current_keypath: List[Union[str, int]]):
+        assert isinstance(node, dict)
+        if node.get("type", None) == "object":
+            properties = node["properties"]
+            assert isinstance(properties, dict)
+
+            if "additionalProperties" not in node:
+                raise jsonschema.exceptions.ValidationError(
+                    f"'additionalProperties' must be present on objects, and should probably be False (at {_serialize_keypath(current_keypath)})"
+                )
+
+            if "required" not in node:
+                hint = '"required": [%s]' % "".join(f'"{key}"' for key in properties)
+                raise jsonschema.exceptions.ValidationError(
+                    f"'required' must be present on objects, maybe you want: {hint} (at {_serialize_keypath(current_keypath)})"
+                )
+
+            for index, key in enumerate(node["required"]):
+                if key not in properties:
+                    raise jsonschema.exceptions.ValidationError(
+                        f"required property \"{key}\" must be present in 'properties', but it was not (at {_serialize_keypath(current_keypath + ['required', index])})"
+                    )
+
+            for key, prop in properties.items():
+                validate_schema_node(prop, current_keypath + ["properties", key])
+        elif node.get("type", None) == "array":
+            validate_schema_node(node["items"], current_keypath + ["items"])
+        elif "anyOf" in node:
+            for index, element in enumerate(node["anyOf"]):
+                validate_schema_node(element, current_keypath + ["anyOf", index])
+        elif node.get("type", None) in ["string", "boolean", "integer", "null"]:
+            pass
+        else:
+            raise jsonschema.exceptions.ValidationError(
+                f"unknown schema object: {node}"
+            )
+
+    validate_schema_node(schema, [])
 
 
-def IntRange(
-    minimum: int, maximum: int, exclusiveMaximum=False, exclusiveMinimum=False
-):
-    if exclusiveMinimum:
-        minimum += 1
-    if exclusiveMaximum:
-        maximum -= 1
+def _serialize_key(key: Union[str, int]):
+    if isinstance(key, str):
+        return f'"{key}"'
+    else:
+        return f"{key}"
 
-    assert minimum <= maximum
-    return {
-        "type": "integer",
-        "minimum": minimum,
-        "maximum": maximum,
-    }
+
+def _serialize_keypath(keypath: List[Union[str, int]]):
+    return f"schema{''.join(f'[{_serialize_key(key)}]' for key in keypath)}"
