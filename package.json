@@ -7,7 +7,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn --cwd arlo-client tsc && lint-staged && yarn --cwd arlo-client lint-staged"
+      "pre-commit": "yarn --cwd arlo-client tsc && lint-staged && yarn --cwd arlo-client lint-staged && make typecheck-server"
     }
   },
   "lint-staged": {
@@ -15,7 +15,8 @@
       "prettier --write"
     ],
     "*.py": [
-      "python3.7 -m pipenv run black"
+      "python3.7 -m pipenv run black",
+      "python3.7 -m pipenv run pylint"
     ],
     "package.json": [
       "sort-package-json"
