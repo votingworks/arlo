@@ -19,7 +19,7 @@ def db():
 
     yield arlo_server.db
 
-    arlo_server.db.session.commit()
+    arlo_server.db.session.rollback()
 
 
 def test_first_update(db):

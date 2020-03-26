@@ -90,6 +90,8 @@ class Jurisdiction(BaseModel):
         passive_deletes=True,
     )
 
+    __table_args__ = (db.UniqueConstraint("election_id", "name"),)
+
 
 class User(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
@@ -161,6 +163,8 @@ class Batch(BaseModel):
     ballot_draws = relationship(
         "SampledBallotDraw", backref="batch", passive_deletes=True
     )
+
+    __table_args__ = (db.UniqueConstraint("jurisdiction_id", "name"),)
 
 
 class Contest(BaseModel):

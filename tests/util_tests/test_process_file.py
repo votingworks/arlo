@@ -1,7 +1,8 @@
 import datetime
 import pytest
 import uuid
-from typing import Optional
+from sqlalchemy import insert
+from sqlalchemy.exc import SQLAlchemyError
 
 import arlo_server
 from arlo_server.models import File
@@ -16,7 +17,7 @@ def db():
 
     yield arlo_server.db
 
-    arlo_server.db.session.commit()
+    arlo_server.db.session.rollback()
 
 
 def test_success(db):
@@ -29,28 +30,14 @@ def test_success(db):
     db.session.add(file)
     db.session.commit()
 
-    while_processing_started_at: Optional[datetime.datetime] = None
-    while_processing_completed_at: Optional[datetime.datetime] = None
-    while_processing_error: Optional[str] = None
-
     def process():
-        nonlocal while_processing_started_at
-        nonlocal while_processing_completed_at
-        nonlocal while_processing_error
-
-        while_processing_started_at = file.processing_started_at
-        while_processing_completed_at = file.processing_completed_at
-        while_processing_error = file.processing_error
+        pass
 
     assert file.processing_started_at is None
     assert file.processing_completed_at is None
     assert file.processing_error is None
 
     process_file(db.session, file, process)
-
-    assert isinstance(while_processing_started_at, datetime.datetime)
-    assert while_processing_completed_at is None
-    assert while_processing_error is None
 
     assert isinstance(file.processing_started_at, datetime.datetime)
     assert isinstance(file.processing_completed_at, datetime.datetime)
@@ -67,19 +54,7 @@ def test_error(db):
     db.session.add(file)
     db.session.commit()
 
-    while_processing_started_at: Optional[datetime.datetime] = None
-    while_processing_completed_at: Optional[datetime.datetime] = None
-    while_processing_error: Optional[str] = None
-
     def process():
-        nonlocal while_processing_started_at
-        nonlocal while_processing_completed_at
-        nonlocal while_processing_error
-
-        while_processing_started_at = file.processing_started_at
-        while_processing_completed_at = file.processing_completed_at
-        while_processing_error = file.processing_error
-
         raise Exception("NOPE")
 
     assert file.processing_started_at is None
@@ -91,10 +66,40 @@ def test_error(db):
     except Exception as error:
         assert str(error) == "NOPE"
 
-    assert isinstance(while_processing_started_at, datetime.datetime)
-    assert while_processing_completed_at is None
-    assert while_processing_error is None
-
     assert isinstance(file.processing_started_at, datetime.datetime)
     assert isinstance(file.processing_completed_at, datetime.datetime)
     assert file.processing_error == "NOPE"
+
+
+def test_session_stuck(db):
+    file = File(
+        id=str(uuid.uuid4()),
+        name="Test File",
+        contents="abcdefg",
+        uploaded_at=datetime.datetime.utcnow(),
+    )
+    db.session.add(file)
+    db.session.commit()
+
+    def process():
+        # We do something here that renders a db session unable to commit,
+        # specifically trying to violate a db constraint. Note that we're not
+        # using the models here because doing so makes sqlalchemy notice the
+        # conflict before it even gets to the db.
+        db.session.execute(
+            insert(File.__table__).values(
+                id=file.id,
+                name="Test File2",
+                contents="abcdefg",
+                uploaded_at=datetime.datetime.utcnow(),
+            )
+        )
+
+    try:
+        process_file(db.session, file, process)
+    except SQLAlchemyError as error:
+        pass
+
+    assert isinstance(file.processing_started_at, datetime.datetime)
+    assert isinstance(file.processing_completed_at, datetime.datetime)
+    assert file.processing_error
