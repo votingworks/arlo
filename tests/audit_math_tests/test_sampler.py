@@ -93,7 +93,7 @@ def test_draw_more_samples():
 def test_draw_macro_sample(macro_batches, macro_contest):
     # Test getting a sample
     sample = sampler.draw_ppeb_sample(
-        seed, macro_contest, {}, 10, 0, batch_results=macro_batches
+        seed, macro_contest, 10, 0, batch_results=macro_batches
     )
 
     for i, item in enumerate(sample):
@@ -107,7 +107,7 @@ def test_draw_more_macro_sample(macro_batches, macro_contest):
     # Test getting a sample
     samp_size = 5
     sample = sampler.draw_ppeb_sample(
-        seed, macro_contest, {}, samp_size, 0, batch_results=macro_batches,
+        seed, macro_contest, samp_size, 0, batch_results=macro_batches,
     )
     assert samp_size == len(sample), "Received sample of size {}, expected {}".format(
         samp_size, len(sample)
@@ -121,7 +121,7 @@ def test_draw_more_macro_sample(macro_batches, macro_contest):
 
     samp_size = 5
     sample = sampler.draw_ppeb_sample(
-        seed, macro_contest, {}, samp_size, num_sampled=5, batch_results=macro_batches
+        seed, macro_contest, samp_size, num_sampled=5, batch_results=macro_batches
     )
     assert samp_size == len(sample), "Received sample of size {}, expected {}".format(
         samp_size, len(sample)

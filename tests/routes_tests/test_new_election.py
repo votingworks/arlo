@@ -234,6 +234,6 @@ def test_election_reset(client, election_id):
     assert status["rounds"] == []
 
 
-def test_election_reset_not_found(client, election_id):
+def test_election_reset_not_found(client):
     rv = client.post(f"/election/{str(uuid.uuid4())}/audit/reset")
     assert rv.status_code == 404
