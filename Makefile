@@ -44,7 +44,7 @@ test-client:
 
 # To run a specific test: TEST=<test name> make test-server
 test-server:
-	FLASK_ENV=test python3.7 -m pipenv run python -m pytest -k '${TEST}' --ignore=arlo-client -vv --disable-warnings -x
+	FLASK_ENV=test python3.7 -m pipenv run python -m pytest -k '${TEST}' --ignore=arlo-client -vv
 
 # Only tests audit_math
 test-math:
