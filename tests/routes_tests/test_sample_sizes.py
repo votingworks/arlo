@@ -16,7 +16,9 @@ def test_sample_sizes_without_contests(client: FlaskClient, election_id: str):
 
 
 def test_sample_sizes_without_risk_limit(
-    client: FlaskClient, election_id: str, contest: str
+    client: FlaskClient,
+    election_id: str,
+    contest: str,  # pylint: disable=unused-argument
 ):
     rv = client.get(f"/election/{election_id}/sample-sizes")
     assert rv.status_code == 400
@@ -31,7 +33,10 @@ def test_sample_sizes_without_risk_limit(
 
 
 def test_sample_sizes_round_1(
-    client: FlaskClient, election_id: str, contest: str, election_settings: None
+    client: FlaskClient,
+    election_id: str,
+    contest: str,  # pylint: disable=unused-argument
+    election_settings: None,  # pylint: disable=unused-argument
 ):
     rv = client.get(f"/election/{election_id}/sample-sizes")
     sample_sizes = json.loads(rv.data)

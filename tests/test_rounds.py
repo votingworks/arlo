@@ -64,7 +64,7 @@ def test_rounds_create_one(
     election_id: str,
     jurisdiction_ids: List[str],
     contest: dict,
-    manifests,
+    manifests,  # pylint: disable=unused-argument
 ):
     sample_size = 119  # BRAVO sample size
     rv = post_json(
@@ -120,8 +120,8 @@ def test_rounds_create_two(
     election_id: str,
     jurisdiction_ids: List[str],
     contest: dict,
-    manifests,
-    election_settings,
+    manifests,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 119,},
@@ -203,7 +203,11 @@ def test_rounds_create_two(
 
 
 def test_rounds_create_before_previous_round_complete(
-    client: FlaskClient, election_id: str, contest: dict, manifests, election_settings
+    client: FlaskClient,
+    election_id: str,
+    contest: dict,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 10,},
@@ -235,7 +239,9 @@ def test_rounds_wrong_number_too_big(client: FlaskClient, election_id: str):
 
 
 def test_rounds_wrong_number_too_small(
-    client: FlaskClient, election_id: str, contest: dict
+    client: FlaskClient,
+    election_id: str,
+    contest: dict,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 10,},

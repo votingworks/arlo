@@ -62,7 +62,6 @@ def draw_sample(
 def draw_ppeb_sample(
     seed: str,
     contest: Contest,
-    manifest: Dict[str, int],
     sample_size: int,
     num_sampled: int,
     batch_results: Dict[str, Dict[str, Dict[str, int]]],
@@ -76,12 +75,6 @@ def draw_ppeb_sample(
 
     Inputs:
         seed    - the random seed to use in sampling
-        manifest - mapping of batches to the ballots they contain:
-                    {
-                        batch1: num_balots,
-                        batch2: num_ballots,
-                        ...
-                    }
         sample_size - number of ballots to randomly draw
         num_sampled - number of ballots that have already been sampled
         batch_results - the result of the election, per batch:

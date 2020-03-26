@@ -143,7 +143,9 @@ def get_sample_sizes(
     risk_limit: float,
     contest: Contest,
     reported_results: Dict[str, Dict[str, Dict[str, int]]],
-    sample_results: Dict[str, Dict[str, Dict[str, int]]],
+    sample_results: Dict[
+        str, Dict[str, Dict[str, int]]
+    ],  # pylint: disable=unused-argument
 ) -> float:
     """
     Computes initial sample sizes parameterized by likelihood that the

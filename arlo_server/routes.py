@@ -199,7 +199,7 @@ if ADMIN_PASSWORD:
     auth = HTTPBasicAuth()
 
     @auth.verify_password
-    def verify_password(username, password):
+    def verify_password(_username, password):
         # use a comparison method that prevents timing attacks:
         # https://securitypitfalls.wordpress.com/2018/08/03/constant-time-compare-in-python/
         return password is not None and hmac.compare_digest(password, ADMIN_PASSWORD)
@@ -713,6 +713,7 @@ def ballot_list(election_id, jurisdiction_id, round_id):
         .add_entity(Batch)
         .add_entity(AuditBoard)
         .filter(Round.id == round_id)
+        .filter(Round.election_id == election_id)
         .filter(Batch.jurisdiction_id == jurisdiction_id)
         .order_by(
             AuditBoard.name,
@@ -754,6 +755,7 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, rou
         .add_entity(SampledBallot)
         .add_entity(Batch)
         .filter(Round.id == round_id)
+        .filter(Round.election_id == election_id)
         .filter(Batch.jurisdiction_id == jurisdiction_id)
         .filter(SampledBallot.audit_board_id == audit_board_id)
         .order_by(
@@ -1302,7 +1304,7 @@ def jurisdictionadmin_login_callback():
 @app.route("/")
 @app.route("/election/<election_id>")
 @app.route("/election/<election_id>/board/<board_id>")
-def serve(election_id=None, board_id=None):
+def serve(election_id=None, board_id=None):  # pylint: disable=unused-argument
     return app.send_static_file("index.html")
 
 
