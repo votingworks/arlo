@@ -13,26 +13,30 @@ def process_file(session: Session, file: File, callback: Callable[[], None]) -> 
 
     # Claim this file by updating the `processing_started_at` timestamp in such
     # a way that it must not have been set before.
-    file.processing_started_at = datetime.datetime.utcnow()
+    processing_started_at = datetime.datetime.utcnow()
     result = session.execute(
         update(File.__table__)
         .where(File.id == file.id)
         .where(File.processing_started_at.is_(None))
-        .values(processing_started_at=file.processing_started_at)
+        .values(processing_started_at=processing_started_at)
     )
     if result.rowcount == 0:
         return False
 
     # If we got this far, `file` is ours to process.
-    session.add(file)
     try:
         callback()
+        file.processing_started_at = processing_started_at
         file.processing_completed_at = datetime.datetime.utcnow()
+        session.add(file)
         session.commit()
         return True
     except Exception as error:
+        session.rollback()
+        file.processing_started_at = processing_started_at
         file.processing_completed_at = datetime.datetime.utcnow()
         file.processing_error = str(error)
+        session.add(file)
         session.commit()
         raise error
 
