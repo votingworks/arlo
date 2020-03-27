@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Audit Setup > Contests renders empty state correctly 1`] = `
+exports[`Audit Setup > Participants renders empty state correctly 1`] = `
 <div>
   <form
     data-testid="form-one"

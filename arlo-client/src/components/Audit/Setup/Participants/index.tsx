@@ -30,7 +30,7 @@ interface IProps {
 const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   const { electionId } = useParams()
   const [isLoading, setIsLoading] = useState(false)
-  const [{ state = '' }, updateSettings] = useAuditSettings(electionId!)
+  const [{ state }, updateSettings] = useAuditSettings(electionId!)
   const submit = async (values: IValues) => {
     try {
       setIsLoading(true)
@@ -56,7 +56,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   }
   return (
     <Formik
-      initialValues={{ state, csv: null }}
+      initialValues={{ state: state || '', csv: null }}
       validationSchema={schema}
       onSubmit={submit}
       enableReinitialize

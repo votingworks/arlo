@@ -47,14 +47,15 @@ const Settings: React.FC<IProps> = ({
       toast.error(err.message)
     }
   }
+  const initialValues = {
+    electionName: electionName === null ? '' : electionName,
+    randomSeed: randomSeed === null ? '' : randomSeed,
+    riskLimit: riskLimit === null ? 10 : riskLimit,
+    online: online === null ? true : online,
+  }
   return (
     <Formik
-      initialValues={{
-        electionName,
-        randomSeed,
-        riskLimit,
-        online,
-      }}
+      initialValues={initialValues}
       validationSchema={schema}
       onSubmit={submit}
       enableReinitialize

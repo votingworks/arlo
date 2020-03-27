@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { statusStates } from '../_mocks'
+import { statusStates, auditSettings } from '../_mocks'
 import * as utilities from '../../utilities'
 import { asyncActRender } from '../../testUtilities'
 import Setup from './index'
@@ -14,6 +14,7 @@ const checkAndToastMock: jest.SpyInstance<
   ReturnType<typeof utilities.checkAndToast>,
   Parameters<typeof utilities.checkAndToast>
 > = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
+apiMock.mockResolvedValue(auditSettings.all)
 
 checkAndToastMock.mockReturnValue(false)
 

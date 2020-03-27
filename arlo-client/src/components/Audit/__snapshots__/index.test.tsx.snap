@@ -4154,6 +4154,20 @@ exports[`RiskLimitingAuditForm renders sidebar when authenticated on /progress 1
           </label>
         </div>
       </div>
+      <div
+        class="sc-gqjmRU bEkPjh"
+      >
+        <button
+          class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
+          type="submit"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Submit & Next
+          </span>
+        </button>
+      </div>
     </form>
   </div>
 </div>
@@ -4646,6 +4660,20 @@ exports[`RiskLimitingAuditForm renders sidebar when authenticated on /setup 1`] 
             </span>
           </label>
         </div>
+      </div>
+      <div
+        class="sc-gqjmRU bEkPjh"
+      >
+        <button
+          class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
+          type="submit"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Submit & Next
+          </span>
+        </button>
       </div>
     </form>
   </div>

@@ -1,8 +1,12 @@
 import React from 'react'
 import { waitForElement, wait, fireEvent } from '@testing-library/react'
-import { BrowserRouter as Router, useRouteMatch } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  useRouteMatch,
+  useParams,
+} from 'react-router-dom'
 import Audit from './index'
-import { statusStates, dummyBallots } from './_mocks'
+import { statusStates, dummyBallots, auditSettings } from './_mocks'
 import * as utilities from '../utilities'
 import { asyncActRender } from '../testUtilities'
 import AuthDataProvider from '../UserContext'
@@ -21,7 +25,13 @@ checkAndToastMock.mockReturnValue(false)
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
   useRouteMatch: jest.fn(),
+  useParams: jest.fn(),
 }))
+const paramsMock = useParams as jest.Mock
+paramsMock.mockReturnValue({
+  electionId: '1',
+  view: 'setup',
+})
 const routeMock = useRouteMatch as jest.Mock
 routeMock.mockReturnValue({
   url: '/election/1/setup',
@@ -40,6 +50,10 @@ afterEach(() => {
       electionId: '1',
       view: 'setup',
     },
+  })
+  paramsMock.mockReturnValue({
+    electionId: '1',
+    view: 'setup',
   })
 })
 
@@ -188,6 +202,7 @@ describe('RiskLimitingAuditForm', () => {
           },
         ],
       }))
+      .mockImplementationOnce(async () => auditSettings.blank)
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -197,9 +212,10 @@ describe('RiskLimitingAuditForm', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(2)
+      expect(apiMock).toBeCalledTimes(3)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
       expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
       expect(queryAllByText('Participants').length).toBe(2)
       expect(container).toMatchSnapshot()
     })
@@ -228,6 +244,7 @@ describe('RiskLimitingAuditForm', () => {
           },
         ],
       }))
+      .mockImplementationOnce(async () => auditSettings.blank)
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -237,9 +254,10 @@ describe('RiskLimitingAuditForm', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(2)
+      expect(apiMock).toBeCalledTimes(3)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
       expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
       expect(queryAllByText('Participants').length).toBe(2)
       expect(container).toMatchSnapshot()
     })
@@ -261,6 +279,7 @@ describe('RiskLimitingAuditForm', () => {
           },
         ],
       }))
+      .mockImplementationOnce(async () => auditSettings.blank)
     const { queryAllByText, getByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -270,9 +289,10 @@ describe('RiskLimitingAuditForm', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(2)
+      expect(apiMock).toBeCalledTimes(3)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
       expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
       expect(queryAllByText('Participants').length).toBe(2)
     })
 
@@ -299,6 +319,7 @@ describe('RiskLimitingAuditForm', () => {
           },
         ],
       }))
+      .mockImplementation(async () => auditSettings.otherSettings)
     const { queryAllByText, getByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -308,9 +329,10 @@ describe('RiskLimitingAuditForm', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(2)
+      expect(apiMock).toBeCalledTimes(3)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
       expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
       expect(queryAllByText('Participants').length).toBe(2)
     })
 
@@ -320,7 +342,7 @@ describe('RiskLimitingAuditForm', () => {
       expect(queryAllByText('Audit Settings').length).toBe(2)
     })
 
-    fireEvent.click(getByText('Next'))
+    fireEvent.click(getByText('Save & Next'))
     await wait(() => {
       expect(queryAllByText('Review').length).toBe(1)
     })
