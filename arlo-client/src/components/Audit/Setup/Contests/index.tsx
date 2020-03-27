@@ -62,10 +62,8 @@ const Contests: React.FC<IProps> = ({
     <Formik
       initialValues={initialValues}
       validationSchema={schema}
-      onSubmit={v => {
+      onSubmit={() => {
         setIsLoading(true)
-        // eslint-disable-next-line no-console
-        console.log(v)
         nextStage.activate()
       }}
     >
