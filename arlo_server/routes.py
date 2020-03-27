@@ -32,7 +32,6 @@ from arlo_server.auth import (
 )
 from arlo_server.models import *
 
-from config import HTTP_ORIGIN
 from config import (
     AUDITADMIN_AUTH0_BASE_URL,
     AUDITADMIN_AUTH0_CLIENT_ID,
@@ -1247,7 +1246,7 @@ def logout():
     clear_loggedin_user()
 
     # request auth0 logout and come back here when that's done
-    return_url = f"{HTTP_ORIGIN}/"
+    return_url = f"{request.host_url}/"
     params = urllib.parse.urlencode({"returnTo": return_url})
 
     base_url = (
@@ -1261,7 +1260,7 @@ def logout():
 @app.route("/auth/auditadmin/start")
 def auditadmin_login():
     return auth0_aa.authorize_redirect(
-        redirect_uri=f"{HTTP_ORIGIN}{AUDITADMIN_OAUTH_CALLBACK_URL}"
+        redirect_uri=f"{request.host_url}{AUDITADMIN_OAUTH_CALLBACK_URL}"
     )
 
 
@@ -1282,7 +1281,7 @@ def auditadmin_login_callback():
 @app.route("/auth/jurisdictionadmin/start")
 def jurisdictionadmin_login():
     return auth0_ja.authorize_redirect(
-        redirect_uri=f"{HTTP_ORIGIN}{JURISDICTIONADMIN_OAUTH_CALLBACK_URL}"
+        redirect_uri=f"{request.host_url}{JURISDICTIONADMIN_OAUTH_CALLBACK_URL}"
     )
 
 

@@ -11,6 +11,10 @@
     }
   ],
   "env": {
+    "ARLO_SESSION_SECRET": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    }
   },
   "formation": {
     "web": {

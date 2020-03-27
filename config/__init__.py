@@ -2,7 +2,37 @@ import configparser
 import os
 import sys
 
-from typing import Tuple
+from typing import Dict, Tuple
+
+###
+###
+
+DEVELOPMENT_ENVS = ("development", "test")
+
+
+def setup_flask_config() -> Tuple[str, bool]:
+    """
+    Configure Flask-specific environment variables.
+    
+    We do this here because Flask attempts to set some of its application config
+    based on `FLASK_ENV` and `FLASK_DEBUG` environment variables, and that
+    happens _after_ initialization and initial configuration, when calling
+    `app.run(…)`. Therefore, we set them here to ensure they end up with the
+    right values.
+    
+    Specifically, setting FLASK_ENV=test by itself means `app.debug` will remain
+    `False`, which isn't what we want.
+    """
+    flask_env = os.environ.get("FLASK_ENV", "production")
+
+    if "FLASK_DEBUG" not in os.environ:
+        os.environ["FLASK_DEBUG"] = str(flask_env in DEVELOPMENT_ENVS)
+
+    return (flask_env, os.environ["FLASK_DEBUG"].lower() not in ("0", "no", "false"))
+
+
+FLASK_ENV, FLASK_DEBUG = setup_flask_config()
+
 
 DEFAULT_DATABASE_URL = "postgres://postgres@localhost:5432/arlo"
 
@@ -17,8 +47,7 @@ def read_database_url_config() -> str:
     database_config = configparser.ConfigParser()
     database_config.read(database_cfg_path)
 
-    flask_env = os.environ.get("FLASK_ENV", "development")
-    result = database_config.get(flask_env, "database_url", fallback=None)
+    result = database_config.get(FLASK_ENV, "database_url", fallback=None)
 
     if not result:
         print(
@@ -46,7 +75,7 @@ STATIC_FOLDER = (
             "..",
             "..",
             "arlo-client",
-            "public" if os.environ.get("FLASK_ENV") == "test" else "build",
+            "public" if FLASK_ENV == "test" else "build",
         )
     )
     + "/"
@@ -57,11 +86,9 @@ def read_session_secret() -> str:
     session_secret = os.environ.get("ARLO_SESSION_SECRET", None)
 
     if not session_secret:
-        flask_env = os.environ.get("FLASK_ENV", "development")
-
-        if flask_env == "development" or flask_env == "test":
+        if FLASK_ENV in DEVELOPMENT_ENVS:
             # Allow omitting in development, use a fixed secret instead.
-            session_secret = f"arlo-{flask_env}-session-secret-v1"
+            session_secret = f"arlo-{FLASK_ENV}-session-secret-v1"
         else:
             raise Exception(
                 "ARLO_SESSION_SECRET env var for managing sessions is missing"
@@ -77,10 +104,10 @@ def read_http_origin() -> str:
     http_origin = os.environ.get("ARLO_HTTP_ORIGIN", None)
 
     if not http_origin:
-        flask_env = os.environ.get("FLASK_ENV", "development")
-
-        if flask_env == "development" or flask_env == "test":
+        if FLASK_ENV in DEVELOPMENT_ENVS:
             http_origin = "http://localhost:3000"
+        elif FLASK_ENV == "staging" and "HEROKU_PR_NUMBER" in os.environ:
+            http_origin = f"https://vx-arlo-staging-pr-{os.environ.get('HEROKU_PR_NUMBER')}.herokuapp.com"
         else:
             raise Exception(
                 "ARLO_HTTP_ORIGIN env var, e.g. https://arlo.example.com, is missing"

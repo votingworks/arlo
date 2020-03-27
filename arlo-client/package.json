@@ -12,7 +12,7 @@
     "test:coverage": "react-scripts test --coverage --watchAll=false",
     "test:update": "react-scripts test -u  --watchAll=false",
     "test:watch": "react-scripts test",
-    "test:wdio": "pipenv run python ../app.py & pipenv run python ../bgcompute.py & react-scripts start & wdio wdio.conf.js"
+    "test:wdio": "FLASK_ENV=test pipenv run python ../app.py & FLASK_ENV=test pipenv run python ../bgcompute.py & react-scripts start & wdio wdio.conf.js"
   },
   "lint-staged": {
     "*.+(css|graphql|json|less|md|mdx|sass|scss|yaml|yml)": [
