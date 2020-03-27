@@ -241,6 +241,7 @@ class AuditBoard(BaseModel):
     member_2 = db.Column(db.String(200), nullable=True)
     member_2_affiliation = db.Column(db.String(200), nullable=True)
     passphrase = db.Column(db.String(1000), unique=True, nullable=True)
+    signed_off_at = db.Column(db.DateTime(timezone=False), nullable=True)
 
     sampled_ballots = relationship(
         "SampledBallot", backref="audit_board", passive_deletes=True

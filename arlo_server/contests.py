@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Optional
 from flask import request, jsonify
 from werkzeug.exceptions import BadRequest
 from sqlalchemy import func
@@ -16,10 +16,8 @@ from arlo_server.models import (
     Batch,
 )
 from arlo_server.rounds import get_current_round
-from util.jsonschema import validate
+from util.jsonschema import validate, JSONDict
 
-# An approximation of a JSON object type, since we can't do recursive types
-JSONDict = Dict[str, Any]
 
 CONTEST_CHOICE_SCHEMA = {
     "type": "object",
