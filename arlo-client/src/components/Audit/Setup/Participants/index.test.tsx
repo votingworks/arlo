@@ -42,7 +42,7 @@ auditSettingsMock.mockReturnValue([
     randomSeed: null,
     riskLimit: null,
   },
-  jest.fn(async () => true),
+  async () => true,
 ])
 
 const formData: FormData = new FormData()
@@ -76,7 +76,7 @@ const fillAndSubmit = async () => {
   await wait(() => expect(queryByLabelText('Select a CSV...')).toBeFalsy())
   await wait(() => expect(queryByLabelText('jurisdictions.csv')).toBeTruthy())
 
-  fireEvent.click(getByText('Submit & Next'), { bubbles: true })
+  fireEvent.click(getByText('Save & Next'), { bubbles: true })
 }
 
 beforeEach(() => {
@@ -85,6 +85,7 @@ beforeEach(() => {
   checkAndToastMock.mockClear()
   routeMock.mockClear()
   ;(nextStage.activate as jest.Mock).mockClear()
+  auditSettingsMock.mockClear()
 })
 
 describe('Audit Setup > Participants', () => {
@@ -133,6 +134,28 @@ describe('Audit Setup > Participants', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(0)
       expect(checkAndToastMock).toBeCalledTimes(1)
+      expect(nextStage.activate).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  it('handles failure to update settings', async () => {
+    auditSettingsMock.mockReturnValue([
+      {
+        state: null,
+        electionName: null,
+        online: null,
+        randomSeed: null,
+        riskLimit: null,
+      },
+      async () => false,
+    ])
+
+    await fillAndSubmit()
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(0)
+      expect(toastSpy).toBeCalledTimes(0)
+      expect(checkAndToastMock).toBeCalledTimes(0)
       expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })
   })

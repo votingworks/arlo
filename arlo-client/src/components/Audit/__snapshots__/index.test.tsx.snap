@@ -4164,7 +4164,7 @@ exports[`RiskLimitingAuditForm renders sidebar when authenticated on /progress 1
           <span
             class="bp3-button-text"
           >
-            Submit & Next
+            Save & Next
           </span>
         </button>
       </div>
@@ -4671,7 +4671,7 @@ exports[`RiskLimitingAuditForm renders sidebar when authenticated on /setup 1`] 
           <span
             class="bp3-button-text"
           >
-            Submit & Next
+            Save & Next
           </span>
         </button>
       </div>

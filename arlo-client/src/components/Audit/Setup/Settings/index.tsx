@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
 import { RadioGroup, Radio } from '@blueprintjs/core'
@@ -31,21 +30,17 @@ const Settings: React.FC<IProps> = ({
   const { electionId } = useParams()
   const [isLoading, setIsLoading] = useState(false)
   const [
-    { electionName = '', randomSeed = '', riskLimit = 10, online = true },
+    { electionName, randomSeed, riskLimit, online },
     updateState,
   ] = useAuditSettings(electionId!)
   const submit = async (values: IValues) => {
-    try {
-      setIsLoading(true)
-      const response = updateState({
-        ...values,
-        riskLimit: parseNumber(values.riskLimit), // Formik stringifies internally
-      })
-      if (!response) return
-      nextStage.activate()
-    } catch (err) {
-      toast.error(err.message)
-    }
+    setIsLoading(true)
+    const response = await updateState({
+      ...values,
+      riskLimit: parseNumber(values.riskLimit), // Formik stringifies internally
+    })
+    if (!response) return
+    nextStage.activate()
   }
   const initialValues = {
     electionName: electionName === null ? '' : electionName,
@@ -65,7 +60,7 @@ const Settings: React.FC<IProps> = ({
           <FormWrapper title="Audit Settings">
             <FormSection>
               {/* eslint-disable jsx-a11y/label-has-associated-control */}
-              <label htmlFor="audit-name" id="audit-name-label">
+              <label htmlFor="election-name" id="election-name-label">
                 Election Name
                 <Field
                   id="election-name"
@@ -81,6 +76,7 @@ const Settings: React.FC<IProps> = ({
                 Audit boards will enter data about each audited ballot:
                 <RadioGroup
                   name="online"
+                  data-testid="online-toggle"
                   onChange={e =>
                     setFieldValue('online', e.currentTarget.value === 'online')
                   }
@@ -97,6 +93,7 @@ const Settings: React.FC<IProps> = ({
                 {`Set the risk for the audit as a percentage (e.g. "5" = 5%)`}
                 <Field
                   id="risk-limit"
+                  data-testid="risk-limit"
                   name="riskLimit"
                   disabled={!!audit.frozenAt}
                   component={Select}

@@ -34,7 +34,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   const submit = async (values: IValues) => {
     try {
       setIsLoading(true)
-      const responseOne = updateSettings({ state: values.state })
+      const responseOne = await updateSettings({ state: values.state })
       if (!responseOne) return
       /* istanbul ignore else */
       if (values.csv) {
@@ -140,7 +140,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                   handleSubmit(e)
                 }}
               >
-                Submit &amp; Next
+                Save &amp; Next
               </FormButton>
             </FormButtonBar>
           )}

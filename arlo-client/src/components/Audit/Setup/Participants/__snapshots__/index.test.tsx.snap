@@ -405,7 +405,7 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
         <span
           class="bp3-button-text"
         >
-          Submit & Next
+          Save & Next
         </span>
       </button>
     </div>

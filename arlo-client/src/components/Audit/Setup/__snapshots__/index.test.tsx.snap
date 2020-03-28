@@ -17,8 +17,8 @@ exports[`Setup renders Audit Settings stage 1`] = `
         class="sc-bZQynM ibvdum"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -93,6 +93,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
             class="bp3-html-select sc-fjdhpX jqDqiz"
           >
             <select
+              data-testid="risk-limit"
               field="[object Object]"
               form="[object Object]"
               id="risk-limit"
@@ -894,7 +895,7 @@ exports[`Setup renders Participants stage 1`] = `
         <span
           class="bp3-button-text"
         >
-          Submit & Next
+          Save & Next
         </span>
       </button>
     </div>
