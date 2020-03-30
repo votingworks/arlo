@@ -29,6 +29,7 @@ T = Talisman(
     content_security_policy={
         "default-src": "'self'",
         "script-src": "'self' 'unsafe-inline'",
+        "style-src": "'self' 'unsafe-inline'",
     },
 )
 app.secret_key = SESSION_SECRET
