@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
-import { setupStages } from './Setup'
-import { ElementType } from '../../types'
-import { ISidebarMenuItem } from '../Atoms/Sidebar'
+import { setupStages } from '../Setup'
+import { ElementType } from '../../../types'
+import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 
 function useSetupMenuItems(
   stage: ElementType<typeof setupStages>,
