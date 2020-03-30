@@ -25,6 +25,11 @@ T = Talisman(
     force_https_permanent=True,
     session_cookie_http_only=True,
     feature_policy="camera 'none'; microphone 'none'; geolocation 'none'",
+    # TODO: Configure webpack to use a nonce: https://webpack.js.org/guides/csp/.
+    content_security_policy={
+        "default-src": "'self'",
+        "script-src": "'self' 'unsafe-inline'",
+    },
 )
 app.secret_key = SESSION_SECRET
 
