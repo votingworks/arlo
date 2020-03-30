@@ -126,10 +126,7 @@ def setup_next_round(election):
 
     print("adding round {:d} for election {:s}".format(len(rounds) + 1, election.id))
     round = Round(
-        id=str(uuid.uuid4()),
-        election_id=election.id,
-        round_num=len(rounds) + 1,
-        started_at=datetime.datetime.utcnow(),
+        id=str(uuid.uuid4()), election_id=election.id, round_num=len(rounds) + 1,
     )
 
     db.session.add(round)
@@ -397,7 +394,7 @@ def audit_status(election_id=None):
         rounds=[
             {
                 "id": round.id,
-                "startedAt": isoformat(round.started_at),
+                "startedAt": isoformat(round.created_at),
                 "endedAt": isoformat(round.ended_at),
                 "contests": [
                     {
@@ -1041,7 +1038,7 @@ def audit_report(election_id):
         )
 
         report_writer.writerow(
-            ["Round {:d} Start".format(round.round_num), round.started_at]
+            ["Round {:d} Start".format(round.round_num), round.created_at]
         )
         report_writer.writerow(
             ["Round {:d} End".format(round.round_num), round.ended_at]

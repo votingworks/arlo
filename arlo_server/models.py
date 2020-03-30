@@ -253,7 +253,6 @@ class Round(BaseModel):
         db.String(200), db.ForeignKey("election.id", ondelete="cascade"), nullable=False
     )
     round_num = db.Column(db.Integer, nullable=False)
-    started_at = db.Column(db.DateTime, nullable=False)
     ended_at = db.Column(db.DateTime, nullable=True)
 
     __table_args__ = (db.UniqueConstraint("election_id", "round_num"),)
