@@ -33,7 +33,7 @@ def serialize_round(r: Round) -> dict:
     return {
         "id": r.id,
         "roundNum": r.round_num,
-        "startedAt": isoformat(r.started_at),
+        "startedAt": isoformat(r.created_at),
         "endedAt": isoformat(r.ended_at),
     }
 
@@ -141,10 +141,7 @@ def create_round(election: Election):
     )
 
     round = Round(
-        id=str(uuid.uuid4()),
-        election_id=election.id,
-        round_num=json_round["roundNum"],
-        started_at=datetime.datetime.utcnow(),
+        id=str(uuid.uuid4()), election_id=election.id, round_num=json_round["roundNum"],
     )
     db.session.add(round)
 
