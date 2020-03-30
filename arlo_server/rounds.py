@@ -1,7 +1,7 @@
 from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
-import uuid, datetime
+import uuid
 from typing import Optional
 
 from arlo_server import app, db
