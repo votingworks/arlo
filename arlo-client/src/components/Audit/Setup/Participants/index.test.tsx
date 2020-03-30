@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, fireEvent, wait } from '@testing-library/react'
+import { fireEvent, wait } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { statusStates } from '../../_mocks'
@@ -7,6 +7,10 @@ import relativeStages from '../_mocks'
 import Participants from './index'
 import jurisdictionFile from './_mocks'
 import * as utilities from '../../../utilities'
+import { asyncActRender } from '../../../testUtilities'
+import useAuditSettings from '../useAuditSettings'
+
+const auditSettingsMock = useAuditSettings as jest.Mock
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -29,6 +33,18 @@ routeMock.mockReturnValue({
   view: 'setup',
 })
 
+jest.mock('../useAuditSettings')
+auditSettingsMock.mockReturnValue([
+  {
+    state: null,
+    electionName: null,
+    online: null,
+    randomSeed: null,
+    riskLimit: null,
+  },
+  async () => true,
+])
+
 const formData: FormData = new FormData()
 formData.append('jurisdictions', jurisdictionFile, jurisdictionFile.name)
 
@@ -41,7 +57,7 @@ const fillAndSubmit = async () => {
     queryByLabelText,
     queryByText,
     getByTestId,
-  } = render(
+  } = await asyncActRender(
     <Router>
       <Participants audit={statusStates[0]} nextStage={nextStage} />
     </Router>
@@ -60,7 +76,7 @@ const fillAndSubmit = async () => {
   await wait(() => expect(queryByLabelText('Select a CSV...')).toBeFalsy())
   await wait(() => expect(queryByLabelText('jurisdictions.csv')).toBeTruthy())
 
-  fireEvent.click(getByText('Submit & Next'), { bubbles: true })
+  fireEvent.click(getByText('Save & Next'), { bubbles: true })
 }
 
 beforeEach(() => {
@@ -69,11 +85,12 @@ beforeEach(() => {
   checkAndToastMock.mockClear()
   routeMock.mockClear()
   ;(nextStage.activate as jest.Mock).mockClear()
+  auditSettingsMock.mockClear()
 })
 
-describe('Audit Setup > Contests', () => {
-  it('renders empty state correctly', () => {
-    const { container } = render(
+describe('Audit Setup > Participants', () => {
+  it('renders empty state correctly', async () => {
+    const { container } = await asyncActRender(
       <Router>
         <Participants audit={statusStates[0]} nextStage={nextStage} />
       </Router>
@@ -82,6 +99,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('selects a state and submits it', async () => {
+    apiMock.mockResolvedValue({ status: 'ok' })
     await fillAndSubmit()
     await wait(() => {
       expect(apiMock).toBeCalledTimes(1)
@@ -116,6 +134,28 @@ describe('Audit Setup > Contests', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(0)
       expect(checkAndToastMock).toBeCalledTimes(1)
+      expect(nextStage.activate).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  it('handles failure to update settings', async () => {
+    auditSettingsMock.mockReturnValue([
+      {
+        state: null,
+        electionName: null,
+        online: null,
+        randomSeed: null,
+        riskLimit: null,
+      },
+      async () => false,
+    ])
+
+    await fillAndSubmit()
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(0)
+      expect(toastSpy).toBeCalledTimes(0)
+      expect(checkAndToastMock).toBeCalledTimes(0)
       expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })
   })

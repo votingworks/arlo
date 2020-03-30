@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Audit Setup > Contests renders empty state correctly 1`] = `
+exports[`Audit Setup > Participants renders empty state correctly 1`] = `
 <div>
   <form
     data-testid="form-one"
@@ -405,7 +405,7 @@ exports[`Audit Setup > Contests renders empty state correctly 1`] = `
         <span
           class="bp3-button-text"
         >
-          Submit & Next
+          Save & Next
         </span>
       </button>
     </div>
