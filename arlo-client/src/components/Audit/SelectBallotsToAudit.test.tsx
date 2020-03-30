@@ -71,7 +71,7 @@ beforeEach(() => {
   checkAndToastMock.mockClear()
 })
 
-describe('SelectBallotsToAudit', () => {
+describe.skip('SelectBallotsToAudit', () => {
   it('renders correctly', () => {
     const { container, rerender } = render(
       <SelectBallotsToAudit

@@ -77,6 +77,7 @@ export interface IBallotManifest {
   numBallots: number | '' | null
   numBatches: number | '' | null
   uploadedAt: string | null
+  processing: any
 }
 
 export interface IBatch {

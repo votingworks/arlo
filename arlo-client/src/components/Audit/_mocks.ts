@@ -183,6 +183,7 @@ export const statusStates: IAudit[] = [
           numBallots: null,
           numBatches: null,
           uploadedAt: null,
+          processing: null,
         },
         batches: [
           {
@@ -265,6 +266,7 @@ export const statusStates: IAudit[] = [
           numBallots: 2117,
           numBatches: 10,
           uploadedAt: '2019-07-18T16:34:07.000Z',
+          processing: { status: 'COMPLETE' },
         },
         contests: ['contest-1'],
         id: 'jurisdiction-1',
@@ -337,6 +339,7 @@ export const statusStates: IAudit[] = [
           numBallots: 2117,
           numBatches: 10,
           uploadedAt: '2019-07-18T16:34:07.000Z',
+          processing: { status: 'COMPLETE' },
         },
         contests: ['contest-1'],
         id: 'jurisdiction-1',
@@ -412,6 +415,7 @@ export const statusStates: IAudit[] = [
           numBallots: 2117,
           numBatches: 10,
           uploadedAt: '2019-07-18T16:34:07.000Z',
+          processing: { status: 'COMPLETE' },
         },
         contests: ['contest-1'],
         id: 'jurisdiction-1',
@@ -490,6 +494,7 @@ export const statusStates: IAudit[] = [
           numBallots: null,
           numBatches: null,
           uploadedAt: null,
+          processing: null,
         },
         batches: [
           {
@@ -581,6 +586,7 @@ export const statusStates: IAudit[] = [
           numBallots: null,
           numBatches: null,
           uploadedAt: null,
+          processing: null,
         },
         batches: [
           {
