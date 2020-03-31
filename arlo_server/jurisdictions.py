@@ -13,7 +13,7 @@ from arlo_server.models import (
     Round,
     AuditBoard,
 )
-from arlo_server.auth import with_election_access, UserType
+from arlo_server.auth import with_election_access
 from arlo_server.rounds import get_current_round
 from util.process_file import serialize_file, serialize_file_processing
 from util.jsonschema import JSONDict
@@ -124,7 +124,7 @@ def round_status_by_jurisdiction(
 
 
 @app.route("/election/<election_id>/jurisdiction", methods=["GET"])
-@with_election_access(UserType.AUDIT_ADMIN)
+@with_election_access
 def list_jurisdictions(election: Election):
     current_round = get_current_round(election)
     round_status = round_status_by_jurisdiction(

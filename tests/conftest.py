@@ -2,9 +2,11 @@ import pytest
 from flask.testing import FlaskClient
 import json, io, uuid
 from typing import List
+from flask import jsonify
 
 from arlo_server import app, db
-from arlo_server.models import Jurisdiction, USState
+from arlo_server.models import Election, Jurisdiction, USState
+from arlo_server.auth import with_election_access, with_jurisdiction_access
 from helpers import put_json, create_election
 from bgcompute import (
     bgcompute_update_election_jurisdictions_file,
@@ -30,9 +32,8 @@ def client() -> FlaskClient:
 
 
 @pytest.fixture
-def election_id(client: FlaskClient) -> str:
-    election_id = create_election(client)
-    yield election_id
+def election_id() -> str:
+    yield create_election()
 
 
 @pytest.fixture
@@ -125,3 +126,22 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     )
     assert rv.status_code == 200
     bgcompute_update_ballot_manifest_file()
+
+
+# Add special routes to test our auth decorators. This fixture will run once before
+# the test session starts. We have to add the route before starting any tests
+# or else Flask complains. See test_auth.py for the tests that use these routes.
+@pytest.fixture(scope="session", autouse=True)
+def auth_decorator_test_routes():
+    @app.route("/election/<election_id>/test_auth")
+    @with_election_access
+    def fake_election_route(election: Election):
+        assert election
+        return jsonify(election.id)
+
+    @app.route("/election/<election_id>/jurisdiction/<jurisdiction_id>/test_auth")
+    @with_jurisdiction_access
+    def fake_jurisdiction_route(election: Election, jurisdiction: Jurisdiction):
+        assert election
+        assert jurisdiction
+        return jsonify([election.id, jurisdiction.id])
