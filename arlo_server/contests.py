@@ -67,7 +67,6 @@ def serialize_contest_choice(contest_choice: ContestChoice) -> JSONDict:
 
 
 def serialize_contest(contest: Contest, round_status: Optional[JSONDict]) -> JSONDict:
-    jurisdictions = sorted(contest.jurisdictions, key=lambda j: j.name)
     return {
         "id": contest.id,
         "name": contest.name,
@@ -76,7 +75,7 @@ def serialize_contest(contest: Contest, round_status: Optional[JSONDict]) -> JSO
         "totalBallotsCast": contest.total_ballots_cast,
         "numWinners": contest.num_winners,
         "votesAllowed": contest.votes_allowed,
-        "jurisdictionIds": [j.id for j in jurisdictions],
+        "jurisdictionIds": [j.id for j in contest.jurisdictions],
         "currentRoundStatus": round_status,
     }
 
