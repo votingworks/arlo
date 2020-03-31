@@ -182,7 +182,7 @@ describe('Audit Setup > Contests', () => {
       expect(input.value).toBe(inputData.value)
     })
 
-    fireEvent.click(getByText('Submit & Next'), { bubbles: true })
+    fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await wait(() => {
       expect(nextStage.activate).toHaveBeenCalledTimes(1)
     })
@@ -219,7 +219,7 @@ describe('Audit Setup > Contests', () => {
       }
     )
 
-    fireEvent.click(getByText('Submit & Next'), { bubbles: true })
+    fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await wait(() => {
       expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })

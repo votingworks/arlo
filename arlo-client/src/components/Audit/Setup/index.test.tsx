@@ -45,12 +45,56 @@ describe('Setup', () => {
     expect(container).toMatchSnapshot()
   })
 
+  it('renders Participants stage with locked next stage', async () => {
+    const { container } = await asyncActRender(
+      <Setup
+        audit={statusStates[2]}
+        stage="Participants"
+        {...relativeStages('Participants', 'locked')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders Participants stage with processing next stage', async () => {
+    const { container } = await asyncActRender(
+      <Setup
+        audit={statusStates[2]}
+        stage="Participants"
+        {...relativeStages('Participants', 'processing')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
   it('renders Target Contests stage', async () => {
     const { container } = await asyncActRender(
       <Setup
         audit={statusStates.sampleSizeOptions}
         stage="Target Contests"
         {...relativeStages('Target Contests')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders Target Contests stage with locked next stage', async () => {
+    const { container } = await asyncActRender(
+      <Setup
+        audit={statusStates[2]}
+        stage="Target Contests"
+        {...relativeStages('Target Contests', 'locked')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders Target Contests stage with processing next stage', async () => {
+    const { container } = await asyncActRender(
+      <Setup
+        audit={statusStates[2]}
+        stage="Target Contests"
+        {...relativeStages('Target Contests', 'processing')}
       />
     )
     expect(container).toMatchSnapshot()
@@ -67,6 +111,28 @@ describe('Setup', () => {
     expect(container).toMatchSnapshot()
   })
 
+  it('renders Opportunistic Contests stage with locked next stage', async () => {
+    const { container } = await asyncActRender(
+      <Setup
+        audit={statusStates[2]}
+        stage="Opportunistic Contests"
+        {...relativeStages('Opportunistic Contests', 'locked')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders Opportunistic Contests stage with processing next stage', async () => {
+    const { container } = await asyncActRender(
+      <Setup
+        audit={statusStates[2]}
+        stage="Opportunistic Contests"
+        {...relativeStages('Opportunistic Contests', 'processing')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
   it('renders Audit Settings stage', async () => {
     const { container } = await asyncActRender(
       <Setup
@@ -78,12 +144,56 @@ describe('Setup', () => {
     expect(container).toMatchSnapshot()
   })
 
+  it('renders Audit Settings stage with locked next stage', async () => {
+    const { container } = await asyncActRender(
+      <Setup
+        audit={statusStates[2]}
+        stage="Audit Settings"
+        {...relativeStages('Audit Settings', 'locked')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders Audit Settings stage with processing next stage', async () => {
+    const { container } = await asyncActRender(
+      <Setup
+        audit={statusStates[2]}
+        stage="Audit Settings"
+        {...relativeStages('Audit Settings', 'processing')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
   it('renders Review & Launch stage', async () => {
     const { container } = await asyncActRender(
       <Setup
         audit={statusStates.sampleSizeOptions}
         stage="Review & Launch"
         {...relativeStages('Review & Launch')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders Review & Launch stage with locked next stage', async () => {
+    const { container } = await asyncActRender(
+      <Setup
+        audit={statusStates[2]}
+        stage="Review & Launch"
+        {...relativeStages('Review & Launch', 'locked')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders Review & Launch stage with processing next stage', async () => {
+    const { container } = await asyncActRender(
+      <Setup
+        audit={statusStates[2]}
+        stage="Review & Launch"
+        {...relativeStages('Review & Launch', 'processing')}
       />
     )
     expect(container).toMatchSnapshot()

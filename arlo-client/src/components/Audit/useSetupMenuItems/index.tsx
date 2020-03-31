@@ -63,7 +63,13 @@ function useSetupMenuItems(
       setAuditSettings('locked')
       setReviewLaunch('locked')
     }
-  }, [setParticipants, setContests, setAuditSettings, setReviewLaunch])
+  }, [
+    setParticipants,
+    setContests,
+    setAuditSettings,
+    setReviewLaunch,
+    electionId,
+  ])
 
   const refresh = useCallback(() => {
     setParticipants('live')
@@ -76,6 +82,7 @@ function useSetupMenuItems(
     setOrPollParticipantsFile,
     setAuditSettings,
     setReviewLaunch,
+    lockAllIfRounds,
   ])
 
   const menuItems: ISidebarMenuItem[] = useMemo(
