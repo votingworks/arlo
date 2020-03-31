@@ -26,7 +26,7 @@ resettestdb:
 	FLASK_ENV=test make resetdb
 
 resetdb:
-	${PIPENV} run python resetdb.py
+	FLASK_ENV=$${FLASK_ENV:-development} ${PIPENV} run python resetdb.py
 
 dev-environment: deps initdevdb install-development resetdb
 
