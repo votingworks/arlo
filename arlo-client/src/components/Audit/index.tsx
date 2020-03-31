@@ -74,7 +74,7 @@ const Audit: React.FC<{}> = () => {
     'Participants'
   )
 
-  const [menuItems, refresh] = useSetupMenuItems(stage, setStage)
+  const [menuItems, refresh] = useSetupMenuItems(stage, setStage, electionId)
 
   useEffect(() => {
     refresh()

@@ -1,11 +1,15 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
+import { toast } from 'react-toastify'
 import { setupStages } from '../Setup'
 import { ElementType } from '../../../types'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
+import getJurisdictionFileStatus from './getJurisdictionFileStatus'
+import { poll } from '../../utilities'
 
 function useSetupMenuItems(
   stage: ElementType<typeof setupStages>,
-  setStage: (s: ElementType<typeof setupStages>) => void
+  setStage: (s: ElementType<typeof setupStages>) => void,
+  electionId: string
 ): [ISidebarMenuItem[], () => void] {
   const [participants, setParticipants] = useState<ISidebarMenuItem['state']>(
     'live'
@@ -22,20 +26,50 @@ function useSetupMenuItems(
   const [reviewLaunch, setReviewLaunch] = useState<ISidebarMenuItem['state']>(
     'live'
   )
+  const setContests = useCallback(
+    (s: ISidebarMenuItem['state']) => {
+      setTargetContests(s)
+      setOpportunisticContests(s)
+    },
+    [setTargetContests, setOpportunisticContests]
+  )
 
-  const refresh = () => {
+  const setOrPollParticipantsFile = useCallback(async () => {
+    const jurisdictionStatus = await getJurisdictionFileStatus(electionId)
+    if (jurisdictionStatus === 'ERRORED') {
+      setContests('locked')
+    } else if (jurisdictionStatus === 'PROCESSED') {
+      setContests('live')
+    } else {
+      setContests('processing')
+      const condition = async () => {
+        const newJurisdictionStatus = await getJurisdictionFileStatus(
+          electionId
+        )
+        if (newJurisdictionStatus === 'PROCESSED') return true
+        return false
+      }
+      const complete = () => setContests('live')
+      poll(condition, complete, (err: Error) => toast.error(err.message))
+    }
+  }, [electionId, setContests])
+
+  const refresh = useCallback(() => {
     setParticipants('live')
-    setTargetContests('live')
-    setOpportunisticContests('live')
+    setOrPollParticipantsFile()
     setAuditSettings('live')
     setReviewLaunch('live')
-  }
+  }, [
+    setParticipants,
+    setOrPollParticipantsFile,
+    setAuditSettings,
+    setReviewLaunch,
+  ])
 
   const menuItems: ISidebarMenuItem[] = useMemo(
     () =>
       setupStages.map((s: ElementType<typeof setupStages>) => {
         const state = (() => {
-          // move these to useStates, so they can be asynchronously updated
           switch (s) {
             case 'Participants':
               return participants
@@ -56,6 +90,7 @@ function useSetupMenuItems(
           title: s,
           active: s === stage,
           activate: (_, force = false) => {
+            refresh()
             /* istanbul ignore else */
             if (state === 'live') {
               /* istanbul ignore next */
@@ -76,6 +111,7 @@ function useSetupMenuItems(
       opportunisticContests,
       auditSettings,
       reviewLaunch,
+      refresh,
     ]
   )
   return [menuItems, refresh]
