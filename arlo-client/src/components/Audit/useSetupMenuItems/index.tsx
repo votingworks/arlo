@@ -5,6 +5,7 @@ import { ElementType } from '../../../types'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 import getJurisdictionFileStatus from './getJurisdictionFileStatus'
 import { poll } from '../../utilities'
+import getRoundStatus from './getRoundStatus'
 
 function useSetupMenuItems(
   stage: ElementType<typeof setupStages>,
@@ -54,11 +55,22 @@ function useSetupMenuItems(
     }
   }, [electionId, setContests])
 
+  const lockAllIfRounds = useCallback(async () => {
+    const roundsExist = await getRoundStatus(electionId)
+    if (roundsExist) {
+      setParticipants('locked')
+      setContests('locked')
+      setAuditSettings('locked')
+      setReviewLaunch('locked')
+    }
+  }, [setParticipants, setContests, setAuditSettings, setReviewLaunch])
+
   const refresh = useCallback(() => {
     setParticipants('live')
     setOrPollParticipantsFile()
     setAuditSettings('live')
     setReviewLaunch('live')
+    lockAllIfRounds()
   }, [
     setParticipants,
     setOrPollParticipantsFile,
@@ -98,6 +110,8 @@ function useSetupMenuItems(
                 // launch confirm dialog here
               }
               setStage(s)
+            } else if (reviewLaunch === 'locked') {
+              setStage('Review & Launch')
             }
           },
           state,
