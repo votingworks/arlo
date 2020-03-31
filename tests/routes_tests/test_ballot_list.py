@@ -1,5 +1,4 @@
 import json
-from flask.testing import FlaskClient
 
 import pytest
 
@@ -9,9 +8,8 @@ import bgcompute
 
 
 @pytest.fixture()
-def election_id(client: FlaskClient) -> str:
-    election_id = create_election(client, is_multi_jurisdiction=False)
-    yield election_id
+def election_id() -> str:
+    yield create_election(is_multi_jurisdiction=False)
 
 
 def test_ballot_list_jurisdiction_two_rounds(client, election_id):

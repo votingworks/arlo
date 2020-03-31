@@ -6,9 +6,17 @@ from flask.testing import FlaskClient
 
 from arlo_server.auth import UserType
 from arlo_server.routes import create_organization
-from arlo_server.models import db, AuditAdministration, User
+from arlo_server.models import (
+    db,
+    AuditAdministration,
+    User,
+    Election,
+    Jurisdiction,
+    JurisdictionAdministration,
+)
 
-DEFAULT_USER_EMAIL = "admin@example.com"
+DEFAULT_AA_EMAIL = "admin@example.com"
+DEFAULT_JA_EMAIL = "jurisdiction.admin@example.com"
 
 
 def post_json(client: FlaskClient, url: str, obj) -> Any:
@@ -24,46 +32,67 @@ def put_json(client: FlaskClient, url: str, obj) -> Any:
 
 
 def set_logged_in_user(
-    client: FlaskClient, user_type: UserType, user_email=DEFAULT_USER_EMAIL
+    client: FlaskClient, user_type: UserType, user_email=DEFAULT_AA_EMAIL
 ):
     with client.session_transaction() as session:
         session["_user"] = {"type": user_type, "email": user_email}
 
 
-def create_user(email=DEFAULT_USER_EMAIL):
+def clear_logged_in_user(client: FlaskClient):
+    with client.session_transaction() as session:
+        session["_user"] = None
+
+
+def create_user(email=DEFAULT_AA_EMAIL):
     user = User(id=str(uuid.uuid4()), email=email, external_id=email)
     db.session.add(user)
     db.session.commit()
     return user
 
 
-def create_org_and_admin(org_name="Test Org", user_email=DEFAULT_USER_EMAIL):
+def create_org_and_admin(
+    org_name: str = "Test Org", user_email: str = DEFAULT_AA_EMAIL
+) -> (str, str):
     org = create_organization(org_name)
-    u = create_user(user_email)
-    db.session.add(u)
-    admin = AuditAdministration(organization_id=org.id, user_id=u.id)
+    aa = create_user(user_email)
+    db.session.add(aa)
+    admin = AuditAdministration(organization_id=org.id, user_id=aa.id)
     db.session.add(admin)
     db.session.commit()
+    return org.id, aa.id
 
-    return org.id, u.id
+
+def create_jurisdiction_and_admin(
+    election_id: str,
+    jurisdiction_name: str = "Test Jurisdiction",
+    user_email: str = DEFAULT_JA_EMAIL,
+) -> (str, str):
+    jurisdiction = Jurisdiction(
+        id=str(uuid.uuid4()), election_id=election_id, name=jurisdiction_name
+    )
+    ja = create_user(user_email)
+    db.session.add(ja)
+    admin = JurisdictionAdministration(user_id=ja.id, jurisdiction_id=jurisdiction.id)
+    db.session.add(jurisdiction)
+    db.session.add(admin)
+    db.session.commit()
+    return jurisdiction.id, ja.id
 
 
 def create_election(
-    client: FlaskClient,
     audit_name: str = "Test Audit",
     organization_id: str = None,
     is_multi_jurisdiction: bool = True,
 ):
-    rv = post_json(
-        client,
-        "/election/new",
-        {
-            "auditName": audit_name,
-            "organizationId": organization_id,
-            "isMultiJurisdiction": is_multi_jurisdiction,
-        },
+    election = Election(
+        id=str(uuid.uuid4()),
+        audit_name=audit_name,
+        organization_id=organization_id,
+        is_multi_jurisdiction=is_multi_jurisdiction,
     )
-    return json.loads(rv.data)["electionId"]
+    db.session.add(election)
+    db.session.commit()
+    return election.id
 
 
 def assert_is_id(x):

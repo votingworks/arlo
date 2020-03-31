@@ -5,7 +5,7 @@ from typing import Dict
 
 from arlo_server import app
 from arlo_server.models import Election
-from arlo_server.auth import with_election_access, UserType
+from arlo_server.auth import with_election_access
 from audit_math import bravo, sampler_contest
 
 
@@ -34,7 +34,7 @@ def sample_size_options(election: Election) -> dict:
 
 
 @app.route("/election/<election_id>/sample-sizes", methods=["GET"])
-@with_election_access(UserType.AUDIT_ADMIN)
+@with_election_access
 def get_sample_sizes(election: Election):
     sample_sizes = sample_size_options(election)
 

@@ -4,7 +4,7 @@ from flask import session
 from typing import Callable, Optional, Tuple, Union
 from werkzeug.exceptions import Unauthorized, Forbidden
 
-from arlo_server.models import Election, User
+from arlo_server.models import Election, User, Jurisdiction
 
 
 class UserType(str, Enum):
@@ -58,27 +58,89 @@ def require_audit_admin_for_organization(organization_id: Optional[str]):
     )
 
 
-def with_election_access(user_type: UserType):
+def require_jurisdiction_admin_for_jurisdiction(
+    jurisdiction_id: str, election: Election
+):
+    user_type, user = get_loggedin_user_record()
+
+    if not user:
+        raise Unauthorized(
+            description=f"Anonymous users do not have access to jurisdiction {jurisdiction_id}"
+        )
+
+    if user_type != UserType.JURISDICTION_ADMIN:
+        raise Forbidden(
+            description=f"{user.email} is not logged in as a jurisdiction admin and so does not have access to jurisdiction {jurisdiction_id}"
+        )
+
+    jurisdiction = next(
+        (j for j in user.jurisdictions if j.id == jurisdiction_id), None
+    )
+    if not jurisdiction:
+        raise Forbidden(
+            description=f"{user.email} does not have access to jurisdiction {jurisdiction_id}"
+        )
+    if jurisdiction.election_id != election.id:
+        raise Forbidden(
+            description=f"Jurisdiction {jurisdiction.id} is not associated with election {election.id}"
+        )
+
+
+def with_election_access(route: Callable):
     """
-    Flask route decorator that restricts access to a route based on the current
-    logged-in user's access to the election at the route's path.
+    Flask route decorator that restricts access to a route to Audit Admins
+    that have access to the election at the route's path. It also loads the
+    election object.
 
-    To use this, you must have a path component named `election_id` and a route
-    parameter named `election`.
+    To use this, you must have:
+    - a path component named `election_id`
+    - a route parameter named `election`
     """
-    if user_type != UserType.AUDIT_ADMIN:
-        raise Exception(f"user type {user_type} is not yet supported")
 
-    def decorator(route: Callable):
-        @functools.wraps(route)
-        def wrapper(*args, **kwargs):
-            if "election_id" not in kwargs:
-                raise Exception(f"expected 'election_id' in kwargs but got: {kwargs}")
-            election = Election.query.get_or_404(kwargs.pop("election_id"))
-            require_audit_admin_for_organization(election.organization_id)
-            kwargs["election"] = election
-            return route(*args, **kwargs)
+    @functools.wraps(route)
+    def wrapper(*args, **kwargs):
+        if "election_id" not in kwargs:
+            raise Exception(f"expected 'election_id' in kwargs but got: {kwargs}")
 
-        return wrapper
+        election = Election.query.get_or_404(kwargs.pop("election_id"))
 
-    return decorator
+        require_audit_admin_for_organization(election.organization_id)
+
+        kwargs["election"] = election
+
+        return route(*args, **kwargs)
+
+    return wrapper
+
+
+def with_jurisdiction_access(route: Callable):
+    """
+    Flask route decorator that restricts access to a route to Jurisdiction
+    Admins that have access to the election and jurisdiction at the route's
+    path. It also loads the election and jurisdiction objects.
+
+    To use this, you must have:
+    - a path component named `election_id`
+    - a route parameter named `election`
+    - a path component named `jurisdiction_id`
+    - a route parameter named `jurisdiction`
+    """
+
+    @functools.wraps(route)
+    def wrapper(*args, **kwargs):
+        if "election_id" not in kwargs:
+            raise Exception(f"expected 'election_id' in kwargs but got: {kwargs}")
+        if "jurisdiction_id" not in kwargs:
+            raise Exception(f"expected 'jurisdiction_id' in kwargs but got: {kwargs}")
+
+        election = Election.query.get_or_404(kwargs.pop("election_id"))
+        jurisdiction = Jurisdiction.query.get_or_404(kwargs.pop("jurisdiction_id"))
+
+        require_jurisdiction_admin_for_jurisdiction(jurisdiction.id, election)
+
+        kwargs["election"] = election
+        kwargs["jurisdiction"] = jurisdiction
+
+        return route(*args, **kwargs)
+
+    return wrapper

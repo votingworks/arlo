@@ -250,7 +250,7 @@ def election_new():
 
 
 @app.route("/election/<election_id>/jurisdiction/file", methods=["GET"])
-@with_election_access(UserType.AUDIT_ADMIN)
+@with_election_access
 def get_jurisdictions_file(election: Election):
     jurisdictions_file = election.jurisdictions_file
 
@@ -264,7 +264,7 @@ def get_jurisdictions_file(election: Election):
 
 
 @app.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
-@with_election_access(UserType.AUDIT_ADMIN)
+@with_election_access
 def update_jurisdictions_file(election: Election):
     if "jurisdictions" not in request.files:
         return (

@@ -12,7 +12,7 @@ from arlo_server.models import (
     SampledBallot,
     SampledBallotDraw,
 )
-from arlo_server.auth import with_election_access, UserType
+from arlo_server.auth import with_election_access
 from arlo_server.sample_sizes import sample_size_options
 from util.isoformat import isoformat
 from audit_math import sampler
@@ -120,14 +120,14 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
 
 
 @app.route("/election/<election_id>/round", methods=["GET"])
-@with_election_access(UserType.AUDIT_ADMIN)
+@with_election_access
 def list_rounds(election: Election):
     rounds = sorted(election.rounds, key=lambda r: r.round_num)
     return jsonify({"rounds": [serialize_round(r) for r in rounds]})
 
 
 @app.route("/election/<election_id>/round", methods=["POST"])
-@with_election_access(UserType.AUDIT_ADMIN)
+@with_election_access
 def create_round(election: Election):
     json_round = request.get_json()
     validate_round(json_round, election)

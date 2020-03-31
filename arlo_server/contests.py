@@ -4,7 +4,7 @@ from werkzeug.exceptions import BadRequest
 from sqlalchemy import func
 
 from arlo_server import app, db
-from arlo_server.auth import with_election_access, UserType
+from arlo_server.auth import with_election_access
 from arlo_server.models import (
     Contest,
     ContestChoice,
@@ -158,7 +158,7 @@ def round_status_by_contest(
 
 
 @app.route("/election/<election_id>/contest", methods=["PUT"])
-@with_election_access(UserType.AUDIT_ADMIN)
+@with_election_access
 def create_or_update_all_contests(election: Election):
     json_contests = request.get_json()
     validate_contests(json_contests)
@@ -175,7 +175,7 @@ def create_or_update_all_contests(election: Election):
 
 
 @app.route("/election/<election_id>/contest", methods=["GET"])
-@with_election_access(UserType.AUDIT_ADMIN)
+@with_election_access
 def list_contests(election: Election):
     current_round = get_current_round(election)
     round_status = round_status_by_contest(current_round, election.contests)
