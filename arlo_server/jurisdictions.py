@@ -126,14 +126,12 @@ def round_status_by_jurisdiction(
 @app.route("/election/<election_id>/jurisdiction", methods=["GET"])
 @with_election_access(UserType.AUDIT_ADMIN)
 def list_jurisdictions(election: Election):
-    jurisdictions = sorted(election.jurisdictions, key=lambda j: j.name)
-
     current_round = get_current_round(election)
     round_status = round_status_by_jurisdiction(
-        current_round, jurisdictions, election.online
+        current_round, election.jurisdictions, election.online
     )
 
     json_jurisdictions = [
-        serialize_jurisdiction(j, round_status[j.id]) for j in jurisdictions
+        serialize_jurisdiction(j, round_status[j.id]) for j in election.jurisdictions
     ]
     return jsonify({"jurisdictions": json_jurisdictions})

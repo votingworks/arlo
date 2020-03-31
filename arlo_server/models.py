@@ -60,7 +60,10 @@ class Election(BaseModel):
     frozen_at = db.Column(db.DateTime(timezone=False), nullable=True)
 
     jurisdictions = relationship(
-        "Jurisdiction", backref="election", passive_deletes=True
+        "Jurisdiction",
+        backref="election",
+        passive_deletes=True,
+        order_by="Jurisdiction.name",
     )
     contests = relationship("Contest", backref="election", passive_deletes=True)
     rounds = relationship("Round", backref="election", passive_deletes=True)
