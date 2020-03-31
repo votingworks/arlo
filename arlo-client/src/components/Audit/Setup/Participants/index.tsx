@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react'
+import React from 'react'
 import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -29,11 +29,9 @@ interface IProps {
 
 const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
   const { electionId } = useParams()
-  const [isLoading, setIsLoading] = useState(false)
   const [{ state }, updateSettings] = useAuditSettings(electionId!)
   const submit = async (values: IValues) => {
     try {
-      setIsLoading(true)
       const responseOne = await updateSettings({ state: values.state })
       if (!responseOne) return
       /* istanbul ignore else */
@@ -129,16 +127,15 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
               )}
             </FormSection>
           </FormWrapper>
-          {isLoading && <Spinner />}
-          {!isLoading && (
+          {nextStage.state === 'processing' ? (
+            <Spinner />
+          ) : (
             <FormButtonBar>
               <FormButton
                 type="submit"
                 intent="primary"
-                disabled={!!audit.frozenAt}
-                onClick={e => {
-                  handleSubmit(e)
-                }}
+                disabled={nextStage.state === 'locked'}
+                onClick={handleSubmit}
               >
                 Save &amp; Next
               </FormButton>

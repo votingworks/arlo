@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
 import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
-import { RadioGroup, Radio } from '@blueprintjs/core'
+import { RadioGroup, Radio, Spinner } from '@blueprintjs/core'
 import { IAudit } from '../../../../types'
 import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
@@ -28,13 +28,11 @@ const Settings: React.FC<IProps> = ({
   audit,
 }: IProps) => {
   const { electionId } = useParams()
-  const [isLoading, setIsLoading] = useState(false)
   const [
     { electionName, randomSeed, riskLimit, online },
     updateState,
   ] = useAuditSettings(electionId!)
   const submit = async (values: IValues) => {
-    setIsLoading(true)
     const response = await updateState({
       ...values,
       riskLimit: parseNumber(values.riskLimit), // Formik stringifies internally
@@ -123,22 +121,21 @@ const Settings: React.FC<IProps> = ({
               </label>
             </FormSection>
           </FormWrapper>
-          <FormButtonBar>
-            <FormButton
-              loading={isLoading}
-              disabled={isLoading}
-              onClick={prevStage.activate}
-            >
-              Back
-            </FormButton>
-            <FormButton
-              loading={isLoading}
-              disabled={isLoading}
-              onClick={handleSubmit}
-            >
-              Save &amp; Next
-            </FormButton>
-          </FormButtonBar>
+          {nextStage.state === 'processing' ? (
+            <Spinner />
+          ) : (
+            <FormButtonBar>
+              <FormButton onClick={prevStage.activate}>Back</FormButton>
+              <FormButton
+                type="submit"
+                intent="primary"
+                disabled={nextStage.state === 'locked'}
+                onClick={handleSubmit}
+              >
+                Save &amp; Next
+              </FormButton>
+            </FormButtonBar>
+          )}
         </Form>
       )}
     </Formik>

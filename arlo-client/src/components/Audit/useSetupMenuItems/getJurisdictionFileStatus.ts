@@ -39,7 +39,12 @@ type IJurisdictionsFileResponse =
 const getJurisdictionFileStatus = async (
   electionId: string
 ): Promise<
-  'ERRORED' | 'PROCESSING' | 'PROCESSED' | 'ERRORED' | 'READY_TO_PROCESS'
+  | 'ERRORED'
+  | 'PROCESSING'
+  | 'PROCESSED'
+  | 'ERRORED'
+  | 'READY_TO_PROCESS'
+  | 'NULL'
 > => {
   const jurisdictionsOrError:
     | IJurisdictionsFileResponse
@@ -50,7 +55,7 @@ const getJurisdictionFileStatus = async (
   if (jurisdictionsOrError.processing) {
     return jurisdictionsOrError.processing!.status
   }
-  return 'READY_TO_PROCESS'
+  return 'NULL'
 }
 
 export default getJurisdictionFileStatus

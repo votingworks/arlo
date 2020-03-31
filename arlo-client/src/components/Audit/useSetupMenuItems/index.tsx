@@ -36,7 +36,7 @@ function useSetupMenuItems(
 
   const setOrPollParticipantsFile = useCallback(async () => {
     const jurisdictionStatus = await getJurisdictionFileStatus(electionId)
-    if (jurisdictionStatus === 'ERRORED') {
+    if (jurisdictionStatus === 'ERRORED' || jurisdictionStatus === 'NULL') {
       setContests('locked')
     } else if (jurisdictionStatus === 'PROCESSED') {
       setContests('live')
@@ -95,7 +95,7 @@ function useSetupMenuItems(
             if (state === 'live') {
               /* istanbul ignore next */
               if (!force) {
-                // launch confirm dialog
+                // launch confirm dialog here
               }
               setStage(s)
             }

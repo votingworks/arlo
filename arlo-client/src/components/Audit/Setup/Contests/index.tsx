@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react'
+import React from 'react'
 import { Formik, FormikProps, Form, Field, FieldArray } from 'formik'
 import { Spinner } from '@blueprintjs/core'
 import { IAudit } from '../../../../types'
@@ -54,7 +54,6 @@ const Contests: React.FC<IProps> = ({
   nextStage,
   prevStage,
 }) => {
-  const [isLoading, setIsLoading] = useState(false)
   const initialValues: IValues = {
     contests: audit.contests.length ? audit.contests : contestValues.contests,
   }
@@ -63,7 +62,6 @@ const Contests: React.FC<IProps> = ({
       initialValues={initialValues}
       validationSchema={schema}
       onSubmit={v => {
-        setIsLoading(true)
         // eslint-disable-next-line no-console
         console.log(v)
         nextStage.activate()
@@ -233,17 +231,18 @@ const Contests: React.FC<IProps> = ({
               )}
             />
           </FormWrapper>
-          {isLoading && <Spinner />}
-          {!audit.contests.length && !isLoading && (
+          {nextStage.state === 'processing' ? (
+            <Spinner />
+          ) : (
             <FormButtonBar>
               <FormButton onClick={prevStage.activate}>Back</FormButton>
               <FormButton
                 type="submit"
                 intent="primary"
-                disabled={!!audit.frozenAt}
+                disabled={nextStage.state === 'locked'}
                 onClick={handleSubmit}
               >
-                Submit &amp; Next
+                Save &amp; Next
               </FormButton>
             </FormButtonBar>
           )}
