@@ -1,7 +1,7 @@
 import { api, checkAndToast } from '../../utilities'
 import { IErrorResponse } from '../../../types'
 
-type IJurisdictionsFileResponse =
+export type IJurisdictionsFileResponse =
   | { file: null; processing: null }
   | {
       file: {
