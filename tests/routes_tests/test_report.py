@@ -1,4 +1,5 @@
 import json, random
+from flask.testing import FlaskClient
 
 import pytest
 
@@ -8,8 +9,8 @@ import bgcompute
 
 
 @pytest.fixture()
-def election_id() -> str:
-    yield create_election(is_multi_jurisdiction=False)
+def election_id(client: FlaskClient) -> str:
+    yield create_election(client, is_multi_jurisdiction=False)
 
 
 def run_audit_round(

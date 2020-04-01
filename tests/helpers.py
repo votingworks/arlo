@@ -10,7 +10,6 @@ from arlo_server.models import (
     db,
     AuditAdministration,
     User,
-    Election,
     Jurisdiction,
     JurisdictionAdministration,
 )
@@ -80,19 +79,21 @@ def create_jurisdiction_and_admin(
 
 
 def create_election(
+    client: FlaskClient,
     audit_name: str = "Test Audit",
     organization_id: str = None,
     is_multi_jurisdiction: bool = True,
 ):
-    election = Election(
-        id=str(uuid.uuid4()),
-        audit_name=audit_name,
-        organization_id=organization_id,
-        is_multi_jurisdiction=is_multi_jurisdiction,
+    rv = post_json(
+        client,
+        "/election/new",
+        {
+            "auditName": audit_name,
+            "organizationId": organization_id,
+            "isMultiJurisdiction": is_multi_jurisdiction,
+        },
     )
-    db.session.add(election)
-    db.session.commit()
-    return election.id
+    return json.loads(rv.data)["electionId"]
 
 
 def assert_is_id(x):
