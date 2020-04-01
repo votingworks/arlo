@@ -12,8 +12,8 @@ small_manifest_file_path = os.path.join(os.path.dirname(__file__), "small-manife
 
 
 @pytest.fixture()
-def election_id() -> str:
-    yield create_election(is_multi_jurisdiction=False)
+def election_id(client: FlaskClient) -> str:
+    yield create_election(client, is_multi_jurisdiction=False)
 
 
 def test_index(client):
@@ -41,8 +41,12 @@ def test_session(client):
 
 
 def test_whole_audit_flow(client: FlaskClient):
-    election_id_1 = create_election(audit_name="Audit 1", is_multi_jurisdiction=False)
-    election_id_2 = create_election(audit_name="Audit 2", is_multi_jurisdiction=False)
+    election_id_1 = create_election(
+        client, audit_name="Audit 1", is_multi_jurisdiction=False
+    )
+    election_id_2 = create_election(
+        client, audit_name="Audit 2", is_multi_jurisdiction=False
+    )
 
     print("running whole audit flow " + election_id_1)
     run_whole_audit_flow(

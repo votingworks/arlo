@@ -28,8 +28,9 @@ def org_id():
 
 
 @pytest.fixture
-def election_id(org_id: str):
-    return create_election(organization_id=org_id)
+def election_id(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, AA_EMAIL)
+    return create_election(client, organization_id=org_id)
 
 
 @pytest.fixture
@@ -241,7 +242,8 @@ def test_with_jurisdiction_access_wrong_org(
     client: FlaskClient, election_id: str, jurisdiction_id: str
 ):
     org_id_2, _ = create_org_and_admin("Org 2", "aa2@example.com")
-    election_id_2 = create_election(organization_id=org_id_2)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "aa2@example.com")
+    election_id_2 = create_election(client, organization_id=org_id_2)
     create_jurisdiction_and_admin(election_id_2, user_email="ja2@example.com")
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "ja2@example.com")
     rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth")
@@ -259,7 +261,10 @@ def test_with_jurisdiction_access_wrong_org(
 def test_with_jurisdiction_access_wrong_election(
     client: FlaskClient, org_id: str, election_id: str, jurisdiction_id: str
 ):
-    election_id_2 = create_election(audit_name="Audit 2", organization_id=org_id)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, AA_EMAIL)
+    election_id_2 = create_election(
+        client, audit_name="Audit 2", organization_id=org_id
+    )
     create_jurisdiction_and_admin(election_id_2, user_email="ja2@example.com")
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "ja2@example.com")
     rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth")

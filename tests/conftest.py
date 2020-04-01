@@ -32,8 +32,8 @@ def client() -> FlaskClient:
 
 
 @pytest.fixture
-def election_id() -> str:
-    yield create_election()
+def election_id(client: FlaskClient) -> str:
+    yield create_election(client)
 
 
 @pytest.fixture
