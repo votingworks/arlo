@@ -2,7 +2,10 @@ import jsonschema
 import jsonschema.validators
 from typing import Any, Dict, List, Union
 
-JSONSchema = Dict[str, Any]
+# An approximation of a JSON object type, since mypy doesn't support
+# recursive types.
+JSONDict = Dict[str, Any]
+JSONSchema = JSONDict
 
 
 def validate(instance: Any, schema: JSONSchema):

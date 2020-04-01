@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Optional
 from flask import request, jsonify
 from werkzeug.exceptions import BadRequest
 from sqlalchemy import func
@@ -16,10 +16,8 @@ from arlo_server.models import (
     Batch,
 )
 from arlo_server.rounds import get_current_round
-from util.jsonschema import validate
+from util.jsonschema import validate, JSONDict
 
-# An approximation of a JSON object type, since we can't do recursive types
-JSONDict = Dict[str, Any]
 
 CONTEST_CHOICE_SCHEMA = {
     "type": "object",
@@ -69,7 +67,6 @@ def serialize_contest_choice(contest_choice: ContestChoice) -> JSONDict:
 
 
 def serialize_contest(contest: Contest, round_status: Optional[JSONDict]) -> JSONDict:
-    jurisdictions = sorted(contest.jurisdictions, key=lambda j: j.name)
     return {
         "id": contest.id,
         "name": contest.name,
@@ -78,7 +75,7 @@ def serialize_contest(contest: Contest, round_status: Optional[JSONDict]) -> JSO
         "totalBallotsCast": contest.total_ballots_cast,
         "numWinners": contest.num_winners,
         "votesAllowed": contest.votes_allowed,
-        "jurisdictionIds": [j.id for j in jurisdictions],
+        "jurisdictionIds": [j.id for j in contest.jurisdictions],
         "currentRoundStatus": round_status,
     }
 

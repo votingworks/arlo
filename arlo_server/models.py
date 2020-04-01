@@ -60,7 +60,10 @@ class Election(BaseModel):
     frozen_at = db.Column(db.DateTime(timezone=False), nullable=True)
 
     jurisdictions = relationship(
-        "Jurisdiction", backref="election", passive_deletes=True
+        "Jurisdiction",
+        backref="election",
+        passive_deletes=True,
+        order_by="Jurisdiction.name",
     )
     contests = relationship("Contest", backref="election", passive_deletes=True)
     rounds = relationship("Round", backref="election", passive_deletes=True)
@@ -93,10 +96,7 @@ class Jurisdiction(BaseModel):
         "AuditBoard", backref="jurisdiction", passive_deletes=True
     )
     contests = relationship(
-        "Contest",
-        secondary="contest_jurisdiction",
-        backref="jurisdictions",
-        passive_deletes=True,
+        "Contest", secondary="contest_jurisdiction", passive_deletes=True,
     )
 
     __table_args__ = (db.UniqueConstraint("election_id", "name"),)
@@ -192,6 +192,12 @@ class Contest(BaseModel):
     results = relationship(
         "RoundContestResult", backref="contest", passive_deletes=True
     )
+    jurisdictions = relationship(
+        "Jurisdiction",
+        secondary="contest_jurisdiction",
+        order_by="Jurisdiction.name",
+        passive_deletes=True,
+    )
 
 
 class ContestChoice(BaseModel):
@@ -241,6 +247,7 @@ class AuditBoard(BaseModel):
     member_2 = db.Column(db.String(200), nullable=True)
     member_2_affiliation = db.Column(db.String(200), nullable=True)
     passphrase = db.Column(db.String(1000), unique=True, nullable=True)
+    signed_off_at = db.Column(db.DateTime(timezone=False), nullable=True)
 
     sampled_ballots = relationship(
         "SampledBallot", backref="audit_board", passive_deletes=True
