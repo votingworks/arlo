@@ -22,6 +22,7 @@ async function inputAndSubmitForm() {
   const getStatusMock = jest
     .fn()
     .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after jurisdictions
+    .mockImplementation(async () => statusStates[5]) // the POST to /election/{electionId}/audit/status after manifest
   const updateAuditMock = jest
     .fn()
     .mockImplementationOnce(async () => statusStates[5]) // the POST to /election/{electionId}/audit/status after manifest
@@ -71,7 +72,7 @@ beforeEach(() => {
   checkAndToastMock.mockClear()
 })
 
-describe.skip('SelectBallotsToAudit', () => {
+describe('SelectBallotsToAudit', () => {
   it('renders correctly', () => {
     const { container, rerender } = render(
       <SelectBallotsToAudit
@@ -134,6 +135,7 @@ describe.skip('SelectBallotsToAudit', () => {
     const getStatusMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates[3]) // the POST to /election/{electionId}/audit/status after jurisdictions
+      .mockImplementation(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
     const updateAuditMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
@@ -215,7 +217,7 @@ describe.skip('SelectBallotsToAudit', () => {
         },
       })
 
-      expect(getStatusMock).toBeCalledTimes(1)
+      expect(getStatusMock).toBeCalledTimes(2)
       expect(updateAuditMock).toBeCalledTimes(1)
       expect(checkAndToastMock).toBeCalledTimes(3)
     })
@@ -324,8 +326,8 @@ describe.skip('SelectBallotsToAudit', () => {
         /\/election\/[^/]+\/jurisdiction\/jurisdiction-1\/manifest/
       )
 
-      expect((getStatusMock as jest.Mock).mock.calls.length).toBe(1)
-      expect((updateAuditMock as jest.Mock).mock.calls.length).toBe(1)
+      expect(getStatusMock).toBeCalledTimes(2)
+      expect(updateAuditMock).toBeCalledTimes(1)
     })
   })
 

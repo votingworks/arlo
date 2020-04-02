@@ -8,7 +8,7 @@
     "lint:fix": "yarn lint --fix",
     "start": "react-scripts start",
     "test": "is-ci \"test:ci\" \"test:watch\"",
-    "test:ci": "CI=true tsc && yarn test:wdio",
+    "test:ci": "CI=true tsc && react-scripts test --maxWorkers 2 --env=jsdom --coverage && yarn test:wdio",
     "test:coverage": "react-scripts test --coverage --watchAll=false",
     "test:update": "react-scripts test -u  --watchAll=false",
     "test:watch": "react-scripts test",
