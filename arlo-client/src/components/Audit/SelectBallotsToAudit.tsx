@@ -181,12 +181,13 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
       const condition = async () => {
         const { jurisdictions } = await getStatus()
         const { ballotManifest } = jurisdictions[0]
+        /* istanbul ignore next */
         if (!ballotManifest) {
           return false
         }
         const { processing } = ballotManifest
         return (
-          processing &&
+          !!processing &&
           (processing.status === 'PROCESSED' || processing.status === 'ERRORED')
         )
       }

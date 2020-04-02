@@ -223,6 +223,123 @@ describe('SelectBallotsToAudit', () => {
     })
   })
 
+  it('bails if the manifest failed to start processing', async () => {
+    const getStatusMock = jest
+      .fn()
+      .mockImplementation(async () => statusStates[3]) // the POST to /election/{electionId}/audit/status after jurisdictions
+    const updateAuditMock = jest
+      .fn()
+      .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
+    apiMock.mockImplementation(async () => {})
+
+    const { getByText, getByLabelText } = render(
+      <SelectBallotsToAudit
+        audit={statusStates[2]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    const manifestInput = getByLabelText('Select manifest...')
+    fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
+
+    const submitButton = getByText('Select Ballots To Audit')
+    fireEvent.click(submitButton, { bubbles: true })
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(3)
+
+      expect(getStatusMock).toBeCalledTimes(2)
+      expect(updateAuditMock).toBeCalledTimes(0)
+      expect(checkAndToastMock).toBeCalledTimes(3)
+    })
+  })
+
+  it('does not bail if the manifest processing errors', async () => {
+    const getStatusMock = jest
+      .fn()
+      .mockImplementation(async () => statusStates[9]) // the POST to /election/{electionId}/audit/status after jurisdictions
+    const updateAuditMock = jest
+      .fn()
+      .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
+    apiMock.mockImplementation(async () => {})
+
+    const { getByText, getByLabelText } = render(
+      <SelectBallotsToAudit
+        audit={statusStates[2]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    const manifestInput = getByLabelText('Select manifest...')
+    fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
+
+    const submitButton = getByText('Select Ballots To Audit')
+    fireEvent.click(submitButton, { bubbles: true })
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(3)
+
+      expect(getStatusMock).toBeCalledTimes(2)
+      expect(updateAuditMock).toBeCalledTimes(1)
+      expect(checkAndToastMock).toBeCalledTimes(3)
+    })
+  })
+
+  it('handles server timeout on ballot manifest processing', async () => {
+    const dateIncrementor = (function* incr() {
+      let i = 10
+      while (true) {
+        i += 130000
+        yield i
+      }
+    })()
+    const dateSpy = jest
+      .spyOn(Date, 'now')
+      .mockImplementation(() => dateIncrementor.next().value)
+
+    const getStatusMock = jest
+      .fn()
+      .mockImplementation(async () => statusStates[3]) // the POST to /election/{electionId}/audit/status after jurisdictions
+    const updateAuditMock = jest
+      .fn()
+      .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
+    apiMock.mockImplementation(async () => {})
+
+    const { getByText, getByLabelText } = render(
+      <SelectBallotsToAudit
+        audit={statusStates[2]}
+        isLoading={false}
+        setIsLoading={jest.fn()}
+        updateAudit={updateAuditMock}
+        getStatus={getStatusMock}
+        electionId="1"
+      />
+    )
+
+    const manifestInput = getByLabelText('Select manifest...')
+    fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
+
+    const submitButton = getByText('Select Ballots To Audit')
+    fireEvent.click(submitButton, { bubbles: true })
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(3)
+      expect(dateSpy).toBeCalled()
+      expect(updateAuditMock).toBeCalledTimes(0)
+      expect(toastSpy).toBeCalledTimes(1)
+      expect(getStatusMock).toBeCalledTimes(2)
+      expect(checkAndToastMock).toBeCalledTimes(3)
+    })
+  })
+
   it('changes sampleSize based on audit.rounds.contests.sampleSize', () => {
     const { getByLabelText } = render(
       <Router>
