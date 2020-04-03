@@ -59,7 +59,7 @@ afterEach(() => {
 
 describe('RiskLimitingAuditForm', () => {
   it('fetches initial state from api', async () => {
-    apiMock.mockImplementation(async () => statusStates[0])
+    apiMock.mockImplementation(async () => statusStates.empty)
     const { container } = await asyncActRender(
       <Router>
         <Audit />
@@ -72,7 +72,7 @@ describe('RiskLimitingAuditForm', () => {
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/
       )
-      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[0])
+      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates.empty)
     })
   })
 
@@ -96,7 +96,7 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('does not render SelectBallotsToAudit when /audit/status is processing samplesizes', async () => {
-    apiMock.mockImplementation(async () => statusStates[1])
+    apiMock.mockImplementation(async () => statusStates.contestFirstRound)
     const { container, queryByTestId } = await asyncActRender(
       <Router>
         <Audit />
@@ -110,12 +110,14 @@ describe('RiskLimitingAuditForm', () => {
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/
       )
-      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[1])
+      expect(apiMock.mock.results[0].value).resolves.toBe(
+        statusStates.contestFirstRound
+      )
     })
   })
 
   it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
-    apiMock.mockImplementation(async () => statusStates[2])
+    apiMock.mockImplementation(async () => statusStates.sampleSizeOptions)
     const { container, getByTestId } = await asyncActRender(
       <Router>
         <Audit />
@@ -133,12 +135,14 @@ describe('RiskLimitingAuditForm', () => {
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/
       )
-      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[2])
+      expect(apiMock.mock.results[0].value).resolves.toBe(
+        statusStates.sampleSizeOptions
+      )
     })
   })
 
   it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
-    apiMock.mockImplementation(async () => statusStates[3])
+    apiMock.mockImplementation(async () => statusStates.jurisdictionsInitial)
     const { container, getByTestId, queryByTestId } = await asyncActRender(
       <Router>
         <Audit />
@@ -157,13 +161,15 @@ describe('RiskLimitingAuditForm', () => {
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/
       )
-      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[3])
+      expect(apiMock.mock.results[0].value).resolves.toBe(
+        statusStates.jurisdictionsInitial
+      )
     })
   })
 
   it('renders CalculateRiskMeasurement when /audit/status returns round data', async () => {
     apiMock
-      .mockImplementationOnce(async () => statusStates[4])
+      .mockImplementationOnce(async () => statusStates.ballotManifestProcessed)
       .mockImplementationOnce(async () => dummyBallots)
     const { container, getByTestId } = await asyncActRender(
       <Router>
@@ -182,13 +188,15 @@ describe('RiskLimitingAuditForm', () => {
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/
       )
-      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates[4])
+      expect(apiMock.mock.results[0].value).resolves.toBe(
+        statusStates.ballotManifestProcessed
+      )
     })
   })
 
   it('renders sidebar when authenticated on /setup', async () => {
     apiMock
-      .mockImplementationOnce(async () => statusStates[2])
+      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
       .mockImplementationOnce(async () => ({
         type: 'audit_admin',
         name: 'Joe',
@@ -230,7 +238,7 @@ describe('RiskLimitingAuditForm', () => {
       },
     })
     apiMock
-      .mockImplementationOnce(async () => statusStates[2])
+      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
       .mockImplementationOnce(async () => ({
         type: 'audit_admin',
         name: 'Joe',
@@ -265,7 +273,7 @@ describe('RiskLimitingAuditForm', () => {
 
   it('sidebar changes stages', async () => {
     apiMock
-      .mockImplementationOnce(async () => statusStates[2])
+      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
       .mockImplementationOnce(async () => ({
         type: 'audit_admin',
         name: 'Joe',
@@ -305,7 +313,7 @@ describe('RiskLimitingAuditForm', () => {
 
   it('next and back buttons change stages', async () => {
     apiMock
-      .mockImplementationOnce(async () => statusStates[2])
+      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
       .mockImplementationOnce(async () => ({
         type: 'audit_admin',
         name: 'Joe',

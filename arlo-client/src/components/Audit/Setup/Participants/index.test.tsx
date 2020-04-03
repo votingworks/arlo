@@ -59,7 +59,7 @@ const fillAndSubmit = async () => {
     getByTestId,
   } = await asyncActRender(
     <Router>
-      <Participants audit={statusStates[0]} nextStage={nextStage} />
+      <Participants audit={statusStates.empty} nextStage={nextStage} />
     </Router>
   )
 
@@ -92,7 +92,7 @@ describe('Audit Setup > Participants', () => {
   it('renders empty state correctly', async () => {
     const { container } = await asyncActRender(
       <Router>
-        <Participants audit={statusStates[0]} nextStage={nextStage} />
+        <Participants audit={statusStates.empty} nextStage={nextStage} />
       </Router>
     )
     expect(container).toMatchSnapshot()

@@ -7,11 +7,11 @@ import { statusStates, dummyBallots, incompleteDummyBallots } from './_mocks'
 import * as utilities from '../utilities'
 import { asyncActRender } from '../testUtilities'
 
-statusStates[3].online = false
-statusStates[4].online = false
-statusStates[5].online = false
-statusStates[6].online = false
-statusStates[7].online = false
+statusStates.jurisdictionsInitial.online = false
+statusStates.ballotManifestProcessed.online = false
+statusStates.completeInFirstRound.online = false
+statusStates.firstRoundSampleSizeOptionsNull.online = false
+statusStates.firstRoundSampleSizeOptions.online = false
 
 jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation()
 
@@ -32,7 +32,7 @@ const sharedSetIsLoadingMock = jest.fn()
 const sharedUpdateAuditMock = jest.fn()
 const sharedGetStatusMock = jest
   .fn()
-  .mockImplementation(async () => statusStates[5])
+  .mockImplementation(async () => statusStates.completeInFirstRound)
 const sharedToastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 let jspdfInstance: jsPDF
@@ -61,7 +61,7 @@ describe('CalculateRiskMeasurement', () => {
   it('renders first round correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates.ballotManifestProcessed}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -75,7 +75,7 @@ describe('CalculateRiskMeasurement', () => {
   it('renders completion in first round correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[5]}
+        audit={statusStates.completeInFirstRound}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -89,7 +89,7 @@ describe('CalculateRiskMeasurement', () => {
   it('renders first round with loading correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates.ballotManifestProcessed}
         isLoading
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -103,7 +103,7 @@ describe('CalculateRiskMeasurement', () => {
   it('renders completion in first round with loading correctly', () => {
     const container = render(
       <CalculateRiskMeasurement
-        audit={statusStates[5]}
+        audit={statusStates.completeInFirstRound}
         isLoading
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -121,7 +121,7 @@ describe('CalculateRiskMeasurement', () => {
     }))
     const { container, getByLabelText, queryAllByText, getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates.ballotManifestProcessed}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -211,11 +211,13 @@ describe('CalculateRiskMeasurement', () => {
 
     const getStatusMock = jest
       .fn()
-      .mockImplementation(async () => statusStates[6])
+      .mockImplementation(
+        async () => statusStates.firstRoundSampleSizeOptionsNull
+      )
 
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates.ballotManifestProcessed}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -250,11 +252,13 @@ describe('CalculateRiskMeasurement', () => {
 
     const getStatusMock = jest
       .fn()
-      .mockImplementation(async () => statusStates[6])
+      .mockImplementation(
+        async () => statusStates.firstRoundSampleSizeOptionsNull
+      )
 
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates.ballotManifestProcessed}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -294,7 +298,7 @@ describe('CalculateRiskMeasurement', () => {
     apiMock.mockImplementationOnce(async () => dummyBallots)
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates.jurisdictionsInitial}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -322,7 +326,7 @@ describe('CalculateRiskMeasurement', () => {
     apiMock.mockImplementationOnce(async () => dummyBallots)
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[3]}
+        audit={statusStates.jurisdictionsInitial}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -350,7 +354,7 @@ describe('CalculateRiskMeasurement', () => {
     window.open = jest.fn()
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates.ballotManifestProcessed}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -374,7 +378,7 @@ describe('CalculateRiskMeasurement', () => {
     window.open = jest.fn()
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[5]}
+        audit={statusStates.completeInFirstRound}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -398,7 +402,7 @@ describe('CalculateRiskMeasurement', () => {
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const { getByLabelText, getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates.ballotManifestProcessed}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -433,11 +437,11 @@ describe('CalculateRiskMeasurement', () => {
   })
 
   it('downloads data entry flow sheets', async () => {
-    statusStates[7].online = true
+    statusStates.firstRoundSampleSizeOptions.online = true
     apiMock.mockImplementationOnce(async () => dummyBallots)
     const { getByText } = render(
       <CalculateRiskMeasurement
-        audit={statusStates[7]}
+        audit={statusStates.firstRoundSampleSizeOptions}
         isLoading={false}
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -467,11 +471,11 @@ describe('CalculateRiskMeasurement', () => {
   })
 
   it('renders online mode progress bar', async () => {
-    statusStates[4].online = true
+    statusStates.ballotManifestProcessed.online = true
     apiMock.mockImplementationOnce(async () => incompleteDummyBallots)
     const { container } = await asyncActRender(
       <CalculateRiskMeasurement
-        audit={statusStates[4]}
+        audit={statusStates.ballotManifestProcessed}
         isLoading
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}
@@ -483,11 +487,11 @@ describe('CalculateRiskMeasurement', () => {
   })
 
   it('renders online mode progress bar in multiple rounds', async () => {
-    statusStates[8].online = true
+    statusStates.multiAuditBoardsAndRounds.online = true
     apiMock.mockImplementationOnce(async () => incompleteDummyBallots)
     const { container } = await asyncActRender(
       <CalculateRiskMeasurement
-        audit={statusStates[8]}
+        audit={statusStates.multiAuditBoardsAndRounds}
         isLoading
         setIsLoading={sharedSetIsLoadingMock}
         updateAudit={sharedUpdateAuditMock}

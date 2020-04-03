@@ -215,7 +215,7 @@ describe('EstimateSampleSize', () => {
   it('renders empty state correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -227,7 +227,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -241,7 +241,7 @@ describe('EstimateSampleSize', () => {
   it('renders after contests creation correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[1]}
+        audit={statusStates.contestFirstRound}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -253,7 +253,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[1]}
+        audit={statusStates.contestFirstRound}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -267,7 +267,7 @@ describe('EstimateSampleSize', () => {
   it('renders after sample size is estimated correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[3]}
+        audit={statusStates.jurisdictionsInitial}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -279,7 +279,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[3]}
+        audit={statusStates.jurisdictionsInitial}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -293,7 +293,7 @@ describe('EstimateSampleSize', () => {
   it('renders after manifest is uploaded correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[4]}
+        audit={statusStates.ballotManifestProcessed}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -305,7 +305,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[4]}
+        audit={statusStates.ballotManifestProcessed}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -319,7 +319,7 @@ describe('EstimateSampleSize', () => {
   it('renders during rounds stage correctly', () => {
     const { container, rerender } = render(
       <EstimateSampleSize
-        audit={statusStates[5]}
+        audit={statusStates.completeInFirstRound}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -331,7 +331,7 @@ describe('EstimateSampleSize', () => {
 
     rerender(
       <EstimateSampleSize
-        audit={statusStates[5]}
+        audit={statusStates.completeInFirstRound}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -345,7 +345,7 @@ describe('EstimateSampleSize', () => {
   it('changes audits to be offline and online', () => {
     const { getByLabelText } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -381,7 +381,7 @@ describe('EstimateSampleSize', () => {
     // skip until feature is complete in backend
     const { getByText, getAllByText, queryByText } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -415,7 +415,7 @@ describe('EstimateSampleSize', () => {
   it('adds and removes choices', async () => {
     const { getByText, getAllByText, queryAllByText } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -448,13 +448,13 @@ describe('EstimateSampleSize', () => {
     const setIsLoadingMock = jest.fn()
     const getStatusMock = jest
       .fn()
-      .mockImplementationOnce(async () => statusStates[0])
-      .mockImplementationOnce(async () => statusStates[1])
-      .mockImplementationOnce(async () => statusStates[2])
+      .mockImplementationOnce(async () => statusStates.empty)
+      .mockImplementationOnce(async () => statusStates.contestFirstRound)
+      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
 
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
@@ -508,11 +508,11 @@ describe('EstimateSampleSize', () => {
     const setIsLoadingMock = jest.fn()
     const getStatusMock = jest
       .fn()
-      .mockImplementation(async () => statusStates[0])
+      .mockImplementation(async () => statusStates.empty)
 
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={setIsLoadingMock}
         updateAudit={updateAuditMock}
@@ -549,7 +549,7 @@ describe('EstimateSampleSize', () => {
     apiMock.mockReset()
     const { getByLabelText, getByTestId, getByText } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -588,7 +588,7 @@ describe('EstimateSampleSize', () => {
   it('displays an error when the total votes are greater than the allowed votes and more than one vote is allowed per contest', async () => {
     const { getByLabelText, getByTestId } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -635,7 +635,7 @@ describe('EstimateSampleSize', () => {
   it('displays no error when the total votes are greater than the ballot count, but less than the total allowed votes for a contest', async () => {
     const { getByLabelText, queryByTestId } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -686,7 +686,7 @@ describe('EstimateSampleSize', () => {
     const updateAuditMock = jest.fn()
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}
@@ -719,7 +719,7 @@ describe('EstimateSampleSize', () => {
     const updateAuditMock = jest.fn()
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}
@@ -752,7 +752,7 @@ describe('EstimateSampleSize', () => {
     const updateAuditMock = jest.fn()
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}
