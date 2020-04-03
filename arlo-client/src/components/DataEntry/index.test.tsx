@@ -8,7 +8,7 @@ import { statusStates } from '../Audit/_mocks'
 import * as utilities from '../utilities'
 import { IAudit, IBallot } from '../../types'
 
-const memberDummy = statusStates[3]
+const memberDummy = statusStates.jurisdictionsInitial
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,

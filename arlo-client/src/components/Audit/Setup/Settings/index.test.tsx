@@ -36,7 +36,7 @@ const fillAndSubmit = async () => {
   const { getByText, getByLabelText, getByTestId } = await asyncActRender(
     <Router>
       <Settings
-        audit={statusStates[0]}
+        audit={statusStates.empty}
         nextStage={nextStage}
         prevStage={prevStage}
       />

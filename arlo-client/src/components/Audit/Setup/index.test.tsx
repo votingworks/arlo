@@ -37,7 +37,7 @@ describe('Setup', () => {
   it('renders Participants stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
+        audit={statusStates.sampleSizeOptions}
         stage="Participants"
         {...relativeStages('Participants')}
       />
@@ -48,7 +48,7 @@ describe('Setup', () => {
   it('renders Target Contests stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
+        audit={statusStates.sampleSizeOptions}
         stage="Target Contests"
         {...relativeStages('Target Contests')}
       />
@@ -59,7 +59,7 @@ describe('Setup', () => {
   it('renders Opportunistic Contests stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
+        audit={statusStates.sampleSizeOptions}
         stage="Opportunistic Contests"
         {...relativeStages('Opportunistic Contests')}
       />
@@ -70,7 +70,7 @@ describe('Setup', () => {
   it('renders Audit Settings stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
+        audit={statusStates.sampleSizeOptions}
         stage="Audit Settings"
         {...relativeStages('Audit Settings')}
       />
@@ -81,7 +81,7 @@ describe('Setup', () => {
   it('renders Review & Launch stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
+        audit={statusStates.sampleSizeOptions}
         stage="Review & Launch"
         {...relativeStages('Review & Launch')}
       />

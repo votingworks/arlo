@@ -16,7 +16,7 @@ const checkAndToastMock: jest.SpyInstance<
 
 checkAndToastMock.mockReturnValue(false)
 
-const dummy = statusStates[3]
+const dummy = statusStates.jurisdictionsInitial
 dummy.jurisdictions[0].auditBoards = [dummyBoard[0]]
 
 apiMock

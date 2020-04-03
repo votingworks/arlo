@@ -21,15 +21,15 @@ const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 async function inputAndSubmitForm() {
   const getStatusMock = jest
     .fn()
-    .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after jurisdictions
-    .mockImplementation(async () => statusStates[5]) // the POST to /election/{electionId}/audit/status after manifest
+    .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after jurisdictions
+    .mockImplementation(async () => statusStates.completeInFirstRound) // the POST to /election/{electionId}/audit/status after manifest
   const updateAuditMock = jest
     .fn()
-    .mockImplementationOnce(async () => statusStates[5]) // the POST to /election/{electionId}/audit/status after manifest
+    .mockImplementationOnce(async () => statusStates.completeInFirstRound) // the POST to /election/{electionId}/audit/status after manifest
 
   const { getByLabelText, getByText } = render(
     <SelectBallotsToAudit
-      audit={statusStates[2]}
+      audit={statusStates.sampleSizeOptions}
       isLoading={false}
       setIsLoading={jest.fn()}
       updateAudit={updateAuditMock}
@@ -76,7 +76,7 @@ describe('SelectBallotsToAudit', () => {
   it('renders correctly', () => {
     const { container, rerender } = render(
       <SelectBallotsToAudit
-        audit={statusStates[1]}
+        audit={statusStates.contestFirstRound}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -88,7 +88,7 @@ describe('SelectBallotsToAudit', () => {
 
     rerender(
       <SelectBallotsToAudit
-        audit={statusStates[1]}
+        audit={statusStates.contestFirstRound}
         isLoading
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -102,7 +102,7 @@ describe('SelectBallotsToAudit', () => {
   it('has radio for selecting sampleSize', () => {
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
-        audit={statusStates[2]}
+        audit={statusStates.sampleSizeOptions}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -134,11 +134,11 @@ describe('SelectBallotsToAudit', () => {
   it('conditionally shows custom text input and submits', async () => {
     const getStatusMock = jest
       .fn()
-      .mockImplementationOnce(async () => statusStates[3]) // the POST to /election/{electionId}/audit/status after jurisdictions
-      .mockImplementation(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
+      .mockImplementationOnce(async () => statusStates.jurisdictionsInitial) // the POST to /election/{electionId}/audit/status after jurisdictions
+      .mockImplementation(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
     const updateAuditMock = jest
       .fn()
-      .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
+      .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
     apiMock.mockImplementation(async () => {})
 
     const {
@@ -149,7 +149,7 @@ describe('SelectBallotsToAudit', () => {
       queryAllByText,
     } = render(
       <SelectBallotsToAudit
-        audit={statusStates[2]}
+        audit={statusStates.sampleSizeOptions}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}
@@ -226,15 +226,15 @@ describe('SelectBallotsToAudit', () => {
   it('bails if the manifest failed to start processing', async () => {
     const getStatusMock = jest
       .fn()
-      .mockImplementation(async () => statusStates[3]) // the POST to /election/{electionId}/audit/status after jurisdictions
+      .mockImplementation(async () => statusStates.jurisdictionsInitial) // the POST to /election/{electionId}/audit/status after jurisdictions
     const updateAuditMock = jest
       .fn()
-      .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
+      .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
     apiMock.mockImplementation(async () => {})
 
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
-        audit={statusStates[2]}
+        audit={statusStates.sampleSizeOptions}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}
@@ -261,15 +261,15 @@ describe('SelectBallotsToAudit', () => {
   it('does not bail if the manifest processing errors', async () => {
     const getStatusMock = jest
       .fn()
-      .mockImplementation(async () => statusStates[9]) // the POST to /election/{electionId}/audit/status after jurisdictions
+      .mockImplementation(async () => statusStates.ballotManifestProcessError) // the POST to /election/{electionId}/audit/status after jurisdictions
     const updateAuditMock = jest
       .fn()
-      .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
+      .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
     apiMock.mockImplementation(async () => {})
 
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
-        audit={statusStates[2]}
+        audit={statusStates.sampleSizeOptions}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}
@@ -307,15 +307,15 @@ describe('SelectBallotsToAudit', () => {
 
     const getStatusMock = jest
       .fn()
-      .mockImplementation(async () => statusStates[3]) // the POST to /election/{electionId}/audit/status after jurisdictions
+      .mockImplementation(async () => statusStates.jurisdictionsInitial) // the POST to /election/{electionId}/audit/status after jurisdictions
     const updateAuditMock = jest
       .fn()
-      .mockImplementationOnce(async () => statusStates[4]) // the POST to /election/{electionId}/audit/status after manifest
+      .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
     apiMock.mockImplementation(async () => {})
 
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
-        audit={statusStates[2]}
+        audit={statusStates.sampleSizeOptions}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={updateAuditMock}
@@ -344,7 +344,7 @@ describe('SelectBallotsToAudit', () => {
     const { getByLabelText } = render(
       <Router>
         <SelectBallotsToAudit
-          audit={statusStates[5]}
+          audit={statusStates.completeInFirstRound}
           isLoading={false}
           setIsLoading={jest.fn()}
           updateAudit={jest.fn()}
@@ -364,7 +364,7 @@ describe('SelectBallotsToAudit', () => {
   it('changes number of audits', () => {
     const { getByLabelText, container } = render(
       <SelectBallotsToAudit
-        audit={statusStates[1]}
+        audit={statusStates.contestFirstRound}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -551,13 +551,13 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('uses the highest prob value from duplicate sampleSizes', () => {
-    statusStates[1].rounds[0].contests[0].sampleSizeOptions = [
+    statusStates.contestFirstRound.rounds[0].contests[0].sampleSizeOptions = [
       { size: 30, prob: 0.8, type: null },
       { size: 30, prob: 0.9, type: null },
     ]
     const { queryAllByText } = render(
       <SelectBallotsToAudit
-        audit={statusStates[1]}
+        audit={statusStates.contestFirstRound}
         isLoading={false}
         setIsLoading={jest.fn()}
         updateAudit={jest.fn()}
@@ -574,7 +574,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('does not display duplicate sampleSize options', () => {
-    const statusState = { ...statusStates[1] }
+    const statusState = { ...statusStates.contestFirstRound }
     statusState.rounds[0].contests[0].sampleSizeOptions = [
       { size: 30, prob: null, type: null },
       { size: 30, prob: null, type: null },

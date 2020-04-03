@@ -33,8 +33,8 @@ export const auditSettings: {
   },
 }
 
-export const statusStates: IAudit[] = [
-  {
+export const statusStates: { [key: string]: IAudit } = {
+  empty: {
     name: '',
     riskLimit: '',
     frozenAt: null,
@@ -44,7 +44,7 @@ export const statusStates: IAudit[] = [
     jurisdictions: [],
     rounds: [],
   },
-  {
+  contestFirstRound: {
     contests: [
       {
         choices: [
@@ -93,7 +93,7 @@ export const statusStates: IAudit[] = [
     frozenAt: null,
     online: true,
   },
-  {
+  sampleSizeOptions: {
     contests: [
       {
         choices: [
@@ -146,7 +146,7 @@ export const statusStates: IAudit[] = [
     frozenAt: null,
     online: true,
   },
-  {
+  jurisdictionsInitial: {
     contests: [
       {
         choices: [
@@ -228,7 +228,7 @@ export const statusStates: IAudit[] = [
     frozenAt: null,
     online: true,
   },
-  {
+  ballotManifestProcessed: {
     contests: [
       {
         choices: [
@@ -302,7 +302,81 @@ export const statusStates: IAudit[] = [
     frozenAt: null,
     online: true,
   },
-  {
+  ballotManifestProcessError: {
+    contests: [
+      {
+        choices: [
+          {
+            id: 'choice-1',
+            name: 'choice one',
+            numVotes: 792,
+          },
+          {
+            id: 'choice-2',
+            name: 'choice two',
+            numVotes: 1325,
+          },
+        ],
+        id: 'contest-1',
+        name: 'contest name',
+        numWinners: '1',
+        votesAllowed: '1',
+        totalBallotsCast: '2123',
+        isTargeted: true,
+      },
+    ],
+    jurisdictions: [
+      {
+        auditBoards: [
+          {
+            id: 'audit-board-1',
+            name: 'Audit Board #1',
+            members: [],
+            ballots: [],
+          },
+        ],
+        ballotManifest: {
+          filename: 'Ballot Manifest May 2019 Election - WYNADOTTE.csv',
+          numBallots: 2117,
+          numBatches: 10,
+          uploadedAt: '2019-07-18T16:34:07.000Z',
+          processing: { status: 'ERRORED' },
+        },
+        contests: ['contest-1'],
+        id: 'jurisdiction-1',
+        name: 'Jurisdiction 1',
+      },
+    ],
+    rounds: [
+      {
+        contests: [
+          {
+            endMeasurements: {
+              isComplete: null,
+              pvalue: null,
+            },
+            id: 'contest-1',
+            results: {},
+            sampleSize: 379,
+            sampleSizeOptions: [
+              { size: 269, type: 'ASN', prob: null },
+              { size: 379, prob: 0.8, type: null },
+              { size: 78, prob: null, type: null },
+            ],
+          },
+        ],
+        endedAt: null,
+        startedAt: '2019-07-18T16:34:07.000Z',
+        id: 'round-1',
+      },
+    ],
+    name: 'contest name',
+    randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
+    riskLimit: '1',
+    frozenAt: null,
+    online: true,
+  },
+  completeInFirstRound: {
     contests: [
       {
         choices: [
@@ -378,7 +452,7 @@ export const statusStates: IAudit[] = [
     frozenAt: null,
     online: true,
   },
-  {
+  firstRoundSampleSizeOptionsNull: {
     contests: [
       {
         choices: [
@@ -447,7 +521,7 @@ export const statusStates: IAudit[] = [
     frozenAt: null,
     online: true,
   },
-  {
+  firstRoundSampleSizeOptions: {
     contests: [
       {
         choices: [
@@ -539,7 +613,7 @@ export const statusStates: IAudit[] = [
     frozenAt: null,
     online: true,
   },
-  {
+  multiAuditBoardsAndRounds: {
     contests: [
       {
         choices: [
@@ -655,81 +729,7 @@ export const statusStates: IAudit[] = [
     frozenAt: null,
     online: true,
   },
-  {
-    contests: [
-      {
-        choices: [
-          {
-            id: 'choice-1',
-            name: 'choice one',
-            numVotes: 792,
-          },
-          {
-            id: 'choice-2',
-            name: 'choice two',
-            numVotes: 1325,
-          },
-        ],
-        id: 'contest-1',
-        name: 'contest name',
-        numWinners: '1',
-        votesAllowed: '1',
-        totalBallotsCast: '2123',
-        isTargeted: true,
-      },
-    ],
-    jurisdictions: [
-      {
-        auditBoards: [
-          {
-            id: 'audit-board-1',
-            name: 'Audit Board #1',
-            members: [],
-            ballots: [],
-          },
-        ],
-        ballotManifest: {
-          filename: 'Ballot Manifest May 2019 Election - WYNADOTTE.csv',
-          numBallots: 2117,
-          numBatches: 10,
-          uploadedAt: '2019-07-18T16:34:07.000Z',
-          processing: { status: 'ERRORED' },
-        },
-        contests: ['contest-1'],
-        id: 'jurisdiction-1',
-        name: 'Jurisdiction 1',
-      },
-    ],
-    rounds: [
-      {
-        contests: [
-          {
-            endMeasurements: {
-              isComplete: null,
-              pvalue: null,
-            },
-            id: 'contest-1',
-            results: {},
-            sampleSize: 379,
-            sampleSizeOptions: [
-              { size: 269, type: 'ASN', prob: null },
-              { size: 379, prob: 0.8, type: null },
-              { size: 78, prob: null, type: null },
-            ],
-          },
-        ],
-        endedAt: null,
-        startedAt: '2019-07-18T16:34:07.000Z',
-        id: 'round-1',
-      },
-    ],
-    name: 'contest name',
-    randomSeed: '12345678901234567890abcdefghijklmnopqrstuvwxyz😊',
-    riskLimit: '1',
-    frozenAt: null,
-    online: true,
-  },
-]
+}
 
 export const ballotManifest = new File(
   ['ballot manifest'],
