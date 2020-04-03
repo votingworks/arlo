@@ -33,7 +33,7 @@ import {
   IAuditBoard,
   IErrorResponse,
 } from '../../types'
-import { api, testNumber, checkAndToast } from '../utilities'
+import { api, testNumber, checkAndToast, poll } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Form/_helpers'
 import H2Title from '../Atoms/H2Title'
 import FormField from '../Form/FormField'
@@ -178,7 +178,24 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
         if (checkAndToast(errorResponse)) return
       }
 
-      updateAudit()
+      const condition = async () => {
+        const { jurisdictions } = await getStatus()
+        const { ballotManifest } = jurisdictions[0]
+        /* istanbul ignore next */
+        if (!ballotManifest) {
+          return false
+        }
+        const { processing } = ballotManifest
+        return (
+          !!processing &&
+          (processing.status === 'PROCESSED' || processing.status === 'ERRORED')
+        )
+      }
+      const complete = () => {
+        updateAudit()
+        setIsLoading(false)
+      }
+      poll(condition, complete, (err: Error) => toast.error(err.message))
     } catch (err) {
       toast.error(err.message)
     }

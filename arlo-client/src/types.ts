@@ -18,6 +18,10 @@ export interface IAuditFlowParams extends ICreateAuditParams {
   ballotId?: string
 }
 
+export interface IProcessingStatus {
+  status: 'ERRORED' | 'PROCESSING' | 'PROCESSED' | 'READY_TO_PROCESS'
+}
+
 export interface ICandidate {
   id: string
   name: string
@@ -77,6 +81,7 @@ export interface IBallotManifest {
   numBallots: number | '' | null
   numBatches: number | '' | null
   uploadedAt: string | null
+  processing: IProcessingStatus | null
 }
 
 export interface IBatch {
