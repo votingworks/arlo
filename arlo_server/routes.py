@@ -1256,9 +1256,8 @@ def logout():
 
 @app.route("/auth/auditadmin/start")
 def auditadmin_login():
-    return auth0_aa.authorize_redirect(
-        redirect_uri=f"{request.host_url.rstrip('/')}{AUDITADMIN_OAUTH_CALLBACK_URL}"
-    )
+    redirect_uri = urllib.parse.urljoin(request.host_url, AUDITADMIN_OAUTH_CALLBACK_URL)
+    return auth0_aa.authorize_redirect(redirect_uri=redirect_uri)
 
 
 @app.route(AUDITADMIN_OAUTH_CALLBACK_URL)
@@ -1277,9 +1276,10 @@ def auditadmin_login_callback():
 
 @app.route("/auth/jurisdictionadmin/start")
 def jurisdictionadmin_login():
-    return auth0_ja.authorize_redirect(
-        redirect_uri=f"{request.host_url.rstrip('/')}{JURISDICTIONADMIN_OAUTH_CALLBACK_URL}"
+    redirect_uri = urllib.parse.urljoin(
+        request.host_url, JURISDICTIONADMIN_OAUTH_CALLBACK_URL
     )
+    return auth0_ja.authorize_redirect(redirect_uri=redirect_uri)
 
 
 @app.route(JURISDICTIONADMIN_OAUTH_CALLBACK_URL)
