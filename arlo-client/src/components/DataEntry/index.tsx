@@ -167,14 +167,14 @@ const DataEntry: React.FC<IProps> = ({
   /* istanbul ignore if */
   if (!audit || !board) {
     return (
-      <Wrapper>
+      <Wrapper className="single-page">
         <Spinner />
       </Wrapper>
     )
   }
   if (board.members.length) {
     return (
-      <Wrapper>
+      <Wrapper className="single-page">
         <Switch>
           <Route
             exact
@@ -220,7 +220,7 @@ const DataEntry: React.FC<IProps> = ({
     )
   }
   return (
-    <Wrapper>
+    <Wrapper className="single-page">
       <MemberForm
         updateAudit={updateAudit}
         boardName={board.name}
