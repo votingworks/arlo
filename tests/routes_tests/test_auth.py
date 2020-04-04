@@ -1,7 +1,8 @@
 import pytest
 from flask.testing import FlaskClient
-import json
+import json, re
 from unittest.mock import Mock, MagicMock
+from urllib.parse import urlparse, parse_qs
 
 from arlo_server.auth import UserType
 from arlo_server.routes import (
@@ -100,6 +101,16 @@ def test_auth_me_jurisdiction_admin(
 def test_auditadmin_start(client: FlaskClient):
     rv = client.get("/auth/auditadmin/start")
     assert rv.status_code == 302
+    location = urlparse(rv.location)
+    query_vars = parse_qs(location.query)
+    assert query_vars["redirect_uri"]
+    redirect_uri = query_vars["redirect_uri"][0]
+
+    # common problem is a trailing slash on origin
+    # which makes a double slash like 'http://localhost//authorize'
+    # which won't work. So testing to make sure there is no '//'
+    # other than '://'
+    assert re.search("[^:]\/\/", redirect_uri) is None
 
 
 def test_auditadmin_callback(
