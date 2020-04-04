@@ -98,10 +98,9 @@ def test_auth_me_jurisdiction_admin(
     }
 
 
-def test_auditadmin_start(client: FlaskClient):
-    rv = client.get("/auth/auditadmin/start")
-    assert rv.status_code == 302
-    location = urlparse(rv.location)
+def check_redirect_contains_redirect_uri(response, expected_url):
+    assert response.status_code == 302
+    location = urlparse(response.location)
     query_vars = parse_qs(location.query)
     assert query_vars["redirect_uri"]
     redirect_uri = query_vars["redirect_uri"][0]
@@ -111,6 +110,12 @@ def test_auditadmin_start(client: FlaskClient):
     # which won't work. So testing to make sure there is no '//'
     # other than '://'
     assert re.search("[^:]\/\/", redirect_uri) is None
+    assert expected_url in redirect_uri
+
+
+def test_auditadmin_start(client: FlaskClient):
+    rv = client.get("/auth/auditadmin/start")
+    check_redirect_contains_redirect_uri(rv, "/auth/auditadmin/callback")
 
 
 def test_auditadmin_callback(
@@ -135,7 +140,7 @@ def test_auditadmin_callback(
 
 def test_jurisdictionadmin_start(client: FlaskClient):
     rv = client.get("/auth/jurisdictionadmin/start")
-    assert rv.status_code == 302
+    check_redirect_contains_redirect_uri(rv, "/auth/jurisdictionadmin/callback")
 
 
 def test_jurisdictionadmin_callback(
