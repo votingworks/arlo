@@ -1243,7 +1243,7 @@ def logout():
     clear_loggedin_user()
 
     # request auth0 logout and come back here when that's done
-    return_url = f"{request.host_url}/"
+    return_url = f"{request.host_url}"
     params = urllib.parse.urlencode({"returnTo": return_url})
 
     base_url = (
@@ -1257,7 +1257,7 @@ def logout():
 @app.route("/auth/auditadmin/start")
 def auditadmin_login():
     return auth0_aa.authorize_redirect(
-        redirect_uri=f"{request.host_url}{AUDITADMIN_OAUTH_CALLBACK_URL}"
+        redirect_uri=f"{request.host_url.rstrip('/')}{AUDITADMIN_OAUTH_CALLBACK_URL}"
     )
 
 
@@ -1278,7 +1278,7 @@ def auditadmin_login_callback():
 @app.route("/auth/jurisdictionadmin/start")
 def jurisdictionadmin_login():
     return auth0_ja.authorize_redirect(
-        redirect_uri=f"{request.host_url}{JURISDICTIONADMIN_OAUTH_CALLBACK_URL}"
+        redirect_uri=f"{request.host_url.rstrip('/')}{JURISDICTIONADMIN_OAUTH_CALLBACK_URL}"
     )
 
 
