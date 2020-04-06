@@ -47,3 +47,6 @@ import arlo_server.contests
 import arlo_server.jurisdictions
 import arlo_server.sample_sizes
 import arlo_server.rounds
+
+# Error handlers
+import arlo_server.errors
