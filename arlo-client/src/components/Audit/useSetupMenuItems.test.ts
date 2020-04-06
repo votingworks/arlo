@@ -95,16 +95,13 @@ describe('useSetupMenuItems', () => {
         { file: null, processing: null }
       )
     )
-    const {
-      result: {
-        current: [menuItems, refresh],
-      },
-      waitForNextUpdate,
-    } = renderHook(() => useSetupMenuItems('Participants', jest.fn(), '1'))
-    act(() => refresh())
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useSetupMenuItems('Participants', jest.fn(), '1')
+    )
+    act(() => result.current[1]())
     await waitForNextUpdate()
     await wait(() =>
-      expect(menuItems.every(i => i.state === 'locked')).toBeTruthy()
+      expect(result.current[0].every(i => i.state === 'locked')).toBeTruthy()
     )
   })
 })
