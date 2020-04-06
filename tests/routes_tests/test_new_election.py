@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 
 from arlo_server.auth import UserType
 from arlo_server.routes import create_organization
-from tests.helpers import create_org_and_admin, set_logged_in_user, post_json
+from tests.helpers import assert_ok, create_org_and_admin, set_logged_in_user, post_json
 
 
 def test_without_org_with_anonymous_user(client: FlaskClient):
@@ -222,7 +222,7 @@ def test_two_orgs_same_name(client: FlaskClient):
 
 def test_election_reset(client, election_id):
     rv = client.post(f"/election/{election_id}/audit/reset")
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/audit/status")
     status = json.loads(rv.data)

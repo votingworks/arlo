@@ -1,13 +1,17 @@
 import pytest
 from flask.testing import FlaskClient
-import json, io, uuid
+import io, uuid
 from typing import List, Generator
 from flask import jsonify
 
 from arlo_server import app, db
 from arlo_server.models import Election, Jurisdiction, USState
 from arlo_server.auth import with_election_access, with_jurisdiction_access
-from tests.helpers import put_json, create_election
+from tests.helpers import (
+    assert_ok,
+    put_json,
+    create_election,
+)
 from bgcompute import (
     bgcompute_update_election_jurisdictions_file,
     bgcompute_update_ballot_manifest_file,
@@ -55,7 +59,7 @@ def jurisdiction_ids(
             )
         },
     )
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
     bgcompute_update_election_jurisdictions_file()
     jurisdictions = Jurisdiction.query.filter_by(election_id=election_id).all()
     yield [j.id for j in jurisdictions]
@@ -80,7 +84,7 @@ def contest_id(
         "jurisdictionIds": jurisdiction_ids,
     }
     rv = put_json(client, f"/election/{election_id}/contest", [contest])
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
     yield contest_id
 
 
@@ -94,7 +98,7 @@ def election_settings(client: FlaskClient, election_id: str) -> None:
         "state": USState.California,
     }
     rv = put_json(client, f"/election/{election_id}/settings", settings)
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
 
 @pytest.fixture
@@ -114,7 +118,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
             )
         },
     )
-    assert rv.status_code == 200
+    assert_ok(rv)
     rv = client.put(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/manifest",
         data={
@@ -130,7 +134,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
             )
         },
     )
-    assert rv.status_code == 200
+    assert_ok(rv)
     bgcompute_update_ballot_manifest_file()
 
 
