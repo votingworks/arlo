@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
-import { ElementType, IAudit } from '../../../types'
+import { ElementType } from '../../../types'
 import Participants from './Participants'
 import Contests from './Contests'
 import Settings from './Settings'
@@ -17,11 +17,10 @@ export const setupStages = [
 
 interface IProps {
   stage: ElementType<typeof setupStages>
-  audit: IAudit
   menuItems: ISidebarMenuItem[]
 }
 
-const Setup: React.FC<IProps> = ({ stage, audit, menuItems }) => {
+const Setup: React.FC<IProps> = ({ stage, menuItems }) => {
   const activeStage = menuItems.find(m => m.title === stage)
   const nextStage: ISidebarMenuItem | undefined =
     menuItems[menuItems.indexOf(activeStage!) + 1]
@@ -41,7 +40,6 @@ const Setup: React.FC<IProps> = ({ stage, audit, menuItems }) => {
         <Contests
           isTargeted
           key="targeted"
-          audit={audit}
           nextStage={nextStage!}
           prevStage={prevStage!}
           locked={activeStage!.state === 'locked'}
@@ -52,7 +50,6 @@ const Setup: React.FC<IProps> = ({ stage, audit, menuItems }) => {
         <Contests
           isTargeted={false}
           key="opportunistic"
-          audit={audit}
           nextStage={nextStage!}
           prevStage={prevStage!}
           locked={activeStage!.state === 'locked'}

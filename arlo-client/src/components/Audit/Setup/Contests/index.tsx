@@ -2,7 +2,6 @@
 import React from 'react'
 import { Formik, FormikProps, Form, Field, FieldArray } from 'formik'
 import { Spinner } from '@blueprintjs/core'
-import { IAudit } from '../../../../types'
 import FormWrapper from '../../../Form/FormWrapper'
 import FormSection, { FormSectionDescription } from '../../../Form/FormSection'
 import FormField from '../../../Form/FormField'
@@ -20,7 +19,6 @@ import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 
 interface IProps {
-  audit: IAudit
   isTargeted: boolean
   nextStage: ISidebarMenuItem
   prevStage: ISidebarMenuItem
@@ -51,17 +49,13 @@ const contestValues: { contests: IContestValues[] } = {
 
 const Contests: React.FC<IProps> = ({
   isTargeted,
-  audit,
   nextStage,
   prevStage,
   locked,
 }) => {
-  const initialValues: IValues = {
-    contests: audit.contests.length ? audit.contests : contestValues.contests,
-  }
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={contestValues}
       validationSchema={schema}
       onSubmit={v => {
         // eslint-disable-next-line no-console
@@ -170,7 +164,7 @@ const Contests: React.FC<IProps> = ({
                                         />
                                       </InputLabel>
                                       {contest.choices.length > 2 &&
-                                        !audit.contests.length && (
+                                        !locked && (
                                           <Action
                                             onClick={() =>
                                               choicesArrayHelpers.remove(j)
@@ -183,7 +177,7 @@ const Contests: React.FC<IProps> = ({
                                   </React.Fragment>
                                 )
                               )}
-                              {!audit.contests.length && (
+                              {!locked && (
                                 <Action
                                   onClick={() =>
                                     choicesArrayHelpers.push({

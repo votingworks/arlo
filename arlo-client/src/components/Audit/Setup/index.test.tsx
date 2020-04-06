@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { statusStates, auditSettings } from '../_mocks'
+import { auditSettings } from '../_mocks'
 import * as utilities from '../../utilities'
 import { asyncActRender } from '../../testUtilities'
 import Setup from './index'
@@ -37,7 +37,6 @@ describe('Setup', () => {
   it('renders Participants stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates.sampleSizeOptions}
         stage="Participants"
         menuItems={relativeStages('Participants').menuItems}
       />
@@ -48,7 +47,6 @@ describe('Setup', () => {
   it('renders Participants stage with locked next stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
         stage="Participants"
         menuItems={relativeStages('Participants', 'locked').menuItems}
       />
@@ -59,7 +57,6 @@ describe('Setup', () => {
   it('renders Participants stage with processing next stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
         stage="Participants"
         menuItems={relativeStages('Participants', 'processing').menuItems}
       />
@@ -70,7 +67,6 @@ describe('Setup', () => {
   it('renders Target Contests stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates.sampleSizeOptions}
         stage="Target Contests"
         menuItems={relativeStages('Target Contests').menuItems}
       />
@@ -81,7 +77,6 @@ describe('Setup', () => {
   it('renders Target Contests stage with locked next stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
         stage="Target Contests"
         menuItems={relativeStages('Target Contests', 'locked').menuItems}
       />
@@ -92,7 +87,6 @@ describe('Setup', () => {
   it('renders Target Contests stage with processing next stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
         stage="Target Contests"
         menuItems={relativeStages('Target Contests', 'processing').menuItems}
       />
@@ -103,7 +97,6 @@ describe('Setup', () => {
   it('renders Opportunistic Contests stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates.sampleSizeOptions}
         stage="Opportunistic Contests"
         menuItems={relativeStages('Opportunistic Contests').menuItems}
       />
@@ -114,7 +107,6 @@ describe('Setup', () => {
   it('renders Opportunistic Contests stage with locked next stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
         stage="Opportunistic Contests"
         menuItems={relativeStages('Opportunistic Contests', 'locked').menuItems}
       />
@@ -125,7 +117,6 @@ describe('Setup', () => {
   it('renders Opportunistic Contests stage with processing next stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
         stage="Opportunistic Contests"
         menuItems={
           relativeStages('Opportunistic Contests', 'processing').menuItems
@@ -138,7 +129,6 @@ describe('Setup', () => {
   it('renders Audit Settings stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates.sampleSizeOptions}
         stage="Audit Settings"
         menuItems={relativeStages('Audit Settings').menuItems}
       />
@@ -149,7 +139,6 @@ describe('Setup', () => {
   it('renders Audit Settings stage with locked next stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
         stage="Audit Settings"
         menuItems={relativeStages('Audit Settings', 'locked').menuItems}
       />
@@ -160,7 +149,6 @@ describe('Setup', () => {
   it('renders Audit Settings stage with processing next stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
         stage="Audit Settings"
         menuItems={relativeStages('Audit Settings', 'processing').menuItems}
       />
@@ -171,7 +159,6 @@ describe('Setup', () => {
   it('renders Review & Launch stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates.sampleSizeOptions}
         stage="Review & Launch"
         menuItems={relativeStages('Review & Launch').menuItems}
       />
@@ -182,7 +169,6 @@ describe('Setup', () => {
   it('renders Review & Launch stage with locked next stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
         stage="Review & Launch"
         menuItems={relativeStages('Review & Launch', 'locked').menuItems}
       />
@@ -193,7 +179,6 @@ describe('Setup', () => {
   it('renders Review & Launch stage with processing next stage', async () => {
     const { container } = await asyncActRender(
       <Setup
-        audit={statusStates[2]}
         stage="Review & Launch"
         menuItems={relativeStages('Review & Launch', 'processing').menuItems}
       />

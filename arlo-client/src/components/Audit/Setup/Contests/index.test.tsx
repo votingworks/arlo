@@ -1,7 +1,6 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import { regexpEscape } from '../../../testUtilities'
-import { statusStates } from '../../_mocks'
 import * as utilities from '../../../utilities'
 import Contests from './index'
 import relativeStages from '../_mocks'
@@ -101,7 +100,6 @@ describe('Audit Setup > Contests', () => {
     const { container } = render(
       <Contests
         locked={false}
-        audit={statusStates.empty}
         isTargeted
         {...relativeStages('Target Contests')}
       />
@@ -114,7 +112,6 @@ describe('Audit Setup > Contests', () => {
     const { getByText, getAllByText, queryByText } = render(
       <Contests
         locked={false}
-        audit={statusStates.empty}
         isTargeted
         {...relativeStages('Target Contests')}
       />
@@ -146,7 +143,6 @@ describe('Audit Setup > Contests', () => {
     const { getByText, getAllByText, queryAllByText } = render(
       <Contests
         locked={false}
-        audit={statusStates.empty}
         isTargeted
         {...relativeStages('Target Contests')}
       />
@@ -171,7 +167,6 @@ describe('Audit Setup > Contests', () => {
     const { getByLabelText, getByText } = render(
       <Contests
         locked={false}
-        audit={statusStates.empty}
         isTargeted
         nextStage={nextStage}
         prevStage={prevStage}
@@ -196,7 +191,6 @@ describe('Audit Setup > Contests', () => {
     const { getByLabelText, getByTestId, getByText } = render(
       <Contests
         locked={false}
-        audit={statusStates.empty}
         isTargeted
         nextStage={nextStage}
         prevStage={prevStage}
@@ -234,7 +228,6 @@ describe('Audit Setup > Contests', () => {
     const { getByLabelText, getByTestId } = render(
       <Contests
         locked={false}
-        audit={statusStates.empty}
         isTargeted
         {...relativeStages('Target Contests')}
       />
@@ -279,7 +272,6 @@ describe('Audit Setup > Contests', () => {
     const { getByLabelText, queryByTestId } = render(
       <Contests
         locked={false}
-        audit={statusStates.empty}
         isTargeted
         {...relativeStages('Target Contests')}
       />

@@ -780,7 +780,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
                 id="contests[0].name"
                 name="contests[0].name"
                 style="padding-right: 10px;"
-                value="contest name"
+                value=""
               />
             </div>
           </div>
@@ -870,7 +870,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
-                    value="choice one"
+                    value=""
                   />
                 </div>
               </div>
@@ -890,7 +890,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[0].numVotes"
                     style="padding-right: 10px;"
-                    value="792"
+                    value=""
                   />
                 </div>
               </div>
@@ -914,7 +914,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
-                    value="choice two"
+                    value=""
                   />
                 </div>
               </div>
@@ -934,12 +934,17 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[1].numVotes"
                     style="padding-right: 10px;"
-                    value="1325"
+                    value=""
                   />
                 </div>
               </div>
             </label>
           </div>
+          <p
+            class="sc-kGXeez hibFwE"
+          >
+            Add a new candidate/choice
+          </p>
         </div>
       </div>
       <div
@@ -972,7 +977,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
                 id="contests[0].totalBallotsCast"
                 name="contests[0].totalBallotsCast"
                 style="padding-right: 10px;"
-                value="2123"
+                value=""
               />
             </div>
           </div>
@@ -1045,14 +1050,15 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
             class="sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
             >
               <input
                 class="bp3-input"
+                disabled=""
                 id="contests[0].name"
                 name="contests[0].name"
                 style="padding-right: 10px;"
-                value="contest name"
+                value=""
               />
             </div>
           </div>
@@ -1070,10 +1076,11 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
             class="sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
             >
               <input
                 class="bp3-input"
+                disabled=""
                 id="contests[0].numWinners"
                 name="contests[0].numWinners"
                 style="padding-right: 10px;"
@@ -1095,10 +1102,11 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
             class="sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
             >
               <input
                 class="bp3-input"
+                disabled=""
                 id="contests[0].votesAllowed"
                 name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
@@ -1136,13 +1144,14 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
                 class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
               >
                 <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
                 >
                   <input
                     class="bp3-input"
+                    disabled=""
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
-                    value="choice one"
+                    value=""
                   />
                 </div>
               </div>
@@ -1156,13 +1165,14 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
                 class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
               >
                 <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
                 >
                   <input
                     class="bp3-input"
+                    disabled=""
                     name="contests[0].choices[0].numVotes"
                     style="padding-right: 10px;"
-                    value="792"
+                    value=""
                   />
                 </div>
               </div>
@@ -1180,13 +1190,14 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
                 class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
               >
                 <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
                 >
                   <input
                     class="bp3-input"
+                    disabled=""
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
-                    value="choice two"
+                    value=""
                   />
                 </div>
               </div>
@@ -1200,13 +1211,14 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
                 class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
               >
                 <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
                 >
                   <input
                     class="bp3-input"
+                    disabled=""
                     name="contests[0].choices[1].numVotes"
                     style="padding-right: 10px;"
-                    value="1325"
+                    value=""
                   />
                 </div>
               </div>
@@ -1237,14 +1249,15 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
             class="sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
             >
               <input
                 class="bp3-input"
+                disabled=""
                 id="contests[0].totalBallotsCast"
                 name="contests[0].totalBallotsCast"
                 style="padding-right: 10px;"
-                value="2123"
+                value=""
               />
             </div>
           </div>
@@ -1326,7 +1339,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
                 id="contests[0].name"
                 name="contests[0].name"
                 style="padding-right: 10px;"
-                value="contest name"
+                value=""
               />
             </div>
           </div>
@@ -1416,7 +1429,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
                     class="bp3-input"
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
-                    value="choice one"
+                    value=""
                   />
                 </div>
               </div>
@@ -1436,7 +1449,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
                     class="bp3-input"
                     name="contests[0].choices[0].numVotes"
                     style="padding-right: 10px;"
-                    value="792"
+                    value=""
                   />
                 </div>
               </div>
@@ -1460,7 +1473,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
                     class="bp3-input"
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
-                    value="choice two"
+                    value=""
                   />
                 </div>
               </div>
@@ -1480,12 +1493,17 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
                     class="bp3-input"
                     name="contests[0].choices[1].numVotes"
                     style="padding-right: 10px;"
-                    value="1325"
+                    value=""
                   />
                 </div>
               </div>
             </label>
           </div>
+          <p
+            class="sc-kGXeez hibFwE"
+          >
+            Add a new candidate/choice
+          </p>
         </div>
       </div>
       <div
@@ -1518,7 +1536,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
                 id="contests[0].totalBallotsCast"
                 name="contests[0].totalBallotsCast"
                 style="padding-right: 10px;"
-                value="2123"
+                value=""
               />
             </div>
           </div>
@@ -2926,7 +2944,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                 id="contests[0].name"
                 name="contests[0].name"
                 style="padding-right: 10px;"
-                value="contest name"
+                value=""
               />
             </div>
           </div>
@@ -3016,7 +3034,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
-                    value="choice one"
+                    value=""
                   />
                 </div>
               </div>
@@ -3036,7 +3054,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[0].numVotes"
                     style="padding-right: 10px;"
-                    value="792"
+                    value=""
                   />
                 </div>
               </div>
@@ -3060,7 +3078,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
-                    value="choice two"
+                    value=""
                   />
                 </div>
               </div>
@@ -3080,12 +3098,17 @@ exports[`Setup renders Target Contests stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[1].numVotes"
                     style="padding-right: 10px;"
-                    value="1325"
+                    value=""
                   />
                 </div>
               </div>
             </label>
           </div>
+          <p
+            class="sc-kGXeez hibFwE"
+          >
+            Add a new candidate/choice
+          </p>
         </div>
       </div>
       <div
@@ -3118,7 +3141,7 @@ exports[`Setup renders Target Contests stage 1`] = `
                 id="contests[0].totalBallotsCast"
                 name="contests[0].totalBallotsCast"
                 style="padding-right: 10px;"
-                value="2123"
+                value=""
               />
             </div>
           </div>
@@ -3191,14 +3214,15 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
             class="sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
             >
               <input
                 class="bp3-input"
+                disabled=""
                 id="contests[0].name"
                 name="contests[0].name"
                 style="padding-right: 10px;"
-                value="contest name"
+                value=""
               />
             </div>
           </div>
@@ -3216,10 +3240,11 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
             class="sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
             >
               <input
                 class="bp3-input"
+                disabled=""
                 id="contests[0].numWinners"
                 name="contests[0].numWinners"
                 style="padding-right: 10px;"
@@ -3241,10 +3266,11 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
             class="sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
             >
               <input
                 class="bp3-input"
+                disabled=""
                 id="contests[0].votesAllowed"
                 name="contests[0].votesAllowed"
                 style="padding-right: 10px;"
@@ -3282,13 +3308,14 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                 class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
               >
                 <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
                 >
                   <input
                     class="bp3-input"
+                    disabled=""
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
-                    value="choice one"
+                    value=""
                   />
                 </div>
               </div>
@@ -3302,13 +3329,14 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                 class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
               >
                 <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
                 >
                   <input
                     class="bp3-input"
+                    disabled=""
                     name="contests[0].choices[0].numVotes"
                     style="padding-right: 10px;"
-                    value="792"
+                    value=""
                   />
                 </div>
               </div>
@@ -3326,13 +3354,14 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                 class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
               >
                 <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
                 >
                   <input
                     class="bp3-input"
+                    disabled=""
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
-                    value="choice two"
+                    value=""
                   />
                 </div>
               </div>
@@ -3346,13 +3375,14 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                 class="sc-chPdSV knRDOr sc-iwsKbI dvOqsv"
               >
                 <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
+                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
                 >
                   <input
                     class="bp3-input"
+                    disabled=""
                     name="contests[0].choices[1].numVotes"
                     style="padding-right: 10px;"
-                    value="1325"
+                    value=""
                   />
                 </div>
               </div>
@@ -3383,14 +3413,15 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
             class="sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
             >
               <input
                 class="bp3-input"
+                disabled=""
                 id="contests[0].totalBallotsCast"
                 name="contests[0].totalBallotsCast"
                 style="padding-right: 10px;"
-                value="2123"
+                value=""
               />
             </div>
           </div>
@@ -3472,7 +3503,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                 id="contests[0].name"
                 name="contests[0].name"
                 style="padding-right: 10px;"
-                value="contest name"
+                value=""
               />
             </div>
           </div>
@@ -3562,7 +3593,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
-                    value="choice one"
+                    value=""
                   />
                 </div>
               </div>
@@ -3582,7 +3613,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[0].numVotes"
                     style="padding-right: 10px;"
-                    value="792"
+                    value=""
                   />
                 </div>
               </div>
@@ -3606,7 +3637,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
-                    value="choice two"
+                    value=""
                   />
                 </div>
               </div>
@@ -3626,12 +3657,17 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[1].numVotes"
                     style="padding-right: 10px;"
-                    value="1325"
+                    value=""
                   />
                 </div>
               </div>
             </label>
           </div>
+          <p
+            class="sc-kGXeez hibFwE"
+          >
+            Add a new candidate/choice
+          </p>
         </div>
       </div>
       <div
@@ -3664,7 +3700,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                 id="contests[0].totalBallotsCast"
                 name="contests[0].totalBallotsCast"
                 style="padding-right: 10px;"
-                value="2123"
+                value=""
               />
             </div>
           </div>
