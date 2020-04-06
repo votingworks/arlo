@@ -286,16 +286,16 @@ def test_two_round_audit_report(client, election_id):
 
     # We'll just test a sampling of lines that should include a good variety of cases
     assert ballot_lines[:10] == [
-        f'"Batch 1, #111",Round 2: 0.034167626,Audited,{candidate_id_1},Comment for ballot 0',
+        f'"Batch 1, #111",Round 2: 0.034167626,Audited,{candidate_id_2},',
         f'"Batch 1, #122",Round 1: 0.012066605,Audited,{candidate_id_1},',
         f'"Batch 10, #10",Round 1: 0.010939432,Audited,{candidate_id_1},Comment for ballot 0',
         f'"Batch 10, #103",Round 2: 0.031357473,Audited,{candidate_id_1},',
-        '"Batch 10, #151",Round 1: 0.012381762,Audited,Blank vote/no mark,Comment for ballot 3',
-        '"Batch 10, #175",Round 2: 0.021956866,Audited,Audit board can\'t agree,',
+        f'"Batch 10, #151",Round 1: 0.012381762,Audited,Blank vote/no mark,Comment for ballot 3',
+        f'"Batch 10, #175",Round 2: 0.021956866,Audited,{candidate_id_2},Comment for ballot 1017',
         f'"Batch 10, #200",Round 1: 0.000030407,Audited,{candidate_id_2},',
         f'"Batch 10, #59",Round 1: 0.002728647,Audited,{candidate_id_1},',
-        '"Batch 10, #72",Round 1: 0.009650515,Audited,Audit board can\'t agree,',
-        '"Batch 100, #106",Round 2: 0.015314474,Audited,Blank vote/no mark,Comment for ballot 3',
+        f'"Batch 10, #72",Round 1: 0.009650515,Audited,Audit board can\'t agree,',
+        f'"Batch 100, #106",Round 2: 0.015314474,Audited,{candidate_id_2},',
     ]
 
     # Check one of the ballots sampled in both rounds to make sure it formats correctly

@@ -253,6 +253,8 @@ class AuditBoard(BaseModel):
         "SampledBallot", backref="audit_board", passive_deletes=True
     )
 
+    __table_args__ = (db.UniqueConstraint("jurisdiction_id", "round_id", "name"),)
+
 
 class Round(BaseModel):
     id = db.Column(db.String(200), primary_key=True)

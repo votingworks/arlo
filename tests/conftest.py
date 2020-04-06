@@ -45,15 +45,17 @@ def election_id(client: FlaskClient) -> Generator[str, None, None]:
 def jurisdiction_ids(
     client: FlaskClient, election_id: str
 ) -> Generator[List[str], None, None]:
+    # We expect the API to order the jurisdictions by name, so we upload them
+    # out of order.
     rv = client.put(
         f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 io.BytesIO(
                     b"Jurisdiction,Admin Email\n"
-                    b"J1,a1@example.com\n"
                     b"J2,a2@example.com\n"
-                    b"J3,a3@example.com"
+                    b"J3,a3@example.com\n"
+                    b"J1,a1@example.com"
                 ),
                 "jurisdictions.csv",
             )
@@ -61,7 +63,11 @@ def jurisdiction_ids(
     )
     assert_ok(rv)
     bgcompute_update_election_jurisdictions_file()
-    jurisdictions = Jurisdiction.query.filter_by(election_id=election_id).all()
+    jurisdictions = (
+        Jurisdiction.query.filter_by(election_id=election_id)
+        .order_by(Jurisdiction.name)
+        .all()
+    )
     yield [j.id for j in jurisdictions]
 
 
