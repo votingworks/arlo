@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 from typing import List
 import json, uuid
 
-from tests.helpers import post_json, put_json
+from tests.helpers import assert_ok, post_json, put_json
 from arlo_server.models import RoundContest
 from arlo_server.contests import JSONDict
 from arlo_server import db
@@ -64,7 +64,7 @@ def test_contests_list_empty(client, election_id):
 def test_contests_create_get_update_one(client, election_id, json_contests):
     contest = json_contests[0]
     rv = put_json(client, f"/election/{election_id}/contest", [contest])
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/contest")
     contests = json.loads(rv.data)
@@ -78,7 +78,7 @@ def test_contests_create_get_update_one(client, election_id, json_contests):
     )
 
     rv = put_json(client, f"/election/{election_id}/contest", [contest])
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/contest")
     contests = json.loads(rv.data)
@@ -93,7 +93,7 @@ def test_contests_create_get_update_multiple(
     jurisdiction_ids: List[str],
 ):
     rv = put_json(client, f"/election/{election_id}/contest", json_contests)
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/contest")
     contests = json.loads(rv.data)
@@ -107,7 +107,7 @@ def test_contests_create_get_update_multiple(
     json_contests[2]["jurisdictionIds"] = jurisdiction_ids[1:]
 
     rv = put_json(client, f"/election/{election_id}/contest", json_contests)
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/contest")
     contests = json.loads(rv.data)
@@ -125,7 +125,7 @@ def test_contests_round_status(
     manifests,  # pylint: disable=unused-argument
 ):
     rv = put_json(client, f"/election/{election_id}/contest", json_contests)
-    assert rv.status_code == 200
+    assert_ok(rv)
 
     SAMPLE_SIZE = 119  # Bravo sample size
     rv = post_json(
@@ -133,7 +133,7 @@ def test_contests_round_status(
         f"/election/{election_id}/round",
         {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
     )
-    assert rv.status_code == 200
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]

@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 
 import pytest
 
-from tests.helpers import post_json, create_election
+from tests.helpers import assert_ok, post_json, create_election
 from tests.test_app import setup_whole_audit
 import bgcompute
 
@@ -59,7 +59,7 @@ def test_ballot_list_jurisdiction_two_rounds(client, election_id):
             ]
         },
     )
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
     bgcompute.bgcompute()
 
     # Get the sample size and round id for the second round
@@ -127,7 +127,7 @@ def test_ballot_list_audit_board_two_rounds(client, election_id):
             ]
         },
     )
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
     bgcompute.bgcompute()
 
     # Get the sample size and round id for the second round

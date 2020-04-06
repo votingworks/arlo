@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 
 import pytest
 
-from tests.helpers import post_json, create_election
+from tests.helpers import assert_ok, post_json, create_election
 from tests.test_app import setup_whole_audit, run_whole_audit_flow
 import bgcompute
 
@@ -42,7 +42,7 @@ def run_audit_round(
             f"/election/{election_id}/jurisdiction/{jurisdiction_id}/batch/{ballot['batch']['id']}/ballot/{ballot['position']}",
             {"vote": vote, "comment": f"Comment for ballot {i}" if i % 3 == 0 else "",},
         )
-        assert json.loads(rv.data)["status"] == "ok"
+        assert_ok(rv)
 
     # The results won't be exact since we used a (seeded) random choice above.
     # If we need exact results, we can always query the db or track results above.
@@ -63,7 +63,7 @@ def run_audit_round(
             ]
         },
     )
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     return len(ballot_list)
 

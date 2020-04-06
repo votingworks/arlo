@@ -10,6 +10,7 @@ from arlo_server.models import (
     User,
 )
 from bgcompute import bgcompute_update_election_jurisdictions_file
+from tests.helpers import assert_ok
 
 
 def test_missing_file(client: FlaskClient, election_id: str):
@@ -79,8 +80,7 @@ def test_metadata(client, election_id):
             )
         },
     )
-    assert rv.status_code == 200
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     election = Election.query.filter_by(id=election_id).one()
     assert election.jurisdictions_file.contents == "Jurisdiction,Admin Email"
@@ -128,8 +128,7 @@ def test_replace_jurisdictions_file(client, election_id):
             )
         },
     )
-    assert rv.status_code == 200
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
     assert File.query.count() == 1, "the file should exist before a response is sent"
 
     # Replace it with another file.
@@ -142,8 +141,7 @@ def test_replace_jurisdictions_file(client, election_id):
             )
         },
     )
-    assert rv.status_code == 200
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
     assert File.query.count() == 1, "the old file should have been deleted"
 
 
@@ -157,8 +155,7 @@ def test_no_jurisdiction(client, election_id):
             )
         },
     )
-    assert rv.status_code == 200
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     # Process the file in the background.
     assert bgcompute_update_election_jurisdictions_file() == 1
@@ -179,8 +176,7 @@ def test_single_jurisdiction_single_admin(client, election_id):
             )
         },
     )
-    assert rv.status_code == 200
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     # Process the file in the background.
     assert bgcompute_update_election_jurisdictions_file() == 1
@@ -206,8 +202,7 @@ def test_single_jurisdiction_multiple_admins(client, election_id):
             )
         },
     )
-    assert rv.status_code == 200
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     # Process the file in the background.
     assert bgcompute_update_election_jurisdictions_file() == 1
@@ -234,8 +229,7 @@ def test_multiple_jurisdictions_single_admin(client, election_id):
             )
         },
     )
-    assert rv.status_code == 200
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     # Process the file in the background.
     assert bgcompute_update_election_jurisdictions_file() == 1

@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 
 from arlo_server.models import Election, USState
 
-from tests.helpers import put_json, compare_json, asserts_startswith
+from tests.helpers import assert_ok, put_json, compare_json, asserts_startswith
 
 
 def test_get_empty(client: FlaskClient, election_id: str):
@@ -31,8 +31,7 @@ def test_update_election(client: FlaskClient, election_id: str):
     election["state"] = USState.Mississippi
 
     rv = put_json(client, f"/election/{election_id}/settings", election)
-    assert rv.status_code == 200, f"unexpected response: {rv.data}"
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     election_record = Election.query.filter_by(id=election_id).one()
     assert election_record.election_name == "An Updated Name"

@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import List
 
 from tests.helpers import (
+    assert_ok,
     put_json,
     post_json,
     compare_json,
@@ -45,7 +46,7 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
             )
         },
     )
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
     bgcompute_update_election_jurisdictions_file()
     jurisdictions = (
         Jurisdiction.query.filter_by(election_id=election_id)
@@ -124,7 +125,7 @@ def test_jurisdictions_list_with_manifest(
             )
         },
     )
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
     assert bgcompute_update_ballot_manifest_file() == 1
 
     rv = client.get(f"/election/{election_id}/jurisdiction")
@@ -184,7 +185,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
             )
         },
     )
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     with pytest.raises(SQLAlchemyError):
         bgcompute_update_ballot_manifest_file()
@@ -257,7 +258,7 @@ def test_jurisdictions_round_status(
         f"/election/{election_id}/round",
         {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
     )
-    assert rv.status_code == 200
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
@@ -376,14 +377,14 @@ def test_jurisdictions_round_status_offline(
         "state": USState.California,
     }
     rv = put_json(client, f"/election/{election_id}/settings", settings)
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     rv = post_json(
         client,
         f"/election/{election_id}/round",
         {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
     )
-    assert rv.status_code == 200
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]

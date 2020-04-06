@@ -1,6 +1,6 @@
 import json, uuid
 
-from tests.helpers import post_json
+from tests.helpers import assert_ok, post_json
 
 
 def test_audit_basic_update_create_contest(client, election_id):
@@ -33,7 +33,7 @@ def test_audit_basic_update_create_contest(client, election_id):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
 
 def test_audit_basic_update_sets_default_for_contest_is_targeted(client, election_id):
@@ -65,7 +65,7 @@ def test_audit_basic_update_sets_default_for_contest_is_targeted(client, electio
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/audit/status")
     assert json.loads(rv.data)["contests"][0]["isTargeted"] is True

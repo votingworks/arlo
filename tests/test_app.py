@@ -5,7 +5,7 @@ from typing import Generator
 
 import pytest
 
-from tests.helpers import post_json, create_election
+from tests.helpers import assert_ok, post_json, create_election
 import bgcompute
 
 manifest_file_path = os.path.join(os.path.dirname(__file__), "manifest.csv")
@@ -82,7 +82,7 @@ def setup_audit_board(client, election_id, jurisdiction_id, audit_board_id):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
 
 def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online=False):
@@ -128,10 +128,10 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.post(f"{url_prefix}/audit/freeze")
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     # before background compute, should be null sample size options
     rv = client.get("{}/audit/status".format(url_prefix))
@@ -178,7 +178,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
@@ -203,7 +203,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
         client, "{}/audit/sample-size".format(url_prefix), {"size": sample_size}
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     # upload the manifest
     data = {}
@@ -214,7 +214,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
         content_type="multipart/form-data",
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
     assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     rv = client.get("{}/audit/status".format(url_prefix))
@@ -230,7 +230,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
     rv = client.delete(
         "{}/jurisdiction/{}/manifest".format(url_prefix, jurisdiction_id)
     )
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
@@ -247,7 +247,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
         content_type="multipart/form-data",
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
     assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     setup_audit_board(client, election_id, jurisdiction_id, audit_board_id_1)
@@ -323,10 +323,10 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.post(f"{url_prefix}/audit/freeze")
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     # before background compute, should be null sample size options
     rv = client.get("{}/audit/status".format(url_prefix))
@@ -373,7 +373,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
@@ -396,7 +396,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
         client, "{}/audit/sample-size".format(url_prefix), {"size": sample_size}
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     # upload the manifest
     data = {}
@@ -407,7 +407,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
         content_type="multipart/form-data",
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
     assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     rv = client.get("{}/audit/status".format(url_prefix))
@@ -423,7 +423,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     rv = client.delete(
         "{}/jurisdiction/{}/manifest".format(url_prefix, jurisdiction_id)
     )
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
@@ -440,7 +440,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
         content_type="multipart/form-data",
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
     assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     # get the retrieval list for round 1
@@ -501,7 +501,7 @@ def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
@@ -571,14 +571,14 @@ def test_small_election(client, election_id):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     # not yet frozen
     rv = client.get(f"/election/{election_id}/audit/status")
     assert not json.loads(rv.data)["frozenAt"]
 
     rv = client.post(f"/election/{election_id}/audit/freeze")
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     # now frozen
     rv = client.get(f"/election/{election_id}/audit/status")
@@ -629,7 +629,7 @@ def test_small_election(client, election_id):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/audit/status")
     status = json.loads(rv.data)
@@ -663,7 +663,7 @@ def test_small_election(client, election_id):
         content_type="multipart/form-data",
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
     assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     rv = client.get(f"/election/{election_id}/audit/status")
@@ -711,7 +711,7 @@ def test_small_election(client, election_id):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/audit/status")
     status = json.loads(rv.data)
@@ -832,7 +832,7 @@ def test_multi_round_audit(client, election_id):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
@@ -908,7 +908,7 @@ def test_multi_winner_election(client, election_id):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/audit/status")
     status = json.loads(rv.data)
@@ -945,10 +945,10 @@ def test_multi_winner_election(client, election_id):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.post(f"/election/{election_id}/audit/freeze")
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
     bgcompute.bgcompute()
 
     rv = client.get(f"/election/{election_id}/audit/status")
@@ -981,7 +981,7 @@ def test_multi_winner_election(client, election_id):
         content_type="multipart/form-data",
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
     assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
 
     rv = client.get(f"/election/{election_id}/audit/status")
@@ -1027,7 +1027,7 @@ def test_multi_winner_election(client, election_id):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/audit/status")
     status = json.loads(rv.data)
@@ -1081,7 +1081,7 @@ def test_multi_round_multi_winner_audit(client, election_id):
         },
     )
 
-    assert json.loads(rv.data)["status"] == "ok"
+    assert_ok(rv)
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)

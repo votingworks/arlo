@@ -12,6 +12,7 @@ from arlo_server.models import (
     Batch,
 )
 from tests.helpers import (
+    assert_ok,
     post_json,
     put_json,
     compare_json,
@@ -39,8 +40,7 @@ def test_rounds_create_one(
         f"/election/{election_id}/round",
         {"roundNum": 1, "sampleSize": sample_size,},
     )
-    assert rv.status_code == 200
-    assert json.loads(rv.data) == {"status": "ok"}
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/round")
     rounds = json.loads(rv.data)
@@ -111,12 +111,12 @@ def test_rounds_create_two(
         },
     ]
     rv = put_json(client, f"/election/{election_id}/contest", contests)
-    assert rv.status_code == 200
+    assert_ok(rv)
 
     rv = post_json(
         client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 119,},
     )
-    assert rv.status_code == 200
+    assert_ok(rv)
 
     # Fake that the first round got completed by setting Round.ended_at.
     # We also need to add RoundContestResults so that the next round sample
@@ -158,7 +158,7 @@ def test_rounds_create_two(
     )
 
     rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
-    assert rv.status_code == 200
+    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/round")
     rounds = json.loads(rv.data)
@@ -205,7 +205,7 @@ def test_rounds_create_before_previous_round_complete(
     rv = post_json(
         client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 10,},
     )
-    assert rv.status_code == 200
+    assert_ok(rv)
 
     rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
     assert rv.status_code == 409
@@ -239,7 +239,7 @@ def test_rounds_wrong_number_too_small(
     rv = post_json(
         client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 10,},
     )
-    assert rv.status_code == 200
+    assert_ok(rv)
 
     rv = post_json(
         client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 10,},
