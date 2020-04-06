@@ -11,7 +11,13 @@ from arlo_server.models import (
     RoundContestResult,
     Batch,
 )
-from helpers import post_json, put_json, compare_json, assert_is_id, assert_is_date
+from tests.helpers import (
+    post_json,
+    put_json,
+    compare_json,
+    assert_is_id,
+    assert_is_date,
+)
 
 
 def test_rounds_list_empty(client: FlaskClient, election_id: str):
@@ -24,7 +30,7 @@ def test_rounds_create_one(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest: dict,
+    contest_id: str,
     manifests,  # pylint: disable=unused-argument
 ):
     sample_size = 119  # BRAVO sample size
@@ -57,7 +63,7 @@ def test_rounds_create_one(
         round_id=rounds["rounds"][0]["id"]
     ).all()
     assert len(round_contests) == 1
-    assert round_contests[0].contest_id == contest["id"]
+    assert round_contests[0].contest_id == contest_id
 
     # Check that the ballots got sampled
     ballot_draws = SampledBallotDraw.query.filter_by(
@@ -80,10 +86,14 @@ def test_rounds_create_two(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest: dict,
+    contest_id: str,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
 ):
+    rv = client.get(f"/election/{election_id}/contest")
+    contest = json.loads(rv.data)["contests"][0]
+    del contest["currentRoundStatus"]
+
     contests = [
         contest,
         {
@@ -188,7 +198,7 @@ def test_rounds_create_two(
 def test_rounds_create_before_previous_round_complete(
     client: FlaskClient,
     election_id: str,
-    contest: dict,  # pylint: disable=unused-argument
+    contest_id: str,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
 ):
@@ -224,7 +234,7 @@ def test_rounds_wrong_number_too_big(client: FlaskClient, election_id: str):
 def test_rounds_wrong_number_too_small(
     client: FlaskClient,
     election_id: str,
-    contest: dict,  # pylint: disable=unused-argument
+    contest_id: str,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 10,},

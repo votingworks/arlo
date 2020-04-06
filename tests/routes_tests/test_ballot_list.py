@@ -3,8 +3,8 @@ from flask.testing import FlaskClient
 
 import pytest
 
-from helpers import post_json, create_election
-from test_app import setup_whole_audit
+from tests.helpers import post_json, create_election
+from tests.test_app import setup_whole_audit
 import bgcompute
 
 

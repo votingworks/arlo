@@ -2,14 +2,14 @@ import json
 import pytest
 from flask.testing import FlaskClient
 
-from helpers import (
+from tests.helpers import (
     compare_json,
     assert_is_id,
     assert_is_date,
     assert_is_passphrase,
     create_election,
 )
-from test_app import setup_whole_audit
+from tests.test_app import setup_whole_audit
 from util.process_file import ProcessingStatus
 
 

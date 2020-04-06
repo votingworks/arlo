@@ -1,24 +1,25 @@
 import pytest
 from flask.testing import FlaskClient
 import json, io, uuid
-from typing import List
+from typing import List, Generator
 from flask import jsonify
 
 from arlo_server import app, db
 from arlo_server.models import Election, Jurisdiction, USState
 from arlo_server.auth import with_election_access, with_jurisdiction_access
-from helpers import put_json, create_election
+from tests.helpers import put_json, create_election
 from bgcompute import (
     bgcompute_update_election_jurisdictions_file,
     bgcompute_update_ballot_manifest_file,
 )
+
 
 # The fixtures in this module are available in any test via dependency
 # injection.
 
 
 @pytest.fixture
-def client() -> FlaskClient:
+def client() -> Generator[FlaskClient, None, None]:
     app.config["TESTING"] = True
     client = app.test_client()
 
@@ -32,12 +33,14 @@ def client() -> FlaskClient:
 
 
 @pytest.fixture
-def election_id(client: FlaskClient) -> str:
+def election_id(client: FlaskClient) -> Generator[str, None, None]:
     yield create_election(client)
 
 
 @pytest.fixture
-def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
+def jurisdiction_ids(
+    client: FlaskClient, election_id: str
+) -> Generator[List[str], None, None]:
     rv = client.put(
         f"/election/{election_id}/jurisdiction/file",
         data={
@@ -59,9 +62,12 @@ def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
 
 
 @pytest.fixture
-def contest(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]) -> str:
+def contest_id(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+) -> Generator[str, None, None]:
+    contest_id = str(uuid.uuid4())
     contest = {
-        "id": str(uuid.uuid4()),
+        "id": contest_id,
         "name": "Contest 1",
         "isTargeted": True,
         "choices": [
@@ -75,7 +81,7 @@ def contest(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]) 
     }
     rv = put_json(client, f"/election/{election_id}/contest", [contest])
     assert json.loads(rv.data) == {"status": "ok"}
-    yield contest
+    yield contest_id
 
 
 @pytest.fixture

@@ -1,8 +1,9 @@
 import uuid, json, re
 import pytest
 import datetime
-from typing import Any, List, Union
+from typing import Any, List, Union, Tuple
 from flask.testing import FlaskClient
+from werkzeug.wrappers import Response
 
 from arlo_server.auth import UserType
 from arlo_server.routes import create_organization
@@ -13,6 +14,7 @@ from arlo_server.models import (
     Jurisdiction,
     JurisdictionAdministration,
 )
+
 
 DEFAULT_AA_EMAIL = "admin@example.com"
 DEFAULT_JA_EMAIL = "jurisdiction.admin@example.com"
@@ -30,19 +32,27 @@ def put_json(client: FlaskClient, url: str, obj) -> Any:
     )
 
 
+def assert_ok(rv: Response):
+    __tracebackhide__ = True
+    assert (
+        rv.status_code == 200
+    ), f"Expected status code 200, got {rv.status_code}, body: {rv.data}"
+    assert json.loads(rv.data) == {"status": "ok"}
+
+
 def set_logged_in_user(
     client: FlaskClient, user_type: UserType, user_email=DEFAULT_AA_EMAIL
 ):
-    with client.session_transaction() as session:
+    with client.session_transaction() as session:  # type: ignore
         session["_user"] = {"type": user_type, "email": user_email}
 
 
 def clear_logged_in_user(client: FlaskClient):
-    with client.session_transaction() as session:
+    with client.session_transaction() as session:  # type: ignore
         session["_user"] = None
 
 
-def create_user(email=DEFAULT_AA_EMAIL):
+def create_user(email=DEFAULT_AA_EMAIL) -> User:
     user = User(id=str(uuid.uuid4()), email=email, external_id=email)
     db.session.add(user)
     db.session.commit()
@@ -51,7 +61,7 @@ def create_user(email=DEFAULT_AA_EMAIL):
 
 def create_org_and_admin(
     org_name: str = "Test Org", user_email: str = DEFAULT_AA_EMAIL
-) -> (str, str):
+) -> Tuple[str, str]:
     org = create_organization(org_name)
     aa = create_user(user_email)
     db.session.add(aa)
@@ -65,7 +75,7 @@ def create_jurisdiction_and_admin(
     election_id: str,
     jurisdiction_name: str = "Test Jurisdiction",
     user_email: str = DEFAULT_JA_EMAIL,
-) -> (str, str):
+) -> Tuple[str, str]:
     jurisdiction = Jurisdiction(
         id=str(uuid.uuid4()), election_id=election_id, name=jurisdiction_name
     )
@@ -97,6 +107,7 @@ def create_election(
 
 
 def assert_is_id(x):
+    __tracebackhide__ = True
     assert isinstance(x, str)
     uuid.UUID(x, version=4)  # Will raise exception on non-UUID strings
 
@@ -109,17 +120,20 @@ def assert_is_date(x):
     
     See https://docs.python.org/3.8/library/datetime.html#datetime.date.fromisoformat.
     """
+    __tracebackhide__ = True
     assert isinstance(x, str)
     datetime.datetime.fromisoformat(x)
 
 
 def assert_is_passphrase(x):
+    __tracebackhide__ = True
     assert isinstance(x, str)
     assert re.match(r"[a-z]+-[a-z]+-[a-z]+-[a-z]+", x)
 
 
 def asserts_startswith(prefix: str):
     def assert_startswith(x: str):
+        __tracebackhide__ = True
         assert isinstance(x, str)
         assert x.startswith(prefix), f"expected:\n\n{x}\n\nto start with: {prefix}"
 
@@ -132,6 +146,7 @@ def compare_json(actual_json, expected_json):
     expected dict. The expected dict can contain assertion functions in place of
     any non-deterministic values.
     """
+    __tracebackhide__ = True
 
     def serialize_keypath(keypath: List[Union[str, int]]) -> str:
         return f"root{''.join([f'[{serialize_key(key)}]' for key in keypath])}"
@@ -142,6 +157,7 @@ def compare_json(actual_json, expected_json):
     def inner_compare_json(
         actual_json, expected_json, current_keypath: List[Union[str, int]]
     ):
+        __tracebackhide__ = True
         if isinstance(expected_json, dict):
             assert isinstance(
                 actual_json, dict
