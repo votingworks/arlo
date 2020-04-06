@@ -1,17 +1,9 @@
 import os, datetime, csv, io, json, uuid, re, hmac, urllib.parse, itertools
-from jsonschema.exceptions import ValidationError
 
 from flask import jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
 
 from audit_math import bravo, sampler_contest
-from werkzeug.exceptions import (
-    InternalServerError,
-    Unauthorized,
-    Forbidden,
-    BadRequest,
-    Conflict,
-)
 from xkcdpass import xkcd_password as xp
 
 from sqlalchemy import func
@@ -31,6 +23,7 @@ from arlo_server.auth import (
     with_election_access,
 )
 from arlo_server.models import *
+from arlo_server.errors import handle_unique_constraint_error
 
 from config import (
     AUDITADMIN_AUTH0_BASE_URL,
@@ -239,12 +232,11 @@ def election_new():
     try:
         db.session.commit()
     except IntegrityError as e:
-        if e.orig.diag.constraint_name == "election_organization_id_audit_name_key":
-            raise Conflict(
-                f"An audit with name '{election.audit_name}' already exists within your organization"
-            )
-        else:
-            raise e
+        handle_unique_constraint_error(
+            e,
+            constraint_name="election_organization_id_audit_name_key",
+            message=f"An audit with name '{election.audit_name}' already exists within your organization",
+        )
 
     return jsonify(electionId=election.id)
 
@@ -1302,60 +1294,3 @@ def jurisdictionadmin_login_callback():
 @app.route("/election/<election_id>/board/<board_id>")
 def serve(election_id=None, board_id=None):  # pylint: disable=unused-argument
     return app.send_static_file("index.html")
-
-
-@app.errorhandler(ValidationError)
-def handle_validation_error(e):
-    return (
-        jsonify(errors=[{"message": e.message, "errorType": "Bad Request"}]),
-        BadRequest.code,
-    )
-
-
-@app.errorhandler(BadRequest)
-def handle_400(e):
-    return (
-        jsonify(errors=[{"message": e.description, "errorType": "Bad Request"}]),
-        BadRequest.code,
-    )
-
-
-@app.errorhandler(Unauthorized)
-def handle_401(e):
-    return (
-        jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
-        Unauthorized.code,
-    )
-
-
-@app.errorhandler(Conflict)
-def handle_409(e):
-    return (
-        jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
-        Conflict.code,
-    )
-
-
-@app.errorhandler(Forbidden)
-def handle_403(e):
-    return (
-        jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
-        Forbidden.code,
-    )
-
-
-@app.errorhandler(InternalServerError)
-def handle_500(e):
-    original = getattr(e, "original_exception", None)
-
-    if original is None:
-        # direct 500 error, such as abort(500)
-        return e
-
-    # wrapped unhandled error
-    return (
-        jsonify(
-            errors=[{"message": str(original), "errorType": type(original).__name__}]
-        ),
-        InternalServerError.code,
-    )
