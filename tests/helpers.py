@@ -71,6 +71,17 @@ def create_org_and_admin(
     return org.id, aa.id
 
 
+def create_jurisdiction_admin(
+    jurisdiction_id: str, user_email: str = DEFAULT_JA_EMAIL
+) -> str:
+    ja = create_user(user_email)
+    db.session.add(ja)
+    admin = JurisdictionAdministration(user_id=ja.id, jurisdiction_id=jurisdiction_id)
+    db.session.add(admin)
+    db.session.commit()
+    return str(ja.id)
+
+
 def create_jurisdiction_and_admin(
     election_id: str,
     jurisdiction_name: str = "Test Jurisdiction",
@@ -79,13 +90,10 @@ def create_jurisdiction_and_admin(
     jurisdiction = Jurisdiction(
         id=str(uuid.uuid4()), election_id=election_id, name=jurisdiction_name
     )
-    ja = create_user(user_email)
-    db.session.add(ja)
-    admin = JurisdictionAdministration(user_id=ja.id, jurisdiction_id=jurisdiction.id)
     db.session.add(jurisdiction)
-    db.session.add(admin)
     db.session.commit()
-    return jurisdiction.id, ja.id
+    ja_id = create_jurisdiction_admin(jurisdiction.id, user_email)
+    return jurisdiction.id, ja_id
 
 
 def create_election(

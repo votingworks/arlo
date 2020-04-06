@@ -16,45 +16,12 @@ from tests.helpers import (
 )
 from arlo_server import db
 from arlo_server.models import (
-    Jurisdiction,
     AuditBoard,
     SampledBallot,
     SampledBallotDraw,
     USState,
 )
-from bgcompute import (
-    bgcompute_update_election_jurisdictions_file,
-    bgcompute_update_ballot_manifest_file,
-)
-
-
-@pytest.fixture()
-def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
-    # We expect the list endpoint to order the jurisdictions by name, so we
-    # upload them out of order.
-    rv = client.put(
-        f"/election/{election_id}/jurisdiction/file",
-        data={
-            "jurisdictions": (
-                io.BytesIO(
-                    b"Jurisdiction,Admin Email\n"
-                    b"J2,a2@example.com\n"
-                    b"J3,a3@example.com\n"
-                    b"J1,a1@example.com"
-                ),
-                "jurisdictions.csv",
-            )
-        },
-    )
-    assert_ok(rv)
-    bgcompute_update_election_jurisdictions_file()
-    jurisdictions = (
-        Jurisdiction.query.filter_by(election_id=election_id)
-        .order_by(Jurisdiction.name)
-        .all()
-    )
-    assert len(jurisdictions) == 3
-    yield [j.id for j in jurisdictions]
+from bgcompute import bgcompute_update_ballot_manifest_file
 
 
 def test_jurisdictions_list_empty(client: FlaskClient, election_id: str):

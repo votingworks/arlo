@@ -1,4 +1,4 @@
-import os, datetime, csv, io, json, uuid, re, hmac, urllib.parse, itertools
+import os, datetime, csv, io, json, uuid, re, hmac, urllib.parse
 
 from flask import jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
@@ -40,6 +40,7 @@ from util.ballot_manifest import sample_ballots
 from util.isoformat import isoformat
 from util.jsonschema import validate
 from util.process_file import serialize_file, serialize_file_processing
+from util.group_by import group_by
 
 AUDIT_BOARD_MEMBER_COUNT = 2
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
@@ -1074,16 +1075,14 @@ def audit_report(election_id):
         # First group all the ballot draws by the actual ballot
         for _, ballot_draws in group_by(
             all_sampled_ballot_draws, key=lambda b: (b.batch_id, b.ballot_position)
-        ):
-            ballot_draws = list(ballot_draws)
+        ).items():
             b = ballot_draws[0]
 
             # Then group the draws for this ballot by round
             ticket_numbers = []
             for round_num, round_draws in group_by(
                 ballot_draws, key=lambda b: b.round.round_num
-            ):
-                round_draws = list(round_draws)
+            ).items():
                 ticket_numbers_str = ", ".join(
                     sorted(d.ticket_number for d in round_draws)
                 )
@@ -1106,10 +1105,6 @@ def audit_report(election_id):
         "Content-Disposition"
     ] = f'attachment; filename="audit-report-{election_timestamp_name(election)}.csv"'
     return response
-
-
-def group_by(xs, key=None):
-    return itertools.groupby(sorted(xs, key=key), key=key)
 
 
 def pretty_affiliation(affiliation):

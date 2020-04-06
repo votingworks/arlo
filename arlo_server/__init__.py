@@ -41,12 +41,19 @@ db.init_app(app)
 
 # The order of these imports is important as it defines route precedence.
 # Be careful when re-ordering them.
-import arlo_server.election_settings
+
+# Single-jurisdiction flow routes
+# (Plus some routes for multi-jurisdiction flow that were created before we had
+# separate routes modules)
 import arlo_server.routes
+
+# Multi-jurisdiction flow routes
+import arlo_server.election_settings
 import arlo_server.contests
 import arlo_server.jurisdictions
 import arlo_server.sample_sizes
 import arlo_server.rounds
+import arlo_server.audit_boards
 
 # Error handlers
 import arlo_server.errors
