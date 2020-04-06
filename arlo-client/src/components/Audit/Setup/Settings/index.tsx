@@ -2,7 +2,6 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
 import { RadioGroup, Radio, Spinner } from '@blueprintjs/core'
-import { IAudit } from '../../../../types'
 import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
@@ -17,7 +16,7 @@ import schema from './schema'
 import useAuditSettings from '../useAuditSettings'
 
 interface IProps {
-  audit: IAudit
+  locked: boolean
   nextStage: ISidebarMenuItem
   prevStage: ISidebarMenuItem
 }
@@ -25,7 +24,7 @@ interface IProps {
 const Settings: React.FC<IProps> = ({
   nextStage,
   prevStage,
-  audit,
+  locked,
 }: IProps) => {
   const { electionId } = useParams()
   const [
@@ -64,7 +63,7 @@ const Settings: React.FC<IProps> = ({
                   id="election-name"
                   aria-labelledby="election-name-label"
                   name="electionName"
-                  disabled={!!audit.frozenAt}
+                  disabled={locked}
                   component={FormField}
                 />
               </label>
@@ -79,7 +78,7 @@ const Settings: React.FC<IProps> = ({
                     setFieldValue('online', e.currentTarget.value === 'online')
                   }
                   selectedValue={values.online ? 'online' : 'offline'}
-                  disabled={!!audit.frozenAt}
+                  disabled={locked}
                 >
                   <Radio value="online">Online</Radio>
                   <Radio value="offline">Offline</Radio>
@@ -93,7 +92,7 @@ const Settings: React.FC<IProps> = ({
                   id="risk-limit"
                   data-testid="risk-limit"
                   name="riskLimit"
-                  disabled={!!audit.frozenAt}
+                  disabled={locked}
                   component={Select}
                   value={values.riskLimit}
                   onChange={(e: React.FormEvent<HTMLSelectElement>) =>
@@ -115,7 +114,7 @@ const Settings: React.FC<IProps> = ({
                   aria-labelledby="random-seed-label"
                   type="text"
                   name="randomSeed"
-                  disabled={!!audit.frozenAt}
+                  disabled={locked}
                   component={FormField}
                 />
               </label>

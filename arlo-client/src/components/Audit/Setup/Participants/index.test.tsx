@@ -2,7 +2,6 @@ import React from 'react'
 import { fireEvent, wait } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { statusStates } from '../../_mocks'
 import relativeStages from '../_mocks'
 import Participants from './index'
 import jurisdictionFile from './_mocks'
@@ -59,7 +58,7 @@ const fillAndSubmit = async () => {
     getByTestId,
   } = await asyncActRender(
     <Router>
-      <Participants audit={statusStates.empty} nextStage={nextStage} />
+      <Participants locked={false} nextStage={nextStage} />
     </Router>
   )
 
@@ -92,7 +91,7 @@ describe('Audit Setup > Participants', () => {
   it('renders empty state correctly', async () => {
     const { container } = await asyncActRender(
       <Router>
-        <Participants audit={statusStates.empty} nextStage={nextStage} />
+        <Participants locked={false} nextStage={nextStage} />
       </Router>
     )
     expect(container).toMatchSnapshot()

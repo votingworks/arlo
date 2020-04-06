@@ -267,11 +267,12 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
             class="sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
             >
               <input
                 aria-labelledby="election-name-label"
                 class="bp3-input"
+                disabled=""
                 id="election-name"
                 name="electionName"
                 style="padding-right: 10px;"
@@ -290,10 +291,11 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
           Audit boards will enter data about each audited ballot:
           <div>
             <label
-              class="bp3-control bp3-radio"
+              class="bp3-control bp3-radio bp3-disabled"
             >
               <input
                 checked=""
+                disabled=""
                 name="online"
                 type="radio"
                 value="online"
@@ -304,9 +306,10 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
               Online
             </label>
             <label
-              class="bp3-control bp3-radio"
+              class="bp3-control bp3-radio bp3-disabled"
             >
               <input
+                disabled=""
                 name="online"
                 type="radio"
                 value="offline"
@@ -332,10 +335,11 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select sc-fjdhpX jqDqiz"
+            class="bp3-html-select bp3-disabled sc-fjdhpX jqDqiz"
           >
             <select
               data-testid="risk-limit"
+              disabled=""
               field="[object Object]"
               form="[object Object]"
               id="risk-limit"
@@ -440,11 +444,12 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
             class="sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
             >
               <input
                 aria-labelledby="random-seed-label"
                 class="bp3-input"
+                disabled=""
                 id="random-seed"
                 name="randomSeed"
                 style="padding-right: 10px;"
@@ -1982,10 +1987,11 @@ exports[`Setup renders Participants stage with locked next stage 1`] = `
         Choose your state from the options below
         <br />
         <div
-          class="bp3-html-select sc-dnqmqq kLRTmU"
+          class="bp3-html-select bp3-disabled sc-dnqmqq kLRTmU"
         >
           <select
             data-testid="state-field"
+            disabled=""
             field="[object Object]"
             form="[object Object]"
             id="state"

@@ -18,15 +18,24 @@ export const setupStages = [
 interface IProps {
   stage: ElementType<typeof setupStages>
   audit: IAudit
-  prevStage: ISidebarMenuItem | undefined
-  nextStage: ISidebarMenuItem | undefined
+  menuItems: ISidebarMenuItem[]
 }
 
-const Setup: React.FC<IProps> = ({ stage, prevStage, audit, nextStage }) => {
+const Setup: React.FC<IProps> = ({ stage, audit, menuItems }) => {
+  const activeStage = menuItems.find(m => m.title === stage)
+  const nextStage: ISidebarMenuItem | undefined =
+    menuItems[menuItems.indexOf(activeStage!) + 1]
+  const prevStage: ISidebarMenuItem | undefined =
+    menuItems[menuItems.indexOf(activeStage!) - 1]
   switch (stage) {
     case 'Participants':
       // prevStage === undefined, so don't send it
-      return <Participants audit={audit} nextStage={nextStage!} />
+      return (
+        <Participants
+          nextStage={nextStage!}
+          locked={activeStage!.state === 'locked'}
+        />
+      )
     case 'Target Contests':
       return (
         <Contests
@@ -35,6 +44,7 @@ const Setup: React.FC<IProps> = ({ stage, prevStage, audit, nextStage }) => {
           audit={audit}
           nextStage={nextStage!}
           prevStage={prevStage!}
+          locked={activeStage!.state === 'locked'}
         />
       )
     case 'Opportunistic Contests':
@@ -45,15 +55,25 @@ const Setup: React.FC<IProps> = ({ stage, prevStage, audit, nextStage }) => {
           audit={audit}
           nextStage={nextStage!}
           prevStage={prevStage!}
+          locked={activeStage!.state === 'locked'}
         />
       )
     case 'Audit Settings':
       return (
-        <Settings audit={audit} nextStage={nextStage!} prevStage={prevStage!} />
+        <Settings
+          nextStage={nextStage!}
+          prevStage={prevStage!}
+          locked={activeStage!.state === 'locked'}
+        />
       )
     case 'Review & Launch':
       // nextStage === undefined, so don't send it
-      return <Review audit={audit} prevStage={prevStage!} />
+      return (
+        <Review
+          prevStage={prevStage!}
+          locked={activeStage!.state === 'locked'}
+        />
+      )
     /* istanbul ignore next */
     default:
       return null

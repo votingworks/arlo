@@ -24,6 +24,7 @@ interface IProps {
   isTargeted: boolean
   nextStage: ISidebarMenuItem
   prevStage: ISidebarMenuItem
+  locked: boolean
 }
 
 const contestValues: { contests: IContestValues[] } = {
@@ -53,6 +54,7 @@ const Contests: React.FC<IProps> = ({
   audit,
   nextStage,
   prevStage,
+  locked,
 }) => {
   const initialValues: IValues = {
     contests: audit.contests.length ? audit.contests : contestValues.contests,
@@ -100,7 +102,7 @@ const Contests: React.FC<IProps> = ({
                           <Field
                             id={`contests[${i}].name`}
                             name={`contests[${i}].name`}
-                            disabled={audit.frozenAt}
+                            disabled={locked}
                             component={FormField}
                           />
                         </label>
@@ -112,7 +114,7 @@ const Contests: React.FC<IProps> = ({
                           <Field
                             id={`contests[${i}].numWinners`}
                             name={`contests[${i}].numWinners`}
-                            disabled={audit.frozenAt}
+                            disabled={locked}
                             component={FormField}
                           />
                         </label>
@@ -125,7 +127,7 @@ const Contests: React.FC<IProps> = ({
                           <Field
                             id={`contests[${i}].votesAllowed`}
                             name={`contests[${i}].votesAllowed`}
-                            disabled={audit.frozenAt}
+                            disabled={locked}
                             component={FormField}
                           />
                         </label>
@@ -155,7 +157,7 @@ const Contests: React.FC<IProps> = ({
                                         Name of Candidate/Choice {j + 1}
                                         <Field
                                           name={`contests[${i}].choices[${j}].name`}
-                                          disabled={audit.frozenAt}
+                                          disabled={locked}
                                           component={FlexField}
                                         />
                                       </InputLabel>
@@ -163,7 +165,7 @@ const Contests: React.FC<IProps> = ({
                                         Votes for Candidate/Choice {j + 1}
                                         <Field
                                           name={`contests[${i}].choices[${j}].numVotes`}
-                                          disabled={audit.frozenAt}
+                                          disabled={locked}
                                           component={FlexField}
                                         />
                                       </InputLabel>
@@ -208,7 +210,7 @@ const Contests: React.FC<IProps> = ({
                           <Field
                             id={`contests[${i}].totalBallotsCast`}
                             name={`contests[${i}].totalBallotsCast`}
-                            disabled={audit.frozenAt}
+                            disabled={locked}
                             component={FormField}
                           />
                         </label>

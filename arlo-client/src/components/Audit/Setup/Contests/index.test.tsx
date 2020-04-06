@@ -100,6 +100,7 @@ describe('Audit Setup > Contests', () => {
   it('renders empty state correctly', () => {
     const { container } = render(
       <Contests
+        locked={false}
         audit={statusStates.empty}
         isTargeted
         {...relativeStages('Target Contests')}
@@ -112,6 +113,7 @@ describe('Audit Setup > Contests', () => {
     // skip until feature is complete in backend
     const { getByText, getAllByText, queryByText } = render(
       <Contests
+        locked={false}
         audit={statusStates.empty}
         isTargeted
         {...relativeStages('Target Contests')}
@@ -143,6 +145,7 @@ describe('Audit Setup > Contests', () => {
   it('adds and removes choices', async () => {
     const { getByText, getAllByText, queryAllByText } = render(
       <Contests
+        locked={false}
         audit={statusStates.empty}
         isTargeted
         {...relativeStages('Target Contests')}
@@ -167,6 +170,7 @@ describe('Audit Setup > Contests', () => {
   it('is able to submit the form successfully', async () => {
     const { getByLabelText, getByText } = render(
       <Contests
+        locked={false}
         audit={statusStates.empty}
         isTargeted
         nextStage={nextStage}
@@ -191,6 +195,7 @@ describe('Audit Setup > Contests', () => {
   it('displays errors', async () => {
     const { getByLabelText, getByTestId, getByText } = render(
       <Contests
+        locked={false}
         audit={statusStates.empty}
         isTargeted
         nextStage={nextStage}
@@ -228,6 +233,7 @@ describe('Audit Setup > Contests', () => {
   it('displays an error when the total votes are greater than the allowed votes and more than one vote is allowed per contest', async () => {
     const { getByLabelText, getByTestId } = render(
       <Contests
+        locked={false}
         audit={statusStates.empty}
         isTargeted
         {...relativeStages('Target Contests')}
@@ -272,6 +278,7 @@ describe('Audit Setup > Contests', () => {
   it('displays no error when the total votes are greater than the ballot count, but less than the total allowed votes for a contest', async () => {
     const { getByLabelText, queryByTestId } = render(
       <Contests
+        locked={false}
         audit={statusStates.empty}
         isTargeted
         {...relativeStages('Target Contests')}

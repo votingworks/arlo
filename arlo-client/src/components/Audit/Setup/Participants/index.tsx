@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import { HTMLSelect, Spinner, FileInput } from '@blueprintjs/core'
-import { IAudit, IErrorResponse } from '../../../../types'
+import { IErrorResponse } from '../../../../types'
 import FormWrapper from '../../../Form/FormWrapper'
 import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
@@ -23,11 +23,11 @@ export const Select = styled(HTMLSelect)`
 `
 
 interface IProps {
-  audit: IAudit
   nextStage: ISidebarMenuItem
+  locked: boolean
 }
 
-const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
+const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
   const { electionId } = useParams()
   const [{ state }, updateSettings] = useAuditSettings(electionId!)
   const submit = async (values: IValues) => {
@@ -80,7 +80,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                 onChange={(e: React.FormEvent<HTMLSelectElement>) =>
                   setFieldValue('state', e.currentTarget.value)
                 }
-                disabled={!!audit.frozenAt}
+                disabled={locked}
                 value={values.state || ''}
                 options={[{ value: '' }, ...labelValueStates]}
               />

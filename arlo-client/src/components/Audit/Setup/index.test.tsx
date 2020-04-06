@@ -39,7 +39,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates.sampleSizeOptions}
         stage="Participants"
-        {...relativeStages('Participants')}
+        menuItems={relativeStages('Participants').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -50,7 +50,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Participants"
-        {...relativeStages('Participants', 'locked')}
+        menuItems={relativeStages('Participants', 'locked').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -61,7 +61,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Participants"
-        {...relativeStages('Participants', 'processing')}
+        menuItems={relativeStages('Participants', 'processing').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -72,7 +72,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates.sampleSizeOptions}
         stage="Target Contests"
-        {...relativeStages('Target Contests')}
+        menuItems={relativeStages('Target Contests').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -83,7 +83,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Target Contests"
-        {...relativeStages('Target Contests', 'locked')}
+        menuItems={relativeStages('Target Contests', 'locked').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -94,7 +94,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Target Contests"
-        {...relativeStages('Target Contests', 'processing')}
+        menuItems={relativeStages('Target Contests', 'processing').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -105,7 +105,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates.sampleSizeOptions}
         stage="Opportunistic Contests"
-        {...relativeStages('Opportunistic Contests')}
+        menuItems={relativeStages('Opportunistic Contests').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -116,7 +116,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Opportunistic Contests"
-        {...relativeStages('Opportunistic Contests', 'locked')}
+        menuItems={relativeStages('Opportunistic Contests', 'locked').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -127,7 +127,9 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Opportunistic Contests"
-        {...relativeStages('Opportunistic Contests', 'processing')}
+        menuItems={
+          relativeStages('Opportunistic Contests', 'processing').menuItems
+        }
       />
     )
     expect(container).toMatchSnapshot()
@@ -138,7 +140,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates.sampleSizeOptions}
         stage="Audit Settings"
-        {...relativeStages('Audit Settings')}
+        menuItems={relativeStages('Audit Settings').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -149,7 +151,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Audit Settings"
-        {...relativeStages('Audit Settings', 'locked')}
+        menuItems={relativeStages('Audit Settings', 'locked').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -160,7 +162,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Audit Settings"
-        {...relativeStages('Audit Settings', 'processing')}
+        menuItems={relativeStages('Audit Settings', 'processing').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -171,7 +173,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates.sampleSizeOptions}
         stage="Review & Launch"
-        {...relativeStages('Review & Launch')}
+        menuItems={relativeStages('Review & Launch').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -182,7 +184,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Review & Launch"
-        {...relativeStages('Review & Launch', 'locked')}
+        menuItems={relativeStages('Review & Launch', 'locked').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
@@ -193,7 +195,7 @@ describe('Setup', () => {
       <Setup
         audit={statusStates[2]}
         stage="Review & Launch"
-        {...relativeStages('Review & Launch', 'processing')}
+        menuItems={relativeStages('Review & Launch', 'processing').menuItems}
       />
     )
     expect(container).toMatchSnapshot()
