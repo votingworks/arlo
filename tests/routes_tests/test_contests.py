@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 from typing import List
 import json, uuid
 
-from helpers import post_json, put_json
+from tests.helpers import post_json, put_json
 from arlo_server.models import RoundContest
 from arlo_server.contests import JSONDict
 from arlo_server import db

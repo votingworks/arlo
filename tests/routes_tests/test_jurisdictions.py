@@ -6,7 +6,7 @@ import json, io, uuid
 from datetime import datetime
 from typing import List
 
-from helpers import (
+from tests.helpers import (
     put_json,
     post_json,
     compare_json,
@@ -16,7 +16,6 @@ from helpers import (
 from arlo_server import db
 from arlo_server.models import (
     Jurisdiction,
-    Contest,
     AuditBoard,
     SampledBallot,
     SampledBallotDraw,
@@ -245,7 +244,7 @@ def test_jurisdictions_round_status(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest: Contest,  # pylint: disable=unused-argument
+    contest_id: str,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
@@ -360,7 +359,7 @@ def test_jurisdictions_round_status_offline(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest: Contest,  # pylint: disable=unused-argument
+    contest_id: str,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):

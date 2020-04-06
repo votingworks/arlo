@@ -1,6 +1,6 @@
 import json, uuid
 
-from helpers import post_json
+from tests.helpers import post_json
 
 
 def test_audit_basic_update_create_contest(client, election_id):
