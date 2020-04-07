@@ -11,6 +11,7 @@ from arlo_server.models import (
     RoundContestResult,
     Batch,
 )
+from arlo_server.auth import UserType
 from tests.helpers import (
     assert_ok,
     post_json,
@@ -18,11 +19,23 @@ from tests.helpers import (
     compare_json,
     assert_is_id,
     assert_is_date,
+    set_logged_in_user,
+    create_jurisdiction_admin,
 )
 
+JA_EMAIL = "ja@example.com"
 
-def test_rounds_list_empty(client: FlaskClient, election_id: str):
+
+def test_rounds_list_empty(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
     rv = client.get(f"/election/{election_id}/round")
+    rounds = json.loads(rv.data)
+    assert rounds == {"rounds": []}
+
+    create_jurisdiction_admin(jurisdiction_ids[0], user_email=JA_EMAIL)
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
+    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round")
     rounds = json.loads(rv.data)
     assert rounds == {"rounds": []}
 
@@ -42,21 +55,26 @@ def test_rounds_create_one(
     )
     assert_ok(rv)
 
+    expected_rounds = {
+        "rounds": [
+            {
+                "id": assert_is_id,
+                "roundNum": 1,
+                "startedAt": assert_is_date,
+                "endedAt": None,
+            }
+        ]
+    }
+
     rv = client.get(f"/election/{election_id}/round")
     rounds = json.loads(rv.data)
-    compare_json(
-        rounds,
-        {
-            "rounds": [
-                {
-                    "id": assert_is_id,
-                    "roundNum": 1,
-                    "startedAt": assert_is_date,
-                    "endedAt": None,
-                }
-            ]
-        },
-    )
+    compare_json(rounds, expected_rounds)
+
+    create_jurisdiction_admin(jurisdiction_ids[0], user_email=JA_EMAIL)
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
+    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round")
+    rounds = json.loads(rv.data)
+    compare_json(rounds, expected_rounds)
 
     # Check that we also created RoundContest objects
     round_contests = RoundContest.query.filter_by(
@@ -160,27 +178,31 @@ def test_rounds_create_two(
     rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
     assert_ok(rv)
 
+    expected_rounds = {
+        "rounds": [
+            {
+                "id": assert_is_id,
+                "roundNum": 1,
+                "startedAt": assert_is_date,
+                "endedAt": assert_is_date,
+            },
+            {
+                "id": assert_is_id,
+                "roundNum": 2,
+                "startedAt": assert_is_date,
+                "endedAt": None,
+            },
+        ]
+    }
     rv = client.get(f"/election/{election_id}/round")
     rounds = json.loads(rv.data)
-    compare_json(
-        rounds,
-        {
-            "rounds": [
-                {
-                    "id": assert_is_id,
-                    "roundNum": 1,
-                    "startedAt": assert_is_date,
-                    "endedAt": assert_is_date,
-                },
-                {
-                    "id": assert_is_id,
-                    "roundNum": 2,
-                    "startedAt": assert_is_date,
-                    "endedAt": None,
-                },
-            ]
-        },
-    )
+    compare_json(rounds, expected_rounds)
+
+    create_jurisdiction_admin(jurisdiction_ids[0], user_email=JA_EMAIL)
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
+    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round")
+    rounds = json.loads(rv.data)
+    compare_json(rounds, expected_rounds)
 
     ballot_draws = (
         SampledBallotDraw.query.filter_by(round_id=rounds["rounds"][1]["id"])

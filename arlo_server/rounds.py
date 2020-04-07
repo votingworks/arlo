@@ -11,8 +11,9 @@ from arlo_server.models import (
     Election,
     SampledBallot,
     SampledBallotDraw,
+    Jurisdiction,
 )
-from arlo_server.auth import with_election_access
+from arlo_server.auth import with_election_access, with_jurisdiction_access
 from arlo_server.sample_sizes import sample_size_options
 from util.isoformat import isoformat
 from audit_math import sampler
@@ -121,9 +122,22 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
 
 @app.route("/election/<election_id>/round", methods=["GET"])
 @with_election_access
-def list_rounds(election: Election):
-    rounds = sorted(election.rounds, key=lambda r: r.round_num)
-    return jsonify({"rounds": [serialize_round(r) for r in rounds]})
+def list_rounds_audit_admin(election: Election):
+    return jsonify({"rounds": [serialize_round(r) for r in election.rounds]})
+
+
+# Make a separate endpoint for jurisdiction admins to access the list of
+# rounds. This makes our permission scheme simpler (every route only allows one
+# user type), even though the logic of this particular pair our routes is
+# identical.
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round", methods=["GET"]
+)
+@with_jurisdiction_access
+def list_rounds_jurisdiction_admin(
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
+):
+    return jsonify({"rounds": [serialize_round(r) for r in election.rounds]})
 
 
 @app.route("/election/<election_id>/round", methods=["POST"])
