@@ -3,7 +3,9 @@ import { toast } from 'react-toastify'
 import { setupStages } from '../Setup'
 import { ElementType } from '../../../types'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
-import getJurisdictionFileStatus from './getJurisdictionFileStatus'
+import getJurisdictionFileStatus, {
+  FileProcessingStatus,
+} from './getJurisdictionFileStatus'
 import { poll } from '../../utilities'
 import getRoundStatus from './getRoundStatus'
 
@@ -37,9 +39,12 @@ function useSetupMenuItems(
 
   const setOrPollParticipantsFile = useCallback(async () => {
     const jurisdictionStatus = await getJurisdictionFileStatus(electionId)
-    if (jurisdictionStatus === 'ERRORED' || jurisdictionStatus === 'NULL') {
+    if (jurisdictionStatus === FileProcessingStatus.Errored) {
       setContests('locked')
-    } else if (jurisdictionStatus === 'PROCESSED') {
+    } else if (
+      jurisdictionStatus === FileProcessingStatus.Processed ||
+      jurisdictionStatus === FileProcessingStatus.ReadyToProcess
+    ) {
       setContests('live')
     } else {
       setContests('processing')
@@ -47,7 +52,8 @@ function useSetupMenuItems(
         const newJurisdictionStatus = await getJurisdictionFileStatus(
           electionId
         )
-        if (newJurisdictionStatus === 'PROCESSED') return true
+        if (newJurisdictionStatus === FileProcessingStatus.Processed)
+          return true
         return false
       }
       const complete = () => setContests('live')
