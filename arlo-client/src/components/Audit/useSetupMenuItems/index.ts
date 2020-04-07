@@ -39,12 +39,12 @@ function useSetupMenuItems(
 
   const setOrPollParticipantsFile = useCallback(async () => {
     const jurisdictionStatus = await getJurisdictionFileStatus(electionId)
-    if (jurisdictionStatus === FileProcessingStatus.Errored) {
-      setContests('locked')
-    } else if (
-      jurisdictionStatus === FileProcessingStatus.Processed ||
-      jurisdictionStatus === FileProcessingStatus.ReadyToProcess
+    if (
+      jurisdictionStatus === FileProcessingStatus.Errored ||
+      jurisdictionStatus === FileProcessingStatus.Blank
     ) {
+      setContests('locked')
+    } else if (jurisdictionStatus === FileProcessingStatus.Processed) {
       setContests('live')
     } else {
       setContests('processing')

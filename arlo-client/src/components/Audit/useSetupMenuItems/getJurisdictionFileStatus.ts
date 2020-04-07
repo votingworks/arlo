@@ -2,7 +2,8 @@ import { api, checkAndToast } from '../../utilities'
 import { IErrorResponse } from '../../../types'
 
 export enum FileProcessingStatus {
-  ReadyToProcess = 'READY_TO_PROCESS',
+  Blank = 'NULL', // only returned from getJurisdictionFileStatus, represents the null state from the server
+  ReadyToProcess = 'READY_TO_PROCESS', // only received from the server, never returned from getJurisdictionFileStatus; equivalent to 'Processing'
   Processing = 'PROCESSING',
   Processed = 'PROCESSED',
   Errored = 'ERRORED',
@@ -32,9 +33,15 @@ const getJurisdictionFileStatus = async (
     return FileProcessingStatus.Errored
   }
   if (jurisdictionsOrError.processing) {
+    if (
+      jurisdictionsOrError.processing!.status ===
+      FileProcessingStatus.ReadyToProcess
+    ) {
+      return FileProcessingStatus.Processing
+    }
     return jurisdictionsOrError.processing!.status
   }
-  return FileProcessingStatus.ReadyToProcess
+  return FileProcessingStatus.Blank
 }
 
 export default getJurisdictionFileStatus
