@@ -238,6 +238,31 @@ describe('useSetupMenuItems', () => {
     })
   })
 
+  it('handles READY_TO_PROCESS response from /jurisdiction/file api', async () => {
+    apiMock.mockImplementation(
+      generateApiMock(
+        { rounds: [] },
+        {
+          file: null,
+          processing: {
+            status: FileProcessingStatus.ReadyToProcess,
+            startedAt: '',
+            error: null,
+            completedAt: null,
+          },
+        }
+      )
+    )
+    const { result } = renderHook(() =>
+      useSetupMenuItems('Participants', jest.fn(), '1')
+    )
+    act(() => result.current[1]())
+    await wait(() => {
+      expect(result.current[0][1].state === 'processing').toBeTruthy()
+      expect(result.current[0][2].state === 'processing').toBeTruthy()
+    })
+  })
+
   it('handles background process timeout', async () => {
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const dateIncrementor = (function* incr() {
