@@ -1,6 +1,7 @@
 import json
 import pytest
 from flask.testing import FlaskClient
+from typing import Generator
 
 from tests.helpers import (
     compare_json,
@@ -14,7 +15,7 @@ from util.process_file import ProcessingStatus
 
 
 @pytest.fixture()
-def election_id(client: FlaskClient) -> str:
+def election_id(client: FlaskClient) -> Generator[str, None, None]:
     yield create_election(client, is_multi_jurisdiction=False)
 
 

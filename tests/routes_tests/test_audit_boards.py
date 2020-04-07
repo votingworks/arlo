@@ -1,6 +1,6 @@
 import pytest, json
 from flask.testing import FlaskClient
-from typing import List
+from typing import List, Generator
 from datetime import datetime
 from collections import defaultdict
 
@@ -74,7 +74,7 @@ def round_id(
     contest_id: str,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
-) -> str:
+) -> Generator[str, None, None]:
     rv = post_json(
         client,
         f"/election/{election_id}/round",
@@ -89,7 +89,7 @@ def round_id(
 @pytest.fixture
 def round_2_id(
     client: FlaskClient, election_id: str, contest_id: str, round_id: str,
-) -> str:
+) -> Generator[str, None, None]:
     # Fake that the first round got completed by setting Round.ended_at.
     # We also need to add RoundContestResults so that the next round sample
     # size can get computed.

@@ -72,7 +72,7 @@ class TestBucket:
         )
         assert (
             not bucket.largest_element
-        ), "Initial largest element was not None".format(bucket.largest_element)
+        ), "Initial largest element was not None: {}".format(bucket.largest_element)
 
     def test_add_batch(self, bucket):
         expected_batches = {"1": 100}

@@ -130,7 +130,7 @@ def test_auditadmin_callback(
     rv = client.get("/auth/auditadmin/callback?code=foobar")
     assert rv.status_code == 302
 
-    with client.session_transaction() as session:
+    with client.session_transaction() as session:  # type: ignore
         assert session["_user"]["type"] == UserType.AUDIT_ADMIN
         assert session["_user"]["email"] == AA_EMAIL
 
@@ -155,7 +155,7 @@ def test_jurisdictionadmin_callback(
     rv = client.get("/auth/jurisdictionadmin/callback?code=foobar")
     assert rv.status_code == 302
 
-    with client.session_transaction() as session:
+    with client.session_transaction() as session:  # type: ignore
         assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
         assert session["_user"]["email"] == JA_EMAIL
 
@@ -168,7 +168,7 @@ def test_logout(client: FlaskClient):
 
     rv = client.get("/auth/logout")
 
-    with client.session_transaction() as session:
+    with client.session_transaction() as session:  # type: ignore
         assert session["_user"] is None
 
     assert rv.status_code == 302
