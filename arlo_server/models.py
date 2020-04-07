@@ -66,7 +66,9 @@ class Election(BaseModel):
         order_by="Jurisdiction.name",
     )
     contests = relationship("Contest", backref="election", passive_deletes=True)
-    rounds = relationship("Round", backref="election", passive_deletes=True)
+    rounds = relationship(
+        "Round", backref="election", passive_deletes=True, order_by="Round.round_num"
+    )
 
     jurisdictions_file_id = db.Column(
         db.String(200), db.ForeignKey("file.id", ondelete="set null"), nullable=True
