@@ -183,7 +183,7 @@ def test_contests_round_status(
 def test_contests_missing_field(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    contest = {
+    contest: JSONDict = {
         "id": str(uuid.uuid4()),
         "name": "Contest 1",
         "isTargeted": True,

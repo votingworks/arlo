@@ -1,6 +1,6 @@
 import json
 from flask.testing import FlaskClient
-
+from typing import Generator
 import pytest
 
 from tests.helpers import assert_ok, post_json, create_election
@@ -9,7 +9,7 @@ import bgcompute
 
 
 @pytest.fixture()
-def election_id(client: FlaskClient) -> str:
+def election_id(client: FlaskClient) -> Generator[str, None, None]:
     yield create_election(client, is_multi_jurisdiction=False)
 
 
