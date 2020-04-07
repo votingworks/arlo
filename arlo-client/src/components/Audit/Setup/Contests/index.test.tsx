@@ -1,7 +1,6 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import { regexpEscape } from '../../../testUtilities'
-import { statusStates } from '../../_mocks'
 import * as utilities from '../../../utilities'
 import Contests from './index'
 import relativeStages from '../_mocks'
@@ -100,7 +99,7 @@ describe('Audit Setup > Contests', () => {
   it('renders empty state correctly', () => {
     const { container } = render(
       <Contests
-        audit={statusStates.empty}
+        locked={false}
         isTargeted
         {...relativeStages('Target Contests')}
       />
@@ -112,7 +111,7 @@ describe('Audit Setup > Contests', () => {
     // skip until feature is complete in backend
     const { getByText, getAllByText, queryByText } = render(
       <Contests
-        audit={statusStates.empty}
+        locked={false}
         isTargeted
         {...relativeStages('Target Contests')}
       />
@@ -143,7 +142,7 @@ describe('Audit Setup > Contests', () => {
   it('adds and removes choices', async () => {
     const { getByText, getAllByText, queryAllByText } = render(
       <Contests
-        audit={statusStates.empty}
+        locked={false}
         isTargeted
         {...relativeStages('Target Contests')}
       />
@@ -167,7 +166,7 @@ describe('Audit Setup > Contests', () => {
   it('is able to submit the form successfully', async () => {
     const { getByLabelText, getByText } = render(
       <Contests
-        audit={statusStates.empty}
+        locked={false}
         isTargeted
         nextStage={nextStage}
         prevStage={prevStage}
@@ -182,7 +181,7 @@ describe('Audit Setup > Contests', () => {
       expect(input.value).toBe(inputData.value)
     })
 
-    fireEvent.click(getByText('Submit & Next'), { bubbles: true })
+    fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await wait(() => {
       expect(nextStage.activate).toHaveBeenCalledTimes(1)
     })
@@ -191,7 +190,7 @@ describe('Audit Setup > Contests', () => {
   it('displays errors', async () => {
     const { getByLabelText, getByTestId, getByText } = render(
       <Contests
-        audit={statusStates.empty}
+        locked={false}
         isTargeted
         nextStage={nextStage}
         prevStage={prevStage}
@@ -219,7 +218,7 @@ describe('Audit Setup > Contests', () => {
       }
     )
 
-    fireEvent.click(getByText('Submit & Next'), { bubbles: true })
+    fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await wait(() => {
       expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })
@@ -228,7 +227,7 @@ describe('Audit Setup > Contests', () => {
   it('displays an error when the total votes are greater than the allowed votes and more than one vote is allowed per contest', async () => {
     const { getByLabelText, getByTestId } = render(
       <Contests
-        audit={statusStates.empty}
+        locked={false}
         isTargeted
         {...relativeStages('Target Contests')}
       />
@@ -272,7 +271,7 @@ describe('Audit Setup > Contests', () => {
   it('displays no error when the total votes are greater than the ballot count, but less than the total allowed votes for a contest', async () => {
     const { getByLabelText, queryByTestId } = render(
       <Contests
-        audit={statusStates.empty}
+        locked={false}
         isTargeted
         {...relativeStages('Target Contests')}
       />

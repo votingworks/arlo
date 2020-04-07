@@ -1,7 +1,6 @@
 import React from 'react'
 import { fireEvent, wait } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
-import { statusStates } from '../../_mocks'
 import relativeStages from '../_mocks'
 import Settings from './index'
 import { asyncActRender, regexpEscape } from '../../../testUtilities'
@@ -35,11 +34,7 @@ const { nextStage, prevStage } = relativeStages('Audit Settings')
 const fillAndSubmit = async () => {
   const { getByText, getByLabelText, getByTestId } = await asyncActRender(
     <Router>
-      <Settings
-        audit={statusStates.empty}
-        nextStage={nextStage}
-        prevStage={prevStage}
-      />
+      <Settings locked={false} nextStage={nextStage} prevStage={prevStage} />
     </Router>
   )
 

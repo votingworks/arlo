@@ -1,8 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react'
+import React from 'react'
 import { Formik, FormikProps, Form, Field, FieldArray } from 'formik'
 import { Spinner } from '@blueprintjs/core'
-import { IAudit } from '../../../../types'
 import FormWrapper from '../../../Form/FormWrapper'
 import FormSection, { FormSectionDescription } from '../../../Form/FormSection'
 import FormField from '../../../Form/FormField'
@@ -20,10 +19,10 @@ import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 
 interface IProps {
-  audit: IAudit
   isTargeted: boolean
   nextStage: ISidebarMenuItem
   prevStage: ISidebarMenuItem
+  locked: boolean
 }
 
 const contestValues: { contests: IContestValues[] } = {
@@ -50,20 +49,15 @@ const contestValues: { contests: IContestValues[] } = {
 
 const Contests: React.FC<IProps> = ({
   isTargeted,
-  audit,
   nextStage,
   prevStage,
+  locked,
 }) => {
-  const [isLoading, setIsLoading] = useState(false)
-  const initialValues: IValues = {
-    contests: audit.contests.length ? audit.contests : contestValues.contests,
-  }
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={contestValues}
       validationSchema={schema}
       onSubmit={v => {
-        setIsLoading(true)
         // eslint-disable-next-line no-console
         console.log(v)
         nextStage.activate()
@@ -102,7 +96,7 @@ const Contests: React.FC<IProps> = ({
                           <Field
                             id={`contests[${i}].name`}
                             name={`contests[${i}].name`}
-                            disabled={audit.frozenAt}
+                            disabled={locked}
                             component={FormField}
                           />
                         </label>
@@ -114,7 +108,7 @@ const Contests: React.FC<IProps> = ({
                           <Field
                             id={`contests[${i}].numWinners`}
                             name={`contests[${i}].numWinners`}
-                            disabled={audit.frozenAt}
+                            disabled={locked}
                             component={FormField}
                           />
                         </label>
@@ -127,7 +121,7 @@ const Contests: React.FC<IProps> = ({
                           <Field
                             id={`contests[${i}].votesAllowed`}
                             name={`contests[${i}].votesAllowed`}
-                            disabled={audit.frozenAt}
+                            disabled={locked}
                             component={FormField}
                           />
                         </label>
@@ -157,7 +151,7 @@ const Contests: React.FC<IProps> = ({
                                         Name of Candidate/Choice {j + 1}
                                         <Field
                                           name={`contests[${i}].choices[${j}].name`}
-                                          disabled={audit.frozenAt}
+                                          disabled={locked}
                                           component={FlexField}
                                         />
                                       </InputLabel>
@@ -165,12 +159,12 @@ const Contests: React.FC<IProps> = ({
                                         Votes for Candidate/Choice {j + 1}
                                         <Field
                                           name={`contests[${i}].choices[${j}].numVotes`}
-                                          disabled={audit.frozenAt}
+                                          disabled={locked}
                                           component={FlexField}
                                         />
                                       </InputLabel>
                                       {contest.choices.length > 2 &&
-                                        !audit.contests.length && (
+                                        !locked && (
                                           <Action
                                             onClick={() =>
                                               choicesArrayHelpers.remove(j)
@@ -183,7 +177,7 @@ const Contests: React.FC<IProps> = ({
                                   </React.Fragment>
                                 )
                               )}
-                              {!audit.contests.length && (
+                              {!locked && (
                                 <Action
                                   onClick={() =>
                                     choicesArrayHelpers.push({
@@ -210,7 +204,7 @@ const Contests: React.FC<IProps> = ({
                           <Field
                             id={`contests[${i}].totalBallotsCast`}
                             name={`contests[${i}].totalBallotsCast`}
-                            disabled={audit.frozenAt}
+                            disabled={locked}
                             component={FormField}
                           />
                         </label>
@@ -233,17 +227,18 @@ const Contests: React.FC<IProps> = ({
               )}
             />
           </FormWrapper>
-          {isLoading && <Spinner />}
-          {!audit.contests.length && !isLoading && (
+          {nextStage.state === 'processing' ? (
+            <Spinner />
+          ) : (
             <FormButtonBar>
               <FormButton onClick={prevStage.activate}>Back</FormButton>
               <FormButton
                 type="submit"
                 intent="primary"
-                disabled={!!audit.frozenAt}
+                disabled={nextStage.state === 'locked'}
                 onClick={handleSubmit}
               >
-                Submit &amp; Next
+                Save &amp; Next
               </FormButton>
             </FormButtonBar>
           )}

@@ -1,11 +1,10 @@
 import React from 'react'
-import { IAudit } from '../../../../types'
 import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 
 interface IProps {
-  audit: IAudit
+  locked: boolean
   prevStage: ISidebarMenuItem
 }
 

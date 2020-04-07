@@ -1,11 +1,11 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react'
+import React from 'react'
 import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import { HTMLSelect, Spinner, FileInput } from '@blueprintjs/core'
-import { IAudit, IErrorResponse } from '../../../../types'
+import { IErrorResponse } from '../../../../types'
 import FormWrapper from '../../../Form/FormWrapper'
 import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
@@ -23,17 +23,15 @@ export const Select = styled(HTMLSelect)`
 `
 
 interface IProps {
-  audit: IAudit
   nextStage: ISidebarMenuItem
+  locked: boolean
 }
 
-const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
+const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
   const { electionId } = useParams()
-  const [isLoading, setIsLoading] = useState(false)
   const [{ state }, updateSettings] = useAuditSettings(electionId!)
   const submit = async (values: IValues) => {
     try {
-      setIsLoading(true)
       const responseOne = await updateSettings({ state: values.state })
       if (!responseOne) return
       /* istanbul ignore else */
@@ -82,7 +80,7 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
                 onChange={(e: React.FormEvent<HTMLSelectElement>) =>
                   setFieldValue('state', e.currentTarget.value)
                 }
-                disabled={!!audit.frozenAt}
+                disabled={locked}
                 value={values.state || ''}
                 options={[{ value: '' }, ...labelValueStates]}
               />
@@ -129,16 +127,15 @@ const Participants: React.FC<IProps> = ({ audit, nextStage }: IProps) => {
               )}
             </FormSection>
           </FormWrapper>
-          {isLoading && <Spinner />}
-          {!isLoading && (
+          {nextStage.state === 'processing' ? (
+            <Spinner />
+          ) : (
             <FormButtonBar>
               <FormButton
                 type="submit"
                 intent="primary"
-                disabled={!!audit.frozenAt}
-                onClick={e => {
-                  handleSubmit(e)
-                }}
+                disabled={nextStage.state === 'locked'}
+                onClick={handleSubmit}
               >
                 Save &amp; Next
               </FormButton>

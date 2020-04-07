@@ -10,6 +10,11 @@ import { statusStates, dummyBallots, auditSettings } from './_mocks'
 import * as utilities from '../utilities'
 import { asyncActRender } from '../testUtilities'
 import AuthDataProvider from '../UserContext'
+import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
+import getRoundStatus from './useSetupMenuItems/getRoundStatus'
+
+const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
+const getRoundStatusMock = getRoundStatus as jest.Mock
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -40,6 +45,11 @@ routeMock.mockReturnValue({
     view: 'setup',
   },
 })
+
+jest.mock('./useSetupMenuItems/getJurisdictionFileStatus')
+jest.mock('./useSetupMenuItems/getRoundStatus')
+getJurisdictionFileStatusMock.mockReturnValue('PROCESSED')
+getRoundStatusMock.mockReturnValue(false)
 
 afterEach(() => {
   apiMock.mockClear()
@@ -193,7 +203,9 @@ describe('RiskLimitingAuditForm', () => {
       )
     })
   })
+})
 
+describe('AA setup flow', () => {
   it('renders sidebar when authenticated on /setup', async () => {
     apiMock
       .mockImplementationOnce(async () => statusStates.sampleSizeOptions)

@@ -7,7 +7,7 @@ import { api, checkAndToast } from '../utilities'
 import { IAudit, IErrorResponse, ElementType } from '../../types'
 import ResetButton from './ResetButton'
 import Wrapper from '../Atoms/Wrapper'
-import Sidebar, { ISidebarMenuItem } from '../Atoms/Sidebar'
+import Sidebar from '../Atoms/Sidebar'
 import { AuthDataContext } from '../UserContext'
 import Setup, { setupStages } from './Setup'
 import useSetupMenuItems from './useSetupMenuItems'
@@ -74,17 +74,11 @@ const Audit: React.FC<{}> = () => {
     'Participants'
   )
 
-  const [menuItems, refresh] = useSetupMenuItems(stage, setStage)
+  const [menuItems, refresh] = useSetupMenuItems(stage, setStage, electionId)
 
   useEffect(() => {
     refresh()
   }, [refresh])
-
-  const activeStage = menuItems.find(m => m.title === stage)
-  const nextStage: ISidebarMenuItem | undefined =
-    menuItems[menuItems.indexOf(activeStage!) + 1]
-  const prevStage: ISidebarMenuItem | undefined =
-    menuItems[menuItems.indexOf(activeStage!) - 1]
 
   return (
     <Wrapper className={!isAuthenticated ? 'single-page' : ''}>
@@ -100,12 +94,7 @@ const Audit: React.FC<{}> = () => {
           {meta!.type === 'audit_admin' && (
             <Sidebar title="Audit Setup" menuItems={menuItems} />
           )}
-          <Setup
-            stage={stage}
-            audit={audit}
-            nextStage={nextStage}
-            prevStage={prevStage}
-          />
+          <Setup stage={stage} menuItems={menuItems} />
         </>
       ) : (
         <>
