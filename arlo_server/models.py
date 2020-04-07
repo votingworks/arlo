@@ -93,7 +93,10 @@ class Jurisdiction(BaseModel):
 
     batches = relationship("Batch", backref="jurisdiction", passive_deletes=True)
     audit_boards = relationship(
-        "AuditBoard", backref="jurisdiction", passive_deletes=True
+        "AuditBoard",
+        backref="jurisdiction",
+        passive_deletes=True,
+        order_by="AuditBoard.name",
     )
     contests = relationship(
         "Contest", secondary="contest_jurisdiction", passive_deletes=True,
