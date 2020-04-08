@@ -1,16 +1,28 @@
 import pytest
 from flask.testing import FlaskClient
-import io, uuid
+import io, uuid, json
+from datetime import datetime
 from typing import List, Generator
 from flask import jsonify
 
 from arlo_server import app, db
-from arlo_server.models import Election, Jurisdiction, USState
-from arlo_server.auth import with_election_access, with_jurisdiction_access
+from arlo_server.models import (
+    Election,
+    Jurisdiction,
+    USState,
+    Round,
+    RoundContestResult,
+    Contest,
+)
+from arlo_server.auth import with_election_access, with_jurisdiction_access, UserType
 from tests.helpers import (
     assert_ok,
     put_json,
+    post_json,
     create_election,
+    create_jurisdiction_admin,
+    set_logged_in_user,
+    DEFAULT_JA_EMAIL,
 )
 from bgcompute import (
     bgcompute_update_election_jurisdictions_file,
@@ -20,6 +32,8 @@ from bgcompute import (
 
 # The fixtures in this module are available in any test via dependency
 # injection.
+
+SAMPLE_SIZE = 119  # Bravo sample size for round 1
 
 
 @pytest.fixture
@@ -142,6 +156,118 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     )
     assert_ok(rv)
     bgcompute_update_ballot_manifest_file()
+
+
+@pytest.fixture
+def round_1_id(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_id: str,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+) -> Generator[str, None, None]:
+    rv = post_json(
+        client,
+        f"/election/{election_id}/round",
+        {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
+    )
+    assert_ok(rv)
+    rv = client.get(f"/election/{election_id}/round",)
+    rounds = json.loads(rv.data)["rounds"]
+    yield rounds[0]["id"]
+
+
+@pytest.fixture
+def round_2_id(
+    client: FlaskClient,
+    election_id: str,
+    contest_id: str,
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+) -> Generator[str, None, None]:
+    # Fake that the first round got completed by setting Round.ended_at.
+    # We also need to add RoundContestResults so that the next round sample
+    # size can get computed.
+    round = Round.query.get(round_1_id)
+    round.ended_at = datetime.utcnow()
+    contest = Contest.query.get(contest_id)
+    db.session.add(
+        RoundContestResult(
+            round_id=round.id,
+            contest_id=contest.id,
+            contest_choice_id=contest.choices[0].id,
+            result=70,
+        )
+    )
+    db.session.add(
+        RoundContestResult(
+            round_id=round.id,
+            contest_id=contest.id,
+            contest_choice_id=contest.choices[1].id,
+            result=49,
+        )
+    )
+    db.session.commit()
+
+    rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
+    assert_ok(rv)
+
+    rv = client.get(f"/election/{election_id}/round",)
+    rounds = json.loads(rv.data)["rounds"]
+    yield rounds[1]["id"]
+
+
+@pytest.fixture
+def audit_board_round_1_ids(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: str,
+    round_1_id: str,
+    as_jurisdiction_admin,  # pylint: disable=unused-argument
+) -> Generator[List[str], None, None]:
+    rv = post_json(
+        client,
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
+    )
+    assert_ok(rv)
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board"
+    )
+    audit_boards = json.loads(rv.data)["auditBoards"]
+    yield [ab["id"] for ab in audit_boards]
+
+
+@pytest.fixture
+def audit_board_round_2_ids(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: str,
+    round_2_id: str,
+    as_jurisdiction_admin,  # pylint: disable=unused-argument
+) -> Generator[List[str], None, None]:
+    rv = post_json(
+        client,
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
+        [
+            {"name": "Audit Board #1"},
+            {"name": "Audit Board #2"},
+            {"name": "Audit Board #3"},
+        ],
+    )
+    assert_ok(rv)
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board"
+    )
+    audit_boards = json.loads(rv.data)["auditBoards"]
+    yield [ab["id"] for ab in audit_boards]
+
+
+@pytest.fixture
+def as_jurisdiction_admin(client: FlaskClient, jurisdiction_ids: List[str]):
+    create_jurisdiction_admin(jurisdiction_ids[0])
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
 
 # Add special routes to test our auth decorators. This fixture will run once before

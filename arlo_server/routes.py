@@ -1,4 +1,4 @@
-import os, datetime, csv, io, json, uuid, re, hmac, urllib.parse
+import os, datetime, csv, io, json, uuid, hmac, urllib.parse
 
 from flask import jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
@@ -6,8 +6,6 @@ from flask_httpauth import HTTPBasicAuth
 from audit_math import bravo, sampler_contest
 from xkcdpass import xkcd_password as xp
 
-from sqlalchemy import func
-from sqlalchemy.dialects.postgresql import aggregate_order_by
 from sqlalchemy.exc import IntegrityError
 
 from authlib.flask.client import OAuth
@@ -24,6 +22,7 @@ from arlo_server.auth import (
 )
 from arlo_server.models import *
 from arlo_server.errors import handle_unique_constraint_error
+from arlo_server.ballots import ballot_retrieval_list
 
 from config import (
     AUDITADMIN_AUTH0_BASE_URL,
@@ -41,6 +40,7 @@ from util.isoformat import isoformat
 from util.jsonschema import validate
 from util.process_file import serialize_file, serialize_file_processing
 from util.group_by import group_by
+from util.csv_download import election_timestamp_name, csv_response
 
 AUDIT_BOARD_MEMBER_COUNT = 2
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
@@ -156,12 +156,6 @@ def check_round(election, jurisdiction_id, round_id):
     db.session.commit()
 
     return is_complete
-
-
-def election_timestamp_name(election) -> str:
-    clean_election_name = re.sub(r"[^a-zA-Z0-9]+", r"-", election.election_name)
-    now = datetime.datetime.utcnow().isoformat(timespec="minutes")
-    return f"{clean_election_name}-{now}"
 
 
 def serialize_members(audit_board):
@@ -832,96 +826,16 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     election = get_election(election_id)
 
     # check the jurisdiction and round
-    Jurisdiction.query.filter_by(election_id=election.id, id=jurisdiction_id).one()
+    jurisdiction = Jurisdiction.query.filter_by(
+        election_id=election.id, id=jurisdiction_id
+    ).one()
     round = Round.query.filter_by(election_id=election.id, round_num=round_num).one()
 
-    csv_io = io.StringIO()
-    retrieval_list_writer = csv.writer(csv_io)
-    retrieval_list_writer.writerow(
-        [
-            "Batch Name",
-            "Ballot Number",
-            "Storage Location",
-            "Tabulator",
-            "Ticket Numbers",
-            "Already Audited",
-            "Audit Board",
-        ]
+    retrieval_list_csv = ballot_retrieval_list(jurisdiction, round)
+    return csv_response(
+        retrieval_list_csv,
+        filename=f"ballot-retrieval-{election_timestamp_name(election)}",
     )
-
-    # Get previously sampled ballots as a separate query for clarity
-    # (self joins are cool but they're not super clear)
-    previous_ballots_query = (
-        SampledBallotDraw.query.join(SampledBallotDraw.round)
-        .filter(Round.round_num < round_num)
-        .join(SampledBallotDraw.batch)
-        .filter_by(jurisdiction_id=jurisdiction_id)
-        .values(Batch.name, SampledBallotDraw.ballot_position)
-    )
-    previous_ballots = {
-        (batch_name, ballot_position)
-        for batch_name, ballot_position in previous_ballots_query
-    }
-
-    # Get deduped sampled ballots
-    ballots = (
-        SampledBallotDraw.query.filter_by(round_id=round.id)
-        .join(SampledBallotDraw.batch)
-        .filter_by(jurisdiction_id=jurisdiction_id)
-        .join(SampledBallotDraw.sampled_ballot)
-        .join(SampledBallot.audit_board)
-        .add_entity(Batch)
-        .add_entity(AuditBoard)
-        .group_by(
-            Batch.name,
-            Batch.id,
-            Batch.storage_location,
-            Batch.tabulator,
-            AuditBoard.name,
-        )
-        .group_by(SampledBallotDraw.ballot_position)
-        .order_by(AuditBoard.name, Batch.name, SampledBallotDraw.ballot_position)
-        .values(
-            Batch.id,
-            SampledBallotDraw.ballot_position,
-            Batch.name,
-            Batch.storage_location,
-            Batch.tabulator,
-            AuditBoard.name,
-            func.string_agg(
-                SampledBallotDraw.ticket_number,
-                aggregate_order_by(",", SampledBallotDraw.ticket_number),
-            ),
-        )
-    )
-
-    for (
-        _batch_id,
-        position,
-        batch_name,
-        storage_location,
-        tabulator,
-        audit_board,
-        ticket_numbers,
-    ) in ballots:
-        previously_audited = "Y" if (batch_name, position) in previous_ballots else "N"
-        retrieval_list_writer.writerow(
-            [
-                batch_name,
-                position,
-                storage_location,
-                tabulator,
-                ticket_numbers,
-                previously_audited,
-                audit_board,
-            ]
-        )
-
-    response = Response(csv_io.getvalue())
-    response.headers[
-        "Content-Disposition"
-    ] = f'attachment; filename="ballot-retrieval-{election_timestamp_name(election)}.csv"'
-    return response
 
 
 @app.route(
@@ -1100,11 +1014,10 @@ def audit_report(election_id):
                 ]
             )
 
-    response = Response(csv_io.getvalue())
-    response.headers[
-        "Content-Disposition"
-    ] = f'attachment; filename="audit-report-{election_timestamp_name(election)}.csv"'
-    return response
+    return csv_response(
+        csv_io.getvalue(),
+        filename=f"audit-report-{election_timestamp_name(election)}.csv",
+    )
 
 
 def pretty_affiliation(affiliation):
