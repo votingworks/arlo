@@ -142,8 +142,10 @@ export interface IAudit {
 
 export interface IElectionMeta {
   id: string
-  name: string
+  auditName: string
+  electionName: string
   state: string
+  isMultiJurisdiction: boolean
   electionDate: string
 }
 

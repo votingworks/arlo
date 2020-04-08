@@ -152,7 +152,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
                   key={election.id}
                   className="bp3-button bp3-intent-primary"
                 >
-                  {election.name || 'Not named yet'}
+                  {election.auditName || 'Not named yet'}
                   {election.state && ` (${election.state})`}
                 </AuditLink>
               ))
@@ -164,7 +164,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
                 key={election.id}
                 className="bp3-button bp3-intent-primary"
               >
-                {election.name || 'Not named yet'}
+                {election.auditName || 'Not named yet'}
                 {election.state && ` (${election.state})`}
               </AuditLink>
             ))}

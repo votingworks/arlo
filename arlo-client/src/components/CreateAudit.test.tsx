@@ -146,22 +146,22 @@ describe('CreateAudit', () => {
           elections: [
             {
               id: 'election-1',
-              name: '',
+              auditName: '',
               state: 'NY',
             },
             {
               id: 'election-2',
-              name: 'Election Two',
+              auditName: 'Election Two',
               state: 'FL',
             },
             {
               id: 'election-3',
-              name: 'Election Three',
+              auditName: 'Election Three',
               state: '',
             },
             {
               id: 'election-4',
-              name: 'Election Four',
+              auditName: 'Election Four',
               state: 'WA',
             },
           ],
@@ -194,7 +194,7 @@ describe('CreateAudit', () => {
           name: 'County One',
           election: {
             id: 'election-1',
-            name: 'Election One',
+            auditName: 'Election One',
             state: 'NY',
           },
         },
@@ -203,7 +203,7 @@ describe('CreateAudit', () => {
           name: 'County Two',
           election: {
             id: 'election-2',
-            name: '',
+            auditName: '',
             state: '',
           },
         },
