@@ -1,38 +1,78 @@
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback, useState, useMemo } from 'react'
 import uuidv4 from 'uuidv4'
 import { api, checkAndToast } from '../../../utilities'
 import { IErrorResponse, IContest } from '../../../../types'
 import { IContests } from './types'
+import { parse as parseNumber } from '../../../../utils/number-schema'
+
+interface IContestNumbered {
+  id: string
+  isTargeted: boolean
+  name: string
+  numWinners: number
+  votesAllowed: number
+  choices: {
+    id: string
+    name: string
+    numVotes: number
+  }[]
+  totalBallotsCast: number
+  jurisdictionIds: string[]
+}
+
+const numberifyContest = (
+  contest: IContest,
+  isTargeted: boolean
+): IContestNumbered => {
+  return {
+    id: contest.id || uuidv4(), // preserve given id if present, generate new one if empty string
+    name: contest.name,
+    isTargeted,
+    totalBallotsCast: parseNumber(contest.totalBallotsCast),
+    numWinners: parseNumber(contest.numWinners),
+    votesAllowed: parseNumber(contest.votesAllowed),
+    jurisdictionIds: contest.jurisdictionIds,
+    choices: contest.choices.map(choice => ({
+      id: choice.id || uuidv4(),
+      name: choice.name,
+      numVotes: parseNumber(choice.numVotes),
+    })),
+  }
+}
 
 const useContestsApi = (
   electionId: string,
   isTargeted: boolean
 ): [IContests, (arg0: IContest[]) => Promise<boolean>] => {
-  const defaultValues: IContests = {
-    contests: [
-      {
-        id: '',
-        name: '',
-        isTargeted,
-        totalBallotsCast: '',
-        numWinners: '1',
-        votesAllowed: '1',
-        choices: [
-          {
-            id: '',
-            name: '',
-            numVotes: '',
-          },
-          {
-            id: '',
-            name: '',
-            numVotes: '',
-          },
-        ],
-      },
-    ],
-  }
-  const [contests, setSettings] = useState(defaultValues)
+  const defaultValues: IContests = useMemo(
+    () => ({
+      contests: [
+        {
+          id: '',
+          name: '',
+          isTargeted,
+          totalBallotsCast: '',
+          numWinners: '1',
+          votesAllowed: '1',
+          jurisdictionIds: [],
+          choices: [
+            {
+              id: '',
+              name: '',
+              numVotes: '',
+            },
+            {
+              id: '',
+              name: '',
+              numVotes: '',
+            },
+          ],
+        },
+      ],
+    }),
+    [isTargeted]
+  )
+  const [contests, setContests] = useState(defaultValues)
 
   const getContests = useCallback(async (): Promise<IContests> => {
     const contestsOrError: IContests | IErrorResponse = await api(
@@ -63,15 +103,18 @@ const useContestsApi = (
     const mergedContests = {
       contests: [
         ...updatedContests,
-        // merge in all the new contests that weren't found by id, and generate unique ids for them
-        ...newContests.map(c => ({ ...c, id: uuidv4() })),
+        // merge in all the new contests that weren't found by id
+        ...newContests,
       ],
     }
     const response: IErrorResponse = await api(
       `/election/${electionId}/contest`,
       {
         method: 'PUT',
-        body: JSON.stringify(mergedContests),
+        // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
+        body: JSON.stringify(
+          mergedContests.contests.map(c => numberifyContest(c, isTargeted))
+        ),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -80,14 +123,14 @@ const useContestsApi = (
     if (checkAndToast(response)) {
       return false
     }
-    setSettings(mergedContests)
+    setContests(mergedContests)
     return true
   }
 
   useEffect(() => {
     ;(async () => {
       const newContests = await getContests()
-      setSettings(newContests)
+      setContests(newContests)
     })()
   }, [getContests])
   return [contests, updateContests]

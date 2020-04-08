@@ -65,6 +65,7 @@ export const statusStates: { [key: string]: IAudit } = {
         votesAllowed: '1',
         totalBallotsCast: '2123',
         isTargeted: true,
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [],
@@ -114,6 +115,7 @@ export const statusStates: { [key: string]: IAudit } = {
         votesAllowed: '1',
         totalBallotsCast: '2123',
         isTargeted: true,
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [],
@@ -167,6 +169,7 @@ export const statusStates: { [key: string]: IAudit } = {
         isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -249,6 +252,7 @@ export const statusStates: { [key: string]: IAudit } = {
         votesAllowed: '1',
         totalBallotsCast: '2123',
         isTargeted: true,
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -323,6 +327,7 @@ export const statusStates: { [key: string]: IAudit } = {
         votesAllowed: '1',
         totalBallotsCast: '2123',
         isTargeted: true,
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -397,6 +402,7 @@ export const statusStates: { [key: string]: IAudit } = {
         votesAllowed: '1',
         totalBallotsCast: '2123',
         isTargeted: true,
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -473,6 +479,7 @@ export const statusStates: { [key: string]: IAudit } = {
         isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -542,6 +549,7 @@ export const statusStates: { [key: string]: IAudit } = {
         isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -634,6 +642,7 @@ export const statusStates: { [key: string]: IAudit } = {
         isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [

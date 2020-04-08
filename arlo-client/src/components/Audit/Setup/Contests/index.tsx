@@ -44,6 +44,7 @@ const Contests: React.FC<IProps> = ({
         totalBallotsCast: '',
         numWinners: '1',
         votesAllowed: '1',
+        jurisdictionIds: [],
         choices: [
           {
             id: '',
@@ -66,8 +67,8 @@ const Contests: React.FC<IProps> = ({
   }
   const submit = async (values: IContests) => {
     try {
-      const responseOne = await updateContests(values.contests)
-      if (!responseOne) return
+      const response = await updateContests(values.contests)
+      if (!response) return
       nextStage.activate()
     } catch (err) {
       toast.error(err.message)

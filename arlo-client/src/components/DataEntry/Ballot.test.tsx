@@ -26,6 +26,7 @@ const contest = {
   votesAllowed: '1',
   totalBallotsCast: '2123',
   isTargeted: true,
+  jurisdictionIds: [],
 }
 
 describe('Ballot', () => {
