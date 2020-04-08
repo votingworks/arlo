@@ -1,14 +1,12 @@
-import pytest, json
+import json
 from flask.testing import FlaskClient
-from typing import List, Generator
+from typing import List
 from datetime import datetime
 from collections import defaultdict
 
 from tests.helpers import (
     post_json,
     assert_ok,
-    create_jurisdiction_admin,
-    set_logged_in_user,
     compare_json,
     assert_is_id,
     assert_is_date,
@@ -16,16 +14,10 @@ from tests.helpers import (
 from arlo_server.models import (
     db,
     AuditBoard,
-    Round,
-    RoundContestResult,
-    Contest,
     SampledBallot,
     Batch,
 )
-from arlo_server.auth import UserType
 
-JA_EMAIL = "ja@example.com"
-SAMPLE_SIZE = 119  # Bravo sample size
 J1_SAMPLES = 81
 
 
@@ -70,78 +62,15 @@ def assert_ballots_got_assigned_correctly(
         ), f"Different audit boards assigned ballots from the same batch"
 
 
-@pytest.fixture
-def round_id(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_id: str,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-) -> Generator[str, None, None]:
-    rv = post_json(
-        client,
-        f"/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
-    )
-    assert_ok(rv)
-    rv = client.get(f"/election/{election_id}/round",)
-    rounds = json.loads(rv.data)["rounds"]
-    yield rounds[0]["id"]
-
-
-@pytest.fixture
-def round_2_id(
-    client: FlaskClient, election_id: str, contest_id: str, round_id: str,
-) -> Generator[str, None, None]:
-    # Fake that the first round got completed by setting Round.ended_at.
-    # We also need to add RoundContestResults so that the next round sample
-    # size can get computed.
-    round = Round.query.get(round_id)
-    round.ended_at = datetime.utcnow()
-    contest = Contest.query.get(contest_id)
-    db.session.add(
-        RoundContestResult(
-            round_id=round.id,
-            contest_id=contest.id,
-            contest_choice_id=contest.choices[0].id,
-            result=70,
-        )
-    )
-    db.session.add(
-        RoundContestResult(
-            round_id=round.id,
-            contest_id=contest.id,
-            contest_choice_id=contest.choices[1].id,
-            result=49,
-        )
-    )
-    db.session.commit()
-
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, "aa@example.com")
-    rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
-    assert_ok(rv)
-
-    rv = client.get(f"/election/{election_id}/round",)
-    rounds = json.loads(rv.data)["rounds"]
-    yield rounds[1]["id"]
-
-
-@pytest.fixture
-def as_jurisdiction_admin(client: FlaskClient, jurisdiction_ids: List[str]):
-    create_jurisdiction_admin(jurisdiction_ids[0], JA_EMAIL)
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
-
-
 def test_audit_boards_list_empty(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,
+    round_1_id: str,
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)
     assert audit_boards == {"auditBoards": []}
@@ -151,18 +80,18 @@ def test_audit_boards_create_one(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,
+    round_1_id: str,
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert_ok(rv)
     assert_ballots_got_assigned_correctly(
         jurisdiction_ids[0],
-        round_id,
+        round_1_id,
         expected_num_audit_boards=1,
         expected_num_ballots=75,
     )
@@ -172,18 +101,18 @@ def test_audit_boards_list_one(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,
+    round_1_id: str,
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)
     compare_json(
@@ -212,7 +141,7 @@ def test_audit_boards_list_one(
     db.session.commit()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)
     compare_json(
@@ -240,7 +169,7 @@ def test_audit_boards_list_one(
     db.session.commit()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)
     compare_json(
@@ -265,18 +194,18 @@ def test_audit_boards_create_two(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,
+    round_1_id: str,
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
     )
     assert_ok(rv)
     assert_ballots_got_assigned_correctly(
         jurisdiction_ids[0],
-        round_id,
+        round_1_id,
         expected_num_audit_boards=2,
         expected_num_ballots=75,
     )
@@ -286,20 +215,20 @@ def test_audit_boards_list_two(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,
+    round_1_id: str,
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
     AB1_SAMPLES = 54
 
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)
     compare_json(
@@ -342,7 +271,7 @@ def test_audit_boards_list_two(
     db.session.commit()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
 
@@ -363,7 +292,7 @@ def test_audit_boards_list_two(
     db.session.commit()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
 
@@ -409,7 +338,7 @@ def test_audit_boards_list_round_2(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,
+    round_1_id: str,
     round_2_id: str,
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
@@ -471,7 +400,7 @@ def test_audit_boards_list_round_2(
 
     # Can still access round 1 audit boards
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     assert rv.status_code == 200
 
@@ -480,12 +409,12 @@ def test_audit_boards_missing_field(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,
+    round_1_id: str,
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{}, {"name": "Audit Board #2"}],
     )
     assert rv.status_code == 400
@@ -500,12 +429,12 @@ def test_audit_boards_duplicate_name(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,
+    round_1_id: str,
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}, {"name": "Audit Board #1"}],
     )
     assert rv.status_code == 409
@@ -520,19 +449,19 @@ def test_audit_boards_already_created(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,
+    round_1_id: str,
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert_ok(rv)
 
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #2"}],
     )
     assert rv.status_code == 409
@@ -550,13 +479,13 @@ def test_audit_boards_wrong_round(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,
+    round_1_id: str,
     round_2_id: str,  # pylint: disable=unused-argument
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert rv.status_code == 409
@@ -571,7 +500,7 @@ def test_audit_boards_bad_round_id(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_id: str,  # pylint: disable=unused-argument
+    round_1_id: str,  # pylint: disable=unused-argument
     as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
     rv = post_json(
