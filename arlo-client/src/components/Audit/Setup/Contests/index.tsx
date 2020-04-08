@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { Formik, FormikProps, Form, Field, FieldArray } from 'formik'
 import { Spinner } from '@blueprintjs/core'
 import FormWrapper from '../../../Form/FormWrapper'
@@ -14,9 +16,11 @@ import {
 } from '../../EstimateSampleSize'
 import FormButtonBar from '../../../Form/FormButtonBar'
 import FormButton from '../../../Form/FormButton'
-import { IContestValues, IValues, IChoiceValues } from './types'
+import { IContests } from './types'
 import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
+import useContestsApi from './useContestsApi'
+import { IContest, ICandidate } from '../../../../types'
 
 interface IProps {
   isTargeted: boolean
@@ -25,45 +29,59 @@ interface IProps {
   locked: boolean
 }
 
-const contestValues: { contests: IContestValues[] } = {
-  contests: [
-    {
-      name: '',
-      isTargeted: true,
-      totalBallotsCast: '',
-      numWinners: '1',
-      votesAllowed: '1',
-      choices: [
-        {
-          name: '',
-          numVotes: '',
-        },
-        {
-          name: '',
-          numVotes: '',
-        },
-      ],
-    },
-  ],
-}
-
 const Contests: React.FC<IProps> = ({
   isTargeted,
   nextStage,
   prevStage,
   locked,
 }) => {
+  const contestValues: IContests = {
+    contests: [
+      {
+        id: '',
+        name: '',
+        isTargeted,
+        totalBallotsCast: '',
+        numWinners: '1',
+        votesAllowed: '1',
+        choices: [
+          {
+            id: '',
+            name: '',
+            numVotes: '',
+          },
+          {
+            id: '',
+            name: '',
+            numVotes: '',
+          },
+        ],
+      },
+    ],
+  }
+  const { electionId } = useParams()
+  const [{ contests }, updateContests] = useContestsApi(electionId!, isTargeted)
+  const filteredContests = {
+    contests: contests.filter(c => c.isTargeted === isTargeted),
+  }
+  const submit = async (values: IContests) => {
+    try {
+      const responseOne = await updateContests(values.contests)
+      if (!responseOne) return
+      nextStage.activate()
+    } catch (err) {
+      toast.error(err.message)
+    }
+  }
   return (
     <Formik
-      initialValues={contestValues}
+      initialValues={
+        filteredContests.contests.length ? filteredContests : contestValues
+      }
       validationSchema={schema}
-      onSubmit={v => {
-        // eslint-disable-next-line no-console
-        console.log(v)
-        nextStage.activate()
-      }}
+      onSubmit={submit}
     >
-      {({ values, handleSubmit }: FormikProps<IValues>) => (
+      {({ values, handleSubmit }: FormikProps<IContests>) => (
         <Form data-testid="form-one">
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
@@ -72,7 +90,7 @@ const Contests: React.FC<IProps> = ({
               name="contests"
               render={() => (
                 <>
-                  {values.contests.map((contest: IContestValues, i: number) => (
+                  {values.contests.map((contest: IContest, i: number) => (
                     /* eslint-disable react/no-array-index-key */
                     <React.Fragment key={i}>
                       {i > 0 && (
@@ -143,7 +161,7 @@ const Contests: React.FC<IProps> = ({
                           >
                             <TwoColumnSection>
                               {contest.choices.map(
-                                (choice: IChoiceValues, j: number) => (
+                                (choice: ICandidate, j: number) => (
                                   /* eslint-disable react/no-array-index-key */
                                   <React.Fragment key={j}>
                                     <InputFieldRow>

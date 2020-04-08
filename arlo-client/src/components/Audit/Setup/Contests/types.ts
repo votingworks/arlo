@@ -1,18 +1,5 @@
-export interface IChoiceValues {
-  id?: string
-  name: string
-  numVotes: string | number
-}
+import { IContest } from '../../../../types'
 
-export interface IContestValues {
-  name: string
-  isTargeted: boolean
-  totalBallotsCast: string
-  numWinners: string
-  votesAllowed: string
-  choices: IChoiceValues[]
-}
-
-export interface IValues {
-  contests: IContestValues[]
+export interface IContests {
+  contests: IContest[]
 }
