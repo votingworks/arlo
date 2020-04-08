@@ -1,9 +1,10 @@
 from flask import jsonify, request
 import uuid
-from typing import List
+from typing import List, Dict
 from xkcdpass import xkcd_password as xp
 from werkzeug.exceptions import Conflict
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func
 
 from arlo_server import app, db
 from arlo_server.auth import with_jurisdiction_access
@@ -14,12 +15,14 @@ from arlo_server.models import (
     Election,
     Jurisdiction,
     SampledBallot,
+    SampledBallotDraw,
     Batch,
 )
 from arlo_server.errors import handle_unique_constraint_error
 from util.jsonschema import validate, JSONDict
 from util.binpacking import BalancedBucketList, Bucket
 from util.group_by import group_by
+from util.isoformat import isoformat
 
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 
@@ -119,3 +122,68 @@ def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round_id
     assign_sampled_ballots(jurisdiction, round, audit_boards)
 
     return jsonify(status="ok")
+
+
+def round_status_by_audit_board(
+    jurisdiction_id: str, round_id: str
+) -> Dict[str, JSONDict]:
+    audit_boards = AuditBoard.query.filter_by(
+        jurisdiction_id=jurisdiction_id, round_id=round_id
+    ).all()
+    sampled_ballots_by_audit_board = dict(
+        SampledBallotDraw.query.filter_by(round_id=round_id)
+        .join(SampledBallot)
+        .join(AuditBoard)
+        .filter_by(jurisdiction_id=jurisdiction_id)
+        .group_by(AuditBoard.id)
+        .values(AuditBoard.id, func.count())
+    )
+    audited_ballots_by_audit_board = dict(
+        SampledBallotDraw.query.filter_by(round_id=round_id)
+        .join(SampledBallot)
+        .filter(SampledBallot.vote.isnot(None))
+        .join(AuditBoard)
+        .filter_by(jurisdiction_id=jurisdiction_id)
+        .group_by(AuditBoard.id)
+        .values(AuditBoard.id, func.count())
+    )
+
+    return {
+        ab.id: {
+            "numSampledBallots": sampled_ballots_by_audit_board.get(ab.id, 0),
+            "numAuditedBallots": audited_ballots_by_audit_board.get(ab.id, 0),
+        }
+        for ab in audit_boards
+    }
+
+
+def serialize_audit_board(audit_board: AuditBoard, round_status: JSONDict) -> JSONDict:
+    return {
+        "id": audit_board.id,
+        "name": audit_board.name,
+        "signedOffAt": isoformat(audit_board.signed_off_at),
+        "currentRoundStatus": round_status,
+    }
+
+
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board",
+    methods=["GET"],
+)
+@with_jurisdiction_access
+def list_audit_boards(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+    round_id: str,
+):
+    round = Round.query.get_or_404(round_id)
+    audit_boards = (
+        AuditBoard.query.filter_by(jurisdiction_id=jurisdiction.id, round_id=round_id)
+        .order_by(AuditBoard.name)
+        .all()
+    )
+    round_status = round_status_by_audit_board(jurisdiction.id, round_id)
+    json_audit_boards = [
+        serialize_audit_board(ab, round_status[ab.id]) for ab in audit_boards
+    ]
+    return jsonify({"auditBoards": json_audit_boards})

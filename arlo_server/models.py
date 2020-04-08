@@ -253,7 +253,10 @@ class AuditBoard(BaseModel):
     signed_off_at = db.Column(db.DateTime(timezone=False), nullable=True)
 
     sampled_ballots = relationship(
-        "SampledBallot", backref="audit_board", passive_deletes=True
+        "SampledBallot",
+        backref="audit_board",
+        passive_deletes=True,
+        order_by="SampledBallot.batch_id, SampledBallot.ballot_position",
     )
 
     __table_args__ = (db.UniqueConstraint("jurisdiction_id", "round_id", "name"),)
