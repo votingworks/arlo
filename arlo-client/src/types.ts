@@ -139,6 +139,7 @@ export interface IAudit {
   jurisdictions: IJurisdiction[]
   rounds: IRound[]
   frozenAt: string | null
+  isMultiJurisdiction: boolean
 }
 
 export interface IElectionMeta {

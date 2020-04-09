@@ -327,6 +327,7 @@ def audit_status(election_id=None):
         frozenAt=isoformat(election.frozen_at),
         riskLimit=election.risk_limit,
         randomSeed=election.random_seed,
+        isMultiJurisdiction=election.is_multi_jurisdiction,
         contests=[
             {
                 "id": contest.id,

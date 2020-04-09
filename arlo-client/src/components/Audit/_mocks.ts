@@ -43,6 +43,7 @@ export const statusStates: { [key: string]: IAudit } = {
     contests: [],
     jurisdictions: [],
     rounds: [],
+    isMultiJurisdiction: false,
   },
   contestFirstRound: {
     contests: [
@@ -93,6 +94,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   sampleSizeOptions: {
     contests: [
@@ -147,6 +149,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   jurisdictionsInitial: {
     contests: [
@@ -230,6 +233,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   ballotManifestProcessed: {
     contests: [
@@ -305,6 +309,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   ballotManifestProcessError: {
     contests: [
@@ -380,6 +385,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   completeInFirstRound: {
     contests: [
@@ -457,6 +463,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   firstRoundSampleSizeOptionsNull: {
     contests: [
@@ -527,6 +534,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   firstRoundSampleSizeOptions: {
     contests: [
@@ -620,6 +628,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   multiAuditBoardsAndRounds: {
     contests: [
@@ -737,6 +746,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
 }
 

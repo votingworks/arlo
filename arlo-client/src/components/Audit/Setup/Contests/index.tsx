@@ -65,6 +65,7 @@ const Contests: React.FC<IProps> = ({
   const filteredContests = {
     contests: contests.filter(c => c.isTargeted === isTargeted),
   }
+  console.log(filteredContests)
   const submit = async (values: IContests) => {
     try {
       const response = await updateContests(values.contests)
