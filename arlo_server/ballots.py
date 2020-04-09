@@ -17,6 +17,41 @@ from util.csv_download import csv_response, election_timestamp_name
 
 
 def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
+    previous_ballots_query = (
+        SampledBallotDraw.query.join(SampledBallotDraw.round)
+        .filter(Round.round_num < round.round_num)
+        .join(SampledBallotDraw.batch)
+        .filter_by(jurisdiction_id=jurisdiction.id)
+        .values(Batch.name, SampledBallotDraw.ballot_position)
+    )
+    previous_ballots = {
+        (batch_name, ballot_position)
+        for batch_name, ballot_position in previous_ballots_query
+    }
+
+    ballots = (
+        SampledBallotDraw.query.filter_by(round_id=round.id)
+        .join(SampledBallotDraw.batch)
+        .filter_by(jurisdiction_id=jurisdiction.id)
+        .join(SampledBallotDraw.sampled_ballot)
+        .join(SampledBallot.audit_board)
+        .group_by(AuditBoard.id, Batch.id, SampledBallotDraw.ballot_position)
+        .order_by(AuditBoard.name, Batch.name, SampledBallotDraw.ballot_position)
+        .values(
+            Batch.name,
+            SampledBallotDraw.ballot_position,
+            Batch.storage_location,
+            Batch.tabulator,
+            func.string_agg(
+                SampledBallotDraw.ticket_number,
+                aggregate_order_by(
+                    literal_column("','"), SampledBallotDraw.ticket_number
+                ),
+            ),
+            AuditBoard.name,
+        )
+    )
+
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)
     retrieval_list_writer.writerow(
@@ -31,63 +66,15 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
         ]
     )
 
-    # Get previously sampled ballots as a separate query for clarity
-    # (self joins are cool but they're not super clear)
-    previous_ballots_query = (
-        SampledBallotDraw.query.join(SampledBallotDraw.round)
-        .filter(Round.round_num < round.round_num)
-        .join(SampledBallotDraw.batch)
-        .filter_by(jurisdiction_id=jurisdiction.id)
-        .values(Batch.name, SampledBallotDraw.ballot_position)
-    )
-    previous_ballots = {
-        (batch_name, ballot_position)
-        for batch_name, ballot_position in previous_ballots_query
-    }
-
-    # Get deduped sampled ballots
-    ballots = (
-        SampledBallotDraw.query.filter_by(round_id=round.id)
-        .join(SampledBallotDraw.batch)
-        .filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBallotDraw.sampled_ballot)
-        .join(SampledBallot.audit_board)
-        .add_entity(Batch)
-        .add_entity(AuditBoard)
-        .group_by(
-            Batch.name,
-            Batch.id,
-            Batch.storage_location,
-            Batch.tabulator,
-            AuditBoard.name,
-        )
-        .group_by(SampledBallotDraw.ballot_position)
-        .order_by(AuditBoard.name, Batch.name, SampledBallotDraw.ballot_position)
-        .values(
-            Batch.id,
-            SampledBallotDraw.ballot_position,
-            Batch.name,
-            Batch.storage_location,
-            Batch.tabulator,
-            AuditBoard.name,
-            func.string_agg(
-                SampledBallotDraw.ticket_number,
-                aggregate_order_by(
-                    literal_column("','"), SampledBallotDraw.ticket_number
-                ),
-            ),
-        )
-    )
-
-    for (
-        _batch_id,
-        position,
-        batch_name,
-        storage_location,
-        tabulator,
-        audit_board,
-        ticket_numbers,
-    ) in ballots:
+    for ballot in ballots:
+        (
+            batch_name,
+            position,
+            storage_location,
+            tabulator,
+            ticket_numbers,
+            audit_board_name,
+        ) = ballot
         previously_audited = "Y" if (batch_name, position) in previous_ballots else "N"
         retrieval_list_writer.writerow(
             [
@@ -97,7 +84,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
                 tabulator,
                 ticket_numbers,
                 previously_audited,
-                audit_board,
+                audit_board_name,
             ]
         )
 
