@@ -20,14 +20,11 @@ interface IContestNumbered {
   jurisdictionIds: string[]
 }
 
-const numberifyContest = (
-  contest: IContest,
-  isTargeted: boolean
-): IContestNumbered => {
+const numberifyContest = (contest: IContest): IContestNumbered => {
   return {
     id: contest.id || uuidv4(), // preserve given id if present, generate new one if empty string
     name: contest.name,
-    isTargeted,
+    isTargeted: contest.isTargeted,
     totalBallotsCast: parseNumber(contest.totalBallotsCast),
     numWinners: parseNumber(contest.numWinners),
     votesAllowed: parseNumber(contest.votesAllowed),
@@ -113,7 +110,7 @@ const useContestsApi = (
         method: 'PUT',
         // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
         body: JSON.stringify(
-          mergedContests.contests.map(c => numberifyContest(c, isTargeted))
+          mergedContests.contests.map(c => numberifyContest(c))
         ),
         headers: {
           'Content-Type': 'application/json',
