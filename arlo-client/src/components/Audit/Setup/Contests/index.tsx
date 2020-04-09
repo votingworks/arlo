@@ -65,7 +65,6 @@ const Contests: React.FC<IProps> = ({
   const filteredContests = {
     contests: contests.filter(c => c.isTargeted === isTargeted),
   }
-  console.log(filteredContests)
   const submit = async (values: IContests) => {
     try {
       const response = await updateContests(values.contests)
@@ -81,6 +80,7 @@ const Contests: React.FC<IProps> = ({
         filteredContests.contests.length ? filteredContests : contestValues
       }
       validationSchema={schema}
+      enableReinitialize
       onSubmit={submit}
     >
       {({ values, handleSubmit }: FormikProps<IContests>) => (

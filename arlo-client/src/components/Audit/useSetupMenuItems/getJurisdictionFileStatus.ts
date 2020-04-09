@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify'
 import { api, checkAndToast } from '../../utilities'
 import { IErrorResponse } from '../../../types'
 
@@ -26,22 +27,27 @@ export interface IJurisdictionsFileResponse {
 const getJurisdictionFileStatus = async (
   electionId: string
 ): Promise<FileProcessingStatus> => {
-  const jurisdictionsOrError:
-    | IJurisdictionsFileResponse
-    | IErrorResponse = await api(`/election/${electionId}/jurisdiction/file`)
-  if (checkAndToast(jurisdictionsOrError)) {
+  try {
+    const jurisdictionsOrError:
+      | IJurisdictionsFileResponse
+      | IErrorResponse = await api(`/election/${electionId}/jurisdiction/file`)
+    if (checkAndToast(jurisdictionsOrError)) {
+      return FileProcessingStatus.Errored
+    }
+    if (jurisdictionsOrError.processing) {
+      if (
+        jurisdictionsOrError.processing!.status ===
+        FileProcessingStatus.ReadyToProcess
+      ) {
+        return FileProcessingStatus.Processing
+      }
+      return jurisdictionsOrError.processing!.status
+    }
+    return FileProcessingStatus.Blank
+  } catch (err) {
+    toast.error(err.message)
     return FileProcessingStatus.Errored
   }
-  if (jurisdictionsOrError.processing) {
-    if (
-      jurisdictionsOrError.processing!.status ===
-      FileProcessingStatus.ReadyToProcess
-    ) {
-      return FileProcessingStatus.Processing
-    }
-    return jurisdictionsOrError.processing!.status
-  }
-  return FileProcessingStatus.Blank
 }
 
 export default getJurisdictionFileStatus
