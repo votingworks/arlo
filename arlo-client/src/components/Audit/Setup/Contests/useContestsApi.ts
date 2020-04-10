@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useState, useMemo } from 'react'
+import { toast } from 'react-toastify'
 import uuidv4 from 'uuidv4'
 import { api, checkAndToast } from '../../../utilities'
 import { IErrorResponse, IContest } from '../../../../types'
@@ -72,13 +73,20 @@ const useContestsApi = (
   const [contests, setContests] = useState(defaultValues)
 
   const getContests = useCallback(async (): Promise<IContests> => {
-    const contestsOrError: IContests | IErrorResponse = await api(
-      `/election/${electionId}/contest`
-    )
-    if (checkAndToast(contestsOrError)) {
+    try {
+      const contestsOrError: IContests | IErrorResponse = await api(
+        `/election/${electionId}/contest`
+      )
+      // checkAndToast left here for consistency and reference but not tested since it's vestigial
+      /* istanbul ignore next */
+      if (checkAndToast(contestsOrError)) {
+        return defaultValues
+      }
+      return contestsOrError
+    } catch (err) {
+      toast.error(err.message)
       return defaultValues
     }
-    return contestsOrError
   }, [electionId, defaultValues])
 
   const updateContests = async (newContests: IContest[]): Promise<boolean> => {
@@ -104,20 +112,27 @@ const useContestsApi = (
         ...newContests,
       ],
     }
-    const response: IErrorResponse = await api(
-      `/election/${electionId}/contest`,
-      {
-        method: 'PUT',
-        // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
-        body: JSON.stringify(
-          mergedContests.contests.map(c => numberifyContest(c))
-        ),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    try {
+      const response: IErrorResponse = await api(
+        `/election/${electionId}/contest`,
+        {
+          method: 'PUT',
+          // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
+          body: JSON.stringify(
+            mergedContests.contests.map(c => numberifyContest(c))
+          ),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      // checkAndToast left here for consistency and reference but not tested since it's vestigial
+      /* istanbul ignore next */
+      if (checkAndToast(response)) {
+        return false
       }
-    )
-    if (checkAndToast(response)) {
+    } catch (err) {
+      toast.error(err.message)
       return false
     }
     setContests(mergedContests)

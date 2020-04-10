@@ -60,7 +60,7 @@ export const contestMocks: {
   filledTargeted: {
     contests: [
       {
-        id: expect.stringMatching(/^[-0-9a-z]*$/),
+        id: 'contest-id',
         name: 'Contest Name',
         isTargeted: true,
         totalBallotsCast: '30',
@@ -69,12 +69,12 @@ export const contestMocks: {
         jurisdictionIds: [],
         choices: [
           {
-            id: expect.stringMatching(/^[-0-9a-z]*$/),
+            id: 'choice-id',
             name: 'Choice One',
             numVotes: '10',
           },
           {
-            id: expect.stringMatching(/^[-0-9a-z]*$/),
+            id: 'choice-id',
             name: 'Choice Two',
             numVotes: '20',
           },
@@ -85,7 +85,7 @@ export const contestMocks: {
   filledOpportunistic: {
     contests: [
       {
-        id: expect.stringMatching(/^[-0-9a-z]*$/),
+        id: 'contest-id',
         name: 'Contest Name',
         isTargeted: false,
         totalBallotsCast: '30',
@@ -94,12 +94,12 @@ export const contestMocks: {
         jurisdictionIds: [],
         choices: [
           {
-            id: expect.stringMatching(/^[-0-9a-z]*$/),
+            id: 'choice-id',
             name: 'Choice Three',
             numVotes: '10',
           },
           {
-            id: expect.stringMatching(/^[-0-9a-z]*$/),
+            id: 'choice-id',
             name: 'Choice Four',
             numVotes: '20',
           },

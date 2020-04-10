@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { Formik, FormikProps, Form, Field, FieldArray } from 'formik'
 import { Spinner } from '@blueprintjs/core'
 import FormWrapper from '../../../Form/FormWrapper'
@@ -66,13 +65,9 @@ const Contests: React.FC<IProps> = ({
     contests: contests.filter(c => c.isTargeted === isTargeted),
   }
   const submit = async (values: IContests) => {
-    try {
-      const response = await updateContests(values.contests)
-      if (!response) return
-      nextStage.activate()
-    } catch (err) {
-      toast.error(err.message)
-    }
+    const response = await updateContests(values.contests)
+    if (!response) return
+    nextStage.activate()
   }
   return (
     <Formik
