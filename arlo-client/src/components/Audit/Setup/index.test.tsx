@@ -5,6 +5,8 @@ import * as utilities from '../../utilities'
 import { asyncActRender } from '../../testUtilities'
 import Setup from './index'
 import relativeStages from './_mocks'
+import { contestMocks } from './Contests/_mocks'
+import useContestsApi from './Contests/useContestsApi'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -15,6 +17,13 @@ const checkAndToastMock: jest.SpyInstance<
   Parameters<typeof utilities.checkAndToast>
 > = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 apiMock.mockResolvedValue(auditSettings.all)
+
+const useContestsApiMock = useContestsApi as jest.Mock
+jest.mock('./Contests/useContestsApi')
+useContestsApiMock.mockImplementation(() => [
+  contestMocks.emptyTargeted,
+  jest.fn(),
+])
 
 checkAndToastMock.mockReturnValue(false)
 
@@ -95,6 +104,10 @@ describe('Setup', () => {
   })
 
   it('renders Opportunistic Contests stage', async () => {
+    useContestsApiMock.mockImplementation(() => [
+      contestMocks.emptyOpportunistic,
+      jest.fn(),
+    ])
     const { container } = await asyncActRender(
       <Setup
         stage="Opportunistic Contests"
@@ -105,6 +118,10 @@ describe('Setup', () => {
   })
 
   it('renders Opportunistic Contests stage with locked next stage', async () => {
+    useContestsApiMock.mockImplementation(() => [
+      contestMocks.emptyOpportunistic,
+      jest.fn(),
+    ])
     const { container } = await asyncActRender(
       <Setup
         stage="Opportunistic Contests"
@@ -115,6 +132,10 @@ describe('Setup', () => {
   })
 
   it('renders Opportunistic Contests stage with processing next stage', async () => {
+    useContestsApiMock.mockImplementation(() => [
+      contestMocks.emptyOpportunistic,
+      jest.fn(),
+    ])
     const { container } = await asyncActRender(
       <Setup
         stage="Opportunistic Contests"

@@ -33,7 +33,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
                 id="election-name"
                 name="electionName"
                 style="padding-right: 10px;"
-                value=""
+                value="Election Name"
               />
             </div>
           </div>
@@ -207,7 +207,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
                 name="randomSeed"
                 style="padding-right: 10px;"
                 type="text"
-                value=""
+                value="12345"
               />
             </div>
           </div>
@@ -241,8 +241,6 @@ exports[`Setup renders Audit Settings stage 1`] = `
   </form>
 </div>
 `;
-
-exports[`Setup renders Audit Settings stage 2`] = `<div />`;
 
 exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
 <div>

@@ -6,6 +6,7 @@ import * as utilities from '../../../utilities'
 import Contests from './index'
 import relativeStages from '../_mocks'
 import { contestsInputMocks, contestMocks } from './_mocks'
+import { numberifyContest, IContestNumbered } from './useContestsApi'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -36,6 +37,17 @@ function typeInto(input: Element, value: string): void {
   fireEvent.focus(input)
   fireEvent.change(input, { target: { value } })
   fireEvent.blur(input)
+}
+
+function regexify(contest: IContestNumbered) {
+  return {
+    ...contest,
+    id: expect.stringMatching(/^[-0-9a-z]*$/),
+    choices: contest.choices.map(c => ({
+      ...c,
+      id: expect.stringMatching(/^[-0-9a-z]*$/),
+    })),
+  }
 }
 
 afterEach(() => {
@@ -149,6 +161,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('is able to submit the form successfully', async () => {
+    apiMock.mockResolvedValue(contestMocks.emptyTargeted)
     const { getByLabelText, getByText } = render(
       <Contests
         locked={false}
@@ -168,16 +181,23 @@ describe('Audit Setup > Contests', () => {
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await wait(() => {
-      apiMock.mock.calls.forEach(c => console.log(c[0]))
       expect(apiMock).toHaveBeenCalledTimes(3)
       expect(apiMock.mock.calls[2][0]).toBe('/election/1/contest')
-      expect(apiMock.mock.calls[2][1]).toBe({
+      expect(apiMock.mock.calls[2][1]).toMatchObject({
         method: 'PUT',
-        body: JSON.stringify(contestMocks.filledTargeted),
         headers: {
           'Content-Type': 'application/json',
         },
       })
+      if (apiMock.mock.calls[2][1]!.body) {
+        expect(
+          JSON.parse(apiMock.mock.calls[2][1]!.body as string)
+        ).toMatchObject(
+          contestMocks.filledTargeted.contests.map(c =>
+            regexify(numberifyContest(c))
+          )
+        )
+      }
       expect(nextStage.activate).toHaveBeenCalledTimes(1)
     })
   })

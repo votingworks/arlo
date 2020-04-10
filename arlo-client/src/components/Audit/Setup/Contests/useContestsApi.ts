@@ -5,7 +5,7 @@ import { IErrorResponse, IContest } from '../../../../types'
 import { IContests } from './types'
 import { parse as parseNumber } from '../../../../utils/number-schema'
 
-interface IContestNumbered {
+export interface IContestNumbered {
   id: string
   isTargeted: boolean
   name: string
@@ -20,7 +20,7 @@ interface IContestNumbered {
   jurisdictionIds: string[]
 }
 
-const numberifyContest = (contest: IContest): IContestNumbered => {
+export const numberifyContest = (contest: IContest): IContestNumbered => {
   return {
     id: contest.id || uuidv4(), // preserve given id if present, generate new one if empty string
     name: contest.name,
