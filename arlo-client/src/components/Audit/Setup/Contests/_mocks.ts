@@ -1,0 +1,189 @@
+import { IContests } from './types'
+
+export const contestMocks: {
+  [key in
+    | 'emptyTargeted'
+    | 'emptyOpportunistic'
+    | 'filledTargeted'
+    | 'filledOpportunistic']: IContests
+} = {
+  emptyTargeted: {
+    contests: [
+      {
+        id: '',
+        name: '',
+        isTargeted: true,
+        totalBallotsCast: '',
+        numWinners: '1',
+        votesAllowed: '1',
+        jurisdictionIds: [],
+        choices: [
+          {
+            id: '',
+            name: '',
+            numVotes: '',
+          },
+          {
+            id: '',
+            name: '',
+            numVotes: '',
+          },
+        ],
+      },
+    ],
+  },
+  emptyOpportunistic: {
+    contests: [
+      {
+        id: '',
+        name: '',
+        isTargeted: false,
+        totalBallotsCast: '',
+        numWinners: '1',
+        votesAllowed: '1',
+        jurisdictionIds: [],
+        choices: [
+          {
+            id: '',
+            name: '',
+            numVotes: '',
+          },
+          {
+            id: '',
+            name: '',
+            numVotes: '',
+          },
+        ],
+      },
+    ],
+  },
+  filledTargeted: {
+    contests: [
+      {
+        id: expect.stringMatching(/^[-0-9a-z]*$/),
+        name: 'Contest Name',
+        isTargeted: true,
+        totalBallotsCast: '30',
+        numWinners: '1',
+        votesAllowed: '1',
+        jurisdictionIds: [],
+        choices: [
+          {
+            id: expect.stringMatching(/^[-0-9a-z]*$/),
+            name: 'Choice One',
+            numVotes: '10',
+          },
+          {
+            id: expect.stringMatching(/^[-0-9a-z]*$/),
+            name: 'Choice Two',
+            numVotes: '20',
+          },
+        ],
+      },
+    ],
+  },
+  filledOpportunistic: {
+    contests: [
+      {
+        id: expect.stringMatching(/^[-0-9a-z]*$/),
+        name: 'Contest Name',
+        isTargeted: false,
+        totalBallotsCast: '30',
+        numWinners: '1',
+        votesAllowed: '1',
+        jurisdictionIds: [],
+        choices: [
+          {
+            id: expect.stringMatching(/^[-0-9a-z]*$/),
+            name: 'Choice Three',
+            numVotes: '10',
+          },
+          {
+            id: expect.stringMatching(/^[-0-9a-z]*$/),
+            name: 'Choice Four',
+            numVotes: '20',
+          },
+        ],
+      },
+    ],
+  },
+}
+
+export const contestsInputMocks = {
+  inputs: [
+    { key: 'Contest Name', value: 'Contest Name' },
+    { key: 'Name of Candidate/Choice 1', value: 'Choice One' },
+    { key: 'Name of Candidate/Choice 2', value: 'Choice Two' },
+    { key: 'Votes for Candidate/Choice 1', value: '10' },
+    { key: 'Votes for Candidate/Choice 2', value: '20' },
+    { key: 'Total Ballots for Contest', value: '30' },
+  ],
+  errorInputs: [
+    { key: 'Contest Name', value: '', error: 'Required' },
+    {
+      key: 'Total Ballots for Contest',
+      value: '',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Total Ballots for Contest',
+      value: 'test',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Total Ballots for Contest',
+      value: '-1',
+      error:
+        'Must be greater than or equal to the sum of votes for each candidate/choice',
+    },
+    {
+      key: 'Total Ballots for Contest',
+      value: '0.5',
+      error: 'Must be an integer',
+    },
+    { key: 'Name of Candidate/Choice 1', value: '', error: 'Required' },
+    { key: 'Name of Candidate/Choice 2', value: '', error: 'Required' },
+    {
+      key: 'Votes for Candidate/Choice 1',
+      value: '',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Votes for Candidate/Choice 1',
+      value: 'test',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Votes for Candidate/Choice 1',
+      value: '-1',
+      error: 'Must be a positive number',
+    },
+    {
+      key: 'Votes for Candidate/Choice 1',
+      value: '0.5',
+      error: 'Must be an integer',
+    },
+    {
+      key: 'Votes for Candidate/Choice 2',
+      value: '',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Votes for Candidate/Choice 2',
+      value: 'test',
+      error: 'Must be a number',
+    },
+    {
+      key: 'Votes for Candidate/Choice 2',
+      value: '-1',
+      error: 'Must be a positive number',
+    },
+    {
+      key: 'Votes for Candidate/Choice 2',
+      value: '0.5',
+      error: 'Must be an integer',
+    },
+  ],
+}
+
+export default contestsInputMocks

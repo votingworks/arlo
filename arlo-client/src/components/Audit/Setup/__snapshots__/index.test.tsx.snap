@@ -33,7 +33,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
                 id="election-name"
                 name="electionName"
                 style="padding-right: 10px;"
-                value="Election Name"
+                value=""
               />
             </div>
           </div>
@@ -207,7 +207,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
                 name="randomSeed"
                 style="padding-right: 10px;"
                 type="text"
-                value="12345"
+                value=""
               />
             </div>
           </div>
@@ -241,6 +241,8 @@ exports[`Setup renders Audit Settings stage 1`] = `
   </form>
 </div>
 `;
+
+exports[`Setup renders Audit Settings stage 2`] = `<div />`;
 
 exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
 <div>
@@ -2386,9 +2388,7 @@ exports[`Setup renders Participants stage with locked next stage 1`] = `
       class="sc-htpNat gtULUV"
     >
       <button
-        class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
-        disabled=""
-        tabindex="-1"
+        class="bp3-button bp3-intent-primary sc-ifAKCX zdCNs"
         type="submit"
       >
         <span

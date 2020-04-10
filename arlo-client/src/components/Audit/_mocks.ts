@@ -33,7 +33,19 @@ export const auditSettings: {
   },
 }
 
-export const statusStates: { [key: string]: IAudit } = {
+export const statusStates: {
+  [key in
+    | 'empty'
+    | 'contestFirstRound'
+    | 'sampleSizeOptions'
+    | 'jurisdictionsInitial'
+    | 'ballotManifestProcessed'
+    | 'ballotManifestProcessError'
+    | 'completeInFirstRound'
+    | 'firstRoundSampleSizeOptionsNull'
+    | 'firstRoundSampleSizeOptions'
+    | 'multiAuditBoardsAndRounds']: IAudit
+} = {
   empty: {
     name: '',
     riskLimit: '',

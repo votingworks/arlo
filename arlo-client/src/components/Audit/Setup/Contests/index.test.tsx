@@ -1,88 +1,35 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
+import { useParams } from 'react-router-dom'
 import { regexpEscape } from '../../../testUtilities'
 import * as utilities from '../../../utilities'
 import Contests from './index'
 import relativeStages from '../_mocks'
+import { contestsInputMocks, contestMocks } from './_mocks'
+
+const apiMock: jest.SpyInstance<
+  ReturnType<typeof utilities.api>,
+  Parameters<typeof utilities.api>
+> = jest.spyOn(utilities, 'api').mockImplementation()
+const checkAndToastMock: jest.SpyInstance<
+  ReturnType<typeof utilities.checkAndToast>,
+  Parameters<typeof utilities.checkAndToast>
+> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
+apiMock.mockResolvedValue(contestMocks.emptyTargeted)
+
+checkAndToastMock.mockReturnValue(false)
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
+  useParams: jest.fn(),
+}))
+const routeMock = useParams as jest.Mock
+routeMock.mockReturnValue({
+  electionId: '1',
+  view: 'setup',
+})
 
 const { nextStage, prevStage } = relativeStages('Target Contests')
-
-const ContestsMocks = {
-  inputs: [
-    { key: 'Contest Name', value: 'Contest Name' },
-    { key: 'Name of Candidate/Choice 1', value: 'Choice One' },
-    { key: 'Name of Candidate/Choice 2', value: 'Choice Two' },
-    { key: 'Votes for Candidate/Choice 1', value: '10' },
-    { key: 'Votes for Candidate/Choice 2', value: '20' },
-    { key: 'Total Ballots for Contest', value: '30' },
-  ],
-  errorInputs: [
-    { key: 'Contest Name', value: '', error: 'Required' },
-    {
-      key: 'Total Ballots for Contest',
-      value: '',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: 'test',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: '-1',
-      error:
-        'Must be greater than or equal to the sum of votes for each candidate/choice',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: '0.5',
-      error: 'Must be an integer',
-    },
-    { key: 'Name of Candidate/Choice 1', value: '', error: 'Required' },
-    { key: 'Name of Candidate/Choice 2', value: '', error: 'Required' },
-    {
-      key: 'Votes for Candidate/Choice 1',
-      value: '',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 1',
-      value: 'test',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 1',
-      value: '-1',
-      error: 'Must be a positive number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 1',
-      value: '0.5',
-      error: 'Must be an integer',
-    },
-    {
-      key: 'Votes for Candidate/Choice 2',
-      value: '',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 2',
-      value: 'test',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 2',
-      value: '-1',
-      error: 'Must be a positive number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 2',
-      value: '0.5',
-      error: 'Must be an integer',
-    },
-  ],
-}
 
 function typeInto(input: Element, value: string): void {
   // TODO: do more, like `focusIn`, `focusOut`, `input`, etc?
@@ -93,15 +40,53 @@ function typeInto(input: Element, value: string): void {
 
 afterEach(() => {
   ;(nextStage.activate as jest.Mock).mockClear()
+  apiMock.mockClear()
+  checkAndToastMock.mockClear()
 })
 
 describe('Audit Setup > Contests', () => {
-  it('renders empty state correctly', () => {
+  it('renders empty targeted state correctly', () => {
     const { container } = render(
       <Contests
         locked={false}
         isTargeted
         {...relativeStages('Target Contests')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders empty opportunistic state correctly', () => {
+    apiMock.mockResolvedValue(contestMocks.emptyOpportunistic)
+    const { container } = render(
+      <Contests
+        locked={false}
+        isTargeted={false}
+        {...relativeStages('Opportunistic Contests')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders filled targeted state correctly', () => {
+    apiMock.mockResolvedValue(contestMocks.filledTargeted)
+    const { container } = render(
+      <Contests
+        locked={false}
+        isTargeted
+        {...relativeStages('Target Contests')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders filled opportunistic state correctly', () => {
+    apiMock.mockResolvedValue(contestMocks.filledOpportunistic)
+    const { container } = render(
+      <Contests
+        locked={false}
+        isTargeted={false}
+        {...relativeStages('Opportunistic Contests')}
       />
     )
     expect(container).toMatchSnapshot()
@@ -173,7 +158,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
-    ContestsMocks.inputs.forEach(inputData => {
+    contestsInputMocks.inputs.forEach(inputData => {
       const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',
       }) as HTMLInputElement
@@ -183,6 +168,16 @@ describe('Audit Setup > Contests', () => {
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await wait(() => {
+      apiMock.mock.calls.forEach(c => console.log(c[0]))
+      expect(apiMock).toHaveBeenCalledTimes(3)
+      expect(apiMock.mock.calls[2][0]).toBe('/election/1/contest')
+      expect(apiMock.mock.calls[2][1]).toBe({
+        method: 'PUT',
+        body: JSON.stringify(contestMocks.filledTargeted),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
       expect(nextStage.activate).toHaveBeenCalledTimes(1)
     })
   })
@@ -198,7 +193,7 @@ describe('Audit Setup > Contests', () => {
     )
 
     await utilities.asyncForEach(
-      ContestsMocks.errorInputs,
+      contestsInputMocks.errorInputs,
       async (inputData: { key: string; value: string; error: string }) => {
         const { key, value, error } = inputData
         const input = getByLabelText(new RegExp(regexpEscape(key)), {
