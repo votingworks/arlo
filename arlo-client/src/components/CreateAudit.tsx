@@ -148,7 +148,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
             meta!.organizations.map(o =>
               o.elections.map(election => (
                 <AuditLink
-                  to={`/election/${election.id}`}
+                  to={`/election/${election.id}/setup`}
                   key={election.id}
                   className="bp3-button bp3-intent-primary"
                 >
@@ -160,7 +160,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
           {meta!.jurisdictions.length > 0 &&
             meta!.jurisdictions.map(({ election }) => (
               <AuditLink
-                to={`/election/${election.id}`}
+                to={`/election/${election.id}/setup`}
                 key={election.id}
                 className="bp3-button bp3-intent-primary"
               >

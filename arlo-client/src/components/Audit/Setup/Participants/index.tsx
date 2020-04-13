@@ -131,12 +131,7 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
             <Spinner />
           ) : (
             <FormButtonBar>
-              <FormButton
-                type="submit"
-                intent="primary"
-                disabled={nextStage.state === 'locked'}
-                onClick={handleSubmit}
-              >
+              <FormButton type="submit" intent="primary" onClick={handleSubmit}>
                 Save &amp; Next
               </FormButton>
             </FormButtonBar>

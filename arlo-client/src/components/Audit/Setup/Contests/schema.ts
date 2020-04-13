@@ -1,6 +1,6 @@
 import * as Yup from 'yup'
 import number, { parse as parseNumber } from '../../../../utils/number-schema'
-import { IChoiceValues } from './types'
+import { ICandidate } from '../../../../types'
 
 const contestsSchema = Yup.object().shape({
   contests: Yup.array()
@@ -29,7 +29,7 @@ const contestsSchema = Yup.object().shape({
               const ballots = parseNumber(value)
               const { choices } = this.parent
               const totalVotes = choices.reduce(
-                (sum: number, choiceValue: IChoiceValues) =>
+                (sum: number, choiceValue: ICandidate) =>
                   sum + (parseNumber(choiceValue.numVotes) || 0),
                 0
               )

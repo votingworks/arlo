@@ -33,7 +33,19 @@ export const auditSettings: {
   },
 }
 
-export const statusStates: { [key: string]: IAudit } = {
+export const statusStates: {
+  [key in
+    | 'empty'
+    | 'contestFirstRound'
+    | 'sampleSizeOptions'
+    | 'jurisdictionsInitial'
+    | 'ballotManifestProcessed'
+    | 'ballotManifestProcessError'
+    | 'completeInFirstRound'
+    | 'firstRoundSampleSizeOptionsNull'
+    | 'firstRoundSampleSizeOptions'
+    | 'multiAuditBoardsAndRounds']: IAudit
+} = {
   empty: {
     name: '',
     riskLimit: '',
@@ -43,6 +55,7 @@ export const statusStates: { [key: string]: IAudit } = {
     contests: [],
     jurisdictions: [],
     rounds: [],
+    isMultiJurisdiction: false,
   },
   contestFirstRound: {
     contests: [
@@ -65,6 +78,7 @@ export const statusStates: { [key: string]: IAudit } = {
         votesAllowed: '1',
         totalBallotsCast: '2123',
         isTargeted: true,
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [],
@@ -92,6 +106,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   sampleSizeOptions: {
     contests: [
@@ -114,6 +129,7 @@ export const statusStates: { [key: string]: IAudit } = {
         votesAllowed: '1',
         totalBallotsCast: '2123',
         isTargeted: true,
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [],
@@ -145,6 +161,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   jurisdictionsInitial: {
     contests: [
@@ -167,6 +184,7 @@ export const statusStates: { [key: string]: IAudit } = {
         isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -227,6 +245,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   ballotManifestProcessed: {
     contests: [
@@ -249,6 +268,7 @@ export const statusStates: { [key: string]: IAudit } = {
         votesAllowed: '1',
         totalBallotsCast: '2123',
         isTargeted: true,
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -301,6 +321,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   ballotManifestProcessError: {
     contests: [
@@ -323,6 +344,7 @@ export const statusStates: { [key: string]: IAudit } = {
         votesAllowed: '1',
         totalBallotsCast: '2123',
         isTargeted: true,
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -375,6 +397,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   completeInFirstRound: {
     contests: [
@@ -397,6 +420,7 @@ export const statusStates: { [key: string]: IAudit } = {
         votesAllowed: '1',
         totalBallotsCast: '2123',
         isTargeted: true,
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -451,6 +475,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   firstRoundSampleSizeOptionsNull: {
     contests: [
@@ -473,6 +498,7 @@ export const statusStates: { [key: string]: IAudit } = {
         isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -520,6 +546,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   firstRoundSampleSizeOptions: {
     contests: [
@@ -542,6 +569,7 @@ export const statusStates: { [key: string]: IAudit } = {
         isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -612,6 +640,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
   multiAuditBoardsAndRounds: {
     contests: [
@@ -634,6 +663,7 @@ export const statusStates: { [key: string]: IAudit } = {
         isTargeted: true,
         numWinners: '1',
         votesAllowed: '1',
+        jurisdictionIds: [],
       },
     ],
     jurisdictions: [
@@ -728,6 +758,7 @@ export const statusStates: { [key: string]: IAudit } = {
     riskLimit: '1',
     frozenAt: null,
     online: true,
+    isMultiJurisdiction: false,
   },
 }
 

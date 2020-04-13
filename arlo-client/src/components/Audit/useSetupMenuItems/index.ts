@@ -56,10 +56,13 @@ function useSetupMenuItems(
           return true
         return false
       }
-      const complete = () => setContests('live')
+      const complete = () => {
+        setContests('live')
+        setStage('Target Contests')
+      }
       poll(condition, complete, (err: Error) => toast.error(err.message))
     }
-  }, [electionId, setContests])
+  }, [electionId, setContests, setStage])
 
   const lockAllIfRounds = useCallback(async () => {
     const roundsExist = await getRoundStatus(electionId)

@@ -1,88 +1,38 @@
 import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
+import { toast } from 'react-toastify'
+import { useParams } from 'react-router-dom'
 import { regexpEscape } from '../../../testUtilities'
 import * as utilities from '../../../utilities'
 import Contests from './index'
 import relativeStages from '../_mocks'
+import { contestsInputMocks, contestMocks } from './_mocks'
+import { numberifyContest, IContestNumbered } from './useContestsApi'
+
+const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
+const apiMock: jest.SpyInstance<
+  ReturnType<typeof utilities.api>,
+  Parameters<typeof utilities.api>
+> = jest.spyOn(utilities, 'api').mockImplementation()
+const checkAndToastMock: jest.SpyInstance<
+  ReturnType<typeof utilities.checkAndToast>,
+  Parameters<typeof utilities.checkAndToast>
+> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
+apiMock.mockResolvedValue(contestMocks.emptyTargeted)
+
+checkAndToastMock.mockReturnValue(false)
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
+  useParams: jest.fn(),
+}))
+const routeMock = useParams as jest.Mock
+routeMock.mockReturnValue({
+  electionId: '1',
+  view: 'setup',
+})
 
 const { nextStage, prevStage } = relativeStages('Target Contests')
-
-const ContestsMocks = {
-  inputs: [
-    { key: 'Contest Name', value: 'Contest Name' },
-    { key: 'Name of Candidate/Choice 1', value: 'Choice One' },
-    { key: 'Name of Candidate/Choice 2', value: 'Choice Two' },
-    { key: 'Votes for Candidate/Choice 1', value: '10' },
-    { key: 'Votes for Candidate/Choice 2', value: '20' },
-    { key: 'Total Ballots for Contest', value: '30' },
-  ],
-  errorInputs: [
-    { key: 'Contest Name', value: '', error: 'Required' },
-    {
-      key: 'Total Ballots for Contest',
-      value: '',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: 'test',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: '-1',
-      error:
-        'Must be greater than or equal to the sum of votes for each candidate/choice',
-    },
-    {
-      key: 'Total Ballots for Contest',
-      value: '0.5',
-      error: 'Must be an integer',
-    },
-    { key: 'Name of Candidate/Choice 1', value: '', error: 'Required' },
-    { key: 'Name of Candidate/Choice 2', value: '', error: 'Required' },
-    {
-      key: 'Votes for Candidate/Choice 1',
-      value: '',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 1',
-      value: 'test',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 1',
-      value: '-1',
-      error: 'Must be a positive number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 1',
-      value: '0.5',
-      error: 'Must be an integer',
-    },
-    {
-      key: 'Votes for Candidate/Choice 2',
-      value: '',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 2',
-      value: 'test',
-      error: 'Must be a number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 2',
-      value: '-1',
-      error: 'Must be a positive number',
-    },
-    {
-      key: 'Votes for Candidate/Choice 2',
-      value: '0.5',
-      error: 'Must be an integer',
-    },
-  ],
-}
 
 function typeInto(input: Element, value: string): void {
   // TODO: do more, like `focusIn`, `focusOut`, `input`, etc?
@@ -91,17 +41,67 @@ function typeInto(input: Element, value: string): void {
   fireEvent.blur(input)
 }
 
+function regexify(contest: IContestNumbered) {
+  return {
+    ...contest,
+    id: expect.stringMatching(/^[-0-9a-z]*$/),
+    choices: contest.choices.map(c => ({
+      ...c,
+      id: expect.stringMatching(/^[-0-9a-z]*$/),
+    })),
+  }
+}
+
 afterEach(() => {
   ;(nextStage.activate as jest.Mock).mockClear()
+  apiMock.mockClear()
+  checkAndToastMock.mockClear()
+  toastSpy.mockClear()
 })
 
 describe('Audit Setup > Contests', () => {
-  it('renders empty state correctly', () => {
+  it('renders empty targeted state correctly', () => {
     const { container } = render(
       <Contests
         locked={false}
         isTargeted
         {...relativeStages('Target Contests')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders empty opportunistic state correctly', () => {
+    apiMock.mockResolvedValue(contestMocks.emptyOpportunistic)
+    const { container } = render(
+      <Contests
+        locked={false}
+        isTargeted={false}
+        {...relativeStages('Opportunistic Contests')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders filled targeted state correctly', () => {
+    apiMock.mockResolvedValue(contestMocks.filledTargeted)
+    const { container } = render(
+      <Contests
+        locked={false}
+        isTargeted
+        {...relativeStages('Target Contests')}
+      />
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders filled opportunistic state correctly', () => {
+    apiMock.mockResolvedValue(contestMocks.filledOpportunistic)
+    const { container } = render(
+      <Contests
+        locked={false}
+        isTargeted={false}
+        {...relativeStages('Opportunistic Contests')}
       />
     )
     expect(container).toMatchSnapshot()
@@ -164,6 +164,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('is able to submit the form successfully', async () => {
+    apiMock.mockResolvedValue(contestMocks.emptyTargeted)
     const { getByLabelText, getByText } = render(
       <Contests
         locked={false}
@@ -173,7 +174,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
-    ContestsMocks.inputs.forEach(inputData => {
+    contestsInputMocks.inputs.forEach(inputData => {
       const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',
       }) as HTMLInputElement
@@ -183,6 +184,23 @@ describe('Audit Setup > Contests', () => {
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await wait(() => {
+      expect(apiMock).toHaveBeenCalledTimes(3)
+      expect(apiMock.mock.calls[2][0]).toBe('/election/1/contest')
+      expect(apiMock.mock.calls[2][1]).toMatchObject({
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      if (apiMock.mock.calls[2][1]!.body) {
+        expect(
+          JSON.parse(apiMock.mock.calls[2][1]!.body as string)
+        ).toMatchObject(
+          contestMocks.filledTargeted.contests.map(c =>
+            regexify(numberifyContest(c))
+          )
+        )
+      }
       expect(nextStage.activate).toHaveBeenCalledTimes(1)
     })
   })
@@ -198,7 +216,7 @@ describe('Audit Setup > Contests', () => {
     )
 
     await utilities.asyncForEach(
-      ContestsMocks.errorInputs,
+      contestsInputMocks.errorInputs,
       async (inputData: { key: string; value: string; error: string }) => {
         const { key, value, error } = inputData
         const input = getByLabelText(new RegExp(regexpEscape(key)), {
@@ -307,6 +325,98 @@ describe('Audit Setup > Contests', () => {
       // 30 ballots * 2 allowed votes / ballot = 60 allowed votes
       // 20 actual votes in choice #1 + 40 actual votes in choice #2 = 60 actual votes
       expect(queryByTestId(`${totalBallotInput.name}-error`)).toBeNull()
+    })
+  })
+
+  it('handles api request error on initial load', async () => {
+    apiMock.mockRejectedValue(new Error('Network error'))
+    const { container } = render(
+      <Contests
+        locked={false}
+        isTargeted
+        {...relativeStages('Target Contests')}
+      />
+    )
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(1)
+      expect(toastSpy).toBeCalledTimes(1)
+      expect(toastSpy).toHaveBeenCalledWith('Network error')
+      expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('handles api request error on submission', async () => {
+    apiMock
+      .mockResolvedValueOnce(contestMocks.emptyTargeted)
+      .mockResolvedValueOnce(contestMocks.emptyTargeted)
+      .mockRejectedValue(new Error('Network error'))
+    const { getByLabelText, getByText, container } = render(
+      <Contests
+        locked={false}
+        isTargeted
+        nextStage={nextStage}
+        prevStage={prevStage}
+      />
+    )
+
+    contestsInputMocks.inputs.forEach(inputData => {
+      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
+        selector: 'input',
+      }) as HTMLInputElement
+      typeInto(input, inputData.value)
+      expect(input.value).toBe(inputData.value)
+    })
+
+    fireEvent.click(getByText('Save & Next'), { bubbles: true })
+    await wait(() => {
+      expect(apiMock).toHaveBeenCalledTimes(3)
+      expect(toastSpy).toHaveBeenCalledTimes(1)
+      expect(toastSpy).toHaveBeenCalledWith('Network error')
+      expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('handles submission when there is a pre-existing contest', async () => {
+    apiMock
+      .mockResolvedValueOnce(contestMocks.filledOpportunistic)
+      .mockResolvedValueOnce(contestMocks.filledOpportunistic)
+      .mockResolvedValue({ status: 'ok' })
+    const { getByLabelText, getByText } = render(
+      <Contests
+        locked={false}
+        isTargeted
+        nextStage={nextStage}
+        prevStage={prevStage}
+      />
+    )
+
+    contestsInputMocks.inputs.forEach(inputData => {
+      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
+        selector: 'input',
+      }) as HTMLInputElement
+      typeInto(input, inputData.value)
+      expect(input.value).toBe(inputData.value)
+    })
+
+    fireEvent.click(getByText('Save & Next'), { bubbles: true })
+    await wait(() => {
+      expect(apiMock).toHaveBeenCalledTimes(3)
+      expect(toastSpy).toHaveBeenCalledTimes(0)
+      if (apiMock.mock.calls[2][1]!.body) {
+        expect(
+          JSON.parse(apiMock.mock.calls[2][1]!.body as string)[1]
+        ).toMatchObject(
+          regexify(numberifyContest(contestMocks.filledTargeted.contests[0]))
+        )
+        expect(
+          JSON.parse(apiMock.mock.calls[2][1]!.body as string)[0]
+        ).toMatchObject(
+          regexify(
+            numberifyContest(contestMocks.filledOpportunistic.contests[0])
+          )
+        )
+      }
+      expect(nextStage.activate).toHaveBeenCalledTimes(1)
     })
   })
 })

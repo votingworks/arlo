@@ -42,6 +42,7 @@ export interface IContest {
   votesAllowed: string
   choices: ICandidate[]
   totalBallotsCast: string
+  jurisdictionIds: string[]
 }
 
 export interface IBallot {
@@ -138,6 +139,7 @@ export interface IAudit {
   jurisdictions: IJurisdiction[]
   rounds: IRound[]
   frozenAt: string | null
+  isMultiJurisdiction: boolean
 }
 
 export interface IElectionMeta {

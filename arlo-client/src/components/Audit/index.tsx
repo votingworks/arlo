@@ -21,6 +21,7 @@ const initialData: IAudit = {
   contests: [],
   jurisdictions: [],
   rounds: [],
+  isMultiJurisdiction: false,
 }
 
 interface IParams {
@@ -65,6 +66,7 @@ const Audit: React.FC<{}> = () => {
   }, [updateAudit])
 
   const showSelectBallotsToAudit =
+    !audit.isMultiJurisdiction &&
     !!audit.contests.length &&
     audit.rounds[0].contests.every(c => !!c.sampleSizeOptions)
   const showCalculateRiskMeasurement =
