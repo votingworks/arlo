@@ -15,7 +15,6 @@ from arlo_server.auth import (
     UserType,
     clear_loggedin_user,
     get_loggedin_user,
-    get_loggedin_user_record,
     require_audit_admin_for_organization,
     set_loggedin_user,
     with_election_access,
@@ -1054,8 +1053,9 @@ def audit_reset(election_id):
 @app.route("/auditboard/<passphrase>", methods=["GET"])
 def auditboard_passphrase(passphrase):
     auditboard = AuditBoard.query.filter_by(passphrase=passphrase).one()
+    set_loggedin_user(UserType.AUDIT_BOARD, auditboard.id)
     return redirect(
-        "/election/%s/board/%s" % (auditboard.jurisdiction.election.id, auditboard.id)
+        f"/election/{auditboard.jurisdiction.election.id}/board/{auditboard.id}"
     )
 
 
@@ -1113,8 +1113,9 @@ def serialize_election(election):
 
 @app.route("/auth/me")
 def me():
-    user_type, user = get_loggedin_user_record()
-    if user:
+    user_type, user_key = get_loggedin_user()
+    if user_type in [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN]:
+        user = User.query.filter_by(email=user_key).one()
         return jsonify(
             type=user_type,
             email=user.email,

@@ -40,9 +40,7 @@ def test_in_org_with_anonymous_user(client: FlaskClient):
 
 def test_in_org_with_logged_in_admin(client: FlaskClient):
     org_id, _user_id = create_org_and_admin(user_email="admin@example.com")
-    set_logged_in_user(
-        client, user_type=UserType.AUDIT_ADMIN, user_email="admin@example.com"
-    )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin@example.com")
 
     rv = post_json(
         client,
@@ -65,9 +63,7 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
 def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
     _org1_id, _user1_id = create_org_and_admin(user_email="admin1@example.com")
     org2_id, _user2_id = create_org_and_admin(user_email="admin2@example.com")
-    set_logged_in_user(
-        client, user_type=UserType.AUDIT_ADMIN, user_email="admin1@example.com"
-    )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin1@example.com")
 
     rv = post_json(
         client,
@@ -91,9 +87,7 @@ def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
 
 def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
     org_id, _user_id = create_org_and_admin(user_email="admin@example.com")
-    set_logged_in_user(
-        client, user_type=UserType.JURISDICTION_ADMIN, user_email="admin@example.com"
-    )
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "admin@example.com")
 
     rv = post_json(
         client,
@@ -107,7 +101,7 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": f"admin@example.com is not logged in as an audit admin and so does not have access to organization {org_id}",
+                "message": f"User is not logged in as an audit admin and so does not have access to organization {org_id}",
                 "errorType": "Forbidden",
             }
         ]
@@ -148,9 +142,7 @@ def test_without_org_duplicate_audit_name(client: FlaskClient):
 
 def test_in_org_duplicate_audit_name(client: FlaskClient):
     org_id, _user_id = create_org_and_admin(user_email="admin@example.com")
-    set_logged_in_user(
-        client, user_type=UserType.AUDIT_ADMIN, user_email="admin@example.com"
-    )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin@example.com")
 
     rv = post_json(
         client,
@@ -187,9 +179,7 @@ def test_in_org_duplicate_audit_name(client: FlaskClient):
 def test_two_orgs_same_name(client: FlaskClient):
     org_id_1, _ = create_org_and_admin(user_email="admin1@example.com")
     org_id_2, _ = create_org_and_admin(user_email="admin2@example.com")
-    set_logged_in_user(
-        client, user_type=UserType.AUDIT_ADMIN, user_email="admin1@example.com"
-    )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin1@example.com")
 
     rv = post_json(
         client,
@@ -203,9 +193,7 @@ def test_two_orgs_same_name(client: FlaskClient):
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
 
-    set_logged_in_user(
-        client, user_type=UserType.AUDIT_ADMIN, user_email="admin2@example.com"
-    )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin2@example.com")
 
     rv = post_json(
         client,

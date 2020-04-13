@@ -41,10 +41,10 @@ def assert_ok(rv: Response):
 
 
 def set_logged_in_user(
-    client: FlaskClient, user_type: UserType, user_email=DEFAULT_AA_EMAIL
+    client: FlaskClient, user_type: UserType, user_key=DEFAULT_AA_EMAIL
 ):
     with client.session_transaction() as session:  # type: ignore
-        session["_user"] = {"type": user_type, "email": user_email}
+        session["_user"] = {"type": user_type, "key": user_key}
 
 
 def clear_logged_in_user(client: FlaskClient):
@@ -101,7 +101,7 @@ def create_election(
     audit_name: str = "Test Audit",
     organization_id: str = None,
     is_multi_jurisdiction: bool = True,
-):
+) -> str:
     rv = post_json(
         client,
         "/election/new",
@@ -111,7 +111,7 @@ def create_election(
             "isMultiJurisdiction": is_multi_jurisdiction,
         },
     )
-    return json.loads(rv.data)["electionId"]
+    return str(json.loads(rv.data)["electionId"])
 
 
 def assert_is_id(x):

@@ -13,8 +13,14 @@ from arlo_server.models import (
     Round,
     RoundContestResult,
     Contest,
+    AuditBoard,
 )
-from arlo_server.auth import with_election_access, with_jurisdiction_access, UserType
+from arlo_server.auth import (
+    UserType,
+    with_election_access,
+    with_jurisdiction_access,
+    with_audit_board_access,
+)
 from tests.helpers import (
     assert_ok,
     put_json,
@@ -287,3 +293,19 @@ def auth_decorator_test_routes():
         assert election
         assert jurisdiction
         return jsonify([election.id, jurisdiction.id])
+
+    @app.route(
+        "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/test_auth"
+    )
+    @with_audit_board_access
+    def fake_audit_board_route(
+        election: Election,
+        jurisdiction: Jurisdiction,
+        round: Round,
+        audit_board: AuditBoard,
+    ):
+        assert election
+        assert jurisdiction
+        assert round
+        assert audit_board
+        return jsonify([election.id, jurisdiction.id, round.id, audit_board.id])
