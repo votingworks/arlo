@@ -10,11 +10,11 @@ import { Spinner, ProgressBar } from '@blueprintjs/core'
 import FormSection, {
   FormSectionLabel,
   FormSectionDescription,
-} from '../Form/FormSection'
-import FormWrapper from '../Form/FormWrapper'
-import FormButton from '../Form/FormButton'
-import FormField from '../Form/FormField'
-import FormButtonBar from '../Form/FormButtonBar'
+} from '../Atoms/Form/FormSection'
+import FormWrapper from '../Atoms/Form/FormWrapper'
+import FormButton from '../Atoms/Form/FormButton'
+import FormField from '../Atoms/Form/FormField'
+import FormButtonBar from '../Atoms/Form/FormButtonBar'
 import { api, testNumber, poll, checkAndToast } from '../utilities'
 import {
   IContest,

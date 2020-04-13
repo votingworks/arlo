@@ -9,9 +9,9 @@ import {
   FlushDivider,
 } from './Atoms'
 import BlockRadio from './BlockRadio'
-import FormButton from '../Form/FormButton'
+import FormButton from '../Atoms/Form/FormButton'
 import { IReview, IContest } from '../../types'
-import FormField from '../Form/FormField'
+import FormField from '../Atoms/Form/FormField'
 
 interface IProps {
   contest: IContest

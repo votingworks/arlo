@@ -18,14 +18,14 @@ import {
   RadioGroup,
   Radio,
 } from '@blueprintjs/core'
-import FormSection, { FormSectionDescription } from '../Form/FormSection'
-import FormWrapper from '../Form/FormWrapper'
+import FormSection, { FormSectionDescription } from '../Atoms/Form/FormSection'
+import FormWrapper from '../Atoms/Form/FormWrapper'
 import H2Title from '../Atoms/H2Title'
-import FormButton from '../Form/FormButton'
-import FormField from '../Form/FormField'
-import FormButtonBar from '../Form/FormButtonBar'
+import FormButton from '../Atoms/Form/FormButton'
+import FormField from '../Atoms/Form/FormField'
+import FormButtonBar from '../Atoms/Form/FormButtonBar'
 import { api, poll, checkAndToast } from '../utilities'
-import { generateOptions, ErrorLabel } from '../Form/_helpers'
+import { generateOptions, ErrorLabel } from '../Atoms/Form/_helpers'
 import { IAudit, IErrorResponse } from '../../types'
 import number, { parse as parseNumber } from '../../utils/number-schema'
 

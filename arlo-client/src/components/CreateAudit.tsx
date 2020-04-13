@@ -3,12 +3,12 @@ import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import { Formik, FormikProps, Field } from 'formik'
-import FormButton from './Form/FormButton'
+import FormButton from './Atoms/Form/FormButton'
 import { api, checkAndToast } from './utilities'
 import { ICreateAuditParams, IErrorResponse } from '../types'
 import { useAuthDataContext } from './UserContext'
-import FormSection from './Form/FormSection'
-import FormField from './Form/FormField'
+import FormSection from './Atoms/Form/FormSection'
+import FormField from './Atoms/Form/FormField'
 
 const Button = styled(FormButton)`
   margin: 30px 0 0 0;

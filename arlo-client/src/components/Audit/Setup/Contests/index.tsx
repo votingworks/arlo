@@ -3,9 +3,11 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import { Formik, FormikProps, Form, Field, FieldArray } from 'formik'
 import { Spinner } from '@blueprintjs/core'
-import FormWrapper from '../../../Form/FormWrapper'
-import FormSection, { FormSectionDescription } from '../../../Form/FormSection'
-import FormField from '../../../Form/FormField'
+import FormWrapper from '../../../Atoms/Form/FormWrapper'
+import FormSection, {
+  FormSectionDescription,
+} from '../../../Atoms/Form/FormSection'
+import FormField from '../../../Atoms/Form/FormField'
 import {
   TwoColumnSection,
   InputFieldRow,
@@ -13,8 +15,8 @@ import {
   FlexField,
   Action,
 } from '../../EstimateSampleSize'
-import FormButtonBar from '../../../Form/FormButtonBar'
-import FormButton from '../../../Form/FormButton'
+import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
+import FormButton from '../../../Atoms/Form/FormButton'
 import { IContests } from './types'
 import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
