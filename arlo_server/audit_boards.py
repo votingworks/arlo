@@ -1,13 +1,15 @@
 from flask import jsonify, request
 import uuid
+from datetime import datetime
 from typing import List, Dict
 from xkcdpass import xkcd_password as xp
-from werkzeug.exceptions import Conflict
+from werkzeug.exceptions import Conflict, BadRequest
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import func
+from sqlalchemy import func, and_
 
 from arlo_server import app, db
-from arlo_server.auth import with_jurisdiction_access
+from arlo_server.routes import sample_results
+from arlo_server.auth import with_jurisdiction_access, with_audit_board_access
 from arlo_server.rounds import get_current_round
 from arlo_server.models import (
     AuditBoard,
@@ -23,6 +25,7 @@ from util.jsonschema import validate, JSONDict
 from util.binpacking import BalancedBucketList, Bucket
 from util.group_by import group_by
 from util.isoformat import isoformat
+from audit_math import bravo, sampler_contest
 
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 
@@ -187,3 +190,101 @@ def list_audit_boards(
         serialize_audit_board(ab, round_status[ab.id]) for ab in audit_boards
     ]
     return jsonify({"auditBoards": json_audit_boards})
+
+
+def calculate_risk_measurements(election: Election, round: Round):
+    results = sample_results(election)
+
+    for contest in election.contests:
+        risk, is_complete = bravo.compute_risk(
+            election.risk_limit / 100,
+            sampler_contest.from_db_contest(contest),
+            results[contest.id],
+        )
+
+        round_contest = next(
+            rc for rc in round.round_contests if rc.contest_id == contest.id
+        )
+        round_contest.end_p_value = max(risk.values())
+        round_contest.is_complete = is_complete
+
+
+def end_round(election: Election, round: Round):
+    calculate_risk_measurements(election, round)
+    round.ended_at = datetime.utcnow()
+
+
+def is_round_complete(election: Election, round: Round) -> bool:
+    num_jurisdictions_without_audit_boards_set_up = (
+        # For each jurisdiction...
+        Jurisdiction.query.filter_by(election_id=election.id)
+        # Where there are ballots that haven't been audited...
+        .join(Jurisdiction.batches)
+        .join(Batch.ballots)
+        .filter(SampledBallot.vote.is_(None))
+        # And those ballots got sampled this round...
+        .join(SampledBallot.draws)
+        .filter_by(round_id=round.id)
+        # Count the number of audit boards set up.
+        .outerjoin(
+            AuditBoard,
+            and_(
+                AuditBoard.jurisdiction_id == Jurisdiction.id,
+                AuditBoard.round_id == round.id,
+            ),
+        )
+        .group_by(Jurisdiction.id)
+        # Finally, count how many jurisdictions have no audit boards set up.
+        .having(func.count(AuditBoard.id) == 0)
+        .count()
+    )
+    all_audit_boards_set_up = num_jurisdictions_without_audit_boards_set_up == 0
+    all_audit_boards_signed_off = all(
+        ab.signed_off_at is not None for ab in round.audit_boards
+    )
+    return all_audit_boards_set_up and all_audit_boards_signed_off
+
+
+SIGN_OFF_AUDIT_BOARD_REQUEST_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "memberName1": {"type": "string"},
+        "memberName2": {"type": "string"},
+    },
+    "additionalProperties": False,
+    "required": ["memberName1", "memberName2"],
+}
+
+# Raises if invalid
+def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):
+    validate(sign_off_request, SIGN_OFF_AUDIT_BOARD_REQUEST_SCHEMA)
+
+    for name in [sign_off_request["memberName1"], sign_off_request["memberName2"]]:
+        if name not in {audit_board.member_1, audit_board.member_2}:
+            raise BadRequest(f"Audit board member name did not match: {name}")
+
+    if any(b.vote is None for b in audit_board.sampled_ballots):
+        raise Conflict(f"Audit board is not finished auditing all assigned ballots")
+
+
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/sign-off",
+    methods=["POST"],
+)
+@with_audit_board_access
+def sign_off_audit_board(
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    round: Round,
+    audit_board: AuditBoard,
+):
+    validate_sign_off(request.get_json(), audit_board)
+
+    audit_board.signed_off_at = datetime.utcnow()
+
+    if is_round_complete(election, round):
+        end_round(election, round)
+
+    db.session.commit()
+
+    return jsonify(status="ok")
