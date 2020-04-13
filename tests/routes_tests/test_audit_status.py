@@ -60,6 +60,7 @@ def test_audit_status(client, election_id):
                 }
             ],
             "frozenAt": assert_is_date,
+            "isMultiJurisdiction": False,
             "jurisdictions": [
                 {
                     "auditBoards": [
