@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_talisman import Talisman
 from werkzeug.wrappers import Request
+from urllib.parse import urlparse
 
 from config import (
     STATIC_FOLDER,
@@ -16,7 +17,7 @@ if FLASK_ENV not in DEVELOPMENT_ENVS:
     # Restrict which hosts we trust when not in dev/test. This works by causing
     # anything accessing the request URL (i.e. `request.url` or similar) to
     # throw an exception if it doesn't match one of the values in this list.
-    Request.trusted_hosts = [HTTP_ORIGIN]
+    Request.trusted_hosts = [str(urlparse(HTTP_ORIGIN).hostname)]
 
 app = Flask(__name__, static_folder=STATIC_FOLDER)
 app.testing = FLASK_ENV == "test"
