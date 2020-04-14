@@ -120,6 +120,7 @@ const Contests: React.FC<IProps> = ({
                       value: j.id,
                       checked: contestJurisdictions.indexOf(j.id) > -1,
                     }))
+                    console.log(contestJurisdictions, jurisdictionOptions)
                     return (
                       /* eslint-disable react/no-array-index-key */
                       <React.Fragment key={i}>

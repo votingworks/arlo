@@ -26,24 +26,25 @@ const DropdownCheckboxList = ({
   optionList,
   contestIndex,
 }: IProps) => {
+  const jurisdictionList = getIn(
+    values,
+    `contests[${contestIndex}].jurisdictionIds`
+  )
   const updateList = (value: string, checked: boolean) => {
-    const newList = [
-      ...getIn(values, `contests[${contestIndex}].jurisdictionIds`),
-    ]
-    if (checked) {
-      newList.push(value)
-    } else {
-      const itemIndex = newList.indexOf(value)
-      newList.splice(itemIndex, 1)
+    const itemIndex = jurisdictionList.indexOf(value)
+    if (checked && itemIndex === -1) {
+      jurisdictionList.push(value)
+    } else if (!checked && itemIndex > -1) {
+      jurisdictionList.splice(itemIndex, 1)
     }
-    setFieldValue(`contests[${contestIndex}].jurisdictionIds`, newList)
+    setFieldValue(`contests[${contestIndex}].jurisdictionIds`, jurisdictionList)
   }
   const menu = (
     <Menu>
-      {optionList.map((v, i) => (
+      {optionList.map(v => (
         <Menu.Item text={v.title} key={v.value} shouldDismissPopover={false}>
           <Checkbox
-            checked={getIn(values, `jurisdictionIds[${i}].checked`)}
+            checked={jurisdictionList.indexOf(v.value) > -1}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               updateList(v.value, e.currentTarget.checked)
             }
