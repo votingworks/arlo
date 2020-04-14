@@ -1,8 +1,19 @@
 import React from 'react'
+import styled from 'styled-components'
 import { FormikProps, getIn } from 'formik'
 import { Popover, Position, Menu, Checkbox } from '@blueprintjs/core'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { IContests } from './types'
+
+const CustomMenuItem = styled.li`
+  .bp3-menu-item {
+    display: inline;
+  }
+  .bp3-checkbox {
+    float: right;
+    margin: 0;
+  }
+`
 
 export type ICheckboxList = {
   title: string
@@ -42,14 +53,24 @@ const DropdownCheckboxList = ({
   const menu = (
     <Menu>
       {optionList.map(v => (
-        <Menu.Item text={v.title} key={v.value} shouldDismissPopover={false}>
+        <CustomMenuItem key={v.value}>
+          <span className="bp3-menu-item">{v.title}</span>
           <Checkbox
+            inline
             checked={jurisdictionList.indexOf(v.value) > -1}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               updateList(v.value, e.currentTarget.checked)
             }
           />
-        </Menu.Item>
+        </CustomMenuItem>
+        // <Menu.Item text={v.title} key={v.value} shouldDismissPopover={false}>
+        //   <Checkbox
+        //     checked={jurisdictionList.indexOf(v.value) > -1}
+        //     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+        //       updateList(v.value, e.currentTarget.checked)
+        //     }
+        //   />
+        // </Menu.Item>
       ))}
     </Menu>
   )
