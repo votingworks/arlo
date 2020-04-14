@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_talisman import Talisman
 from werkzeug.wrappers import Request
+from werkzeug.middleware.proxy_fix import ProxyFix
 from urllib.parse import urlparse
 
 from config import (
@@ -20,6 +21,7 @@ if FLASK_ENV not in DEVELOPMENT_ENVS:
     Request.trusted_hosts = [str(urlparse(HTTP_ORIGIN).hostname)]
 
 app = Flask(__name__, static_folder=STATIC_FOLDER)
+app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
 app.testing = FLASK_ENV == "test"
 T = Talisman(
     app,
