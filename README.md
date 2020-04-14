@@ -98,7 +98,9 @@ Arlo is configured mostly through environment variables:
 
 - `ARLO_SESSION_SECRET`: the secret key used to encrypt/auth client-side cookie sessions
 - `ARLO_HTTP_ORIGIN`: the proper HTTP/HTTPS origin where this Arlo server is running, e.g. https://arlo.example.com:8443 (as any web origin, no trailing slash)
-- `ARLO_AUDITADMIN_AUTH0_BASE_URL`, `ARLO_AUDITADMIN_AUTH0_CLIENT_ID`, `ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the auth0 app used for audit admins.
+- `ARLO_AUTH0_BASE_URL`: base url for the auth0 tenant used for user authentication
+- `ARLO_AUTH0_AUDITADMIN_CLIENT_ID`, `ARLO_AUTH0_AUDITADMIN_CLIENT_SECRET`: client id and client secret for the auth0 app used for audit admins
+- `ARLO_AUTH0_JURISDICTIONADMIN_CLIENT_ID`, `ARLO_AUTH0_JURISDICTIONADMIN_CLIENT_SECRET`: client id and client secret for the auth0 app used for jurisdiction admins
 
 ### Creating Organizations and Administrators
 

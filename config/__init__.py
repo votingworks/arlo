@@ -121,31 +121,20 @@ def read_http_origin() -> str:
 HTTP_ORIGIN = read_http_origin()
 
 
-def read_auditadmin_auth0_creds() -> Tuple[str, str, str]:
+def read_auth0_creds() -> Tuple[str, str, str, str, str]:
     return (
-        os.environ.get("ARLO_AUDITADMIN_AUTH0_BASE_URL", ""),
-        os.environ.get("ARLO_AUDITADMIN_AUTH0_CLIENT_ID", ""),
-        os.environ.get("ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET", ""),
+        os.environ.get("ARLO_AUTH0_BASE_URL", ""),
+        os.environ.get("ARLO_AUTH0_AUDITADMIN_CLIENT_ID", ""),
+        os.environ.get("ARLO_AUTH0_AUDITADMIN_CLIENT_SECRET", ""),
+        os.environ.get("ARLO_AUTH0_JURISDICTIONADMIN_CLIENT_ID", ""),
+        os.environ.get("ARLO_AUTH0_JURISDICTIONADMIN_CLIENT_SECRET", ""),
     )
 
 
 (
-    AUDITADMIN_AUTH0_BASE_URL,
-    AUDITADMIN_AUTH0_CLIENT_ID,
-    AUDITADMIN_AUTH0_CLIENT_SECRET,
-) = read_auditadmin_auth0_creds()
-
-
-def read_jurisdictionadmin_auth0_creds() -> Tuple[str, str, str]:
-    return (
-        os.environ.get("ARLO_JURISDICTIONADMIN_AUTH0_BASE_URL", ""),
-        os.environ.get("ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_ID", ""),
-        os.environ.get("ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_SECRET", ""),
-    )
-
-
-(
-    JURISDICTIONADMIN_AUTH0_BASE_URL,
-    JURISDICTIONADMIN_AUTH0_CLIENT_ID,
-    JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
-) = read_jurisdictionadmin_auth0_creds()
+    AUTH0_BASE_URL,
+    AUTH0_AUDITADMIN_CLIENT_ID,
+    AUTH0_AUDITADMIN_CLIENT_SECRET,
+    AUTH0_JURISDICTIONADMIN_CLIENT_ID,
+    AUTH0_JURISDICTIONADMIN_CLIENT_SECRET,
+) = read_auth0_creds()

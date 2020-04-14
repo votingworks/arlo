@@ -1,4 +1,5 @@
-import os, datetime, csv, io, json, uuid, hmac, urllib.parse
+import os, datetime, csv, io, json, uuid, hmac
+from urllib.parse import urljoin, urlencode
 
 from flask import jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
@@ -24,16 +25,12 @@ from arlo_server.errors import handle_unique_constraint_error
 from arlo_server.ballots import ballot_retrieval_list
 
 from config import (
-    AUDITADMIN_AUTH0_BASE_URL,
-    AUDITADMIN_AUTH0_CLIENT_ID,
-    AUDITADMIN_AUTH0_CLIENT_SECRET,
+    AUTH0_BASE_URL,
+    AUTH0_AUDITADMIN_CLIENT_ID,
+    AUTH0_AUDITADMIN_CLIENT_SECRET,
+    AUTH0_JURISDICTIONADMIN_CLIENT_ID,
+    AUTH0_JURISDICTIONADMIN_CLIENT_SECRET,
 )
-from config import (
-    JURISDICTIONADMIN_AUTH0_BASE_URL,
-    JURISDICTIONADMIN_AUTH0_CLIENT_ID,
-    JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
-)
-
 from util.ballot_manifest import sample_ballots
 from util.isoformat import isoformat
 from util.jsonschema import validate
@@ -1081,21 +1078,21 @@ oauth = OAuth(app)
 
 auth0_aa = oauth.register(
     "auth0_aa",
-    client_id=AUDITADMIN_AUTH0_CLIENT_ID,
-    client_secret=AUDITADMIN_AUTH0_CLIENT_SECRET,
-    api_base_url=AUDITADMIN_AUTH0_BASE_URL,
-    access_token_url=f"{AUDITADMIN_AUTH0_BASE_URL}/oauth/token",
-    authorize_url=f"{AUDITADMIN_AUTH0_BASE_URL}/authorize",
+    client_id=AUTH0_AUDITADMIN_CLIENT_ID,
+    client_secret=AUTH0_AUDITADMIN_CLIENT_SECRET,
+    api_base_url=AUTH0_BASE_URL,
+    access_token_url=urljoin(AUTH0_BASE_URL, "/oauth/token"),
+    authorize_url=urljoin(AUTH0_BASE_URL, "/authorize"),
     client_kwargs={"scope": "openid profile email"},
 )
 
 auth0_ja = oauth.register(
     "auth0_ja",
-    client_id=JURISDICTIONADMIN_AUTH0_CLIENT_ID,
-    client_secret=JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
-    api_base_url=JURISDICTIONADMIN_AUTH0_BASE_URL,
-    access_token_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/oauth/token",
-    authorize_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/authorize",
+    client_id=AUTH0_JURISDICTIONADMIN_CLIENT_ID,
+    client_secret=AUTH0_JURISDICTIONADMIN_CLIENT_SECRET,
+    api_base_url=AUTH0_BASE_URL,
+    access_token_url=urljoin(AUTH0_BASE_URL, "/oauth/token"),
+    authorize_url=urljoin(AUTH0_BASE_URL, "/authorize"),
     client_kwargs={"scope": "openid profile email"},
 )
 
@@ -1146,19 +1143,13 @@ def logout():
 
     # request auth0 logout and come back here when that's done
     return_url = f"{request.host_url}"
-    params = urllib.parse.urlencode({"returnTo": return_url})
-
-    base_url = (
-        AUDITADMIN_AUTH0_BASE_URL
-        if user_type == UserType.AUDIT_ADMIN
-        else JURISDICTIONADMIN_AUTH0_BASE_URL
-    )
-    return redirect(f"{base_url}/v2/logout?{params}")
+    params = urlencode({"returnTo": return_url})
+    return redirect(urljoin(AUTH0_BASE_URL, f"/v2/logout?{params}"))
 
 
 @app.route("/auth/auditadmin/start")
 def auditadmin_login():
-    redirect_uri = urllib.parse.urljoin(request.host_url, AUDITADMIN_OAUTH_CALLBACK_URL)
+    redirect_uri = urljoin(request.host_url, AUDITADMIN_OAUTH_CALLBACK_URL)
     return auth0_aa.authorize_redirect(redirect_uri=redirect_uri)
 
 
@@ -1178,9 +1169,7 @@ def auditadmin_login_callback():
 
 @app.route("/auth/jurisdictionadmin/start")
 def jurisdictionadmin_login():
-    redirect_uri = urllib.parse.urljoin(
-        request.host_url, JURISDICTIONADMIN_OAUTH_CALLBACK_URL
-    )
+    redirect_uri = urljoin(request.host_url, JURISDICTIONADMIN_OAUTH_CALLBACK_URL)
     return auth0_ja.authorize_redirect(redirect_uri=redirect_uri)
 
 
