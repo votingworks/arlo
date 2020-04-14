@@ -106,8 +106,10 @@ def read_http_origin() -> str:
     if not http_origin:
         if FLASK_ENV in DEVELOPMENT_ENVS:
             http_origin = "http://localhost:3000"
-        elif FLASK_ENV == "staging" and "HEROKU_PR_NUMBER" in os.environ:
-            http_origin = f"https://vx-arlo-staging-pr-{os.environ.get('HEROKU_PR_NUMBER')}.herokuapp.com"
+        # For Heroku Review Apps, which get created automatically for each pull
+        # request, we need to create the http origin based on the app name.
+        elif FLASK_ENV == "staging":
+            http_origin = f"https://{os.environ.get('HEROKU_APP_NAME')}.herokuapp.com"
         else:
             raise Exception(
                 "ARLO_HTTP_ORIGIN env var, e.g. https://arlo.example.com, is missing"
