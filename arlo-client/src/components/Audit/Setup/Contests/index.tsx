@@ -26,7 +26,7 @@ import { IContest, ICandidate } from '../../../../types'
 import { api } from '../../../utilities'
 import DropdownCheckboxList from './DropdownCheckboxList'
 
-type IJurisdictions = {
+export type IJurisdictions = {
   id: string
   name: string
 }[]

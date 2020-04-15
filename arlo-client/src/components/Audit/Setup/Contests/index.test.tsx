@@ -4,10 +4,11 @@ import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { regexpEscape } from '../../../testUtilities'
 import * as utilities from '../../../utilities'
-import Contests from './index'
+import Contests, { IJurisdictions } from './index'
 import relativeStages from '../_mocks'
 import { contestsInputMocks, contestMocks } from './_mocks'
 import { numberifyContest, IContestNumbered } from './useContestsApi'
+import { IContests } from './types'
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 const apiMock: jest.SpyInstance<
@@ -18,7 +19,30 @@ const checkAndToastMock: jest.SpyInstance<
   ReturnType<typeof utilities.checkAndToast>,
   Parameters<typeof utilities.checkAndToast>
 > = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
-apiMock.mockResolvedValue(contestMocks.emptyTargeted)
+
+const generateApiMock = (
+  contestsReturn: IContests | Error | { status: 'ok' },
+  jurisdictionReturn:
+    | { jurisdictions: IJurisdictions }
+    | Error
+    | { status: 'ok' }
+) => async (
+  endpoint: string
+): Promise<
+  IContests | { jurisdictions: IJurisdictions } | Error | { status: 'ok' }
+> => {
+  switch (endpoint) {
+    case '/election/1/jurisdiction':
+      return jurisdictionReturn
+    case '/election/1/contest':
+    default:
+      return contestsReturn
+  }
+}
+
+apiMock.mockResolvedValue(
+  generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
+)
 
 checkAndToastMock.mockReturnValue(false)
 
@@ -72,7 +96,9 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('renders empty opportunistic state correctly', () => {
-    apiMock.mockResolvedValue(contestMocks.emptyOpportunistic)
+    apiMock.mockResolvedValue(
+      generateApiMock(contestMocks.emptyOpportunistic, { jurisdictions: [] })
+    )
     const { container } = render(
       <Contests
         locked={false}
@@ -84,7 +110,9 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('renders filled targeted state correctly', () => {
-    apiMock.mockResolvedValue(contestMocks.filledTargeted)
+    apiMock.mockResolvedValue(
+      generateApiMock(contestMocks.filledTargeted, { jurisdictions: [] })
+    )
     const { container } = render(
       <Contests
         locked={false}
@@ -96,7 +124,9 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('renders filled opportunistic state correctly', () => {
-    apiMock.mockResolvedValue(contestMocks.filledOpportunistic)
+    apiMock.mockResolvedValue(
+      generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
+    )
     const { container } = render(
       <Contests
         locked={false}
@@ -140,6 +170,9 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('adds and removes choices', async () => {
+    apiMock.mockResolvedValue(
+      generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
+    )
     const { getByText, getAllByText, queryAllByText } = render(
       <Contests
         locked={false}
@@ -164,7 +197,9 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('is able to submit the form successfully', async () => {
-    apiMock.mockResolvedValue(contestMocks.emptyTargeted)
+    apiMock.mockResolvedValue(
+      generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
+    )
     const { getByLabelText, getByText } = render(
       <Contests
         locked={false}
@@ -347,9 +382,15 @@ describe('Audit Setup > Contests', () => {
 
   it('handles api request error on submission', async () => {
     apiMock
-      .mockResolvedValueOnce(contestMocks.emptyTargeted)
-      .mockResolvedValueOnce(contestMocks.emptyTargeted)
-      .mockRejectedValue(new Error('Network error'))
+      .mockResolvedValueOnce(
+        generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
+      )
+      .mockResolvedValueOnce(
+        generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
+      )
+      .mockRejectedValue(
+        generateApiMock(new Error('Network error'), { jurisdictions: [] })
+      )
     const { getByLabelText, getByText, container } = render(
       <Contests
         locked={false}
@@ -378,9 +419,15 @@ describe('Audit Setup > Contests', () => {
 
   it('handles submission when there is a pre-existing contest', async () => {
     apiMock
-      .mockResolvedValueOnce(contestMocks.filledOpportunistic)
-      .mockResolvedValueOnce(contestMocks.filledOpportunistic)
-      .mockResolvedValue({ status: 'ok' })
+      .mockResolvedValueOnce(
+        generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
+      )
+      .mockResolvedValueOnce(
+        generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
+      )
+      .mockRejectedValue(
+        generateApiMock({ status: 'ok' }, { jurisdictions: [] })
+      )
     const { getByLabelText, getByText } = render(
       <Contests
         locked={false}

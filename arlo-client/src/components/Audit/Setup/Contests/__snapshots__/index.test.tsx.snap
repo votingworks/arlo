@@ -802,6 +802,38 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
           </div>
         </label>
       </div>
+      <div
+        class="sc-htpNat kLGmUl"
+      >
+        <h3
+          class="bp3-heading sc-ifAKCX fYInwY"
+        >
+          Contest Universe
+        </h3>
+        <div
+          class="sc-bxivhb fbVQhV"
+        >
+          Select the jurisdictions where this contest appeared on the ballot.
+        </div>
+        <span
+          class="bp3-popover-wrapper"
+        >
+          <span
+            class="bp3-popover-target"
+          >
+            <button
+              class="bp3-button sc-gZMcBi eZVGYn"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Select Jurisdictions
+              </span>
+            </button>
+          </span>
+        </span>
+      </div>
     </div>
     <div
       class="sc-gqjmRU bEkPjh"
@@ -1078,6 +1110,38 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
             </div>
           </div>
         </label>
+      </div>
+      <div
+        class="sc-htpNat kLGmUl"
+      >
+        <h3
+          class="bp3-heading sc-ifAKCX fYInwY"
+        >
+          Contest Universe
+        </h3>
+        <div
+          class="sc-bxivhb fbVQhV"
+        >
+          Select the jurisdictions where this contest appeared on the ballot.
+        </div>
+        <span
+          class="bp3-popover-wrapper"
+        >
+          <span
+            class="bp3-popover-target"
+          >
+            <button
+              class="bp3-button sc-gZMcBi eZVGYn"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Select Jurisdictions
+              </span>
+            </button>
+          </span>
+        </span>
       </div>
     </div>
     <div
@@ -1356,6 +1420,38 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
           </div>
         </label>
       </div>
+      <div
+        class="sc-htpNat kLGmUl"
+      >
+        <h3
+          class="bp3-heading sc-ifAKCX fYInwY"
+        >
+          Contest Universe
+        </h3>
+        <div
+          class="sc-bxivhb fbVQhV"
+        >
+          Select the jurisdictions where this contest appeared on the ballot.
+        </div>
+        <span
+          class="bp3-popover-wrapper"
+        >
+          <span
+            class="bp3-popover-target"
+          >
+            <button
+              class="bp3-button sc-gZMcBi eZVGYn"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Select Jurisdictions
+              </span>
+            </button>
+          </span>
+        </span>
+      </div>
     </div>
     <div
       class="sc-gqjmRU bEkPjh"
@@ -1632,6 +1728,38 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
             </div>
           </div>
         </label>
+      </div>
+      <div
+        class="sc-htpNat kLGmUl"
+      >
+        <h3
+          class="bp3-heading sc-ifAKCX fYInwY"
+        >
+          Contest Universe
+        </h3>
+        <div
+          class="sc-bxivhb fbVQhV"
+        >
+          Select the jurisdictions where this contest appeared on the ballot.
+        </div>
+        <span
+          class="bp3-popover-wrapper"
+        >
+          <span
+            class="bp3-popover-target"
+          >
+            <button
+              class="bp3-button sc-gZMcBi eZVGYn"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Select Jurisdictions
+              </span>
+            </button>
+          </span>
+        </span>
       </div>
     </div>
     <div
