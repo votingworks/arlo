@@ -13,8 +13,11 @@ from tests.helpers import (
     compare_json,
     assert_is_date,
     asserts_startswith,
+    set_logged_in_user,
+    DEFAULT_JA_EMAIL,
 )
 from arlo_server import db
+from arlo_server.auth import UserType
 from arlo_server.models import (
     AuditBoard,
     SampledBallot,
@@ -77,8 +80,9 @@ def test_jurisdictions_list_no_manifest(
 def test_jurisdictions_list_with_manifest(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/manifest",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -143,8 +147,9 @@ def test_jurisdictions_list_with_manifest(
 
 
 def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/manifest",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"1,101\n"),

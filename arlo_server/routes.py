@@ -1,12 +1,15 @@
 import os, datetime, csv, io, json, uuid, hmac, urllib.parse
+from typing import Dict, List, Tuple
 
 from flask import jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
+from werkzeug.exceptions import NotFound, Forbidden
 
-from audit_math import bravo, sampler_contest
+from audit_math import bravo, sampler_contest, sampler
 from xkcdpass import xkcd_password as xp
 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.session import Session
 
 from authlib.flask.client import OAuth
 
@@ -22,6 +25,11 @@ from arlo_server.auth import (
 from arlo_server.models import *
 from arlo_server.errors import handle_unique_constraint_error
 from arlo_server.ballots import ballot_retrieval_list
+from arlo_server.ballot_manifest import (
+    save_ballot_manifest_file,
+    clear_ballot_manifest_file,
+)
+from util.binpacking import BalancedBucketList, Bucket
 
 from config import (
     AUDITADMIN_AUTH0_BASE_URL,
@@ -34,7 +42,6 @@ from config import (
     JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
 )
 
-from util.ballot_manifest import sample_ballots
 from util.isoformat import isoformat
 from util.jsonschema import validate
 from util.process_file import serialize_file, serialize_file_processing
@@ -155,6 +162,97 @@ def check_round(election, jurisdiction_id, round_id):
     db.session.commit()
 
     return is_complete
+
+
+def sample_ballots(session: Session, election: Election, round: Round):
+    # assume only one contest
+    round_contest = round.round_contests[0]
+    jurisdiction = election.jurisdictions[0]
+
+    num_sampled = (
+        session.query(SampledBallotDraw)
+        .join(SampledBallotDraw.batch)
+        .filter_by(jurisdiction_id=jurisdiction.id)
+        .count()
+    )
+    if not num_sampled:
+        num_sampled = 0
+
+    chosen_sample_size = round_contest.sample_size
+
+    # the sampler needs to have the same inputs given the same manifest
+    # so we use the batch name, rather than the batch id
+    # (because the batch ID is an internally generated uuid
+    #  that changes from one run to the next.)
+    manifest = {}
+    batch_id_from_name = {}
+    for batch in jurisdiction.batches:
+        manifest[batch.name] = batch.num_ballots
+        batch_id_from_name[batch.name] = batch.id
+
+    sample = sampler.draw_sample(
+        election.random_seed, manifest, chosen_sample_size, num_sampled=num_sampled,
+    )
+
+    audit_boards = jurisdiction.audit_boards
+
+    batch_sizes: Dict[str, int] = {}
+    batches_to_ballots: Dict[str, List[Tuple[int, str, int]]] = {}
+    # Build batch - batch_size map
+    for (ticket_number, (batch_name, ballot_position), sample_number) in sample:
+        if batch_name in batch_sizes:
+            if (
+                sample_number == 1
+            ):  # if we've already seen it, it doesn't affect batch size
+                batch_sizes[batch_name] += 1
+            batches_to_ballots[batch_name].append(
+                (ballot_position, ticket_number, sample_number)
+            )
+        else:
+            batch_sizes[batch_name] = 1
+            batches_to_ballots[batch_name] = [
+                (ballot_position, ticket_number, sample_number)
+            ]
+
+    # Create the buckets and initially assign batches
+    buckets = [Bucket(audit_board.name) for audit_board in audit_boards]
+    for i, batch in enumerate(batch_sizes):
+        buckets[i % len(audit_boards)].add_batch(batch, batch_sizes[batch])
+
+    # Now assign batchest fairly
+    bl = BalancedBucketList(buckets)
+
+    # read audit board and batch info out
+    for audit_board_num, bucket in enumerate(bl.buckets):
+        audit_board = audit_boards[audit_board_num]
+        for batch_name in bucket.batches:
+
+            for (ballot_position, ticket_number, sample_number) in batches_to_ballots[
+                batch_name
+            ]:
+                # sampler is 0-indexed, we're 1-indexing here
+                ballot_position += 1
+
+                batch_id = batch_id_from_name[batch_name]
+
+                if sample_number == 1:
+                    sampled_ballot = SampledBallot(
+                        batch_id=batch_id,
+                        ballot_position=ballot_position,
+                        audit_board_id=audit_board.id,
+                    )
+                    session.add(sampled_ballot)
+
+                sampled_ballot_draw = SampledBallotDraw(
+                    batch_id=batch_id,
+                    ballot_position=ballot_position,
+                    round_id=round.id,
+                    ticket_number=ticket_number,
+                )
+
+                session.add(sampled_ballot_draw)
+
+    session.commit()
 
 
 def serialize_members(audit_board):
@@ -525,45 +623,19 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
     election = get_election(election_id)
     jurisdiction = Jurisdiction.query.filter_by(
         election_id=election.id, id=jurisdiction_id
-    ).one()
+    ).first()
 
     if not jurisdiction:
-        return (
-            jsonify(
-                errors=[
-                    {
-                        "message": f"No jurisdiction found with id: {jurisdiction_id}",
-                        "errorType": "NotFoundError",
-                    }
-                ]
-            ),
-            404,
-        )
+        raise NotFound()
+    if election.is_multi_jurisdiction:
+        raise Forbidden()
 
     if request.method == "DELETE":
-        jurisdiction.manifest_num_ballots = None
-        jurisdiction.manifest_num_batches = None
+        clear_ballot_manifest_file(jurisdiction)
+    else:
+        save_ballot_manifest_file(request.files["manifest"], jurisdiction)
 
-        if jurisdiction.manifest_file_id:
-            File.query.filter_by(id=jurisdiction.manifest_file_id).delete()
-        Batch.query.filter_by(jurisdiction=jurisdiction).delete()
-
-        db.session.commit()
-
-        return jsonify(status="ok")
-
-    manifest = request.files["manifest"]
-    manifest_string = manifest.read().decode("utf-8-sig")
-    jurisdiction.manifest_file = File(
-        id=str(uuid.uuid4()),
-        name=manifest.filename,
-        contents=manifest_string,
-        uploaded_at=datetime.datetime.utcnow(),
-    )
-
-    db.session.add(jurisdiction)
     db.session.commit()
-
     return jsonify(status="ok")
 
 

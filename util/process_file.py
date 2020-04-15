@@ -7,6 +7,10 @@ from arlo_server.models import File, ProcessingStatus
 from util.isoformat import isoformat
 
 
+class UserError(Exception):
+    pass
+
+
 def process_file(session: Session, file: File, callback: Callable[[], None]) -> bool:
     if file.processing_started_at:
         return False
@@ -38,7 +42,9 @@ def process_file(session: Session, file: File, callback: Callable[[], None]) -> 
         file.processing_error = str(error)
         session.add(file)
         session.commit()
-        raise error
+        if not isinstance(error, UserError):
+            raise error
+        return True
 
 
 def serialize_file(file: File, contents=False) -> Dict[str, Any]:

@@ -3,7 +3,7 @@ import time
 from arlo_server import db
 from arlo_server.models import Election, File, Jurisdiction, RoundContest
 from arlo_server.routes import compute_sample_sizes
-from util.ballot_manifest import process_ballot_manifest_file
+from arlo_server.ballot_manifest import process_ballot_manifest_file
 from util.jurisdiction_bulk_update import process_jurisdictions_file
 
 

@@ -26,9 +26,9 @@ from tests.helpers import (
     put_json,
     post_json,
     create_election,
-    create_jurisdiction_admin,
     set_logged_in_user,
     DEFAULT_JA_EMAIL,
+    DEFAULT_AA_EMAIL,
 )
 from bgcompute import (
     bgcompute_update_election_jurisdictions_file,
@@ -65,17 +65,19 @@ def election_id(client: FlaskClient) -> Generator[str, None, None]:
 def jurisdiction_ids(
     client: FlaskClient, election_id: str
 ) -> Generator[List[str], None, None]:
-    # We expect the API to order the jurisdictions by name, so we upload them
-    # out of order.
     rv = client.put(
         f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
+                # We expect the API to order the jurisdictions by name, so we
+                # upload them out of order.
                 io.BytesIO(
-                    b"Jurisdiction,Admin Email\n"
-                    b"J2,a2@example.com\n"
-                    b"J3,a3@example.com\n"
-                    b"J1,a1@example.com"
+                    (
+                        "Jurisdiction,Admin Email\n"
+                        f"J2,{DEFAULT_JA_EMAIL}\n"
+                        "J3,j3@example.com\n"
+                        f"J1,{DEFAULT_JA_EMAIL}\n"
+                    ).encode()
                 ),
                 "jurisdictions.csv",
             )
@@ -129,8 +131,9 @@ def election_settings(client: FlaskClient, election_id: str) -> None:
 
 @pytest.fixture
 def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/manifest",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -146,7 +149,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     )
     assert_ok(rv)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/manifest",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -173,6 +176,7 @@ def round_1_id(
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ) -> Generator[str, None, None]:
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/round",
@@ -192,6 +196,7 @@ def round_2_id(
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ) -> Generator[str, None, None]:
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     # Fake that the first round got completed by setting Round.ended_at.
     # We also need to add RoundContestResults so that the next round sample
     # size can get computed.
@@ -226,12 +231,9 @@ def round_2_id(
 
 @pytest.fixture
 def audit_board_round_1_ids(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: str,
-    round_1_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: str, round_1_id: str,
 ) -> Generator[List[str], None, None]:
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -247,12 +249,9 @@ def audit_board_round_1_ids(
 
 @pytest.fixture
 def audit_board_round_2_ids(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: str,
-    round_2_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: str, round_2_id: str,
 ) -> Generator[List[str], None, None]:
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
@@ -268,12 +267,6 @@ def audit_board_round_2_ids(
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
     yield [ab["id"] for ab in audit_boards]
-
-
-@pytest.fixture
-def as_jurisdiction_admin(client: FlaskClient, jurisdiction_ids: List[str]):
-    create_jurisdiction_admin(jurisdiction_ids[0])
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
 
 # Add special routes to test our auth decorators. This fixture will run once before

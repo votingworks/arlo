@@ -12,6 +12,7 @@ from tests.helpers import (
     assert_is_date,
     create_jurisdiction_admin,
     set_logged_in_user,
+    DEFAULT_JA_EMAIL,
 )
 from arlo_server.models import (
     db,
@@ -69,12 +70,9 @@ def assert_ballots_got_assigned_correctly(
 
 
 def test_audit_boards_list_empty(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
@@ -83,12 +81,9 @@ def test_audit_boards_list_empty(
 
 
 def test_audit_boards_create_one(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -104,12 +99,9 @@ def test_audit_boards_create_one(
 
 
 def test_audit_boards_list_one(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -197,12 +189,9 @@ def test_audit_boards_list_one(
 
 
 def test_audit_boards_create_two(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -218,12 +207,9 @@ def test_audit_boards_create_two(
 
 
 def test_audit_boards_list_two(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     AB1_SAMPLES = 54
 
     rv = post_json(
@@ -315,12 +301,9 @@ def test_audit_boards_list_two(
 
 
 def test_audit_boards_create_round_2(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_2_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_2_id: str,
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
@@ -346,8 +329,8 @@ def test_audit_boards_list_round_2(
     jurisdiction_ids: List[str],
     round_1_id: str,
     round_2_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     J1_SAMPLES_ROUND_2 = 148  # 90% prob sample size
     AB1_SAMPLES_ROUND_2 = 92
     AB2_SAMPLES_ROUND_2 = 29
@@ -412,12 +395,9 @@ def test_audit_boards_list_round_2(
 
 
 def test_audit_boards_missing_field(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -432,12 +412,9 @@ def test_audit_boards_missing_field(
 
 
 def test_audit_boards_duplicate_name(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -452,12 +429,9 @@ def test_audit_boards_duplicate_name(
 
 
 def test_audit_boards_already_created(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    round_1_id: str,
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -487,8 +461,8 @@ def test_audit_boards_wrong_round(
     jurisdiction_ids: List[str],
     round_1_id: str,
     round_2_id: str,  # pylint: disable=unused-argument
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -507,8 +481,8 @@ def test_audit_boards_bad_round_id(
     election_id: str,
     jurisdiction_ids: List[str],
     round_1_id: str,  # pylint: disable=unused-argument
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/not-a-valid-id/audit-board",
