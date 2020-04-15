@@ -20,10 +20,8 @@ from tests.helpers import (
     assert_is_id,
     assert_is_date,
     set_logged_in_user,
-    create_jurisdiction_admin,
+    DEFAULT_JA_EMAIL,
 )
-
-JA_EMAIL = "ja@example.com"
 
 
 def test_rounds_list_empty(
@@ -33,8 +31,7 @@ def test_rounds_list_empty(
     rounds = json.loads(rv.data)
     assert rounds == {"rounds": []}
 
-    create_jurisdiction_admin(jurisdiction_ids[0], user_email=JA_EMAIL)
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round")
     rounds = json.loads(rv.data)
     assert rounds == {"rounds": []}
@@ -70,8 +67,7 @@ def test_rounds_create_one(
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)
 
-    create_jurisdiction_admin(jurisdiction_ids[0], user_email=JA_EMAIL)
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round")
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)
@@ -198,8 +194,7 @@ def test_rounds_create_two(
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)
 
-    create_jurisdiction_admin(jurisdiction_ids[0], user_email=JA_EMAIL)
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round")
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)

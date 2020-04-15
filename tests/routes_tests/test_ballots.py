@@ -1,5 +1,7 @@
 from flask.testing import FlaskClient
 from typing import List
+from tests.helpers import set_logged_in_user, DEFAULT_JA_EMAIL
+from arlo_server.auth import UserType
 
 
 def test_ja_ballot_retrieval_list_round_1(
@@ -8,8 +10,8 @@ def test_ja_ballot_retrieval_list_round_1(
     jurisdiction_ids: List[str],
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/retrieval-list"
     )
@@ -26,8 +28,8 @@ def test_ja_ballot_retrieval_list_round_2(
     jurisdiction_ids: List[str],
     round_2_id: str,
     audit_board_round_2_ids: str,  # pylint: disable=unused-argument
-    as_jurisdiction_admin,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/retrieval-list"
     )

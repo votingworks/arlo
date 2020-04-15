@@ -3,7 +3,6 @@ from flask.testing import FlaskClient
 import json, re, uuid
 from unittest.mock import Mock, MagicMock
 from urllib.parse import urlparse, parse_qs
-from typing import List
 
 from arlo_server.auth import UserType
 from arlo_server.models import db, AuditBoard, Round
@@ -143,9 +142,9 @@ def test_jurisdictionadmin_callback(
 
 
 def test_audit_board_log_in(
-    client: FlaskClient, election_id: str, audit_board_round_1_ids: List[str],
+    client: FlaskClient, election_id: str, audit_board_id: str,
 ):
-    audit_board = AuditBoard.query.get(audit_board_round_1_ids[0])
+    audit_board = AuditBoard.query.get(audit_board_id)
     rv = client.get(f"/auditboard/{audit_board.passphrase}")
     assert rv.status_code == 302
     location = urlparse(rv.location)
@@ -227,9 +226,9 @@ def test_auth_me_jurisdiction_admin(
 
 
 def test_auth_me_audit_board(
-    client: FlaskClient, audit_board_round_1_ids: List[str],
+    client: FlaskClient, audit_board_id: str,
 ):
-    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get("/auth/me")
     assert rv.status_code == 200
     assert json.loads(rv.data) == {}
