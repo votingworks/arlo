@@ -367,7 +367,8 @@ def test_audit_boards_list_round_2(
                     "signedOffAt": None,
                     "currentRoundStatus": {
                         "numSampledBallots": AB1_SAMPLES_ROUND_2,
-                        "numAuditedBallots": 0,
+                        # Some ballots got audited in round 1 and sampled again in round 2
+                        "numAuditedBallots": 9,
                     },
                 },
                 {
@@ -377,7 +378,7 @@ def test_audit_boards_list_round_2(
                     "signedOffAt": None,
                     "currentRoundStatus": {
                         "numSampledBallots": AB2_SAMPLES_ROUND_2,
-                        "numAuditedBallots": 0,
+                        "numAuditedBallots": 3,
                     },
                 },
                 {
@@ -389,7 +390,7 @@ def test_audit_boards_list_round_2(
                         "numSampledBallots": J1_SAMPLES_ROUND_2
                         - AB1_SAMPLES_ROUND_2
                         - AB2_SAMPLES_ROUND_2,
-                        "numAuditedBallots": 0,
+                        "numAuditedBallots": 2,
                     },
                 },
             ]
