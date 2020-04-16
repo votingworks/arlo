@@ -25,8 +25,8 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
         class="sc-bdVaJa fdbLH"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -36,10 +36,10 @@ exports[`EstimateSampleSize renders after contests creation correctly 1`] = `
               class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
             >
               <input
-                aria-labelledby="audit-name-label"
+                aria-labelledby="election-name-label"
                 class="bp3-input"
                 disabled=""
-                id="audit-name"
+                id="election-name"
                 name="name"
                 style="padding-right: 10px;"
                 value="contest name"
@@ -485,8 +485,8 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
         class="sc-bdVaJa fdbLH"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -496,10 +496,10 @@ exports[`EstimateSampleSize renders after contests creation correctly 2`] = `
               class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
             >
               <input
-                aria-labelledby="audit-name-label"
+                aria-labelledby="election-name-label"
                 class="bp3-input"
                 disabled=""
-                id="audit-name"
+                id="election-name"
                 name="name"
                 style="padding-right: 10px;"
                 value="contest name"
@@ -971,8 +971,8 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
         class="sc-bdVaJa fdbLH"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -982,10 +982,10 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 1`] = `
               class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
             >
               <input
-                aria-labelledby="audit-name-label"
+                aria-labelledby="election-name-label"
                 class="bp3-input"
                 disabled=""
-                id="audit-name"
+                id="election-name"
                 name="name"
                 style="padding-right: 10px;"
                 value="contest name"
@@ -1431,8 +1431,8 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
         class="sc-bdVaJa fdbLH"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -1442,10 +1442,10 @@ exports[`EstimateSampleSize renders after manifest is uploaded correctly 2`] = `
               class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
             >
               <input
-                aria-labelledby="audit-name-label"
+                aria-labelledby="election-name-label"
                 class="bp3-input"
                 disabled=""
-                id="audit-name"
+                id="election-name"
                 name="name"
                 style="padding-right: 10px;"
                 value="contest name"
@@ -1917,8 +1917,8 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
         class="sc-bdVaJa fdbLH"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -1928,10 +1928,10 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 1`]
               class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
             >
               <input
-                aria-labelledby="audit-name-label"
+                aria-labelledby="election-name-label"
                 class="bp3-input"
                 disabled=""
-                id="audit-name"
+                id="election-name"
                 name="name"
                 style="padding-right: 10px;"
                 value="contest name"
@@ -2377,8 +2377,8 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
         class="sc-bdVaJa fdbLH"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -2388,10 +2388,10 @@ exports[`EstimateSampleSize renders after sample size is estimated correctly 2`]
               class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
             >
               <input
-                aria-labelledby="audit-name-label"
+                aria-labelledby="election-name-label"
                 class="bp3-input"
                 disabled=""
-                id="audit-name"
+                id="election-name"
                 name="name"
                 style="padding-right: 10px;"
                 value="contest name"
@@ -2863,8 +2863,8 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
         class="sc-bdVaJa fdbLH"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -2874,10 +2874,10 @@ exports[`EstimateSampleSize renders during rounds stage correctly 1`] = `
               class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
             >
               <input
-                aria-labelledby="audit-name-label"
+                aria-labelledby="election-name-label"
                 class="bp3-input"
                 disabled=""
-                id="audit-name"
+                id="election-name"
                 name="name"
                 style="padding-right: 10px;"
                 value="contest name"
@@ -3323,8 +3323,8 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
         class="sc-bdVaJa fdbLH"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -3334,10 +3334,10 @@ exports[`EstimateSampleSize renders during rounds stage correctly 2`] = `
               class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
             >
               <input
-                aria-labelledby="audit-name-label"
+                aria-labelledby="election-name-label"
                 class="bp3-input"
                 disabled=""
-                id="audit-name"
+                id="election-name"
                 name="name"
                 style="padding-right: 10px;"
                 value="contest name"
@@ -3809,8 +3809,8 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
         class="sc-bdVaJa fdbLH"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -3820,9 +3820,9 @@ exports[`EstimateSampleSize renders empty state correctly 1`] = `
               class="bp3-input-group sc-htoDjs jVvDPF"
             >
               <input
-                aria-labelledby="audit-name-label"
+                aria-labelledby="election-name-label"
                 class="bp3-input"
-                id="audit-name"
+                id="election-name"
                 name="name"
                 style="padding-right: 10px;"
                 value=""
@@ -4275,8 +4275,8 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
         class="sc-bdVaJa fdbLH"
       >
         <label
-          for="audit-name"
-          id="audit-name-label"
+          for="election-name"
+          id="election-name-label"
         >
           Election Name
           <div
@@ -4286,9 +4286,9 @@ exports[`EstimateSampleSize renders empty state correctly 2`] = `
               class="bp3-input-group sc-htoDjs jVvDPF"
             >
               <input
-                aria-labelledby="audit-name-label"
+                aria-labelledby="election-name-label"
                 class="bp3-input"
-                id="audit-name"
+                id="election-name"
                 name="name"
                 style="padding-right: 10px;"
                 value=""

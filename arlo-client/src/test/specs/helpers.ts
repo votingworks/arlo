@@ -9,10 +9,10 @@ export const start = () => {
   browser.url('/')
   $('#audit-name').addValue('Audit Name')
   $('.bp3-button-text=Create a New Audit').click()
-  $('#audit-name').waitForExist(5000)
+  $('#election-name').waitForExist(5000)
 }
 export const fillFormOne = (online: boolean) => {
-  $('#audit-name').addValue('Election Name')
+  $('#election-name').addValue('Election Name')
   $('input[name="contests[0].name"]').addValue('Contest Name')
   $('input[name="contests[0].choices[0].name"]').addValue('Choice One')
   $('input[name="contests[0].choices[0].numVotes"]').addValue('792')

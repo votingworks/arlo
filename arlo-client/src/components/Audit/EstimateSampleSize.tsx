@@ -290,11 +290,11 @@ const EstimateSampleSize: React.FC<IProps> = ({
             <FormWrapper title="Administer an Audit">
               <FormSection>
                 {/* eslint-disable jsx-a11y/label-has-associated-control */}
-                <label htmlFor="audit-name" id="audit-name-label">
+                <label htmlFor="election-name" id="election-name-label">
                   Election Name
                   <Field
-                    id="audit-name"
-                    aria-labelledby="audit-name-label"
+                    id="election-name"
+                    aria-labelledby="election-name-label"
                     name="name"
                     disabled={audit.contests.length}
                     component={FormField}
