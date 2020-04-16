@@ -22,6 +22,9 @@
       "stylelint",
       "eslint --quiet --fix"
     ],
+    "*.+(ts|tsx)": [
+      "bash -c tsc"
+    ],
     "*.css": [
       "stylelint --config .stylelintrc-css.js --fix"
     ],
