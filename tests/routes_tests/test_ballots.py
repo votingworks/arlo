@@ -1,7 +1,162 @@
 from flask.testing import FlaskClient
 from typing import List
-from tests.helpers import set_logged_in_user, DEFAULT_JA_EMAIL
+import json
+
+from tests.helpers import (
+    set_logged_in_user,
+    DEFAULT_JA_EMAIL,
+    assert_is_id,
+    compare_json,
+    post_json,
+    assert_ok,
+)
 from arlo_server.auth import UserType
+
+J1_SAMPLES_ROUND_1 = 81  # Bravo sample size
+J1_SAMPLES_ROUND_2 = 148  # 90% prob sample size
+
+
+def test_ja_ballot_draws_bad_round_id(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/invalid-round-id/ballot-draws"
+    )
+    assert rv.status_code == 404
+
+
+def test_ja_ballot_draws_before_audit_boards_set_up(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballot-draws"
+    )
+    ballot_draws = json.loads(rv.data)["ballotDraws"]
+    assert ballot_draws == []
+
+
+def test_ja_ballot_draws_round_1(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballot-draws"
+    )
+    ballot_draws = json.loads(rv.data)["ballotDraws"]
+
+    assert len(ballot_draws) == J1_SAMPLES_ROUND_1
+    compare_json(
+        ballot_draws[0],
+        {
+            "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
+            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
+            "comment": None,
+            "position": 0,
+            "status": None,
+            "ticketNumber": "0.100384496",
+            "vote": None,
+        },
+    )
+
+    ballot_with_wrong_status = next(
+        (b for b in ballot_draws if b["status"] is not None), None
+    )
+    assert ballot_with_wrong_status is None
+
+    assert ballot_draws == sorted(
+        ballot_draws,
+        key=lambda b: (b["auditBoard"]["name"], b["batch"]["name"], b["position"],),
+    )
+
+    # Try auditing one ballot
+    rv = post_json(
+        client,
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch/{ballot_draws[0]['batch']['id']}/ballot/{ballot_draws[0]['position']}",
+        {"vote": "YES", "comment": "blah blah blah"},
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballot-draws"
+    )
+    ballot_draws = json.loads(rv.data)["ballotDraws"]
+
+    compare_json(
+        ballot_draws[0],
+        {
+            "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
+            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
+            "comment": "blah blah blah",
+            "position": 0,
+            "status": "AUDITED",
+            "ticketNumber": "0.100384496",
+            "vote": "YES",
+        },
+    )
+
+
+def test_ja_ballot_draws_round_2(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_2_id: str,
+    audit_board_round_2_ids: List[str],  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/ballot-draws"
+    )
+    ballot_draws = json.loads(rv.data)["ballotDraws"]
+
+    assert len(ballot_draws) == J1_SAMPLES_ROUND_2
+    compare_json(
+        ballot_draws[0],
+        {
+            "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
+            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
+            "comment": None,
+            "position": 4,
+            "status": None,
+            "ticketNumber": "0.136825434",
+            "vote": None,
+        },
+    )
+
+    previously_audited_ballots = [b for b in ballot_draws if b["status"] is not None]
+    assert len(previously_audited_ballots) == 14
+
+
+def test_ja_ballot_retrieval_list_bad_round_id(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/invalid-round-id/retrieval-list"
+    )
+    assert rv.status_code == 404
+
+
+def test_ja_ballot_retrieval_list_before_audit_boards_set_up(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/retrieval-list"
+    )
+    assert rv.status_code == 200
+    assert "attachment; filename=" in rv.headers["Content-Disposition"]
+
+    retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
+    assert (
+        retrieval_list
+        == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board\n"
+    )
 
 
 def test_ja_ballot_retrieval_list_round_1(

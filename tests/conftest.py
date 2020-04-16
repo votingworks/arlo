@@ -4,6 +4,7 @@ import io, uuid, json
 from datetime import datetime
 from typing import List, Generator
 from flask import jsonify
+from sqlalchemy.orm import joinedload
 
 from arlo_server import app, db
 from arlo_server.models import (
@@ -13,6 +14,7 @@ from arlo_server.models import (
     Round,
     RoundContestResult,
     Contest,
+    SampledBallotDraw,
     AuditBoard,
 )
 from arlo_server.auth import (
@@ -197,18 +199,29 @@ def round_2_id(
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ) -> Generator[str, None, None]:
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    # Fake that the first round got completed by setting Round.ended_at.
-    # We also need to add RoundContestResults so that the next round sample
-    # size can get computed.
-    round = Round.query.get(round_1_id)
-    round.ended_at = datetime.utcnow()
+
+    # Fake that the first round got completed by:
+    # - auditing all the sampled ballots
+    # - setting Round.ended_at
+    # - add RoundContestResults
+    WINNER_VOTES = 70
+    round = Round.query.options(
+        joinedload(Round.sampled_ballot_draws).joinedload(
+            SampledBallotDraw.sampled_ballot
+        )
+    ).get(round_1_id)
     contest = Contest.query.get(contest_id)
+    for ballot_draw in round.sampled_ballot_draws[:WINNER_VOTES]:
+        ballot_draw.sampled_ballot.vote = contest.choices[0].id
+    for ballot_draw in round.sampled_ballot_draws[WINNER_VOTES:]:
+        ballot_draw.sampled_ballot.vote = contest.choices[1].id
+    round.ended_at = datetime.utcnow()
     db.session.add(
         RoundContestResult(
             round_id=round.id,
             contest_id=contest.id,
             contest_choice_id=contest.choices[0].id,
-            result=70,
+            result=WINNER_VOTES,
         )
     )
     db.session.add(
@@ -216,7 +229,7 @@ def round_2_id(
             round_id=round.id,
             contest_id=contest.id,
             contest_choice_id=contest.choices[1].id,
-            result=49,
+            result=SAMPLE_SIZE - WINNER_VOTES,
         )
     )
     db.session.commit()
