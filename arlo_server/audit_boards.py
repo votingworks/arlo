@@ -164,6 +164,7 @@ def serialize_audit_board(audit_board: AuditBoard, round_status: JSONDict) -> JS
     return {
         "id": audit_board.id,
         "name": audit_board.name,
+        "passphrase": audit_board.passphrase,
         "signedOffAt": isoformat(audit_board.signed_off_at),
         "currentRoundStatus": round_status,
     }
