@@ -10,6 +10,7 @@ from tests.helpers import (
     compare_json,
     assert_is_id,
     assert_is_date,
+    assert_is_passphrase,
     create_jurisdiction_admin,
     set_logged_in_user,
     DEFAULT_JA_EMAIL,
@@ -120,6 +121,7 @@ def test_audit_boards_list_one(
                 {
                     "id": assert_is_id,
                     "name": "Audit Board #1",
+                    "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
                         "numSampledBallots": J1_SAMPLES,
@@ -149,6 +151,7 @@ def test_audit_boards_list_one(
                 {
                     "id": assert_is_id,
                     "name": "Audit Board #1",
+                    "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
                         "numSampledBallots": J1_SAMPLES,
@@ -177,6 +180,7 @@ def test_audit_boards_list_one(
                 {
                     "id": assert_is_id,
                     "name": "Audit Board #1",
+                    "passphrase": assert_is_passphrase,
                     "signedOffAt": assert_is_date,
                     "currentRoundStatus": {
                         "numSampledBallots": J1_SAMPLES,
@@ -231,6 +235,7 @@ def test_audit_boards_list_two(
                     "id": assert_is_id,
                     "name": "Audit Board #1",
                     "signedOffAt": None,
+                    "passphrase": assert_is_passphrase,
                     "currentRoundStatus": {
                         "numSampledBallots": AB1_SAMPLES,
                         "numAuditedBallots": 0,
@@ -239,6 +244,7 @@ def test_audit_boards_list_two(
                 {
                     "id": assert_is_id,
                     "name": "Audit Board #2",
+                    "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
                         "numSampledBallots": J1_SAMPLES - AB1_SAMPLES,
@@ -357,6 +363,7 @@ def test_audit_boards_list_round_2(
                 {
                     "id": assert_is_id,
                     "name": "Audit Board #1",
+                    "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
                         "numSampledBallots": AB1_SAMPLES_ROUND_2,
@@ -366,6 +373,7 @@ def test_audit_boards_list_round_2(
                 {
                     "id": assert_is_id,
                     "name": "Audit Board #2",
+                    "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
                         "numSampledBallots": AB2_SAMPLES_ROUND_2,
@@ -375,6 +383,7 @@ def test_audit_boards_list_round_2(
                 {
                     "id": assert_is_id,
                     "name": "Audit Board #3",
+                    "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
                         "numSampledBallots": J1_SAMPLES_ROUND_2
