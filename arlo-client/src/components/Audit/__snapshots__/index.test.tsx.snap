@@ -1034,8 +1034,8 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
           class="sc-bdVaJa fdbLH"
         >
           <label
-            for="audit-name"
-            id="audit-name-label"
+            for="election-name"
+            id="election-name-label"
           >
             Election Name
             <div
@@ -1045,10 +1045,10 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
                 class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
-                  aria-labelledby="audit-name-label"
+                  aria-labelledby="election-name-label"
                   class="bp3-input"
                   disabled=""
-                  id="audit-name"
+                  id="election-name"
                   name="name"
                   style="padding-right: 10px;"
                   value="contest name"
@@ -1737,8 +1737,8 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
           class="sc-bdVaJa fdbLH"
         >
           <label
-            for="audit-name"
-            id="audit-name-label"
+            for="election-name"
+            id="election-name-label"
           >
             Election Name
             <div
@@ -1748,10 +1748,10 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
                 class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
-                  aria-labelledby="audit-name-label"
+                  aria-labelledby="election-name-label"
                   class="bp3-input"
                   disabled=""
-                  id="audit-name"
+                  id="election-name"
                   name="name"
                   style="padding-right: 10px;"
                   value="contest name"
@@ -2201,8 +2201,8 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
           class="sc-bdVaJa fdbLH"
         >
           <label
-            for="audit-name"
-            id="audit-name-label"
+            for="election-name"
+            id="election-name-label"
           >
             Election Name
             <div
@@ -2212,9 +2212,9 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
                 class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
-                  aria-labelledby="audit-name-label"
+                  aria-labelledby="election-name-label"
                   class="bp3-input"
-                  id="audit-name"
+                  id="election-name"
                   name="name"
                   style="padding-right: 10px;"
                   value=""
@@ -2671,8 +2671,8 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
           class="sc-bdVaJa fdbLH"
         >
           <label
-            for="audit-name"
-            id="audit-name-label"
+            for="election-name"
+            id="election-name-label"
           >
             Election Name
             <div
@@ -2682,10 +2682,10 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
                 class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
-                  aria-labelledby="audit-name-label"
+                  aria-labelledby="election-name-label"
                   class="bp3-input"
                   disabled=""
-                  id="audit-name"
+                  id="election-name"
                   name="name"
                   style="padding-right: 10px;"
                   value="contest name"
@@ -3527,8 +3527,8 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
           class="sc-bdVaJa fdbLH"
         >
           <label
-            for="audit-name"
-            id="audit-name-label"
+            for="election-name"
+            id="election-name-label"
           >
             Election Name
             <div
@@ -3538,10 +3538,10 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
                 class="bp3-input-group bp3-disabled sc-htoDjs jVvDPF"
               >
                 <input
-                  aria-labelledby="audit-name-label"
+                  aria-labelledby="election-name-label"
                   class="bp3-input"
                   disabled=""
-                  id="audit-name"
+                  id="election-name"
                   name="name"
                   style="padding-right: 10px;"
                   value="contest name"
@@ -4230,8 +4230,8 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
           class="sc-bdVaJa fdbLH"
         >
           <label
-            for="audit-name"
-            id="audit-name-label"
+            for="election-name"
+            id="election-name-label"
           >
             Election Name
             <div
@@ -4241,9 +4241,9 @@ exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
                 class="bp3-input-group sc-htoDjs jVvDPF"
               >
                 <input
-                  aria-labelledby="audit-name-label"
+                  aria-labelledby="election-name-label"
                   class="bp3-input"
-                  id="audit-name"
+                  id="election-name"
                   name="name"
                   style="padding-right: 10px;"
                   value=""
