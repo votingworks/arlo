@@ -14,6 +14,8 @@ from tests.helpers import (
     create_jurisdiction_admin,
     set_logged_in_user,
     DEFAULT_JA_EMAIL,
+    J1_SAMPLES_ROUND_1,
+    J1_SAMPLES_ROUND_2,
 )
 from arlo_server.models import (
     db,
@@ -25,8 +27,6 @@ from arlo_server.models import (
     Contest,
 )
 from arlo_server.auth import UserType
-
-J1_SAMPLES = 81
 
 
 def assert_ballots_got_assigned_correctly(
@@ -124,7 +124,7 @@ def test_audit_boards_list_one(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
-                        "numSampledBallots": J1_SAMPLES,
+                        "numSampledBallots": J1_SAMPLES_ROUND_1,
                         "numAuditedBallots": 0,
                     },
                 }
@@ -154,7 +154,7 @@ def test_audit_boards_list_one(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
-                        "numSampledBallots": J1_SAMPLES,
+                        "numSampledBallots": J1_SAMPLES_ROUND_1,
                         "numAuditedBallots": num_audited_samples,
                     },
                 }
@@ -183,8 +183,8 @@ def test_audit_boards_list_one(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": assert_is_date,
                     "currentRoundStatus": {
-                        "numSampledBallots": J1_SAMPLES,
-                        "numAuditedBallots": J1_SAMPLES,
+                        "numSampledBallots": J1_SAMPLES_ROUND_1,
+                        "numAuditedBallots": J1_SAMPLES_ROUND_1,
                     },
                 }
             ]
@@ -247,7 +247,7 @@ def test_audit_boards_list_two(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
-                        "numSampledBallots": J1_SAMPLES - AB1_SAMPLES,
+                        "numSampledBallots": J1_SAMPLES_ROUND_1 - AB1_SAMPLES,
                         "numAuditedBallots": 0,
                     },
                 },
@@ -278,7 +278,7 @@ def test_audit_boards_list_two(
         "numAuditedBallots": num_audited_samples_1,
     }
     assert audit_boards[1]["currentRoundStatus"] == {
-        "numSampledBallots": J1_SAMPLES - AB1_SAMPLES,
+        "numSampledBallots": J1_SAMPLES_ROUND_1 - AB1_SAMPLES,
         "numAuditedBallots": num_audited_samples_2,
     }
 
@@ -301,7 +301,7 @@ def test_audit_boards_list_two(
     }
     assert audit_boards[1]["signedOffAt"] is None
     assert audit_boards[1]["currentRoundStatus"] == {
-        "numSampledBallots": J1_SAMPLES - AB1_SAMPLES,
+        "numSampledBallots": J1_SAMPLES_ROUND_1 - AB1_SAMPLES,
         "numAuditedBallots": num_audited_samples_2,
     }
 
@@ -337,7 +337,6 @@ def test_audit_boards_list_round_2(
     round_2_id: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    J1_SAMPLES_ROUND_2 = 148  # 90% prob sample size
     AB1_SAMPLES_ROUND_2 = 92
     AB2_SAMPLES_ROUND_2 = 29
 

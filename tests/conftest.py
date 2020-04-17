@@ -31,6 +31,7 @@ from tests.helpers import (
     set_logged_in_user,
     DEFAULT_JA_EMAIL,
     DEFAULT_AA_EMAIL,
+    SAMPLE_SIZE_ROUND_1,
 )
 from bgcompute import (
     bgcompute_update_election_jurisdictions_file,
@@ -40,8 +41,6 @@ from bgcompute import (
 
 # The fixtures in this module are available in any test via dependency
 # injection.
-
-SAMPLE_SIZE = 119  # Bravo sample size for round 1
 
 
 @pytest.fixture
@@ -182,7 +181,7 @@ def round_1_id(
     rv = post_json(
         client,
         f"/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
+        {"roundNum": 1, "sampleSize": SAMPLE_SIZE_ROUND_1},
     )
     assert_ok(rv)
     rv = client.get(f"/election/{election_id}/round",)
@@ -229,7 +228,7 @@ def round_2_id(
             round_id=round.id,
             contest_id=contest.id,
             contest_choice_id=contest.choices[1].id,
-            result=SAMPLE_SIZE - WINNER_VOTES,
+            result=SAMPLE_SIZE_ROUND_1 - WINNER_VOTES,
         )
     )
     db.session.commit()

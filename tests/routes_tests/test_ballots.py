@@ -9,11 +9,10 @@ from tests.helpers import (
     compare_json,
     post_json,
     assert_ok,
+    J1_SAMPLES_ROUND_1,
+    J1_SAMPLES_ROUND_2,
 )
 from arlo_server.auth import UserType
-
-J1_SAMPLES_ROUND_1 = 81  # Bravo sample size
-J1_SAMPLES_ROUND_2 = 148  # 90% prob sample size
 
 
 def test_ja_ballot_draws_bad_round_id(

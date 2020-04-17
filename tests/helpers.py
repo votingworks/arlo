@@ -15,6 +15,9 @@ from arlo_server.models import (
     JurisdictionAdministration,
 )
 
+SAMPLE_SIZE_ROUND_1 = 119  # Bravo sample size
+J1_SAMPLES_ROUND_1 = 81
+J1_SAMPLES_ROUND_2 = 148  # 90% probability sample size
 
 DEFAULT_AA_EMAIL = "admin@example.com"
 DEFAULT_JA_EMAIL = "jurisdiction.admin@example.com"
