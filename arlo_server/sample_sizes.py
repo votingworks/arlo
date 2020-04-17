@@ -4,9 +4,17 @@ from werkzeug.exceptions import BadRequest
 from typing import Dict
 
 from arlo_server import app
-from arlo_server.models import Election
+from arlo_server.models import Election, Contest
 from arlo_server.auth import with_election_access
 from audit_math import bravo, sampler_contest
+
+
+# Sum the audit results for each contest choice from all rounds so far
+def cumulative_contest_results(contest: Contest) -> Dict[str, int]:
+    results_by_choice: Dict[str, int] = defaultdict(int)
+    for result in contest.results:
+        results_by_choice[result.contest_choice_id] += result.result
+    return results_by_choice
 
 
 def sample_size_options(election: Election) -> dict:
@@ -18,17 +26,10 @@ def sample_size_options(election: Election) -> dict:
     # For now, we only support one targeted contest
     contest = next(c for c in election.contests if c.is_targeted)
 
-    # Sum the audit results from previous rounds
-    results_by_choice: Dict[str, int] = defaultdict(int)
-    for result in contest.results:
-        results_by_choice[result.contest_choice_id] += result.result
-    results_so_far = {contest.id: results_by_choice}
-
-    # Do the math!
     sample_sizes: dict = bravo.get_sample_size(
         election.risk_limit / 100,
         sampler_contest.from_db_contest(contest),
-        results_so_far,
+        cumulative_contest_results(contest),
     )
     return sample_sizes
 

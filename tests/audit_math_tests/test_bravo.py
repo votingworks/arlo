@@ -36,7 +36,7 @@ def test_expected_sample_sizes(contests):
 
     for contest in true_asns:
         computed = bravo.get_expected_sample_sizes(
-            risk_limit, contests[contest], round0_sample_results
+            risk_limit, contests[contest], round0_sample_results[contest]
         )
         expected = true_asns[contest]
 
@@ -66,7 +66,7 @@ def test_expected_sample_sizes_second_round(contests):
     for contest in true_asns:
         expected = true_asns[contest]
         computed = bravo.get_expected_sample_sizes(
-            risk_limit, contests[contest], round1_sample_results
+            risk_limit, contests[contest], round1_sample_results[contest]
         )
 
         assert (
@@ -203,7 +203,7 @@ def test_get_sample_size(contests):
 
     for contest in contests:
         computed = bravo.get_sample_size(
-            risk_limit, contests[contest], round0_sample_results
+            risk_limit, contests[contest], round0_sample_results[contest]
         )
 
         expected = true_sample_sizes[contest]
