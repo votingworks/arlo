@@ -219,19 +219,10 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
 def test_jurisdictions_round_status(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_id: str,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    round_1_id: str,  # pylint: disable=unused-argument
 ):
     AB1_SAMPLES = 23  # Arbitrary num of ballots to assign to audit board 1
-
-    rv = post_json(
-        client,
-        f"/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": SAMPLE_SIZE_ROUND_1},
-    )
-    assert_ok(rv)
 
     rv = client.get(f"/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
@@ -332,8 +323,8 @@ def test_jurisdictions_round_status(
 def test_jurisdictions_round_status_offline(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_id: str,  # pylint: disable=unused-argument
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):

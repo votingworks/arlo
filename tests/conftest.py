@@ -16,9 +16,7 @@ from arlo_server.models import (
     Contest,
     SampledBallotDraw,
     AuditBoard,
-    BallotInterpretation,
     Interpretation,
-    BallotStatus,
 )
 from arlo_server.auth import (
     UserType,
@@ -32,6 +30,7 @@ from tests.helpers import (
     post_json,
     create_election,
     set_logged_in_user,
+    audit_ballot,
     DEFAULT_JA_EMAIL,
     DEFAULT_AA_EMAIL,
     SAMPLE_SIZE_ROUND_1,
@@ -98,26 +97,41 @@ def jurisdiction_ids(
 
 
 @pytest.fixture
-def contest_id(
+def contest_ids(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-) -> Generator[str, None, None]:
-    contest_id = str(uuid.uuid4())
-    contest = {
-        "id": contest_id,
-        "name": "Contest 1",
-        "isTargeted": True,
-        "choices": [
-            {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
-            {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
-        ],
-        "totalBallotsCast": 1000,
-        "numWinners": 1,
-        "votesAllowed": 1,
-        "jurisdictionIds": jurisdiction_ids,
-    }
-    rv = put_json(client, f"/election/{election_id}/contest", [contest])
+) -> List[str]:
+    contests = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
+            ],
+            "totalBallotsCast": 1000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+            "jurisdictionIds": jurisdiction_ids,
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 2",
+            "isTargeted": False,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 200,},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 300,},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 100,},
+            ],
+            "totalBallotsCast": 600,
+            "numWinners": 2,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+    ]
+    rv = put_json(client, f"/election/{election_id}/contest", contests)
     assert_ok(rv)
-    yield contest_id
+    return [str(c["id"]) for c in contests]
 
 
 @pytest.fixture
@@ -176,7 +190,7 @@ def round_1_id(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_ids: str,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ) -> Generator[str, None, None]:
@@ -196,7 +210,7 @@ def round_1_id(
 def round_2_id(
     client: FlaskClient,
     election_id: str,
-    contest_id: str,
+    contest_ids: str,
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ) -> Generator[str, None, None]:
@@ -212,29 +226,21 @@ def round_2_id(
             SampledBallotDraw.sampled_ballot
         )
     ).get(round_1_id)
-    contest = Contest.query.get(contest_id)
+    contest = Contest.query.get(contest_ids[0])
     for ballot_draw in round.sampled_ballot_draws[:WINNER_VOTES]:
-        if ballot_draw.sampled_ballot.status == BallotStatus.NOT_AUDITED:
-            ballot_draw.sampled_ballot.status = BallotStatus.AUDITED
-            db.session.add(
-                BallotInterpretation(
-                    ballot_id=ballot_draw.sampled_ballot.id,
-                    contest_id=contest_id,
-                    interpretation=Interpretation.VOTE,
-                    contest_choice_id=contest.choices[0].id,
-                )
-            )
+        audit_ballot(
+            ballot_draw.sampled_ballot,
+            contest.id,
+            Interpretation.VOTE,
+            contest.choices[0].id,
+        )
     for ballot_draw in round.sampled_ballot_draws[WINNER_VOTES:]:
-        if ballot_draw.sampled_ballot.status == BallotStatus.NOT_AUDITED:
-            ballot_draw.sampled_ballot.status = BallotStatus.AUDITED
-            db.session.add(
-                BallotInterpretation(
-                    ballot_id=ballot_draw.sampled_ballot.id,
-                    contest_id=contest_id,
-                    interpretation=Interpretation.VOTE,
-                    contest_choice_id=contest.choices[1].id,
-                )
-            )
+        audit_ballot(
+            ballot_draw.sampled_ballot,
+            contest.id,
+            Interpretation.VOTE,
+            contest.choices[1].id,
+        )
     round.ended_at = datetime.utcnow()
     db.session.add(
         RoundContestResult(

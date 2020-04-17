@@ -1,19 +1,15 @@
 from flask.testing import FlaskClient
 from typing import List
-import json, datetime, uuid
+import json
 
-from arlo_server import db
 from arlo_server.models import (
     SampledBallotDraw,
-    Round,
     RoundContest,
-    RoundContestResult,
 )
 from arlo_server.auth import UserType
 from tests.helpers import (
     assert_ok,
     post_json,
-    put_json,
     compare_json,
     assert_is_id,
     assert_is_date,
@@ -39,7 +35,7 @@ def test_rounds_create_one(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,
+    contest_ids: str,
     manifests,  # pylint: disable=unused-argument
 ):
     sample_size = 119  # BRAVO sample size
@@ -74,8 +70,8 @@ def test_rounds_create_one(
     round_contests = RoundContest.query.filter_by(
         round_id=rounds["rounds"][0]["id"]
     ).all()
-    assert len(round_contests) == 1
-    assert round_contests[0].contest_id == contest_id
+    assert len(round_contests) == 2
+    assert sorted([rc.contest_id for rc in round_contests]) == sorted(contest_ids)
 
     # Check that the ballots got sampled
     ballot_draws = SampledBallotDraw.query.filter_by(
@@ -93,79 +89,11 @@ def test_rounds_create_two(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
+    round_2_id: str,  # pylint: disable=unused-argument
 ):
-    rv = client.get(f"/election/{election_id}/contest")
-    contest = json.loads(rv.data)["contests"][0]
-    del contest["currentRoundStatus"]
-
-    contests = [
-        contest,
-        {
-            "id": str(uuid.uuid4()),
-            "name": "Contest 2",
-            "isTargeted": False,
-            "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 300,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 200,},
-            ],
-            "totalBallotsCast": 5000,
-            "numWinners": 1,
-            "votesAllowed": 1,
-            "jurisdictionIds": [jurisdiction_ids[0], jurisdiction_ids[2]],
-        },
-    ]
-    rv = put_json(client, f"/election/{election_id}/contest", contests)
-    assert_ok(rv)
-
-    rv = post_json(
-        client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 119,},
-    )
-    assert_ok(rv)
-
-    # Fake that the first round got completed by setting Round.ended_at.
-    # We also need to add RoundContestResults so that the next round sample
-    # size can get computed.
-    round = Round.query.filter_by(election_id=election_id).one()
-    round.ended_at = datetime.datetime.utcnow()
-    db.session.add(
-        RoundContestResult(
-            round_id=round.id,
-            contest_id=contest["id"],
-            contest_choice_id=contest["choices"][0]["id"],
-            result=70,
-        )
-    )
-    db.session.add(
-        RoundContestResult(
-            round_id=round.id,
-            contest_id=contest["id"],
-            contest_choice_id=contest["choices"][1]["id"],
-            result=49,
-        )
-    )
-    db.session.commit()
-
-    rv = client.get(f"/election/{election_id}/round")
-    rounds = json.loads(rv.data)
-    compare_json(
-        rounds,
-        {
-            "rounds": [
-                {
-                    "id": assert_is_id,
-                    "roundNum": 1,
-                    "startedAt": assert_is_date,
-                    "endedAt": assert_is_date,
-                }
-            ]
-        },
-    )
-
-    rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
-    assert_ok(rv)
+    # In this case, we let the round_2_id fixture do the actual creation of the
+    # rounds instead of doing it in the test, because there's a lot of extra
+    # work to do to end the first round that's covered in that fixture
 
     expected_rounds = {
         "rounds": [
@@ -207,7 +135,7 @@ def test_rounds_create_two(
 def test_rounds_create_before_previous_round_complete(
     client: FlaskClient,
     election_id: str,
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_ids: str,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
 ):
@@ -243,7 +171,7 @@ def test_rounds_wrong_number_too_big(client: FlaskClient, election_id: str):
 def test_rounds_wrong_number_too_small(
     client: FlaskClient,
     election_id: str,
-    contest_id: str,  # pylint: disable=unused-argument
+    contest_ids: str,  # pylint: disable=unused-argument
 ):
     rv = post_json(
         client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 10,},

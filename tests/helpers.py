@@ -1,7 +1,7 @@
 import uuid, json, re
 import pytest
 import datetime
-from typing import Any, List, Union, Tuple
+from typing import Any, List, Union, Tuple, Optional
 from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
 
@@ -13,6 +13,10 @@ from arlo_server.models import (
     User,
     Jurisdiction,
     JurisdictionAdministration,
+    SampledBallot,
+    BallotStatus,
+    BallotInterpretation,
+    Interpretation,
 )
 
 SAMPLE_SIZE_ROUND_1 = 119  # Bravo sample size
@@ -115,6 +119,24 @@ def create_election(
         },
     )
     return str(json.loads(rv.data)["electionId"])
+
+
+def audit_ballot(
+    ballot: SampledBallot,
+    contest_id: str,
+    interpretation: Interpretation,
+    choice_id: Optional[str] = None,
+):
+    if ballot.status != BallotStatus.AUDITED:
+        db.session.add(
+            BallotInterpretation(
+                ballot_id=ballot.id,
+                contest_id=contest_id,
+                interpretation=interpretation,
+                contest_choice_id=choice_id,
+            )
+        )
+        ballot.status = BallotStatus.AUDITED
 
 
 def assert_is_id(x):
