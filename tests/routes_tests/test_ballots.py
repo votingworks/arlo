@@ -41,7 +41,7 @@ def test_ja_ballot_draws_round_1(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_id: str,
+    contest_ids: str,
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ):
@@ -75,14 +75,14 @@ def test_ja_ballot_draws_round_1(
     )
 
     # Try auditing one ballot
-    choice_id = ContestChoice.query.filter_by(contest_id=contest_id).first().id
+    choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch/{ballot_draws[0]['batch']['id']}/ballot/{ballot_draws[0]['position']}",
         {
             "interpretations": [
                 {
-                    "contestId": contest_id,
+                    "contestId": contest_ids[0],
                     "interpretation": "VOTE",
                     "choiceId": choice_id,
                     "comment": "blah blah blah",
@@ -107,7 +107,7 @@ def test_ja_ballot_draws_round_1(
             "ticketNumber": "0.100384496",
             "interpretations": [
                 {
-                    "contestId": contest_id,
+                    "contestId": contest_ids[0],
                     "interpretation": "VOTE",
                     "choiceId": choice_id,
                     "comment": "blah blah blah",

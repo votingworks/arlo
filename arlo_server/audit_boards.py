@@ -19,6 +19,8 @@ from arlo_server.models import (
     SampledBallotDraw,
     BallotStatus,
     Batch,
+    RoundContestResult,
+    BallotInterpretation,
 )
 from arlo_server.errors import handle_unique_constraint_error
 from arlo_server.sample_sizes import cumulative_contest_results
@@ -209,7 +211,28 @@ def calculate_risk_measurements(election: Election, round: Round):
         round_contest.is_complete = is_complete
 
 
+def count_audited_votes(election: Election, round: Round):
+    vote_counts = dict(
+        BallotInterpretation.query.join(SampledBallot)
+        .join(SampledBallotDraw)
+        .filter_by(round_id=round.id)
+        .group_by(BallotInterpretation.contest_choice_id)
+        .values(BallotInterpretation.contest_choice_id, func.count(),)
+    )
+
+    for contest in election.contests:
+        for contest_choice in contest.choices:
+            result = RoundContestResult(
+                round_id=round.id,
+                contest_id=contest.id,
+                contest_choice_id=contest_choice.id,
+                result=vote_counts.get(contest_choice.id, 0),
+            )
+            db.session.add(result)
+
+
 def end_round(election: Election, round: Round):
+    count_audited_votes(election, round)
     calculate_risk_measurements(election, round)
     round.ended_at = datetime.utcnow()
 

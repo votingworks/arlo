@@ -13,6 +13,7 @@ from tests.helpers import (
     assert_is_passphrase,
     create_jurisdiction_admin,
     set_logged_in_user,
+    audit_ballot,
     DEFAULT_JA_EMAIL,
     J1_SAMPLES_ROUND_1,
     J1_SAMPLES_ROUND_2,
@@ -24,8 +25,12 @@ from arlo_server.models import (
     Batch,
     Round,
     RoundContest,
+    RoundContestResult,
     Contest,
     BallotStatus,
+    ContestChoice,
+    Interpretation,
+    SampledBallotDraw,
 )
 from arlo_server.auth import UserType
 
@@ -501,8 +506,16 @@ def test_audit_boards_bad_round_id(
     assert rv.status_code == 404
 
 
+CHOICE_1_VOTES = 10
+CHOICE_2_VOTES = 15
+
+
 def set_up_audit_board(
-    client: FlaskClient, election_id: str, jurisdiction_id: str, audit_board_id: str
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_id: str,
+    contest_id: str,
+    audit_board_id: str,
 ) -> Tuple[str, str]:
     SILLY_NAMES = [
         "Joe Schmo",
@@ -531,9 +544,27 @@ def set_up_audit_board(
     assert_ok(rv)
 
     # Fake auditing all the ballots
-    ballots = SampledBallot.query.filter_by(audit_board_id=audit_board_id).all()
-    for ballot in ballots:
-        ballot.status = BallotStatus.AUDITED
+    ballot_draws = (
+        SampledBallotDraw.query.join(SampledBallot)
+        .filter_by(audit_board_id=audit_board_id)
+        .order_by(SampledBallot.batch_id, SampledBallot.ballot_position)
+        .all()
+    )
+    choices = (
+        ContestChoice.query.filter_by(contest_id=contest_id)
+        .order_by(ContestChoice.name)
+        .all()
+    )
+    for draw in ballot_draws[:CHOICE_1_VOTES]:
+        audit_ballot(
+            draw.sampled_ballot, contest_id, Interpretation.VOTE, choices[0].id
+        )
+    for draw in ballot_draws[CHOICE_1_VOTES : CHOICE_1_VOTES + CHOICE_2_VOTES]:
+        audit_ballot(
+            draw.sampled_ballot, contest_id, Interpretation.VOTE, choices[1].id
+        )
+    for draw in ballot_draws[CHOICE_1_VOTES + CHOICE_2_VOTES :]:
+        audit_ballot(draw.sampled_ballot, contest_id, Interpretation.BLANK)
     db.session.commit()
 
     return member_1, member_2
@@ -543,12 +574,13 @@ def test_audit_boards_sign_off_happy_path(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
+    contest_ids: List[str],
     round_1_id: str,
     audit_board_round_1_ids: List[str],
 ):
     def run_audit_board_flow(jurisdiction_id: str, audit_board_id: str):
         member_1, member_2 = set_up_audit_board(
-            client, election_id, jurisdiction_id, audit_board_id
+            client, election_id, jurisdiction_id, contest_ids[0], audit_board_id
         )
         set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
         rv = post_json(
@@ -591,6 +623,27 @@ def test_audit_boards_sign_off_happy_path(
     # Now the round should be over
     round = Round.query.get(round_1_id)
     assert round.ended_at is not None
+    results = (
+        RoundContestResult.query.filter_by(round_id=round_1_id)
+        .order_by(RoundContestResult.result)
+        .all()
+    )
+    assert len(results) == 5
+
+    contest_1_results = [r for r in results if r.contest_id == contest_ids[0]]
+    assert len(contest_1_results) == 2
+    assert contest_1_results[0].result == CHOICE_1_VOTES * 3
+    assert contest_1_results[1].result == CHOICE_2_VOTES * 3
+
+    contest_2_results = [r for r in results if r.contest_id == contest_ids[1]]
+    assert len(contest_2_results) == 3
+    # Note: we didn't record any audited ballots for contest 2, so we expect 0s
+    # here. But contest 2 has overlapping candidate names as contest 1, so this
+    # makes ensures we don't accidentally count votes for a choice for the
+    # wrong contest.
+    assert contest_2_results[0].result == 0
+    assert contest_2_results[1].result == 0
+    assert contest_2_results[2].result == 0
 
     # Check that the risk measurements got calculated
     round_contests = (
@@ -608,12 +661,13 @@ def test_audit_boards_sign_off_missing_name(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
+    contest_ids: List[str],
     round_1_id: str,
     audit_board_round_1_ids: List[str],
 ):
     audit_board_id = audit_board_round_1_ids[0]
     member_1, member_2 = set_up_audit_board(
-        client, election_id, jurisdiction_ids[0], audit_board_id
+        client, election_id, jurisdiction_ids[0], contest_ids[0], audit_board_id
     )
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
 
@@ -642,12 +696,13 @@ def test_audit_boards_sign_off_wrong_name(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
+    contest_ids: List[str],
     round_1_id: str,
     audit_board_round_1_ids: List[str],
 ):
     audit_board_id = audit_board_round_1_ids[0]
     member_1, member_2 = set_up_audit_board(
-        client, election_id, jurisdiction_ids[0], audit_board_id
+        client, election_id, jurisdiction_ids[0], contest_ids[0], audit_board_id
     )
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
 
@@ -677,12 +732,13 @@ def test_audit_boards_sign_off_before_finished(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
+    contest_ids: List[str],
     round_1_id: str,
     audit_board_round_1_ids: List[str],
 ):
     audit_board_id = audit_board_round_1_ids[0]
     member_1, member_2 = set_up_audit_board(
-        client, election_id, jurisdiction_ids[0], audit_board_id
+        client, election_id, jurisdiction_ids[0], contest_ids[0], audit_board_id
     )
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
 
