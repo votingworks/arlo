@@ -8,7 +8,6 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func, and_
 
 from arlo_server import app, db
-from arlo_server.routes import sample_results
 from arlo_server.auth import with_jurisdiction_access, with_audit_board_access
 from arlo_server.rounds import get_current_round
 from arlo_server.models import (
@@ -21,6 +20,7 @@ from arlo_server.models import (
     Batch,
 )
 from arlo_server.errors import handle_unique_constraint_error
+from arlo_server.sample_sizes import cumulative_contest_results
 from util.jsonschema import validate, JSONDict
 from util.binpacking import BalancedBucketList, Bucket
 from util.group_by import group_by
@@ -194,13 +194,11 @@ def list_audit_boards(
 
 
 def calculate_risk_measurements(election: Election, round: Round):
-    results = sample_results(election)
-
     for contest in election.contests:
         risk, is_complete = bravo.compute_risk(
             election.risk_limit / 100,
             sampler_contest.from_db_contest(contest),
-            results[contest.id],
+            cumulative_contest_results(contest),
         )
 
         round_contest = next(

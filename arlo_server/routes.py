@@ -29,6 +29,7 @@ from arlo_server.ballot_manifest import (
     save_ballot_manifest_file,
     clear_ballot_manifest_file,
 )
+from arlo_server.sample_sizes import cumulative_contest_results
 from util.binpacking import BalancedBucketList, Bucket
 
 from config import (
@@ -67,24 +68,6 @@ def get_election(election_id):
     return Election.query.filter_by(id=election_id).one()
 
 
-def sample_results(election):
-    contests = {}
-
-    for contest in election.contests:
-        contests[contest.id] = dict([[choice.id, 0] for choice in contest.choices])
-
-        round_contests = (
-            RoundContest.query.filter_by(contest_id=contest.id)
-            .order_by("round_id")
-            .all()
-        )
-        for round_contest in round_contests:
-            for result in round_contest.results:
-                contests[contest.id][result.contest_choice_id] += result.result
-
-    return contests
-
-
 def compute_sample_sizes(round_contest):
     the_round = round_contest.round
     election = the_round.election
@@ -93,7 +76,7 @@ def compute_sample_sizes(round_contest):
         raw_sample_size_options = bravo.get_sample_size(
             election.risk_limit / 100,
             sampler_contest.from_db_contest(contest),
-            sample_results(election),
+            cumulative_contest_results(contest),
         )
 
         sample_size_options = list(raw_sample_size_options.values())
@@ -146,12 +129,10 @@ def check_round(election, jurisdiction_id, round_id):
     round_contest = round.round_contests[0]
     contest = next(c for c in election.contests if c.id == round_contest.contest_id)
 
-    current_sample_results = sample_results(election)
-
     risk, is_complete = bravo.compute_risk(
         election.risk_limit / 100,
         sampler_contest.from_db_contest(contest),
-        current_sample_results[round_contest.contest_id],
+        cumulative_contest_results(contest),
     )
 
     round.ended_at = datetime.datetime.utcnow()

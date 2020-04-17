@@ -13,7 +13,7 @@ from .sampler_contest import Contest
 
 
 def get_expected_sample_sizes(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, Dict[str, int]]
+    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
 ) -> int:
     """
     Returns the expected sample size for a BRAVO audit of <contest>
@@ -60,9 +60,7 @@ def get_expected_sample_sizes(
         z_w = math.log(2 * s_w)
         z_l = math.log(2 - 2 * s_w)
 
-        T = min(
-            get_test_statistics(contest.margins, sample_results[contest.name]).values()
-        )
+        T = min(get_test_statistics(contest.margins, sample_results).values())
 
         weighted_alpha = math.log((1.0 / risk_limit) / T)
         return math.ceil((weighted_alpha + (z_w / 2.0)) / (p_w * z_w + p_l * z_l))
@@ -271,7 +269,7 @@ def expected_prob(
 
 
 def get_sample_size(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, Dict[str, int]]
+    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
 ) -> Dict[str, Dict[str, Optional[Union[float, int, str]]]]:
     """
     Computes initial sample size parameterized by likelihood that the
@@ -355,8 +353,8 @@ def get_sample_size(
 
         return samples
 
-    sample_w = sample_results[contest.name][worse_winner]
-    sample_l = sample_results[contest.name][best_loser]
+    sample_w = sample_results[worse_winner]
+    sample_l = sample_results[best_loser]
 
     samples["asn"] = {
         "type": "ASN",
