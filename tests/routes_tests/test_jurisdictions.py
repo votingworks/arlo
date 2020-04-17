@@ -15,6 +15,8 @@ from tests.helpers import (
     asserts_startswith,
     set_logged_in_user,
     DEFAULT_JA_EMAIL,
+    SAMPLE_SIZE_ROUND_1,
+    J1_SAMPLES_ROUND_1,
 )
 from arlo_server import db
 from arlo_server.auth import UserType
@@ -221,14 +223,12 @@ def test_jurisdictions_round_status(
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    SAMPLE_SIZE = 119  # Bravo sample size
-    J1_SAMPLES = 81  # Expected result of sampler for jurisdiction 1
     AB1_SAMPLES = 23  # Arbitrary num of ballots to assign to audit board 1
 
     rv = post_json(
         client,
         f"/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
+        {"roundNum": 1, "sampleSize": SAMPLE_SIZE_ROUND_1},
     )
     assert_ok(rv)
 
@@ -237,12 +237,12 @@ def test_jurisdictions_round_status(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "NOT_STARTED",
-        "numBallotsSampled": J1_SAMPLES,
+        "numBallotsSampled": J1_SAMPLES_ROUND_1,
         "numBallotsAudited": 0,
     }
     assert jurisdictions[1]["currentRoundStatus"] == {
         "status": "NOT_STARTED",
-        "numBallotsSampled": SAMPLE_SIZE - J1_SAMPLES,
+        "numBallotsSampled": SAMPLE_SIZE_ROUND_1 - J1_SAMPLES_ROUND_1,
         "numBallotsAudited": 0,
     }
     assert jurisdictions[2]["currentRoundStatus"] == {
@@ -281,12 +281,12 @@ def test_jurisdictions_round_status(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "IN_PROGRESS",
-        "numBallotsSampled": J1_SAMPLES,
+        "numBallotsSampled": J1_SAMPLES_ROUND_1,
         "numBallotsAudited": 0,
     }
     assert jurisdictions[1]["currentRoundStatus"] == {
         "status": "NOT_STARTED",
-        "numBallotsSampled": SAMPLE_SIZE - J1_SAMPLES,
+        "numBallotsSampled": SAMPLE_SIZE_ROUND_1 - J1_SAMPLES_ROUND_1,
         "numBallotsAudited": 0,
     }
     assert jurisdictions[2]["currentRoundStatus"] == {
@@ -307,7 +307,7 @@ def test_jurisdictions_round_status(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "IN_PROGRESS",
-        "numBallotsSampled": J1_SAMPLES,
+        "numBallotsSampled": J1_SAMPLES_ROUND_1,
         "numBallotsAudited": AB1_SAMPLES,
     }
 
@@ -323,8 +323,8 @@ def test_jurisdictions_round_status(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "COMPLETE",
-        "numBallotsSampled": J1_SAMPLES,
-        "numBallotsAudited": J1_SAMPLES,
+        "numBallotsSampled": J1_SAMPLES_ROUND_1,
+        "numBallotsAudited": J1_SAMPLES_ROUND_1,
     }
 
 
@@ -336,8 +336,6 @@ def test_jurisdictions_round_status_offline(
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    SAMPLE_SIZE = 119  # Bravo sample size
-    J1_SAMPLES = 81  # Expected result of sampler for jurisdiction 1
     AB1_SAMPLES = 23  # Arbitrary num of ballots to assign to audit board 1
 
     # Change the settings to offline
@@ -354,7 +352,7 @@ def test_jurisdictions_round_status_offline(
     rv = post_json(
         client,
         f"/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
+        {"roundNum": 1, "sampleSize": SAMPLE_SIZE_ROUND_1},
     )
     assert_ok(rv)
 
@@ -363,7 +361,7 @@ def test_jurisdictions_round_status_offline(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "NOT_STARTED",
-        "numBallotsSampled": J1_SAMPLES,
+        "numBallotsSampled": J1_SAMPLES_ROUND_1,
         "numBallotsAudited": 0,
     }
 
@@ -390,7 +388,7 @@ def test_jurisdictions_round_status_offline(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "IN_PROGRESS",
-        "numBallotsSampled": J1_SAMPLES,
+        "numBallotsSampled": J1_SAMPLES_ROUND_1,
         "numBallotsAudited": 0,
     }
 
@@ -404,6 +402,6 @@ def test_jurisdictions_round_status_offline(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "COMPLETE",
-        "numBallotsSampled": J1_SAMPLES,
-        "numBallotsAudited": J1_SAMPLES,
+        "numBallotsSampled": J1_SAMPLES_ROUND_1,
+        "numBallotsAudited": J1_SAMPLES_ROUND_1,
     }

@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 from typing import List
 import json, uuid
 
-from tests.helpers import assert_ok, post_json, put_json
+from tests.helpers import assert_ok, post_json, put_json, SAMPLE_SIZE_ROUND_1
 from arlo_server.models import RoundContest
 from arlo_server.contests import JSONDict
 from arlo_server import db
@@ -127,11 +127,10 @@ def test_contests_round_status(
     rv = put_json(client, f"/election/{election_id}/contest", json_contests)
     assert_ok(rv)
 
-    SAMPLE_SIZE = 119  # Bravo sample size
     rv = post_json(
         client,
         f"/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
+        {"roundNum": 1, "sampleSize": SAMPLE_SIZE_ROUND_1},
     )
     assert_ok(rv)
 
@@ -140,7 +139,7 @@ def test_contests_round_status(
 
     assert contests[0]["currentRoundStatus"] == {
         "isRiskLimitMet": None,
-        "numBallotsSampled": SAMPLE_SIZE,
+        "numBallotsSampled": SAMPLE_SIZE_ROUND_1,
     }
     assert contests[1]["currentRoundStatus"] == {
         "isRiskLimitMet": None,
@@ -168,7 +167,7 @@ def test_contests_round_status(
 
     assert contests[0]["currentRoundStatus"] == {
         "isRiskLimitMet": False,
-        "numBallotsSampled": SAMPLE_SIZE,
+        "numBallotsSampled": SAMPLE_SIZE_ROUND_1,
     }
     assert contests[1]["currentRoundStatus"] == {
         "isRiskLimitMet": True,
