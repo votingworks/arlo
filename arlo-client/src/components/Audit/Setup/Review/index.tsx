@@ -1,10 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useParams } from 'react-router-dom'
 import { H4, Callout } from '@blueprintjs/core'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
+import useAuditSettings from '../useAuditSettings'
 
 const SettingsTable = styled.table`
   width: 100%;
@@ -40,6 +42,10 @@ interface IProps {
 }
 
 const Review: React.FC<IProps> = ({ prevStage }: IProps) => {
+  const { electionId } = useParams()
+  const [{ electionName, randomSeed, riskLimit, online }] = useAuditSettings(
+    electionId!
+  )
   return (
     <div>
       <H2Title>Review &amp; Launch</H2Title>
@@ -53,15 +59,15 @@ const Review: React.FC<IProps> = ({ prevStage }: IProps) => {
       <SettingsTable>
         <tr>
           <td>Election Name:</td>
-          <td>name</td>
+          <td>{electionName}</td>
         </tr>
         <tr>
           <td>Risk Limit:</td>
-          <td>10</td>
+          <td>{riskLimit}</td>
         </tr>
         <tr>
           <td>Random Seed:</td>
-          <td>12345</td>
+          <td>{randomSeed}</td>
         </tr>
         <tr>
           <td>Participating Jurisdictions:</td>
@@ -71,7 +77,7 @@ const Review: React.FC<IProps> = ({ prevStage }: IProps) => {
         </tr>
         <tr>
           <td>Audit Board Data Entry:</td>
-          <td>Online</td>
+          <td>{online ? 'Online' : 'Offline'}</td>
         </tr>
       </SettingsTable>
       <ContestsTable>
