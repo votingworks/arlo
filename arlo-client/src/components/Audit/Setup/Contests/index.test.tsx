@@ -40,7 +40,7 @@ const generateApiMock = (
   }
 }
 
-apiMock.mockResolvedValue(
+apiMock.mockImplementation(
   generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
 )
 
@@ -96,7 +96,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('renders empty opportunistic state correctly', () => {
-    apiMock.mockResolvedValue(
+    apiMock.mockImplementation(
       generateApiMock(contestMocks.emptyOpportunistic, { jurisdictions: [] })
     )
     const { container } = render(
@@ -110,7 +110,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('renders filled targeted state correctly', () => {
-    apiMock.mockResolvedValue(
+    apiMock.mockImplementation(
       generateApiMock(contestMocks.filledTargeted, { jurisdictions: [] })
     )
     const { container } = render(
@@ -124,7 +124,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('renders filled opportunistic state correctly', () => {
-    apiMock.mockResolvedValue(
+    apiMock.mockImplementation(
       generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
     )
     const { container } = render(
@@ -170,7 +170,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('adds and removes choices', async () => {
-    apiMock.mockResolvedValue(
+    apiMock.mockImplementation(
       generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
     )
     const { getByText, getAllByText, queryAllByText } = render(
@@ -197,7 +197,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('is able to submit the form successfully', async () => {
-    apiMock.mockResolvedValue(
+    apiMock.mockImplementation(
       generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
     )
     const { getByLabelText, getByText } = render(
@@ -219,17 +219,17 @@ describe('Audit Setup > Contests', () => {
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await wait(() => {
-      expect(apiMock).toHaveBeenCalledTimes(3)
-      expect(apiMock.mock.calls[2][0]).toBe('/election/1/contest')
-      expect(apiMock.mock.calls[2][1]).toMatchObject({
+      expect(apiMock).toHaveBeenCalledTimes(4)
+      expect(apiMock.mock.calls[3][0]).toBe('/election/1/contest')
+      expect(apiMock.mock.calls[3][1]).toMatchObject({
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
       })
-      if (apiMock.mock.calls[2][1]!.body) {
+      if (apiMock.mock.calls[3][1]!.body) {
         expect(
-          JSON.parse(apiMock.mock.calls[2][1]!.body as string)
+          JSON.parse(apiMock.mock.calls[3][1]!.body as string)
         ).toMatchObject(
           contestMocks.filledTargeted.contests.map(c =>
             regexify(numberifyContest(c))
@@ -364,7 +364,9 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('handles api request error on initial load', async () => {
-    apiMock.mockRejectedValue(new Error('Network error'))
+    apiMock.mockImplementation(
+      generateApiMock(new Error('Network error'), { jurisdictions: [] })
+    )
     const { container } = render(
       <Contests
         locked={false}
@@ -373,7 +375,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock).toBeCalledTimes(2)
       expect(toastSpy).toBeCalledTimes(1)
       expect(toastSpy).toHaveBeenCalledWith('Network error')
       expect(container).toMatchSnapshot()
@@ -382,13 +384,13 @@ describe('Audit Setup > Contests', () => {
 
   it('handles api request error on submission', async () => {
     apiMock
-      .mockResolvedValueOnce(
+      .mockImplementationOnce(
         generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
       )
-      .mockResolvedValueOnce(
+      .mockImplementationOnce(
         generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
       )
-      .mockRejectedValue(
+      .mockImplementation(
         generateApiMock(new Error('Network error'), { jurisdictions: [] })
       )
     const { getByLabelText, getByText, container } = render(
@@ -419,16 +421,16 @@ describe('Audit Setup > Contests', () => {
 
   it('handles submission when there is a pre-existing contest', async () => {
     apiMock
-      .mockResolvedValueOnce(
+      .mockImplementationOnce(
         generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
       )
-      .mockResolvedValueOnce(
+      .mockImplementationOnce(
         generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
       )
-      .mockRejectedValue(
+      .mockImplementation(
         generateApiMock({ status: 'ok' }, { jurisdictions: [] })
       )
-    const { getByLabelText, getByText } = render(
+    const { getAllByLabelText, getByText } = render(
       <Contests
         locked={false}
         isTargeted
@@ -438,11 +440,11 @@ describe('Audit Setup > Contests', () => {
     )
 
     contestsInputMocks.inputs.forEach(inputData => {
-      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
+      const input = getAllByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',
-      }) as HTMLInputElement
-      typeInto(input, inputData.value)
-      expect(input.value).toBe(inputData.value)
+      }) as HTMLInputElement[]
+      typeInto(input[input.length - 1], inputData.value)
+      expect(input[input.length - 1].value).toBe(inputData.value)
     })
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
