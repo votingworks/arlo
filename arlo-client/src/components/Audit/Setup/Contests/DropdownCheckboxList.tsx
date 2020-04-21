@@ -7,7 +7,8 @@ import { IContests } from './types'
 
 const CustomMenuItem = styled.li`
   .bp3-menu-item {
-    display: inline;
+    display: inline-block;
+    width: 100%;
   }
   .bp3-checkbox {
     float: right;
@@ -43,6 +44,7 @@ const DropdownCheckboxList = ({
   )
   const updateList = (value: string, checked: boolean) => {
     const itemIndex = jurisdictionList.indexOf(value)
+    /* istanbul ignore else */
     if (checked && itemIndex === -1) {
       jurisdictionList.push(value)
     } else if (!checked && itemIndex > -1) {
@@ -54,23 +56,18 @@ const DropdownCheckboxList = ({
     <Menu>
       {optionList.map(v => (
         <CustomMenuItem key={v.value}>
-          <span className="bp3-menu-item">{v.title}</span>
-          <Checkbox
-            inline
-            checked={jurisdictionList.indexOf(v.value) > -1}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              updateList(v.value, e.currentTarget.checked)
-            }
-          />
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+          <label className="bp3-menu-item">
+            {v.title}
+            <Checkbox
+              inline
+              checked={jurisdictionList.indexOf(v.value) > -1}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                updateList(v.value, e.currentTarget.checked)
+              }
+            />
+          </label>
         </CustomMenuItem>
-        // <Menu.Item text={v.title} key={v.value} shouldDismissPopover={false}>
-        //   <Checkbox
-        //     checked={jurisdictionList.indexOf(v.value) > -1}
-        //     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-        //       updateList(v.value, e.currentTarget.checked)
-        //     }
-        //   />
-        // </Menu.Item>
       ))}
     </Menu>
   )

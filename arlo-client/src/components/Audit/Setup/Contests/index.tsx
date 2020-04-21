@@ -89,6 +89,8 @@ const Contests: React.FC<IProps> = ({
   }, [electionId])
   const submit = async (values: IContests) => {
     const response = await updateContests(values.contests)
+    // TEST TODO
+    /* istanbul ignore next */
     if (!response) return
     nextStage.activate()
   }
