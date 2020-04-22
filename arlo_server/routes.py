@@ -819,7 +819,6 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, rou
                 "interpretations": [
                     serialize_interpretation(i) for i in ballot.interpretations
                 ],
-                "comment": ballot.comment,
                 "position": ballot.ballot_position,
                 "batch": {
                     "id": batch.id,
@@ -1054,7 +1053,7 @@ def audit_report(election_id):
         report_writer.writerow(["All Sampled Ballots"])
         report_writer.writerow(["Ballot", "Ticket Numbers", "Audited?", "Audit Result"])
         # Write a row for each ballot that looks like this:
-        # "Batch 1, #13",Round 1: 0.123,Audited,some_candidate_id,A comment
+        # "Batch 1, #13",Round 1: 0.123,Audited,some_candidate_id
         # The Ticket Numbers column is a bit tricky:
         # If a ballot was sampled multiple times in a round: Round 1: 0.123, 0.456
         # If a ballot was sampled in multiple rounds: Round 1: 0.123, Round 2: 0.456

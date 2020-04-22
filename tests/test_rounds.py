@@ -5,11 +5,9 @@ import json, datetime, uuid
 from arlo_server import db
 from arlo_server.models import (
     SampledBallotDraw,
-    SampledBallot,
     Round,
     RoundContest,
     RoundContestResult,
-    Batch,
 )
 from arlo_server.auth import UserType
 from tests.helpers import (
