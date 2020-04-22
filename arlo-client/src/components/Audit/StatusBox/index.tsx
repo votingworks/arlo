@@ -82,7 +82,8 @@ const StatusBox = ({ electionId }: IProps) => {
       setCurrentRound(round)
       if (jurisdictionList) setJurisdictions(jurisdictionList)
     })()
-  })
+  }, [electionId, setCurrentRound, setJurisdictions])
+  console.log(jurisdictions)
 
   const [title, details, button] = generateStatuses(
     jurisdictions.length,
@@ -110,7 +111,7 @@ const StatusBox = ({ electionId }: IProps) => {
                   Download Audit Reports
                 </FormButton>
               )
-            case 'START_ROUND_BUTTON':
+            case 'START_ROUND_BUTTON': // button to submit to the rounds endpoint with a new round number
             case 'NO_BUTTON':
             default:
               return null

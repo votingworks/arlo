@@ -11,6 +11,7 @@ import Sidebar from '../Atoms/Sidebar'
 import { AuthDataContext } from '../UserContext'
 import Setup, { setupStages } from './Setup'
 import useSetupMenuItems from './useSetupMenuItems'
+import StatusBox from './StatusBox'
 
 const initialData: IAudit = {
   name: '',
@@ -93,6 +94,7 @@ const Audit: React.FC<{}> = () => {
       {isAuthenticated &&
       (viewMatch === 'setup' || viewMatch === 'progress') ? (
         <>
+          <StatusBox electionId={electionId} />
           {meta!.type === 'audit_admin' && (
             <Sidebar title="Audit Setup" menuItems={menuItems} />
           )}
