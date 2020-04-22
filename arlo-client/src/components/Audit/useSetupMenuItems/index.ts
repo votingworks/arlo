@@ -79,6 +79,7 @@ function useSetupMenuItems(
     setAuditSettings,
     setReviewLaunch,
     electionId,
+    setStage,
   ])
 
   const refresh = useCallback(() => {
