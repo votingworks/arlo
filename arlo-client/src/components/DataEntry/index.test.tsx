@@ -232,7 +232,7 @@ describe('DataEntry ballot interaction', () => {
       </StaticRouter>
     )
 
-    fireEvent.click(getByTestId('choice one'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
