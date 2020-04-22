@@ -2,7 +2,6 @@ import os, math, uuid
 import json, csv, io
 from flask.testing import FlaskClient
 from typing import Generator
-
 import pytest
 
 from tests.helpers import assert_ok, post_json, create_election
@@ -1152,9 +1151,8 @@ def test_ballot_set(client, election_id):
             ballot = response["ballots"][0]
             batch_id = ballot["batch"]["id"]
             round_id = round["id"]
-            assert not ballot["status"]
-            assert not ballot["vote"]
-            assert not ballot["comment"]
+            assert ballot["status"] == "NOT_AUDITED"
+            assert ballot["interpretations"] == []
             break
 
     assert batch_id is not None
@@ -1167,7 +1165,18 @@ def test_ballot_set(client, election_id):
     )
 
     rv = post_json(
-        client, url, {"vote": "NO", "comment": "This one had a hanging chad."}
+        client,
+        url,
+        {
+            "interpretations": [
+                {
+                    "contestId": contest_id,
+                    "interpretation": "VOTE",
+                    "choiceId": candidate_id_1,
+                    "comment": "This one had a hanging chad.",
+                }
+            ]
+        },
     )
     response = json.loads(rv.data)
 
@@ -1184,8 +1193,14 @@ def test_ballot_set(client, election_id):
     ballot = [b for b in response["ballots"] if b["position"] == ballot_position][0]
 
     assert ballot["status"] == "AUDITED"
-    assert ballot["vote"] == "NO"
-    assert ballot["comment"] == "This one had a hanging chad."
+    assert ballot["interpretations"] == [
+        {
+            "contestId": contest_id,
+            "interpretation": "VOTE",
+            "choiceId": candidate_id_1,
+            "comment": "This one had a hanging chad.",
+        }
+    ]
 
 
 def test_audit_board(client, election_id):

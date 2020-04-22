@@ -174,9 +174,6 @@ class Batch(BaseModel):
     tabulator = db.Column(db.String(200), nullable=True)
 
     ballots = relationship("SampledBallot", backref="batch", passive_deletes=True)
-    ballot_draws = relationship(
-        "SampledBallotDraw", backref="batch", passive_deletes=True
-    )
 
     __table_args__ = (db.UniqueConstraint("jurisdiction_id", "name"),)
 
@@ -281,15 +278,24 @@ class Round(BaseModel):
     audit_boards = relationship("AuditBoard", backref="round", passive_deletes=True)
 
 
+class BallotStatus(str, Enum):
+    NOT_AUDITED = "NOT_AUDITED"
+    AUDITED = "AUDITED"
+    SKIPPED = "SKIPPED"
+
+
+# Represents a physical ballot. A ballot only gets interpreted by an audit
+# board once per audit.
 class SampledBallot(BaseModel):
+    id = db.Column(db.String(200), primary_key=True)
+
     batch_id = db.Column(
         db.String(200), db.ForeignKey("batch.id", ondelete="cascade"), nullable=False
     )
-
     # this ballot position should be 1-indexed
     ballot_position = db.Column(db.Integer, nullable=False)
 
-    __table_args__ = (db.PrimaryKeyConstraint("batch_id", "ballot_position"),)
+    __table_args__ = (db.UniqueConstraint("batch_id", "ballot_position"),)
 
     draws = relationship(
         "SampledBallotDraw", backref="sampled_ballot", passive_deletes=True
@@ -300,31 +306,56 @@ class SampledBallot(BaseModel):
         db.ForeignKey("audit_board.id", ondelete="cascade"),
         nullable=True,
     )
-    vote = db.Column(db.String(200), nullable=True)
-    comment = db.Column(db.Text, nullable=True)
+    status = db.Column(db.Enum(BallotStatus), nullable=False)
+    interpretations = relationship("BallotInterpretation", cascade="all, delete-orphan",  passive_deletes=True)
 
 
+# Represents one sampling of a ballot in a specific round. A ballot can get
+# drawn multiple times per round, so a ticket number is assigned to identify
+# each draw.
 class SampledBallotDraw(BaseModel):
-    batch_id = db.Column(
-        db.String(200), db.ForeignKey("batch.id", ondelete="cascade"), nullable=False
+    ballot_id = db.Column(
+        db.String(200),
+        db.ForeignKey("sampled_ballot.id", ondelete="cascade"),
+        nullable=False,
     )
-    ballot_position = db.Column(db.Integer, nullable=False)
-
     round_id = db.Column(
         db.String(200), db.ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
     ticket_number = db.Column(db.String(200), nullable=False)
 
     __table_args__ = (
-        db.PrimaryKeyConstraint(
-            "batch_id", "ballot_position", "round_id", "ticket_number"
-        ),
-        db.ForeignKeyConstraint(
-            ["batch_id", "ballot_position"],
-            ["sampled_ballot.batch_id", "sampled_ballot.ballot_position"],
-            ondelete="cascade",
-        ),
+        db.PrimaryKeyConstraint("ballot_id", "round_id", "ticket_number"),
     )
+
+
+class Interpretation(str, Enum):
+    BLANK = "BLANK"
+    CANT_AGREE = "CANT_AGREE"
+    VOTE = "VOTE"
+
+
+# Represents how the audit board interpreted the vote for a specific contest
+# when they were auditing one ballot.
+class BallotInterpretation(BaseModel):
+    ballot_id = db.Column(
+        db.String(200),
+        db.ForeignKey("sampled_ballot.id", ondelete="cascade"),
+        nullable=False,
+    )
+    contest_id = db.Column(
+        db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False
+    )
+
+    __table_args__ = (db.PrimaryKeyConstraint("ballot_id", "contest_id"),)
+
+    interpretation = db.Column(db.Enum(Interpretation), nullable=False)
+    # If interpretation is VOTE, contest_choice_id holds the id for the choice
+    # that was voted for. Otherwise null.
+    contest_choice_id = db.Column(
+        db.String(200), db.ForeignKey("contest_choice.id", ondelete="cascade")
+    )
+    comment = db.Column(db.Text, nullable=True)
 
 
 class RoundContest(BaseModel):

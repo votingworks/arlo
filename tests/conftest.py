@@ -16,6 +16,9 @@ from arlo_server.models import (
     Contest,
     SampledBallotDraw,
     AuditBoard,
+    BallotInterpretation,
+    Interpretation,
+    BallotStatus,
 )
 from arlo_server.auth import (
     UserType,
@@ -211,9 +214,27 @@ def round_2_id(
     ).get(round_1_id)
     contest = Contest.query.get(contest_id)
     for ballot_draw in round.sampled_ballot_draws[:WINNER_VOTES]:
-        ballot_draw.sampled_ballot.vote = contest.choices[0].id
+        if ballot_draw.sampled_ballot.status == BallotStatus.NOT_AUDITED:
+            ballot_draw.sampled_ballot.status = BallotStatus.AUDITED
+            db.session.add(
+                BallotInterpretation(
+                    ballot_id=ballot_draw.sampled_ballot.id,
+                    contest_id=contest_id,
+                    interpretation=Interpretation.VOTE,
+                    contest_choice_id=contest.choices[0].id,
+                )
+            )
     for ballot_draw in round.sampled_ballot_draws[WINNER_VOTES:]:
-        ballot_draw.sampled_ballot.vote = contest.choices[1].id
+        if ballot_draw.sampled_ballot.status == BallotStatus.NOT_AUDITED:
+            ballot_draw.sampled_ballot.status = BallotStatus.AUDITED
+            db.session.add(
+                BallotInterpretation(
+                    ballot_id=ballot_draw.sampled_ballot.id,
+                    contest_id=contest_id,
+                    interpretation=Interpretation.VOTE,
+                    contest_choice_id=contest.choices[1].id,
+                )
+            )
     round.ended_at = datetime.utcnow()
     db.session.add(
         RoundContestResult(

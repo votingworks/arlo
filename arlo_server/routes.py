@@ -10,6 +10,7 @@ from xkcdpass import xkcd_password as xp
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
+from sqlalchemy.orm import contains_eager
 
 from authlib.flask.client import OAuth
 
@@ -24,7 +25,11 @@ from arlo_server.auth import (
 )
 from arlo_server.models import *
 from arlo_server.errors import handle_unique_constraint_error
-from arlo_server.ballots import ballot_retrieval_list
+from arlo_server.ballots import (
+    ballot_retrieval_list,
+    serialize_interpretation,
+    deserialize_interpretation,
+)
 from arlo_server.ballot_manifest import (
     save_ballot_manifest_file,
     clear_ballot_manifest_file,
@@ -152,7 +157,8 @@ def sample_ballots(session: Session, election: Election, round: Round):
 
     num_sampled = (
         session.query(SampledBallotDraw)
-        .join(SampledBallotDraw.batch)
+        .join(SampledBallot)
+        .join(SampledBallot.batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
         .count()
     )
@@ -218,15 +224,20 @@ def sample_ballots(session: Session, election: Election, round: Round):
 
                 if sample_number == 1:
                     sampled_ballot = SampledBallot(
+                        id=str(uuid.uuid4()),
                         batch_id=batch_id,
                         ballot_position=ballot_position,
                         audit_board_id=audit_board.id,
+                        status=BallotStatus.NOT_AUDITED,
                     )
                     session.add(sampled_ballot)
+                else:
+                    sampled_ballot = SampledBallot.query.filter_by(
+                        batch_id=batch_id, ballot_position=ballot_position,
+                    ).one()
 
                 sampled_ballot_draw = SampledBallotDraw(
-                    batch_id=batch_id,
-                    ballot_position=ballot_position,
+                    ballot_id=sampled_ballot.id,
                     round_id=round.id,
                     ticket_number=ticket_number,
                 )
@@ -742,7 +753,7 @@ def set_audit_board(election_id, jurisdiction_id, audit_board_id):
 def ballot_list(election_id, jurisdiction_id, round_id):
     query = (
         SampledBallotDraw.query.join(SampledBallot)
-        .join(SampledBallotDraw.batch)
+        .join(SampledBallot.batch)
         .join(Round)
         .join(AuditBoard, AuditBoard.id == SampledBallot.audit_board_id)
         .add_entity(SampledBallot)
@@ -764,9 +775,10 @@ def ballot_list(election_id, jurisdiction_id, round_id):
         ballots=[
             {
                 "ticketNumber": ballot_draw.ticket_number,
-                "status": "AUDITED" if ballot.vote is not None else None,
-                "vote": ballot.vote,
-                "comment": ballot.comment,
+                "status": ballot.status,
+                "interpretations": [
+                    serialize_interpretation(i) for i in ballot.interpretations
+                ],
                 "position": ballot.ballot_position,
                 "batch": {
                     "id": batch.id,
@@ -803,8 +815,10 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, rou
         ballots=[
             {
                 "ticketNumber": ballot_draw.ticket_number,
-                "status": "AUDITED" if ballot.vote is not None else None,
-                "vote": ballot.vote,
+                "status": ballot.status,
+                "interpretations": [
+                    serialize_interpretation(i) for i in ballot.interpretations
+                ],
                 "comment": ballot.comment,
                 "position": ballot.ballot_position,
                 "batch": {
@@ -859,12 +873,13 @@ def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
         )
 
     ballot = ballots[0]
-
-    if "vote" in attributes:
-        ballot.vote = attributes["vote"]
-
-    if "comment" in attributes:
-        ballot.comment = attributes["comment"]
+    ballot.interpretations = [
+        deserialize_interpretation(ballot.id, interpretation)
+        for interpretation in attributes["interpretations"]
+    ]
+    # for interpretation in attributes["interpretations"]:
+    # db.session.add(deserialize_interpretation(ballot.id, interpretation))
+    ballot.status = BallotStatus.AUDITED
 
     db.session.commit()
 
@@ -1010,6 +1025,11 @@ def audit_report(election_id):
             .join(Batch)
             .filter_by(jurisdiction_id=jurisdiction.id)
             .order_by("batch_id", "ballot_position")
+            .options(
+                contains_eager(SampledBallotDraw.sampled_ballot).contains_eager(
+                    SampledBallot.batch
+                )
+            )
             .all()
         )
         all_sampled_ballot_draws += ballot_draws
@@ -1020,7 +1040,9 @@ def audit_report(election_id):
                 " ".join(
                     [
                         "(Batch {:s}, #{:d}, Ticket #{:s})".format(
-                            b.batch.name, b.ballot_position, b.ticket_number
+                            b.sampled_ballot.batch.name,
+                            b.sampled_ballot.ballot_position,
+                            b.ticket_number,
                         )
                         for b in ballot_draws
                     ]
@@ -1030,9 +1052,7 @@ def audit_report(election_id):
 
     if election.online:
         report_writer.writerow(["All Sampled Ballots"])
-        report_writer.writerow(
-            ["Ballot", "Ticket Numbers", "Audited?", "Audit Result", "Comments"]
-        )
+        report_writer.writerow(["Ballot", "Ticket Numbers", "Audited?", "Audit Result"])
         # Write a row for each ballot that looks like this:
         # "Batch 1, #13",Round 1: 0.123,Audited,some_candidate_id,A comment
         # The Ticket Numbers column is a bit tricky:
@@ -1041,7 +1061,7 @@ def audit_report(election_id):
 
         # First group all the ballot draws by the actual ballot
         for _, ballot_draws in group_by(
-            all_sampled_ballot_draws, key=lambda b: (b.batch_id, b.ballot_position)
+            all_sampled_ballot_draws, key=lambda b: b.ballot_id
         ).items():
             b = ballot_draws[0]
 
@@ -1059,11 +1079,12 @@ def audit_report(election_id):
 
             report_writer.writerow(
                 [
-                    "Batch {:s}, #{:d}".format(b.batch.name, b.ballot_position),
+                    "Batch {:s}, #{:d}".format(
+                        b.sampled_ballot.batch.name, b.sampled_ballot.ballot_position
+                    ),
                     ", ".join(ticket_numbers),
-                    "Audited" if b.sampled_ballot.vote else "Not audited",
-                    b.sampled_ballot.vote,
-                    b.sampled_ballot.comment,
+                    b.sampled_ballot.status,
+                    pretty_interpretations(b.sampled_ballot.interpretations),
                 ]
             )
 
@@ -1071,6 +1092,18 @@ def audit_report(election_id):
         csv_io.getvalue(),
         filename=f"audit-report-{election_timestamp_name(election)}.csv",
     )
+
+
+# TODO make this work for multiple contests
+# TODO include comments
+def pretty_interpretations(interpretations: List[BallotInterpretation]) -> str:
+    if len(interpretations) == 0:
+        return ""
+
+    if interpretations[0].interpretation == Interpretation.VOTE:
+        return str(interpretations[0].contest_choice_id)
+    else:
+        return str(interpretations[0].interpretation.value)
 
 
 def pretty_affiliation(affiliation):

@@ -1,6 +1,6 @@
 import io, csv
 from sqlalchemy import func, literal_column
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from flask import jsonify
 
@@ -14,6 +14,7 @@ from arlo_server.models import (
     AuditBoard,
     SampledBallot,
     Jurisdiction,
+    BallotInterpretation,
 )
 from util.csv_download import csv_response, election_timestamp_name
 from util.jsonschema import JSONDict
@@ -21,11 +22,12 @@ from util.jsonschema import JSONDict
 
 def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
     previous_ballots_query = (
-        SampledBallotDraw.query.join(SampledBallotDraw.round)
+        SampledBallotDraw.query.join(Round)
         .filter(Round.round_num < round.round_num)
-        .join(SampledBallotDraw.batch)
+        .join(SampledBallot)
+        .join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
-        .values(Batch.name, SampledBallotDraw.ballot_position)
+        .values(Batch.name, SampledBallot.ballot_position)
     )
     previous_ballots = {
         (batch_name, ballot_position)
@@ -34,15 +36,15 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
 
     ballots = (
         SampledBallotDraw.query.filter_by(round_id=round.id)
-        .join(SampledBallotDraw.batch)
+        .join(SampledBallot)
+        .join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBallotDraw.sampled_ballot)
-        .join(SampledBallot.audit_board)
-        .group_by(AuditBoard.id, Batch.id, SampledBallotDraw.ballot_position)
-        .order_by(AuditBoard.name, Batch.name, SampledBallotDraw.ballot_position)
+        .join(AuditBoard)
+        .group_by(AuditBoard.id, SampledBallot.id, Batch.id)
+        .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position)
         .values(
             Batch.name,
-            SampledBallotDraw.ballot_position,
+            SampledBallot.ballot_position,
             Batch.storage_location,
             Batch.tabulator,
             func.string_agg(
@@ -108,16 +110,38 @@ def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round_id:
     )
 
 
+def deserialize_interpretation(
+    ballot_id: str, interpretation: JSONDict
+) -> BallotInterpretation:
+    return BallotInterpretation(
+        ballot_id=ballot_id,
+        contest_id=interpretation["contestId"],
+        interpretation=interpretation["interpretation"],
+        contest_choice_id=interpretation["choiceId"],
+        comment=interpretation["comment"],
+    )
+
+
+def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
+    return {
+        "contestId": interpretation.contest_id,
+        "interpretation": interpretation.interpretation,
+        "choiceId": interpretation.contest_choice_id,
+        "comment": interpretation.comment,
+    }
+
+
 def serialize_ballot_draw(ballot_draw: SampledBallotDraw) -> JSONDict:
     # TODO separate status for ballots that were skipped by the audit board
     ballot = ballot_draw.sampled_ballot
     audit_board = ballot.audit_board
-    batch = ballot_draw.batch
+    batch = ballot.batch
     return {
         "ticketNumber": ballot_draw.ticket_number,
-        "status": "AUDITED" if ballot.vote is not None else None,
-        "vote": ballot.vote,
-        "comment": ballot.comment,
+        "status": ballot.status,
+        "interpretations": [
+            serialize_interpretation(i) for i in ballot.interpretations
+        ],
         "position": ballot.ballot_position,
         "batch": {"id": batch.id, "name": batch.name, "tabulator": batch.tabulator,},
         "auditBoard": {"id": audit_board.id, "name": audit_board.name,},
@@ -137,19 +161,21 @@ def list_ballot_draws_for_jurisdiction(
     Round.query.get_or_404(round_id)
     ballot_draws = (
         SampledBallotDraw.query.filter_by(round_id=round_id)
+        .join(SampledBallot)
         .join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBallot)
         .join(AuditBoard)
         .order_by(
             AuditBoard.name,
             Batch.name,
-            SampledBallotDraw.ballot_position,
+            SampledBallot.ballot_position,
             SampledBallotDraw.ticket_number,
         )
         .options(
-            joinedload(SampledBallotDraw.batch),
-            joinedload(SampledBallotDraw.sampled_ballot).joinedload(
+            contains_eager(SampledBallotDraw.sampled_ballot).contains_eager(
+                SampledBallot.batch
+            ),
+            contains_eager(SampledBallotDraw.sampled_ballot).contains_eager(
                 SampledBallot.audit_board
             ),
         )
