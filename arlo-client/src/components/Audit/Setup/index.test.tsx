@@ -6,7 +6,7 @@ import { asyncActRender } from '../../testUtilities'
 import Setup from './index'
 import relativeStages from './_mocks'
 import { contestMocks } from './Contests/_mocks'
-import useContestsApi from './Contests/useContestsApi'
+import useContestsApi from './useContestsApi'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,

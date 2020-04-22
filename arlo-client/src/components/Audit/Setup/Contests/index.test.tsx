@@ -7,7 +7,7 @@ import * as utilities from '../../../utilities'
 import Contests, { IJurisdictions } from './index'
 import relativeStages from '../_mocks'
 import { contestsInputMocks, contestMocks } from './_mocks'
-import { numberifyContest, IContestNumbered } from './useContestsApi'
+import { numberifyContest, IContestNumbered } from '../useContestsApi'
 import { IContests } from './types'
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()

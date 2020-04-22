@@ -7,7 +7,7 @@ import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../useAuditSettings'
-import useContestsApi from '../Contests/useContestsApi'
+import useContestsApi from '../useContestsApi'
 import { IContest } from '../../../../types'
 
 const SettingsTable = styled.table`

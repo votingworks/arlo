@@ -1,10 +1,10 @@
 import { useEffect, useCallback, useState, useMemo } from 'react'
 import { toast } from 'react-toastify'
 import uuidv4 from 'uuidv4'
-import { api, checkAndToast } from '../../../utilities'
-import { IErrorResponse, IContest } from '../../../../types'
-import { IContests } from './types'
-import { parse as parseNumber } from '../../../../utils/number-schema'
+import { api, checkAndToast } from '../../utilities'
+import { IErrorResponse, IContest } from '../../../types'
+import { IContests } from './Contests/types'
+import { parse as parseNumber } from '../../../utils/number-schema'
 
 export interface IContestNumbered {
   id: string
