@@ -307,7 +307,9 @@ class SampledBallot(BaseModel):
         nullable=True,
     )
     status = db.Column(db.Enum(BallotStatus), nullable=False)
-    interpretations = relationship("BallotInterpretation", cascade="all, delete-orphan",  passive_deletes=True)
+    interpretations = relationship(
+        "BallotInterpretation", cascade="all, delete-orphan", passive_deletes=True
+    )
 
 
 # Represents one sampling of a ballot in a specific round. A ballot can get
