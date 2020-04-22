@@ -18,9 +18,10 @@ export const setupStages = [
 interface IProps {
   stage: ElementType<typeof setupStages>
   menuItems: ISidebarMenuItem[]
+  refresh: () => void
 }
 
-const Setup: React.FC<IProps> = ({ stage, menuItems }) => {
+const Setup: React.FC<IProps> = ({ stage, menuItems, refresh }) => {
   const activeStage = menuItems.find(m => m.title === stage)
   const nextStage: ISidebarMenuItem | undefined =
     menuItems[menuItems.indexOf(activeStage!) + 1]
@@ -69,6 +70,7 @@ const Setup: React.FC<IProps> = ({ stage, menuItems }) => {
         <Review
           prevStage={prevStage!}
           locked={activeStage!.state === 'locked'}
+          refresh={refresh}
         />
       )
     /* istanbul ignore next */

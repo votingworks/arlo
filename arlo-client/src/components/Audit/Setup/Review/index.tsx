@@ -13,7 +13,7 @@ import useAuditSettings from '../useAuditSettings'
 import useContestsApi from '../useContestsApi'
 import { IContest, ISampleSizeOption } from '../../../../types'
 import useParticipantsApi from '../useParticipantsApi'
-import { api } from '../../../utilities'
+import { api, checkAndToast } from '../../../utilities'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -60,9 +60,10 @@ interface IStringSampleSize {
 interface IProps {
   locked: boolean
   prevStage: ISidebarMenuItem
+  refresh: () => void
 }
 
-const Review: React.FC<IProps> = ({ prevStage, locked }: IProps) => {
+const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const { electionId } = useParams()
   const [{ electionName, randomSeed, riskLimit, online }] = useAuditSettings(
     electionId!
@@ -105,7 +106,28 @@ const Review: React.FC<IProps> = ({ prevStage, locked }: IProps) => {
       }
     })()
   }, [electionId])
-  console.log(sampleSizeOptions)
+  const submit = ({ sampleSize }: { sampleSize: string }) => {
+    try {
+      const result = api(`/election/${electionId}/round`, {
+        method: 'POST',
+        body: JSON.stringify({
+          sampleSize: Number(sampleSize),
+          roundNum: 1,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      // checkAndToast left here for consistency and reference but not tested since it's vestigial
+      /* istanbul ignore next */
+      if (checkAndToast(result)) {
+        return
+      }
+      refresh()
+    } catch (err) {
+      toast.error(err.message)
+    }
+  }
   return (
     <div>
       <H2Title>Review &amp; Launch</H2Title>
@@ -180,7 +202,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked }: IProps) => {
           sampleSize: sampleSizeOptions.length ? sampleSizeOptions[0].size : '',
         }}
         enableReinitialize
-        onSubmit={v => console.log(v)}
+        onSubmit={submit}
       >
         {({
           values,
@@ -237,7 +259,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked }: IProps) => {
             )}
             <FormButtonBar>
               <FormButton onClick={prevStage.activate}>Back</FormButton>
-              <FormButton onClick={handleSubmit}>Launch</FormButton>
+              <FormButton onClick={handleSubmit}>Launch Audit</FormButton>
             </FormButtonBar>
           </Form>
         )}
