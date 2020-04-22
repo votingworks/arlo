@@ -16,6 +16,7 @@ module.exports = function(app) {
   app.use(proxy('/election/new', { target }))
   app.use(proxy('/election/*/audit/**', { target }))
   app.use(proxy('/election/*/settings', { target }))
+  app.use(proxy('/election/*/sample-sizes', { target }))
   app.use(proxy('/election/*/contest', { target }))
   app.use(proxy('/election/*/round', { target }))
   app.use(proxy('/election/*/jurisdiction', { target }))
