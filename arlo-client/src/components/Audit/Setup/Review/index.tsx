@@ -7,6 +7,8 @@ import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../useAuditSettings'
+import useContestsApi from '../Contests/useContestsApi'
+import { IContest } from '../../../../types'
 
 const SettingsTable = styled.table`
   width: 100%;
@@ -46,6 +48,9 @@ const Review: React.FC<IProps> = ({ prevStage }: IProps) => {
   const [{ electionName, randomSeed, riskLimit, online }] = useAuditSettings(
     electionId!
   )
+  const [{ contests }] = useContestsApi(electionId!, true)
+  const targetedContests = contests.filter(c => c.isTargeted === true)
+  const opportunisticContests = contests.filter(c => c.isTargeted === false)
   return (
     <div>
       <H2Title>Review &amp; Launch</H2Title>
@@ -88,18 +93,12 @@ const Review: React.FC<IProps> = ({ prevStage }: IProps) => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>9-1-1 Bond Measure</td>
-            <td>City One, City two, a bunch more cities</td>
-          </tr>
-          <tr>
-            <td>9-1-1 Bond Measure</td>
-            <td>City One, City two, a bunch more cities</td>
-          </tr>
-          <tr>
-            <td>9-1-1 Bond Measure</td>
-            <td>City One, City two, a bunch more cities</td>
-          </tr>
+          {targetedContests.map((c: IContest) => (
+            <tr key={c.id}>
+              <td>{c.name}</td>
+              <td>{c.jurisdictionIds.join(', ')}</td>
+            </tr>
+          ))}
         </tbody>
       </ContestsTable>
       <ContestsTable>
@@ -110,18 +109,12 @@ const Review: React.FC<IProps> = ({ prevStage }: IProps) => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>9-1-1 Bond Measure</td>
-            <td>City One, City two, a bunch more cities</td>
-          </tr>
-          <tr>
-            <td>9-1-1 Bond Measure</td>
-            <td>City One, City two, a bunch more cities</td>
-          </tr>
-          <tr>
-            <td>9-1-1 Bond Measure</td>
-            <td>City One, City two, a bunch more cities</td>
-          </tr>
+          {opportunisticContests.map((c: IContest) => (
+            <tr key={c.id}>
+              <td>{c.name}</td>
+              <td>{c.jurisdictionIds.join(', ')}</td>
+            </tr>
+          ))}
         </tbody>
       </ContestsTable>
       <H4>Sample Size Options</H4>
