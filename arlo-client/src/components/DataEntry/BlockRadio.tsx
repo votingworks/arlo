@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import { IBallot } from '../../types'
 
 const Block = styled.label`
   &.bp3-control.bp3-radio {
@@ -35,7 +34,8 @@ const Block = styled.label`
 
 interface IProps {
   name: string
-  value: Exclude<IBallot['vote'], null>
+  value: string
+  label: string
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   locked?: boolean
   className?: string
@@ -43,12 +43,10 @@ interface IProps {
   gray?: boolean
 }
 
-// export type voteKey = keyof typeof TEXT
-// export type voteValue = typeof TEXT[voteKey]
-
 const BlockRadio = ({
   name,
   value,
+  label,
   handleChange,
   className,
   gray,
@@ -64,7 +62,7 @@ const BlockRadio = ({
       checked={checked}
     />
     <span className={`${gray && 'gray'} bp3-control-indicator`}>
-      <span className="radio-text">{value}</span>
+      <span className="radio-text">{label}</span>
     </span>
   </Block>
 )
