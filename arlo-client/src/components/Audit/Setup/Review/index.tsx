@@ -51,6 +51,12 @@ const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
 })
 
+interface IStringSampleSize {
+  size: string
+  type: string | null
+  prob: number | null
+}
+
 interface IProps {
   locked: boolean
   prevStage: ISidebarMenuItem
@@ -80,15 +86,20 @@ const Review: React.FC<IProps> = ({ prevStage, locked }: IProps) => {
       ),
     }))
   const [sampleSizeOptions, setSampleSizeOptions] = useState<
-    ISampleSizeOption[]
+    IStringSampleSize[]
   >([])
   useEffect(() => {
     ;(async () => {
       try {
-        const response: ISampleSizeOption[] = await api(
+        const { sampleSizes }: { sampleSizes: ISampleSizeOption[] } = await api(
           `/election/${electionId}/sample-sizes`
         )
-        setSampleSizeOptions(response)
+        setSampleSizeOptions(
+          sampleSizes.map(v => ({
+            ...v,
+            size: `${v.size}`,
+          }))
+        )
       } catch (err) {
         toast.error(err.message)
       }
@@ -106,28 +117,30 @@ const Review: React.FC<IProps> = ({ prevStage, locked }: IProps) => {
       <br />
       <H4>Audit Settings</H4>
       <SettingsTable>
-        <tr>
-          <td>Election Name:</td>
-          <td>{electionName}</td>
-        </tr>
-        <tr>
-          <td>Risk Limit:</td>
-          <td>{riskLimit}</td>
-        </tr>
-        <tr>
-          <td>Random Seed:</td>
-          <td>{randomSeed}</td>
-        </tr>
-        <tr>
-          <td>Participating Jurisdictions:</td>
-          <td>
-            <a href="/link-to-jurisdictions-file">link</a>
-          </td>
-        </tr>
-        <tr>
-          <td>Audit Board Data Entry:</td>
-          <td>{online ? 'Online' : 'Offline'}</td>
-        </tr>
+        <tbody>
+          <tr>
+            <td>Election Name:</td>
+            <td>{electionName}</td>
+          </tr>
+          <tr>
+            <td>Risk Limit:</td>
+            <td>{riskLimit}</td>
+          </tr>
+          <tr>
+            <td>Random Seed:</td>
+            <td>{randomSeed}</td>
+          </tr>
+          <tr>
+            <td>Participating Jurisdictions:</td>
+            <td>
+              <a href="/link-to-jurisdictions-file">link</a>
+            </td>
+          </tr>
+          <tr>
+            <td>Audit Board Data Entry:</td>
+            <td>{online ? 'Online' : 'Offline'}</td>
+          </tr>
+        </tbody>
       </SettingsTable>
       <ContestsTable>
         <thead>
@@ -163,7 +176,9 @@ const Review: React.FC<IProps> = ({ prevStage, locked }: IProps) => {
       </ContestsTable>
       <H4>Sample Size Options</H4>
       <Formik
-        initialValues={{ sampleSize: '' }}
+        initialValues={{
+          sampleSize: sampleSizeOptions.length ? sampleSizeOptions[0].size : '',
+        }}
         enableReinitialize
         onSubmit={v => console.log(v)}
       >
