@@ -9,6 +9,7 @@ import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../useAuditSettings'
 import useContestsApi from '../useContestsApi'
 import { IContest } from '../../../../types'
+import useParticipantsApi from '../useParticipantsApi'
 
 const SettingsTable = styled.table`
   width: 100%;
@@ -48,9 +49,24 @@ const Review: React.FC<IProps> = ({ prevStage }: IProps) => {
   const [{ electionName, randomSeed, riskLimit, online }] = useAuditSettings(
     electionId!
   )
+  const participants = useParticipantsApi(electionId!)
   const [{ contests }] = useContestsApi(electionId!, true)
-  const targetedContests = contests.filter(c => c.isTargeted === true)
-  const opportunisticContests = contests.filter(c => c.isTargeted === false)
+  const targetedContests = contests
+    .filter(c => c.isTargeted === true)
+    .map(c => ({
+      ...c,
+      jurisdictionIds: c.jurisdictionIds.map(j =>
+        participants.length > 0 ? participants.find(p => p.id === j)!.name : ''
+      ),
+    }))
+  const opportunisticContests = contests
+    .filter(c => c.isTargeted === false)
+    .map(c => ({
+      ...c,
+      jurisdictionIds: c.jurisdictionIds.map(j =>
+        participants.length > 0 ? participants.find(p => p.id === j)!.name : ''
+      ),
+    }))
   return (
     <div>
       <H2Title>Review &amp; Launch</H2Title>

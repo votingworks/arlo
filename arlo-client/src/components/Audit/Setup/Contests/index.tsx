@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState, useEffect } from 'react'
-import { toast } from 'react-toastify'
+import React from 'react'
 import { useParams } from 'react-router-dom'
 import { Formik, FormikProps, Form, Field, FieldArray, getIn } from 'formik'
 import { Spinner } from '@blueprintjs/core'
@@ -22,14 +21,9 @@ import { IContests } from './types'
 import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useContestsApi from '../useContestsApi'
+import useParticipantsApi from '../useParticipantsApi'
 import { IContest, ICandidate } from '../../../../types'
-import { api } from '../../../utilities'
 import DropdownCheckboxList from './DropdownCheckboxList'
-
-export type IJurisdictions = {
-  id: string
-  name: string
-}[]
 
 interface IProps {
   isTargeted: boolean
@@ -74,19 +68,7 @@ const Contests: React.FC<IProps> = ({
   const filteredContests = {
     contests: contests.filter(c => c.isTargeted === isTargeted),
   }
-  const [jurisdictions, setJurisdictions] = useState<IJurisdictions>([])
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const response: { jurisdictions: IJurisdictions } = await api(
-          `/election/${electionId}/jurisdiction`
-        )
-        setJurisdictions(response.jurisdictions)
-      } catch (err) {
-        toast.error(err.message)
-      }
-    })()
-  }, [electionId])
+  const jurisdictions = useParticipantsApi(electionId!)
   const submit = async (values: IContests) => {
     const response = await updateContests(values.contests)
     // TEST TODO
