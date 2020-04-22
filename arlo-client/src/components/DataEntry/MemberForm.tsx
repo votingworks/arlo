@@ -2,10 +2,10 @@ import React from 'react'
 import styled from 'styled-components'
 import { H1, RadioGroup, Radio } from '@blueprintjs/core'
 import { Formik, FormikProps, Form, Field, getIn } from 'formik'
-import FormWrapper from '../Form/FormWrapper'
-import FormSection from '../Form/FormSection'
+import FormWrapper from '../Atoms/Form/FormWrapper'
+import FormSection from '../Atoms/Form/FormSection'
 import { IAuditBoardMember } from '../../types'
-import FormButton from '../Form/FormButton'
+import FormButton from '../Atoms/Form/FormButton'
 import { api, checkAndToast } from '../utilities'
 
 const LabelText = styled.span`

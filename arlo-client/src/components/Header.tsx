@@ -9,7 +9,7 @@ import {
 } from '@blueprintjs/core'
 import { Link, useRouteMatch, RouteComponentProps } from 'react-router-dom'
 import { useAuthDataContext } from './UserContext'
-import FormButton from './Form/FormButton'
+import FormButton from './Atoms/Form/FormButton'
 
 const ButtonBar = styled.div`
   display: inline-block;

@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import styled from 'styled-components'
-import H2Title from '../Atoms/H2Title'
+import H2Title from '../H2Title'
 
 const StyledFormWrapper = styled.div`
   display: block;

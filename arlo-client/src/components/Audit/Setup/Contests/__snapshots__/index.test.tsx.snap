@@ -802,6 +802,38 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
           </div>
         </label>
       </div>
+      <div
+        class="sc-htpNat kLGmUl"
+      >
+        <h3
+          class="bp3-heading sc-ifAKCX fYInwY"
+        >
+          Contest Universe
+        </h3>
+        <div
+          class="sc-bxivhb fbVQhV"
+        >
+          Select the jurisdictions where this contest appeared on the ballot.
+        </div>
+        <span
+          class="bp3-popover-wrapper"
+        >
+          <span
+            class="bp3-popover-target"
+          >
+            <button
+              class="bp3-button sc-gZMcBi eZVGYn"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Select Jurisdictions
+              </span>
+            </button>
+          </span>
+        </span>
+      </div>
     </div>
     <div
       class="sc-gqjmRU bEkPjh"
@@ -1079,6 +1111,38 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
           </div>
         </label>
       </div>
+      <div
+        class="sc-htpNat kLGmUl"
+      >
+        <h3
+          class="bp3-heading sc-ifAKCX fYInwY"
+        >
+          Contest Universe
+        </h3>
+        <div
+          class="sc-bxivhb fbVQhV"
+        >
+          Select the jurisdictions where this contest appeared on the ballot.
+        </div>
+        <span
+          class="bp3-popover-wrapper"
+        >
+          <span
+            class="bp3-popover-target"
+          >
+            <button
+              class="bp3-button sc-gZMcBi eZVGYn"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Select Jurisdictions
+              </span>
+            </button>
+          </span>
+        </span>
+      </div>
     </div>
     <div
       class="sc-gqjmRU bEkPjh"
@@ -1153,7 +1217,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
                 id="contests[0].name"
                 name="contests[0].name"
                 style="padding-right: 10px;"
-                value=""
+                value="Contest Name"
               />
             </div>
           </div>
@@ -1243,7 +1307,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
                     class="bp3-input"
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
-                    value=""
+                    value="Choice Three"
                   />
                 </div>
               </div>
@@ -1263,7 +1327,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
                     class="bp3-input"
                     name="contests[0].choices[0].numVotes"
                     style="padding-right: 10px;"
-                    value=""
+                    value="10"
                   />
                 </div>
               </div>
@@ -1287,7 +1351,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
                     class="bp3-input"
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
-                    value=""
+                    value="Choice Four"
                   />
                 </div>
               </div>
@@ -1307,7 +1371,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
                     class="bp3-input"
                     name="contests[0].choices[1].numVotes"
                     style="padding-right: 10px;"
-                    value=""
+                    value="20"
                   />
                 </div>
               </div>
@@ -1350,11 +1414,43 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
                 id="contests[0].totalBallotsCast"
                 name="contests[0].totalBallotsCast"
                 style="padding-right: 10px;"
-                value=""
+                value="30"
               />
             </div>
           </div>
         </label>
+      </div>
+      <div
+        class="sc-htpNat kLGmUl"
+      >
+        <h3
+          class="bp3-heading sc-ifAKCX fYInwY"
+        >
+          Contest Universe
+        </h3>
+        <div
+          class="sc-bxivhb fbVQhV"
+        >
+          Select the jurisdictions where this contest appeared on the ballot.
+        </div>
+        <span
+          class="bp3-popover-wrapper"
+        >
+          <span
+            class="bp3-popover-target"
+          >
+            <button
+              class="bp3-button sc-gZMcBi eZVGYn"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Select Jurisdictions
+              </span>
+            </button>
+          </span>
+        </span>
       </div>
     </div>
     <div
@@ -1430,7 +1526,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
                 id="contests[0].name"
                 name="contests[0].name"
                 style="padding-right: 10px;"
-                value=""
+                value="Contest Name"
               />
             </div>
           </div>
@@ -1520,7 +1616,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[0].name"
                     style="padding-right: 10px;"
-                    value=""
+                    value="Choice One"
                   />
                 </div>
               </div>
@@ -1540,7 +1636,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[0].numVotes"
                     style="padding-right: 10px;"
-                    value=""
+                    value="10"
                   />
                 </div>
               </div>
@@ -1564,7 +1660,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[1].name"
                     style="padding-right: 10px;"
-                    value=""
+                    value="Choice Two"
                   />
                 </div>
               </div>
@@ -1584,7 +1680,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
                     class="bp3-input"
                     name="contests[0].choices[1].numVotes"
                     style="padding-right: 10px;"
-                    value=""
+                    value="20"
                   />
                 </div>
               </div>
@@ -1627,11 +1723,43 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
                 id="contests[0].totalBallotsCast"
                 name="contests[0].totalBallotsCast"
                 style="padding-right: 10px;"
-                value=""
+                value="30"
               />
             </div>
           </div>
         </label>
+      </div>
+      <div
+        class="sc-htpNat kLGmUl"
+      >
+        <h3
+          class="bp3-heading sc-ifAKCX fYInwY"
+        >
+          Contest Universe
+        </h3>
+        <div
+          class="sc-bxivhb fbVQhV"
+        >
+          Select the jurisdictions where this contest appeared on the ballot.
+        </div>
+        <span
+          class="bp3-popover-wrapper"
+        >
+          <span
+            class="bp3-popover-target"
+          >
+            <button
+              class="bp3-button sc-gZMcBi eZVGYn"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Select Jurisdictions
+              </span>
+            </button>
+          </span>
+        </span>
       </div>
     </div>
     <div

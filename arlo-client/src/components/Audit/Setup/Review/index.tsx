@@ -1,6 +1,6 @@
 import React from 'react'
-import FormButtonBar from '../../../Form/FormButtonBar'
-import FormButton from '../../../Form/FormButton'
+import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
+import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 
 interface IProps {

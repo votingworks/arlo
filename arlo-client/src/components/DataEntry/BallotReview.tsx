@@ -3,7 +3,7 @@ import { H3, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IReview } from '../../types'
 import { BallotRow, FormBlock, ProgressActions, FlushDivider } from './Atoms'
-import FormButton from '../Form/FormButton'
+import FormButton from '../Atoms/Form/FormButton'
 
 const Wrapper = styled.div`
   display: flex;
