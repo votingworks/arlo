@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Redirect, Link } from 'react-router-dom'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
-import { IReview, IBallot, IContest } from '../../types'
+import { IBallotInterpretation, IBallot, IContest } from '../../types'
 import { BallotRow, FlushDivider } from './Atoms'
 
 const TopH1 = styled(H1)`
@@ -41,9 +41,16 @@ interface IProps {
     round: string,
     batch: string,
     position: number,
-    data: IReview
+    interpretation: IBallotInterpretation
   ) => void
 }
+
+const emptyInterpretation = (contestId: string) => ({
+  contestId,
+  interpretation: null,
+  choiceId: null,
+  comment: null,
+})
 
 const Ballot: React.FC<IProps> = ({
   home,
@@ -58,9 +65,10 @@ const Ballot: React.FC<IProps> = ({
   submitBallot,
 }: IProps) => {
   const [auditing, setAuditing] = useState(true)
-  const [review, setReview] = useState<IReview>({ vote: '', comment: '' })
+  const [interpretation, setInterpretation] = useState<IBallotInterpretation>(
+    emptyInterpretation(contest.id)
+  )
 
-  const contestName = contest.name
   const ballotIx = ballots
     ? ballots.findIndex(
         b => b.position === ballotId && b.batch.id === batchId
@@ -68,12 +76,12 @@ const Ballot: React.FC<IProps> = ({
     : // not showing in coverage, but is tested
       -1
   const ballot = ballots[ballotIx]
+
   useEffect(() => {
-    if (ballot) {
-      const { vote, comment } = ballot
-      setReview({ vote, comment: comment || '' })
-    }
-  }, [ballot, ballotIx])
+    const ballotInterpretation =
+      ballot && ballot.interpretations.find(i => i.contestId === contest.id)
+    setInterpretation(ballotInterpretation || emptyInterpretation(contest.id))
+  }, [ballot, contest.id])
 
   return !ballots || !ballot || ballotIx < 0 ? (
     <Redirect to={home} />
@@ -115,23 +123,28 @@ const Ballot: React.FC<IProps> = ({
       {auditing ? (
         <BallotAudit
           contest={contest}
-          review={review}
-          setReview={setReview}
+          interpretation={interpretation}
+          setInterpretation={setInterpretation}
           previousBallot={previousBallot}
           goReview={() => setAuditing(false)}
         />
       ) : (
         <BallotReview
-          contestName={contestName}
-          review={review}
+          contest={contest}
+          interpretation={interpretation}
           goAudit={() => setAuditing(true)}
           nextBallot={nextBallot}
           previousBallot={() => {
             setAuditing(true)
             previousBallot()
           }}
-          submitBallot={(data: IReview) =>
-            submitBallot(roundIx, batchId, ballot.position, data)
+          submitBallot={(ballotInterpretation: IBallotInterpretation) =>
+            submitBallot(
+              roundIx,
+              batchId,
+              ballot.position,
+              ballotInterpretation
+            )
           }
         />
       )}

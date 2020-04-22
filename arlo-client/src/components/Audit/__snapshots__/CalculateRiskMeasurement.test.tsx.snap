@@ -2236,7 +2236,7 @@ exports[`CalculateRiskMeasurement renders online mode progress bar 1`] = `
         >
           <div
             class="bp3-progress-meter"
-            style="width: 50%;"
+            style="width: 100%;"
           />
         </div>
       </div>
@@ -2525,7 +2525,7 @@ exports[`CalculateRiskMeasurement renders online mode progress bar in multiple r
         >
           <div
             class="bp3-progress-meter"
-            style="width: 50%;"
+            style="width: 100%;"
           />
         </div>
       </div>

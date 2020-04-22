@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Formik, FormikProps, getIn, Field } from 'formik'
+import { Formik, FormikProps, Field } from 'formik'
 import { H4, H3, Button } from '@blueprintjs/core'
 import {
   BallotRow,
@@ -10,33 +10,28 @@ import {
 } from './Atoms'
 import BlockRadio from './BlockRadio'
 import FormButton from '../Form/FormButton'
-import { IReview, IContest } from '../../types'
+import { IBallotInterpretation, Interpretation, IContest } from '../../types'
 import FormField from '../Form/FormField'
 
 interface IProps {
   contest: IContest
   goReview: () => void
-  review: IReview
-  setReview: (arg0: { vote: string; comment: string }) => void
+  interpretation: IBallotInterpretation
+  setInterpretation: (i: IBallotInterpretation) => void
   previousBallot: () => void
-}
-
-interface IOptions {
-  vote: string
-  comment: string
 }
 
 const BallotAudit: React.FC<IProps> = ({
   contest,
-  review,
+  interpretation,
+  setInterpretation,
   goReview,
-  setReview,
   previousBallot,
 }: IProps) => {
   const [commenting, setCommenting] = useState(false)
   useEffect(() => {
-    setCommenting(!!review.comment)
-  }, [review.comment])
+    setCommenting(!!interpretation.comment)
+  }, [interpretation.comment])
   return (
     <BallotRow>
       <div className="ballot-side"></div>
@@ -51,65 +46,92 @@ const BallotAudit: React.FC<IProps> = ({
           mark.&quot;
         </p>
         <p>
-          If the audit board cannot agree, select &quot;No audit board
-          consensus.&quot; You may add a comment for additional information
-          about the disagreement.
+          If the audit board cannot agree, select &quot;Audit board can&apos;t
+          agree.&quot; You may add a comment for additional information about
+          the disagreement.
         </p>
         <Formik
-          initialValues={review}
+          initialValues={interpretation}
           enableReinitialize
           onSubmit={values => {
-            setReview(values)
+            setInterpretation(values)
             goReview()
           }}
           render={({
             handleSubmit,
             values,
             setFieldValue,
-          }: FormikProps<IOptions>) => {
+          }: FormikProps<IBallotInterpretation>) => {
+            // Since the radio button values must be strings, not full objects,
+            // we condense our data model for interpretations to strings:
+            // - For buttons representing interpretation VOTE (one for each
+            // contest choice), the value is interpretation.choiceId
+            // - For buttons representing other interpretations (BLANK,
+            // CANT_AGREE), the value is interpretation.interpretation
+
             const radioProps = {
-              name: 'vote',
-              handleChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-                setFieldValue('vote', e.currentTarget.value),
+              name: 'interpretation',
+              handleChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                const { value } = e.currentTarget
+                if (
+                  value === Interpretation.BLANK ||
+                  value === Interpretation.CANT_AGREE
+                ) {
+                  setFieldValue('interpretation', value)
+                  setFieldValue('choiceId', null)
+                } else {
+                  setFieldValue('interpretation', Interpretation.VOTE)
+                  setFieldValue('choiceId', value)
+                }
+              },
             }
             const toggleCommenting = () => {
               setCommenting(!commenting)
-              setFieldValue('comment', '')
+              setFieldValue('comment', null)
             }
+
+            const isVote = values.interpretation === Interpretation.VOTE
+
             return (
               <>
                 <FormBlock>
                   <H3>{contest.name}</H3>
                   <FlushDivider />
                   <RadioGroupFlex
-                    name="vote"
+                    name="interpretation"
                     onChange={
                       /* istanbul ignore next */
                       () => undefined
                     } // required by blueprintjs but we're implementing on BlockRadio instead
-                    selectedValue={getIn(values, 'vote')}
+                    selectedValue={
+                      (isVote ? values.choiceId : values.interpretation) ||
+                      undefined
+                    }
                   >
                     {contest.choices.map(c => (
                       <BlockRadio
                         key={c.id}
                         {...radioProps}
-                        checked={getIn(values, 'vote') === c.name}
-                        value={c.name}
+                        checked={isVote && values.choiceId === c.id}
+                        value={c.id}
+                        label={c.name}
                       />
                     ))}
                     <BlockRadio
                       {...radioProps}
                       gray
                       checked={
-                        getIn(values, 'vote') === "Audit board can't agree"
+                        values.interpretation === Interpretation.CANT_AGREE
                       }
-                      value="Audit board can't agree"
+                      value={Interpretation.CANT_AGREE}
+                      label="Audit board can't agree"
                     />
                     <BlockRadio
                       {...radioProps}
                       gray
-                      checked={getIn(values, 'vote') === 'Blank vote/no mark'}
-                      value="Blank vote/no mark"
+                      checked={values.interpretation === Interpretation.BLANK}
+                      value={Interpretation.BLANK}
+                      label="Blank vote/no mark"
                     />
                   </RadioGroupFlex>
                   <Button minimal icon="edit" onClick={toggleCommenting}>
@@ -128,10 +150,12 @@ const BallotAudit: React.FC<IProps> = ({
                   <FormButton
                     type="submit"
                     onClick={handleSubmit}
-                    disabled={!values.vote}
+                    disabled={!values.interpretation}
                     intent="success"
                     data-testid={
-                      !values.vote ? 'disabled-review' : 'enabled-review'
+                      !values.interpretation
+                        ? 'disabled-review'
+                        : 'enabled-review'
                     }
                   >
                     Review

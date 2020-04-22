@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
 import { H1, Button } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
-import { IAuditBoard, IBallot } from '../../types'
+import { IAuditBoard, IBallot, BallotStatus } from '../../types'
 
 const RightWrapper = styled.div`
   display: flex;
@@ -70,7 +70,7 @@ const BoardTable: React.FC<IProps> = ({
         case 'batch':
           return <PaddedCell>{ballot.batch.name}</PaddedCell>
         case 'status':
-          return ballot.status ? (
+          return ballot.status === BallotStatus.AUDITED ? (
             <PaddedCell>
               <>
                 <Link
@@ -121,9 +121,11 @@ const BoardTable: React.FC<IProps> = ({
   }, [ballots])
 
   const roundComplete =
-    ballots.length && ballots.every(b => b.status === 'AUDITED')
+    ballots.length && ballots.every(b => b.status === BallotStatus.AUDITED)
 
-  const unauditedBallot = ballots.find(b => !b.status)
+  const unauditedBallot = ballots.find(
+    b => b.status === BallotStatus.NOT_AUDITED
+  )
 
   return (
     <div className="board-table-container">

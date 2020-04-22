@@ -68,7 +68,7 @@ describe('Ballot', () => {
       </Router>
     )
 
-    fireEvent.click(getByTestId('choice one'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
@@ -80,7 +80,44 @@ describe('Ballot', () => {
     })
     fireEvent.click(getByText('Edit'), { bubbles: true })
     await wait(() => {
+      expect(getByText('choice one')).toBeTruthy()
       expect(getByText('Review')).toBeTruthy()
+    })
+  })
+
+  const buttonLabels = ["Audit board can't agree", 'Blank vote/no mark']
+  buttonLabels.forEach(buttonLabel => {
+    it(`selects ${buttonLabel}`, async () => {
+      const { container, getByLabelText, getByText, getByTestId } = render(
+        <Router history={history}>
+          <Ballot
+            home="/election/1/board/1"
+            ballots={dummyBallots.ballots}
+            boardName="audit board #1"
+            contest={contest}
+            previousBallot={jest.fn()}
+            nextBallot={jest.fn()}
+            submitBallot={jest.fn()}
+            roundIx="1"
+            batchId="batch-id-1"
+            ballotId={313}
+          />
+        </Router>
+      )
+
+      fireEvent.click(getByLabelText(buttonLabel), {
+        bubbles: true,
+      })
+      await wait(() =>
+        fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
+      )
+      await wait(() => {
+        expect(getByText('Submit & Next Ballot')).toBeTruthy()
+      })
+      await wait(() => {
+        expect(getByText(buttonLabel)).toBeTruthy()
+        expect(container).toMatchSnapshot()
+      })
     })
   })
 
@@ -107,7 +144,7 @@ describe('Ballot', () => {
     const commentInput = getByTestId('comment-textarea')
     fireEvent.change(commentInput, { target: { value: 'a test comment' } })
 
-    fireEvent.click(getByTestId('choice one'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
@@ -143,7 +180,7 @@ describe('Ballot', () => {
 
     fireEvent.click(getByText('Remove comment'), { bubbles: true })
 
-    fireEvent.click(getByTestId('choice one'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
@@ -174,7 +211,7 @@ describe('Ballot', () => {
       </Router>
     )
 
-    fireEvent.click(getByTestId('choice one'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
 
     const reviewButton = await waitForElement(
       () => getByTestId('enabled-review'),
@@ -217,7 +254,7 @@ describe('Ballot', () => {
       expect(previousBallotMock).toBeCalledTimes(1)
     })
 
-    fireEvent.click(getByTestId('choice one'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )

@@ -45,12 +45,29 @@ export interface IContest {
   jurisdictionIds: string[]
 }
 
+export enum Interpretation {
+  BLANK = 'BLANK',
+  CANT_AGREE = 'CANT_AGREE',
+  VOTE = 'VOTE',
+}
+
+export interface IBallotInterpretation {
+  contestId: string
+  interpretation: Interpretation | null
+  choiceId: string | null
+  comment: string | null
+}
+
+export enum BallotStatus {
+  AUDITED = 'AUDITED',
+  NOT_AUDITED = 'NOT_AUDITED',
+}
+
 export interface IBallot {
   timesSampled: number
   auditBoard?: Pick<IAuditBoard, 'id' | 'name'>
-  status: 'AUDITED' | null
-  vote: string
-  comment: string
+  status: BallotStatus
+  interpretations: IBallotInterpretation[]
   position: number
   batch: {
     id: string
@@ -62,11 +79,6 @@ export interface IBallot {
 export interface IAuditBoardMember {
   name: string
   affiliation: string
-}
-
-export interface IReview {
-  vote: IBallot['vote']
-  comment: IBallot['comment']
 }
 
 export interface IAuditBoard {

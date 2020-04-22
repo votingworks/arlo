@@ -8,7 +8,7 @@ import {
   IAudit,
   IAuditBoard,
   IBallot,
-  IReview,
+  IBallotInterpretation,
   IErrorResponse,
 } from '../../types'
 import { api, poll, checkAndToast } from '../utilities'
@@ -146,7 +146,7 @@ const DataEntry: React.FC<IProps> = ({
     roundIx: string,
     batch: string,
     position: number,
-    data: IReview
+    interpretation: IBallotInterpretation
   ) => {
     /* istanbul ignore next */
     if (audit) {
@@ -154,7 +154,7 @@ const DataEntry: React.FC<IProps> = ({
         `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch}/ballot/${position}`,
         {
           method: 'POST',
-          body: JSON.stringify(data),
+          body: JSON.stringify({ interpretations: [interpretation] }),
           headers: {
             'Content-Type': 'application/json',
           },
