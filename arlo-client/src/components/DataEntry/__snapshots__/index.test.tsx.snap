@@ -115,7 +115,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             If the voter did not vote in the contest, select "Blank vote/no mark."
           </p>
           <p>
-            If the audit board cannot agree, select "No audit board consensus." You may add a comment for additional information about the disagreement.
+            If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
           </p>
           <form
             class="sc-jTzLTM sVjEv"
@@ -135,10 +135,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 class=" bp3-control bp3-radio sc-cSHVUG cZsRbk"
               >
                 <input
-                  data-testid="choice one"
-                  name="vote"
+                  data-testid="choice-1"
+                  name="interpretation"
                   type="radio"
-                  value="choice one"
+                  value="choice-1"
                 />
                 <span
                   class="undefined bp3-control-indicator"
@@ -154,10 +154,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 class=" bp3-control bp3-radio sc-cSHVUG cZsRbk"
               >
                 <input
-                  data-testid="choice two"
-                  name="vote"
+                  data-testid="choice-2"
+                  name="interpretation"
                   type="radio"
-                  value="choice two"
+                  value="choice-2"
                 />
                 <span
                   class="undefined bp3-control-indicator"
@@ -173,10 +173,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 class=" bp3-control bp3-radio sc-cSHVUG cZsRbk"
               >
                 <input
-                  data-testid="Audit board can't agree"
-                  name="vote"
+                  data-testid="CANT_AGREE"
+                  name="interpretation"
                   type="radio"
-                  value="Audit board can't agree"
+                  value="CANT_AGREE"
                 />
                 <span
                   class="gray bp3-control-indicator"
@@ -192,10 +192,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 class=" bp3-control bp3-radio sc-cSHVUG cZsRbk"
               >
                 <input
-                  data-testid="Blank vote/no mark"
-                  name="vote"
+                  data-testid="BLANK"
+                  name="interpretation"
                   type="radio"
-                  value="Blank vote/no mark"
+                  value="BLANK"
                 />
                 <span
                   class="gray bp3-control-indicator"
@@ -234,18 +234,27 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
               <span
                 class="bp3-button-text"
               >
-                Add comment
+                Remove comment
               </span>
             </button>
+            <div
+              class="sc-kAzzGY rngAd"
+            >
+              <textarea
+                class="bp3-input sc-kgoBCf jUzbVI"
+                data-testid="comment-textarea"
+                name="comment"
+              >
+                Good ballot
+              </textarea>
+            </div>
           </form>
           <div
             class="sc-jzJRlG kDmaPS"
           >
             <button
-              class="bp3-button bp3-disabled bp3-intent-success sc-dnqmqq iQfLYL"
-              data-testid="disabled-review"
-              disabled=""
-              tabindex="-1"
+              class="bp3-button bp3-intent-success sc-dnqmqq iQfLYL"
+              data-testid="enabled-review"
               type="submit"
             >
               <span
