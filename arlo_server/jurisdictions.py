@@ -65,6 +65,7 @@ def round_status_by_jurisdiction(
 
     sampled_ballot_count_by_jurisdiction = dict(
         SampledBallotDraw.query.filter_by(round_id=round.id)
+        .join(SampledBallot)
         .join(Batch)
         .group_by(Batch.jurisdiction_id)
         .values(Batch.jurisdiction_id, func.count())

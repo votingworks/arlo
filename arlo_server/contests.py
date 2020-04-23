@@ -13,6 +13,7 @@ from arlo_server.models import (
     Round,
     RoundContest,
     SampledBallotDraw,
+    SampledBallot,
     Batch,
 )
 from arlo_server.rounds import get_current_round
@@ -132,6 +133,7 @@ def round_status_by_contest(
 
     sampled_ballot_count_by_contest = dict(
         SampledBallotDraw.query.filter_by(round_id=round.id)
+        .join(SampledBallot)
         .join(Batch)
         .join(Jurisdiction)
         .join(Jurisdiction.contests)
