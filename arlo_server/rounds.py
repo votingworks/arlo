@@ -105,15 +105,18 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
         batch_id = batch_key_to_id[batch_key]
         if times_sampled == 1:
             sampled_ballot = SampledBallot(
-                batch_id=batch_id, ballot_position=ballot_position,
+                id=str(uuid.uuid4()),
+                batch_id=batch_id,
+                ballot_position=ballot_position,
             )
             db.session.add(sampled_ballot)
+        else:
+            sampled_ballot = SampledBallot.query.filter_by(
+                batch_id=batch_id, ballot_position=ballot_position
+            ).one()
 
         sampled_ballot_draw = SampledBallotDraw(
-            batch_id=batch_id,
-            ballot_position=ballot_position,
-            round_id=round.id,
-            ticket_number=ticket_number,
+            ballot_id=sampled_ballot.id, round_id=round.id, ticket_number=ticket_number,
         )
         db.session.add(sampled_ballot_draw)
 

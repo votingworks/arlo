@@ -5,11 +5,9 @@ import json, datetime, uuid
 from arlo_server import db
 from arlo_server.models import (
     SampledBallotDraw,
-    SampledBallot,
     Round,
     RoundContest,
     RoundContestResult,
-    Batch,
 )
 from arlo_server.auth import UserType
 from tests.helpers import (
@@ -84,15 +82,10 @@ def test_rounds_create_one(
         round_id=rounds["rounds"][0]["id"]
     ).all()
     assert len(ballot_draws) == sample_size
-    # Because we sample with replacement, we might have less sampled ballots
-    # than ballot draws, so we'll just check that each draw has a corresponding
-    # ballot
-    for draw in ballot_draws:
-        assert SampledBallot.query.filter_by(
-            batch_id=draw.batch_id, ballot_position=draw.ballot_position
-        ).one_or_none()
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
-    sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in ballot_draws}
+    sampled_jurisdictions = {
+        draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
+    }
     assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
 
 
@@ -199,17 +192,16 @@ def test_rounds_create_two(
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)
 
-    ballot_draws = (
-        SampledBallotDraw.query.filter_by(round_id=rounds["rounds"][1]["id"])
-        .join(Batch)
-        .all()
-    )
+    ballot_draws = SampledBallotDraw.query.filter_by(
+        round_id=rounds["rounds"][1]["id"]
+    ).all()
     # Check that we automatically select the 90% prob sample size
     assert len(ballot_draws) == 205
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
-    sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in ballot_draws}
+    sampled_jurisdictions = {
+        draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
+    }
     assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
-    rv = client.get(f"/election/{election_id}/contest")
 
 
 def test_rounds_create_before_previous_round_complete(
