@@ -1,4 +1,26 @@
-import { IAuditBoard, IBallot, BallotStatus } from '../../types'
+import { IAuditBoard, IBallot, BallotStatus, Interpretation } from '../../types'
+
+export const contest = {
+  choices: [
+    {
+      id: 'choice-1',
+      name: 'choice one',
+      numVotes: 792,
+    },
+    {
+      id: 'choice-2',
+      name: 'choice two',
+      numVotes: 1325,
+    },
+  ],
+  id: 'contest-1',
+  name: 'contest name',
+  numWinners: '1',
+  votesAllowed: '1',
+  totalBallotsCast: '2123',
+  isTargeted: true,
+  jurisdictionIds: [],
+}
 
 export const doneDummyBallots: { ballots: IBallot[] } = {
   ballots: [
@@ -48,7 +70,14 @@ export const dummyBallots: { ballots: IBallot[] } = {
       },
       position: 313,
       status: BallotStatus.AUDITED,
-      interpretations: [],
+      interpretations: [
+        {
+          contestId: contest.id,
+          interpretation: Interpretation.VOTE,
+          choiceId: contest.choices[0].id,
+          comment: 'Good ballot',
+        },
+      ],
       timesSampled: 1,
     },
     {

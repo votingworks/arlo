@@ -2,7 +2,7 @@
 
 exports[`Ballot redirects if ballot does not exist 1`] = `<div />`;
 
-exports[`Ballot renders correctly 1`] = `
+exports[`Ballot renders correctly with an audited ballot 1`] = `
 <div>
   <div
     class="sc-jzJRlG eFkJPq"
@@ -233,6 +233,284 @@ exports[`Ballot renders correctly 1`] = `
             <span
               class="bp3-button-text"
             >
+              Remove comment
+            </span>
+          </button>
+          <div
+            class="sc-htoDjs kKCJWi"
+          >
+            <textarea
+              class="bp3-input sc-iwsKbI hebCva"
+              data-testid="comment-textarea"
+              name="comment"
+            >
+              Good ballot
+            </textarea>
+          </div>
+        </form>
+        <div
+          class="sc-ifAKCX jzSIMx"
+        >
+          <button
+            class="bp3-button bp3-intent-success sc-gzVnrw kdzzfK"
+            data-testid="enabled-review"
+            type="submit"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Review
+            </span>
+          </button>
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Back
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Ballot renders correctly with an unaudited ballot 1`] = `
+<div>
+  <div
+    class="sc-jzJRlG eFkJPq"
+  >
+    <h1
+      class="bp3-heading sc-fjdhpX imXjlB"
+    >
+      audit board #1
+      : Ballot Card Data Entry
+    </h1>
+    <h3
+      class="bp3-heading"
+    >
+      Enter Ballot Information
+    </h3>
+    <div
+      class="bp3-callout sc-cSHVUG icSrYg"
+    >
+      Round 
+      1
+      : auditing ballot 
+      2
+       of 
+      27
+    </div>
+    <div
+      class="sc-bwzfXH kYAzKM"
+    >
+      <div
+        class="ballot-side"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Current ballot:
+        </h4>
+        <div>
+          Tabulator: 
+          11
+        </div>
+        <div>
+          Batch: 
+          0003-04-Precinct 19 (Jonesboro Fire Department)
+        </div>
+        <div>
+          Record/Position: 
+          2112
+        </div>
+      </div>
+      <div
+        class="bp3-divider sc-bdVaJa gqVLlZ"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Are you looking at the correct ballot?
+        </h4>
+        <p>
+          Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+        </p>
+        <p>
+          <button
+            class="bp3-button bp3-intent-danger"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Ballot 
+              2112
+               not found - move to next ballot
+            </span>
+          </button>
+        </p>
+        <p>
+          <a
+            class="bp3-button bp3-intent-primary"
+            href="/election/1/board/1"
+          >
+            Return to audit overview
+          </a>
+        </p>
+      </div>
+    </div>
+    <div
+      class="sc-bwzfXH kYAzKM"
+    >
+      <div
+        class="ballot-side"
+      />
+      <div
+        class="ballot-main"
+      >
+        <h4
+          class="bp3-heading"
+        >
+          Instructions
+        </h4>
+        <p>
+          Select 
+          <strong>
+            all
+          </strong>
+           the candidates/choices below that you see marked on the paper ballot.
+        </p>
+        <p>
+          If the voter did not vote in the contest, select "Blank vote/no mark."
+        </p>
+        <p>
+          If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
+        </p>
+        <form
+          class="sc-htpNat blpdRK"
+        >
+          <h3
+            class="bp3-heading"
+          >
+            contest name
+          </h3>
+          <div
+            class="bp3-divider sc-bdVaJa gqVLlZ"
+          />
+          <div
+            class="sc-bxivhb eqbYCx"
+          >
+            <label
+              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+            >
+              <input
+                data-testid="choice-1"
+                name="interpretation"
+                type="radio"
+                value="choice-1"
+              />
+              <span
+                class="undefined bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  choice one
+                </span>
+              </span>
+            </label>
+            <label
+              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+            >
+              <input
+                data-testid="choice-2"
+                name="interpretation"
+                type="radio"
+                value="choice-2"
+              />
+              <span
+                class="undefined bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  choice two
+                </span>
+              </span>
+            </label>
+            <label
+              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+            >
+              <input
+                data-testid="CANT_AGREE"
+                name="interpretation"
+                type="radio"
+                value="CANT_AGREE"
+              />
+              <span
+                class="gray bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  Audit board can't agree
+                </span>
+              </span>
+            </label>
+            <label
+              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+            >
+              <input
+                data-testid="BLANK"
+                name="interpretation"
+                type="radio"
+                value="BLANK"
+              />
+              <span
+                class="gray bp3-control-indicator"
+              >
+                <span
+                  class="radio-text"
+                >
+                  Blank vote/no mark
+                </span>
+              </span>
+            </label>
+          </div>
+          <button
+            class="bp3-button bp3-minimal"
+            type="button"
+          >
+            <span
+              class="bp3-icon bp3-icon-edit"
+              icon="edit"
+            >
+              <svg
+                data-icon="edit"
+                height="16"
+                viewBox="0 0 16 16"
+                width="16"
+              >
+                <desc>
+                  edit
+                </desc>
+                <path
+                  d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+            <span
+              class="bp3-button-text"
+            >
               Add comment
             </span>
           </button>
@@ -292,7 +570,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
       Round 
       1
       : auditing ballot 
-      1
+      2
        of 
       27
     </div>
@@ -309,14 +587,15 @@ exports[`Ballot selects Audit board can't agree 1`] = `
         </h4>
         <div>
           Tabulator: 
+          11
         </div>
         <div>
           Batch: 
-          0003-04-Precinct 13 (Jonesboro Fire Department)
+          0003-04-Precinct 19 (Jonesboro Fire Department)
         </div>
         <div>
           Record/Position: 
-          313
+          2112
         </div>
       </div>
       <div
@@ -342,7 +621,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
               class="bp3-button-text"
             >
               Ballot 
-              313
+              2112
                not found - move to next ballot
             </span>
           </button>
@@ -476,7 +755,7 @@ exports[`Ballot selects Blank vote/no mark 1`] = `
       Round 
       1
       : auditing ballot 
-      1
+      2
        of 
       27
     </div>
@@ -493,14 +772,15 @@ exports[`Ballot selects Blank vote/no mark 1`] = `
         </h4>
         <div>
           Tabulator: 
+          11
         </div>
         <div>
           Batch: 
-          0003-04-Precinct 13 (Jonesboro Fire Department)
+          0003-04-Precinct 19 (Jonesboro Fire Department)
         </div>
         <div>
           Record/Position: 
-          313
+          2112
         </div>
       </div>
       <div
@@ -526,7 +806,7 @@ exports[`Ballot selects Blank vote/no mark 1`] = `
               class="bp3-button-text"
             >
               Ballot 
-              313
+              2112
                not found - move to next ballot
             </span>
           </button>
@@ -660,7 +940,7 @@ exports[`Ballot switches audit and review views 1`] = `
       Round 
       1
       : auditing ballot 
-      1
+      2
        of 
       27
     </div>
@@ -677,14 +957,15 @@ exports[`Ballot switches audit and review views 1`] = `
         </h4>
         <div>
           Tabulator: 
+          11
         </div>
         <div>
           Batch: 
-          0003-04-Precinct 13 (Jonesboro Fire Department)
+          0003-04-Precinct 19 (Jonesboro Fire Department)
         </div>
         <div>
           Record/Position: 
-          313
+          2112
         </div>
       </div>
       <div
@@ -710,7 +991,7 @@ exports[`Ballot switches audit and review views 1`] = `
               class="bp3-button-text"
             >
               Ballot 
-              313
+              2112
                not found - move to next ballot
             </span>
           </button>
@@ -844,7 +1125,7 @@ exports[`Ballot toggles and deletes a comment 1`] = `
       Round 
       1
       : auditing ballot 
-      1
+      2
        of 
       27
     </div>
@@ -861,14 +1142,15 @@ exports[`Ballot toggles and deletes a comment 1`] = `
         </h4>
         <div>
           Tabulator: 
+          11
         </div>
         <div>
           Batch: 
-          0003-04-Precinct 13 (Jonesboro Fire Department)
+          0003-04-Precinct 19 (Jonesboro Fire Department)
         </div>
         <div>
           Record/Position: 
-          313
+          2112
         </div>
       </div>
       <div
@@ -894,7 +1176,7 @@ exports[`Ballot toggles and deletes a comment 1`] = `
               class="bp3-button-text"
             >
               Ballot 
-              313
+              2112
                not found - move to next ballot
             </span>
           </button>
@@ -1028,7 +1310,7 @@ exports[`Ballot toggles and submits comment 1`] = `
       Round 
       1
       : auditing ballot 
-      1
+      2
        of 
       27
     </div>
@@ -1045,14 +1327,15 @@ exports[`Ballot toggles and submits comment 1`] = `
         </h4>
         <div>
           Tabulator: 
+          11
         </div>
         <div>
           Batch: 
-          0003-04-Precinct 13 (Jonesboro Fire Department)
+          0003-04-Precinct 19 (Jonesboro Fire Department)
         </div>
         <div>
           Record/Position: 
-          313
+          2112
         </div>
       </div>
       <div
@@ -1078,7 +1361,7 @@ exports[`Ballot toggles and submits comment 1`] = `
               class="bp3-button-text"
             >
               Ballot 
-              313
+              2112
                not found - move to next ballot
             </span>
           </button>

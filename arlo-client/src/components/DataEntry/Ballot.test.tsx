@@ -3,35 +3,33 @@ import { render, fireEvent, wait, waitForElement } from '@testing-library/react'
 import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 import Ballot from './Ballot'
-import { dummyBallots } from './_mocks'
+import { contest, dummyBallots } from './_mocks'
 
 const history = createMemoryHistory()
 
-const contest = {
-  choices: [
-    {
-      id: 'choice-1',
-      name: 'choice one',
-      numVotes: 792,
-    },
-    {
-      id: 'choice-2',
-      name: 'choice two',
-      numVotes: 1325,
-    },
-  ],
-  id: 'contest-1',
-  name: 'contest name',
-  numWinners: '1',
-  votesAllowed: '1',
-  totalBallotsCast: '2123',
-  isTargeted: true,
-  jurisdictionIds: [],
-}
-
 describe('Ballot', () => {
-  it('renders correctly', () => {
+  it('renders correctly with an unaudited ballot', () => {
     const { container } = render(
+      <Router history={history}>
+        <Ballot
+          home="/election/1/board/1"
+          ballots={dummyBallots.ballots}
+          boardName="audit board #1"
+          contest={contest}
+          previousBallot={jest.fn()}
+          nextBallot={jest.fn()}
+          submitBallot={jest.fn()}
+          roundIx="1"
+          batchId="batch-id-1"
+          ballotId={2112}
+        />
+      </Router>
+    )
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders correctly with an audited ballot', () => {
+    const { container, getByLabelText } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/board/1"
@@ -47,6 +45,9 @@ describe('Ballot', () => {
         />
       </Router>
     )
+    const choiceOneButton = getByLabelText('choice one')
+    expect(choiceOneButton).toBeTruthy()
+    expect(choiceOneButton).toHaveProperty('checked', true)
     expect(container).toMatchSnapshot()
   })
 
@@ -63,7 +64,7 @@ describe('Ballot', () => {
           submitBallot={jest.fn()}
           roundIx="1"
           batchId="batch-id-1"
-          ballotId={313}
+          ballotId={2112}
         />
       </Router>
     )
@@ -100,7 +101,7 @@ describe('Ballot', () => {
             submitBallot={jest.fn()}
             roundIx="1"
             batchId="batch-id-1"
-            ballotId={313}
+            ballotId={2112}
           />
         </Router>
       )
@@ -122,7 +123,7 @@ describe('Ballot', () => {
   })
 
   it('toggles and submits comment', async () => {
-    const { container, getByText, getByTestId } = render(
+    const { container, getByText, getByTestId, queryByText } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/board/1"
@@ -134,7 +135,7 @@ describe('Ballot', () => {
           submitBallot={jest.fn()}
           roundIx="1"
           batchId="batch-id-1"
-          ballotId={313}
+          ballotId={2112}
         />
       </Router>
     )
@@ -153,6 +154,19 @@ describe('Ballot', () => {
       expect(getByText('COMMENT: a test comment')).toBeTruthy()
       expect(container).toMatchSnapshot()
     })
+
+    // Go back and make sure an empty comment doesn't get saved
+    fireEvent.click(getByText('Edit'), { bubbles: true })
+
+    fireEvent.change(commentInput, { target: { value: '' } })
+
+    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
+    await wait(() =>
+      fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
+    )
+    await wait(() => {
+      expect(queryByText('COMMENT:')).toBeFalsy()
+    })
   })
 
   it('toggles and deletes a comment', async () => {
@@ -168,7 +182,7 @@ describe('Ballot', () => {
           submitBallot={jest.fn()}
           roundIx="1"
           batchId="batch-id-1"
-          ballotId={313}
+          ballotId={2112}
         />
       </Router>
     )
@@ -206,7 +220,7 @@ describe('Ballot', () => {
           submitBallot={submitMock}
           roundIx="1"
           batchId="batch-id-1"
-          ballotId={313}
+          ballotId={2112}
         />
       </Router>
     )

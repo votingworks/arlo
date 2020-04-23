@@ -52,7 +52,7 @@ export interface IProps {
   >
   disabled?: boolean
   value?: string | number
-  onChange?: (e: React.ChangeEvent) => void
+  onChange?: (e: React.FormEvent) => void
   onBlur?: (e: React.FocusEvent) => void
   name?: string
   type?: string
@@ -68,39 +68,35 @@ const FormField: React.FC<IProps> = ({
   className,
   type,
   ...rest
-}: IProps) => (
-  <Wrapper className={className} wide={type === 'textarea'}>
-    {type === 'number' ? (
-      <NumberField
-        disabled={disabled}
-        onValueChange={n => setFieldValue(field.name, n)}
-        type={type}
-        {...field}
-        {...rest}
-        onBlur={() => setFieldTouched(field.name)}
-      />
-    ) : type === 'textarea' ? (
-      <Area
-        disabled={disabled}
-        {...field}
-        {...rest}
-        onChange={field.onChange}
-      />
-    ) : (
-      <Field
-        disabled={disabled}
-        type={type}
-        {...field}
-        {...rest}
-        onChange={field.onChange}
-      />
-    )}
-    {getIn(errors, field.name) && getIn(touched, field.name) && (
-      <ErrorLabel data-testid={`${field.name}-error`}>
-        {getIn(errors, field.name)}
-      </ErrorLabel>
-    )}
-  </Wrapper>
-)
+}: IProps) => {
+  return (
+    <Wrapper className={className} wide={type === 'textarea'}>
+      {type === 'number' ? (
+        <NumberField
+          disabled={disabled}
+          onValueChange={n => setFieldValue(field.name, n)}
+          type={type}
+          {...field}
+          {...rest}
+          onBlur={() => setFieldTouched(field.name)}
+        />
+      ) : type === 'textarea' ? (
+        <Area
+          disabled={disabled}
+          onChange={rest.onChange}
+          {...field}
+          {...rest}
+        />
+      ) : (
+        <Field disabled={disabled} type={type} {...field} {...rest} />
+      )}
+      {getIn(errors, field.name) && getIn(touched, field.name) && (
+        <ErrorLabel data-testid={`${field.name}-error`}>
+          {getIn(errors, field.name)}
+        </ErrorLabel>
+      )}
+    </Wrapper>
+  )
+}
 
 export default FormField

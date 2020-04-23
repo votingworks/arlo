@@ -35,7 +35,6 @@ const BallotReview: React.FC<IProps> = ({
   previousBallot,
   submitBallot,
 }: IProps) => {
-  /* eslint-disable no-console */
   const handleSubmit = async () => {
     await submitBallot(interpretation)
     goAudit()
@@ -43,8 +42,7 @@ const BallotReview: React.FC<IProps> = ({
   }
 
   const renderInterpretation = () => {
-    const interp = interpretation.interpretation!
-    switch (interp) {
+    switch (interpretation.interpretation) {
       case Interpretation.VOTE: {
         const choice = contest.choices.find(
           c => c.id === interpretation.choiceId

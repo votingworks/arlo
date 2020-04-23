@@ -143,6 +143,10 @@ const BallotAudit: React.FC<IProps> = ({
                       type="textarea"
                       data-testid="comment-textarea"
                       component={FormField}
+                      value={values.comment || ''}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setFieldValue('comment', e.currentTarget.value)
+                      }
                     />
                   )}
                 </FormBlock>

@@ -234,18 +234,27 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
               <span
                 class="bp3-button-text"
               >
-                Add comment
+                Remove comment
               </span>
             </button>
+            <div
+              class="sc-kAzzGY rngAd"
+            >
+              <textarea
+                class="bp3-input sc-kgoBCf jUzbVI"
+                data-testid="comment-textarea"
+                name="comment"
+              >
+                Good ballot
+              </textarea>
+            </div>
           </form>
           <div
             class="sc-jzJRlG kDmaPS"
           >
             <button
-              class="bp3-button bp3-disabled bp3-intent-success sc-dnqmqq iQfLYL"
-              data-testid="disabled-review"
-              disabled=""
-              tabindex="-1"
+              class="bp3-button bp3-intent-success sc-dnqmqq iQfLYL"
+              data-testid="enabled-review"
               type="submit"
             >
               <span
