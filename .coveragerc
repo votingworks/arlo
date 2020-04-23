@@ -1,0 +1,15 @@
+[run]
+omit = 
+    app.py
+    test/*
+    create.py
+    create-org.py
+    create-admin.py
+    resetdb.py
+    config/*
+
+[report]
+fail_under = 97.47
+precision = 2
+skip_covered = true
+show_missing = true
