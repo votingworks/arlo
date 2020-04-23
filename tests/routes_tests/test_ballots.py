@@ -13,6 +13,7 @@ from tests.helpers import (
     J1_SAMPLES_ROUND_2,
 )
 from arlo_server.auth import UserType
+from arlo_server.models import ContestChoice
 
 
 def test_ja_ballot_draws_bad_round_id(
@@ -40,6 +41,7 @@ def test_ja_ballot_draws_round_1(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
+    contest_id: str,
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ):
@@ -55,16 +57,15 @@ def test_ja_ballot_draws_round_1(
         {
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
             "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "comment": None,
             "position": 0,
-            "status": None,
+            "status": "NOT_AUDITED",
             "ticketNumber": "0.100384496",
-            "vote": None,
+            "interpretations": [],
         },
     )
 
     ballot_with_wrong_status = next(
-        (b for b in ballot_draws if b["status"] is not None), None
+        (b for b in ballot_draws if b["status"] != "NOT_AUDITED"), None
     )
     assert ballot_with_wrong_status is None
 
@@ -74,10 +75,20 @@ def test_ja_ballot_draws_round_1(
     )
 
     # Try auditing one ballot
+    choice_id = ContestChoice.query.filter_by(contest_id=contest_id).first().id
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch/{ballot_draws[0]['batch']['id']}/ballot/{ballot_draws[0]['position']}",
-        {"vote": "YES", "comment": "blah blah blah"},
+        {
+            "interpretations": [
+                {
+                    "contestId": contest_id,
+                    "interpretation": "VOTE",
+                    "choiceId": choice_id,
+                    "comment": "blah blah blah",
+                }
+            ]
+        },
     )
     assert_ok(rv)
 
@@ -91,11 +102,17 @@ def test_ja_ballot_draws_round_1(
         {
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
             "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "comment": "blah blah blah",
             "position": 0,
             "status": "AUDITED",
             "ticketNumber": "0.100384496",
-            "vote": "YES",
+            "interpretations": [
+                {
+                    "contestId": contest_id,
+                    "interpretation": "VOTE",
+                    "choiceId": choice_id,
+                    "comment": "blah blah blah",
+                }
+            ],
         },
     )
 
@@ -119,15 +136,14 @@ def test_ja_ballot_draws_round_2(
         {
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
             "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "comment": None,
             "position": 4,
-            "status": None,
+            "status": "NOT_AUDITED",
             "ticketNumber": "0.136825434",
-            "vote": None,
+            "interpretations": [],
         },
     )
 
-    previously_audited_ballots = [b for b in ballot_draws if b["status"] is not None]
+    previously_audited_ballots = [b for b in ballot_draws if b["status"] == "AUDITED"]
     assert len(previously_audited_ballots) == 14
 
 
