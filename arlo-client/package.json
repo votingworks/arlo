@@ -53,7 +53,8 @@
       "!src/**/*.d.ts",
       "!src/index.tsx",
       "!src/contexts/ballotContext.ts",
-      "!src/serviceWorker.ts"
+      "!src/serviceWorker.ts",
+      "!src/test/specs/*"
     ],
     "coverageReporters": [
       "text",
@@ -66,12 +67,6 @@
         "branches": 100,
         "lines": 100,
         "functions": 100
-      },
-      "./src/test/specs/": {
-        "statements": 0,
-        "branches": 0,
-        "lines": 0,
-        "functions": 0
       }
     }
   },
