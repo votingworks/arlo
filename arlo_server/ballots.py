@@ -14,6 +14,7 @@ from arlo_server.models import (
     AuditBoard,
     SampledBallot,
     Jurisdiction,
+    BallotInterpretation,
 )
 from util.csv_download import csv_response, election_timestamp_name
 from util.jsonschema import JSONDict
@@ -109,16 +110,37 @@ def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round_id:
     )
 
 
+def deserialize_interpretation(
+    ballot_id: str, interpretation: JSONDict
+) -> BallotInterpretation:
+    return BallotInterpretation(
+        ballot_id=ballot_id,
+        contest_id=interpretation["contestId"],
+        interpretation=interpretation["interpretation"],
+        contest_choice_id=interpretation["choiceId"],
+        comment=interpretation["comment"],
+    )
+
+
+def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
+    return {
+        "contestId": interpretation.contest_id,
+        "interpretation": interpretation.interpretation,
+        "choiceId": interpretation.contest_choice_id,
+        "comment": interpretation.comment,
+    }
+
+
 def serialize_ballot_draw(ballot_draw: SampledBallotDraw) -> JSONDict:
-    # TODO separate status for ballots that were skipped by the audit board
     ballot = ballot_draw.sampled_ballot
     audit_board = ballot.audit_board
     batch = ballot.batch
     return {
         "ticketNumber": ballot_draw.ticket_number,
-        "status": "AUDITED" if ballot.vote is not None else None,
-        "vote": ballot.vote,
-        "comment": ballot.comment,
+        "status": ballot.status,
+        "interpretations": [
+            serialize_interpretation(i) for i in ballot.interpretations
+        ],
         "position": ballot.ballot_position,
         "batch": {"id": batch.id, "name": batch.name, "tabulator": batch.tabulator,},
         "auditBoard": {"id": audit_board.id, "name": audit_board.name,},

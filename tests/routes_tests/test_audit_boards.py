@@ -25,6 +25,7 @@ from arlo_server.models import (
     Round,
     RoundContest,
     Contest,
+    BallotStatus,
 )
 from arlo_server.auth import UserType
 
@@ -136,7 +137,7 @@ def test_audit_boards_list_one(
     audit_board = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
     num_audited_samples = 0
     for ballot in audit_board.sampled_ballots[:10]:
-        ballot.vote = "YES"
+        ballot.status = BallotStatus.AUDITED
         num_audited_samples += len(ballot.draws)
     db.session.commit()
 
@@ -165,7 +166,7 @@ def test_audit_boards_list_one(
     # Finish auditing ballots and sign off
     audit_board = db.session.merge(audit_board)
     for ballot in audit_board.sampled_ballots[10:]:
-        ballot.vote = "NO"
+        ballot.status = BallotStatus.AUDITED
     audit_board.signed_off_at = datetime.utcnow()
     db.session.commit()
 
@@ -259,12 +260,12 @@ def test_audit_boards_list_two(
     audit_board_1 = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
     num_audited_samples_1 = 0
     for ballot in audit_board_1.sampled_ballots[:10]:
-        ballot.vote = "YES"
+        ballot.status = BallotStatus.AUDITED
         num_audited_samples_1 += len(ballot.draws)
     audit_board_2 = AuditBoard.query.get(audit_boards["auditBoards"][1]["id"])
     num_audited_samples_2 = 0
     for ballot in audit_board_2.sampled_ballots[:20]:
-        ballot.vote = "YES"
+        ballot.status = BallotStatus.AUDITED
         num_audited_samples_2 += len(ballot.draws)
     db.session.commit()
 
@@ -285,7 +286,7 @@ def test_audit_boards_list_two(
     # Finish auditing ballots and sign off
     audit_board_1 = db.session.merge(audit_board_1)
     for ballot in audit_board_1.sampled_ballots[10:]:
-        ballot.vote = "NO"
+        ballot.status = BallotStatus.AUDITED
     audit_board_1.signed_off_at = datetime.utcnow()
     db.session.commit()
 
@@ -532,7 +533,7 @@ def set_up_audit_board(
     # Fake auditing all the ballots
     ballots = SampledBallot.query.filter_by(audit_board_id=audit_board_id).all()
     for ballot in ballots:
-        ballot.vote = "YES"
+        ballot.status = BallotStatus.AUDITED
     db.session.commit()
 
     return member_1, member_2
@@ -688,7 +689,7 @@ def test_audit_boards_sign_off_before_finished(
     # Undo some of the ballot auditing done by set_up_audit_board
     ballots = SampledBallot.query.filter_by(audit_board_id=audit_board_id).all()
     for ballot in ballots[:10]:
-        ballot.vote = None
+        ballot.status = BallotStatus.NOT_AUDITED
     db.session.commit()
 
     rv = post_json(

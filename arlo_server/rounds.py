@@ -12,6 +12,7 @@ from arlo_server.models import (
     SampledBallot,
     SampledBallotDraw,
     Jurisdiction,
+    BallotStatus,
 )
 from arlo_server.auth import with_election_access, with_jurisdiction_access
 from arlo_server.sample_sizes import sample_size_options
@@ -108,6 +109,7 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
                 id=str(uuid.uuid4()),
                 batch_id=batch_id,
                 ballot_position=ballot_position,
+                status=BallotStatus.NOT_AUDITED,
             )
             db.session.add(sampled_ballot)
         else:
