@@ -4,6 +4,7 @@ import { Callout, H4 } from '@blueprintjs/core'
 import FormButton from '../../Atoms/Form/FormButton'
 import getRound from './getRound'
 import getJurisdictions, { IJurisdictionsResponse } from './getJurisdictions'
+import { IRound } from '../../../types'
 
 const Wrapper = styled(Callout)`
   .details {
@@ -31,7 +32,7 @@ const generateStatuses = (
     // all jurisdictions have completed the audit
     return ['The audit is complete.', [], 'DOWNLOAD_BUTTON']
   }
-  if (!complete && roundsCompleted === totalJurisdictions) {
+  if (launched && !complete && roundsCompleted === totalJurisdictions) {
     // jurisdictions have finished the round, but another is needed
     return [
       `Round ${round} of the audit is complete - another round needed.`,
@@ -54,7 +55,9 @@ const generateStatuses = (
     'The audit has not started.',
     [
       'Audit setup is not complete.',
-      `${manifestsUploaded} of ${totalJurisdictions} have completed file uploads.`,
+      totalJurisdictions > 0
+        ? `${manifestsUploaded} of ${totalJurisdictions} have completed file uploads.`
+        : 'No jurisdictions have been created yet.',
     ],
     'NO_BUTTON',
   ]
@@ -62,36 +65,42 @@ const generateStatuses = (
 
 interface IProps {
   electionId: string
+  refreshId: string
 }
 
-const StatusBox = ({ electionId }: IProps) => {
+const StatusBox = ({ electionId, refreshId }: IProps) => {
   const downloadAuditReport = async (e: React.FormEvent) => {
     e.preventDefault()
     window.open(`/election/${electionId}/audit/report`)
   }
 
-  const [currentRound, setCurrentRound] = useState(0)
+  const [currentRounds, setCurrentRounds] = useState<IRound[]>([])
   const [{ jurisdictions }, setJurisdictions] = useState<
     IJurisdictionsResponse
   >({ jurisdictions: [] })
   useEffect(() => {
     // get pertinent data
     ;(async () => {
-      const round = await getRound(electionId)
+      const rounds = await getRound(electionId)
       const jurisdictionList = await getJurisdictions(electionId)
-      setCurrentRound(round)
+      setCurrentRounds(rounds)
       if (jurisdictionList) setJurisdictions(jurisdictionList)
     })()
-  }, [electionId, setCurrentRound, setJurisdictions])
-  console.log(jurisdictions)
+  }, [electionId, setCurrentRounds, setJurisdictions, refreshId])
 
   const [title, details, button] = generateStatuses(
     jurisdictions.length,
     jurisdictions.filter(j => j.ballotManifest.file).length,
-    jurisdictions.filter(j => j.currentRoundStatus === currentRound).length,
-    currentRound,
-    currentRound > 0,
-    false
+    jurisdictions.filter(j => j.currentRoundStatus === currentRounds.length)
+      .length,
+    currentRounds.length,
+    currentRounds.length > 0,
+    currentRounds.length > 0 &&
+      currentRounds.every(
+        r =>
+          r.contests.length > 0 &&
+          r.contests.every(c => c.endMeasurements.isComplete)
+      )
   )
 
   return (

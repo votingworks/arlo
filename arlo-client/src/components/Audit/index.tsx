@@ -77,7 +77,11 @@ const Audit: React.FC<{}> = () => {
     'Participants'
   )
 
-  const [menuItems, refresh] = useSetupMenuItems(stage, setStage, electionId)
+  const [menuItems, refresh, refreshId] = useSetupMenuItems(
+    stage,
+    setStage,
+    electionId
+  )
 
   useEffect(() => {
     refresh()
@@ -94,7 +98,7 @@ const Audit: React.FC<{}> = () => {
       {isAuthenticated &&
       (viewMatch === 'setup' || viewMatch === 'progress') ? (
         <>
-          <StatusBox electionId={electionId} />
+          <StatusBox electionId={electionId} refreshId={refreshId} />
           {meta!.type === 'audit_admin' && (
             <Sidebar title="Audit Setup" menuItems={menuItems} />
           )}
