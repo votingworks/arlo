@@ -68,17 +68,14 @@ def read_database_url_config() -> str:
 
 DATABASE_URL = read_database_url_config()
 
-STATIC_FOLDER = (
-    os.path.normpath(
-        os.path.join(
-            __file__,
-            "..",
-            "..",
-            "arlo-client",
-            "public" if FLASK_ENV == "test" else "build",
-        )
+STATIC_FOLDER = os.path.normpath(
+    os.path.join(
+        __file__,
+        "..",
+        "..",
+        "arlo-client",
+        "public" if FLASK_ENV == "test" else "build",
     )
-    + "/"
 )
 
 
