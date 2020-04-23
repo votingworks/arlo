@@ -43,7 +43,7 @@ jobs:
       - run:
           name: backend tests
           command: |
-            make test-server
+            make test-server-coverage
       - run:
           name: frontend tests
           command: |

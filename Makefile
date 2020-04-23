@@ -50,6 +50,9 @@ test-server:
 	FLASK_ENV=test ${PIPENV} run python -m pytest ${FILE} \
 		-k '${TEST}' --ignore=arlo-client -vv ${FLAGS}
 
+test-server-coverage:
+	FLAGS='--cov=. ${FLAGS}' make test-server
+
 test-math:
 	FILE=tests/audit_math_tests make test-server
 
