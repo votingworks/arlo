@@ -17,6 +17,7 @@ from arlo_server.models import (
     Jurisdiction,
     SampledBallot,
     SampledBallotDraw,
+    BallotStatus,
     Batch,
 )
 from arlo_server.errors import handle_unique_constraint_error
@@ -144,7 +145,7 @@ def round_status_by_audit_board(
     audited_ballots_by_audit_board = dict(
         SampledBallotDraw.query.filter_by(round_id=round_id)
         .join(SampledBallot)
-        .filter(SampledBallot.vote.isnot(None))
+        .filter(SampledBallot.status != BallotStatus.NOT_AUDITED)
         .join(AuditBoard)
         .filter_by(jurisdiction_id=jurisdiction_id)
         .group_by(AuditBoard.id)
@@ -220,7 +221,7 @@ def is_round_complete(election: Election, round: Round) -> bool:
         # Where there are ballots that haven't been audited...
         .join(Jurisdiction.batches)
         .join(Batch.ballots)
-        .filter(SampledBallot.vote.is_(None))
+        .filter(SampledBallot.status == BallotStatus.NOT_AUDITED)
         # And those ballots got sampled this round...
         .join(SampledBallot.draws)
         .filter_by(round_id=round.id)
@@ -262,7 +263,7 @@ def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):
         if name not in {audit_board.member_1, audit_board.member_2}:
             raise BadRequest(f"Audit board member name did not match: {name}")
 
-    if any(b.vote is None for b in audit_board.sampled_ballots):
+    if any(b.status == BallotStatus.NOT_AUDITED for b in audit_board.sampled_ballots):
         raise Conflict(f"Audit board is not finished auditing all assigned ballots")
 
 

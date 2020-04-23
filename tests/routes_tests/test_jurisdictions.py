@@ -25,6 +25,7 @@ from arlo_server.models import (
     SampledBallot,
     SampledBallotDraw,
     USState,
+    BallotStatus,
 )
 from bgcompute import bgcompute_update_ballot_manifest_file
 
@@ -298,7 +299,7 @@ def test_jurisdictions_round_status(
     # Simulate one audit board auditing all its ballots and signing off
     audit_board_1 = db.session.merge(audit_board_1)  # Reload into the session
     for ballot in audit_board_1.sampled_ballots:
-        ballot.vote = "YES"
+        ballot.status = BallotStatus.AUDITED
     audit_board_1.signed_off_at = datetime.utcnow()
     db.session.commit()
 
@@ -314,7 +315,7 @@ def test_jurisdictions_round_status(
     # Simulate the other audit board auditing all its ballots and signing off
     audit_board_2 = db.session.merge(audit_board_2)  # Reload into the session
     for ballot in audit_board_2.sampled_ballots:
-        ballot.vote = "NO"
+        ballot.status = BallotStatus.AUDITED
     audit_board_2.signed_off_at = datetime.utcnow()
     db.session.commit()
 

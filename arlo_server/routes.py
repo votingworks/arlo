@@ -25,7 +25,11 @@ from arlo_server.auth import (
 )
 from arlo_server.models import *
 from arlo_server.errors import handle_unique_constraint_error
-from arlo_server.ballots import ballot_retrieval_list
+from arlo_server.ballots import (
+    ballot_retrieval_list,
+    serialize_interpretation,
+    deserialize_interpretation,
+)
 from arlo_server.ballot_manifest import (
     save_ballot_manifest_file,
     clear_ballot_manifest_file,
@@ -224,6 +228,7 @@ def sample_ballots(session: Session, election: Election, round: Round):
                         batch_id=batch_id,
                         ballot_position=ballot_position,
                         audit_board_id=audit_board.id,
+                        status=BallotStatus.NOT_AUDITED,
                     )
                     session.add(sampled_ballot)
                 else:
@@ -770,9 +775,10 @@ def ballot_list(election_id, jurisdiction_id, round_id):
         ballots=[
             {
                 "ticketNumber": ballot_draw.ticket_number,
-                "status": "AUDITED" if ballot.vote is not None else None,
-                "vote": ballot.vote,
-                "comment": ballot.comment,
+                "status": ballot.status,
+                "interpretations": [
+                    serialize_interpretation(i) for i in ballot.interpretations
+                ],
                 "position": ballot.ballot_position,
                 "batch": {
                     "id": batch.id,
@@ -809,9 +815,10 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, rou
         ballots=[
             {
                 "ticketNumber": ballot_draw.ticket_number,
-                "status": "AUDITED" if ballot.vote is not None else None,
-                "vote": ballot.vote,
-                "comment": ballot.comment,
+                "status": ballot.status,
+                "interpretations": [
+                    serialize_interpretation(i) for i in ballot.interpretations
+                ],
                 "position": ballot.ballot_position,
                 "batch": {
                     "id": batch.id,
@@ -865,12 +872,11 @@ def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
         )
 
     ballot = ballots[0]
-
-    if "vote" in attributes:
-        ballot.vote = attributes["vote"]
-
-    if "comment" in attributes:
-        ballot.comment = attributes["comment"]
+    ballot.interpretations = [
+        deserialize_interpretation(ballot.id, interpretation)
+        for interpretation in attributes["interpretations"]
+    ]
+    ballot.status = BallotStatus.AUDITED
 
     db.session.commit()
 
@@ -1043,11 +1049,9 @@ def audit_report(election_id):
 
     if election.online:
         report_writer.writerow(["All Sampled Ballots"])
-        report_writer.writerow(
-            ["Ballot", "Ticket Numbers", "Audited?", "Audit Result", "Comments"]
-        )
+        report_writer.writerow(["Ballot", "Ticket Numbers", "Audited?", "Audit Result"])
         # Write a row for each ballot that looks like this:
-        # "Batch 1, #13",Round 1: 0.123,Audited,some_candidate_id,A comment
+        # "Batch 1, #13",Round 1: 0.123,Audited,some_candidate_id
         # The Ticket Numbers column is a bit tricky:
         # If a ballot was sampled multiple times in a round: Round 1: 0.123, 0.456
         # If a ballot was sampled in multiple rounds: Round 1: 0.123, Round 2: 0.456
@@ -1076,9 +1080,8 @@ def audit_report(election_id):
                         b.sampled_ballot.batch.name, b.sampled_ballot.ballot_position
                     ),
                     ", ".join(ticket_numbers),
-                    "Audited" if b.sampled_ballot.vote else "Not audited",
-                    b.sampled_ballot.vote,
-                    b.sampled_ballot.comment,
+                    b.sampled_ballot.status,
+                    pretty_interpretations(b.sampled_ballot.interpretations),
                 ]
             )
 
@@ -1086,6 +1089,15 @@ def audit_report(election_id):
         csv_io.getvalue(),
         filename=f"audit-report-{election_timestamp_name(election)}.csv",
     )
+
+
+# TODO make this work for multiple contests
+# TODO include comments
+def pretty_interpretations(interpretations: List[BallotInterpretation]) -> str:
+    if interpretations[0].interpretation == Interpretation.VOTE:
+        return str(interpretations[0].contest_choice_id)
+    else:
+        return str(interpretations[0].interpretation.value)
 
 
 def pretty_affiliation(affiliation):
