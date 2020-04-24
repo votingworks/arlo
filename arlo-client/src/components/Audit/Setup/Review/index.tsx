@@ -213,20 +213,6 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                         </Radio>
                       )
                     })}
-                    {/* <Radio value="custom">
-                            Enter your own sample size (not recommended)
-                          </Radio>
-                          {getIn(values, 'sampleSize') === 'custom' && (
-                            <Field
-                              component={FormField}
-                              name={`customSampleSize[${key}]`}
-                              // validate={testNumber(
-                              //   Number(audit.contests[i].totalBallotsCast),
-                              //   'Must be less than or equal to the total number of ballots'
-                              // )}
-                              data-testid={`customSampleSize[${key}]`}
-                            />
-                          )} */}
                   </RadioGroup>
                 </FormSectionDescription>
               </FormSection>
