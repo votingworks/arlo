@@ -19,7 +19,7 @@ const checkAndToastMock: jest.SpyInstance<
 apiMock.mockResolvedValue(auditSettings.all)
 
 const useContestsApiMock = useContestsApi as jest.Mock
-jest.mock('./Contests/useContestsApi')
+jest.mock('./useContestsApi')
 useContestsApiMock.mockImplementation(() => [
   contestMocks.emptyTargeted,
   jest.fn(),

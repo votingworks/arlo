@@ -1996,23 +1996,160 @@ exports[`Setup renders Participants stage with processing next stage 1`] = `
 exports[`Setup renders Review & Launch stage 1`] = `
 <div>
   <div>
-    <p>
-      Review
-    </p>
-    <div
-      class="sc-htpNat gtULUV"
+    <h2
+      class="bp3-heading sc-bdVaJa ibVpPq"
     >
-      <button
-        class="bp3-button sc-ifAKCX zdCNs"
-        type="button"
+      Review & Launch
+    </h2>
+    <div
+      class="bp3-callout bp3-intent-warning bp3-callout-icon"
+    >
+      <span
+        class="bp3-icon bp3-icon-warning-sign"
+        icon="warning-sign"
       >
-        <span
-          class="bp3-button-text"
+        <svg
+          data-icon="warning-sign"
+          height="20"
+          viewBox="0 0 20 20"
+          width="20"
         >
-          Back
-        </span>
-      </button>
+          <desc>
+            warning-sign
+          </desc>
+          <path
+            d="M19.86 17.52l.01-.01-9-16-.01.01C10.69 1.21 10.37 1 10 1s-.69.21-.86.52l-.01-.01-9 16 .01.01c-.08.14-.14.3-.14.48 0 .55.45 1 1 1h18c.55 0 1-.45 1-1 0-.18-.06-.34-.14-.48zM11 17H9v-2h2v2zm0-3H9V6h2v8z"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </span>
+      Once the audit is started, the audit definition will no longer be editable. Please make sure this data is correct before launching the audit.
     </div>
+    <br />
+    <h4
+      class="bp3-heading"
+    >
+      Audit Settings
+    </h4>
+    <table
+      class="sc-dxgOiQ hcdlHA"
+    >
+      <tbody>
+        <tr>
+          <td>
+            Election Name:
+          </td>
+          <td>
+            Election Name
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Risk Limit:
+          </td>
+          <td>
+            10
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Random Seed:
+          </td>
+          <td>
+            12345
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Participating Jurisdictions:
+          </td>
+          <td>
+            <a
+              href="/link-to-jurisdictions-file"
+            >
+              link
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Audit Board Data Entry:
+          </td>
+          <td>
+            Online
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table
+      class="sc-ckVGcZ qPOwv"
+    >
+      <thead>
+        <tr>
+          <th>
+            Target Contests
+          </th>
+          <th>
+            Jurisdictions
+          </th>
+        </tr>
+      </thead>
+      <tbody />
+    </table>
+    <table
+      class="sc-ckVGcZ qPOwv"
+    >
+      <thead>
+        <tr>
+          <th>
+            Opportunistic Contests
+          </th>
+          <th>
+            Jurisdictions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td />
+          <td />
+        </tr>
+      </tbody>
+    </table>
+    <h4
+      class="bp3-heading"
+    >
+      Sample Size Options
+    </h4>
+    <form
+      data-testid="sample-size-form"
+    >
+      0
+      <div
+        class="sc-htpNat gtULUV"
+      >
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Back
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Launch Audit
+          </span>
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 `;
@@ -2020,23 +2157,160 @@ exports[`Setup renders Review & Launch stage 1`] = `
 exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
 <div>
   <div>
-    <p>
-      Review
-    </p>
-    <div
-      class="sc-htpNat gtULUV"
+    <h2
+      class="bp3-heading sc-bdVaJa ibVpPq"
     >
-      <button
-        class="bp3-button sc-ifAKCX zdCNs"
-        type="button"
+      Review & Launch
+    </h2>
+    <div
+      class="bp3-callout bp3-intent-warning bp3-callout-icon"
+    >
+      <span
+        class="bp3-icon bp3-icon-warning-sign"
+        icon="warning-sign"
       >
-        <span
-          class="bp3-button-text"
+        <svg
+          data-icon="warning-sign"
+          height="20"
+          viewBox="0 0 20 20"
+          width="20"
         >
-          Back
-        </span>
-      </button>
+          <desc>
+            warning-sign
+          </desc>
+          <path
+            d="M19.86 17.52l.01-.01-9-16-.01.01C10.69 1.21 10.37 1 10 1s-.69.21-.86.52l-.01-.01-9 16 .01.01c-.08.14-.14.3-.14.48 0 .55.45 1 1 1h18c.55 0 1-.45 1-1 0-.18-.06-.34-.14-.48zM11 17H9v-2h2v2zm0-3H9V6h2v8z"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </span>
+      Once the audit is started, the audit definition will no longer be editable. Please make sure this data is correct before launching the audit.
     </div>
+    <br />
+    <h4
+      class="bp3-heading"
+    >
+      Audit Settings
+    </h4>
+    <table
+      class="sc-dxgOiQ hcdlHA"
+    >
+      <tbody>
+        <tr>
+          <td>
+            Election Name:
+          </td>
+          <td>
+            Election Name
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Risk Limit:
+          </td>
+          <td>
+            10
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Random Seed:
+          </td>
+          <td>
+            12345
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Participating Jurisdictions:
+          </td>
+          <td>
+            <a
+              href="/link-to-jurisdictions-file"
+            >
+              link
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Audit Board Data Entry:
+          </td>
+          <td>
+            Online
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table
+      class="sc-ckVGcZ qPOwv"
+    >
+      <thead>
+        <tr>
+          <th>
+            Target Contests
+          </th>
+          <th>
+            Jurisdictions
+          </th>
+        </tr>
+      </thead>
+      <tbody />
+    </table>
+    <table
+      class="sc-ckVGcZ qPOwv"
+    >
+      <thead>
+        <tr>
+          <th>
+            Opportunistic Contests
+          </th>
+          <th>
+            Jurisdictions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td />
+          <td />
+        </tr>
+      </tbody>
+    </table>
+    <h4
+      class="bp3-heading"
+    >
+      Sample Size Options
+    </h4>
+    <form
+      data-testid="sample-size-form"
+    >
+      0
+      <div
+        class="sc-htpNat gtULUV"
+      >
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Back
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Launch Audit
+          </span>
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 `;
@@ -2044,23 +2318,160 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
 exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
 <div>
   <div>
-    <p>
-      Review
-    </p>
-    <div
-      class="sc-htpNat gtULUV"
+    <h2
+      class="bp3-heading sc-bdVaJa ibVpPq"
     >
-      <button
-        class="bp3-button sc-ifAKCX zdCNs"
-        type="button"
+      Review & Launch
+    </h2>
+    <div
+      class="bp3-callout bp3-intent-warning bp3-callout-icon"
+    >
+      <span
+        class="bp3-icon bp3-icon-warning-sign"
+        icon="warning-sign"
       >
-        <span
-          class="bp3-button-text"
+        <svg
+          data-icon="warning-sign"
+          height="20"
+          viewBox="0 0 20 20"
+          width="20"
         >
-          Back
-        </span>
-      </button>
+          <desc>
+            warning-sign
+          </desc>
+          <path
+            d="M19.86 17.52l.01-.01-9-16-.01.01C10.69 1.21 10.37 1 10 1s-.69.21-.86.52l-.01-.01-9 16 .01.01c-.08.14-.14.3-.14.48 0 .55.45 1 1 1h18c.55 0 1-.45 1-1 0-.18-.06-.34-.14-.48zM11 17H9v-2h2v2zm0-3H9V6h2v8z"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </span>
+      Once the audit is started, the audit definition will no longer be editable. Please make sure this data is correct before launching the audit.
     </div>
+    <br />
+    <h4
+      class="bp3-heading"
+    >
+      Audit Settings
+    </h4>
+    <table
+      class="sc-dxgOiQ hcdlHA"
+    >
+      <tbody>
+        <tr>
+          <td>
+            Election Name:
+          </td>
+          <td>
+            Election Name
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Risk Limit:
+          </td>
+          <td>
+            10
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Random Seed:
+          </td>
+          <td>
+            12345
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Participating Jurisdictions:
+          </td>
+          <td>
+            <a
+              href="/link-to-jurisdictions-file"
+            >
+              link
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Audit Board Data Entry:
+          </td>
+          <td>
+            Online
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table
+      class="sc-ckVGcZ qPOwv"
+    >
+      <thead>
+        <tr>
+          <th>
+            Target Contests
+          </th>
+          <th>
+            Jurisdictions
+          </th>
+        </tr>
+      </thead>
+      <tbody />
+    </table>
+    <table
+      class="sc-ckVGcZ qPOwv"
+    >
+      <thead>
+        <tr>
+          <th>
+            Opportunistic Contests
+          </th>
+          <th>
+            Jurisdictions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td />
+          <td />
+        </tr>
+      </tbody>
+    </table>
+    <h4
+      class="bp3-heading"
+    >
+      Sample Size Options
+    </h4>
+    <form
+      data-testid="sample-size-form"
+    >
+      0
+      <div
+        class="sc-htpNat gtULUV"
+      >
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Back
+          </span>
+        </button>
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Launch Audit
+          </span>
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 `;

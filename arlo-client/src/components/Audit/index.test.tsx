@@ -12,6 +12,7 @@ import { asyncActRender } from '../testUtilities'
 import AuthDataProvider from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
+import { contestMocks } from './Setup/Contests/_mocks'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -339,7 +340,10 @@ describe('AA setup flow', () => {
           },
         ],
       }))
-      .mockImplementation(async () => auditSettings.otherSettings)
+      .mockImplementationOnce(async () => auditSettings.otherSettings)
+      .mockImplementationOnce(async () => auditSettings.otherSettings)
+      .mockImplementationOnce(async () => ({ jurisdictions: [] }))
+      .mockImplementation(async () => contestMocks.filledTargeted)
     const { queryAllByText, getByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -364,9 +368,11 @@ describe('AA setup flow', () => {
 
     fireEvent.click(getByText('Save & Next'))
     await wait(() => {
-      expect(queryAllByText('Review').length).toBe(1)
+      expect(queryAllByText('Review & Launch').length).toBe(2)
     })
     fireEvent.click(getByText('Back'))
-    expect(queryAllByText('Audit Settings').length).toBe(2)
+    await wait(() => {
+      expect(queryAllByText('Audit Settings').length).toBe(2)
+    })
   })
 })
