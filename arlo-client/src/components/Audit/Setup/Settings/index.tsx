@@ -37,7 +37,9 @@ const Settings: React.FC<IProps> = ({
       riskLimit: parseNumber(values.riskLimit), // Formik stringifies internally
     })
     if (!response) return
-    nextStage.activate()
+    /* istanbul ignore else */
+    if (nextStage.activate) nextStage.activate()
+    else throw new Error('Wrong menuItems passed in: activate() is missing')
   }
   const initialValues = {
     electionName: electionName === null ? '' : electionName,
