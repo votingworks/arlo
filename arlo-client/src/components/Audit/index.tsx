@@ -100,16 +100,18 @@ const Audit: React.FC<{}> = () => {
         </>
       ) : (
         <>
-          <EstimateSampleSize
-            audit={audit}
-            isLoading={isLoading && !showSelectBallotsToAudit}
-            setIsLoading={setIsLoading}
-            updateAudit={updateAudit}
-            getStatus={getStatus}
-            electionId={electionId}
-          />
+          {!isAuthenticated && (
+            <EstimateSampleSize
+              audit={audit}
+              isLoading={isLoading && !showSelectBallotsToAudit}
+              setIsLoading={setIsLoading}
+              updateAudit={updateAudit}
+              getStatus={getStatus}
+              electionId={electionId}
+            />
+          )}
 
-          {showSelectBallotsToAudit && (
+          {!isAuthenticated && showSelectBallotsToAudit && (
             <SelectBallotsToAudit
               audit={audit}
               isLoading={isLoading && !showCalculateRiskMeasurement}
