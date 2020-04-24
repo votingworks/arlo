@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
 import { useParams } from 'react-router-dom'
 import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
@@ -17,34 +16,8 @@ import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
 } from '../../../Atoms/Form/FormSection'
-
-const SettingsTable = styled.table`
-  width: 100%;
-  text-align: left;
-  line-height: 30px;
-
-  td:nth-child(even) {
-    width: 50%;
-  }
-`
-const ContestsTable = styled.table`
-  margin: 50px 0;
-  width: 100%;
-  text-align: left;
-  line-height: 30px;
-
-  td,
-  th {
-    padding: 0 10px;
-  }
-  thead {
-    background-color: #137cbd;
-    color: #ffffff;
-  }
-  tr:nth-child(even) {
-    background-color: #f5f8fa;
-  }
-`
+import ContestsTable from './ContestsTable'
+import SettingsTable from './SettingsTable'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -100,7 +73,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
             size: `${v.size}`,
           }))
         )
-      } catch (err) {
+      } catch (err) /* istanbul ignore next */ {
+        // TEST TODO
         toast.error(err.message)
       }
     })()
@@ -123,7 +97,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         return
       }
       refresh()
-    } catch (err) {
+    } catch (err) /* istanbul ignore next */ {
+      // TEST TODO
       toast.error(err.message)
     }
   }

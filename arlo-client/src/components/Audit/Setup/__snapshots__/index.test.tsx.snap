@@ -2032,7 +2032,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -2082,7 +2082,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-ckVGcZ qPOwv"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -2097,7 +2097,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       <tbody />
     </table>
     <table
-      class="sc-ckVGcZ qPOwv"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -2193,7 +2193,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -2243,7 +2243,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-ckVGcZ qPOwv"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -2258,7 +2258,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       <tbody />
     </table>
     <table
-      class="sc-ckVGcZ qPOwv"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -2354,7 +2354,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -2404,7 +2404,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-ckVGcZ qPOwv"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -2419,7 +2419,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       <tbody />
     </table>
     <table
-      class="sc-ckVGcZ qPOwv"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
