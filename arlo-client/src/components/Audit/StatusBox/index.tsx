@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import { Callout, H4 } from '@blueprintjs/core'
 import FormButton from '../../Atoms/Form/FormButton'
 import getRound from './getRound'
 import getJurisdictions, { IJurisdictionsResponse } from './getJurisdictions'
 import { IRound } from '../../../types'
+import { checkAndToast, api } from '../../utilities'
 
 const Wrapper = styled(Callout)`
   .details {
@@ -75,6 +77,28 @@ const StatusBox = ({ electionId, refreshId }: IProps) => {
   }
 
   const [currentRounds, setCurrentRounds] = useState<IRound[]>([])
+  const startNextRound = async () => {
+    try {
+      const result = api(`/election/${electionId}/round`, {
+        method: 'POST',
+        body: JSON.stringify({
+          roundNum: currentRounds.length + 1,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      // checkAndToast left here for consistency and reference but not tested since it's vestigial
+      /* istanbul ignore next */
+      if (checkAndToast(result)) {
+        return
+      }
+      // refresh()
+    } catch (err) {
+      toast.error(err.message)
+    }
+  }
+
   const [{ jurisdictions }, setJurisdictions] = useState<
     IJurisdictionsResponse
   >({ jurisdictions: [] })
@@ -121,6 +145,11 @@ const StatusBox = ({ electionId, refreshId }: IProps) => {
                 </FormButton>
               )
             case 'START_ROUND_BUTTON': // button to submit to the rounds endpoint with a new round number
+              return (
+                <FormButton intent="success" onClick={startNextRound}>
+                  Start Round {currentRounds.length + 1}
+                </FormButton>
+              )
             case 'NO_BUTTON':
             default:
               return null
