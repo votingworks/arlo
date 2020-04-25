@@ -3,7 +3,7 @@
 exports[`DataEntry ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF heyEuy"
   >
     <div
       class="sc-eNQAEJ gXOgPQ"
@@ -284,7 +284,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
 exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF heyEuy"
   >
     <div
       class="board-table-container"
@@ -849,7 +849,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 exports[`DataEntry ballot interaction renders board table with large container size 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF heyEuy"
   >
     <div
       class="board-table-container"

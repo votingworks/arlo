@@ -3,7 +3,7 @@
 exports[`DataEntry initial load fetches initial state from api 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF heyEuy"
   >
     <h1
       class="bp3-heading"
@@ -274,7 +274,7 @@ exports[`DataEntry initial load fetches initial state from api 1`] = `
 exports[`DataEntry initial load renders correctly 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF heyEuy"
   >
     <h1
       class="bp3-heading"
@@ -545,7 +545,7 @@ exports[`DataEntry initial load renders correctly 1`] = `
 exports[`DataEntry initial load renders member form 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF heyEuy"
   >
     <h1
       class="bp3-heading"
