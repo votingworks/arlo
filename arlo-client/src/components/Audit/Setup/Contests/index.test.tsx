@@ -4,10 +4,11 @@ import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { regexpEscape, asyncActRender } from '../../../testUtilities'
 import * as utilities from '../../../utilities'
-import Contests, { IJurisdictions } from './index'
+import Contests from './index'
+import { IJurisdictions } from '../useParticipantsApi'
 import relativeStages from '../_mocks'
 import { contestsInputMocks, contestMocks } from './_mocks'
-import { numberifyContest, IContestNumbered } from './useContestsApi'
+import { numberifyContest, IContestNumbered } from '../useContestsApi'
 import { IContests } from './types'
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()

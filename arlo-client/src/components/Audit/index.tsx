@@ -96,7 +96,7 @@ const Audit: React.FC<{}> = () => {
           {meta!.type === 'audit_admin' && (
             <Sidebar title="Audit Setup" menuItems={menuItems} />
           )}
-          <Setup stage={stage} menuItems={menuItems} />
+          <Setup stage={stage} menuItems={menuItems} refresh={refresh} />
         </>
       ) : (
         <>

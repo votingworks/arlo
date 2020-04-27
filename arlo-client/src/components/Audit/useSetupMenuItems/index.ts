@@ -67,6 +67,7 @@ function useSetupMenuItems(
   const lockAllIfRounds = useCallback(async () => {
     const roundsExist = await getRoundStatus(electionId)
     if (roundsExist) {
+      setStage('Review & Launch')
       setParticipants('locked')
       setContests('locked')
       setAuditSettings('locked')
@@ -78,6 +79,7 @@ function useSetupMenuItems(
     setAuditSettings,
     setReviewLaunch,
     electionId,
+    setStage,
   ])
 
   const refresh = useCallback(() => {

@@ -5,7 +5,9 @@ export const contestMocks: {
     | 'emptyTargeted'
     | 'emptyOpportunistic'
     | 'filledTargeted'
-    | 'filledOpportunistic']: IContests
+    | 'filledOpportunistic'
+    | 'filledTargetedWithJurisdictionId'
+    | 'filledOpportunisticWithJurisdictionId']: IContests
 } = {
   emptyTargeted: {
     contests: [
@@ -92,6 +94,56 @@ export const contestMocks: {
         numWinners: '1',
         votesAllowed: '1',
         jurisdictionIds: [],
+        choices: [
+          {
+            id: 'choice-id',
+            name: 'Choice Three',
+            numVotes: '10',
+          },
+          {
+            id: 'choice-id',
+            name: 'Choice Four',
+            numVotes: '20',
+          },
+        ],
+      },
+    ],
+  },
+  filledTargetedWithJurisdictionId: {
+    contests: [
+      {
+        id: 'contest-id',
+        name: 'Contest Name',
+        isTargeted: true,
+        totalBallotsCast: '30',
+        numWinners: '1',
+        votesAllowed: '1',
+        jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
+        choices: [
+          {
+            id: 'choice-id',
+            name: 'Choice One',
+            numVotes: '10',
+          },
+          {
+            id: 'choice-id',
+            name: 'Choice Two',
+            numVotes: '20',
+          },
+        ],
+      },
+    ],
+  },
+  filledOpportunisticWithJurisdictionId: {
+    contests: [
+      {
+        id: 'contest-id',
+        name: 'Contest Name',
+        isTargeted: false,
+        totalBallotsCast: '30',
+        numWinners: '1',
+        votesAllowed: '1',
+        jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
         choices: [
           {
             id: 'choice-id',
