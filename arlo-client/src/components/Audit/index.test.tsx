@@ -12,9 +12,10 @@ import { asyncActRender } from '../testUtilities'
 import AuthDataProvider from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
-// import { contestMocks } from './Setup/Contests/_mocks'
+import { contestMocks } from './Setup/Contests/_mocks'
 import { IAudit, IUserMeta, IRound, IAuditSettings, IBallot } from '../../types'
 import { IJurisdictions } from './Setup/useParticipantsApi'
+import { IContests } from './Setup/Contests/types'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -31,6 +32,7 @@ const generateApiMock = ({
   jurisdictionReturn,
   settingsReturn,
   ballotsReturn,
+  contestsReturn,
 }: {
   statusReturn?: IAudit | Error | { status: 'ok' }
   authReturn?: IUserMeta | Error
@@ -41,6 +43,7 @@ const generateApiMock = ({
     | { status: 'ok' }
   settingsReturn?: IAuditSettings | Error
   ballotsReturn?: { ballots: IBallot[] } | Error
+  contestsReturn?: IContests | Error
 }) => async (
   endpoint: string
 ): Promise<
@@ -50,6 +53,7 @@ const generateApiMock = ({
   | { jurisdictions: IJurisdictions }
   | IAuditSettings
   | { ballots: IBallot[] }
+  | IContests
   | Error
   | { status: 'ok' }
 > => {
@@ -68,6 +72,8 @@ const generateApiMock = ({
     ballotsReturn
   )
     return ballotsReturn
+  if (endpoint === '/election/1/contest' && contestsReturn)
+    return contestsReturn
   return new Error(`missing mock for ${endpoint}`)
 }
 
@@ -268,30 +274,28 @@ describe('RiskLimitingAuditForm', () => {
 
 describe('AA setup flow', () => {
   it('renders sidebar when authenticated on /setup', async () => {
-    apiMock
-      .mockImplementationOnce(
-        generateApiMock({ statusReturn: statusStates.sampleSizeOptions })
-      )
-      .mockImplementationOnce(
-        generateApiMock({
-          authReturn: {
-            type: 'audit_admin',
-            name: 'Joe',
-            email: 'test@email.org',
-            jurisdictions: [],
-            organizations: [
-              {
-                id: 'org-id',
-                name: 'State',
-                elections: [],
-              },
-            ],
-          },
-        })
-      )
-      .mockImplementationOnce(
-        generateApiMock({ settingsReturn: auditSettings.blank })
-      )
+    apiMock.mockImplementation(
+      generateApiMock({
+        statusReturn: statusStates.sampleSizeOptions,
+        authReturn: {
+          type: 'audit_admin',
+          name: 'Joe',
+          email: 'test@email.org',
+          jurisdictions: [],
+          organizations: [
+            {
+              id: 'org-id',
+              name: 'State',
+              elections: [],
+            },
+          ],
+        },
+        settingsReturn: auditSettings.all,
+        roundReturn: { rounds: [] },
+        jurisdictionReturn: { jurisdictions: [] },
+        contestsReturn: contestMocks.filledTargeted,
+      })
+    )
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -301,10 +305,12 @@ describe('AA setup flow', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(3)
+      expect(apiMock).toBeCalledTimes(5)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
       expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/round')
+      expect(apiMock).toHaveBeenNthCalledWith(4, '/election/1/settings')
+      expect(apiMock).toHaveBeenNthCalledWith(5, '/election/1/jurisdiction')
       expect(queryAllByText('Participants').length).toBe(2)
       expect(container).toMatchSnapshot()
     })
@@ -318,30 +324,28 @@ describe('AA setup flow', () => {
         view: 'progress',
       },
     })
-    apiMock
-      .mockImplementationOnce(
-        generateApiMock({ statusReturn: statusStates.sampleSizeOptions })
-      )
-      .mockImplementationOnce(
-        generateApiMock({
-          authReturn: {
-            type: 'audit_admin',
-            name: 'Joe',
-            email: 'test@email.org',
-            jurisdictions: [],
-            organizations: [
-              {
-                id: 'org-id',
-                name: 'State',
-                elections: [],
-              },
-            ],
-          },
-        })
-      )
-      .mockImplementationOnce(
-        generateApiMock({ settingsReturn: auditSettings.blank })
-      )
+    apiMock.mockImplementation(
+      generateApiMock({
+        statusReturn: statusStates.sampleSizeOptions,
+        authReturn: {
+          type: 'audit_admin',
+          name: 'Joe',
+          email: 'test@email.org',
+          jurisdictions: [],
+          organizations: [
+            {
+              id: 'org-id',
+              name: 'State',
+              elections: [],
+            },
+          ],
+        },
+        settingsReturn: auditSettings.all,
+        roundReturn: { rounds: [] },
+        jurisdictionReturn: { jurisdictions: [] },
+        contestsReturn: contestMocks.filledTargeted,
+      })
+    )
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -351,88 +355,40 @@ describe('AA setup flow', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(3)
+      expect(apiMock).toBeCalledTimes(5)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
       expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/round')
+      expect(apiMock).toHaveBeenNthCalledWith(4, '/election/1/settings')
+      expect(apiMock).toHaveBeenNthCalledWith(5, '/election/1/jurisdiction')
       expect(queryAllByText('Participants').length).toBe(2)
       expect(container).toMatchSnapshot()
     })
   })
 
   it('sidebar changes stages', async () => {
-    apiMock
-      .mockImplementationOnce(
-        generateApiMock({ statusReturn: statusStates.sampleSizeOptions })
-      )
-      .mockImplementationOnce(
-        generateApiMock({
-          authReturn: {
-            type: 'audit_admin',
-            name: 'Joe',
-            email: 'test@email.org',
-            jurisdictions: [],
-            organizations: [
-              {
-                id: 'org-id',
-                name: 'State',
-                elections: [],
-              },
-            ],
-          },
-        })
-      )
-      .mockImplementationOnce(
-        generateApiMock({ settingsReturn: auditSettings.blank })
-      )
-    const { queryAllByText, getByText } = await asyncActRender(
-      <AuthDataProvider>
-        <Router>
-          <Audit />
-        </Router>
-      </AuthDataProvider>
+    apiMock.mockImplementation(
+      generateApiMock({
+        statusReturn: statusStates.sampleSizeOptions,
+        authReturn: {
+          type: 'audit_admin',
+          name: 'Joe',
+          email: 'test@email.org',
+          jurisdictions: [],
+          organizations: [
+            {
+              id: 'org-id',
+              name: 'State',
+              elections: [],
+            },
+          ],
+        },
+        settingsReturn: auditSettings.all,
+        roundReturn: { rounds: [] },
+        jurisdictionReturn: { jurisdictions: [] },
+        contestsReturn: contestMocks.filledTargeted,
+      })
     )
-
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(3)
-      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
-      expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
-      expect(queryAllByText('Participants').length).toBe(2)
-    })
-
-    fireEvent.click(getByText('Target Contests'), { bubbles: true })
-
-    await wait(() => {
-      expect(queryAllByText('Target Contests').length).toBe(2)
-    })
-  })
-
-  it('next and back buttons change stages', async () => {
-    apiMock
-      .mockImplementationOnce(
-        generateApiMock({ statusReturn: statusStates.sampleSizeOptions })
-      )
-      .mockImplementationOnce(
-        generateApiMock({
-          authReturn: {
-            type: 'audit_admin',
-            name: 'Joe',
-            email: 'test@email.org',
-            jurisdictions: [],
-            organizations: [
-              {
-                id: 'org-id',
-                name: 'State',
-                elections: [],
-              },
-            ],
-          },
-        })
-      )
-      .mockImplementationOnce(
-        generateApiMock({ settingsReturn: auditSettings.blank })
-      )
     const { queryAllByText, getByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -446,8 +402,56 @@ describe('AA setup flow', () => {
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
       expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
       expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/round')
-      expect(apiMock).toHaveBeenNthCalledWith(4, '/election/1/jurisdiction')
-      expect(apiMock).toHaveBeenNthCalledWith(5, '/election/1/settings')
+      expect(apiMock).toHaveBeenNthCalledWith(4, '/election/1/settings')
+      expect(apiMock).toHaveBeenNthCalledWith(5, '/election/1/jurisdiction')
+      expect(queryAllByText('Participants').length).toBe(2)
+    })
+
+    fireEvent.click(getByText('Target Contests'), { bubbles: true })
+
+    await wait(() => {
+      expect(queryAllByText('Target Contests').length).toBe(2)
+    })
+  })
+
+  it('next and back buttons change stages', async () => {
+    apiMock.mockImplementation(
+      generateApiMock({
+        statusReturn: statusStates.sampleSizeOptions,
+        authReturn: {
+          type: 'audit_admin',
+          name: 'Joe',
+          email: 'test@email.org',
+          jurisdictions: [],
+          organizations: [
+            {
+              id: 'org-id',
+              name: 'State',
+              elections: [],
+            },
+          ],
+        },
+        settingsReturn: auditSettings.all,
+        roundReturn: { rounds: [] },
+        jurisdictionReturn: { jurisdictions: [] },
+        contestsReturn: contestMocks.filledTargeted,
+      })
+    )
+    const { queryAllByText, getByText } = await asyncActRender(
+      <AuthDataProvider>
+        <Router>
+          <Audit />
+        </Router>
+      </AuthDataProvider>
+    )
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(5)
+      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
+      expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/round')
+      expect(apiMock).toHaveBeenNthCalledWith(4, '/election/1/settings')
+      expect(apiMock).toHaveBeenNthCalledWith(5, '/election/1/jurisdiction')
       expect(queryAllByText('Participants').length).toBe(2)
     })
 

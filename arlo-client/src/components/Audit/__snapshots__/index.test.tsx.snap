@@ -3,8 +3,30 @@
 exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
 <div>
   <div
-    class="sc-kEYyzF kuUIJj"
+    class="sc-kEYyzF heyEuy"
   >
+    <div
+      class="bp3-callout sc-jWBwVP hfSEnB"
+    >
+      <h4
+        class="bp3-heading"
+      >
+        The audit has not started.
+      </h4>
+      <div
+        class="details"
+      >
+        <p>
+          Audit setup is not complete.
+        </p>
+        <p>
+          No jurisdictions have been created yet.
+        </p>
+      </div>
+      <div
+        class="wrapper"
+      />
+    </div>
     <div
       class="sc-kkGfuU jgdXat"
     >
@@ -510,8 +532,30 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
 exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
 <div>
   <div
-    class="sc-kEYyzF kuUIJj"
+    class="sc-kEYyzF heyEuy"
   >
+    <div
+      class="bp3-callout sc-jWBwVP hfSEnB"
+    >
+      <h4
+        class="bp3-heading"
+      >
+        The audit has not started.
+      </h4>
+      <div
+        class="details"
+      >
+        <p>
+          Audit setup is not complete.
+        </p>
+        <p>
+          No jurisdictions have been created yet.
+        </p>
+      </div>
+      <div
+        class="wrapper"
+      />
+    </div>
     <div
       class="sc-kkGfuU jgdXat"
     >
