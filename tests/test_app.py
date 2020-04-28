@@ -28,7 +28,7 @@ def test_index(client):
 
 
 def test_static_logo(client):
-    rv = client.get("/public/arlo.png")
+    rv = client.get("/arlo.png")
     assert rv.status_code == 200
 
 
