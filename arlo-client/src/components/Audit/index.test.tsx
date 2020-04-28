@@ -12,7 +12,9 @@ import { asyncActRender } from '../testUtilities'
 import AuthDataProvider from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
-import { contestMocks } from './Setup/Contests/_mocks'
+// import { contestMocks } from './Setup/Contests/_mocks'
+import { IAudit, IUserMeta, IRound, IAuditSettings, IBallot } from '../../types'
+import { IJurisdictions } from './Setup/useParticipantsApi'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -21,6 +23,54 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
+
+const generateApiMock = ({
+  statusReturn,
+  authReturn,
+  roundReturn,
+  jurisdictionReturn,
+  settingsReturn,
+  ballotsReturn,
+}: {
+  statusReturn?: IAudit | Error | { status: 'ok' }
+  authReturn?: IUserMeta | Error
+  roundReturn?: { rounds: IRound[] } | Error
+  jurisdictionReturn?:
+    | { jurisdictions: IJurisdictions }
+    | Error
+    | { status: 'ok' }
+  settingsReturn?: IAuditSettings | Error
+  ballotsReturn?: { ballots: IBallot[] } | Error
+}) => async (
+  endpoint: string
+): Promise<
+  | IAudit
+  | IUserMeta
+  | { rounds: IRound[] }
+  | { jurisdictions: IJurisdictions }
+  | IAuditSettings
+  | { ballots: IBallot[] }
+  | Error
+  | { status: 'ok' }
+> => {
+  if (endpoint === '/election/1/audit/status' && statusReturn)
+    return statusReturn
+  if (endpoint === '/auth/me' && authReturn) return authReturn
+  if (endpoint === '/election/1/round' && roundReturn) return roundReturn
+  if (endpoint === '/election/1/jurisdiction' && jurisdictionReturn)
+    return jurisdictionReturn
+  if (endpoint === '/election/1/settings' && settingsReturn)
+    return settingsReturn
+  if (
+    endpoint.match(
+      /\/election\/[^/]+\/jurisdiction\/[^/]+\/round\/[^/]+\/ballot-list/
+    ) &&
+    ballotsReturn
+  )
+    return ballotsReturn
+  return new Error(`missing mock for ${endpoint}`)
+}
+
 const checkAndToastMock: jest.SpyInstance<
   ReturnType<typeof utilities.checkAndToast>,
   Parameters<typeof utilities.checkAndToast>
@@ -70,7 +120,9 @@ afterEach(() => {
 
 describe('RiskLimitingAuditForm', () => {
   it('fetches initial state from api', async () => {
-    apiMock.mockImplementation(async () => statusStates.empty)
+    apiMock.mockImplementation(
+      generateApiMock({ statusReturn: statusStates.empty })
+    )
     const { container } = await asyncActRender(
       <Router>
         <Audit />
@@ -107,7 +159,9 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('does not render SelectBallotsToAudit when /audit/status is processing samplesizes', async () => {
-    apiMock.mockImplementation(async () => statusStates.contestFirstRound)
+    apiMock.mockImplementation(
+      generateApiMock({ statusReturn: statusStates.contestFirstRound })
+    )
     const { container, queryByTestId } = await asyncActRender(
       <Router>
         <Audit />
@@ -128,7 +182,9 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
-    apiMock.mockImplementation(async () => statusStates.sampleSizeOptions)
+    apiMock.mockImplementation(
+      generateApiMock({ statusReturn: statusStates.sampleSizeOptions })
+    )
     const { container, getByTestId } = await asyncActRender(
       <Router>
         <Audit />
@@ -153,7 +209,9 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
-    apiMock.mockImplementation(async () => statusStates.jurisdictionsInitial)
+    apiMock.mockImplementation(
+      generateApiMock({ statusReturn: statusStates.jurisdictionsInitial })
+    )
     const { container, getByTestId, queryByTestId } = await asyncActRender(
       <Router>
         <Audit />
@@ -180,8 +238,10 @@ describe('RiskLimitingAuditForm', () => {
 
   it('renders CalculateRiskMeasurement when /audit/status returns round data', async () => {
     apiMock
-      .mockImplementationOnce(async () => statusStates.ballotManifestProcessed)
-      .mockImplementationOnce(async () => dummyBallots)
+      .mockImplementationOnce(
+        generateApiMock({ statusReturn: statusStates.ballotManifestProcessed })
+      )
+      .mockImplementationOnce(generateApiMock({ ballotsReturn: dummyBallots }))
     const { container, getByTestId } = await asyncActRender(
       <Router>
         <Audit />
@@ -209,21 +269,29 @@ describe('RiskLimitingAuditForm', () => {
 describe('AA setup flow', () => {
   it('renders sidebar when authenticated on /setup', async () => {
     apiMock
-      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
-      .mockImplementationOnce(async () => ({
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
+      .mockImplementationOnce(
+        generateApiMock({ statusReturn: statusStates.sampleSizeOptions })
+      )
+      .mockImplementationOnce(
+        generateApiMock({
+          authReturn: {
+            type: 'audit_admin',
+            name: 'Joe',
+            email: 'test@email.org',
+            jurisdictions: [],
+            organizations: [
+              {
+                id: 'org-id',
+                name: 'State',
+                elections: [],
+              },
+            ],
           },
-        ],
-      }))
-      .mockImplementationOnce(async () => auditSettings.blank)
+        })
+      )
+      .mockImplementationOnce(
+        generateApiMock({ settingsReturn: auditSettings.blank })
+      )
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -251,21 +319,29 @@ describe('AA setup flow', () => {
       },
     })
     apiMock
-      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
-      .mockImplementationOnce(async () => ({
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
+      .mockImplementationOnce(
+        generateApiMock({ statusReturn: statusStates.sampleSizeOptions })
+      )
+      .mockImplementationOnce(
+        generateApiMock({
+          authReturn: {
+            type: 'audit_admin',
+            name: 'Joe',
+            email: 'test@email.org',
+            jurisdictions: [],
+            organizations: [
+              {
+                id: 'org-id',
+                name: 'State',
+                elections: [],
+              },
+            ],
           },
-        ],
-      }))
-      .mockImplementationOnce(async () => auditSettings.blank)
+        })
+      )
+      .mockImplementationOnce(
+        generateApiMock({ settingsReturn: auditSettings.blank })
+      )
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -286,21 +362,29 @@ describe('AA setup flow', () => {
 
   it('sidebar changes stages', async () => {
     apiMock
-      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
-      .mockImplementationOnce(async () => ({
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
+      .mockImplementationOnce(
+        generateApiMock({ statusReturn: statusStates.sampleSizeOptions })
+      )
+      .mockImplementationOnce(
+        generateApiMock({
+          authReturn: {
+            type: 'audit_admin',
+            name: 'Joe',
+            email: 'test@email.org',
+            jurisdictions: [],
+            organizations: [
+              {
+                id: 'org-id',
+                name: 'State',
+                elections: [],
+              },
+            ],
           },
-        ],
-      }))
-      .mockImplementationOnce(async () => auditSettings.blank)
+        })
+      )
+      .mockImplementationOnce(
+        generateApiMock({ settingsReturn: auditSettings.blank })
+      )
     const { queryAllByText, getByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -326,24 +410,29 @@ describe('AA setup flow', () => {
 
   it('next and back buttons change stages', async () => {
     apiMock
-      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
-      .mockImplementationOnce(async () => ({
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
+      .mockImplementationOnce(
+        generateApiMock({ statusReturn: statusStates.sampleSizeOptions })
+      )
+      .mockImplementationOnce(
+        generateApiMock({
+          authReturn: {
+            type: 'audit_admin',
+            name: 'Joe',
+            email: 'test@email.org',
+            jurisdictions: [],
+            organizations: [
+              {
+                id: 'org-id',
+                name: 'State',
+                elections: [],
+              },
+            ],
           },
-        ],
-      }))
-      .mockImplementationOnce(async () => auditSettings.otherSettings)
-      .mockImplementationOnce(async () => auditSettings.otherSettings)
-      .mockImplementationOnce(async () => ({ jurisdictions: [] }))
-      .mockImplementation(async () => contestMocks.filledTargeted)
+        })
+      )
+      .mockImplementationOnce(
+        generateApiMock({ settingsReturn: auditSettings.blank })
+      )
     const { queryAllByText, getByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -353,10 +442,12 @@ describe('AA setup flow', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(3)
+      expect(apiMock).toBeCalledTimes(5)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
       expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/round')
+      expect(apiMock).toHaveBeenNthCalledWith(4, '/election/1/jurisdiction')
+      expect(apiMock).toHaveBeenNthCalledWith(5, '/election/1/settings')
       expect(queryAllByText('Participants').length).toBe(2)
     })
 
