@@ -93,8 +93,8 @@ const StatusBox = ({ electionId, refreshId }: IProps) => {
       if (checkAndToast(result)) {
         return
       }
-      // refresh()
-    } catch (err) {
+    } catch (err) /* istanbul ignore next */ {
+      // TEST TODO
       toast.error(err.message)
     }
   }
@@ -108,6 +108,7 @@ const StatusBox = ({ electionId, refreshId }: IProps) => {
       const rounds = await getRound(electionId)
       const jurisdictionList = await getJurisdictions(electionId)
       setCurrentRounds(rounds)
+      /* istanbul ignore else */
       if (jurisdictionList) setJurisdictions(jurisdictionList)
     })()
   }, [electionId, setCurrentRounds, setJurisdictions, refreshId])

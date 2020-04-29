@@ -8,14 +8,11 @@ import {
 import Audit from './index'
 import { statusStates, dummyBallots, auditSettings } from './_mocks'
 import * as utilities from '../utilities'
-import { asyncActRender } from '../testUtilities'
+import { asyncActRender, generateApiMock } from '../testUtilities'
 import AuthDataProvider from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { contestMocks } from './Setup/Contests/_mocks'
-import { IAudit, IUserMeta, IRound, IAuditSettings, IBallot } from '../../types'
-import { IJurisdictions } from './Setup/useParticipantsApi'
-import { IContests } from './Setup/Contests/types'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -24,58 +21,6 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
-
-const generateApiMock = ({
-  statusReturn,
-  authReturn,
-  roundReturn,
-  jurisdictionReturn,
-  settingsReturn,
-  ballotsReturn,
-  contestsReturn,
-}: {
-  statusReturn?: IAudit | Error | { status: 'ok' }
-  authReturn?: IUserMeta | Error
-  roundReturn?: { rounds: IRound[] } | Error
-  jurisdictionReturn?:
-    | { jurisdictions: IJurisdictions }
-    | Error
-    | { status: 'ok' }
-  settingsReturn?: IAuditSettings | Error
-  ballotsReturn?: { ballots: IBallot[] } | Error
-  contestsReturn?: IContests | Error
-}) => async (
-  endpoint: string
-): Promise<
-  | IAudit
-  | IUserMeta
-  | { rounds: IRound[] }
-  | { jurisdictions: IJurisdictions }
-  | IAuditSettings
-  | { ballots: IBallot[] }
-  | IContests
-  | Error
-  | { status: 'ok' }
-> => {
-  if (endpoint === '/election/1/audit/status' && statusReturn)
-    return statusReturn
-  if (endpoint === '/auth/me' && authReturn) return authReturn
-  if (endpoint === '/election/1/round' && roundReturn) return roundReturn
-  if (endpoint === '/election/1/jurisdiction' && jurisdictionReturn)
-    return jurisdictionReturn
-  if (endpoint === '/election/1/settings' && settingsReturn)
-    return settingsReturn
-  if (
-    endpoint.match(
-      /\/election\/[^/]+\/jurisdiction\/[^/]+\/round\/[^/]+\/ballot-list/
-    ) &&
-    ballotsReturn
-  )
-    return ballotsReturn
-  if (endpoint === '/election/1/contest' && contestsReturn)
-    return contestsReturn
-  return new Error(`missing mock for ${endpoint}`)
-}
 
 const checkAndToastMock: jest.SpyInstance<
   ReturnType<typeof utilities.checkAndToast>,

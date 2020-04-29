@@ -16,11 +16,11 @@ export interface IJurisdictionsResponse {
     name: string
     ballotManifest: {
       file: string | null
-      processing: FileProcessingStatus
-      numBallots: number
-      numBatches: number
+      processing: FileProcessingStatus | null
+      numBallots: number | null
+      numBatches: number | null
     }
-    currentRoundStatus: number
+    currentRoundStatus: number | null
   }[]
 }
 
@@ -31,11 +31,14 @@ const getJurisdictions = async (
     const jurisdictionsOrError:
       | IJurisdictionsResponse
       | IErrorResponse = await api(`/election/${electionId}/jurisdiction`)
+    // checkAndToast left here for consistency and reference but not tested since it's vestigial
+    /* istanbul ignore next */
     if (checkAndToast(jurisdictionsOrError)) {
       return undefined
     }
     return jurisdictionsOrError
-  } catch (err) {
+  } catch (err) /* istanbul ignore next */ {
+    // TEST TODO
     toast.error(err.message)
     return undefined
   }

@@ -1,0 +1,173 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StatusBox after completion of audit in first round 1`] = `
+<div>
+  <div
+    class="bp3-callout sc-htpNat hJnrNk"
+  >
+    <h4
+      class="bp3-heading"
+    >
+      The audit is complete.
+    </h4>
+    <div
+      class="details"
+    />
+    <div
+      class="wrapper"
+    >
+      <button
+        class="bp3-button bp3-intent-success sc-bwzfXH eBfcXh"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Download Audit Reports
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StatusBox after jurisdictions are made with no uploads 1`] = `
+<div>
+  <div
+    class="bp3-callout sc-htpNat hJnrNk"
+  >
+    <h4
+      class="bp3-heading"
+    >
+      The audit has not started.
+    </h4>
+    <div
+      class="details"
+    >
+      <p>
+        Audit setup is not complete.
+      </p>
+      <p>
+        0 of 2 have completed file uploads.
+      </p>
+    </div>
+    <div
+      class="wrapper"
+    />
+  </div>
+</div>
+`;
+
+exports[`StatusBox after jurisdictions are made with partial uploads 1`] = `
+<div>
+  <div
+    class="bp3-callout sc-htpNat hJnrNk"
+  >
+    <h4
+      class="bp3-heading"
+    >
+      The audit has not started.
+    </h4>
+    <div
+      class="details"
+    >
+      <p>
+        Audit setup is not complete.
+      </p>
+      <p>
+        1 of 2 have completed file uploads.
+      </p>
+    </div>
+    <div
+      class="wrapper"
+    />
+  </div>
+</div>
+`;
+
+exports[`StatusBox after round one is finished but another is needed 1`] = `
+<div>
+  <div
+    class="bp3-callout sc-htpNat hJnrNk"
+  >
+    <h4
+      class="bp3-heading"
+    >
+      Round 1 of the audit is complete - another round needed.
+    </h4>
+    <div
+      class="details"
+    >
+      <p>
+        When you are ready, start Round 2
+      </p>
+    </div>
+    <div
+      class="wrapper"
+    >
+      <button
+        class="bp3-button bp3-intent-success sc-bwzfXH eBfcXh"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Start Round 
+          2
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StatusBox after round one is started 1`] = `
+<div>
+  <div
+    class="bp3-callout sc-htpNat hJnrNk"
+  >
+    <h4
+      class="bp3-heading"
+    >
+      Round 1 of the audit is in progress.
+    </h4>
+    <div
+      class="details"
+    >
+      <p>
+        0 of 2 have completed Round 1
+      </p>
+    </div>
+    <div
+      class="wrapper"
+    />
+  </div>
+</div>
+`;
+
+exports[`StatusBox renders initial message 1`] = `
+<div>
+  <div
+    class="bp3-callout sc-htpNat hJnrNk"
+  >
+    <h4
+      class="bp3-heading"
+    >
+      The audit has not started.
+    </h4>
+    <div
+      class="details"
+    >
+      <p>
+        Audit setup is not complete.
+      </p>
+      <p>
+        No jurisdictions have been created yet.
+      </p>
+    </div>
+    <div
+      class="wrapper"
+    />
+  </div>
+</div>
+`;
