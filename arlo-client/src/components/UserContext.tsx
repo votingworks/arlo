@@ -8,7 +8,7 @@ import React, {
 import { IAuthData, IUserMeta, IErrorResponse } from '../types'
 import { api, checkAndToast } from './utilities'
 
-const initialAuthData: IAuthData = { isAuthenticated: false }
+const initialAuthData: IAuthData = { isAuthenticated: null }
 export const AuthDataContext = createContext<IAuthData>(initialAuthData)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { useRouteMatch, RouteComponentProps } from 'react-router-dom'
+import { Spinner } from '@blueprintjs/core'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -82,57 +83,103 @@ const Audit: React.FC<{}> = () => {
     refresh()
   }, [refresh])
 
+  const progressSidebar = (
+    <Sidebar
+      title="Audit Progress"
+      menuItems={[
+        {
+          title: 'Jurisdictions',
+          active: true,
+          state: 'live',
+        },
+      ]}
+    />
+  )
+  const aaSetupSidebar = <Sidebar title="Audit Setup" menuItems={menuItems} />
+  const jaSetupSidebar = (
+    <Sidebar
+      title="Audit Setup"
+      menuItems={[
+        {
+          title: 'Upload Ballot Manifest',
+          active: true,
+          state: 'live',
+        },
+      ]}
+    />
+  )
+
+  if (isAuthenticated === null)
+    return (
+      <Wrapper className="single-page">
+        <Spinner />
+      </Wrapper>
+    )
+  if (isAuthenticated)
+    return (
+      <Wrapper>
+        <ResetButton
+          electionId={electionId}
+          disabled={!audit.contests.length || isLoading}
+          updateAudit={updateAudit}
+        />
+        {viewMatch === 'setup' && meta!.type === 'audit_admin' && (
+          <>
+            {aaSetupSidebar}
+            <Setup stage={stage} refresh={refresh} menuItems={menuItems} />
+          </>
+        )}
+        {viewMatch === 'setup' && meta!.type === 'jurisdiction_admin' && (
+          <>
+            {jaSetupSidebar}
+            <p>Ballot manifest upload</p>
+          </>
+        )}
+        {viewMatch === 'progress' && (
+          <>
+            {progressSidebar}
+            <p>Progress view</p>
+          </>
+        )}
+        {viewMatch !== 'setup' && viewMatch !== 'progress' && (
+          <p>Round management view</p>
+        )}
+      </Wrapper>
+    )
   return (
-    <Wrapper className={!isAuthenticated ? 'single-page' : ''}>
+    <Wrapper className="single-page">
       <ResetButton
         electionId={electionId}
         disabled={!audit.contests.length || isLoading}
         updateAudit={updateAudit}
       />
-
-      {isAuthenticated &&
-      (viewMatch === 'setup' || viewMatch === 'progress') ? (
-        <>
-          {meta!.type === 'audit_admin' && (
-            <Sidebar title="Audit Setup" menuItems={menuItems} />
-          )}
-          <Setup stage={stage} menuItems={menuItems} refresh={refresh} />
-        </>
-      ) : (
-        <>
-          {!isAuthenticated && (
-            <EstimateSampleSize
-              audit={audit}
-              isLoading={isLoading && !showSelectBallotsToAudit}
-              setIsLoading={setIsLoading}
-              updateAudit={updateAudit}
-              getStatus={getStatus}
-              electionId={electionId}
-            />
-          )}
-
-          {!isAuthenticated && showSelectBallotsToAudit && (
-            <SelectBallotsToAudit
-              audit={audit}
-              isLoading={isLoading && !showCalculateRiskMeasurement}
-              setIsLoading={setIsLoading}
-              updateAudit={updateAudit}
-              getStatus={getStatus}
-              electionId={electionId}
-            />
-          )}
-
-          {showCalculateRiskMeasurement && (
-            <CalculateRiskMeasurement
-              audit={audit}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-              updateAudit={updateAudit}
-              getStatus={getStatus}
-              electionId={electionId}
-            />
-          )}
-        </>
+      <EstimateSampleSize
+        audit={audit}
+        isLoading={isLoading && !showSelectBallotsToAudit}
+        setIsLoading={setIsLoading}
+        updateAudit={updateAudit}
+        getStatus={getStatus}
+        electionId={electionId}
+      />
+      {showSelectBallotsToAudit && (
+        <SelectBallotsToAudit
+          audit={audit}
+          isLoading={isLoading && !showCalculateRiskMeasurement}
+          setIsLoading={setIsLoading}
+          updateAudit={updateAudit}
+          getStatus={getStatus}
+          electionId={electionId}
+        />
+      )}
+      {showCalculateRiskMeasurement && (
+        <CalculateRiskMeasurement
+          audit={audit}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          updateAudit={updateAudit}
+          getStatus={getStatus}
+          electionId={electionId}
+        />
       )}
     </Wrapper>
   )

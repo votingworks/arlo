@@ -37,7 +37,7 @@ const Settings: React.FC<IProps> = ({
       riskLimit: parseNumber(values.riskLimit), // Formik stringifies internally
     })
     if (!response) return
-    nextStage.activate()
+    nextStage.activate!()
   }
   const initialValues = {
     electionName: electionName === null ? '' : electionName,
