@@ -74,7 +74,7 @@ const Contests: React.FC<IProps> = ({
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
-    nextStage.activate()
+    nextStage.activate!()
   }
   return (
     <Formik

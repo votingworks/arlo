@@ -49,7 +49,7 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
         )
         if (checkAndToast(errorResponse)) return
       }
-      nextStage.activate()
+      nextStage.activate!()
     } catch (err) {
       toast.error(err.message)
     }
