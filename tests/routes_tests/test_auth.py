@@ -230,8 +230,22 @@ def test_auth_me_audit_board(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get("/auth/me")
+    audit_board = AuditBoard.query.get(audit_board_id)
     assert rv.status_code == 200
-    assert json.loads(rv.data) == {}
+    assert json.loads(rv.data) == {
+        "type": UserType.AUDIT_BOARD,
+        "id": audit_board.id,
+        "jurisdictionId": audit_board.jurisdiction_id,
+        "roundId": audit_board.round_id,
+        "name": audit_board.name,
+        "members": [],
+    }
+
+
+def test_auth_me_not_logged_in(client: FlaskClient,):
+    clear_logged_in_user(client)
+    rv = client.get("/auth/me")
+    assert rv.status_code == 401
 
 
 # Tests for route decorators. We have added special routes to test the
