@@ -275,11 +275,10 @@ describe('AA setup flow', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(3)
+      expect(apiMock).toBeCalledTimes(2)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
       expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
-      expect(queryAllByText('Participants').length).toBe(2)
+      expect(queryAllByText('Jurisdictions').length).toBe(1)
       expect(container).toMatchSnapshot()
     })
   })

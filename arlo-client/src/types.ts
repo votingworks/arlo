@@ -184,7 +184,7 @@ export interface IUserMeta {
 }
 
 export interface IAuthData {
-  isAuthenticated: boolean | null
+  isAuthenticated: boolean
   meta?: IUserMeta
 }
 
