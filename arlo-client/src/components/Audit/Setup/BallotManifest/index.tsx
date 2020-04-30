@@ -34,7 +34,6 @@ const BallotManifest: React.FC<{}> = () => {
     file: null,
     processing: null,
   })
-  const [showFileUpload, setShowFileUpload] = useState(true)
   useEffect(() => {
     try {
       ;(async () => {
@@ -47,13 +46,12 @@ const BallotManifest: React.FC<{}> = () => {
         /* istanbul ignore next */
         if (checkAndToast(fileResponse)) return
         setFile(fileResponse)
-        if (fileResponse.file) setShowFileUpload(false)
       })()
     } catch (err) /* istanbul ignore next */ {
       // TEST TODO
       toast.error(err.message)
     }
-  }, [electionId, jurisdictions, setFile, setShowFileUpload])
+  }, [electionId, jurisdictions, setFile])
   const submit = async (values: IValues) => {
     try {
       /* istanbul ignore else */
@@ -61,7 +59,7 @@ const BallotManifest: React.FC<{}> = () => {
         const formData: FormData = new FormData()
         formData.append('manifest', values.csv, values.csv.name)
         const errorResponse: IErrorResponse = await api(
-          `/election/${electionId}/jurisdiction/${jurisdictions[0].id}/ballot-manifest`, // do we need a selector here?
+          `/election/${electionId}/jurisdiction/${jurisdictions[0].id}/ballot-manifest`,
           {
             method: 'PUT',
             body: formData,
@@ -92,7 +90,6 @@ const BallotManifest: React.FC<{}> = () => {
         <Form data-testid="form-one">
           <FormWrapper title="Audit Source Data">
             <H4>Ballot Manifest</H4>
-            {/* When one is already uploaded, this will be toggled to show its details, with a button to reveal the form to replace it */}
             <FormSection>
               <FormSectionDescription>
                 Click &quot;Browse&quot; to choose the appropriate Ballot
@@ -113,7 +110,16 @@ const BallotManifest: React.FC<{}> = () => {
               </FormSectionDescription>
             </FormSection>
             <FormSection>
-              {showFileUpload ? (
+              {file.file ? (
+                <>
+                  <span>{file.file.name} </span>
+                  <FormButton
+                    onClick={() => setFile({ file: null, processing: null })}
+                  >
+                    Replace File
+                  </FormButton>
+                </>
+              ) : (
                 <>
                   <FileInput
                     inputProps={{
@@ -134,13 +140,6 @@ const BallotManifest: React.FC<{}> = () => {
                   {errors.csv && touched.csv && (
                     <ErrorLabel>{errors.csv}</ErrorLabel>
                   )}
-                </>
-              ) : (
-                <>
-                  <span>{file.file ? file.file.name : ''} </span>
-                  <FormButton onClick={() => setShowFileUpload(true)}>
-                    Replace File
-                  </FormButton>
                 </>
               )}
             </FormSection>
