@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { useRouteMatch, RouteComponentProps } from 'react-router-dom'
-import { Spinner } from '@blueprintjs/core'
+// import { Spinner } from '@blueprintjs/core'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -66,6 +66,7 @@ const Audit: React.FC<{}> = () => {
     updateAudit()
   }, [updateAudit])
 
+  console.log('isMultiJurisdiction', audit.isMultiJurisdiction)
   const showSelectBallotsToAudit =
     !audit.isMultiJurisdiction &&
     !!audit.contests.length &&
@@ -109,12 +110,6 @@ const Audit: React.FC<{}> = () => {
     />
   )
 
-  if (isAuthenticated === null)
-    return (
-      <Wrapper className="single-page">
-        <Spinner />
-      </Wrapper>
-    )
   if (isAuthenticated)
     return (
       <Wrapper>
