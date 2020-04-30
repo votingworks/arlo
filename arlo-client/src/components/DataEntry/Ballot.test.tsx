@@ -15,13 +15,12 @@ describe('Ballot', () => {
           home="/election/1/board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
-          contest={contest}
+          contests={[contest]}
           previousBallot={jest.fn()}
           nextBallot={jest.fn()}
           submitBallot={jest.fn()}
-          roundIx="1"
           batchId="batch-id-1"
-          ballotId={2112}
+          ballotPosition={2112}
         />
       </Router>
     )
@@ -35,17 +34,16 @@ describe('Ballot', () => {
           home="/election/1/board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
-          contest={contest}
+          contests={[contest]}
           previousBallot={jest.fn()}
           nextBallot={jest.fn()}
           submitBallot={jest.fn()}
-          roundIx="1"
           batchId="batch-id-1"
-          ballotId={313}
+          ballotPosition={313}
         />
       </Router>
     )
-    const choiceOneButton = getByLabelText('choice one')
+    const choiceOneButton = getByLabelText('Choice One')
     expect(choiceOneButton).toBeTruthy()
     expect(choiceOneButton).toHaveProperty('checked', true)
     expect(container).toMatchSnapshot()
@@ -58,18 +56,17 @@ describe('Ballot', () => {
           home="/election/1/board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
-          contest={contest}
+          contests={[contest]}
           previousBallot={jest.fn()}
           nextBallot={jest.fn()}
           submitBallot={jest.fn()}
-          roundIx="1"
           batchId="batch-id-1"
-          ballotId={2112}
+          ballotPosition={2112}
         />
       </Router>
     )
 
-    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
@@ -81,7 +78,7 @@ describe('Ballot', () => {
     })
     fireEvent.click(getByText('Edit'), { bubbles: true })
     await wait(() => {
-      expect(getByText('choice one')).toBeTruthy()
+      expect(getByText('Choice One')).toBeTruthy()
       expect(getByText('Review')).toBeTruthy()
     })
   })
@@ -95,13 +92,12 @@ describe('Ballot', () => {
             home="/election/1/board/1"
             ballots={dummyBallots.ballots}
             boardName="audit board #1"
-            contest={contest}
+            contests={[contest]}
             previousBallot={jest.fn()}
             nextBallot={jest.fn()}
             submitBallot={jest.fn()}
-            roundIx="1"
             batchId="batch-id-1"
-            ballotId={2112}
+            ballotPosition={2112}
           />
         </Router>
       )
@@ -129,13 +125,12 @@ describe('Ballot', () => {
           home="/election/1/board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
-          contest={contest}
+          contests={[contest]}
           previousBallot={jest.fn()}
           nextBallot={jest.fn()}
           submitBallot={jest.fn()}
-          roundIx="1"
           batchId="batch-id-1"
-          ballotId={2112}
+          ballotPosition={2112}
         />
       </Router>
     )
@@ -145,7 +140,7 @@ describe('Ballot', () => {
     const commentInput = getByTestId('comment-textarea')
     fireEvent.change(commentInput, { target: { value: 'a test comment' } })
 
-    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
@@ -160,7 +155,7 @@ describe('Ballot', () => {
 
     fireEvent.change(commentInput, { target: { value: '' } })
 
-    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
@@ -176,13 +171,12 @@ describe('Ballot', () => {
           home="/election/1/board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
-          contest={contest}
+          contests={[contest]}
           previousBallot={jest.fn()}
           nextBallot={jest.fn()}
           submitBallot={jest.fn()}
-          roundIx="1"
           batchId="batch-id-1"
-          ballotId={2112}
+          ballotPosition={2112}
         />
       </Router>
     )
@@ -194,7 +188,7 @@ describe('Ballot', () => {
 
     fireEvent.click(getByText('Remove comment'), { bubbles: true })
 
-    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
@@ -214,18 +208,17 @@ describe('Ballot', () => {
           home="/election/1/board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
-          contest={contest}
+          contests={[contest]}
           previousBallot={jest.fn()}
           nextBallot={nextBallotMock}
           submitBallot={submitMock}
-          roundIx="1"
           batchId="batch-id-1"
-          ballotId={2112}
+          ballotPosition={2112}
         />
       </Router>
     )
 
-    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
 
     const reviewButton = await waitForElement(
       () => getByTestId('enabled-review'),
@@ -252,13 +245,12 @@ describe('Ballot', () => {
           home="/election/1/board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
-          contest={contest}
+          contests={[contest]}
           previousBallot={previousBallotMock}
           nextBallot={jest.fn()}
           submitBallot={jest.fn()}
-          roundIx="1"
           batchId="batch-id-1"
-          ballotId={2112}
+          ballotPosition={2112}
         />
       </Router>
     )
@@ -268,7 +260,7 @@ describe('Ballot', () => {
       expect(previousBallotMock).toBeCalledTimes(1)
     })
 
-    fireEvent.click(getByTestId('choice-1'), { bubbles: true })
+    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
     await wait(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
@@ -288,13 +280,12 @@ describe('Ballot', () => {
           home="/election/1/board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
-          contest={contest}
+          contests={[contest]}
           previousBallot={jest.fn()}
           nextBallot={jest.fn()}
           submitBallot={jest.fn()}
-          roundIx="1"
           batchId="batch-id"
-          ballotId={6}
+          ballotPosition={6}
         />
       </Router>
     )

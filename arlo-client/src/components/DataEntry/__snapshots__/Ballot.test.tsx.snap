@@ -21,9 +21,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
     <div
       class="bp3-callout sc-cSHVUG icSrYg"
     >
-      Round 
-      1
-      : auditing ballot 
+      Auditing ballot 
       1
        of 
       27
@@ -122,7 +120,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
           <h3
             class="bp3-heading"
           >
-            contest name
+            Contest Name
           </h3>
           <div
             class="bp3-divider sc-bdVaJa gqVLlZ"
@@ -134,10 +132,10 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               class=" bp3-control bp3-radio sc-EHOje cmcGgn"
             >
               <input
-                data-testid="choice-1"
+                data-testid="choice-id-1"
                 name="interpretation"
                 type="radio"
-                value="choice-1"
+                value="choice-id-1"
               />
               <span
                 class="undefined bp3-control-indicator"
@@ -145,7 +143,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 <span
                   class="radio-text"
                 >
-                  choice one
+                  Choice One
                 </span>
               </span>
             </label>
@@ -153,10 +151,10 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               class=" bp3-control bp3-radio sc-EHOje cmcGgn"
             >
               <input
-                data-testid="choice-2"
+                data-testid="choice-id-2"
                 name="interpretation"
                 type="radio"
-                value="choice-2"
+                value="choice-id-2"
               />
               <span
                 class="undefined bp3-control-indicator"
@@ -164,7 +162,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 <span
                   class="radio-text"
                 >
-                  choice two
+                  Choice Two
                 </span>
               </span>
             </label>
@@ -298,9 +296,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
     <div
       class="bp3-callout sc-cSHVUG icSrYg"
     >
-      Round 
-      1
-      : auditing ballot 
+      Auditing ballot 
       2
        of 
       27
@@ -400,7 +396,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
           <h3
             class="bp3-heading"
           >
-            contest name
+            Contest Name
           </h3>
           <div
             class="bp3-divider sc-bdVaJa gqVLlZ"
@@ -412,10 +408,10 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               class=" bp3-control bp3-radio sc-EHOje cmcGgn"
             >
               <input
-                data-testid="choice-1"
+                data-testid="choice-id-1"
                 name="interpretation"
                 type="radio"
-                value="choice-1"
+                value="choice-id-1"
               />
               <span
                 class="undefined bp3-control-indicator"
@@ -423,7 +419,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 <span
                   class="radio-text"
                 >
-                  choice one
+                  Choice One
                 </span>
               </span>
             </label>
@@ -431,10 +427,10 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               class=" bp3-control bp3-radio sc-EHOje cmcGgn"
             >
               <input
-                data-testid="choice-2"
+                data-testid="choice-id-2"
                 name="interpretation"
                 type="radio"
-                value="choice-2"
+                value="choice-id-2"
               />
               <span
                 class="undefined bp3-control-indicator"
@@ -442,7 +438,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 <span
                   class="radio-text"
                 >
-                  choice two
+                  Choice Two
                 </span>
               </span>
             </label>
@@ -567,9 +563,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
     <div
       class="bp3-callout sc-cSHVUG icSrYg"
     >
-      Round 
-      1
-      : auditing ballot 
+      Auditing ballot 
       2
        of 
       27
@@ -651,7 +645,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
           <h3
             class="bp3-heading"
           >
-            contest name
+            Contest Name
           </h3>
           <div
             class="bp3-divider sc-bdVaJa gqVLlZ"
@@ -752,9 +746,7 @@ exports[`Ballot selects Blank vote/no mark 1`] = `
     <div
       class="bp3-callout sc-cSHVUG icSrYg"
     >
-      Round 
-      1
-      : auditing ballot 
+      Auditing ballot 
       2
        of 
       27
@@ -836,7 +828,7 @@ exports[`Ballot selects Blank vote/no mark 1`] = `
           <h3
             class="bp3-heading"
           >
-            contest name
+            Contest Name
           </h3>
           <div
             class="bp3-divider sc-bdVaJa gqVLlZ"
@@ -937,9 +929,7 @@ exports[`Ballot switches audit and review views 1`] = `
     <div
       class="bp3-callout sc-cSHVUG icSrYg"
     >
-      Round 
-      1
-      : auditing ballot 
+      Auditing ballot 
       2
        of 
       27
@@ -1021,7 +1011,7 @@ exports[`Ballot switches audit and review views 1`] = `
           <h3
             class="bp3-heading"
           >
-            contest name
+            Contest Name
           </h3>
           <div
             class="bp3-divider sc-bdVaJa gqVLlZ"
@@ -1038,7 +1028,7 @@ exports[`Ballot switches audit and review views 1`] = `
               <span
                 class="bp3-button-text"
               >
-                choice one
+                Choice One
               </span>
             </button>
             <button
@@ -1122,9 +1112,7 @@ exports[`Ballot toggles and deletes a comment 1`] = `
     <div
       class="bp3-callout sc-cSHVUG icSrYg"
     >
-      Round 
-      1
-      : auditing ballot 
+      Auditing ballot 
       2
        of 
       27
@@ -1206,7 +1194,7 @@ exports[`Ballot toggles and deletes a comment 1`] = `
           <h3
             class="bp3-heading"
           >
-            contest name
+            Contest Name
           </h3>
           <div
             class="bp3-divider sc-bdVaJa gqVLlZ"
@@ -1223,7 +1211,7 @@ exports[`Ballot toggles and deletes a comment 1`] = `
               <span
                 class="bp3-button-text"
               >
-                choice one
+                Choice One
               </span>
             </button>
             <button
@@ -1307,9 +1295,7 @@ exports[`Ballot toggles and submits comment 1`] = `
     <div
       class="bp3-callout sc-cSHVUG icSrYg"
     >
-      Round 
-      1
-      : auditing ballot 
+      Auditing ballot 
       2
        of 
       27
@@ -1391,7 +1377,7 @@ exports[`Ballot toggles and submits comment 1`] = `
           <h3
             class="bp3-heading"
           >
-            contest name
+            Contest Name
           </h3>
           <div
             class="bp3-divider sc-bdVaJa gqVLlZ"
@@ -1408,7 +1394,7 @@ exports[`Ballot toggles and submits comment 1`] = `
               <span
                 class="bp3-button-text"
               >
-                choice one
+                Choice One
               </span>
             </button>
             <button

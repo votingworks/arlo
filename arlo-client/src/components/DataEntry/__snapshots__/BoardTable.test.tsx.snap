@@ -48,43 +48,14 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                 class="bp3-table-column-headers bp3-table-selection-enabled"
               >
                 <div
-                  style="width: 750px;"
+                  style="width: 600px;"
                 >
                   <div
                     class="bp3-table-thead bp3-table-column-header-tr"
-                    style="transform: translateX(0px); width: 750px;"
+                    style="transform: translateX(0px); width: 600px;"
                   >
                     <div
                       class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                      style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                    >
-                      <div
-                        class="bp3-table-column-name"
-                        title="Ballot Position"
-                      >
-                        <div
-                          class="bp3-table-column-name-text"
-                        >
-                          <div
-                            class="bp3-table-truncated-text"
-                          >
-                            Ballot Position
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header-content"
-                      />
-                      <div
-                        class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                      >
-                        <div
-                          class="bp3-table-resize-handle"
-                        />
-                      </div>
-                    </div>
-                    <div
-                      class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
                       style="flex-basis: 150px; min-width: 0px; width: 150px;"
                     >
                       <div
@@ -113,12 +84,12 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                       </div>
                     </div>
                     <div
-                      class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                      class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
                       style="flex-basis: 150px; min-width: 0px; width: 150px;"
                     >
                       <div
                         class="bp3-table-column-name"
-                        title="Status"
+                        title="Ballot Position"
                       >
                         <div
                           class="bp3-table-column-name-text"
@@ -126,7 +97,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                           <div
                             class="bp3-table-truncated-text"
                           >
-                            Status
+                            Ballot Position
                           </div>
                         </div>
                       </div>
@@ -142,7 +113,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                       </div>
                     </div>
                     <div
-                      class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                      class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                       style="flex-basis: 150px; min-width: 0px; width: 150px;"
                     >
                       <div
@@ -170,13 +141,42 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         />
                       </div>
                     </div>
+                    <div
+                      class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                      style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                    >
+                      <div
+                        class="bp3-table-column-name"
+                        title="Status"
+                      >
+                        <div
+                          class="bp3-table-column-name-text"
+                        >
+                          <div
+                            class="bp3-table-truncated-text"
+                          >
+                            Status
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="bp3-table-header-content"
+                      />
+                      <div
+                        class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                      >
+                        <div
+                          class="bp3-table-resize-handle"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div
               class="bp3-table-bottom-container"
-              style="height: 90px; width: 750px;"
+              style="height: 90px; width: 600px;"
             >
               <div
                 class="bp3-table-quadrant-body-container"
@@ -184,7 +184,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                 <div>
                   <div
                     class="bp3-table-body-virtual-client bp3-table-cell-client"
-                    style="height: 90px; width: 750px;"
+                    style="height: 90px; width: 600px;"
                   >
                     <div
                       class="bp3-table-body-cells"
@@ -196,7 +196,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          313
+                          0003-04-Precinct 13 (Jonesboro Fire Department)
                         </div>
                       </div>
                       <div
@@ -206,7 +206,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          0003-04-Precinct 13 (Jonesboro Fire Department)
+                          313
                         </div>
                       </div>
                       <div
@@ -216,12 +216,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          <a
-                            class="bp3-button bp3-small"
-                            href="/home/round/1/batch/batch-id-1/ballot/313"
-                          >
-                            Re-audit
-                          </a>
+                          11
                         </div>
                       </div>
                       <div
@@ -231,7 +226,13 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          11
+                          Audited
+                          <a
+                            class="bp3-button bp3-small sc-bxivhb bAonbG"
+                            href="/home/batch/batch-id-1/ballot/313"
+                          >
+                            Re-audit
+                          </a>
                         </div>
                       </div>
                       <div
@@ -241,7 +242,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          2112
+                          0003-04-Precinct 19 (Jonesboro Fire Department)
                         </div>
                       </div>
                       <div
@@ -251,7 +252,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          0003-04-Precinct 19 (Jonesboro Fire Department)
+                          2112
                         </div>
                       </div>
                       <div
@@ -261,12 +262,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          <a
-                            class="bp3-button bp3-small"
-                            href="/home/round/1/batch/batch-id-1/ballot/2112"
-                          >
-                            Re-audit
-                          </a>
+                          11
                         </div>
                       </div>
                       <div
@@ -276,7 +272,13 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          11
+                          Audited
+                          <a
+                            class="bp3-button bp3-small sc-bxivhb bAonbG"
+                            href="/home/batch/batch-id-1/ballot/2112"
+                          >
+                            Re-audit
+                          </a>
                         </div>
                       </div>
                       <div
@@ -286,7 +288,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          1789
+                          0003-04-Precinct 29 (Jonesboro Fire Department)
                         </div>
                       </div>
                       <div
@@ -296,7 +298,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          0003-04-Precinct 29 (Jonesboro Fire Department)
+                          1789
                         </div>
                       </div>
                       <div
@@ -306,12 +308,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          <a
-                            class="bp3-button bp3-small"
-                            href="/home/round/1/batch/batch-id-1/ballot/1789"
-                          >
-                            Re-audit
-                          </a>
+                          11
                         </div>
                       </div>
                       <div
@@ -321,7 +318,13 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          11
+                          Audited
+                          <a
+                            class="bp3-button bp3-small sc-bxivhb bAonbG"
+                            href="/home/batch/batch-id-1/ballot/1789"
+                          >
+                            Re-audit
+                          </a>
                         </div>
                       </div>
                     </div>
@@ -345,43 +348,14 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                 class="bp3-table-column-headers bp3-table-selection-enabled"
               >
                 <div
-                  style="width: 750px;"
+                  style="width: 600px;"
                 >
                   <div
                     class="bp3-table-thead bp3-table-column-header-tr"
-                    style="transform: translateX(0px); width: 750px;"
+                    style="transform: translateX(0px); width: 600px;"
                   >
                     <div
                       class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                      style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                    >
-                      <div
-                        class="bp3-table-column-name"
-                        title="Ballot Position"
-                      >
-                        <div
-                          class="bp3-table-column-name-text"
-                        >
-                          <div
-                            class="bp3-table-truncated-text"
-                          >
-                            Ballot Position
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header-content"
-                      />
-                      <div
-                        class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                      >
-                        <div
-                          class="bp3-table-resize-handle"
-                        />
-                      </div>
-                    </div>
-                    <div
-                      class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
                       style="flex-basis: 150px; min-width: 0px; width: 150px;"
                     >
                       <div
@@ -410,12 +384,12 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                       </div>
                     </div>
                     <div
-                      class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                      class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
                       style="flex-basis: 150px; min-width: 0px; width: 150px;"
                     >
                       <div
                         class="bp3-table-column-name"
-                        title="Status"
+                        title="Ballot Position"
                       >
                         <div
                           class="bp3-table-column-name-text"
@@ -423,7 +397,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                           <div
                             class="bp3-table-truncated-text"
                           >
-                            Status
+                            Ballot Position
                           </div>
                         </div>
                       </div>
@@ -439,7 +413,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                       </div>
                     </div>
                     <div
-                      class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                      class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                       style="flex-basis: 150px; min-width: 0px; width: 150px;"
                     >
                       <div
@@ -467,13 +441,42 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                         />
                       </div>
                     </div>
+                    <div
+                      class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                      style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                    >
+                      <div
+                        class="bp3-table-column-name"
+                        title="Status"
+                      >
+                        <div
+                          class="bp3-table-column-name-text"
+                        >
+                          <div
+                            class="bp3-table-truncated-text"
+                          >
+                            Status
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="bp3-table-header-content"
+                      />
+                      <div
+                        class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                      >
+                        <div
+                          class="bp3-table-resize-handle"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div
               class="bp3-table-bottom-container"
-              style="height: 90px; width: 750px;"
+              style="height: 90px; width: 600px;"
             >
               <div
                 class="bp3-table-quadrant-body-container"
@@ -481,7 +484,7 @@ exports[`BoardTable loads a completion button when all ballots are done 1`] = `
                 <div>
                   <div
                     class="bp3-table-body-virtual-client bp3-table-cell-client"
-                    style="width: 750px;"
+                    style="width: 600px;"
                   >
                     <div
                       class="bp3-table-body-cells"

@@ -24,7 +24,6 @@ import {
   IAudit,
   IBallot,
   IErrorResponse,
-  IAuditBoard,
 } from '../../types'
 
 const InputSection = styled.div`
@@ -207,42 +206,40 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
 
   const downloadDataEntry = (): void => {
     const auditBoards = new jsPDF({ format: 'letter' })
-    audit.jurisdictions[0].auditBoards.forEach(
-      (board: IAuditBoard, i: number) => {
-        const qr: HTMLCanvasElement | null = document.querySelector(
-          `#qr-${board.id} > canvas`
+    audit.jurisdictions[0].auditBoards.forEach((board, i) => {
+      const qr: HTMLCanvasElement | null = document.querySelector(
+        `#qr-${board.id} > canvas`
+      )
+      /* istanbul ignore else */
+      if (qr) {
+        if (i > 0) auditBoards.addPage('letter')
+        const url = qr.toDataURL()
+        auditBoards.setFontSize(22)
+        auditBoards.setFontStyle('bold')
+        auditBoards.text(board.name, 20, 20)
+        auditBoards.setFontSize(14)
+        auditBoards.setFontStyle('normal')
+        auditBoards.text(
+          'Scan this QR code to enter the votes you see on your assigned ballots.',
+          20,
+          40
         )
-        /* istanbul ignore else */
-        if (qr) {
-          if (i > 0) auditBoards.addPage('letter')
-          const url = qr.toDataURL()
-          auditBoards.setFontSize(22)
-          auditBoards.setFontStyle('bold')
-          auditBoards.text(board.name, 20, 20)
-          auditBoards.setFontSize(14)
-          auditBoards.setFontStyle('normal')
-          auditBoards.text(
-            'Scan this QR code to enter the votes you see on your assigned ballots.',
-            20,
-            40
-          )
-          auditBoards.addImage(url, 'JPEG', 20, 50, 50, 50)
-          auditBoards.text(
-            auditBoards.splitTextToSize(
-              'If you are not able to scan the QR code, you may also type the following URL into a web browser to access the data entry portal.',
-              180
-            ),
-            20,
-            120
-          )
-          auditBoards.text(
-            `${window.location.origin}/auditboard/${board.passphrase}`,
-            20,
-            140
-          )
-        }
+        auditBoards.addImage(url, 'JPEG', 20, 50, 50, 50)
+        auditBoards.text(
+          auditBoards.splitTextToSize(
+            'If you are not able to scan the QR code, you may also type the following URL into a web browser to access the data entry portal.',
+            180
+          ),
+          20,
+          120
+        )
+        auditBoards.text(
+          `${window.location.origin}/auditboard/${board.passphrase}`,
+          20,
+          140
+        )
       }
-    )
+    })
     auditBoards.autoPrint()
     auditBoards.save(`Audit Boards Credentials for Data Entry.pdf`)
   }
