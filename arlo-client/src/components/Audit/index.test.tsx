@@ -207,82 +207,6 @@ describe('RiskLimitingAuditForm', () => {
 })
 
 describe('AA setup flow', () => {
-  it('renders sidebar when authenticated on /setup', async () => {
-    apiMock
-      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
-      .mockImplementationOnce(async () => ({
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
-          },
-        ],
-      }))
-      .mockImplementationOnce(async () => auditSettings.blank)
-    const { container, queryAllByText } = await asyncActRender(
-      <AuthDataProvider>
-        <Router>
-          <Audit />
-        </Router>
-      </AuthDataProvider>
-    )
-
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(3)
-      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
-      expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
-      expect(queryAllByText('Participants').length).toBe(2)
-      expect(container).toMatchSnapshot()
-    })
-  })
-
-  it('renders sidebar when authenticated on /progress', async () => {
-    routeMock.mockReturnValue({
-      url: '/election/1/setup',
-      params: {
-        electionId: '1',
-        view: 'progress',
-      },
-    })
-    apiMock
-      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
-      .mockImplementationOnce(async () => ({
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
-          },
-        ],
-      }))
-      .mockImplementationOnce(async () => auditSettings.blank)
-    const { container, queryAllByText } = await asyncActRender(
-      <AuthDataProvider>
-        <Router>
-          <Audit />
-        </Router>
-      </AuthDataProvider>
-    )
-
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(2)
-      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
-      expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
-      expect(queryAllByText('Jurisdictions').length).toBe(1)
-      expect(container).toMatchSnapshot()
-    })
-  })
-
   it('sidebar changes stages', async () => {
     apiMock
       .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
@@ -372,6 +296,82 @@ describe('AA setup flow', () => {
     fireEvent.click(getByText('Back'))
     await wait(() => {
       expect(queryAllByText('Audit Settings').length).toBe(2)
+    })
+  })
+
+  it('renders sidebar when authenticated on /setup', async () => {
+    apiMock
+      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
+      .mockImplementationOnce(async () => ({
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      }))
+      .mockImplementationOnce(async () => auditSettings.blank)
+    const { container, queryAllByText } = await asyncActRender(
+      <AuthDataProvider>
+        <Router>
+          <Audit />
+        </Router>
+      </AuthDataProvider>
+    )
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(3)
+      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
+      expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
+      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
+      expect(queryAllByText('Participants').length).toBe(2)
+      expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('renders sidebar when authenticated on /progress', async () => {
+    routeMock.mockReturnValue({
+      url: '/election/1/setup',
+      params: {
+        electionId: '1',
+        view: 'progress',
+      },
+    })
+    apiMock
+      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
+      .mockImplementationOnce(async () => ({
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      }))
+      .mockImplementationOnce(async () => auditSettings.blank)
+    const { container, queryAllByText } = await asyncActRender(
+      <AuthDataProvider>
+        <Router>
+          <Audit />
+        </Router>
+      </AuthDataProvider>
+    )
+
+    await wait(() => {
+      expect(apiMock).toBeCalledTimes(2)
+      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
+      expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
+      expect(queryAllByText('Jurisdictions').length).toBe(1)
+      expect(container).toMatchSnapshot()
     })
   })
 })
