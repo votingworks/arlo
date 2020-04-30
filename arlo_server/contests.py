@@ -4,7 +4,7 @@ from werkzeug.exceptions import BadRequest
 from sqlalchemy import func
 
 from arlo_server import app, db
-from arlo_server.auth import with_election_access
+from arlo_server.auth import with_election_access, with_audit_board_access
 from arlo_server.models import (
     Contest,
     ContestChoice,
@@ -15,6 +15,7 @@ from arlo_server.models import (
     SampledBallotDraw,
     SampledBallot,
     Batch,
+    AuditBoard,
 )
 from arlo_server.rounds import get_current_round
 from util.jsonschema import validate, JSONDict
@@ -67,7 +68,9 @@ def serialize_contest_choice(contest_choice: ContestChoice) -> JSONDict:
     }
 
 
-def serialize_contest(contest: Contest, round_status: Optional[JSONDict]) -> JSONDict:
+def serialize_contest(
+    contest: Contest, round_status: Optional[JSONDict] = None
+) -> JSONDict:
     return {
         "id": contest.id,
         "name": contest.name,
@@ -185,4 +188,19 @@ def list_contests(election: Election):
     json_contests = [
         serialize_contest(c, round_status[c.id]) for c in election.contests
     ]
+    return jsonify({"contests": json_contests})
+
+
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/contest",
+    methods=["GET"],
+)
+@with_audit_board_access
+def list_audit_board_contests(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+    round: Round,  # pylint: disable=unused-argument
+    audit_board: AuditBoard,  # pylint: disable=unused-argument
+):
+    json_contests = [serialize_contest(c) for c in jurisdiction.contests]
     return jsonify({"contests": json_contests})
