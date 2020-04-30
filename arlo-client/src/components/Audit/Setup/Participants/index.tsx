@@ -49,7 +49,9 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
         )
         if (checkAndToast(errorResponse)) return
       }
-      nextStage.activate!()
+      /* istanbul ignore else */
+      if (nextStage.activate) nextStage.activate()
+      else throw new Error('Wrong menuItems passed in: activate() is missing')
     } catch (err) {
       toast.error(err.message)
     }
