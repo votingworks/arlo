@@ -74,7 +74,9 @@ const Contests: React.FC<IProps> = ({
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
-    nextStage.activate!()
+    /* istanbul ignore else */
+    if (nextStage.activate) nextStage.activate()
+    else throw new Error('Wrong menuItems passed in: activate() is missing')
   }
   return (
     <Formik
