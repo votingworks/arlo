@@ -80,8 +80,13 @@ const Audit: React.FC<{}> = () => {
   const [menuItems, refresh] = useSetupMenuItems(stage, setStage, electionId)
 
   useEffect(() => {
-    refresh()
-  }, [refresh])
+    if (
+      isAuthenticated &&
+      viewMatch === 'setup' &&
+      meta!.type === 'audit_admin'
+    )
+      refresh()
+  }, [refresh, isAuthenticated, viewMatch, meta])
 
   const progressSidebar = (
     <Sidebar

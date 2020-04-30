@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Formik, FormikProps, Form } from 'formik'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -16,6 +16,7 @@ import FormSection, {
 } from '../../../Atoms/Form/FormSection'
 import { api, checkAndToast } from '../../../utilities'
 import { useAuthDataContext } from '../../../UserContext'
+import { IJurisdictionsFileResponse } from '../../useSetupMenuItems/getJurisdictionFileStatus'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -29,6 +30,30 @@ const BallotManifest: React.FC<{}> = () => {
   const { electionId } = useParams()
   const { meta } = useAuthDataContext()
   const { jurisdictions } = meta!
+  const [file, setFile] = useState<IJurisdictionsFileResponse>({
+    file: null,
+    processing: null,
+  })
+  const [showFileUpload, setShowFileUpload] = useState(true)
+  useEffect(() => {
+    try {
+      ;(async () => {
+        const fileResponse:
+          | IJurisdictionsFileResponse
+          | IErrorResponse = await api(
+          `/election/${electionId}/jurisdiction/${jurisdictions[0].id}/ballot-manifest`
+        )
+        // checkAndToast left here for consistency and reference but not tested since it's vestigial
+        /* istanbul ignore next */
+        if (checkAndToast(fileResponse)) return
+        setFile(fileResponse)
+        if (fileResponse.file) setShowFileUpload(false)
+      })()
+    } catch (err) /* istanbul ignore next */ {
+      // TEST TODO
+      toast.error(err.message)
+    }
+  }, [electionId, jurisdictions, setFile, setShowFileUpload])
   const submit = async (values: IValues) => {
     try {
       /* istanbul ignore else */
@@ -88,24 +113,35 @@ const BallotManifest: React.FC<{}> = () => {
               </FormSectionDescription>
             </FormSection>
             <FormSection>
-              <FileInput
-                inputProps={{
-                  accept: '.csv',
-                  name: 'csv',
-                }}
-                onInputChange={e => {
-                  setFieldValue(
-                    'csv',
-                    (e.currentTarget.files && e.currentTarget.files[0]) ||
-                      undefined
-                  )
-                }}
-                hasSelection={!!values.csv}
-                text={values.csv ? values.csv.name : 'Select a CSV...'}
-                onBlur={handleBlur}
-              />
-              {errors.csv && touched.csv && (
-                <ErrorLabel>{errors.csv}</ErrorLabel>
+              {showFileUpload ? (
+                <>
+                  <FileInput
+                    inputProps={{
+                      accept: '.csv',
+                      name: 'csv',
+                    }}
+                    onInputChange={e => {
+                      setFieldValue(
+                        'csv',
+                        (e.currentTarget.files && e.currentTarget.files[0]) ||
+                          undefined
+                      )
+                    }}
+                    hasSelection={!!values.csv}
+                    text={values.csv ? values.csv.name : 'Select a CSV...'}
+                    onBlur={handleBlur}
+                  />
+                  {errors.csv && touched.csv && (
+                    <ErrorLabel>{errors.csv}</ErrorLabel>
+                  )}
+                </>
+              ) : (
+                <>
+                  <span>{file.file ? file.file.name : ''} </span>
+                  <FormButton onClick={() => setShowFileUpload(true)}>
+                    Replace File
+                  </FormButton>
+                </>
               )}
             </FormSection>
           </FormWrapper>
