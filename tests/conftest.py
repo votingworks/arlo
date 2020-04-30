@@ -1,10 +1,8 @@
 import pytest
 from flask.testing import FlaskClient
 import io, uuid, json
-from datetime import datetime
 from typing import List, Generator
 from flask import jsonify
-from sqlalchemy.orm import joinedload
 
 from arlo_server import app, db
 from arlo_server.models import (
@@ -12,11 +10,7 @@ from arlo_server.models import (
     Jurisdiction,
     USState,
     Round,
-    RoundContestResult,
-    Contest,
-    SampledBallotDraw,
     AuditBoard,
-    Interpretation,
 )
 from arlo_server.auth import (
     UserType,
@@ -30,7 +24,7 @@ from tests.helpers import (
     post_json,
     create_election,
     set_logged_in_user,
-    audit_ballot,
+    run_audit_round,
     DEFAULT_JA_EMAIL,
     DEFAULT_AA_EMAIL,
     SAMPLE_SIZE_ROUND_1,
@@ -214,52 +208,9 @@ def round_2_id(
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ) -> Generator[str, None, None]:
+    run_audit_round(round_1_id, contest_ids[0], 0.5)
+
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-
-    # Fake that the first round got completed by:
-    # - auditing all the sampled ballots
-    # - setting Round.ended_at
-    # - add RoundContestResults
-    WINNER_VOTES = 70
-    round = Round.query.options(
-        joinedload(Round.sampled_ballot_draws).joinedload(
-            SampledBallotDraw.sampled_ballot
-        )
-    ).get(round_1_id)
-    contest = Contest.query.get(contest_ids[0])
-    for ballot_draw in round.sampled_ballot_draws[:WINNER_VOTES]:
-        audit_ballot(
-            ballot_draw.sampled_ballot,
-            contest.id,
-            Interpretation.VOTE,
-            contest.choices[0].id,
-        )
-    for ballot_draw in round.sampled_ballot_draws[WINNER_VOTES:]:
-        audit_ballot(
-            ballot_draw.sampled_ballot,
-            contest.id,
-            Interpretation.VOTE,
-            contest.choices[1].id,
-        )
-    round.ended_at = datetime.utcnow()
-    db.session.add(
-        RoundContestResult(
-            round_id=round.id,
-            contest_id=contest.id,
-            contest_choice_id=contest.choices[0].id,
-            result=WINNER_VOTES,
-        )
-    )
-    db.session.add(
-        RoundContestResult(
-            round_id=round.id,
-            contest_id=contest.id,
-            contest_choice_id=contest.choices[1].id,
-            result=SAMPLE_SIZE_ROUND_1 - WINNER_VOTES,
-        )
-    )
-    db.session.commit()
-
     rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
     assert_ok(rv)
 

@@ -6,6 +6,7 @@ from xkcdpass import xkcd_password as xp
 from werkzeug.exceptions import Conflict, BadRequest
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func, and_
+from sqlalchemy.orm import contains_eager
 
 from arlo_server import app, db
 from arlo_server.auth import with_jurisdiction_access, with_audit_board_access
@@ -68,24 +69,25 @@ def assign_sampled_ballots(
         .filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBallot.draws)
         .filter_by(round_id=round.id)
-        .order_by(SampledBallot.batch_id)  # group_by prefers a sorted list
+        .order_by(Batch.name)  # group_by prefers a sorted list
+        .options(contains_eager(SampledBallot.batch))
         .all()
     )
-    ballots_by_batch = group_by(sampled_ballots, key=lambda sb: sb.batch_id)
+    ballots_by_batch = group_by(sampled_ballots, key=lambda sb: sb.batch.name)
 
     # Divvy up batches of ballots between the audit boards.
     # Note: BalancedBucketList doesn't care which buckets have which batches to
     # start, so we add all the batches to the first bucket before balancing.
     buckets = [Bucket(audit_board.id) for audit_board in audit_boards]
-    for batch_id, sampled_ballots in ballots_by_batch.items():
-        buckets[0].add_batch(batch_id, len(sampled_ballots))
+    for batch_name, sampled_ballots in ballots_by_batch.items():
+        buckets[0].add_batch(batch_name, len(sampled_ballots))
     balanced_buckets = BalancedBucketList(buckets)
 
     for bucket in balanced_buckets.buckets:
         ballots_in_bucket = [
             ballot
-            for batch_id in bucket.batches
-            for ballot in ballots_by_batch[batch_id]
+            for batch_name in bucket.batches
+            for ballot in ballots_by_batch[batch_name]
         ]
         for ballot in ballots_in_bucket:
             ballot.audit_board_id = bucket.name
