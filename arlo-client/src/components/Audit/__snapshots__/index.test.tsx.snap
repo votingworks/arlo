@@ -1,5 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`AA setup flow renders round management 1`] = `
+<div>
+  <div
+    class="sc-kEYyzF kuUIJj"
+  >
+    <p>
+      Round management view
+    </p>
+  </div>
+</div>
+`;
+
 exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
 <div>
   <div
