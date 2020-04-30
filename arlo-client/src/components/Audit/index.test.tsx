@@ -334,41 +334,6 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('renders ballot manifest screen when authenticated as ja on /setup', async () => {
-    apiMock
-      .mockImplementationOnce(async () => statusStates.sampleSizeOptions)
-      .mockImplementationOnce(async () => ({
-        type: 'jurisdiction_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
-          },
-        ],
-      }))
-      .mockImplementationOnce(async () => auditSettings.blank)
-    const { container, queryAllByText } = await asyncActRender(
-      <AuthDataProvider>
-        <Router>
-          <Audit />
-        </Router>
-      </AuthDataProvider>
-    )
-
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(3)
-      expect(apiMock).toHaveBeenNthCalledWith(1, '/election/1/audit/status')
-      expect(apiMock).toHaveBeenNthCalledWith(2, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(3, '/election/1/settings')
-      expect(queryAllByText('Ballot manifest upload').length).toBe(1)
-      expect(container).toMatchSnapshot()
-    })
-  })
-
   it('renders sidebar when authenticated on /progress', async () => {
     routeMock.mockReturnValue({
       url: '/election/1/progress',
