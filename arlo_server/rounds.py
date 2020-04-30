@@ -13,6 +13,7 @@ from arlo_server.models import (
     SampledBallotDraw,
     Jurisdiction,
     BallotStatus,
+    Contest,
 )
 from arlo_server.auth import with_election_access, with_jurisdiction_access
 from arlo_server.sample_sizes import sample_size_options
@@ -37,12 +38,23 @@ def serialize_round(r: Round) -> dict:
         "roundNum": r.round_num,
         "startedAt": isoformat(r.created_at),
         "endedAt": isoformat(r.ended_at),
+        "isAuditComplete": is_audit_complete(r.id),
     }
 
 
 def get_current_round(election: Election) -> Optional[Round]:
     rounds = sorted(election.rounds, key=lambda r: r.round_num, reverse=True)
     return next(iter(rounds), None)
+
+
+def is_audit_complete(round_id: str):
+    targeted_round_contest = (
+        RoundContest.query.filter_by(round_id=round_id)
+        .join(Contest)
+        .filter_by(is_targeted=True)
+        .one()
+    )
+    return targeted_round_contest.is_complete
 
 
 # Raises if invalid
