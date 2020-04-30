@@ -11,6 +11,7 @@ import Sidebar from '../Atoms/Sidebar'
 import { AuthDataContext } from '../UserContext'
 import Setup, { setupStages } from './Setup'
 import useSetupMenuItems from './useSetupMenuItems'
+import BallotManifest from './Setup/BallotManifest'
 
 const initialData: IAudit = {
   name: '',
@@ -125,7 +126,7 @@ const Audit: React.FC<{}> = () => {
         {viewMatch === 'setup' && meta!.type === 'jurisdiction_admin' && (
           <>
             {jaSetupSidebar}
-            <p>Ballot manifest upload</p>
+            <BallotManifest />
           </>
         )}
         {viewMatch === 'progress' && (
