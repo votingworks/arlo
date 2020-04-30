@@ -66,7 +66,6 @@ const Audit: React.FC<{}> = () => {
     updateAudit()
   }, [updateAudit])
 
-  console.log('isMultiJurisdiction', audit.isMultiJurisdiction)
   const showSelectBallotsToAudit =
     !audit.isMultiJurisdiction &&
     !!audit.contests.length &&
