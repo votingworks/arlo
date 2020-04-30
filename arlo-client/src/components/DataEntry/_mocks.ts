@@ -1,26 +1,7 @@
 import { IAuditBoard, IBallot, BallotStatus, Interpretation } from '../../types'
+import { contestMocks } from '../Audit/Setup/Contests/_mocks'
 
-export const contest = {
-  choices: [
-    {
-      id: 'choice-1',
-      name: 'choice one',
-      numVotes: 792,
-    },
-    {
-      id: 'choice-2',
-      name: 'choice two',
-      numVotes: 1325,
-    },
-  ],
-  id: 'contest-1',
-  name: 'contest name',
-  numWinners: '1',
-  votesAllowed: '1',
-  totalBallotsCast: '2123',
-  isTargeted: true,
-  jurisdictionIds: [],
-}
+export const contest = contestMocks.filledTargeted.contests[0]
 
 export const doneDummyBallots: { ballots: IBallot[] } = {
   ballots: [
@@ -369,15 +350,13 @@ export const dummyBallots: { ballots: IBallot[] } = {
   ],
 }
 
-export const dummyBoard: IAuditBoard[] = [
+export const dummyBoards = (): IAuditBoard[] => [
   {
-    id: '123',
+    id: 'audit-board-1',
     name: 'Audit Board #1',
-    members: [],
-  },
-  {
-    id: '123',
-    name: 'Audit Board #1',
+    jurisdictionId: 'jurisdiction-1',
+    jurisdictionName: 'Jurisdiction 1',
+    roundId: 'round-1',
     members: [
       {
         name: 'John Doe',
@@ -389,9 +368,17 @@ export const dummyBoard: IAuditBoard[] = [
       },
     ],
   },
+  {
+    id: 'audit-board-2',
+    name: 'Audit Board #2',
+    jurisdictionId: 'jurisdiction-1',
+    jurisdictionName: 'Jurisdiction 1',
+    roundId: 'round-1',
+    members: [],
+  },
 ]
 
 export default {
-  dummyBoard,
+  dummyBoards,
   dummyBallots,
 }

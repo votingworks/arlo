@@ -24,6 +24,10 @@ const ShortTable = styled(Table)`
   height: 500px;
 `
 
+const ReauditLink = styled(Link)`
+  margin-left: 50px;
+`
+
 // const ActionWrapper = styled.div` // commented out until feature is used
 //   margin-bottom: 20px;
 //   .bp3-checkbox {
@@ -38,47 +42,39 @@ const ShortTable = styled(Table)`
 // `
 
 interface IProps {
-  setIsLoading: (arg0: boolean) => void
-  isLoading: boolean
   boardName: IAuditBoard['name']
   ballots: IBallot[]
   url: string
-  round: number
 }
 
-const KEYS: ('position' | 'tabulator' | 'batch' | 'status' | 'round')[] = [
-  'position',
+const KEYS: ('position' | 'tabulator' | 'batch' | 'status')[] = [
   'batch',
-  'status',
+  'position',
   'tabulator',
-  'round',
+  'status',
 ]
 
-const BoardTable: React.FC<IProps> = ({
-  boardName,
-  ballots,
-  url,
-  round,
-}: IProps) => {
+const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
   const renderCell = (rI: number, cI: number) => {
     /* istanbul ignore else */
     if (ballots) {
       const ballot: IBallot = ballots[rI]
       switch (KEYS[cI]) {
-        case 'position':
-          return <PaddedCell>{ballot.position}</PaddedCell>
         case 'batch':
           return <PaddedCell>{ballot.batch.name}</PaddedCell>
+        case 'position':
+          return <PaddedCell>{ballot.position}</PaddedCell>
         case 'status':
           return ballot.status === BallotStatus.AUDITED ? (
             <PaddedCell>
               <>
-                <Link
-                  to={`${url}/round/1/batch/${ballot.batch.id}/ballot/${ballot.position}`}
+                Audited
+                <ReauditLink
+                  to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
                   className="bp3-button bp3-small"
                 >
                   Re-audit
-                </Link>
+                </ReauditLink>
               </>
             </PaddedCell>
           ) : (
@@ -90,9 +86,6 @@ const BoardTable: React.FC<IProps> = ({
               {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
             </PaddedCell>
           )
-        /* istanbul ignore next */
-        case 'round':
-          return <PaddedCell>{round}</PaddedCell>
         /* istanbul ignore next */
         default:
           return <PaddedCell>?</PaddedCell>
@@ -143,7 +136,7 @@ const BoardTable: React.FC<IProps> = ({
           ballots.length > 0 &&
           unauditedBallot && (
             <Link
-              to={`${url}/round/1/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`}
+              to={`${url}/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`}
               className="bp3-button bp3-intent-primary"
             >
               Start Auditing
@@ -164,15 +157,14 @@ const BoardTable: React.FC<IProps> = ({
         columnWidths={cols}
         enableRowHeader={false}
       >
+        <Column key="batch" name="Batch" cellRenderer={renderCell} />
         <Column
           key="position"
           name="Ballot Position"
           cellRenderer={renderCell}
         />
-        <Column key="batch" name="Batch" cellRenderer={renderCell} />
-        <Column key="status" name="Status" cellRenderer={renderCell} />
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
-        <Column key="round" name="Audit Round" cellRenderer={renderCell} />
+        <Column key="status" name="Status" cellRenderer={renderCell} />
       </ShortTable>
     </div>
   )

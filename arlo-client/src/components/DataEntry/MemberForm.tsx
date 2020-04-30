@@ -6,7 +6,6 @@ import FormWrapper from '../Atoms/Form/FormWrapper'
 import FormSection from '../Atoms/Form/FormSection'
 import { IAuditBoardMember } from '../../types'
 import FormButton from '../Atoms/Form/FormButton'
-import { api, checkAndToast } from '../utilities'
 
 const LabelText = styled.span`
   display: block;
@@ -19,20 +18,14 @@ const NameField = styled(Field)`
 
 interface IProps {
   boardName: string
-  boardId: string
   jurisdictionName: string
-  jurisdictionId: string
-  electionId: string
-  updateAudit: () => void
+  submitMembers: (members: IAuditBoardMember[]) => void
 }
 
 const MemberForm: React.FC<IProps> = ({
   boardName,
-  boardId,
   jurisdictionName,
-  jurisdictionId,
-  electionId,
-  updateAudit,
+  submitMembers,
 }: IProps) => {
   return (
     <>
@@ -53,24 +46,7 @@ const MemberForm: React.FC<IProps> = ({
               affiliation: '',
             },
           ]}
-          onSubmit={async values => {
-            const body = {
-              name: boardName,
-              members: values,
-            }
-            const response = await api(
-              `/election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${boardId}`,
-              {
-                method: 'POST',
-                body: JSON.stringify(body),
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            )
-            if (checkAndToast(response)) return
-            updateAudit()
-          }}
+          onSubmit={submitMembers}
           render={({
             setFieldValue,
             values,

@@ -13,7 +13,7 @@ export interface ICreateAuditParams {
 }
 
 export interface IAuditFlowParams extends ICreateAuditParams {
-  token: string
+  auditBoardId: string
   roundId?: string
   ballotId?: string
 }
@@ -84,9 +84,11 @@ export interface IAuditBoardMember {
 export interface IAuditBoard {
   id: string
   name: string
+  jurisdictionId: string
+  jurisdictionName: string
+  roundId: string
   members: IAuditBoardMember[]
   passphrase?: string
-  ballots?: IBallot[] // TODO remove
 }
 
 export interface IBallotManifest {
@@ -109,7 +111,7 @@ export interface IJurisdiction {
   id: string
   name: string
   contests: string[]
-  auditBoards: IAuditBoard[]
+  auditBoards: Pick<IAuditBoard, 'id' | 'name' | 'members' | 'passphrase'>[]
   ballotManifest?: IBallotManifest
   batches?: IBatch[] // optional until I'm ready to update everything
 }

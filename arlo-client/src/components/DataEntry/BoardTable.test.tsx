@@ -11,10 +11,7 @@ describe('BoardTable', () => {
         <BoardTable
           boardName="Audit Board #1"
           ballots={doneDummyBallots.ballots}
-          round={1}
           url="/home"
-          isLoading={false}
-          setIsLoading={jest.fn()}
         />
       </StaticRouter>
     )

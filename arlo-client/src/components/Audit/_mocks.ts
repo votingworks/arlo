@@ -278,7 +278,6 @@ export const statusStates: {
             id: 'audit-board-1',
             name: 'Audit Board #1',
             members: [],
-            ballots: [],
           },
         ],
         ballotManifest: {
@@ -354,7 +353,6 @@ export const statusStates: {
             id: 'audit-board-1',
             name: 'Audit Board #1',
             members: [],
-            ballots: [],
           },
         ],
         ballotManifest: {
