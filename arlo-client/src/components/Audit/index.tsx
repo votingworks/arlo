@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { useRouteMatch, RouteComponentProps } from 'react-router-dom'
-// import { Spinner } from '@blueprintjs/core'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
