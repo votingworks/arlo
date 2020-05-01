@@ -5,10 +5,10 @@ import { useParams } from 'react-router-dom'
 import { regexpEscape, asyncActRender } from '../../../testUtilities'
 import * as utilities from '../../../utilities'
 import Contests from './index'
-import { IJurisdictions } from '../useParticipantsApi'
 import relativeStages from '../_mocks'
 import { contestsInputMocks, contestMocks } from './_mocks'
 import { numberifyContest, IContestNumbered } from '../useContestsApi'
+import { IJurisdiction } from '../../useJurisdictions'
 import { IContests } from './types'
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
@@ -24,13 +24,13 @@ const checkAndToastMock: jest.SpyInstance<
 const generateApiMock = (
   contestsReturn: IContests | Error | { status: 'ok' },
   jurisdictionReturn:
-    | { jurisdictions: IJurisdictions }
+    | { jurisdictions: IJurisdiction[] }
     | Error
     | { status: 'ok' }
 ) => async (
   endpoint: string
 ): Promise<
-  IContests | { jurisdictions: IJurisdictions } | Error | { status: 'ok' }
+  IContests | { jurisdictions: IJurisdiction[] } | Error | { status: 'ok' }
 > => {
   switch (endpoint) {
     case '/election/1/jurisdiction':
@@ -484,10 +484,14 @@ describe('Audit Setup > Contests', () => {
           {
             id: '1',
             name: 'Jurisdiction One',
+            ballotManifest: { file: null, processing: null },
+            currentRoundStatus: null,
           },
           {
             id: '2',
             name: 'Jurisdiction Two',
+            ballotManifest: { file: null, processing: null },
+            currentRoundStatus: null,
           },
         ],
       })
