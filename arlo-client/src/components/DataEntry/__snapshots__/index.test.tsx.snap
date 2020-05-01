@@ -3,7 +3,7 @@
 exports[`DataEntry ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="single-page sc-kkGfuU keUCRe"
+    class="single-page sc-kkGfuU iJbanW"
   >
     <div
       class="sc-hMqMXs iGVKwm"
@@ -274,7 +274,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
 exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="single-page sc-kkGfuU keUCRe"
+    class="single-page sc-kkGfuU iJbanW"
   >
     <div
       class="board-table-container"
@@ -842,7 +842,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 exports[`DataEntry ballot interaction renders board table with large container size 1`] = `
 <div>
   <div
-    class="single-page sc-kkGfuU keUCRe"
+    class="single-page sc-kkGfuU iJbanW"
   >
     <div
       class="board-table-container"
@@ -1410,7 +1410,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
 exports[`DataEntry member form renders if no audit board members set 1`] = `
 <div>
   <div
-    class="single-page sc-kkGfuU keUCRe"
+    class="single-page sc-kkGfuU iJbanW"
   >
     <h1
       class="bp3-heading"
@@ -1681,7 +1681,7 @@ exports[`DataEntry member form renders if no audit board members set 1`] = `
 exports[`DataEntry member form submits and goes to ballot table 1`] = `
 <div>
   <div
-    class="single-page sc-kkGfuU keUCRe"
+    class="single-page sc-kkGfuU iJbanW"
   >
     <div
       class="board-table-container"

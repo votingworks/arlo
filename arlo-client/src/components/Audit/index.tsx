@@ -1,5 +1,10 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react'
-import { useRouteMatch, RouteComponentProps } from 'react-router-dom'
+import React, { useState, useEffect, useCallback } from 'react'
+import {
+  Redirect,
+  useRouteMatch,
+  useParams,
+  RouteComponentProps,
+} from 'react-router-dom'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -8,11 +13,89 @@ import { IAudit, IErrorResponse, ElementType } from '../../types'
 import ResetButton from './ResetButton'
 import Wrapper from '../Atoms/Wrapper'
 import Sidebar from '../Atoms/Sidebar'
-import { AuthDataContext } from '../UserContext'
+import { useAuthDataContext } from '../UserContext'
 import Setup, { setupStages } from './Setup'
 import useSetupMenuItems from './useSetupMenuItems'
 import BallotManifest from './Setup/BallotManifest'
 import RoundManagement from './RoundManagement'
+import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
+
+interface IParams {
+  electionId: string
+  view: 'setup' | 'progress'
+}
+
+export const MultiJurisdictionAudit: React.FC = () => {
+  const { meta } = useAuthDataContext()
+  switch (meta!.type) {
+    case 'audit_admin':
+      return <AuditAdminView />
+    case 'jurisdiction_admin':
+      return <JurisdictionAdminView />
+    /* istanbul ignore next */
+    default:
+      return <>Error</>
+  }
+}
+
+const AuditAdminView: React.FC = () => {
+  const { electionId } = useParams<IParams>()
+  const [stage, setStage] = useState<ElementType<typeof setupStages>>(
+    'Participants'
+  )
+  const [menuItems, refresh] = useSetupMenuItems(stage, setStage, electionId)
+
+  useEffect(() => {
+    refresh()
+  }, [refresh])
+
+  const match: RouteComponentProps<IParams>['match'] | null = useRouteMatch(
+    '/election/:electionId/:view?'
+  )
+  switch (match && match.params.view) {
+    case 'setup':
+      return (
+        <Wrapper>
+          <Sidebar title="Audit Setup" menuItems={menuItems} />
+          <Setup stage={stage} refresh={refresh} menuItems={menuItems} />
+        </Wrapper>
+      )
+    case 'progress':
+      return (
+        <Wrapper>
+          <Sidebar
+            title="Audit Progress"
+            menuItems={[
+              {
+                title: 'Jurisdictions',
+                active: true,
+                state: 'live',
+              },
+            ]}
+          />
+          <p>Progress view</p>
+        </Wrapper>
+      )
+    default:
+      return (
+        <Wrapper>
+          <p>Round management view</p>
+        </Wrapper>
+      )
+  }
+}
+
+const JurisdictionAdminView: React.FC = () => {
+  const { electionId } = useParams<{ electionId: string }>()
+  const { meta } = useAuthDataContext()
+  const jurisdictionId = meta!.jurisdictions[0].id
+  const rounds = useRoundsJurisdictionAdmin(electionId, jurisdictionId)
+  if (!rounds) return null // Still loading
+  if (!rounds.length) {
+    return <BallotManifest />
+  }
+  return <RoundManagement />
+}
 
 const initialData: IAudit = {
   name: '',
@@ -26,24 +109,9 @@ const initialData: IAudit = {
   isMultiJurisdiction: false,
 }
 
-interface IParams {
-  electionId: string
-  view: 'setup' | 'progress'
-}
-
-const Audit: React.FC<{}> = () => {
-  const match: RouteComponentProps<IParams>['match'] | null = useRouteMatch(
-    '/election/:electionId/:view?'
-  )
-  /* istanbul ignore next */
-  const viewMatch = match ? match.params.view : undefined
-  /* istanbul ignore next */
-  const electionId = match ? match.params.electionId : ''
-
-  const { isAuthenticated, meta } = useContext(AuthDataContext)
-
+export const SingleJurisdictionAudit: React.FC = () => {
+  const { electionId } = useParams<IParams>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
-
   const [audit, setAudit] = useState(initialData)
 
   const getStatus = useCallback(async (): Promise<IAudit> => {
@@ -67,85 +135,16 @@ const Audit: React.FC<{}> = () => {
     updateAudit()
   }, [updateAudit])
 
+  if (audit.isMultiJurisdiction) {
+    return <Redirect to="/" />
+  }
+
   const showSelectBallotsToAudit =
-    !audit.isMultiJurisdiction &&
     !!audit.contests.length &&
     audit.rounds[0].contests.every(c => !!c.sampleSizeOptions)
   const showCalculateRiskMeasurement =
     !!audit.rounds.length && audit.rounds[0].contests.every(c => !!c.sampleSize)
 
-  const [stage, setStage] = useState<ElementType<typeof setupStages>>(
-    'Participants'
-  )
-
-  const [menuItems, refresh] = useSetupMenuItems(stage, setStage, electionId)
-
-  useEffect(() => {
-    if (
-      isAuthenticated &&
-      viewMatch === 'setup' &&
-      meta!.type === 'audit_admin'
-    )
-      refresh()
-  }, [refresh, isAuthenticated, viewMatch, meta])
-
-  const progressSidebar = (
-    <Sidebar
-      title="Audit Progress"
-      menuItems={[
-        {
-          title: 'Jurisdictions',
-          active: true,
-          state: 'live',
-        },
-      ]}
-    />
-  )
-  const aaSetupSidebar = <Sidebar title="Audit Setup" menuItems={menuItems} />
-  const jaSetupSidebar = (
-    <Sidebar
-      title="Audit Setup"
-      menuItems={[
-        {
-          title: 'Upload Ballot Manifest',
-          active: true,
-          state: 'live',
-        },
-      ]}
-    />
-  )
-
-  if (isAuthenticated)
-    return (
-      <Wrapper>
-        <ResetButton
-          electionId={electionId}
-          disabled={!audit.contests.length || isLoading}
-          updateAudit={updateAudit}
-        />
-        {viewMatch === 'setup' && meta!.type === 'audit_admin' && (
-          <>
-            {aaSetupSidebar}
-            <Setup stage={stage} refresh={refresh} menuItems={menuItems} />
-          </>
-        )}
-        {viewMatch === 'setup' && meta!.type === 'jurisdiction_admin' && (
-          <>
-            {jaSetupSidebar}
-            <BallotManifest />
-          </>
-        )}
-        {viewMatch === 'progress' && (
-          <>
-            {progressSidebar}
-            <p>Progress view</p>
-          </>
-        )}
-        {viewMatch !== 'setup' && viewMatch !== 'progress' && (
-          <RoundManagement />
-        )}
-      </Wrapper>
-    )
   return (
     <Wrapper className="single-page">
       <ResetButton
@@ -184,5 +183,3 @@ const Audit: React.FC<{}> = () => {
     </Wrapper>
   )
 }
-
-export default Audit
