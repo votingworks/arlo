@@ -343,19 +343,21 @@ describe('AA setup flow', () => {
         view: 'progress',
       },
     })
-    apiMock.mockImplementationOnce(async () => ({
-      type: 'audit_admin',
-      name: 'Joe',
-      email: 'test@email.org',
-      jurisdictions: [],
-      organizations: [
-        {
-          id: 'org-id',
-          name: 'State',
-          elections: [],
-        },
-      ],
-    }))
+    apiMock
+      .mockImplementationOnce(async () => ({
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      }))
+      .mockImplementationOnce(async () => ({ jurisdictions: [] }))
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -365,8 +367,9 @@ describe('AA setup flow', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock).toBeCalledTimes(2)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
+      expect(apiMock).toHaveBeenNthCalledWith(2, '/election/1/jurisdiction')
       expect(queryAllByText('Jurisdictions').length).toBe(1)
       expect(container).toMatchSnapshot()
     })
