@@ -6,7 +6,7 @@ exports[`App renders properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-TOsTZ dQMTDN"
+    class="sc-ksYbfQ cGlmys"
   >
     <div
       class="bp3-navbar bp3-fixed-top sc-bxivhb eUaiLH"
@@ -37,7 +37,7 @@ exports[`App renders properly 1`] = `
       </div>
     </div>
     <div
-      class="sc-gisBJw cNkReQ"
+      class="sc-TOsTZ dZdCaV"
     >
       <img
         alt="Arlo, by VotingWorks"
@@ -45,7 +45,7 @@ exports[`App renders properly 1`] = `
         src="/arlo.png"
       />
       <div
-        class="sc-ifAKCX iKQdjg"
+        class="sc-EHOje gNDuQv"
       >
         <label
           for="audit-name"
@@ -53,10 +53,10 @@ exports[`App renders properly 1`] = `
         >
           Give your new audit a unique name.
           <div
-            class="sc-cHGsZl QkJkv sc-dnqmqq dOkpOn"
+            class="sc-cJSrbW bSsugf sc-iwsKbI dvOqsv"
           >
             <div
-              class="bp3-input-group sc-iwsKbI hebCva"
+              class="bp3-input-group sc-gZMcBi fkRAtG"
             >
               <input
                 aria-labelledby="audit-name-label"
@@ -71,7 +71,7 @@ exports[`App renders properly 1`] = `
         </label>
       </div>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-caSCKo lgRnQL sc-bwzfXH eBfcXh"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-cHGsZl dTJxsD sc-bwzfXH eBfcXh"
         type="button"
       >
         <span
@@ -81,7 +81,7 @@ exports[`App renders properly 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-caSCKo lgRnQL sc-bdVaJa gLVjYw"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-cHGsZl dTJxsD sc-bdVaJa gLVjYw"
         type="button"
       >
         <span
@@ -91,7 +91,7 @@ exports[`App renders properly 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-caSCKo lgRnQL sc-bdVaJa gLVjYw"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-cHGsZl dTJxsD sc-bdVaJa gLVjYw"
         type="button"
       >
         <span

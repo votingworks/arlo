@@ -3,7 +3,7 @@
 exports[`AA setup flow renders round management 1`] = `
 <div>
   <div
-    class="sc-kEYyzF kuUIJj"
+    class="sc-kEYyzF kCFsgT"
   >
     <p>
       Round management view
@@ -15,7 +15,7 @@ exports[`AA setup flow renders round management 1`] = `
 exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
 <div>
   <div
-    class="sc-kEYyzF kuUIJj"
+    class="sc-kEYyzF kCFsgT"
   >
     <div
       class="sc-kkGfuU jgdXat"
@@ -53,7 +53,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
 exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
 <div>
   <div
-    class="sc-kEYyzF kuUIJj"
+    class="sc-kEYyzF kCFsgT"
   >
     <div
       class="sc-kkGfuU jgdXat"
@@ -560,7 +560,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
 exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF kCFsgT"
   >
     <form
       data-testid="form-one"
@@ -1263,7 +1263,7 @@ exports[`RiskLimitingAuditForm does not render CalculateRiskMeasurement when aud
 exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/status is processing samplesizes 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF kCFsgT"
   >
     <form
       data-testid="form-one"
@@ -1727,7 +1727,7 @@ exports[`RiskLimitingAuditForm does not render SelectBallotsToAudit when /audit/
 exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF kCFsgT"
   >
     <form
       data-testid="form-one"
@@ -2197,7 +2197,7 @@ exports[`RiskLimitingAuditForm fetches initial state from api 1`] = `
 exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/status returns round data 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF kCFsgT"
   >
     <form
       data-testid="form-one"
@@ -3053,7 +3053,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
 exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status returns contest data 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF kCFsgT"
   >
     <form
       data-testid="form-one"
@@ -3756,7 +3756,7 @@ exports[`RiskLimitingAuditForm renders SelectBallotsToAudit when /audit/status r
 exports[`RiskLimitingAuditForm renders correctly with initialData 1`] = `
 <div>
   <div
-    class="single-page sc-kEYyzF kuUIJj"
+    class="single-page sc-kEYyzF kCFsgT"
   >
     <form
       data-testid="form-one"
