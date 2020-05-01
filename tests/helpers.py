@@ -64,6 +64,16 @@ def clear_logged_in_user(client: FlaskClient):
         session["_user"] = None
 
 
+def set_superadmin(client: FlaskClient):
+    with client.session_transaction() as session:  # type: ignore
+        session["_superadmin"] = True
+
+
+def clear_superadmin(client: FlaskClient):
+    with client.session_transaction() as session:  # type: ignore
+        del session["_superadmin"]
+
+
 def create_user(email=DEFAULT_AA_EMAIL) -> User:
     user = User(id=str(uuid.uuid4()), email=email, external_id=email)
     db.session.add(user)
