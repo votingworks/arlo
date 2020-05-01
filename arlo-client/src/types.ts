@@ -181,13 +181,13 @@ export interface IJurisdictionMeta {
 export interface IUserMeta {
   name: string
   email: string
-  type: 'audit_admin' | 'jurisdiction_admin'
+  type: 'audit_admin' | 'jurisdiction_admin' | 'audit_board'
   organizations: IOrganizationMeta[]
   jurisdictions: IJurisdictionMeta[]
 }
 
 export interface IAuthData {
-  isAuthenticated: boolean
+  isAuthenticated: boolean | null
   meta?: IUserMeta
 }
 
