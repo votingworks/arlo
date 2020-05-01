@@ -8,7 +8,7 @@ import React, {
 import { IAuthData, IUserMeta, IErrorResponse } from '../types'
 import { api, checkAndToast } from './utilities'
 
-const initialAuthData: IAuthData = { isAuthenticated: false }
+const initialAuthData: IAuthData = { isAuthenticated: null }
 export const AuthDataContext = createContext<IAuthData>(initialAuthData)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,13 +20,13 @@ const AuthDataProvider = (props: any) => {
       const currentAuthData: IUserMeta | IErrorResponse = await api('/auth/me')
       if ('redirect' in currentAuthData || checkAndToast(currentAuthData)) {
         setAuthData(initialAuthData)
-      } else if (currentAuthData.email) {
+      } else if (currentAuthData.type) {
         setAuthData({
           isAuthenticated: true,
           meta: currentAuthData,
         })
       } else {
-        setAuthData(initialAuthData)
+        setAuthData({ isAuthenticated: false })
       }
     })()
   }, [])

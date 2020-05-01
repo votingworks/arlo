@@ -4,7 +4,8 @@ import { useParams } from 'react-router-dom'
 import Wrapper from '../../Atoms/Wrapper'
 import H2Title from '../../Atoms/H2Title'
 import { useAuthDataContext } from '../../UserContext'
-import { IRound, IErrorResponse, IBallot, IAuditBoard } from '../../../types'
+import useRoundsJurisdictionAdmin from '../useRoundsJurisdictionAdmin'
+import { IErrorResponse, IBallot, IAuditBoard } from '../../../types'
 import { api, checkAndToast } from '../../utilities'
 // import useAuditSettings from '../Setup/useAuditSettings'
 import CreateAuditBoards from './CreateAuditBoards'
@@ -22,30 +23,11 @@ const RoundManagement = () => {
   const { meta } = useAuthDataContext()
   const { jurisdictions } = meta!
   const jurisdictionId = jurisdictions[0].id
-
-  const [rounds, setRounds] = useState<IRound[]>([])
-  useEffect(() => {
-    if (electionId && jurisdictionId) {
-      ;(async () => {
-        try {
-          const response: { rounds: IRound[] } | IErrorResponse = await api(
-            `/election/${electionId}/jurisdiction/${jurisdictionId}/round`
-          )
-          // checkAndToast left here for consistency and reference but not tested since it's vestigial
-          /* istanbul ignore next */
-          if (checkAndToast(response)) return
-          setRounds(response.rounds)
-        } catch (err) /* istanbul ignore next */ {
-          // TEST TODO
-          toast.error(err.message)
-        }
-      })()
-    }
-  }, [electionId, jurisdictionId, setRounds])
+  const rounds = useRoundsJurisdictionAdmin(electionId!, jurisdictionId)
 
   const [ballots, setBallots] = useState<IBallot[]>([])
   useEffect(() => {
-    if (electionId && jurisdictionId && rounds.length) {
+    if (electionId && jurisdictionId && rounds && rounds.length) {
       ;(async () => {
         try {
           const response: { ballots: IBallot[] } | IErrorResponse = await api(
@@ -71,7 +53,9 @@ const RoundManagement = () => {
       const response:
         | { auditBoards: IAuditBoard[] }
         | IErrorResponse = await api(
-        `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${rounds[rounds.length - 1].id}/audit-board`
+        `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${
+          rounds![rounds!.length - 1].id
+        }/audit-board`
       )
       // checkAndToast left here for consistency and reference but not tested since it's vestigial
       /* istanbul ignore next */
@@ -83,11 +67,12 @@ const RoundManagement = () => {
     }
   }, [electionId, jurisdictionId, rounds])
   useEffect(() => {
-    if (electionId && jurisdictionId && rounds.length) {
+    if (electionId && jurisdictionId && rounds && rounds.length) {
       getAuditBoards()
     }
   }, [electionId, jurisdictionId, rounds, getAuditBoards])
 
+  if (!rounds) return null // Still loading
   if (rounds.length > 0 && rounds[rounds.length - 1].isAuditComplete)
     return (
       <Wrapper className="single-page">
