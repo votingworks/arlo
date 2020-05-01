@@ -46,16 +46,18 @@ def clear_loggedin_user():
 ## and so that a superadmin can become any other user at any other time without having
 ## to re-login
 ##
+
+
 def set_superadmin():
-    session["_superadmin"] = True
+    session["_superadmin"] = True  # pragma: no cover
 
 
 def clear_superadmin():
-    del session["_superadmin"]
+    del session["_superadmin"]  # pragma: no cover
 
 
 def is_superadmin():
-    return session.get("_superadmin", False)
+    return session.get("_superadmin", False)  # pragma: no cover
 
 
 def require_superadmin():
