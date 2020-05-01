@@ -12,6 +12,8 @@ from arlo_server.routes import (
 )
 from tests.helpers import (
     set_logged_in_user,
+    set_superadmin,
+    clear_superadmin,
     clear_logged_in_user,
     create_org_and_admin,
     create_jurisdiction_and_admin,
@@ -733,3 +735,13 @@ def test_with_audit_board_access_audit_board_not_found(
         f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/not-a-real-id/test_auth"
     )
     assert rv.status_code == 404
+
+
+def test_superadmin(client: FlaskClient):
+    set_superadmin(client)
+    rv = client.get("/superadmin")
+    assert rv.status_code == 200
+
+    clear_superadmin(client)
+    rv = client.get("/superadmin")
+    assert rv.status_code == 403

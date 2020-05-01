@@ -58,6 +58,7 @@ import arlo_server.sample_sizes
 import arlo_server.rounds
 import arlo_server.audit_boards
 import arlo_server.ballots
+import arlo_server.superadmin
 
 # Error handlers
 import arlo_server.errors

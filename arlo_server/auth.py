@@ -36,6 +36,33 @@ def clear_loggedin_user():
     session["_user"] = None
 
 
+##
+## The super admin bit lets a user impersonate any other user
+## Having the bit only grants access to the superadmin functionality
+## that enables becoming any other user, and then taking action as them.
+##
+## This state of superadmin'ness is kept separate from the normal user session
+## field so that impersonation can be as close as possible to the same user session
+## and so that a superadmin can become any other user at any other time without having
+## to re-login
+##
+def set_superadmin():
+    session["_superadmin"] = True
+
+
+def clear_superadmin():
+    del session["_superadmin"]
+
+
+def is_superadmin():
+    return session.get("_superadmin", False)
+
+
+def require_superadmin():
+    if not is_superadmin():
+        raise Forbidden(description="requires superadmin privileges")
+
+
 def require_audit_admin_for_organization(organization_id: Optional[str]):
     if not organization_id:
         return
@@ -217,6 +244,19 @@ def with_audit_board_access(route: Callable):
         kwargs["round"] = round
         kwargs["audit_board"] = audit_board
 
+        return route(*args, **kwargs)
+
+    return wrapper
+
+
+def with_superadmin_access(route: Callable):
+    """
+    Flask route decorator that restricts access to a route to a superadmin.
+    """
+
+    @functools.wraps(route)
+    def wrapper(*args, **kwargs):
+        require_superadmin()
         return route(*args, **kwargs)
 
     return wrapper
