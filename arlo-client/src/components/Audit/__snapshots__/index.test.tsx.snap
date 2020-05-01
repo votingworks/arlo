@@ -43,9 +43,316 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
         </li>
       </ul>
     </div>
-    <p>
-      Progress view
-    </p>
+    <div>
+      <h2
+        class="bp3-heading sc-bxivhb jFEWwS"
+      >
+        Audit Progress by Jurisdiction
+      </h2>
+      <div>
+        <div
+          class="bp3-table-container bp3-table-no-rows"
+          tabindex="0"
+        >
+          <div
+            class="bp3-table-quadrant-stack"
+          >
+            <div
+              class="bp3-table-quadrant bp3-table-quadrant-main"
+            >
+              <div
+                class="bp3-table-quadrant-scroll-container"
+              >
+                <div
+                  class="bp3-table-top-container"
+                >
+                  <div
+                    class="bp3-table-column-headers"
+                  >
+                    <div
+                      style="width: 600px;"
+                    >
+                      <div
+                        class="bp3-table-thead bp3-table-column-header-tr"
+                        style="transform: translateX(0px); width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Jurisdiction Name"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Jurisdiction Name
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Status"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Status
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Total Audited"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Total Audited
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Remaining in Round"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Remaining in Round
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bp3-table-bottom-container"
+                  style="height: 0px; width: 600px;"
+                >
+                  <div
+                    class="bp3-table-quadrant-body-container"
+                  >
+                    <div>
+                      <div
+                        class="bp3-table-body-virtual-client bp3-table-cell-client"
+                        style="height: 0px; width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-body-cells"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bp3-table-quadrant bp3-table-quadrant-top"
+              style="height: 30px; right: 0px;"
+            >
+              <div
+                class="bp3-table-quadrant-scroll-container"
+              >
+                <div
+                  class="bp3-table-top-container"
+                >
+                  <div
+                    class="bp3-table-column-headers"
+                  >
+                    <div
+                      style="width: 600px;"
+                    >
+                      <div
+                        class="bp3-table-thead bp3-table-column-header-tr"
+                        style="transform: translateX(0px); width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Jurisdiction Name"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Jurisdiction Name
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Status"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Status
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Total Audited"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Total Audited
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Remaining in Round"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Remaining in Round
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bp3-table-bottom-container"
+                  style="height: 0px; width: 600px;"
+                >
+                  <div
+                    class="bp3-table-quadrant-body-container"
+                  >
+                    <div>
+                      <div
+                        class="bp3-table-body-virtual-client bp3-table-cell-client"
+                        style="height: -30px; width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-body-cells"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
+          />
+          <div
+            class="bp3-table-resize-guides bp3-table-overlay-layer"
+          />
+          <div
+            class="bp3-table-resize-sensor"
+            style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
+          >
+            <div
+              class="bp3-table-resize-sensor-expand"
+              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            >
+              <div
+                style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
+              />
+            </div>
+            <div
+              class="bp3-table-resize-sensor-shrink"
+              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            >
+              <div
+                style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 `;

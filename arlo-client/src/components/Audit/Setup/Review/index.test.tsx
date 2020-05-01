@@ -9,7 +9,7 @@ import { asyncActRender } from '../../../testUtilities'
 import useAuditSettings from '../useAuditSettings'
 import { settingsMock, sampleSizeMock } from './_mocks'
 import { IContests } from '../Contests/types'
-import { IJurisdictions } from '../useParticipantsApi'
+import { IJurisdiction } from '../../useJurisdictions'
 import { contestMocks } from '../Contests/_mocks'
 import { ISampleSizeOption } from '../../../../types'
 
@@ -24,7 +24,7 @@ const generateApiMock = (
   sampleSizeReturn: { sampleSizes: ISampleSizeOption[] },
   contestsReturn: IContests | Error | { status: 'ok' },
   jurisdictionReturn:
-    | { jurisdictions: IJurisdictions }
+    | { jurisdictions: IJurisdiction[] }
     | Error
     | { status: 'ok' }
 ) => async (
@@ -32,7 +32,7 @@ const generateApiMock = (
 ): Promise<
   | IContests
   | { sampleSizes: ISampleSizeOption[] }
-  | { jurisdictions: IJurisdictions }
+  | { jurisdictions: IJurisdiction[] }
   | Error
   | { status: 'ok' }
 > => {
@@ -114,10 +114,14 @@ describe('Audit Setup > Review & Launch', () => {
             {
               id: 'jurisdiction-id-1',
               name: 'Jurisdiction One',
+              ballotManifest: { file: null, processing: null },
+              currentRoundStatus: null,
             },
             {
               id: 'jurisdiction-id-2',
               name: 'Jurisdiction Two',
+              ballotManifest: { file: null, processing: null },
+              currentRoundStatus: null,
             },
           ],
         }
@@ -142,10 +146,14 @@ describe('Audit Setup > Review & Launch', () => {
             {
               id: 'jurisdiction-id-1',
               name: 'Jurisdiction One',
+              ballotManifest: { file: null, processing: null },
+              currentRoundStatus: null,
             },
             {
               id: 'jurisdiction-id-2',
               name: 'Jurisdiction Two',
+              ballotManifest: { file: null, processing: null },
+              currentRoundStatus: null,
             },
           ],
         }
