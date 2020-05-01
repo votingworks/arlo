@@ -15,6 +15,7 @@ import Wrapper from '../Atoms/Wrapper'
 import Sidebar from '../Atoms/Sidebar'
 import { useAuthDataContext } from '../UserContext'
 import Setup, { setupStages } from './Setup'
+import Progress from './Progress'
 import useSetupMenuItems from './useSetupMenuItems'
 import BallotManifest from './Setup/BallotManifest'
 import RoundManagement from './RoundManagement'
@@ -73,7 +74,7 @@ const AuditAdminView: React.FC = () => {
               },
             ]}
           />
-          <p>Progress view</p>
+          <Progress />
         </Wrapper>
       )
     default:

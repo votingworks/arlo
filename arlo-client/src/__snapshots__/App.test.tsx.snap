@@ -6,7 +6,7 @@ exports[`App renders properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-ksYbfQ cGlmys"
+    class="sc-hmzhuo gmJkxg"
   >
     <div
       class="bp3-navbar bp3-fixed-top sc-bxivhb eUaiLH"
@@ -37,7 +37,7 @@ exports[`App renders properly 1`] = `
       </div>
     </div>
     <div
-      class="sc-TOsTZ dZdCaV"
+      class="sc-kgAjT hAioCe"
     >
       <img
         alt="Arlo, by VotingWorks"
@@ -53,7 +53,7 @@ exports[`App renders properly 1`] = `
         >
           Give your new audit a unique name.
           <div
-            class="sc-cJSrbW bSsugf sc-iwsKbI dvOqsv"
+            class="sc-ksYbfQ fqSvil sc-iwsKbI dvOqsv"
           >
             <div
               class="bp3-input-group sc-gZMcBi fkRAtG"
@@ -71,7 +71,7 @@ exports[`App renders properly 1`] = `
         </label>
       </div>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-cHGsZl dTJxsD sc-bwzfXH eBfcXh"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-TOsTZ gsRLJp sc-bwzfXH eBfcXh"
         type="button"
       >
         <span
@@ -81,7 +81,7 @@ exports[`App renders properly 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-cHGsZl dTJxsD sc-bdVaJa gLVjYw"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-TOsTZ gsRLJp sc-bdVaJa gLVjYw"
         type="button"
       >
         <span
@@ -91,7 +91,7 @@ exports[`App renders properly 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-cHGsZl dTJxsD sc-bdVaJa gLVjYw"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-TOsTZ gsRLJp sc-bdVaJa gLVjYw"
         type="button"
       >
         <span

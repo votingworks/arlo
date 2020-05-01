@@ -21,7 +21,7 @@ import { IContests } from './types'
 import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useContestsApi from '../useContestsApi'
-import useParticipantsApi from '../useParticipantsApi'
+import useJurisdictions from '../../useJurisdictions'
 import { IContest, ICandidate } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
 
@@ -68,7 +68,7 @@ const Contests: React.FC<IProps> = ({
   const filteredContests = {
     contests: contests.filter(c => c.isTargeted === isTargeted),
   }
-  const jurisdictions = useParticipantsApi(electionId!)
+  const jurisdictions = useJurisdictions(electionId!)
   const submit = async (values: IContests) => {
     const response = await updateContests(values.contests)
     // TEST TODO
