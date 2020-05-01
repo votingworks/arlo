@@ -10,7 +10,7 @@ import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../useAuditSettings'
 import useContestsApi from '../useContestsApi'
 import { IContest, ISampleSizeOption } from '../../../../types'
-import useParticipantsApi from '../useParticipantsApi'
+import useJurisdictions from '../../useJurisdictions'
 import { api, checkAndToast } from '../../../utilities'
 import FormSection, {
   FormSectionDescription,
@@ -40,14 +40,16 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const [{ electionName, randomSeed, riskLimit, online }] = useAuditSettings(
     electionId!
   )
-  const participants = useParticipantsApi(electionId!)
+  const jurisdictions = useJurisdictions(electionId!)
   const [{ contests }] = useContestsApi(electionId!, true)
   const targetedContests = contests
     .filter(c => c.isTargeted === true)
     .map(c => ({
       ...c,
       jurisdictionIds: c.jurisdictionIds.map(j =>
-        participants.length > 0 ? participants.find(p => p.id === j)!.name : ''
+        jurisdictions.length > 0
+          ? jurisdictions.find(p => p.id === j)!.name
+          : ''
       ),
     }))
   const opportunisticContests = contests
@@ -55,7 +57,9 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
     .map(c => ({
       ...c,
       jurisdictionIds: c.jurisdictionIds.map(j =>
-        participants.length > 0 ? participants.find(p => p.id === j)!.name : ''
+        jurisdictions.length > 0
+          ? jurisdictions.find(p => p.id === j)!.name
+          : ''
       ),
     }))
   const [sampleSizeOptions, setSampleSizeOptions] = useState<
