@@ -14,6 +14,9 @@ const Wrapper = styled.div`
   &.single-page {
     flex-direction: column;
     align-items: center;
+    &.left {
+      align-items: flex-start;
+    }
   }
 `
 
