@@ -21,6 +21,8 @@ from arlo_server.auth import (
     get_loggedin_user,
     require_audit_admin_for_organization,
     set_loggedin_user,
+    set_superadmin,
+    clear_superadmin,
     with_election_access,
 )
 from arlo_server.models import *
@@ -37,6 +39,12 @@ from arlo_server.ballot_manifest import (
 from arlo_server.sample_sizes import cumulative_contest_results
 from util.binpacking import BalancedBucketList, Bucket
 
+from config import (
+    SUPERADMIN_AUTH0_BASE_URL,
+    SUPERADMIN_AUTH0_CLIENT_ID,
+    SUPERADMIN_AUTH0_CLIENT_SECRET,
+    SUPERADMIN_EMAIL_DOMAIN,
+)
 from config import (
     AUDITADMIN_AUTH0_BASE_URL,
     AUDITADMIN_AUTH0_CLIENT_ID,
@@ -1154,10 +1162,21 @@ def incr():
 ## Authentication
 ##
 
+SUPERADMIN_OAUTH_CALLBACK_URL = "/auth/superadmin/callback"
 AUDITADMIN_OAUTH_CALLBACK_URL = "/auth/auditadmin/callback"
 JURISDICTIONADMIN_OAUTH_CALLBACK_URL = "/auth/jurisdictionadmin/callback"
 
 oauth = OAuth(app)
+
+auth0_sa = oauth.register(
+    "auth0_sa",
+    client_id=SUPERADMIN_AUTH0_CLIENT_ID,
+    client_secret=SUPERADMIN_AUTH0_CLIENT_SECRET,
+    api_base_url=SUPERADMIN_AUTH0_BASE_URL,
+    access_token_url=f"{SUPERADMIN_AUTH0_BASE_URL}/oauth/token",
+    authorize_url=f"{SUPERADMIN_AUTH0_BASE_URL}/authorize",
+    client_kwargs={"scope": "openid profile email"},
+)
 
 auth0_aa = oauth.register(
     "auth0_aa",
@@ -1228,6 +1247,8 @@ def me():
 
 @app.route("/auth/logout")
 def logout():
+    clear_superadmin()
+
     user_type, _user_email = get_loggedin_user()
     if not user_type:
         return redirect("/")
@@ -1244,6 +1265,30 @@ def logout():
         else JURISDICTIONADMIN_AUTH0_BASE_URL
     )
     return redirect(f"{base_url}/v2/logout?{params}")
+
+
+@app.route("/auth/superadmin/start")
+def superadmin_login():
+    redirect_uri = urllib.parse.urljoin(request.host_url, SUPERADMIN_OAUTH_CALLBACK_URL)
+    return auth0_sa.authorize_redirect(redirect_uri=redirect_uri)
+
+
+@app.route(SUPERADMIN_OAUTH_CALLBACK_URL)
+def superadmin_login_callback():
+    auth0_sa.authorize_access_token()
+    resp = auth0_sa.get("userinfo")
+    userinfo = resp.json()
+
+    # we rely on the auth0 auth here, but check against a single approved domain.
+    if (
+        userinfo
+        and userinfo["email"]
+        and userinfo["email"].split("@")[-1] == SUPERADMIN_EMAIL_DOMAIN
+    ):
+        set_superadmin()
+        return redirect("/superadmin/")
+    else:
+        return redirect("/")
 
 
 @app.route("/auth/auditadmin/start")

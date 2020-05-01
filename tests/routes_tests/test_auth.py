@@ -7,6 +7,7 @@ from urllib.parse import urlparse, parse_qs
 from arlo_server.auth import UserType
 from arlo_server.models import db, AuditBoard, Round
 from arlo_server.routes import (
+    auth0_sa,
     auth0_aa,
     auth0_ja,
 )
@@ -21,6 +22,7 @@ from tests.helpers import (
 )
 
 
+SA_EMAIL = "sa@voting.works"
 AA_EMAIL = "aa@example.com"
 JA_EMAIL = "ja@example.com"
 
@@ -91,6 +93,30 @@ def check_redirect_contains_redirect_uri(response, expected_url):
     # other than '://'
     assert re.search("[^:]\/\/", redirect_uri) is None
     assert expected_url in redirect_uri
+
+
+def test_superadmin_start(client: FlaskClient):
+    rv = client.get("/auth/superadmin/start")
+    check_redirect_contains_redirect_uri(rv, "/auth/superadmin/callback")
+
+
+def test_superadmin_callback(
+    client: FlaskClient, org_id: str,  # pylint: disable=unused-argument
+):
+    auth0_sa.authorize_access_token = MagicMock(return_value=None)
+
+    mock_response = Mock()
+    mock_response.json = MagicMock(return_value={"email": SA_EMAIL})
+    auth0_sa.get = Mock(return_value=mock_response)
+
+    rv = client.get("/auth/superadmin/callback?code=foobar")
+    assert rv.status_code == 302
+
+    with client.session_transaction() as session:  # type: ignore
+        assert session["_superadmin"]
+
+    assert auth0_sa.authorize_access_token.called
+    assert auth0_sa.get.called
 
 
 def test_auditadmin_start(client: FlaskClient):
@@ -739,9 +765,9 @@ def test_with_audit_board_access_audit_board_not_found(
 
 def test_superadmin(client: FlaskClient):
     set_superadmin(client)
-    rv = client.get("/superadmin")
+    rv = client.get("/superadmin/")
     assert rv.status_code == 200
 
     clear_superadmin(client)
-    rv = client.get("/superadmin")
+    rv = client.get("/superadmin/")
     assert rv.status_code == 403

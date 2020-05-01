@@ -11,7 +11,7 @@ from arlo_server.auth import with_superadmin_access
 
 
 @app.route(
-    "/superadmin", methods=["GET"],
+    "/superadmin/", methods=["GET"],
 )
 @with_superadmin_access
 def superadmin_audits():

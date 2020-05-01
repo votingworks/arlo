@@ -118,6 +118,23 @@ def read_http_origin() -> str:
 HTTP_ORIGIN = read_http_origin()
 
 
+def read_superadmin_auth0_creds() -> Tuple[str, str, str, str]:
+    return (
+        os.environ.get("ARLO_SUPERADMIN_AUTH0_BASE_URL", ""),
+        os.environ.get("ARLO_SUPERADMIN_AUTH0_CLIENT_ID", ""),
+        os.environ.get("ARLO_SUPERADMIN_AUTH0_CLIENT_SECRET", ""),
+        os.environ.get("ARLO_SUPERADMIN_EMAIL_DOMAIN", "voting.works"),
+    )
+
+
+(
+    SUPERADMIN_AUTH0_BASE_URL,
+    SUPERADMIN_AUTH0_CLIENT_ID,
+    SUPERADMIN_AUTH0_CLIENT_SECRET,
+    SUPERADMIN_EMAIL_DOMAIN,
+) = read_superadmin_auth0_creds()
+
+
 def read_auditadmin_auth0_creds() -> Tuple[str, str, str]:
     return (
         os.environ.get("ARLO_AUDITADMIN_AUTH0_BASE_URL", ""),

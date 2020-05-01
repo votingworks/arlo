@@ -53,7 +53,7 @@ def set_superadmin():
 
 
 def clear_superadmin():
-    del session["_superadmin"]  # pragma: no cover
+    session["_superadmin"] = False  # pragma: no cover
 
 
 def is_superadmin():
