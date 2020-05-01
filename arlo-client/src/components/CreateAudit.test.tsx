@@ -20,7 +20,7 @@ const checkAndToastMock: jest.SpyInstance<
 checkAndToastMock.mockReturnValue(false)
 
 const routeProps: RouteComponentProps<ICreateAuditParams> = routerTestProps(
-  '/election/:electionId',
+  '/audit/:electionId',
   {
     electionId: '1',
   }
@@ -68,7 +68,7 @@ describe('CreateAudit', () => {
         },
       })
       expect(historySpy).toBeCalledTimes(1)
-      expect(historySpy).toHaveBeenNthCalledWith(1, '/election/1/setup')
+      expect(historySpy).toHaveBeenNthCalledWith(1, '/audit/1/setup')
     })
   })
 
