@@ -70,7 +70,11 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
         return
       }
       const { electionId } = response
-      history.push(`/election/${electionId}/setup`)
+      if (isAuthenticated) {
+        history.push(`/election/${electionId}/setup`)
+      } else {
+        history.push(`/audit/${electionId}/setup`)
+      }
     } catch (err) {
       toast.error(err.message)
     }
@@ -160,7 +164,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
           {meta!.jurisdictions.length > 0 &&
             meta!.jurisdictions.map(({ election }) => (
               <AuditLink
-                to={`/election/${election.id}/setup`}
+                to={`/election/${election.id}`}
                 key={election.id}
                 className="bp3-button bp3-intent-primary"
               >
