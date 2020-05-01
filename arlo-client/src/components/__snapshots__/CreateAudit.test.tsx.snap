@@ -126,14 +126,14 @@ exports[`CreateAudit lists associated elections for authenticated JA user 1`] = 
     </button>
     <a
       class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-1/setup"
+      href="/election/election-1"
     >
       Election One
        (NY)
     </a>
     <a
       class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-2/setup"
+      href="/election/election-2"
     >
       Not named yet
       
