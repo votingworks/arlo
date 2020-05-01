@@ -28,7 +28,7 @@ const App: React.FC = () => {
           <Switch>
             <Route exact path="/" component={CreateAudit} />
             <Route
-              path="/election/:electionId/board/:token"
+              path="/election/:electionId/board/:auditBoardId"
               component={DataEntry}
             />
             <Route path="/election/:electionId" component={Audit} />

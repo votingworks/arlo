@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Spinner } from '@blueprintjs/core'
 import { Route, Switch } from 'react-router-dom'
 import { History } from 'history'
-import { toast } from 'react-toastify'
 import {
   IAuditFlowParams,
-  IAudit,
   IAuditBoard,
   IBallot,
   IBallotInterpretation,
-  IErrorResponse,
+  IAuditBoardMember,
+  IContest,
 } from '../../types'
-import { api, poll, checkAndToast } from '../utilities'
+import { api } from '../utilities'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
 import Ballot from './Ballot'
@@ -25,193 +24,194 @@ interface IProps {
   history: History
 }
 
+const loadAuditBoard = async (): Promise<IAuditBoard> => {
+  return api(`/auth/me`)
+}
+
+const loadContests = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string,
+  auditBoardId: string
+): Promise<IContest[]> => {
+  const { contests } = await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/contest`
+  )
+  return contests
+}
+
+const loadBallots = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string,
+  auditBoardId: string
+): Promise<IBallot[]> => {
+  const { ballots } = await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${auditBoardId}/round/${roundId}/ballot-list`
+  )
+  return ballots
+}
+
+const saveMembers = async (
+  electionId: string,
+  jurisdictionId: string,
+  auditBoardId: string,
+  members: IAuditBoardMember[]
+) => {
+  return api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${auditBoardId}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ members }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  )
+}
+
+const saveBallotInterpretations = async (
+  electionId: string,
+  jurisdictionId: string,
+  batchId: string,
+  ballotPosition: number,
+  interpretation: IBallotInterpretation
+) => {
+  return api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/batch/${batchId}/ballot/${ballotPosition}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ interpretations: [interpretation] }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  )
+}
+
 const DataEntry: React.FC<IProps> = ({
   match: {
-    params: { electionId, token },
+    params: { electionId, auditBoardId },
     url,
   },
   history,
 }: IProps) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  const [audit, setAudit] = useState<IAudit | undefined>(undefined)
-
-  const getStatus = useCallback(async (): Promise<IAudit | undefined> => {
-    const auditStatusOrError: IAudit | IErrorResponse = await api(
-      `/election/${electionId}/audit/status`
-    )
-    if (checkAndToast(auditStatusOrError)) {
-      return undefined
-    }
-    return auditStatusOrError
-  }, [electionId])
-
-  const updateAudit = useCallback(async () => {
-    setIsLoading(true)
-    const auditStatus = await getStatus()
-    setAudit(auditStatus)
-    setIsLoading(false)
-  }, [getStatus])
+  const [auditBoard, setAuditBoard] = useState<IAuditBoard | null>(null)
+  const [contests, setContests] = useState<IContest[] | null>(null)
+  const [ballots, setBallots] = useState<IBallot[] | null>(null)
 
   useEffect(() => {
-    updateAudit()
-  }, [updateAudit])
+    ;(async () => {
+      setAuditBoard(await loadAuditBoard())
+    })()
+  }, [electionId, auditBoardId])
 
-  const board: IAuditBoard | undefined = audit
-    ? audit.jurisdictions[0].auditBoards.find(
-        (v: IAuditBoard) => v.id === token
-      )
-    : undefined
-
-  const round = audit ? audit.rounds[audit.rounds.length - 1] : undefined
-
-  const [ballots, setBallots] = useState<IBallot[]>([])
-
-  const getBallots = useCallback(async (): Promise<IBallot[]> => {
-    /* istanbul ignore else */
-    if (audit && board && round) {
-      const response = await api<
-        | {
-            ballots: IBallot[]
-          }
-        | IErrorResponse
-      >(
-        `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/audit-board/${board.id}/round/${round.id}/ballot-list`
-      )
-      if (checkAndToast(response)) {
-        return []
+  useEffect(() => {
+    ;(async () => {
+      if (auditBoard && auditBoard.members.length > 0) {
+        const { jurisdictionId, roundId, id } = auditBoard
+        setContests(await loadContests(electionId, jurisdictionId, roundId, id))
+        setBallots(await loadBallots(electionId, jurisdictionId, roundId, id))
       }
-      return response.ballots
-    }
-    /* istanbul ignore next */
-    return []
-  }, [electionId, audit, round, board])
+    })()
+  }, [electionId, auditBoard])
 
-  const updateBallots = useCallback(async () => {
-    setIsLoading(true)
-    let polledBallots: IBallot[] = []
-    poll(
-      async () => {
-        polledBallots = await getBallots()
-        return !!polledBallots.length
-      },
-      () => setBallots(polledBallots), // tested elsewhere
-      /* istanbul ignore next */ (err: Error) => toast.error(err.message)
+  const submitMembers = async (members: IAuditBoardMember[]) => {
+    await saveMembers(
+      electionId,
+      auditBoard!.jurisdictionId,
+      auditBoardId,
+      members
     )
-    setIsLoading(false)
-  }, [getBallots])
-
-  useEffect(() => {
-    /* istanbul ignore else */
-    if (audit) {
-      updateBallots()
-    }
-  }, [updateBallots, audit])
-
-  const nextBallot = (r: string, batchId: string, ballot: number) => () => {
-    const ballotIx = ballots.findIndex(
-      (b: IBallot) => b.batch.id === batchId && b.position === ballot
-    )
-    /* istanbul ignore else */
-    if (ballotIx > -1 && ballots[ballotIx + 1]) {
-      const b = ballots[ballotIx + 1]
-      history.push(`${url}/round/${r}/batch/${b.batch.id}/ballot/${b.position}`)
-    } else {
-      /* istanbul ignore next */ // covered in end to end testing
-      history.push(url)
-    }
+    setAuditBoard(await loadAuditBoard())
   }
 
-  const previousBallot = (
-    roundIx: string,
-    batchId: string,
-    ballot: number
-  ) => () => {
-    const ballotIx = ballots.findIndex(
-      (b: IBallot) => b.batch.id === batchId && b.position === ballot
-    )
-    /* istanbul ignore else */
-    if (ballotIx > -1 && ballots[ballotIx - 1]) {
-      const b = ballots[ballotIx - 1]
-      history.push(
-        `${url}/round/${roundIx}/batch/${b.batch.id}/ballot/${b.position}`
-      )
-    } else {
-      /* istanbul ignore next */ // covered in end to end testing
-      history.push(url)
-    }
-  }
-
-  const submitBallot = async (
-    roundIx: string,
-    batch: string,
-    position: number,
-    interpretation: IBallotInterpretation
-  ) => {
-    /* istanbul ignore next */
-    if (audit) {
-      await api(
-        `/election/${electionId}/jurisdiction/${audit.jurisdictions[0].id}/batch/${batch}/ballot/${position}`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ interpretations: [interpretation] }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-      updateBallots()
-    }
-  }
-
-  /* istanbul ignore if */
-  if (!audit || !board) {
+  if (auditBoard && auditBoard.members.length === 0) {
     return (
       <Wrapper className="single-page">
-        <Spinner />
+        <MemberForm
+          submitMembers={submitMembers}
+          boardName={auditBoard.name}
+          jurisdictionName={auditBoard.jurisdictionName}
+        />
       </Wrapper>
     )
   }
-  if (board.members.length) {
+
+  if (auditBoard && ballots && contests) {
+    const nextBallot = (batchId: string, ballot: number) => () => {
+      const ballotIx = ballots.findIndex(
+        (b: IBallot) => b.batch.id === batchId && b.position === ballot
+      )
+      /* istanbul ignore else */
+      if (ballotIx > -1) {
+        const b = ballots[ballotIx + 1]
+        history.push(`${url}/batch/${b.batch.id}/ballot/${b.position}`)
+      } else {
+        /* istanbul ignore next */ // covered in end to end testing
+        history.push(url)
+      }
+    }
+
+    const previousBallot = (batchId: string, ballot: number) => () => {
+      const ballotIx = ballots.findIndex(
+        (b: IBallot) => b.batch.id === batchId && b.position === ballot
+      )
+      /* istanbul ignore else */
+      if (ballotIx > -1 && ballots[ballotIx - 1]) {
+        const b = ballots[ballotIx - 1]
+        history.push(`${url}/batch/${b.batch.id}/ballot/${b.position}`)
+      } else {
+        /* istanbul ignore next */ // covered in end to end testing
+        history.push(url)
+      }
+    }
+
+    const submitBallot = (batchId: string, ballotPosition: number) => async (
+      interpretation: IBallotInterpretation
+    ) => {
+      const { jurisdictionId, roundId, id } = auditBoard
+      await saveBallotInterpretations(
+        electionId,
+        jurisdictionId,
+        batchId,
+        ballotPosition,
+        interpretation
+      )
+      setBallots(await loadBallots(electionId, jurisdictionId, roundId, id))
+    }
+
     return (
       <Wrapper className="single-page">
         <Switch>
           <Route
             exact
-            path="/election/:electionId/board/:token"
+            path="/election/:electionId/board/:auditBoardId"
             render={({ match: { url: routeURL } }) => (
               <BoardTable
-                isLoading={isLoading}
-                setIsLoading={setIsLoading}
-                boardName={board.name}
+                boardName={auditBoard.name}
                 ballots={ballots}
-                round={audit.rounds.length}
                 url={routeURL}
               />
             )}
           />
           <Route
-            path={`${url}/round/:roundIx/batch/:batchId/ballot/:ballotId`}
+            path={`${url}/batch/:batchId/ballot/:ballotPosition`}
             render={({
               match: {
-                params: { roundIx, batchId, ballotId },
+                params: { batchId, ballotPosition },
               },
             }) => (
               <Ballot
                 home={url}
-                previousBallot={previousBallot(
-                  roundIx,
-                  batchId,
-                  Number(ballotId)
-                )}
-                nextBallot={nextBallot(roundIx, batchId, Number(ballotId))}
-                submitBallot={submitBallot}
-                contest={audit.contests[0]}
-                roundIx={roundIx}
+                previousBallot={previousBallot(batchId, Number(ballotPosition))}
+                nextBallot={nextBallot(batchId, Number(ballotPosition))}
+                submitBallot={submitBallot(batchId, Number(ballotPosition))}
+                contests={contests}
                 batchId={batchId}
-                ballotId={Number(ballotId)}
+                ballotPosition={Number(ballotPosition)}
                 ballots={ballots}
-                boardName={board.name}
+                boardName={auditBoard.name}
               />
             )}
           />
@@ -221,14 +221,7 @@ const DataEntry: React.FC<IProps> = ({
   }
   return (
     <Wrapper className="single-page">
-      <MemberForm
-        updateAudit={updateAudit}
-        boardName={board.name}
-        boardId={board.id}
-        jurisdictionName={audit.jurisdictions[0].name}
-        jurisdictionId={audit.jurisdictions[0].id}
-        electionId={electionId}
-      />
+      <Spinner />
     </Wrapper>
   )
 }

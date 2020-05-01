@@ -71,12 +71,12 @@ export const contestMocks: {
         jurisdictionIds: [],
         choices: [
           {
-            id: 'choice-id',
+            id: 'choice-id-1',
             name: 'Choice One',
             numVotes: '10',
           },
           {
-            id: 'choice-id',
+            id: 'choice-id-2',
             name: 'Choice Two',
             numVotes: '20',
           },
@@ -96,12 +96,12 @@ export const contestMocks: {
         jurisdictionIds: [],
         choices: [
           {
-            id: 'choice-id',
+            id: 'choice-id-3',
             name: 'Choice Three',
             numVotes: '10',
           },
           {
-            id: 'choice-id',
+            id: 'choice-id-4',
             name: 'Choice Four',
             numVotes: '20',
           },
@@ -121,12 +121,12 @@ export const contestMocks: {
         jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
         choices: [
           {
-            id: 'choice-id',
+            id: 'choice-id-1',
             name: 'Choice One',
             numVotes: '10',
           },
           {
-            id: 'choice-id',
+            id: 'choice-id-2',
             name: 'Choice Two',
             numVotes: '20',
           },
@@ -146,12 +146,12 @@ export const contestMocks: {
         jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
         choices: [
           {
-            id: 'choice-id',
+            id: 'choice-id-3',
             name: 'Choice Three',
             numVotes: '10',
           },
           {
-            id: 'choice-id',
+            id: 'choice-id-4',
             name: 'Choice Four',
             numVotes: '20',
           },

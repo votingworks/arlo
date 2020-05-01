@@ -30,19 +30,13 @@ const MainCallout = styled(Callout)`
 interface IProps {
   home: string
   boardName: string
-  roundIx: string
   batchId: string
-  ballotId: number
+  ballotPosition: number
   ballots: IBallot[]
-  contest: IContest
+  contests: IContest[]
   previousBallot: () => void
   nextBallot: () => void
-  submitBallot: (
-    round: string,
-    batch: string,
-    position: number,
-    interpretation: IBallotInterpretation
-  ) => void
+  submitBallot: (interpretation: IBallotInterpretation) => void
 }
 
 const emptyInterpretation = (contestId: string) => ({
@@ -55,23 +49,22 @@ const emptyInterpretation = (contestId: string) => ({
 const Ballot: React.FC<IProps> = ({
   home,
   boardName,
-  roundIx,
   batchId,
-  ballotId,
+  ballotPosition,
   ballots,
-  contest,
+  contests,
   previousBallot,
   nextBallot,
   submitBallot,
 }: IProps) => {
   const [auditing, setAuditing] = useState(true)
   const [interpretation, setInterpretation] = useState<IBallotInterpretation>(
-    emptyInterpretation(contest.id)
+    emptyInterpretation(contests[0].id)
   )
 
   const ballotIx = ballots
     ? ballots.findIndex(
-        b => b.position === ballotId && b.batch.id === batchId
+        b => b.position === ballotPosition && b.batch.id === batchId
       ) /* istanbul ignore next */
     : // not showing in coverage, but is tested
       -1
@@ -80,11 +73,13 @@ const Ballot: React.FC<IProps> = ({
   useEffect(() => {
     if (ballot) {
       const ballotInterpretation = ballot.interpretations.find(
-        i => i.contestId === contest.id
+        i => i.contestId === contests[0].id
       )
-      setInterpretation(ballotInterpretation || emptyInterpretation(contest.id))
+      setInterpretation(
+        ballotInterpretation || emptyInterpretation(contests[0].id)
+      )
     }
-  }, [ballot, contest.id])
+  }, [ballot, contests])
 
   return !ballots || !ballot || ballotIx < 0 ? (
     <Redirect to={home} />
@@ -93,7 +88,7 @@ const Ballot: React.FC<IProps> = ({
       <TopH1>{boardName}: Ballot Card Data Entry</TopH1>
       <H3>Enter Ballot Information</H3>
       <MainCallout icon={null}>
-        Round {roundIx}: auditing ballot {ballotIx + 1} of {ballots.length}
+        Auditing ballot {ballotIx + 1} of {ballots.length}
       </MainCallout>
       <BallotRow>
         <div className="ballot-side">
@@ -113,7 +108,7 @@ const Ballot: React.FC<IProps> = ({
           </p>
           <p>
             <Button onClick={nextBallot} intent="danger">
-              Ballot {ballotId} not found - move to next ballot
+              Ballot {ballotPosition} not found - move to next ballot
             </Button>
           </p>
           <p>
@@ -125,7 +120,7 @@ const Ballot: React.FC<IProps> = ({
       </BallotRow>
       {auditing ? (
         <BallotAudit
-          contest={contest}
+          contest={contests[0]}
           interpretation={interpretation}
           setInterpretation={setInterpretation}
           previousBallot={previousBallot}
@@ -133,7 +128,7 @@ const Ballot: React.FC<IProps> = ({
         />
       ) : (
         <BallotReview
-          contest={contest}
+          contest={contests[0]}
           interpretation={interpretation}
           goAudit={() => setAuditing(true)}
           nextBallot={nextBallot}
@@ -141,14 +136,7 @@ const Ballot: React.FC<IProps> = ({
             setAuditing(true)
             previousBallot()
           }}
-          submitBallot={(ballotInterpretation: IBallotInterpretation) =>
-            submitBallot(
-              roundIx,
-              batchId,
-              ballot.position,
-              ballotInterpretation
-            )
-          }
+          submitBallot={submitBallot}
         />
       )}
     </Wrapper>

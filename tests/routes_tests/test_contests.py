@@ -3,9 +3,16 @@ from flask.testing import FlaskClient
 from typing import List
 import json, uuid
 
-from tests.helpers import assert_ok, post_json, put_json, SAMPLE_SIZE_ROUND_1
+from tests.helpers import (
+    assert_ok,
+    post_json,
+    put_json,
+    SAMPLE_SIZE_ROUND_1,
+    set_logged_in_user,
+)
 from arlo_server.models import RoundContest
 from arlo_server.contests import JSONDict
+from arlo_server.auth import UserType
 from arlo_server import db
 
 
@@ -279,3 +286,47 @@ def test_contest_too_many_votes(client: FlaskClient, election_id: str):
             }
         ]
     }
+
+
+def test_audit_board_contests_list_empty(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+    json_contests: List[JSONDict],
+):
+    rv = put_json(client, f"/election/{election_id}/contest", [json_contests[1]])
+    assert_ok(rv)
+    set_logged_in_user(
+        client, UserType.AUDIT_BOARD, user_key=audit_board_round_1_ids[0]
+    )
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/contest"
+    )
+    assert json.loads(rv.data) == {"contests": []}
+
+
+def test_audit_board_contests_list(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+    json_contests: List[JSONDict],
+):
+    rv = put_json(client, f"/election/{election_id}/contest", json_contests)
+    assert_ok(rv)
+
+    set_logged_in_user(
+        client, UserType.AUDIT_BOARD, user_key=audit_board_round_1_ids[0]
+    )
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/contest"
+    )
+    contests = json.loads(rv.data)
+    expected_contests = [
+        {**contest, "currentRoundStatus": None}
+        for contest in [json_contests[0], json_contests[2]]
+    ]
+    assert contests == {"contests": expected_contests}

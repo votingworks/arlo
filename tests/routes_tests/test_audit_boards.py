@@ -39,7 +39,7 @@ def assert_ballots_got_assigned_correctly(
     jurisdiction_id: str,
     round_id: str,
     expected_num_audit_boards: int,
-    expected_num_ballots: int,
+    expected_num_samples: int,
 ):
     # We got the right number of audit boards
     audit_boards = AuditBoard.query.filter_by(
@@ -48,18 +48,19 @@ def assert_ballots_got_assigned_correctly(
     assert len(audit_boards) == expected_num_audit_boards
 
     # We got the right number of sampled ballots
-    ballots = (
-        SampledBallot.query.join(Batch)
+    ballot_draws = (
+        SampledBallotDraw.query.filter_by(round_id=round_id)
+        .join(SampledBallot)
+        .join(Batch)
         .filter_by(jurisdiction_id=jurisdiction_id)
-        .join(SampledBallot.draws)
-        .filter_by(round_id=round_id)
-        .distinct(SampledBallot.batch_id, SampledBallot.ballot_position)
         .all()
     )
-    assert len(ballots) == expected_num_ballots
+    assert len(ballot_draws) == expected_num_samples
 
     # All the ballots got assigned
-    assert sum(len(ab.sampled_ballots) for ab in audit_boards) == expected_num_ballots
+    assert sum(len(ab.sampled_ballots) for ab in audit_boards) == len(
+        set(bd.ballot_id for bd in ballot_draws)
+    )
 
     # Every audit board got some ballots
     for audit_board in audit_boards:
@@ -101,7 +102,7 @@ def test_audit_boards_create_one(
         jurisdiction_ids[0],
         round_1_id,
         expected_num_audit_boards=1,
-        expected_num_ballots=75,
+        expected_num_samples=J1_SAMPLES_ROUND_1,
     )
 
 
@@ -212,7 +213,7 @@ def test_audit_boards_create_two(
         jurisdiction_ids[0],
         round_1_id,
         expected_num_audit_boards=2,
-        expected_num_ballots=75,
+        expected_num_samples=J1_SAMPLES_ROUND_1,
     )
 
 
@@ -331,7 +332,7 @@ def test_audit_boards_create_round_2(
         jurisdiction_ids[0],
         round_2_id,
         expected_num_audit_boards=3,
-        expected_num_ballots=134,
+        expected_num_samples=J1_SAMPLES_ROUND_2,
     )
 
 
@@ -343,8 +344,8 @@ def test_audit_boards_list_round_2(
     round_2_id: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    AB1_SAMPLES_ROUND_2 = 92
-    AB2_SAMPLES_ROUND_2 = 29
+    AB1_SAMPLES_ROUND_2 = 176
+    AB2_SAMPLES_ROUND_2 = 56
 
     rv = post_json(
         client,
@@ -373,7 +374,7 @@ def test_audit_boards_list_round_2(
                     "currentRoundStatus": {
                         "numSampledBallots": AB1_SAMPLES_ROUND_2,
                         # Some ballots got audited in round 1 and sampled again in round 2
-                        "numAuditedBallots": 9,
+                        "numAuditedBallots": 22,
                     },
                 },
                 {
@@ -383,7 +384,7 @@ def test_audit_boards_list_round_2(
                     "signedOffAt": None,
                     "currentRoundStatus": {
                         "numSampledBallots": AB2_SAMPLES_ROUND_2,
-                        "numAuditedBallots": 3,
+                        "numAuditedBallots": 6,
                     },
                 },
                 {
@@ -395,7 +396,7 @@ def test_audit_boards_list_round_2(
                         "numSampledBallots": J1_SAMPLES_ROUND_2
                         - AB1_SAMPLES_ROUND_2
                         - AB2_SAMPLES_ROUND_2,
-                        "numAuditedBallots": 2,
+                        "numAuditedBallots": 5,
                     },
                 },
             ]

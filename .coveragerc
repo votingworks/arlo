@@ -1,7 +1,7 @@
 [run]
 omit = 
     app.py
-    test/*
+    tests/*
     create.py
     create-org.py
     create-admin.py
@@ -9,7 +9,7 @@ omit =
     config/*
 
 [report]
-fail_under = 97.47
+fail_under = 95.79
 precision = 2
 skip_covered = true
 show_missing = true

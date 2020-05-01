@@ -4,6 +4,7 @@ import datetime
 from typing import Any, List, Union, Tuple, Optional
 from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
+from sqlalchemy.orm import joinedload
 
 from arlo_server.auth import UserType
 from arlo_server.routes import create_organization
@@ -13,15 +14,19 @@ from arlo_server.models import (
     User,
     Jurisdiction,
     JurisdictionAdministration,
+    Round,
+    Contest,
     SampledBallot,
+    SampledBallotDraw,
     BallotStatus,
     BallotInterpretation,
     Interpretation,
 )
+from arlo_server.audit_boards import end_round
 
 SAMPLE_SIZE_ROUND_1 = 119  # Bravo sample size
 J1_SAMPLES_ROUND_1 = 81
-J1_SAMPLES_ROUND_2 = 148  # 90% probability sample size
+J1_SAMPLES_ROUND_2 = 280  # 90% probability sample size
 
 DEFAULT_AA_EMAIL = "admin@example.com"
 DEFAULT_JA_EMAIL = "jurisdiction.admin@example.com"
@@ -137,6 +142,32 @@ def audit_ballot(
             )
         )
         ballot.status = BallotStatus.AUDITED
+
+
+def run_audit_round(round_id: str, contest_id: str, vote_ratio: float):
+    round = Round.query.options(
+        joinedload(Round.sampled_ballot_draws).joinedload(
+            SampledBallotDraw.sampled_ballot
+        )
+    ).get(round_id)
+    contest = Contest.query.get(contest_id)
+    winner_votes = int(vote_ratio * len(round.sampled_ballot_draws))
+    for ballot_draw in round.sampled_ballot_draws[:winner_votes]:
+        audit_ballot(
+            ballot_draw.sampled_ballot,
+            contest.id,
+            Interpretation.VOTE,
+            contest.choices[0].id,
+        )
+    for ballot_draw in round.sampled_ballot_draws[winner_votes:]:
+        audit_ballot(
+            ballot_draw.sampled_ballot,
+            contest.id,
+            Interpretation.VOTE,
+            contest.choices[1].id,
+        )
+    end_round(round.election, round)
+    db.session.commit()
 
 
 def assert_is_id(x):

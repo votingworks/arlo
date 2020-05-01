@@ -14,6 +14,7 @@ from tests.helpers import (
     assert_is_id,
     assert_is_date,
     set_logged_in_user,
+    run_audit_round,
     DEFAULT_JA_EMAIL,
 )
 
@@ -53,6 +54,7 @@ def test_rounds_create_one(
                 "roundNum": 1,
                 "startedAt": assert_is_date,
                 "endedAt": None,
+                "isAuditComplete": None,
             }
         ]
     }
@@ -89,11 +91,13 @@ def test_rounds_create_two(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    round_2_id: str,  # pylint: disable=unused-argument
+    contest_ids: List[str],
+    round_1_id: str,
 ):
-    # In this case, we let the round_2_id fixture do the actual creation of the
-    # rounds instead of doing it in the test, because there's a lot of extra
-    # work to do to end the first round that's covered in that fixture
+    run_audit_round(round_1_id, contest_ids[0], 0.5)
+
+    rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
+    assert_ok(rv)
 
     expected_rounds = {
         "rounds": [
@@ -102,12 +106,14 @@ def test_rounds_create_two(
                 "roundNum": 1,
                 "startedAt": assert_is_date,
                 "endedAt": assert_is_date,
+                "isAuditComplete": False,
             },
             {
                 "id": assert_is_id,
                 "roundNum": 2,
                 "startedAt": assert_is_date,
                 "endedAt": None,
+                "isAuditComplete": None,
             },
         ]
     }
@@ -124,12 +130,33 @@ def test_rounds_create_two(
         round_id=rounds["rounds"][1]["id"]
     ).all()
     # Check that we automatically select the 90% prob sample size
-    assert len(ballot_draws) == 205
+    assert len(ballot_draws) == 395
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
     sampled_jurisdictions = {
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
     }
     assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
+
+
+def test_rounds_complete_audit(
+    client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
+):
+    run_audit_round(round_1_id, contest_ids[0], 0.7)
+
+    expected_rounds = {
+        "rounds": [
+            {
+                "id": assert_is_id,
+                "roundNum": 1,
+                "startedAt": assert_is_date,
+                "endedAt": assert_is_date,
+                "isAuditComplete": True,
+            }
+        ]
+    }
+    rv = client.get(f"/election/{election_id}/round")
+    rounds = json.loads(rv.data)
+    compare_json(rounds, expected_rounds)
 
 
 def test_rounds_create_before_previous_round_complete(

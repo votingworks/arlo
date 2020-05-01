@@ -30,7 +30,6 @@ import {
   IJurisdiction,
   IAudit,
   ISampleSizeOption,
-  IAuditBoard,
   IErrorResponse,
 } from '../../types'
 import { api, testNumber, checkAndToast, poll } from '../utilities'
@@ -206,9 +205,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
     1
   const auditNames =
     audit.jurisdictions.length && audit.jurisdictions[0].auditBoards.length
-      ? audit.jurisdictions[0].auditBoards.map(
-          (board: IAuditBoard) => board.name
-        )
+      ? audit.jurisdictions[0].auditBoards.map(board => board.name)
       : Array(numberOfBoards).fill('')
   const initialState: ISelectBallotsToAuditValues = {
     auditBoards: `${numberOfBoards}`,

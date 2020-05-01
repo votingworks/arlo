@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 
 from flask import jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
-from werkzeug.exceptions import NotFound, Forbidden
+from werkzeug.exceptions import NotFound, Forbidden, Unauthorized
 
 from audit_math import bravo, sampler_contest, sampler
 from xkcdpass import xkcd_password as xp
@@ -1212,8 +1212,18 @@ def me():
                 for j in user.jurisdictions
             ],
         )
+    elif user_type == UserType.AUDIT_BOARD:
+        audit_board = AuditBoard.query.get(user_key)
+        return jsonify(
+            type=user_type,
+            id=audit_board.id,
+            jurisdictionId=audit_board.jurisdiction_id,
+            roundId=audit_board.round_id,
+            name=audit_board.name,
+            members=serialize_members(audit_board),
+        )
     else:
-        return jsonify()
+        return Unauthorized()
 
 
 @app.route("/auth/logout")
