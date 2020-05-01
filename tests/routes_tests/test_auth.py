@@ -114,6 +114,7 @@ def test_superadmin_callback(
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_superadmin"]
+        assert list(session.keys()) == ["_superadmin"]
 
     assert auth0_sa.authorize_access_token.called
     assert auth0_sa.get.called
@@ -185,11 +186,13 @@ def test_audit_board_log_in(
 
 def test_logout(client: FlaskClient):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, AA_EMAIL)
+    set_superadmin(client)
 
     rv = client.get("/auth/logout")
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"] is None
+        assert "_superadmin" not in session.keys()
 
     assert rv.status_code == 302
 
