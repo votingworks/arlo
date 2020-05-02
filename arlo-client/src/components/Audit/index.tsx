@@ -11,7 +11,7 @@ import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { api, checkAndToast } from '../utilities'
 import { IAudit, IErrorResponse, ElementType } from '../../types'
 import ResetButton from './ResetButton'
-import Wrapper from '../Atoms/Wrapper'
+import { Wrapper, Inner } from '../Atoms/Wrapper'
 import Sidebar from '../Atoms/Sidebar'
 import { useAuthDataContext } from '../UserContext'
 import Setup, { setupStages } from './Setup'
@@ -20,6 +20,7 @@ import useSetupMenuItems from './useSetupMenuItems'
 import BallotManifest from './Setup/BallotManifest'
 import RoundManagement from './RoundManagement'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
+import StatusBox from './StatusBox'
 
 interface IParams {
   electionId: string
@@ -57,24 +58,30 @@ const AuditAdminView: React.FC = () => {
     case 'setup':
       return (
         <Wrapper>
-          <Sidebar title="Audit Setup" menuItems={menuItems} />
-          <Setup stage={stage} refresh={refresh} menuItems={menuItems} />
+          <StatusBox />
+          <Inner>
+            <Sidebar title="Audit Setup" menuItems={menuItems} />
+            <Setup stage={stage} refresh={refresh} menuItems={menuItems} />
+          </Inner>
         </Wrapper>
       )
     case 'progress':
       return (
         <Wrapper>
-          <Sidebar
-            title="Audit Progress"
-            menuItems={[
-              {
-                title: 'Jurisdictions',
-                active: true,
-                state: 'live',
-              },
-            ]}
-          />
-          <Progress />
+          <StatusBox />
+          <Inner>
+            <Sidebar
+              title="Audit Progress"
+              menuItems={[
+                {
+                  title: 'Jurisdictions',
+                  active: true,
+                  state: 'live',
+                },
+              ]}
+            />
+            <Progress />
+          </Inner>
         </Wrapper>
       )
     default:

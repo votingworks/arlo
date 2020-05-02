@@ -6,38 +6,42 @@ exports[`App renders properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-hmzhuo gmJkxg"
+    class="sc-jbKcbu brJziM"
   >
     <div
-      class="bp3-navbar bp3-fixed-top sc-bxivhb eUaiLH"
+      class="bp3-navbar sc-EHOje dYMYMZ"
     >
       <div
-        class="bp3-navbar-group bp3-align-left"
+        class="sc-bxivhb sc-bZQynM iSWjGC"
       >
         <div
-          class="bp3-navbar-heading"
+          class="bp3-navbar-group bp3-align-left"
         >
-          <a
-            href="/"
+          <div
+            class="bp3-navbar-heading"
           >
-            <img
-              alt="Arlo, by VotingWorks"
-              src="/arlo.png"
-            />
-          </a>
+            <a
+              href="/"
+            >
+              <img
+                alt="Arlo, by VotingWorks"
+                src="/arlo.png"
+              />
+            </a>
+          </div>
         </div>
-      </div>
-      <div
-        class="bp3-navbar-group bp3-align-right"
-      >
         <div
-          class="sc-htpNat lmHRkX"
-          id="reset-button-wrapper"
-        />
+          class="bp3-navbar-group bp3-align-right"
+        >
+          <div
+            class="sc-ifAKCX jNLPyG"
+            id="reset-button-wrapper"
+          />
+        </div>
       </div>
     </div>
     <div
-      class="sc-kgAjT hAioCe"
+      class="sc-frDJqD cvgOmW"
     >
       <img
         alt="Arlo, by VotingWorks"
@@ -45,7 +49,7 @@ exports[`App renders properly 1`] = `
         src="/arlo.png"
       />
       <div
-        class="sc-EHOje gNDuQv"
+        class="sc-gzVnrw coBAaV"
       >
         <label
           for="audit-name"
@@ -53,10 +57,10 @@ exports[`App renders properly 1`] = `
         >
           Give your new audit a unique name.
           <div
-            class="sc-ksYbfQ fqSvil sc-iwsKbI dvOqsv"
+            class="sc-hqyNC goeAEr sc-gqjmRU egaEhI"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group sc-VigVT hfLuvB"
             >
               <input
                 aria-labelledby="audit-name-label"
@@ -71,7 +75,7 @@ exports[`App renders properly 1`] = `
         </label>
       </div>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-TOsTZ gsRLJp sc-bwzfXH eBfcXh"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hmzhuo jZujBA sc-bwzfXH eBfcXh"
         type="button"
       >
         <span
@@ -81,7 +85,7 @@ exports[`App renders properly 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-TOsTZ gsRLJp sc-bdVaJa gLVjYw"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hmzhuo jZujBA sc-bdVaJa gLVjYw"
         type="button"
       >
         <span
@@ -91,7 +95,7 @@ exports[`App renders properly 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-TOsTZ gsRLJp sc-bdVaJa gLVjYw"
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hmzhuo jZujBA sc-bdVaJa gLVjYw"
         type="button"
       >
         <span
