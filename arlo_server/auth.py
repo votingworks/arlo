@@ -23,17 +23,21 @@ class UserType(str, Enum):
     AUDIT_BOARD = "audit_board"
 
 
+_SUPERADMIN = "_superadmin"
+_USER = "_user"
+
+
 def set_loggedin_user(user_type: UserType, user_key: str):
-    session["_user"] = {"type": user_type, "key": user_key}
+    session[_USER] = {"type": user_type, "key": user_key}
 
 
 def get_loggedin_user() -> Union[Tuple[UserType, str], Tuple[None, None]]:
-    user = session.get("_user", None)
+    user = session.get(_USER, None)
     return (user["type"], user["key"]) if user else (None, None)
 
 
 def clear_loggedin_user():
-    session["_user"] = None
+    session[_USER] = None
 
 
 ##
@@ -47,20 +51,18 @@ def clear_loggedin_user():
 ## to re-login
 ##
 
-SESSION_KEY_SUPERADMIN = "_superadmin"
-
 
 def set_superadmin():
-    session[SESSION_KEY_SUPERADMIN] = True  # pragma: no cover
+    session[_SUPERADMIN] = True  # pragma: no cover
 
 
 def clear_superadmin():  # pragma: no cover
-    if SESSION_KEY_SUPERADMIN in session:
-        del session[SESSION_KEY_SUPERADMIN]
+    if _SUPERADMIN in session:
+        del session[_SUPERADMIN]
 
 
 def is_superadmin():
-    return session.get(SESSION_KEY_SUPERADMIN, False)  # pragma: no cover
+    return session.get(_SUPERADMIN, False)  # pragma: no cover
 
 
 def require_superadmin():
