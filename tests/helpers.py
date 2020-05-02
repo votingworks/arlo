@@ -75,7 +75,8 @@ def set_superadmin(client: FlaskClient):
 
 def clear_superadmin(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
-        del session[_SUPERADMIN]
+        if _SUPERADMIN in session:
+            del session[_SUPERADMIN]
 
 
 def create_user(email=DEFAULT_AA_EMAIL) -> User:
