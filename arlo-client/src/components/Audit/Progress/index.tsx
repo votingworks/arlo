@@ -5,6 +5,10 @@ import { Table, Column, Cell } from '@blueprintjs/table'
 import H2Title from '../../Atoms/H2Title'
 import useJurisdictions, { JurisdictionRoundStatus } from '../useJurisdictions'
 
+const Wrapper = styled.div`
+  flex-grow: 1;
+`
+
 const PaddedCell = styled(Cell)`
   padding: 5px 5px 4px 5px;
 `
@@ -88,7 +92,7 @@ const Progress: React.FC = () => {
     : undefined
 
   return (
-    <div>
+    <Wrapper>
       <H2Title>Audit Progress by Jurisdiction</H2Title>
       <div ref={containerRef}>
         <Table
@@ -101,7 +105,7 @@ const Progress: React.FC = () => {
           {columns}
         </Table>
       </div>
-    </div>
+    </Wrapper>
   )
 }
 
