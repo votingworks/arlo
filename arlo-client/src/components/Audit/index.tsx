@@ -12,6 +12,7 @@ import { AuthDataContext } from '../UserContext'
 import Setup, { setupStages } from './Setup'
 import useSetupMenuItems from './useSetupMenuItems'
 import BallotManifest from './Setup/BallotManifest'
+import RoundManagement from './RoundManagement'
 
 const initialData: IAudit = {
   name: '',
@@ -141,7 +142,7 @@ const Audit: React.FC<{}> = () => {
           </>
         )}
         {viewMatch !== 'setup' && viewMatch !== 'progress' && (
-          <p>Round management view</p>
+          <RoundManagement />
         )}
       </Wrapper>
     )

@@ -91,6 +91,7 @@ describe('useSetupMenuItems', () => {
                 },
               ],
               endedAt: null,
+              isAuditComplete: false,
               startedAt: '2019-07-18T16:34:07.000Z',
               id: 'round-1',
             },
