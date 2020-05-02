@@ -7,8 +7,8 @@ import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
-import useAuditSettings from '../useAuditSettings'
-import useContestsApi from '../useContestsApi'
+import useAuditSettings from '../../useAuditSettings'
+import useContests from '../../useContests'
 import { IContest, ISampleSizeOption } from '../../../../types'
 import useJurisdictions from '../../useJurisdictions'
 import { api, checkAndToast } from '../../../utilities'
@@ -18,6 +18,7 @@ import FormSection, {
 } from '../../../Atoms/Form/FormSection'
 import ContestsTable from './ContestsTable'
 import SettingsTable from './SettingsTable'
+import { isSetupComplete } from '../../StatusBox'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -36,12 +37,11 @@ interface IProps {
 }
 
 const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
-  const { electionId } = useParams()
-  const [{ electionName, randomSeed, riskLimit, online }] = useAuditSettings(
-    electionId!
-  )
-  const jurisdictions = useJurisdictions(electionId!)
-  const [{ contests }] = useContestsApi(electionId!, true)
+  const { electionId } = useParams<{ electionId: string }>()
+  const [auditSettings] = useAuditSettings(electionId)
+  const { electionName, randomSeed, riskLimit, online } = auditSettings
+  const jurisdictions = useJurisdictions(electionId)
+  const [contests] = useContests(electionId)
   const targetedContests = contests
     .filter(c => c.isTargeted === true)
     .map(c => ({
@@ -223,7 +223,14 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
             )}
             <FormButtonBar>
               <FormButton onClick={prevStage.activate}>Back</FormButton>
-              <FormButton onClick={handleSubmit}>Launch Audit</FormButton>
+              <FormButton
+                disabled={
+                  !isSetupComplete(jurisdictions, contests, auditSettings)
+                }
+                onClick={handleSubmit}
+              >
+                Launch Audit
+              </FormButton>
             </FormButtonBar>
           </Form>
         )}
