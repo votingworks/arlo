@@ -189,11 +189,14 @@ def test_logout(client: FlaskClient):
     set_superadmin(client)
 
     rv = client.get("/auth/logout")
+    assert rv.status_code == 302
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"] is None
         assert "_superadmin" not in session.keys()
 
+    # logging out a second time should not cause an error
+    rv = client.get("/auth/logout")
     assert rv.status_code == 302
 
 

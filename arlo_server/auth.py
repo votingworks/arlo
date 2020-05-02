@@ -47,17 +47,20 @@ def clear_loggedin_user():
 ## to re-login
 ##
 
+SESSION_KEY_SUPERADMIN = "_superadmin"
+
 
 def set_superadmin():
-    session["_superadmin"] = True  # pragma: no cover
+    session[SESSION_KEY_SUPERADMIN] = True  # pragma: no cover
 
 
-def clear_superadmin():
-    del session["_superadmin"]  # pragma: no cover
+def clear_superadmin():  # pragma: no cover
+    if SESSION_KEY_SUPERADMIN in session:
+        del session[SESSION_KEY_SUPERADMIN]
 
 
 def is_superadmin():
-    return session.get("_superadmin", False)  # pragma: no cover
+    return session.get(SESSION_KEY_SUPERADMIN, False)  # pragma: no cover
 
 
 def require_superadmin():
