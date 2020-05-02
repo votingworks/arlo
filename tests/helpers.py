@@ -138,7 +138,10 @@ def create_election(
             "isMultiJurisdiction": is_multi_jurisdiction,
         },
     )
-    return str(json.loads(rv.data)["electionId"])
+    result = json.loads(rv.data)
+    if "electionId" not in result:
+        raise Exception(f"No electionID in response: {rv.data}")
+    return str(result["electionId"])
 
 
 def audit_ballot(
