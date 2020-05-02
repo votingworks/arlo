@@ -26,7 +26,6 @@ const Main = styled.div`
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  padding: 40px;
 `
 
 interface PrivateRouteProps extends RouteProps {
