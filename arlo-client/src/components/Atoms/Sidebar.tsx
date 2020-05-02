@@ -4,12 +4,11 @@ import { Menu, Spinner, IMenuItemProps } from '@blueprintjs/core'
 import H2Title from './H2Title'
 
 const Wrapper = styled.div`
-  margin-right: 15px;
+  margin-right: 30px;
   width: 250px;
-  padding: 0 15px;
 
-  .bp3-heading {
-    padding-left: 12px;
+  ul.bp3-menu {
+    padding-left: 0;
   }
 `
 

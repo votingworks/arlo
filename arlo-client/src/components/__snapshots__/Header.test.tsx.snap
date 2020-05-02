@@ -3,31 +3,35 @@
 exports[`Header renders correctly 1`] = `
 <div>
   <div
-    class="bp3-navbar bp3-fixed-top sc-bxivhb eUaiLH"
+    class="bp3-navbar sc-EHOje dYMYMZ"
   >
     <div
-      class="bp3-navbar-group bp3-align-left"
+      class="sc-bxivhb sc-bZQynM iSWjGC"
     >
       <div
-        class="bp3-navbar-heading"
+        class="bp3-navbar-group bp3-align-left"
       >
-        <a
-          href="/"
+        <div
+          class="bp3-navbar-heading"
         >
-          <img
-            alt="Arlo, by VotingWorks"
-            src="/arlo.png"
-          />
-        </a>
+          <a
+            href="/"
+          >
+            <img
+              alt="Arlo, by VotingWorks"
+              src="/arlo.png"
+            />
+          </a>
+        </div>
       </div>
-    </div>
-    <div
-      class="bp3-navbar-group bp3-align-right"
-    >
       <div
-        class="sc-htpNat lmHRkX"
-        id="reset-button-wrapper"
-      />
+        class="bp3-navbar-group bp3-align-right"
+      >
+        <div
+          class="sc-ifAKCX jNLPyG"
+          id="reset-button-wrapper"
+        />
+      </div>
     </div>
   </div>
 </div>
@@ -36,86 +40,90 @@ exports[`Header renders correctly 1`] = `
 exports[`Header shows the nav bar when authenticated and there is an electionId 1`] = `
 <div>
   <div
-    class="bp3-navbar bp3-fixed-top sc-bxivhb eUaiLH"
+    class="bp3-navbar sc-EHOje dYMYMZ"
   >
     <div
-      class="bp3-navbar-group bp3-align-left"
+      class="sc-bxivhb sc-bZQynM iSWjGC"
     >
       <div
-        class="bp3-navbar-heading"
+        class="bp3-navbar-group bp3-align-left"
       >
-        <a
-          href="/"
+        <div
+          class="bp3-navbar-heading"
         >
-          <img
-            alt="Arlo, by VotingWorks"
-            src="/arlo.png"
-          />
-        </a>
-      </div>
-    </div>
-    <div
-      class="bp3-navbar-group bp3-align-right"
-    >
-      <div
-        class="bp3-navbar-heading"
-      >
-        <a
-          href="/election/1/setup"
-        >
-          Audit Setup
-        </a>
+          <a
+            href="/"
+          >
+            <img
+              alt="Arlo, by VotingWorks"
+              src="/arlo.png"
+            />
+          </a>
+        </div>
       </div>
       <div
-        class="bp3-navbar-divider"
-      />
-      <div
-        class="bp3-navbar-heading"
+        class="bp3-navbar-group bp3-align-right"
       >
-        <a
-          href="/election/1/progress"
+        <div
+          class="bp3-navbar-heading"
         >
-          Audit Progress
-        </a>
+          <a
+            href="/election/1/setup"
+          >
+            Audit Setup
+          </a>
+        </div>
+        <div
+          class="bp3-navbar-divider"
+        />
+        <div
+          class="bp3-navbar-heading"
+        >
+          <a
+            href="/election/1/progress"
+          >
+            Audit Progress
+          </a>
+        </div>
+        <div
+          class="bp3-navbar-divider"
+        />
+        <div
+          class="bp3-navbar-heading"
+        >
+          <a
+            href="/"
+          >
+            View Audits
+          </a>
+        </div>
+        <div
+          class="bp3-navbar-divider"
+        />
+        <div
+          class="bp3-navbar-heading"
+        >
+          <a
+            href="/"
+          >
+            New Audit
+          </a>
+        </div>
+        <div
+          class="sc-ifAKCX jNLPyG"
+          id="reset-button-wrapper"
+        />
+        <button
+          class="bp3-button bp3-small sc-bwzfXH eBfcXh"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Log out
+          </span>
+        </button>
       </div>
-      <div
-        class="bp3-navbar-divider"
-      />
-      <div
-        class="bp3-navbar-heading"
-      >
-        <a
-          href="/"
-        >
-          View Audits
-        </a>
-      </div>
-      <div
-        class="bp3-navbar-divider"
-      />
-      <div
-        class="bp3-navbar-heading"
-      >
-        <a
-          href="/"
-        >
-          New Audit
-        </a>
-      </div>
-      <div
-        class="sc-htpNat lmHRkX"
-        id="reset-button-wrapper"
-      />
-      <button
-        class="bp3-button bp3-small sc-bwzfXH eBfcXh"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Log out
-        </span>
-      </button>
     </div>
   </div>
 </div>
