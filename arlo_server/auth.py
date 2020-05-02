@@ -1,6 +1,6 @@
 import functools
 from enum import Enum
-from flask import session
+from flask import session, request
 from typing import Callable, Optional, Tuple, Union
 from werkzeug.exceptions import Unauthorized, Forbidden
 
@@ -62,6 +62,13 @@ def clear_superadmin():  # pragma: no cover
 
 
 def is_superadmin():
+    # auth hack for load testing, shouldn't live on master
+    if (
+        request.headers.get("X-ARLO-LOADTESTING-SUPERADMIN", "")
+        == "myvoiceismypassportverifyme"
+    ):
+        return True
+
     return session.get(_SUPERADMIN, False)  # pragma: no cover
 
 
