@@ -96,18 +96,22 @@ const RoundManagement = () => {
         </H2Title>
       </Wrapper>
     )
+  if (rounds.length === 0)
+    return (
+      <Wrapper className="single-page">
+        <H2Title>This Audit is not launched yet.</H2Title>
+      </Wrapper>
+    )
   return (
     <Wrapper className="single-page left">
       <H2Title>Round {rounds.length} Audit Board Setup</H2Title>
-      {rounds.length > 0 && (
-        <CreateAuditBoards
-          auditBoards={auditBoards}
-          electionId={electionId!}
-          jurisdictionId={jurisdictionId}
-          roundId={rounds[rounds.length - 1].id}
-          getAuditBoards={getAuditBoards}
-        />
-      )}
+      <CreateAuditBoards
+        auditBoards={auditBoards}
+        electionId={electionId!}
+        jurisdictionId={jurisdictionId}
+        roundId={rounds[rounds.length - 1].id}
+        getAuditBoards={getAuditBoards}
+      />
       {auditBoards.length > 0 && (
         <>
           <FormButton
