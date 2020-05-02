@@ -137,6 +137,7 @@ export interface IRound {
   contests: IRoundContest[]
   startedAt: string
   endedAt: string | null
+  isAuditComplete: boolean
   jurisdictions?: {
     [key: string]: {
       numBallots: number
