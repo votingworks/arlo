@@ -1,10 +1,15 @@
 import functools
 from enum import Enum
-from flask import session
+from flask import session, request
 from typing import Callable, Optional, Tuple, Union
 from werkzeug.exceptions import Unauthorized, Forbidden
 
 from arlo_server.models import Election, User, Jurisdiction, Round, AuditBoard
+
+from config import (
+    FLASK_ENV,
+    LOADTEST_ENVS,
+)
 
 
 class UserType(str, Enum):
@@ -62,6 +67,14 @@ def clear_superadmin():  # pragma: no cover
 
 
 def is_superadmin():
+    # auth hack for load testing, shouldn't live on master
+    if (
+        FLASK_ENV in LOADTEST_ENVS
+        and request.headers.get("X-ARLO-LOADTESTING-SUPERADMIN", "")
+        == "myvoiceismypassportverifyme"
+    ):
+        return True
+
     return session.get(_SUPERADMIN, False)  # pragma: no cover
 
 
