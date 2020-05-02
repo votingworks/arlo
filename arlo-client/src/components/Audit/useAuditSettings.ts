@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useState } from 'react'
-import { api, checkAndToast } from '../../utilities'
-import { IAuditSettings, IErrorResponse } from '../../../types'
+import { api, checkAndToast } from '../utilities'
+import { IAuditSettings, IErrorResponse } from '../../types'
 
 const defaultValues: IAuditSettings = {
   state: null,
