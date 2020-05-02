@@ -13,7 +13,7 @@ import { generateOptions, ErrorLabel } from '../../../Atoms/Form/_helpers'
 import { parse as parseNumber } from '../../../../utils/number-schema'
 import FormField from '../../../Atoms/Form/FormField'
 import schema from './schema'
-import useAuditSettings from '../useAuditSettings'
+import useAuditSettings from '../../useAuditSettings'
 
 interface IProps {
   locked: boolean
