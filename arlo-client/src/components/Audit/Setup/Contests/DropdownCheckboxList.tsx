@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { FormikProps, getIn } from 'formik'
 import { Popover, Position, Menu, Checkbox } from '@blueprintjs/core'
 import FormButton from '../../../Atoms/Form/FormButton'
-import { IContests } from './types'
+import { IContest } from '../../../../types'
 
 const CustomMenuItem = styled.li`
   .bp3-menu-item {
@@ -24,8 +24,8 @@ export type ICheckboxList = {
 
 interface IProps {
   formikBag: {
-    values: FormikProps<IContests>['values']
-    setFieldValue: FormikProps<IContests>['setFieldValue']
+    values: FormikProps<IContest[]>['values']
+    setFieldValue: FormikProps<IContest[]>['setFieldValue']
   }
   text: string
   optionList: ICheckboxList
