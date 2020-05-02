@@ -1,0 +1,15 @@
+<h2>{{ election.audit_name }}: Jurisdictions</h2>
+<a href="./">back to organizations</a>
+
+<p><p>
+  
+<ul>
+  {% for jurisdiction in election.jurisdictions %}
+  <form method="post" action="./jurisdictionadmin-login">
+    <li> {{jurisdiction.name}}
+      <input type="hidden" name="email" value="{{jurisdiction.jurisdiction_administrations[0].user.email}}">
+      <input type="submit" value="log in as">
+    </li>
+  </form>
+  {% endfor %}
+</ul>
