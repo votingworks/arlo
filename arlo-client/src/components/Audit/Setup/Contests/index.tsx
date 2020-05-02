@@ -17,10 +17,9 @@ import {
 } from '../../EstimateSampleSize'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
-import { IContests } from './types'
 import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
-import useContestsApi from '../useContestsApi'
+import useContests from '../../useContests'
 import useJurisdictions from '../../useJurisdictions'
 import { IContest, ICandidate } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
@@ -38,39 +37,36 @@ const Contests: React.FC<IProps> = ({
   prevStage,
   locked,
 }) => {
-  const contestValues: IContests = {
-    contests: [
-      {
-        id: '',
-        name: '',
-        isTargeted,
-        totalBallotsCast: '',
-        numWinners: '1',
-        votesAllowed: '1',
-        jurisdictionIds: [],
-        choices: [
-          {
-            id: '',
-            name: '',
-            numVotes: '',
-          },
-          {
-            id: '',
-            name: '',
-            numVotes: '',
-          },
-        ],
-      },
-    ],
-  }
-  const { electionId } = useParams()
-  const [{ contests }, updateContests] = useContestsApi(electionId!, isTargeted)
-  const filteredContests = {
-    contests: contests.filter(c => c.isTargeted === isTargeted),
-  }
-  const jurisdictions = useJurisdictions(electionId!)
-  const submit = async (values: IContests) => {
-    const response = await updateContests(values.contests)
+  const contestValues: IContest[] = [
+    {
+      id: '',
+      name: '',
+      isTargeted,
+      totalBallotsCast: '',
+      numWinners: '1',
+      votesAllowed: '1',
+      jurisdictionIds: [],
+      choices: [
+        {
+          id: '',
+          name: '',
+          numVotes: '',
+        },
+        {
+          id: '',
+          name: '',
+          numVotes: '',
+        },
+      ],
+    },
+  ]
+  const { electionId } = useParams<{ electionId: string }>()
+  const [contests, updateContests] = useContests(electionId)
+  const filteredContests = contests.filter(c => c.isTargeted === isTargeted)
+  const jurisdictions = useJurisdictions(electionId)
+
+  const submit = async (values: IContest[]) => {
+    const response = await updateContests(values)
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
@@ -80,14 +76,12 @@ const Contests: React.FC<IProps> = ({
   }
   return (
     <Formik
-      initialValues={
-        filteredContests.contests.length ? filteredContests : contestValues
-      }
+      initialValues={filteredContests.length ? filteredContests : contestValues}
       validationSchema={schema}
       enableReinitialize
       onSubmit={submit}
     >
-      {({ values, handleSubmit, setFieldValue }: FormikProps<IContests>) => (
+      {({ values, handleSubmit, setFieldValue }: FormikProps<IContest[]>) => (
         <Form data-testid="form-one">
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
@@ -96,7 +90,7 @@ const Contests: React.FC<IProps> = ({
               name="contests"
               render={() => (
                 <>
-                  {values.contests.map((contest: IContest, i: number) => {
+                  {values.map((contest: IContest, i: number) => {
                     const contestJurisdictions = getIn(
                       values,
                       `contests[${i}].jurisdictionIds`
@@ -118,14 +112,14 @@ const Contests: React.FC<IProps> = ({
                         <FormSection
                           label={`Contest ${
                             /* istanbul ignore next */
-                            values.contests.length > 1 ? i + 1 : ''
+                            values.length > 1 ? i + 1 : ''
                           } Info`}
                           description="Enter the name of the contest that will drive the audit."
                         >
                           <label htmlFor={`contests[${i}].name`}>
                             Contest{' '}
                             {/* istanbul ignore next */
-                            values.contests.length > 1 ? i + 1 : ''}{' '}
+                            values.length > 1 ? i + 1 : ''}{' '}
                             Name
                             <Field
                               id={`contests[${i}].name`}
@@ -234,7 +228,7 @@ const Contests: React.FC<IProps> = ({
                           <label htmlFor={`contests[${i}].totalBallotsCast`}>
                             Total Ballots for Contest{' '}
                             {/* istanbul ignore next */
-                            values.contests.length > 1 ? i + 1 : ''}
+                            values.length > 1 ? i + 1 : ''}
                             <Field
                               id={`contests[${i}].totalBallotsCast`}
                               name={`contests[${i}].totalBallotsCast`}

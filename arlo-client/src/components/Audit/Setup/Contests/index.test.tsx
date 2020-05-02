@@ -7,9 +7,9 @@ import * as utilities from '../../../utilities'
 import Contests from './index'
 import relativeStages from '../_mocks'
 import { contestsInputMocks, contestMocks } from './_mocks'
-import { numberifyContest, IContestNumbered } from '../useContestsApi'
+import { numberifyContest, IContestNumbered } from '../../useContests'
 import { IJurisdiction } from '../../useJurisdictions'
-import { IContests } from './types'
+import { IContest } from '../../../../types'
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 const apiMock: jest.SpyInstance<
@@ -22,7 +22,7 @@ const checkAndToastMock: jest.SpyInstance<
 > = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 const generateApiMock = (
-  contestsReturn: IContests | Error | { status: 'ok' },
+  contestsReturn: { contests: IContest[] } | Error | { status: 'ok' },
   jurisdictionReturn:
     | { jurisdictions: IJurisdiction[] }
     | Error
@@ -30,7 +30,10 @@ const generateApiMock = (
 ) => async (
   endpoint: string
 ): Promise<
-  IContests | { jurisdictions: IJurisdiction[] } | Error | { status: 'ok' }
+  | { contests: IContest[] }
+  | { jurisdictions: IJurisdiction[] }
+  | Error
+  | { status: 'ok' }
 > => {
   switch (endpoint) {
     case '/election/1/jurisdiction':
