@@ -6,7 +6,11 @@ from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
 from sqlalchemy.orm import joinedload
 
-from arlo_server.auth import UserType
+from arlo_server.auth import (
+    UserType,
+    _USER,
+    _SUPERADMIN,
+)
 from arlo_server.routes import create_organization
 from arlo_server.models import (
     db,
@@ -56,22 +60,22 @@ def set_logged_in_user(
     client: FlaskClient, user_type: UserType, user_key=DEFAULT_AA_EMAIL
 ):
     with client.session_transaction() as session:  # type: ignore
-        session["_user"] = {"type": user_type, "key": user_key}
+        session[_USER] = {"type": user_type, "key": user_key}
 
 
 def clear_logged_in_user(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
-        session["_user"] = None
+        session[_USER] = None
 
 
 def set_superadmin(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
-        session["_superadmin"] = True
+        session[_SUPERADMIN] = True
 
 
 def clear_superadmin(client: FlaskClient):
     with client.session_transaction() as session:  # type: ignore
-        del session["_superadmin"]
+        del session[_SUPERADMIN]
 
 
 def create_user(email=DEFAULT_AA_EMAIL) -> User:
