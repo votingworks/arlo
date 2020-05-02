@@ -8,10 +8,9 @@ import * as utilities from '../../../utilities'
 import { asyncActRender } from '../../../testUtilities'
 import useAuditSettings from '../useAuditSettings'
 import { settingsMock, sampleSizeMock } from './_mocks'
-import { IContests } from '../Contests/types'
 import { IJurisdiction } from '../../useJurisdictions'
 import { contestMocks } from '../Contests/_mocks'
-import { ISampleSizeOption } from '../../../../types'
+import { ISampleSizeOption, IContest } from '../../../../types'
 
 const auditSettingsMock = useAuditSettings as jest.Mock
 
@@ -22,7 +21,7 @@ const apiMock: jest.SpyInstance<
 
 const generateApiMock = (
   sampleSizeReturn: { sampleSizes: ISampleSizeOption[] },
-  contestsReturn: IContests | Error | { status: 'ok' },
+  contestsReturn: { contests: IContest[] } | Error | { status: 'ok' },
   jurisdictionReturn:
     | { jurisdictions: IJurisdiction[] }
     | Error
@@ -30,7 +29,7 @@ const generateApiMock = (
 ) => async (
   endpoint: string
 ): Promise<
-  | IContests
+  | { contests: IContest[] }
   | { sampleSizes: ISampleSizeOption[] }
   | { jurisdictions: IJurisdiction[] }
   | Error
