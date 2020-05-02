@@ -8,6 +8,7 @@ from typing import Dict, Tuple
 ###
 
 DEVELOPMENT_ENVS = ("development", "test")
+LOADTEST_ENVS = ("test", "loadtest")
 
 
 def setup_flask_config() -> Tuple[str, bool]:
