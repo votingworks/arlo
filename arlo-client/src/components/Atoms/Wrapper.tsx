@@ -1,15 +1,9 @@
 import styled from 'styled-components'
 
-const Wrapper = styled.div`
+export const Wrapper = styled.div`
   display: flex;
-  flex-grow: 1;
-  margin-top: 20px;
-  margin-right: auto;
-  margin-left: auto;
+  flex-direction: column;
   width: 100%;
-  max-width: 1020px;
-  padding-right: 15px;
-  padding-left: 15px;
 
   &.single-page {
     flex-direction: column;
@@ -18,6 +12,14 @@ const Wrapper = styled.div`
       align-items: flex-start;
     }
   }
+`
+
+export const Inner = styled.div`
+  display: flex;
+  width: 1020px;
+  min-width: 1020px;
+  margin-left: auto;
+  margin-right: auto;
 `
 
 export default Wrapper
