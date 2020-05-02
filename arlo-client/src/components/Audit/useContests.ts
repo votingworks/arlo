@@ -1,10 +1,9 @@
-import { useEffect, useCallback, useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import uuidv4 from 'uuidv4'
-import { api, checkAndToast } from '../../utilities'
-import { IErrorResponse, IContest } from '../../../types'
-import { IContests } from './Contests/types'
-import { parse as parseNumber } from '../../../utils/number-schema'
+import { api } from '../utilities'
+import { IContest } from '../../types'
+import { parse as parseNumber } from '../../utils/number-schema'
 
 export interface IContestNumbered {
   id: string
@@ -38,61 +37,26 @@ export const numberifyContest = (contest: IContest): IContestNumbered => {
   }
 }
 
-const useContestsApi = (
-  electionId: string,
-  isTargeted: boolean
-): [IContests, (arg0: IContest[]) => Promise<boolean>] => {
-  const defaultValues: IContests = useMemo(
-    () => ({
-      contests: [
-        {
-          id: '',
-          name: '',
-          isTargeted,
-          totalBallotsCast: '',
-          numWinners: '1',
-          votesAllowed: '1',
-          jurisdictionIds: [],
-          choices: [
-            {
-              id: '',
-              name: '',
-              numVotes: '',
-            },
-            {
-              id: '',
-              name: '',
-              numVotes: '',
-            },
-          ],
-        },
-      ],
-    }),
-    [isTargeted]
-  )
-  const [contests, setContests] = useState(defaultValues)
+const useContests = (
+  electionId: string
+): [IContest[], (arg0: IContest[]) => Promise<boolean>] => {
+  const [contests, setContests] = useState<IContest[]>([])
 
-  const getContests = useCallback(async (): Promise<IContests> => {
+  const getContests = async (): Promise<IContest[]> => {
     try {
-      const contestsOrError: IContests | IErrorResponse = await api(
+      const response: { contests: IContest[] } = await api(
         `/election/${electionId}/contest`
       )
-      // checkAndToast left here for consistency and reference but not tested since it's vestigial
-      /* istanbul ignore next */
-      if (checkAndToast(contestsOrError)) {
-        return defaultValues
-      }
-      return contestsOrError
-    } catch (err) /* istanbul ignore next */ {
-      // TEST TODO
+      return response.contests
+    } catch (err) {
       toast.error(err.message)
-      return defaultValues
+      return contests
     }
-  }, [electionId, defaultValues])
+  }
 
   const updateContests = async (newContests: IContest[]): Promise<boolean> => {
     const oldContests = await getContests()
-    const updatedContests: IContest[] = oldContests.contests.reduce(
+    const updatedContests: IContest[] = oldContests.reduce(
       (a: IContest[], c) => {
         const matchingContest = newContests.findIndex(v => v.id === c.id)
         // replace old contest with new contest that has the same id, then remove it from newContests
@@ -106,34 +70,23 @@ const useContestsApi = (
       },
       []
     )
-    const mergedContests = {
-      contests: [
-        ...updatedContests,
-        // merge in all the new contests that weren't found by id
-        ...newContests,
-      ],
-    }
+    const mergedContests = [
+      ...updatedContests,
+      // merge in all the new contests that weren't found by id
+      ...newContests,
+    ]
     try {
-      const response: IErrorResponse = await api(
-        `/election/${electionId}/contest`,
-        {
-          method: 'PUT',
-          // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
-          body: JSON.stringify(
-            mergedContests.contests.map(c => numberifyContest(c))
-          ),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-      // checkAndToast left here for consistency and reference but not tested since it's vestigial
-      /* istanbul ignore next */
-      if (checkAndToast(response)) {
-        return false
-      }
-    } catch (err) /* istanbul ignore next */ {
-      // TEST TODO
+      await api(`/election/${electionId}/contest`, {
+        method: 'PUT',
+        // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
+        body: JSON.stringify({
+          contests: mergedContests.map(c => numberifyContest(c)),
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    } catch (err) {
       toast.error(err.message)
       return false
     }
@@ -150,4 +103,4 @@ const useContestsApi = (
   return [contests, updateContests]
 }
 
-export default useContestsApi
+export default useContests

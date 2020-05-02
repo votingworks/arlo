@@ -18,7 +18,7 @@ import FormSection, {
 } from '../../../Atoms/Form/FormSection'
 import { api, checkAndToast } from '../../../utilities'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
-import useAuditSettings from '../useAuditSettings'
+import useAuditSettings from '../../useAuditSettings'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
