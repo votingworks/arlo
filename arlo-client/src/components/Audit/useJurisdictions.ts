@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { api } from '../utilities'
 
-enum FileProcessingStatus {
+export enum FileProcessingStatus {
   READY_TO_PROCESS = 'READY_TO_PROCESS',
   PROCESSING = 'PROCESSING',
   PROCESSED = 'PROCESSED',
