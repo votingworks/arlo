@@ -1,4 +1,4 @@
-import { IContests } from './types'
+import { IContest } from '../../../../types'
 
 export const contestMocks: {
   [key in
@@ -7,7 +7,7 @@ export const contestMocks: {
     | 'filledTargeted'
     | 'filledOpportunistic'
     | 'filledTargetedWithJurisdictionId'
-    | 'filledOpportunisticWithJurisdictionId']: IContests
+    | 'filledOpportunisticWithJurisdictionId']: { contests: IContest[] }
 } = {
   emptyTargeted: {
     contests: [
