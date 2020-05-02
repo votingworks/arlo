@@ -12,6 +12,9 @@ import useJurisdictions, {
 import FormButton from '../Atoms/Form/FormButton'
 import { api } from '../utilities'
 import { Inner } from '../Atoms/Wrapper'
+import { IAuditSettings, IContest } from '../../types'
+import useAuditSettings from './useAuditSettings'
+import useContests from './useContests'
 
 const Wrapper = styled(Callout)`
   display: flex;
@@ -48,9 +51,20 @@ const downloadAuditReport = (electionId: string) => {
   window.open(`/election/${electionId}/audit/report`)
 }
 
+export const isSetupComplete = (
+  jurisdictions: IJurisdiction[],
+  contests: IContest[],
+  auditSettings: IAuditSettings
+): boolean =>
+  jurisdictions.length > 0 &&
+  contests.some(c => c.isTargeted) &&
+  Object.entries(auditSettings).every(([, v]) => v !== null)
+
 const statusContent = (
   rounds: IRound[],
-  jurisdictions: IJurisdiction[]
+  jurisdictions: IJurisdiction[],
+  contests: IContest[],
+  auditSettings: IAuditSettings
 ): {
   headline: string
   details: string[]
@@ -58,7 +72,11 @@ const statusContent = (
 } => {
   // Audit setup
   if (rounds.length === 0) {
-    const details = ['Audit setup is not complete.']
+    const details = [
+      isSetupComplete(jurisdictions, contests, auditSettings)
+        ? 'Audit setup is complete.'
+        : 'Audit setup is not complete.',
+    ]
     if (jurisdictions.length > 0) {
       const numUploaded = jurisdictions.filter(
         ({ ballotManifest: { processing } }) =>
@@ -116,10 +134,17 @@ const StatusBox: React.FC = () => {
   const { electionId } = useParams<{ electionId: string }>()
   const rounds = useRoundsAuditAdmin(electionId)
   const jurisdictions = useJurisdictions(electionId)
+  const [contests] = useContests(electionId)
+  const [auditSettings] = useAuditSettings(electionId)
 
   if (!rounds) return null // Still loading
 
-  const { headline, details, button } = statusContent(rounds, jurisdictions)
+  const { headline, details, button } = statusContent(
+    rounds,
+    jurisdictions,
+    contests,
+    auditSettings
+  )
 
   const buttonElement = (() => {
     switch (button) {
