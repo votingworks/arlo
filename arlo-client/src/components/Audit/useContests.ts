@@ -50,7 +50,8 @@ const getContests = async (electionId: string): Promise<IContest[] | null> => {
 }
 
 const useContests = (
-  electionId: string
+  electionId: string,
+  refreshId?: string
 ): [IContest[] | null, (arg0: IContest[]) => Promise<boolean>] => {
   const [contests, setContests] = useState<IContest[] | null>(null)
 
@@ -94,7 +95,7 @@ const useContests = (
       const newContests = await getContests(electionId)
       setContests(newContests)
     })()
-  }, [electionId])
+  }, [electionId, refreshId])
   return [contests, updateContests]
 }
 
