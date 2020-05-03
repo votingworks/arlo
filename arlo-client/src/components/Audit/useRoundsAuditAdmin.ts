@@ -10,7 +10,7 @@ export interface IRound {
   isAuditComplete: boolean
 }
 
-const useRoundsAuditAdmin = (electionId: string) => {
+const useRoundsAuditAdmin = (electionId: string, refreshId?: string) => {
   const [rounds, setRounds] = useState<IRound[] | null>(null)
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const useRoundsAuditAdmin = (electionId: string) => {
         toast.error(err.message)
       }
     })()
-  }, [electionId])
+  }, [electionId, refreshId])
 
   return rounds
 }
