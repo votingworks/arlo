@@ -13,9 +13,13 @@ const PaddedCell = styled(Cell)`
   padding: 5px 5px 4px 5px;
 `
 
-const Progress: React.FC = () => {
-  const { electionId } = useParams()
-  const jurisdictions = useJurisdictions(electionId!)
+interface IProps {
+  refreshId: string
+}
+
+const Progress: React.FC<IProps> = ({ refreshId }: IProps) => {
+  const { electionId } = useParams<{ electionId: string }>()
+  const jurisdictions = useJurisdictions(electionId, refreshId)
 
   const columns = [
     <Column
