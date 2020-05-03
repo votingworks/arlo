@@ -22,7 +22,8 @@ type TNewSettings =
     }
 
 const useAuditSettings = (
-  electionId: string
+  electionId: string,
+  refreshId?: string
 ): [IAuditSettings, (arg0: TNewSettings) => Promise<boolean>] => {
   const [settings, setSettings] = useState(defaultValues)
 
@@ -66,7 +67,7 @@ const useAuditSettings = (
       const newSettings = await getSettings()
       setSettings(newSettings)
     })()
-  }, [getSettings])
+  }, [getSettings, refreshId])
   return [settings, updateSettings]
 }
 

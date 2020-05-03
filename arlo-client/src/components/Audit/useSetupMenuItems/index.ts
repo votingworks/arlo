@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react'
 import { toast } from 'react-toastify'
+import uuidv4 from 'uuidv4'
 import { setupStages } from '../Setup'
 import { ElementType } from '../../../types'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
@@ -13,7 +14,8 @@ function useSetupMenuItems(
   stage: ElementType<typeof setupStages>,
   setStage: (s: ElementType<typeof setupStages>) => void,
   electionId: string
-): [ISidebarMenuItem[], () => void] {
+): [ISidebarMenuItem[], () => void, string] {
+  const [refreshId, setRefreshId] = useState(uuidv4())
   const [participants, setParticipants] = useState<ISidebarMenuItem['state']>(
     'live'
   )
@@ -59,6 +61,7 @@ function useSetupMenuItems(
       const complete = () => {
         setContests('live')
         setStage('Target Contests')
+        setRefreshId(uuidv4())
       }
       poll(condition, complete, (err: Error) => toast.error(err.message))
     }
@@ -88,12 +91,14 @@ function useSetupMenuItems(
     setAuditSettings('live')
     setReviewLaunch('live')
     lockAllIfRounds()
+    setRefreshId(uuidv4())
   }, [
     setParticipants,
     setOrPollParticipantsFile,
     setAuditSettings,
     setReviewLaunch,
     lockAllIfRounds,
+    setRefreshId,
   ])
 
   const menuItems: ISidebarMenuItem[] = useMemo(
@@ -146,7 +151,7 @@ function useSetupMenuItems(
       refresh,
     ]
   )
-  return [menuItems, refresh]
+  return [menuItems, refresh, refreshId]
 }
 
 export default useSetupMenuItems
