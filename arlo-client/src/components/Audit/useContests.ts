@@ -37,39 +37,36 @@ export const numberifyContest = (contest: IContest): IContestNumbered => {
   }
 }
 
+const getContests = async (electionId: string): Promise<IContest[] | null> => {
+  try {
+    const response: { contests: IContest[] } = await api(
+      `/election/${electionId}/contest`
+    )
+    return response.contests
+  } catch (err) {
+    toast.error(err.message)
+    return null
+  }
+}
+
 const useContests = (
   electionId: string
-): [IContest[], (arg0: IContest[]) => Promise<boolean>] => {
-  const [contests, setContests] = useState<IContest[]>([])
-
-  const getContests = async (): Promise<IContest[]> => {
-    try {
-      const response: { contests: IContest[] } = await api(
-        `/election/${electionId}/contest`
-      )
-      return response.contests
-    } catch (err) {
-      toast.error(err.message)
-      return contests
-    }
-  }
+): [IContest[] | null, (arg0: IContest[]) => Promise<boolean>] => {
+  const [contests, setContests] = useState<IContest[] | null>(null)
 
   const updateContests = async (newContests: IContest[]): Promise<boolean> => {
-    const oldContests = await getContests()
-    const updatedContests: IContest[] = oldContests.reduce(
-      (a: IContest[], c) => {
-        const matchingContest = newContests.findIndex(v => v.id === c.id)
-        // replace old contest with new contest that has the same id, then remove it from newContests
-        if (matchingContest > -1) {
-          a.push(newContests[matchingContest])
-          newContests.splice(matchingContest, 1)
-        } else {
-          a.push(c)
-        }
-        return a
-      },
-      []
-    )
+    if (!contests) return false
+    const updatedContests: IContest[] = contests.reduce((a: IContest[], c) => {
+      const matchingContest = newContests.findIndex(v => v.id === c.id)
+      // replace old contest with new contest that has the same id, then remove it from newContests
+      if (matchingContest > -1) {
+        a.push(newContests[matchingContest])
+        newContests.splice(matchingContest, 1)
+      } else {
+        a.push(c)
+      }
+      return a
+    }, [])
     const mergedContests = [
       ...updatedContests,
       // merge in all the new contests that weren't found by id
@@ -79,9 +76,7 @@ const useContests = (
       await api(`/election/${electionId}/contest`, {
         method: 'PUT',
         // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
-        body: JSON.stringify({
-          contests: mergedContests.map(c => numberifyContest(c)),
-        }),
+        body: JSON.stringify(mergedContests.map(c => numberifyContest(c))),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -96,10 +91,10 @@ const useContests = (
 
   useEffect(() => {
     ;(async () => {
-      const newContests = await getContests()
+      const newContests = await getContests(electionId)
       setContests(newContests)
     })()
-  }, [getContests])
+  }, [electionId])
   return [contests, updateContests]
 }
 
