@@ -137,7 +137,7 @@ const StatusBox: React.FC = () => {
   const [contests] = useContests(electionId)
   const [auditSettings] = useAuditSettings(electionId)
 
-  if (!rounds) return null // Still loading
+  if (!rounds || !contests) return null // Still loading
 
   const { headline, details, button } = statusContent(
     rounds,

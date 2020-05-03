@@ -42,6 +42,31 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const { electionName, randomSeed, riskLimit, online } = auditSettings
   const jurisdictions = useJurisdictions(electionId)
   const [contests] = useContests(electionId)
+  const [sampleSizeOptions, setSampleSizeOptions] = useState<
+    IStringSampleSize[]
+  >([])
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { sampleSizes }: { sampleSizes: ISampleSizeOption[] } = await api(
+          `/election/${electionId}/sample-sizes`
+        )
+        setSampleSizeOptions(
+          sampleSizes.map(v => ({
+            ...v,
+            size: `${v.size}`,
+          }))
+        )
+      } catch (err) /* istanbul ignore next */ {
+        // TEST TODO
+        toast.error(err.message)
+      }
+    })()
+  }, [electionId])
+
+  if (!contests) return null // Still loading
+
   const targetedContests = contests
     .filter(c => c.isTargeted === true)
     .map(c => ({
@@ -62,27 +87,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           : ''
       ),
     }))
-  const [sampleSizeOptions, setSampleSizeOptions] = useState<
-    IStringSampleSize[]
-  >([])
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const { sampleSizes }: { sampleSizes: ISampleSizeOption[] } = await api(
-          `/election/${electionId}/sample-sizes`
-        )
-        setSampleSizeOptions(
-          sampleSizes.map(v => ({
-            ...v,
-            size: `${v.size}`,
-          }))
-        )
-      } catch (err) /* istanbul ignore next */ {
-        // TEST TODO
-        toast.error(err.message)
-      }
-    })()
-  }, [electionId])
+
   const submit = ({ sampleSize }: { sampleSize: string }) => {
     try {
       const result = api(`/election/${electionId}/round`, {
@@ -106,6 +111,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       toast.error(err.message)
     }
   }
+
   return (
     <div>
       <H2Title>Review &amp; Launch</H2Title>
@@ -224,6 +230,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
             <FormButtonBar>
               <FormButton onClick={prevStage.activate}>Back</FormButton>
               <FormButton
+                intent="primary"
                 disabled={
                   !isSetupComplete(jurisdictions, contests, auditSettings)
                 }
