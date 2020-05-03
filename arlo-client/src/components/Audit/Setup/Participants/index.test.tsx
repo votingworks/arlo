@@ -7,7 +7,7 @@ import Participants from './index'
 import jurisdictionFile from './_mocks'
 import * as utilities from '../../../utilities'
 import { asyncActRender } from '../../../testUtilities'
-import useAuditSettings from '../useAuditSettings'
+import useAuditSettings from '../../useAuditSettings'
 
 const auditSettingsMock = useAuditSettings as jest.Mock
 
