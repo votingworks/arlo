@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { FormikProps, getIn } from 'formik'
+import { FormikProps } from 'formik'
 import { Popover, Position, Menu, Checkbox } from '@blueprintjs/core'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { IContest } from '../../../../types'
@@ -24,8 +24,8 @@ export type ICheckboxList = {
 
 interface IProps {
   formikBag: {
-    values: FormikProps<IContest[]>['values']
-    setFieldValue: FormikProps<IContest[]>['setFieldValue']
+    values: FormikProps<{ contests: IContest[] }>['values']
+    setFieldValue: FormikProps<{ contests: IContest[] }>['setFieldValue']
   }
   text: string
   optionList: ICheckboxList
@@ -38,10 +38,7 @@ const DropdownCheckboxList = ({
   optionList,
   contestIndex,
 }: IProps) => {
-  const jurisdictionList = getIn(
-    values,
-    `contests[${contestIndex}].jurisdictionIds`
-  )
+  const jurisdictionList = values.contests[contestIndex].jurisdictionIds
   const updateList = (value: string, checked: boolean) => {
     const itemIndex = jurisdictionList.indexOf(value)
     /* istanbul ignore else */
