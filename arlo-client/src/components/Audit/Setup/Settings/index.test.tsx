@@ -4,7 +4,7 @@ import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import relativeStages from '../_mocks'
 import Settings from './index'
 import { asyncActRender, regexpEscape } from '../../../testUtilities'
-import useAuditSettings from '../useAuditSettings'
+import useAuditSettings from '../../useAuditSettings'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -17,7 +17,7 @@ routeMock.mockReturnValue({
 })
 
 const auditSettingsMock = useAuditSettings as jest.Mock
-jest.mock('../useAuditSettings')
+jest.mock('../../useAuditSettings')
 auditSettingsMock.mockReturnValue([
   {
     state: 'AL',

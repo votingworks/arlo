@@ -19,6 +19,7 @@ const ButtonBar = styled.div`
 
 const Nav = styled(Navbar)`
   width: 100%;
+  padding: 0;
 
   .bp3-navbar-heading img {
     height: 35px;
