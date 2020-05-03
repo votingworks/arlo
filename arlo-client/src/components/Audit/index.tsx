@@ -45,7 +45,11 @@ const AuditAdminView: React.FC = () => {
   const [stage, setStage] = useState<ElementType<typeof setupStages>>(
     'Participants'
   )
-  const [menuItems, refresh] = useSetupMenuItems(stage, setStage, electionId)
+  const [menuItems, refresh, refreshId] = useSetupMenuItems(
+    stage,
+    setStage,
+    electionId
+  )
 
   useEffect(() => {
     refresh()
@@ -58,7 +62,7 @@ const AuditAdminView: React.FC = () => {
     case 'setup':
       return (
         <Wrapper>
-          <StatusBox />
+          <StatusBox refreshId={refreshId} />
           <Inner>
             <Sidebar title="Audit Setup" menuItems={menuItems} />
             <Setup stage={stage} refresh={refresh} menuItems={menuItems} />
@@ -68,7 +72,7 @@ const AuditAdminView: React.FC = () => {
     case 'progress':
       return (
         <Wrapper>
-          <StatusBox />
+          <StatusBox refreshId={refreshId} />
           <Inner>
             <Sidebar
               title="Audit Progress"
@@ -80,7 +84,7 @@ const AuditAdminView: React.FC = () => {
                 },
               ]}
             />
-            <Progress />
+            <Progress refreshId={refreshId} />
           </Inner>
         </Wrapper>
       )
