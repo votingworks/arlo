@@ -16,10 +16,11 @@ export const Wrapper = styled.div`
 
 export const Inner = styled.div`
   display: flex;
+  margin-right: auto;
+  margin-left: auto;
   width: 1020px;
   min-width: 1020px;
-  margin-left: auto;
-  margin-right: auto;
+  padding: 0 15px;
 `
 
 export default Wrapper
