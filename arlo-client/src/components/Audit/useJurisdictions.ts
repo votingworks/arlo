@@ -40,7 +40,7 @@ export interface IJurisdiction {
   } | null
 }
 
-const useJurisdictions = (electionId: string) => {
+const useJurisdictions = (electionId: string, refreshId?: string) => {
   const [jurisdictions, setJurisdictions] = useState<IJurisdiction[]>([])
   useEffect(() => {
     ;(async () => {
@@ -53,7 +53,7 @@ const useJurisdictions = (electionId: string) => {
         toast.error(err.message)
       }
     })()
-  }, [electionId])
+  }, [electionId, refreshId])
   return jurisdictions
 }
 
