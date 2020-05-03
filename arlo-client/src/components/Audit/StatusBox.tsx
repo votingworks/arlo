@@ -130,12 +130,16 @@ const statusContent = (
   }
 }
 
-const StatusBox: React.FC = () => {
+interface IProps {
+  refreshId: string
+}
+
+const StatusBox: React.FC<IProps> = ({ refreshId }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const rounds = useRoundsAuditAdmin(electionId)
-  const jurisdictions = useJurisdictions(electionId)
-  const [contests] = useContests(electionId)
-  const [auditSettings] = useAuditSettings(electionId)
+  const rounds = useRoundsAuditAdmin(electionId, refreshId)
+  const jurisdictions = useJurisdictions(electionId, refreshId)
+  const [contests] = useContests(electionId, refreshId)
+  const [auditSettings] = useAuditSettings(electionId, refreshId)
 
   if (!rounds || !contests) return null // Still loading
 
