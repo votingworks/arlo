@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { Formik, FormikProps, Form, Field, FieldArray, getIn } from 'formik'
+import { Formik, FormikProps, Form, Field, FieldArray } from 'formik'
 import { Spinner } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormSection, {
@@ -62,11 +62,13 @@ const Contests: React.FC<IProps> = ({
   ]
   const { electionId } = useParams<{ electionId: string }>()
   const [contests, updateContests] = useContests(electionId)
-  const filteredContests = contests.filter(c => c.isTargeted === isTargeted)
   const jurisdictions = useJurisdictions(electionId)
 
-  const submit = async (values: IContest[]) => {
-    const response = await updateContests(values)
+  if (!contests) return null // Still loading
+  const filteredContests = contests.filter(c => c.isTargeted === isTargeted)
+
+  const submit = async (values: { contests: IContest[] }) => {
+    const response = await updateContests(values.contests)
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
@@ -76,12 +78,18 @@ const Contests: React.FC<IProps> = ({
   }
   return (
     <Formik
-      initialValues={filteredContests.length ? filteredContests : contestValues}
+      initialValues={{
+        contests: filteredContests.length ? filteredContests : contestValues,
+      }}
       validationSchema={schema}
       enableReinitialize
       onSubmit={submit}
     >
-      {({ values, handleSubmit, setFieldValue }: FormikProps<IContest[]>) => (
+      {({
+        values,
+        handleSubmit,
+        setFieldValue,
+      }: FormikProps<{ contests: IContest[] }>) => (
         <Form data-testid="form-one">
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
@@ -90,15 +98,11 @@ const Contests: React.FC<IProps> = ({
               name="contests"
               render={() => (
                 <>
-                  {values.map((contest: IContest, i: number) => {
-                    const contestJurisdictions = getIn(
-                      values,
-                      `contests[${i}].jurisdictionIds`
-                    )
+                  {values.contests.map((contest: IContest, i: number) => {
                     const jurisdictionOptions = jurisdictions.map(j => ({
                       title: j.name,
                       value: j.id,
-                      checked: contestJurisdictions.indexOf(j.id) > -1,
+                      checked: contest.jurisdictionIds.indexOf(j.id) > -1,
                     }))
                     return (
                       /* eslint-disable react/no-array-index-key */
@@ -112,14 +116,14 @@ const Contests: React.FC<IProps> = ({
                         <FormSection
                           label={`Contest ${
                             /* istanbul ignore next */
-                            values.length > 1 ? i + 1 : ''
+                            values.contests.length > 1 ? i + 1 : ''
                           } Info`}
                           description="Enter the name of the contest that will drive the audit."
                         >
                           <label htmlFor={`contests[${i}].name`}>
                             Contest{' '}
                             {/* istanbul ignore next */
-                            values.length > 1 ? i + 1 : ''}{' '}
+                            values.contests.length > 1 ? i + 1 : ''}{' '}
                             Name
                             <Field
                               id={`contests[${i}].name`}
@@ -228,7 +232,7 @@ const Contests: React.FC<IProps> = ({
                           <label htmlFor={`contests[${i}].totalBallotsCast`}>
                             Total Ballots for Contest{' '}
                             {/* istanbul ignore next */
-                            values.length > 1 ? i + 1 : ''}
+                            values.contests.length > 1 ? i + 1 : ''}
                             <Field
                               id={`contests[${i}].totalBallotsCast`}
                               name={`contests[${i}].totalBallotsCast`}
