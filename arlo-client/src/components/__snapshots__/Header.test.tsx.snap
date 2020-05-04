@@ -3,10 +3,10 @@
 exports[`Header renders correctly 1`] = `
 <div>
   <div
-    class="bp3-navbar sc-EHOje dYMYMZ"
+    class="bp3-navbar sc-EHOje kGnsSl"
   >
     <div
-      class="sc-bxivhb sc-bZQynM iSWjGC"
+      class="sc-bxivhb sc-bZQynM fAhCaV"
     >
       <div
         class="bp3-navbar-group bp3-align-left"
@@ -40,10 +40,10 @@ exports[`Header renders correctly 1`] = `
 exports[`Header shows the nav bar when authenticated and there is an electionId 1`] = `
 <div>
   <div
-    class="bp3-navbar sc-EHOje dYMYMZ"
+    class="bp3-navbar sc-EHOje kGnsSl"
   >
     <div
-      class="sc-bxivhb sc-bZQynM iSWjGC"
+      class="sc-bxivhb sc-bZQynM fAhCaV"
     >
       <div
         class="bp3-navbar-group bp3-align-left"
