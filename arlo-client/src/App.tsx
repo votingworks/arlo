@@ -10,7 +10,7 @@ import './App.css'
 import styled from 'styled-components'
 import { ToastContainer } from 'react-toastify'
 import Header from './components/Header'
-import Wrapper from './components/Atoms/Wrapper'
+import { Wrapper } from './components/Atoms/Wrapper'
 import {
   SingleJurisdictionAudit,
   MultiJurisdictionAudit,

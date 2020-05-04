@@ -20,7 +20,9 @@ import useSetupMenuItems from './useSetupMenuItems'
 import BallotManifest from './Setup/BallotManifest'
 import RoundManagement from './RoundManagement'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
-import StatusBox from './StatusBox'
+import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from './StatusBox'
+import useBallotManifest from './useBallotManifest'
+import useAuditBoards from './useAuditBoards'
 
 interface IParams {
   electionId: string
@@ -62,7 +64,7 @@ const AuditAdminView: React.FC = () => {
     case 'setup':
       return (
         <Wrapper>
-          <StatusBox refreshId={refreshId} />
+          <AuditAdminStatusBox refreshId={refreshId} />
           <Inner>
             <Sidebar title="Audit Setup" menuItems={menuItems} />
             <Setup stage={stage} refresh={refresh} menuItems={menuItems} />
@@ -72,7 +74,7 @@ const AuditAdminView: React.FC = () => {
     case 'progress':
       return (
         <Wrapper>
-          <StatusBox refreshId={refreshId} />
+          <AuditAdminStatusBox refreshId={refreshId} />
           <Inner>
             <Sidebar
               title="Audit Progress"
@@ -97,12 +99,52 @@ const JurisdictionAdminView: React.FC = () => {
   const { electionId } = useParams<{ electionId: string }>()
   const { meta } = useAuthDataContext()
   const jurisdictionId = meta!.jurisdictions[0].id
+
   const rounds = useRoundsJurisdictionAdmin(electionId, jurisdictionId)
-  if (!rounds) return null // Still loading
+  const [ballotManifest, uploadBallotManifest] = useBallotManifest(
+    electionId,
+    jurisdictionId
+  )
+  const [auditBoards, createAuditBoards] = useAuditBoards(
+    electionId,
+    jurisdictionId,
+    rounds
+  )
+
+  if (!rounds || !ballotManifest || !auditBoards) return null // Still loading
   if (!rounds.length) {
-    return <BallotManifest />
+    return (
+      <Wrapper>
+        <JurisdictionAdminStatusBox
+          rounds={rounds}
+          ballotManifest={ballotManifest}
+          auditBoards={auditBoards}
+        />
+        <Inner>
+          <BallotManifest
+            ballotManifest={ballotManifest}
+            uploadBallotManifest={uploadBallotManifest}
+          />
+        </Inner>
+      </Wrapper>
+    )
   }
-  return <RoundManagement />
+  return (
+    <Wrapper>
+      <JurisdictionAdminStatusBox
+        rounds={rounds}
+        ballotManifest={ballotManifest}
+        auditBoards={auditBoards}
+      />
+      <Inner>
+        <RoundManagement
+          round={rounds[rounds.length - 1]}
+          auditBoards={auditBoards}
+          createAuditBoards={createAuditBoards}
+        />
+      </Inner>
+    </Wrapper>
+  )
 }
 
 const initialData: IAudit = {
