@@ -36,11 +36,11 @@ interface IProps {
   contests: IContest[]
   previousBallot: () => void
   nextBallot: () => void
-  submitBallot: (interpretation: IBallotInterpretation) => void
+  submitBallot: (interpretations: IBallotInterpretation[]) => void
 }
 
-const emptyInterpretation = (contestId: string) => ({
-  contestId,
+const emptyInterpretation = (contest: IContest) => ({
+  contestId: contest.id,
   interpretation: null,
   choiceId: null,
   comment: null,
@@ -58,30 +58,28 @@ const Ballot: React.FC<IProps> = ({
   submitBallot,
 }: IProps) => {
   const [auditing, setAuditing] = useState(true)
-  const [interpretation, setInterpretation] = useState<IBallotInterpretation>(
-    emptyInterpretation(contests[0].id)
-  )
+  const [interpretations, setInterpretations] = useState<
+    IBallotInterpretation[]
+  >(contests.map(emptyInterpretation))
 
-  const ballotIx = ballots
-    ? ballots.findIndex(
-        b => b.position === ballotPosition && b.batch.id === batchId
-      ) /* istanbul ignore next */
-    : // not showing in coverage, but is tested
-      -1
+  const ballotIx = ballots.findIndex(
+    b => b.position === ballotPosition && b.batch.id === batchId
+  ) /* istanbul ignore next */
   const ballot = ballots[ballotIx]
 
   useEffect(() => {
     if (ballot) {
-      const ballotInterpretation = ballot.interpretations.find(
-        i => i.contestId === contests[0].id
-      )
-      setInterpretation(
-        ballotInterpretation || emptyInterpretation(contests[0].id)
+      setInterpretations(
+        contests.map(
+          contest =>
+            ballot.interpretations.find(i => i.contestId === contest.id) ||
+            emptyInterpretation(contest)
+        )
       )
     }
   }, [ballot, contests])
 
-  return !ballots || !ballot || ballotIx < 0 ? (
+  return !ballot || ballotIx < 0 ? (
     <Redirect to={home} />
   ) : (
     <Wrapper>
@@ -120,16 +118,16 @@ const Ballot: React.FC<IProps> = ({
       </BallotRow>
       {auditing ? (
         <BallotAudit
-          contest={contests[0]}
-          interpretation={interpretation}
-          setInterpretation={setInterpretation}
-          previousBallot={previousBallot}
+          contests={contests}
           goReview={() => setAuditing(false)}
+          interpretations={interpretations}
+          setInterpretations={setInterpretations}
+          previousBallot={previousBallot}
         />
       ) : (
         <BallotReview
-          contest={contests[0]}
-          interpretation={interpretation}
+          contests={contests}
+          interpretations={interpretations}
           goAudit={() => setAuditing(true)}
           nextBallot={nextBallot}
           previousBallot={() => {

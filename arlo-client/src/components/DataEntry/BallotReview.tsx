@@ -38,24 +38,24 @@ const renderInterpretation = (
 }
 
 interface IProps {
-  contest: IContest
+  contests: IContest[]
   goAudit: () => void
-  interpretation: IBallotInterpretation
+  interpretations: IBallotInterpretation[]
   nextBallot: () => void
   previousBallot: () => void
-  submitBallot: (interpretation: IBallotInterpretation) => void
+  submitBallot: (interpretations: IBallotInterpretation[]) => void
 }
 
 const BallotReview: React.FC<IProps> = ({
-  contest,
+  contests,
   goAudit,
-  interpretation,
+  interpretations,
   nextBallot,
   previousBallot,
   submitBallot,
 }: IProps) => {
   const handleSubmit = async () => {
-    await submitBallot(interpretation)
+    await submitBallot(interpretations)
     goAudit()
     nextBallot()
   }
@@ -64,23 +64,26 @@ const BallotReview: React.FC<IProps> = ({
     <BallotRow>
       <div className="ballot-side"></div>
       <div className="ballot-main">
-        <FormBlock>
-          <H3>{contest.name}</H3>
-          <FlushDivider />
-          <Wrapper>
-            {/* <ButtonGroup fill large vertical> */}
-            <LockedButton disabled large intent="primary">
-              {renderInterpretation(interpretation, contest)}
-            </LockedButton>
-            <Button icon="edit" minimal onClick={goAudit}>
-              Edit
-            </Button>
-            {/* </ButtonGroup> */}
-          </Wrapper>
-          <p>
-            {interpretation.comment && `COMMENT: ${interpretation.comment}`}
-          </p>
-        </FormBlock>
+        {contests.map((contest, i) => (
+          <FormBlock key={contest.name}>
+            <H3>{contest.name}</H3>
+            <FlushDivider />
+            <Wrapper>
+              {/* <ButtonGroup fill large vertical> */}
+              <LockedButton disabled large intent="primary">
+                {renderInterpretation(interpretations[i], contest)}
+              </LockedButton>
+              <Button icon="edit" minimal onClick={goAudit}>
+                Edit
+              </Button>
+              {/* </ButtonGroup> */}
+            </Wrapper>
+            <p>
+              {interpretations[i].comment &&
+                `COMMENT: ${interpretations[i].comment}`}
+            </p>
+          </FormBlock>
+        ))}
         <ProgressActions>
           <FormButton type="submit" onClick={handleSubmit} intent="success">
             Submit &amp; Next Ballot

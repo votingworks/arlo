@@ -75,13 +75,13 @@ const saveBallotInterpretations = async (
   jurisdictionId: string,
   batchId: string,
   ballotPosition: number,
-  interpretation: IBallotInterpretation
+  interpretations: IBallotInterpretation[]
 ) => {
   return api(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/batch/${batchId}/ballot/${ballotPosition}`,
     {
       method: 'POST',
-      body: JSON.stringify({ interpretations: [interpretation] }),
+      body: JSON.stringify({ interpretations }),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -168,7 +168,7 @@ const DataEntry: React.FC<IProps> = ({
     }
 
     const submitBallot = (batchId: string, ballotPosition: number) => async (
-      interpretation: IBallotInterpretation
+      interpretations: IBallotInterpretation[]
     ) => {
       const { jurisdictionId, roundId, id } = auditBoard
       await saveBallotInterpretations(
@@ -176,7 +176,7 @@ const DataEntry: React.FC<IProps> = ({
         jurisdictionId,
         batchId,
         ballotPosition,
-        interpretation
+        interpretations
       )
       setBallots(await loadBallots(electionId, jurisdictionId, roundId, id))
     }

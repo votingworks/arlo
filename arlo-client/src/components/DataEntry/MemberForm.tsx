@@ -34,63 +34,58 @@ const MemberForm: React.FC<IProps> = ({
         Enter the information below for each member of {jurisdictionName}{' '}
         {boardName} below, then click &quot;Next&quot; to proceed.
       </p>
-      <FormWrapper>
-        <Formik
-          initialValues={[
-            {
-              name: '',
-              affiliation: '',
-            },
-            {
-              name: '',
-              affiliation: '',
-            },
-          ]}
-          onSubmit={submitMembers}
-          render={({
-            setFieldValue,
-            values,
-            handleSubmit,
-          }: FormikProps<[IAuditBoardMember, IAuditBoardMember]>) => (
-            <Form>
-              {[0, 1].map(i => (
-                <FormSection label="Audit Board Member" key={i}>
-                  {/* eslint-disable jsx-a11y/label-has-associated-control */}
-                  <label htmlFor={`[${i}]name`}>
-                    <LabelText>Full Name</LabelText>
-                    <NameField name={`[${i}]name`} id={`[${i}]name`} />
-                  </label>
-                  <div>
-                    <LabelText>
-                      Party Affiliation <i>(optional)</i>
-                    </LabelText>
-                    <RadioGroup
-                      name={`[${i}]affiliation`}
-                      onChange={e =>
-                        setFieldValue(
-                          `[${i}]affiliation`,
-                          e.currentTarget.value
-                        )
-                      }
-                      selectedValue={getIn(values, `[${i}]affiliation`)}
-                    >
-                      <Radio value="DEM">Democrat</Radio>
-                      <Radio value="REP">Republican</Radio>
-                      <Radio value="LIB">Libertarian</Radio>
-                      <Radio value="IND">Independent/Unaffiliated</Radio>
-                      <Radio value="OTH">Other</Radio>
-                      <Radio value="">None</Radio>
-                    </RadioGroup>
-                  </div>
-                </FormSection>
-              ))}
-              <FormButton intent="primary" type="button" onClick={handleSubmit}>
-                Next
-              </FormButton>
-            </Form>
-          )}
-        />
-      </FormWrapper>
+      <Formik
+        initialValues={[
+          {
+            name: '',
+            affiliation: '',
+          },
+          {
+            name: '',
+            affiliation: '',
+          },
+        ]}
+        onSubmit={submitMembers}
+        render={({
+          setFieldValue,
+          values,
+          handleSubmit,
+        }: FormikProps<[IAuditBoardMember, IAuditBoardMember]>) => (
+          <Form>
+            {[0, 1].map(i => (
+              <FormSection label="Audit Board Member" key={i}>
+                {/* eslint-disable jsx-a11y/label-has-associated-control */}
+                <label htmlFor={`[${i}]name`}>
+                  <LabelText>Full Name</LabelText>
+                  <NameField name={`[${i}]name`} id={`[${i}]name`} />
+                </label>
+                <div>
+                  <LabelText>
+                    Party Affiliation <i>(optional)</i>
+                  </LabelText>
+                  <RadioGroup
+                    name={`[${i}]affiliation`}
+                    onChange={e =>
+                      setFieldValue(`[${i}]affiliation`, e.currentTarget.value)
+                    }
+                    selectedValue={getIn(values, `[${i}]affiliation`)}
+                  >
+                    <Radio value="DEM">Democrat</Radio>
+                    <Radio value="REP">Republican</Radio>
+                    <Radio value="LIB">Libertarian</Radio>
+                    <Radio value="IND">Independent/Unaffiliated</Radio>
+                    <Radio value="OTH">Other</Radio>
+                    <Radio value="">None</Radio>
+                  </RadioGroup>
+                </div>
+              </FormSection>
+            ))}
+            <FormButton intent="primary" type="button" onClick={handleSubmit}>
+              Next
+            </FormButton>
+          </Form>
+        )}
+      />
     </>
   )
 }
