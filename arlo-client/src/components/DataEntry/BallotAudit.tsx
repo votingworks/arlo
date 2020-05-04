@@ -67,7 +67,7 @@ const BallotAudit: React.FC<IProps> = ({
                   <BallotAuditContest
                     key={contest.name}
                     contest={contest}
-                    interpretation={interpretations[i]}
+                    interpretation={values.interpretations[i]}
                     setInterpretation={newInterpretation =>
                       setFieldValue(`interpretations[${i}]`, newInterpretation)
                     }
@@ -126,7 +126,7 @@ const BallotAuditContest = ({
   // - For buttons representing other interpretations (BLANK,
   // CANT_AGREE), the value is interpretation.interpretation
   const radioProps = {
-    name: 'interpretation',
+    name: `interpretation-${contest.name}`,
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = e.currentTarget
       if (
@@ -194,7 +194,7 @@ const BallotAuditContest = ({
       </Button>
       {commenting && (
         <Field
-          name="comment"
+          name={`comment-${contest.name}`}
           type="textarea"
           data-testid="comment-textarea"
           component={FormField}
