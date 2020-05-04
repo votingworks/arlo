@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf'
-import { IBallot, IAuditBoard } from '../../../types'
+import { IBallot } from '../../../types'
+import { IAuditBoard } from '../useAuditBoards'
 
 export const downloadLabels = async (
   r: number,

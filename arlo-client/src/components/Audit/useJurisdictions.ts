@@ -9,7 +9,7 @@ export enum FileProcessingStatus {
   ERRORED = 'ERRORED',
 }
 
-interface IFileInfo {
+export interface IFileInfo {
   file: {
     contents: null | string
     name: string
