@@ -214,22 +214,38 @@ describe('AA setup flow', () => {
     return isAuthenticated ? <MultiJurisdictionAudit /> : null
   }
 
+  beforeEach(() =>
+    apiMock.mockImplementation(async (endpoint: string) => {
+      switch (endpoint) {
+        case '/auth/me':
+          return {
+            type: 'audit_admin',
+            name: 'Joe',
+            email: 'test@email.org',
+            jurisdictions: [],
+            organizations: [
+              {
+                id: 'org-id',
+                name: 'State',
+                elections: [],
+              },
+            ],
+          }
+        case '/election/1/round':
+          return { rounds: [] }
+        case '/election/1/jurisdiction':
+          return { jurisdictions: [] }
+        case '/election/1/contest':
+          return contestMocks.filledTargeted
+        case '/election/1/settings':
+          return auditSettings.otherSettings
+        default:
+          return null
+      }
+    })
+  )
+
   it('sidebar changes stages', async () => {
-    apiMock
-      .mockImplementationOnce(async () => ({
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
-          },
-        ],
-      }))
-      .mockImplementationOnce(async () => auditSettings.otherSettings)
     const { queryAllByText, getByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -239,9 +255,6 @@ describe('AA setup flow', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(2)
-      expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(2, '/election/1/settings')
       expect(queryAllByText('Participants').length).toBe(2)
     })
 
@@ -253,24 +266,6 @@ describe('AA setup flow', () => {
   })
 
   it('next and back buttons change stages', async () => {
-    apiMock
-      .mockImplementationOnce(async () => ({
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
-          },
-        ],
-      }))
-      .mockImplementationOnce(async () => auditSettings.otherSettings)
-      .mockImplementationOnce(async () => auditSettings.otherSettings)
-      .mockImplementationOnce(async () => ({ jurisdictions: [] }))
-      .mockImplementation(async () => contestMocks.filledTargeted)
     const { queryAllByText, getByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -280,9 +275,6 @@ describe('AA setup flow', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(2)
-      expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(2, '/election/1/settings')
       expect(queryAllByText('Participants').length).toBe(2)
     })
 
@@ -303,21 +295,6 @@ describe('AA setup flow', () => {
   })
 
   it('renders sidebar when authenticated on /setup', async () => {
-    apiMock
-      .mockImplementationOnce(async () => ({
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
-          },
-        ],
-      }))
-      .mockImplementationOnce(async () => auditSettings.blank)
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -327,9 +304,6 @@ describe('AA setup flow', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(2)
-      expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(2, '/election/1/settings')
       expect(queryAllByText('Participants').length).toBe(2)
       expect(container).toMatchSnapshot()
     })
@@ -343,21 +317,6 @@ describe('AA setup flow', () => {
         view: 'progress',
       },
     })
-    apiMock
-      .mockImplementationOnce(async () => ({
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
-          },
-        ],
-      }))
-      .mockImplementationOnce(async () => ({ jurisdictions: [] }))
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -367,9 +326,6 @@ describe('AA setup flow', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(2)
-      expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
-      expect(apiMock).toHaveBeenNthCalledWith(2, '/election/1/jurisdiction')
       expect(queryAllByText('Jurisdictions').length).toBe(1)
       expect(container).toMatchSnapshot()
     })
@@ -383,19 +339,6 @@ describe('AA setup flow', () => {
         view: '',
       },
     })
-    apiMock.mockImplementationOnce(async () => ({
-      type: 'audit_admin',
-      name: 'Joe',
-      email: 'test@email.org',
-      jurisdictions: [],
-      organizations: [
-        {
-          id: 'org-id',
-          name: 'State',
-          elections: [],
-        },
-      ],
-    }))
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
@@ -405,8 +348,6 @@ describe('AA setup flow', () => {
     )
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
       expect(queryAllByText('Round management view').length).toBe(1)
       expect(container).toMatchSnapshot()
     })

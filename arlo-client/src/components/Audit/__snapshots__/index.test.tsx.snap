@@ -15,174 +15,334 @@ exports[`AA setup flow renders round management 1`] = `
 exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
 <div>
   <div
-    class="sc-kEYyzF kCFsgT"
+    class="sc-kEYyzF eUtHUm"
   >
     <div
-      class="sc-kkGfuU jgdXat"
+      class="bp3-callout sc-brqgnP jodPLw"
     >
-      <h2
-        class="bp3-heading sc-bxivhb jFEWwS"
+      <div
+        class="sc-kkGfuU dNbVpK"
       >
-        Audit Progress
-      </h2>
-      <ul
-        class="bp3-menu"
-      >
-        <li
-          class=""
-        >
-          <a
-            class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
-          >
-            <div
-              class="bp3-text-overflow-ellipsis bp3-fill"
-            >
-              Jurisdictions
-            </div>
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div>
-      <h2
-        class="bp3-heading sc-bxivhb jFEWwS"
-      >
-        Audit Progress by Jurisdiction
-      </h2>
-      <div>
         <div
-          class="bp3-table-container bp3-table-no-rows"
-          tabindex="0"
+          class="text"
         >
-          <div
-            class="bp3-table-quadrant-stack"
+          <h4
+            class="bp3-heading"
           >
-            <div
-              class="bp3-table-quadrant bp3-table-quadrant-main"
+            The audit has not started.
+          </h4>
+          <p>
+            Audit setup is not complete.
+          </p>
+        </div>
+        <div />
+      </div>
+    </div>
+    <div
+      class="sc-kkGfuU dNbVpK"
+    >
+      <div
+        class="sc-iAyFgw crJrHI"
+      >
+        <h2
+          class="bp3-heading sc-bxivhb jFEWwS"
+        >
+          Audit Progress
+        </h2>
+        <ul
+          class="bp3-menu"
+        >
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
             >
               <div
-                class="bp3-table-quadrant-scroll-container"
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Jurisdictions
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="sc-cMljjf beyuyF"
+      >
+        <h2
+          class="bp3-heading sc-bxivhb jFEWwS"
+        >
+          Audit Progress by Jurisdiction
+        </h2>
+        <div>
+          <div
+            class="bp3-table-container bp3-table-no-rows"
+            tabindex="0"
+          >
+            <div
+              class="bp3-table-quadrant-stack"
+            >
+              <div
+                class="bp3-table-quadrant bp3-table-quadrant-main"
               >
                 <div
-                  class="bp3-table-top-container"
+                  class="bp3-table-quadrant-scroll-container"
                 >
                   <div
-                    class="bp3-table-column-headers"
+                    class="bp3-table-top-container"
                   >
                     <div
-                      style="width: 600px;"
+                      class="bp3-table-column-headers"
                     >
                       <div
-                        class="bp3-table-thead bp3-table-column-header-tr"
-                        style="transform: translateX(0px); width: 600px;"
+                        style="width: 600px;"
                       >
                         <div
-                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                          class="bp3-table-thead bp3-table-column-header-tr"
+                          style="transform: translateX(0px); width: 600px;"
                         >
                           <div
-                            class="bp3-table-column-name"
-                            title="Jurisdiction Name"
+                            class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                            style="flex-basis: 150px; min-width: 0px; width: 150px;"
                           >
                             <div
-                              class="bp3-table-column-name-text"
+                              class="bp3-table-column-name"
+                              title="Jurisdiction Name"
                             >
                               <div
-                                class="bp3-table-truncated-text"
+                                class="bp3-table-column-name-text"
                               >
-                                Jurisdiction Name
+                                <div
+                                  class="bp3-table-truncated-text"
+                                >
+                                  Jurisdiction Name
+                                </div>
                               </div>
                             </div>
+                            <div
+                              class="bp3-table-header-content"
+                            />
                           </div>
                           <div
-                            class="bp3-table-header-content"
-                          />
+                            class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                            style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-column-name"
+                              title="Status"
+                            >
+                              <div
+                                class="bp3-table-column-name-text"
+                              >
+                                <div
+                                  class="bp3-table-truncated-text"
+                                >
+                                  Status
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-header-content"
+                            />
+                          </div>
+                          <div
+                            class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                            style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-column-name"
+                              title="Total Audited"
+                            >
+                              <div
+                                class="bp3-table-column-name-text"
+                              >
+                                <div
+                                  class="bp3-table-truncated-text"
+                                >
+                                  Total Audited
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-header-content"
+                            />
+                          </div>
+                          <div
+                            class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                            style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-column-name"
+                              title="Remaining in Round"
+                            >
+                              <div
+                                class="bp3-table-column-name-text"
+                              >
+                                <div
+                                  class="bp3-table-truncated-text"
+                                >
+                                  Remaining in Round
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-header-content"
+                            />
+                          </div>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="bp3-table-bottom-container"
+                    style="height: 0px; width: 600px;"
+                  >
+                    <div
+                      class="bp3-table-quadrant-body-container"
+                    >
+                      <div>
                         <div
-                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                          class="bp3-table-body-virtual-client bp3-table-cell-client"
+                          style="height: 0px; width: 600px;"
                         >
                           <div
-                            class="bp3-table-column-name"
-                            title="Status"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Status
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Total Audited"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Total Audited
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Remaining in Round"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Remaining in Round
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
+                            class="bp3-table-body-cells"
                           />
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
+              <div
+                class="bp3-table-quadrant bp3-table-quadrant-top"
+                style="height: 30px; right: 0px;"
+              >
                 <div
-                  class="bp3-table-bottom-container"
-                  style="height: 0px; width: 600px;"
+                  class="bp3-table-quadrant-scroll-container"
                 >
                   <div
-                    class="bp3-table-quadrant-body-container"
+                    class="bp3-table-top-container"
                   >
-                    <div>
+                    <div
+                      class="bp3-table-column-headers"
+                    >
                       <div
-                        class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: 0px; width: 600px;"
+                        style="width: 600px;"
                       >
                         <div
-                          class="bp3-table-body-cells"
-                        />
+                          class="bp3-table-thead bp3-table-column-header-tr"
+                          style="transform: translateX(0px); width: 600px;"
+                        >
+                          <div
+                            class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                            style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-column-name"
+                              title="Jurisdiction Name"
+                            >
+                              <div
+                                class="bp3-table-column-name-text"
+                              >
+                                <div
+                                  class="bp3-table-truncated-text"
+                                >
+                                  Jurisdiction Name
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-header-content"
+                            />
+                          </div>
+                          <div
+                            class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                            style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-column-name"
+                              title="Status"
+                            >
+                              <div
+                                class="bp3-table-column-name-text"
+                              >
+                                <div
+                                  class="bp3-table-truncated-text"
+                                >
+                                  Status
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-header-content"
+                            />
+                          </div>
+                          <div
+                            class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                            style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-column-name"
+                              title="Total Audited"
+                            >
+                              <div
+                                class="bp3-table-column-name-text"
+                              >
+                                <div
+                                  class="bp3-table-truncated-text"
+                                >
+                                  Total Audited
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-header-content"
+                            />
+                          </div>
+                          <div
+                            class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                            style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-column-name"
+                              title="Remaining in Round"
+                            >
+                              <div
+                                class="bp3-table-column-name-text"
+                              >
+                                <div
+                                  class="bp3-table-truncated-text"
+                                >
+                                  Remaining in Round
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-header-content"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="bp3-table-bottom-container"
+                    style="height: 0px; width: 600px;"
+                  >
+                    <div
+                      class="bp3-table-quadrant-body-container"
+                    >
+                      <div>
+                        <div
+                          class="bp3-table-body-virtual-client bp3-table-cell-client"
+                          style="height: -30px; width: 600px;"
+                        >
+                          <div
+                            class="bp3-table-body-cells"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -190,164 +350,31 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
               </div>
             </div>
             <div
-              class="bp3-table-quadrant bp3-table-quadrant-top"
-              style="height: 30px; right: 0px;"
+              class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
+            />
+            <div
+              class="bp3-table-resize-guides bp3-table-overlay-layer"
+            />
+            <div
+              class="bp3-table-resize-sensor"
+              style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
             >
               <div
-                class="bp3-table-quadrant-scroll-container"
+                class="bp3-table-resize-sensor-expand"
+                style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
               >
                 <div
-                  class="bp3-table-top-container"
-                >
-                  <div
-                    class="bp3-table-column-headers"
-                  >
-                    <div
-                      style="width: 600px;"
-                    >
-                      <div
-                        class="bp3-table-thead bp3-table-column-header-tr"
-                        style="transform: translateX(0px); width: 600px;"
-                      >
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Jurisdiction Name"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Jurisdiction Name
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Status"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Status
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Total Audited"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Total Audited
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Remaining in Round"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Remaining in Round
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="bp3-table-bottom-container"
-                  style="height: 0px; width: 600px;"
-                >
-                  <div
-                    class="bp3-table-quadrant-body-container"
-                  >
-                    <div>
-                      <div
-                        class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: -30px; width: 600px;"
-                      >
-                        <div
-                          class="bp3-table-body-cells"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
+                />
               </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
-          />
-          <div
-            class="bp3-table-resize-guides bp3-table-overlay-layer"
-          />
-          <div
-            class="bp3-table-resize-sensor"
-            style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
-          >
-            <div
-              class="bp3-table-resize-sensor-expand"
-              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
-            >
               <div
-                style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
-              />
-            </div>
-            <div
-              class="bp3-table-resize-sensor-shrink"
-              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
-            >
-              <div
-                style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
-              />
+                class="bp3-table-resize-sensor-shrink"
+                style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+              >
+                <div
+                  style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -360,506 +387,531 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
 exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
 <div>
   <div
-    class="sc-kEYyzF kCFsgT"
+    class="sc-kEYyzF eUtHUm"
   >
     <div
-      class="sc-kkGfuU jgdXat"
-    >
-      <h2
-        class="bp3-heading sc-bxivhb jFEWwS"
-      >
-        Audit Setup
-      </h2>
-      <ul
-        class="bp3-menu"
-      >
-        <li
-          class=""
-        >
-          <a
-            class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
-          >
-            <div
-              class="bp3-text-overflow-ellipsis bp3-fill"
-            >
-              Participants
-            </div>
-          </a>
-        </li>
-        <li
-          class="bp3-menu-divider"
-        />
-        <li
-          class=""
-        >
-          <a
-            class="bp3-menu-item bp3-popover-dismiss"
-          >
-            <div
-              class="bp3-text-overflow-ellipsis bp3-fill"
-            >
-              Target Contests
-            </div>
-          </a>
-        </li>
-        <li
-          class="bp3-menu-divider"
-        />
-        <li
-          class=""
-        >
-          <a
-            class="bp3-menu-item bp3-popover-dismiss"
-          >
-            <div
-              class="bp3-text-overflow-ellipsis bp3-fill"
-            >
-              Opportunistic Contests
-            </div>
-          </a>
-        </li>
-        <li
-          class="bp3-menu-divider"
-        />
-        <li
-          class=""
-        >
-          <a
-            class="bp3-menu-item bp3-popover-dismiss"
-          >
-            <div
-              class="bp3-text-overflow-ellipsis bp3-fill"
-            >
-              Audit Settings
-            </div>
-          </a>
-        </li>
-        <li
-          class="bp3-menu-divider"
-        />
-        <li
-          class=""
-        >
-          <a
-            class="bp3-menu-item bp3-popover-dismiss"
-          >
-            <div
-              class="bp3-text-overflow-ellipsis bp3-fill"
-            >
-              Review & Launch
-            </div>
-          </a>
-        </li>
-      </ul>
-    </div>
-    <form
-      data-testid="form-one"
+      class="bp3-callout sc-brqgnP jodPLw"
     >
       <div
-        class="sc-ifAKCX dUfgxM"
+        class="sc-kkGfuU dNbVpK"
+      >
+        <div
+          class="text"
+        >
+          <h4
+            class="bp3-heading"
+          >
+            The audit has not started.
+          </h4>
+          <p>
+            Audit setup is not complete.
+          </p>
+        </div>
+        <div />
+      </div>
+    </div>
+    <div
+      class="sc-kkGfuU dNbVpK"
+    >
+      <div
+        class="sc-iAyFgw crJrHI"
       >
         <h2
           class="bp3-heading sc-bxivhb jFEWwS"
         >
-          Participants
+          Audit Setup
         </h2>
-        <label
-          for="state"
+        <ul
+          class="bp3-menu"
         >
-          Choose your state from the options below
-          <br />
-          <div
-            class="bp3-html-select sc-iAyFgw hQSkFJ"
+          <li
+            class=""
           >
-            <select
-              data-testid="state-field"
-              field="[object Object]"
-              form="[object Object]"
-              id="state"
-            >
-              <option
-                value=""
-              />
-              <option
-                label="Alabama"
-                value="AL"
-              >
-                Alabama
-              </option>
-              <option
-                label="Alaska"
-                value="AK"
-              >
-                Alaska
-              </option>
-              <option
-                label="Arizona"
-                value="AZ"
-              >
-                Arizona
-              </option>
-              <option
-                label="Arkansas"
-                value="AR"
-              >
-                Arkansas
-              </option>
-              <option
-                label="California"
-                value="CA"
-              >
-                California
-              </option>
-              <option
-                label="Colorado"
-                value="CO"
-              >
-                Colorado
-              </option>
-              <option
-                label="Connecticut"
-                value="CT"
-              >
-                Connecticut
-              </option>
-              <option
-                label="Delaware"
-                value="DE"
-              >
-                Delaware
-              </option>
-              <option
-                label="District Of Columbia"
-                value="DC"
-              >
-                District Of Columbia
-              </option>
-              <option
-                label="Florida"
-                value="FL"
-              >
-                Florida
-              </option>
-              <option
-                label="Georgia"
-                value="GA"
-              >
-                Georgia
-              </option>
-              <option
-                label="Hawaii"
-                value="HI"
-              >
-                Hawaii
-              </option>
-              <option
-                label="Idaho"
-                value="ID"
-              >
-                Idaho
-              </option>
-              <option
-                label="Illinois"
-                value="IL"
-              >
-                Illinois
-              </option>
-              <option
-                label="Indiana"
-                value="IN"
-              >
-                Indiana
-              </option>
-              <option
-                label="Iowa"
-                value="IA"
-              >
-                Iowa
-              </option>
-              <option
-                label="Kansas"
-                value="KS"
-              >
-                Kansas
-              </option>
-              <option
-                label="Kentucky"
-                value="KY"
-              >
-                Kentucky
-              </option>
-              <option
-                label="Louisiana"
-                value="LA"
-              >
-                Louisiana
-              </option>
-              <option
-                label="Maine"
-                value="ME"
-              >
-                Maine
-              </option>
-              <option
-                label="Maryland"
-                value="MD"
-              >
-                Maryland
-              </option>
-              <option
-                label="Massachusetts"
-                value="MA"
-              >
-                Massachusetts
-              </option>
-              <option
-                label="Michigan"
-                value="MI"
-              >
-                Michigan
-              </option>
-              <option
-                label="Minnesota"
-                value="MN"
-              >
-                Minnesota
-              </option>
-              <option
-                label="Mississippi"
-                value="MS"
-              >
-                Mississippi
-              </option>
-              <option
-                label="Missouri"
-                value="MO"
-              >
-                Missouri
-              </option>
-              <option
-                label="Montana"
-                value="MT"
-              >
-                Montana
-              </option>
-              <option
-                label="Nebraska"
-                value="NE"
-              >
-                Nebraska
-              </option>
-              <option
-                label="Nevada"
-                value="NV"
-              >
-                Nevada
-              </option>
-              <option
-                label="New Hampshire"
-                value="NH"
-              >
-                New Hampshire
-              </option>
-              <option
-                label="New Jersey"
-                value="NJ"
-              >
-                New Jersey
-              </option>
-              <option
-                label="New Mexico"
-                value="NM"
-              >
-                New Mexico
-              </option>
-              <option
-                label="New York"
-                value="NY"
-              >
-                New York
-              </option>
-              <option
-                label="North Carolina"
-                value="NC"
-              >
-                North Carolina
-              </option>
-              <option
-                label="North Dakota"
-                value="ND"
-              >
-                North Dakota
-              </option>
-              <option
-                label="Ohio"
-                value="OH"
-              >
-                Ohio
-              </option>
-              <option
-                label="Oklahoma"
-                value="OK"
-              >
-                Oklahoma
-              </option>
-              <option
-                label="Oregon"
-                value="OR"
-              >
-                Oregon
-              </option>
-              <option
-                label="Pennsylvania"
-                value="PA"
-              >
-                Pennsylvania
-              </option>
-              <option
-                label="Rhode Island"
-                value="RI"
-              >
-                Rhode Island
-              </option>
-              <option
-                label="South Carolina"
-                value="SC"
-              >
-                South Carolina
-              </option>
-              <option
-                label="South Dakota"
-                value="SD"
-              >
-                South Dakota
-              </option>
-              <option
-                label="Tennessee"
-                value="TN"
-              >
-                Tennessee
-              </option>
-              <option
-                label="Texas"
-                value="TX"
-              >
-                Texas
-              </option>
-              <option
-                label="Utah"
-                value="UT"
-              >
-                Utah
-              </option>
-              <option
-                label="Vermont"
-                value="VT"
-              >
-                Vermont
-              </option>
-              <option
-                label="Virginia"
-                value="VA"
-              >
-                Virginia
-              </option>
-              <option
-                label="Washington"
-                value="WA"
-              >
-                Washington
-              </option>
-              <option
-                label="West Virginia"
-                value="WV"
-              >
-                West Virginia
-              </option>
-              <option
-                label="Wisconsin"
-                value="WI"
-              >
-                Wisconsin
-              </option>
-              <option
-                label="Wyoming"
-                value="WY"
-              >
-                Wyoming
-              </option>
-            </select>
-            <span
-              class="bp3-icon bp3-icon-double-caret-vertical"
-              icon="double-caret-vertical"
-            >
-              <svg
-                data-icon="double-caret-vertical"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
-              >
-                <desc>
-                  double-caret-vertical
-                </desc>
-                <path
-                  d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                  fill-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </div>
-        </label>
-        <div
-          class="sc-bdVaJa fdbLH"
-        >
-          <div
-            class="sc-bwzfXH izcbHX"
-          >
-            Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
-            <br />
-            <br />
             <a
-              href="http://localhost/sample_jurisdiction_filesheet.csv"
-              rel="noopener noreferrer"
-              target="_blank"
+              class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
             >
-              (Click here to view a sample file in the correct format.)
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Participants
+              </div>
             </a>
+          </li>
+          <li
+            class="bp3-menu-divider"
+          />
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-popover-dismiss"
+            >
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Target Contests
+              </div>
+            </a>
+          </li>
+          <li
+            class="bp3-menu-divider"
+          />
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-popover-dismiss"
+            >
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Opportunistic Contests
+              </div>
+            </a>
+          </li>
+          <li
+            class="bp3-menu-divider"
+          />
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-popover-dismiss"
+            >
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Audit Settings
+              </div>
+            </a>
+          </li>
+          <li
+            class="bp3-menu-divider"
+          />
+          <li
+            class=""
+          >
+            <a
+              class="bp3-menu-item bp3-popover-dismiss"
+            >
+              <div
+                class="bp3-text-overflow-ellipsis bp3-fill"
+              >
+                Review & Launch
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <form
+        data-testid="form-one"
+      >
+        <div
+          class="sc-ifAKCX dUfgxM"
+        >
+          <h2
+            class="bp3-heading sc-bxivhb jFEWwS"
+          >
+            Participants
+          </h2>
+          <label
+            for="state"
+          >
+            Choose your state from the options below
+            <br />
+            <div
+              class="bp3-html-select sc-hSdWYo ycIrv"
+            >
+              <select
+                data-testid="state-field"
+                field="[object Object]"
+                form="[object Object]"
+                id="state"
+              >
+                <option
+                  value=""
+                />
+                <option
+                  label="Alabama"
+                  value="AL"
+                >
+                  Alabama
+                </option>
+                <option
+                  label="Alaska"
+                  value="AK"
+                >
+                  Alaska
+                </option>
+                <option
+                  label="Arizona"
+                  value="AZ"
+                >
+                  Arizona
+                </option>
+                <option
+                  label="Arkansas"
+                  value="AR"
+                >
+                  Arkansas
+                </option>
+                <option
+                  label="California"
+                  value="CA"
+                >
+                  California
+                </option>
+                <option
+                  label="Colorado"
+                  value="CO"
+                >
+                  Colorado
+                </option>
+                <option
+                  label="Connecticut"
+                  value="CT"
+                >
+                  Connecticut
+                </option>
+                <option
+                  label="Delaware"
+                  value="DE"
+                >
+                  Delaware
+                </option>
+                <option
+                  label="District Of Columbia"
+                  value="DC"
+                >
+                  District Of Columbia
+                </option>
+                <option
+                  label="Florida"
+                  value="FL"
+                >
+                  Florida
+                </option>
+                <option
+                  label="Georgia"
+                  value="GA"
+                >
+                  Georgia
+                </option>
+                <option
+                  label="Hawaii"
+                  value="HI"
+                >
+                  Hawaii
+                </option>
+                <option
+                  label="Idaho"
+                  value="ID"
+                >
+                  Idaho
+                </option>
+                <option
+                  label="Illinois"
+                  value="IL"
+                >
+                  Illinois
+                </option>
+                <option
+                  label="Indiana"
+                  value="IN"
+                >
+                  Indiana
+                </option>
+                <option
+                  label="Iowa"
+                  value="IA"
+                >
+                  Iowa
+                </option>
+                <option
+                  label="Kansas"
+                  value="KS"
+                >
+                  Kansas
+                </option>
+                <option
+                  label="Kentucky"
+                  value="KY"
+                >
+                  Kentucky
+                </option>
+                <option
+                  label="Louisiana"
+                  value="LA"
+                >
+                  Louisiana
+                </option>
+                <option
+                  label="Maine"
+                  value="ME"
+                >
+                  Maine
+                </option>
+                <option
+                  label="Maryland"
+                  value="MD"
+                >
+                  Maryland
+                </option>
+                <option
+                  label="Massachusetts"
+                  value="MA"
+                >
+                  Massachusetts
+                </option>
+                <option
+                  label="Michigan"
+                  value="MI"
+                >
+                  Michigan
+                </option>
+                <option
+                  label="Minnesota"
+                  value="MN"
+                >
+                  Minnesota
+                </option>
+                <option
+                  label="Mississippi"
+                  value="MS"
+                >
+                  Mississippi
+                </option>
+                <option
+                  label="Missouri"
+                  value="MO"
+                >
+                  Missouri
+                </option>
+                <option
+                  label="Montana"
+                  value="MT"
+                >
+                  Montana
+                </option>
+                <option
+                  label="Nebraska"
+                  value="NE"
+                >
+                  Nebraska
+                </option>
+                <option
+                  label="Nevada"
+                  value="NV"
+                >
+                  Nevada
+                </option>
+                <option
+                  label="New Hampshire"
+                  value="NH"
+                >
+                  New Hampshire
+                </option>
+                <option
+                  label="New Jersey"
+                  value="NJ"
+                >
+                  New Jersey
+                </option>
+                <option
+                  label="New Mexico"
+                  value="NM"
+                >
+                  New Mexico
+                </option>
+                <option
+                  label="New York"
+                  value="NY"
+                >
+                  New York
+                </option>
+                <option
+                  label="North Carolina"
+                  value="NC"
+                >
+                  North Carolina
+                </option>
+                <option
+                  label="North Dakota"
+                  value="ND"
+                >
+                  North Dakota
+                </option>
+                <option
+                  label="Ohio"
+                  value="OH"
+                >
+                  Ohio
+                </option>
+                <option
+                  label="Oklahoma"
+                  value="OK"
+                >
+                  Oklahoma
+                </option>
+                <option
+                  label="Oregon"
+                  value="OR"
+                >
+                  Oregon
+                </option>
+                <option
+                  label="Pennsylvania"
+                  value="PA"
+                >
+                  Pennsylvania
+                </option>
+                <option
+                  label="Rhode Island"
+                  value="RI"
+                >
+                  Rhode Island
+                </option>
+                <option
+                  label="South Carolina"
+                  value="SC"
+                >
+                  South Carolina
+                </option>
+                <option
+                  label="South Dakota"
+                  value="SD"
+                >
+                  South Dakota
+                </option>
+                <option
+                  label="Tennessee"
+                  value="TN"
+                >
+                  Tennessee
+                </option>
+                <option
+                  label="Texas"
+                  value="TX"
+                >
+                  Texas
+                </option>
+                <option
+                  label="Utah"
+                  value="UT"
+                >
+                  Utah
+                </option>
+                <option
+                  label="Vermont"
+                  value="VT"
+                >
+                  Vermont
+                </option>
+                <option
+                  label="Virginia"
+                  value="VA"
+                >
+                  Virginia
+                </option>
+                <option
+                  label="Washington"
+                  value="WA"
+                >
+                  Washington
+                </option>
+                <option
+                  label="West Virginia"
+                  value="WV"
+                >
+                  West Virginia
+                </option>
+                <option
+                  label="Wisconsin"
+                  value="WI"
+                >
+                  Wisconsin
+                </option>
+                <option
+                  label="Wyoming"
+                  value="WY"
+                >
+                  Wyoming
+                </option>
+              </select>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
+          </label>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <div
+              class="sc-bwzfXH izcbHX"
+            >
+              Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
+              <br />
+              <br />
+              <a
+                href="http://localhost/sample_jurisdiction_filesheet.csv"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                (Click here to view a sample file in the correct format.)
+              </a>
+            </div>
+          </div>
+          <div
+            class="sc-bdVaJa fdbLH"
+          >
+            <label
+              class="bp3-file-input"
+            >
+              <input
+                accept=".csv"
+                name="csv"
+                type="file"
+              />
+              <span
+                class="bp3-file-upload-input"
+              >
+                Select a CSV...
+              </span>
+            </label>
           </div>
         </div>
         <div
-          class="sc-bdVaJa fdbLH"
+          class="sc-gqjmRU bEkPjh"
         >
-          <label
-            class="bp3-file-input"
+          <button
+            class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
+            type="submit"
           >
-            <input
-              accept=".csv"
-              name="csv"
-              type="file"
-            />
             <span
-              class="bp3-file-upload-input"
+              class="bp3-button-text"
             >
-              Select a CSV...
+              Save & Next
             </span>
-          </label>
+          </button>
         </div>
-      </div>
-      <div
-        class="sc-gqjmRU bEkPjh"
-      >
-        <button
-          class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
-          type="submit"
-        >
-          <span
-            class="bp3-button-text"
-          >
-            Save & Next
-          </span>
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>
 `;
