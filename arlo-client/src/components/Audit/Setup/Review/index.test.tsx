@@ -19,6 +19,23 @@ const apiMock: jest.SpyInstance<
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
 
+const dummyJurisdictions = {
+  jurisdictions: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction One',
+      ballotManifest: { file: null, processing: null },
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction Two',
+      ballotManifest: { file: null, processing: null },
+      currentRoundStatus: null,
+    },
+  ],
+}
+
 const generateApiMock = (
   sampleSizeReturn: { sampleSizes: ISampleSizeOption[] },
   contestsReturn: { contests: IContest[] } | Error | { status: 'ok' },
@@ -48,9 +65,11 @@ const generateApiMock = (
   }
 }
 apiMock.mockImplementation(
-  generateApiMock(sampleSizeMock, contestMocks.filledTargeted, {
-    jurisdictions: [],
-  })
+  generateApiMock(
+    sampleSizeMock,
+    contestMocks.filledTargetedWithJurisdictionId,
+    dummyJurisdictions
+  )
 )
 
 const checkAndToastMock: jest.SpyInstance<
@@ -69,8 +88,8 @@ routeMock.mockReturnValue({
   view: 'setup',
 })
 
-jest.mock('../useAuditSettings')
-auditSettingsMock.mockReturnValue(settingsMock.empty)
+jest.mock('../../useAuditSettings')
+auditSettingsMock.mockReturnValue(settingsMock.full)
 
 const { prevStage } = relativeStages('Review & Launch')
 
@@ -108,22 +127,7 @@ describe('Audit Setup > Review & Launch', () => {
       generateApiMock(
         sampleSizeMock,
         contestMocks.filledTargetedWithJurisdictionId,
-        {
-          jurisdictions: [
-            {
-              id: 'jurisdiction-id-1',
-              name: 'Jurisdiction One',
-              ballotManifest: { file: null, processing: null },
-              currentRoundStatus: null,
-            },
-            {
-              id: 'jurisdiction-id-2',
-              name: 'Jurisdiction Two',
-              ballotManifest: { file: null, processing: null },
-              currentRoundStatus: null,
-            },
-          ],
-        }
+        dummyJurisdictions
       )
     )
     auditSettingsMock.mockReturnValue(settingsMock.full)
@@ -140,22 +144,7 @@ describe('Audit Setup > Review & Launch', () => {
       generateApiMock(
         sampleSizeMock,
         contestMocks.filledOpportunisticWithJurisdictionId,
-        {
-          jurisdictions: [
-            {
-              id: 'jurisdiction-id-1',
-              name: 'Jurisdiction One',
-              ballotManifest: { file: null, processing: null },
-              currentRoundStatus: null,
-            },
-            {
-              id: 'jurisdiction-id-2',
-              name: 'Jurisdiction Two',
-              ballotManifest: { file: null, processing: null },
-              currentRoundStatus: null,
-            },
-          ],
-        }
+        dummyJurisdictions
       )
     )
     auditSettingsMock.mockReturnValue(settingsMock.full)
@@ -207,9 +196,11 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('launches the first round', async () => {
     apiMock.mockImplementation(
-      generateApiMock(sampleSizeMock, contestMocks.filledTargeted, {
-        jurisdictions: [],
-      })
+      generateApiMock(
+        sampleSizeMock,
+        contestMocks.filledTargetedWithJurisdictionId,
+        dummyJurisdictions
+      )
     )
     const { findByText } = await asyncActRender(
       <Router>
@@ -235,9 +226,11 @@ describe('Audit Setup > Review & Launch', () => {
 
   it('launches the first round with a non-default sample size', async () => {
     apiMock.mockImplementation(
-      generateApiMock(sampleSizeMock, contestMocks.filledTargeted, {
-        jurisdictions: [],
-      })
+      generateApiMock(
+        sampleSizeMock,
+        contestMocks.filledTargetedWithJurisdictionId,
+        dummyJurisdictions
+      )
     )
     const { getByText } = await asyncActRender(
       <Router>
