@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { api } from '../utilities'
 
-interface IRound {
+export interface IRound {
   id: string
   roundNum: number
   startedAt: string
