@@ -70,9 +70,7 @@ describe('DataEntry', () => {
         </StaticRouter>
       )
       expect(apiMock).toBeCalledTimes(1)
-      expect(
-        getByText('Member Sign in for Audit Board: Audit Board #2')
-      ).toBeTruthy()
+      expect(getByText('Audit Board #2: Member Sign-in')).toBeTruthy()
       expect(container).toMatchSnapshot()
     })
 
