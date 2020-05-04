@@ -2,65 +2,36 @@ import React from 'react'
 import { H4 } from '@blueprintjs/core'
 import { Formik, Field } from 'formik'
 import styled from 'styled-components'
-import { toast } from 'react-toastify'
-import { IAuditBoard, IErrorResponse } from '../../../types'
 import { generateOptions } from '../../Atoms/Form/_helpers'
 import FormButton from '../../Atoms/Form/FormButton'
 import Select from '../../Atoms/Form/Select'
-import { api, checkAndToast } from '../../utilities'
 
 const Wrapper = styled.div`
   margin: 20px 0;
 `
 
-const CreateAuditBoards = ({
-  auditBoards,
-  electionId,
-  jurisdictionId,
-  roundId,
-  getAuditBoards,
-}: {
-  auditBoards: IAuditBoard[]
-  electionId: string
-  jurisdictionId: string
-  roundId: string
-  getAuditBoards: () => void
-}) => {
-  const submit = async ({
-    auditBoards: auditBoardsCount,
-  }: {
-    auditBoards: number
-  }) => {
-    try {
-      const body = JSON.stringify(
-        [...Array(auditBoardsCount).keys()].map(i => ({
-          name: `Audit Board #${i}`,
-        }))
-      )
-      const response: IErrorResponse = await api(
-        `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body,
-        }
-      )
-      // checkAndToast left here for consistency and reference but not tested since it's vestigial
-      /* istanbul ignore next */
-      if (checkAndToast(response)) return
-      getAuditBoards()
-    } catch (err) /* istanbul ignore next */ {
-      // TEST TODO
-      toast.error(err.message)
-    }
+interface IValues {
+  numAuditBoards: number
+}
+
+interface IProps {
+  createAuditBoards: (auditBoards: { name: string }[]) => Promise<boolean>
+  disabled: boolean
+}
+
+const CreateAuditBoards = ({ createAuditBoards, disabled }: IProps) => {
+  const submit = async ({ numAuditBoards }: IValues) => {
+    const boards = [...Array(numAuditBoards).keys()].map(i => ({
+      name: `Audit Board #${i}`,
+    }))
+    createAuditBoards(boards)
   }
+
   return (
     <Wrapper>
       <H4>Number of Audit Boards</H4>
       <p>
-        Select the appropriate number of audit baords based upon the personnel
+        Select the appropriate number of audit boards based upon the personnel
         available and the number of ballots assigned to your jurisdiction for
         this round of the audit. You will have the opportunity to adjust the
         number of audit boards before the next round of the audit, if another
@@ -68,7 +39,7 @@ const CreateAuditBoards = ({
       </p>
       <Formik
         enableReinitialize
-        initialValues={{ auditBoards: auditBoards.length || 1 }}
+        initialValues={{ numAuditBoards: 1 }}
         onSubmit={submit}
       >
         {({ handleSubmit, setFieldValue }) => (
@@ -77,18 +48,18 @@ const CreateAuditBoards = ({
               Set the number of audit boards you wish to use.
               <Field
                 component={Select}
-                id="auditBoards"
-                name="auditBoards"
+                id="numAuditBoards"
+                name="numAuditBoards"
                 onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-                  setFieldValue('auditBoards', Number(e.currentTarget.value))
+                  setFieldValue('numAuditBoards', Number(e.currentTarget.value))
                 }
-                disabled={auditBoards.length}
+                disabled={disabled}
               >
                 {generateOptions(15)}
               </Field>
             </label>
             <br />
-            {auditBoards.length === 0 && (
+            {!disabled && (
               <FormButton onClick={handleSubmit}>Save &amp; Next</FormButton>
             )}
           </>

@@ -3,11 +3,12 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Callout, H4 } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
-import useRoundsAuditAdmin, { IRound } from './useRoundsAuditAdmin'
+import useRoundsAuditAdmin from './useRoundsAuditAdmin'
 import useJurisdictions, {
   IJurisdiction,
   FileProcessingStatus,
   JurisdictionRoundStatus,
+  IFileInfo,
 } from './useJurisdictions'
 import FormButton from '../Atoms/Form/FormButton'
 import { api } from '../utilities'
@@ -15,6 +16,9 @@ import { Inner } from '../Atoms/Wrapper'
 import { IAuditSettings, IContest } from '../../types'
 import useAuditSettings from './useAuditSettings'
 import useContests from './useContests'
+import { IRound } from './useRoundsJurisdictionAdmin'
+import { IAuditBoard } from './useAuditBoards'
+import { useAuthDataContext } from '../UserContext'
 
 const Wrapper = styled(Callout)`
   display: flex;
@@ -26,9 +30,37 @@ const Wrapper = styled(Callout)`
     }
   }
 `
-enum Button {
-  START_NEXT_ROUND,
-  DOWNLOAD_REPORT,
+
+interface IStatusBoxProps {
+  headline: string
+  details: string[]
+  buttonLabel?: string
+  onButtonClick?: () => void
+}
+
+const StatusBox: React.FC<IStatusBoxProps> = ({
+  headline,
+  details,
+  buttonLabel,
+  onButtonClick,
+}: IStatusBoxProps) => {
+  return (
+    <Wrapper>
+      <Inner>
+        <div className="text">
+          <H4>{headline}</H4>
+          {details.map(detail => (
+            <p key={detail}>{detail}</p>
+          ))}
+        </div>
+        {buttonLabel && onButtonClick && (
+          <FormButton intent="success" onClick={onButtonClick}>
+            {buttonLabel}
+          </FormButton>
+        )}
+      </Inner>
+    </Wrapper>
+  )
 }
 
 const createRound = async (electionId: string, roundNum: number) => {
@@ -47,8 +79,15 @@ const createRound = async (electionId: string, roundNum: number) => {
   }
 }
 
-const downloadAuditReport = (electionId: string) => {
+const downloadAuditAdminReport = (electionId: string) => {
   window.open(`/election/${electionId}/audit/report`)
+}
+
+const downloadJurisdictionAdminReport = (
+  electionId: string,
+  jurisdictionId: string
+) => {
+  window.open(`/election/${electionId}/jurisdiction/${jurisdictionId}/report`)
 }
 
 export const isSetupComplete = (
@@ -60,16 +99,21 @@ export const isSetupComplete = (
   contests.some(c => c.isTargeted) &&
   Object.entries(auditSettings).every(([, v]) => v !== null)
 
-const statusContent = (
-  rounds: IRound[],
-  jurisdictions: IJurisdiction[],
-  contests: IContest[],
-  auditSettings: IAuditSettings
-): {
-  headline: string
-  details: string[]
-  button: Button | null
-} => {
+interface IAuditAdminProps {
+  refreshId: string
+}
+
+export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
+  refreshId,
+}: IAuditAdminProps) => {
+  const { electionId } = useParams<{ electionId: string }>()
+  const rounds = useRoundsAuditAdmin(electionId, refreshId)
+  const jurisdictions = useJurisdictions(electionId, refreshId)
+  const [contests] = useContests(electionId, refreshId)
+  const [auditSettings] = useAuditSettings(electionId, refreshId)
+
+  if (!rounds || !contests) return null // Still loading
+
   // Audit setup
   if (rounds.length === 0) {
     const details = [
@@ -87,11 +131,7 @@ const statusContent = (
           ' jurisdictions have completed file uploads.'
       )
     }
-    return {
-      headline: 'The audit has not started.',
-      details,
-      button: null,
-    }
+    return <StatusBox headline="The audit has not started." details={details} />
   }
 
   const { roundNum, endedAt, isAuditComplete } = rounds[rounds.length - 1]
@@ -103,96 +143,111 @@ const statusContent = (
         currentRoundStatus &&
         currentRoundStatus.status === JurisdictionRoundStatus.COMPLETE
     ).length
-    return {
-      headline: `Round ${roundNum} of the audit is in progress`,
-      details: [
-        `${numCompleted} of ${jurisdictions.length} jurisdictions` +
-          ` have completed Round ${roundNum}`,
-      ],
-      button: Button.START_NEXT_ROUND,
-    }
+    return (
+      <StatusBox
+        headline={`Round ${roundNum} of the audit is in progress`}
+        details={[
+          `${numCompleted} of ${jurisdictions.length} jurisdictions` +
+            ` have completed Round ${roundNum}`,
+        ]}
+        buttonLabel={`Start Round ${roundNum + 1}`}
+        onButtonClick={() => createRound(electionId, roundNum + 1)}
+      />
+    )
   }
 
   // Round complete, need another round
   if (!isAuditComplete) {
-    return {
-      headline: `Round ${roundNum} of the audit is complete - another round is needed`,
-      details: [`When you are ready, start Round ${roundNum + 1}`],
-      button: Button.DOWNLOAD_REPORT,
-    }
+    return (
+      <StatusBox
+        headline={`Round ${roundNum} of the audit is complete - another round is needed`}
+        details={[`When you are ready, start Round ${roundNum + 1}`]}
+        buttonLabel="Download Audit Report"
+        onButtonClick={() => downloadAuditAdminReport(electionId)}
+      />
+    )
   }
 
   // Round complete, audit complete
-  return {
-    headline: 'Congratulations - the audit is complete!',
-    details: [],
-    button: null,
-  }
-}
-
-interface IProps {
-  refreshId: string
-}
-
-const StatusBox: React.FC<IProps> = ({ refreshId }: IProps) => {
-  const { electionId } = useParams<{ electionId: string }>()
-  const rounds = useRoundsAuditAdmin(electionId, refreshId)
-  const jurisdictions = useJurisdictions(electionId, refreshId)
-  const [contests] = useContests(electionId, refreshId)
-  const [auditSettings] = useAuditSettings(electionId, refreshId)
-
-  if (!rounds || !contests) return null // Still loading
-
-  const { headline, details, button } = statusContent(
-    rounds,
-    jurisdictions,
-    contests,
-    auditSettings
-  )
-
-  const buttonElement = (() => {
-    switch (button) {
-      case Button.START_NEXT_ROUND: {
-        const { roundNum } = rounds[rounds.length - 1]
-        return (
-          <FormButton
-            intent="success"
-            onClick={() => createRound(electionId, roundNum + 1)}
-          >
-            Start Round {roundNum + 1}
-          </FormButton>
-        )
-      }
-      case Button.DOWNLOAD_REPORT:
-        return (
-          <FormButton
-            intent="success"
-            onClick={e => {
-              e.preventDefault()
-              downloadAuditReport(electionId)
-            }}
-          >
-            Download Audit Report
-          </FormButton>
-        )
-      default:
-        return null
-    }
-  })()
-
   return (
-    <Wrapper>
-      <Inner>
-        <div className="text">
-          <H4>{headline}</H4>
-          {details.map(detail => (
-            <p key={detail}>{detail}</p>
-          ))}
-        </div>
-        <div>{buttonElement}</div>
-      </Inner>
-    </Wrapper>
+    <StatusBox
+      headline="Congratulations - the audit is complete!"
+      details={[]}
+    />
   )
 }
 
-export default StatusBox
+interface IJursidictionAdminProps {
+  rounds: IRound[]
+  ballotManifest: IFileInfo
+  auditBoards: IAuditBoard[]
+}
+
+export const JurisdictionAdminStatusBox = ({
+  rounds,
+  ballotManifest,
+  auditBoards,
+}: IJursidictionAdminProps) => {
+  const { electionId } = useParams<{ electionId: string }>()
+  const { meta } = useAuthDataContext()
+  const jurisdictionId = meta!.jurisdictions[0].id
+
+  // Audit has not started
+  if (rounds.length === 0) {
+    const { processing } = ballotManifest
+    return (
+      <StatusBox
+        headline="The audit has not started."
+        details={
+          processing && processing.status === FileProcessingStatus.PROCESSED
+            ? [
+                'Ballot manifest uploaded.',
+                'Waiting for Audit Administrator to launch audit.',
+              ]
+            : ['Ballot manifest not uploaded.']
+        }
+      />
+    )
+  }
+
+  const { roundNum, isAuditComplete } = rounds[rounds.length - 1]
+  const inProgressHeadline = `Round ${roundNum} of the audit is in progress.`
+
+  // Round in progress, hasn't set up audit boards
+  if (auditBoards.length === 0)
+    return (
+      <StatusBox
+        headline={inProgressHeadline}
+        details={['Audit boards not set up.']}
+      />
+    )
+
+  // Round in progress, audit boards set up
+  if (!isAuditComplete) {
+    const numCompleted = auditBoards.filter(
+      ({ currentRoundStatus }) =>
+        currentRoundStatus.numAuditedBallots ===
+        currentRoundStatus.numSampledBallots
+    ).length
+    const details = [
+      `${numCompleted} of ${auditBoards.length} audit boards complete.`,
+    ]
+    if (numCompleted !== auditBoards.length)
+      details.push(
+        `Waiting for all jurisdictions to complete Round ${roundNum}`
+      )
+    return <StatusBox headline={inProgressHeadline} details={details} />
+  }
+
+  // Audit complete
+  return (
+    <StatusBox
+      headline="The audit is complete"
+      details={['Download the audit report.']}
+      buttonLabel="Download Audit Report"
+      onButtonClick={() =>
+        downloadJurisdictionAdminReport(electionId, jurisdictionId)
+      }
+    />
+  )
+}
