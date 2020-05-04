@@ -32,7 +32,7 @@ routeMock.mockReturnValue({
   view: 'setup',
 })
 
-jest.mock('../useAuditSettings')
+jest.mock('../../useAuditSettings')
 auditSettingsMock.mockReturnValue([
   {
     state: null,
