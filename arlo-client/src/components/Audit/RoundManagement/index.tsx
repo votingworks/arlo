@@ -91,7 +91,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
             >
               Download Audit Board Credentials for Data Entry
             </FormButton>
-            <RoundProgress />
+            <RoundProgress auditBoards={auditBoards} round={round} />
             {/* {online ? <RoundProgress /> : <RoundDataEntry />} */}
           </>
         )}
