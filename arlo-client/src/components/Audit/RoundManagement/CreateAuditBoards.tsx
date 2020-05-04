@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import { generateOptions } from '../../Atoms/Form/_helpers'
 import FormButton from '../../Atoms/Form/FormButton'
 import Select from '../../Atoms/Form/Select'
+import { IAuditBoard } from '../useAuditBoards'
 
 const Wrapper = styled.div`
   margin: 20px 0;
@@ -16,16 +17,18 @@ interface IValues {
 
 interface IProps {
   createAuditBoards: (auditBoards: { name: string }[]) => Promise<boolean>
-  disabled: boolean
+  auditBoards: IAuditBoard[]
 }
 
-const CreateAuditBoards = ({ createAuditBoards, disabled }: IProps) => {
+const CreateAuditBoards = ({ createAuditBoards, auditBoards }: IProps) => {
   const submit = async ({ numAuditBoards }: IValues) => {
     const boards = [...Array(numAuditBoards).keys()].map(i => ({
-      name: `Audit Board #${i}`,
+      name: `Audit Board #${i + 1}`,
     }))
     createAuditBoards(boards)
   }
+
+  const disabled = auditBoards.length > 0
 
   return (
     <Wrapper>
@@ -39,7 +42,7 @@ const CreateAuditBoards = ({ createAuditBoards, disabled }: IProps) => {
       </p>
       <Formik
         enableReinitialize
-        initialValues={{ numAuditBoards: 1 }}
+        initialValues={{ numAuditBoards: auditBoards.length || 1 }}
         onSubmit={submit}
       >
         {({ handleSubmit, setFieldValue }) => (

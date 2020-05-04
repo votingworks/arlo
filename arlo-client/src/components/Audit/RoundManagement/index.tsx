@@ -57,7 +57,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
       <Wrapper className="single-page left">
         <H2Title>Round {roundNum} Audit Board Setup</H2Title>
         <CreateAuditBoards
-          disabled={auditBoards.length > 0}
+          auditBoards={auditBoards}
           createAuditBoards={createAuditBoards}
         />
         {auditBoards.length > 0 && (
