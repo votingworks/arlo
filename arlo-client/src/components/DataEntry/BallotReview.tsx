@@ -2,7 +2,7 @@ import React from 'react'
 import { H3, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { IContest, IBallotInterpretation, Interpretation } from '../../types'
-import { BallotRow, FormBlock, ProgressActions, FlushDivider } from './Atoms'
+import { BallotRow, ContestCard, ProgressActions, FlushDivider } from './Atoms'
 import FormButton from '../Atoms/Form/FormButton'
 
 const Wrapper = styled.div`
@@ -22,19 +22,26 @@ const renderInterpretation = (
   { interpretation, choiceId }: IBallotInterpretation,
   contest: IContest
 ) => {
-  switch (interpretation) {
-    case Interpretation.VOTE: {
-      const choice = contest.choices.find(c => c.id === choiceId)
-      return choice!.name
+  if (!interpretation) return <div />
+  const label = (() => {
+    switch (interpretation) {
+      case Interpretation.VOTE: {
+        const choice = contest.choices.find(c => c.id === choiceId)
+        return choice!.name
+      }
+      case Interpretation.BLANK:
+        return 'Blank vote/no mark'
+      case Interpretation.CANT_AGREE:
+        return "Audit board can't agree"
+      default:
+        return ''
     }
-    case Interpretation.BLANK:
-      return 'Blank vote/no mark'
-    case Interpretation.CANT_AGREE:
-      return "Audit board can't agree"
-    /* istanbul ignore next */
-    default:
-      return ''
-  }
+  })()
+  return (
+    <LockedButton disabled large intent="primary">
+      {label}
+    </LockedButton>
+  )
 }
 
 interface IProps {
@@ -65,14 +72,12 @@ const BallotReview: React.FC<IProps> = ({
       <div className="ballot-side"></div>
       <div className="ballot-main">
         {contests.map((contest, i) => (
-          <FormBlock key={contest.name}>
+          <ContestCard key={contest.name}>
             <H3>{contest.name}</H3>
             <FlushDivider />
             <Wrapper>
               {/* <ButtonGroup fill large vertical> */}
-              <LockedButton disabled large intent="primary">
-                {renderInterpretation(interpretations[i], contest)}
-              </LockedButton>
+              {renderInterpretation(interpretations[i], contest)}
               <Button icon="edit" minimal onClick={goAudit}>
                 Edit
               </Button>
@@ -82,7 +87,7 @@ const BallotReview: React.FC<IProps> = ({
               {interpretations[i].comment &&
                 `COMMENT: ${interpretations[i].comment}`}
             </p>
-          </FormBlock>
+          </ContestCard>
         ))}
         <ProgressActions>
           <FormButton type="submit" onClick={handleSubmit} intent="success">

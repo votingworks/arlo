@@ -13,6 +13,7 @@ const LabelText = styled.span`
 
 const NameField = styled(Field)`
   margin-bottom: 20px;
+  width: 300px;
 `
 
 interface IProps {
@@ -27,8 +28,8 @@ const MemberForm: React.FC<IProps> = ({
   submitMembers,
 }: IProps) => {
   return (
-    <>
-      <H1>Member Sign in for Audit Board: {boardName}</H1>
+    <div>
+      <H1>{boardName}: Member Sign-in</H1>
       <p>
         Enter the information below for each member of {jurisdictionName}{' '}
         {boardName} below, then click &quot;Next&quot; to proceed.
@@ -56,7 +57,11 @@ const MemberForm: React.FC<IProps> = ({
                 {/* eslint-disable jsx-a11y/label-has-associated-control */}
                 <label htmlFor={`[${i}]name`}>
                   <LabelText>Full Name</LabelText>
-                  <NameField name={`[${i}]name`} id={`[${i}]name`} />
+                  <NameField
+                    className="bp3-input"
+                    name={`[${i}]name`}
+                    id={`[${i}]name`}
+                  />
                 </label>
                 <div>
                   <LabelText>
@@ -85,7 +90,7 @@ const MemberForm: React.FC<IProps> = ({
           </Form>
         )}
       />
-    </>
+    </div>
   )
 }
 

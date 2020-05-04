@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { Form } from 'formik'
 import { RadioGroup, Divider } from '@blueprintjs/core'
 
 export const FlushDivider = styled(Divider)`
@@ -44,7 +43,8 @@ export const BallotRow = styled.div`
   }
 `
 
-export const FormBlock = styled(Form)`
+export const ContestCard = styled.div`
+  margin: 20px 0;
   background-color: #ced9e0;
   padding: 20px;
 `
