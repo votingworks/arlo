@@ -156,6 +156,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
               class="bp3-control bp3-radio"
             >
               <input
+                checked=""
                 name="sampleSize"
                 type="radio"
                 value="46"
@@ -229,7 +230,9 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
           </span>
         </button>
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
+          disabled=""
+          tabindex="-1"
           type="button"
         >
           <span
@@ -400,6 +403,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
               class="bp3-control bp3-radio"
             >
               <input
+                checked=""
                 name="sampleSize"
                 type="radio"
                 value="46"
@@ -473,7 +477,9 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
           </span>
         </button>
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
+          disabled=""
+          tabindex="-1"
           type="button"
         >
           <span
@@ -534,19 +540,25 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
           <td>
             Election Name:
           </td>
-          <td />
+          <td>
+            Election Name
+          </td>
         </tr>
         <tr>
           <td>
             Risk Limit:
           </td>
-          <td />
+          <td>
+            10
+          </td>
         </tr>
         <tr>
           <td>
             Random Seed:
           </td>
-          <td />
+          <td>
+            12345
+          </td>
         </tr>
         <tr>
           <td>
@@ -565,7 +577,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
             Audit Board Data Entry:
           </td>
           <td>
-            Offline
+            Online
           </td>
         </tr>
       </tbody>
@@ -588,7 +600,9 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
           <td>
             Contest Name
           </td>
-          <td />
+          <td>
+            Jurisdiction One, Jurisdiction Two
+          </td>
         </tr>
       </tbody>
     </table>
@@ -636,6 +650,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
               class="bp3-control bp3-radio"
             >
               <input
+                checked=""
                 name="sampleSize"
                 type="radio"
                 value="46"
@@ -709,7 +724,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
           </span>
         </button>
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button bp3-intent-primary sc-ifAKCX zdCNs"
           type="button"
         >
           <span
@@ -830,7 +845,9 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
           <td>
             Contest Name
           </td>
-          <td />
+          <td>
+            Jurisdiction One, Jurisdiction Two
+          </td>
         </tr>
       </tbody>
     </table>
@@ -878,6 +895,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
               class="bp3-control bp3-radio"
             >
               <input
+                checked=""
                 name="sampleSize"
                 type="radio"
                 value="46"
@@ -951,7 +969,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
           </span>
         </button>
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button bp3-intent-primary sc-ifAKCX zdCNs"
           type="button"
         >
           <span
@@ -1122,6 +1140,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
               class="bp3-control bp3-radio"
             >
               <input
+                checked=""
                 name="sampleSize"
                 type="radio"
                 value="46"
@@ -1195,7 +1214,9 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
           </span>
         </button>
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
+          disabled=""
+          tabindex="-1"
           type="button"
         >
           <span
@@ -1366,6 +1387,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
               class="bp3-control bp3-radio"
             >
               <input
+                checked=""
                 name="sampleSize"
                 type="radio"
                 value="46"
@@ -1439,7 +1461,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
           </span>
         </button>
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button bp3-intent-primary sc-ifAKCX zdCNs"
           type="button"
         >
           <span
