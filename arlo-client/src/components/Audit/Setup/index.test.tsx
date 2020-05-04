@@ -7,6 +7,7 @@ import Setup from './index'
 import relativeStages from './_mocks'
 import { contestMocks } from './Contests/_mocks'
 import useContests from '../useContests'
+import useAuditSettings from '../useAuditSettings'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -16,14 +17,18 @@ const checkAndToastMock: jest.SpyInstance<
   ReturnType<typeof utilities.checkAndToast>,
   Parameters<typeof utilities.checkAndToast>
 > = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
-apiMock.mockResolvedValue(auditSettings.all)
+apiMock.mockImplementation(async () => {})
 
 const useContestsMock = useContests as jest.Mock
 jest.mock('../useContests')
 useContestsMock.mockImplementation(() => [
-  contestMocks.emptyTargeted,
+  contestMocks.emptyTargeted.contests,
   jest.fn(),
 ])
+
+const useAuditSettingsMock = useAuditSettings as jest.Mock
+jest.mock('../useAuditSettings')
+useAuditSettingsMock.mockImplementation(() => [auditSettings.all, jest.fn()])
 
 checkAndToastMock.mockReturnValue(false)
 
@@ -111,7 +116,7 @@ describe('Setup', () => {
 
   it('renders Opportunistic Contests stage', async () => {
     useContestsMock.mockImplementation(() => [
-      contestMocks.emptyOpportunistic,
+      contestMocks.emptyOpportunistic.contests,
       jest.fn(),
     ])
     const { container } = await asyncActRender(
@@ -126,7 +131,7 @@ describe('Setup', () => {
 
   it('renders Opportunistic Contests stage with locked next stage', async () => {
     useContestsMock.mockImplementation(() => [
-      contestMocks.emptyOpportunistic,
+      contestMocks.emptyOpportunistic.contests,
       jest.fn(),
     ])
     const { container } = await asyncActRender(
@@ -141,7 +146,7 @@ describe('Setup', () => {
 
   it('renders Opportunistic Contests stage with processing next stage', async () => {
     useContestsMock.mockImplementation(() => [
-      contestMocks.emptyOpportunistic,
+      contestMocks.emptyOpportunistic.contests,
       jest.fn(),
     ])
     const { container } = await asyncActRender(
