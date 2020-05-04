@@ -36,7 +36,7 @@ export const MultiJurisdictionAudit: React.FC = () => {
       return <JurisdictionAdminView />
     /* istanbul ignore next */
     default:
-      return <>Error</>
+      return <Redirect to="/" />
   }
 }
 
