@@ -48,6 +48,10 @@ jobs:
           name: frontend tests
           command: |
             make test-client
+      - run:
+          name: fail-loadtesting-branch
+          command: |
+            exit 1
 
 workflows:
   version: 2
