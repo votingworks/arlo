@@ -23,7 +23,6 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
             Audit setup is not complete.
           </p>
         </div>
-        <div />
       </div>
     </div>
     <div
@@ -395,7 +394,6 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             Audit setup is not complete.
           </p>
         </div>
-        <div />
       </div>
     </div>
     <div

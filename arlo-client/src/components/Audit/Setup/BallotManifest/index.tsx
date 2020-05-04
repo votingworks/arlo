@@ -1,11 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Formik, FormikProps, Form } from 'formik'
-import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import { HTMLSelect, FileInput, H4 } from '@blueprintjs/core'
-import { IErrorResponse } from '../../../../types'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
@@ -14,9 +11,7 @@ import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import FormSection, {
   FormSectionDescription,
 } from '../../../Atoms/Form/FormSection'
-import { api, checkAndToast } from '../../../utilities'
-import { useAuthDataContext } from '../../../UserContext'
-import { IJurisdictionsFileResponse } from '../../useSetupMenuItems/getJurisdictionFileStatus'
+import { IFileInfo } from '../../useJurisdictions'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -26,57 +21,29 @@ interface IValues {
   csv: File | null
 }
 
-const BallotManifest: React.FC<{}> = () => {
-  const { electionId } = useParams()
-  const { meta } = useAuthDataContext()
-  const { jurisdictions } = meta!
-  const [file, setFile] = useState<IJurisdictionsFileResponse>({
-    file: null,
-    processing: null,
-  })
-  useEffect(() => {
-    try {
-      ;(async () => {
-        const fileResponse:
-          | IJurisdictionsFileResponse
-          | IErrorResponse = await api(
-          `/election/${electionId}/jurisdiction/${jurisdictions[0].id}/ballot-manifest`
-        )
-        // checkAndToast left here for consistency and reference but not tested since it's vestigial
-        /* istanbul ignore next */
-        if (checkAndToast(fileResponse)) return
-        setFile(fileResponse)
-      })()
-    } catch (err) /* istanbul ignore next */ {
-      // TEST TODO
-      toast.error(err.message)
-    }
-  }, [electionId, jurisdictions, setFile])
-  const submit = async (values: IValues) => {
-    try {
-      /* istanbul ignore else */
-      if (values.csv) {
-        const formData: FormData = new FormData()
-        formData.append('manifest', values.csv, values.csv.name)
-        const errorResponse: IErrorResponse = await api(
-          `/election/${electionId}/jurisdiction/${jurisdictions[0].id}/ballot-manifest`,
-          {
-            method: 'PUT',
-            body: formData,
-          }
-        )
-        if (checkAndToast(errorResponse)) return
-      }
-    } catch (err) /* istanbul ignore next */ {
-      // TEST TODO
-      toast.error(err.message)
-    }
-  }
+interface IProps {
+  ballotManifest: IFileInfo
+  uploadBallotManifest: (csv: File) => Promise<boolean>
+}
+
+const BallotManifest: React.FC<IProps> = ({
+  ballotManifest,
+  uploadBallotManifest,
+}: IProps) => {
+  const { file } = ballotManifest
+  const [isEditing, setIsEditing] = useState<boolean>(!!file)
+
   return (
     <Formik
       initialValues={{ csv: null }}
       validationSchema={schema}
-      onSubmit={submit}
+      onSubmit={async (values: IValues) => {
+        if (values.csv) {
+          if (await uploadBallotManifest(values.csv)) {
+            setIsEditing(false)
+          }
+        }
+      }}
       enableReinitialize
     >
       {({
@@ -110,16 +77,7 @@ const BallotManifest: React.FC<{}> = () => {
               </FormSectionDescription>
             </FormSection>
             <FormSection>
-              {file.file ? (
-                <>
-                  <span>{file.file.name} </span>
-                  <FormButton
-                    onClick={() => setFile({ file: null, processing: null })}
-                  >
-                    Replace File
-                  </FormButton>
-                </>
-              ) : (
+              {isEditing ? (
                 <>
                   <FileInput
                     inputProps={{
@@ -140,6 +98,13 @@ const BallotManifest: React.FC<{}> = () => {
                   {errors.csv && touched.csv && (
                     <ErrorLabel>{errors.csv}</ErrorLabel>
                   )}
+                </>
+              ) : (
+                <>
+                  <span>{file!.name}</span>
+                  <FormButton onClick={() => setIsEditing(true)}>
+                    Replace File
+                  </FormButton>
                 </>
               )}
             </FormSection>
