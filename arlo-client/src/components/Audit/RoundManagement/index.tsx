@@ -9,7 +9,7 @@ import { IErrorResponse, IBallot } from '../../../types'
 import { api, checkAndToast } from '../../utilities'
 // import useAuditSettings from '../Setup/useAuditSettings'
 import CreateAuditBoards from './CreateAuditBoards'
-// import RoundProgress from './RoundProgress'
+import RoundProgress from './RoundProgress'
 // import RoundDataEntry from './RoundDataEntry'
 import FormButton from '../../Atoms/Form/FormButton'
 import {
@@ -91,7 +91,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
             >
               Download Audit Board Credentials for Data Entry
             </FormButton>
-            {/* <RoundProgress /> FIX */}
+            <RoundProgress auditBoards={auditBoards} round={round} />
             {/* {online ? <RoundProgress /> : <RoundDataEntry />} */}
           </>
         )}
