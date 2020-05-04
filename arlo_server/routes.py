@@ -1175,6 +1175,7 @@ auth0_sa = oauth.register(
     api_base_url=SUPERADMIN_AUTH0_BASE_URL,
     access_token_url=f"{SUPERADMIN_AUTH0_BASE_URL}/oauth/token",
     authorize_url=f"{SUPERADMIN_AUTH0_BASE_URL}/authorize",
+    authorize_params={"max_age": "0"},
     client_kwargs={"scope": "openid profile email"},
 )
 
@@ -1185,6 +1186,7 @@ auth0_aa = oauth.register(
     api_base_url=AUDITADMIN_AUTH0_BASE_URL,
     access_token_url=f"{AUDITADMIN_AUTH0_BASE_URL}/oauth/token",
     authorize_url=f"{AUDITADMIN_AUTH0_BASE_URL}/authorize",
+    authorize_params={"max_age": "0"},
     client_kwargs={"scope": "openid profile email"},
 )
 
@@ -1195,6 +1197,7 @@ auth0_ja = oauth.register(
     api_base_url=JURISDICTIONADMIN_AUTH0_BASE_URL,
     access_token_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/oauth/token",
     authorize_url=f"{JURISDICTIONADMIN_AUTH0_BASE_URL}/authorize",
+    authorize_params={"max_age": "0"},
     client_kwargs={"scope": "openid profile email"},
 )
 
@@ -1255,16 +1258,9 @@ def logout():
 
     clear_loggedin_user()
 
-    # request auth0 logout and come back here when that's done
-    return_url = f"{request.host_url}"
-    params = urllib.parse.urlencode({"returnTo": return_url})
-
-    base_url = (
-        AUDITADMIN_AUTH0_BASE_URL
-        if user_type == UserType.AUDIT_ADMIN
-        else JURISDICTIONADMIN_AUTH0_BASE_URL
-    )
-    return redirect(f"{base_url}/v2/logout?{params}")
+    # because we have max_age on the oauth requests,
+    # we don't need to log out of Auth0.
+    return redirect("/")
 
 
 @app.route("/auth/superadmin/start")
