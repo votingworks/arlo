@@ -97,7 +97,7 @@ export const isSetupComplete = (
 ): boolean =>
   jurisdictions.length > 0 &&
   contests.some(c => c.isTargeted) &&
-  Object.entries(auditSettings).every(([, v]) => v !== null)
+  Object.values(auditSettings).every(v => v !== null)
 
 interface IAuditAdminProps {
   refreshId: string
