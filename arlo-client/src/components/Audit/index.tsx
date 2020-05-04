@@ -89,11 +89,7 @@ const AuditAdminView: React.FC = () => {
         </Wrapper>
       )
     default:
-      return (
-        <Wrapper>
-          <p>Round management view</p>
-        </Wrapper>
-      )
+      return <Redirect to={`/election/${electionId}/progress`} />
   }
 }
 

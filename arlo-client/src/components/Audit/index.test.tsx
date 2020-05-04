@@ -2,13 +2,14 @@ import React, { useContext } from 'react'
 import { waitForElement, wait, fireEvent } from '@testing-library/react'
 import {
   BrowserRouter as Router,
+  Router as RegularRouter,
   useRouteMatch,
   useParams,
 } from 'react-router-dom'
 import { SingleJurisdictionAudit, MultiJurisdictionAudit } from './index'
 import { statusStates, dummyBallots, auditSettings } from './_mocks'
 import * as utilities from '../utilities'
-import { asyncActRender } from '../testUtilities'
+import { asyncActRender, routerTestProps } from '../testUtilities'
 import AuthDataProvider, { AuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
@@ -331,7 +332,8 @@ describe('AA setup flow', () => {
     })
   })
 
-  it('renders round management', async () => {
+  it('redirects to /progress by default', async () => {
+    const routeProps = routerTestProps('/election/1', { electionId: '1' })
     routeMock.mockReturnValue({
       url: '/election/1',
       params: {
@@ -339,17 +341,17 @@ describe('AA setup flow', () => {
         view: '',
       },
     })
-    const { container, queryAllByText } = await asyncActRender(
+    await asyncActRender(
       <AuthDataProvider>
-        <Router>
+        <RegularRouter {...routeProps}>
           <MultiJurisdictionAuditWithAuth />
-        </Router>
+        </RegularRouter>
       </AuthDataProvider>
     )
-
     await wait(() => {
-      expect(queryAllByText('Round management view').length).toBe(1)
-      expect(container).toMatchSnapshot()
+      expect(routeProps.history.location.pathname).toEqual(
+        '/election/1/progress'
+      )
     })
   })
 })
