@@ -82,37 +82,40 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   return (
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      <Formik onSubmit={onSubmit} initialValues={{ auditName: '' }}>
-        {({ handleSubmit }: FormikProps<IValues>) => (
-          <>
-            <FormSection>
-              {/* eslint-disable jsx-a11y/label-has-associated-control */}
-              <label htmlFor="audit-name" id="audit-name-label">
-                Give your new audit a unique name.
-                <Field
-                  id="audit-name"
-                  aria-labelledby="audit-name-label"
-                  name="auditName"
-                  disabled={loading}
-                  validate={(v: string) => (v ? undefined : 'Required')}
-                  component={CenterField}
-                />
-              </label>
-            </FormSection>
-            <Button
-              type="button"
-              intent="primary"
-              fill
-              large
-              onClick={handleSubmit}
-              loading={loading}
-              disabled={loading}
-            >
-              Create a New Audit
-            </Button>
-          </>
-        )}
-      </Formik>
+      {(!isAuthenticated ||
+        (isAuthenticated && meta!.type === 'audit_admin')) && (
+        <Formik onSubmit={onSubmit} initialValues={{ auditName: '' }}>
+          {({ handleSubmit }: FormikProps<IValues>) => (
+            <>
+              <FormSection>
+                {/* eslint-disable jsx-a11y/label-has-associated-control */}
+                <label htmlFor="audit-name" id="audit-name-label">
+                  Give your new audit a unique name.
+                  <Field
+                    id="audit-name"
+                    aria-labelledby="audit-name-label"
+                    name="auditName"
+                    disabled={loading}
+                    validate={(v: string) => (v ? undefined : 'Required')}
+                    component={CenterField}
+                  />
+                </label>
+              </FormSection>
+              <Button
+                type="button"
+                intent="primary"
+                fill
+                large
+                onClick={handleSubmit}
+                loading={loading}
+                disabled={loading}
+              >
+                Create a New Audit
+              </Button>
+            </>
+          )}
+        </Formik>
+      )}
       {!isAuthenticated ? (
         <>
           <Button
