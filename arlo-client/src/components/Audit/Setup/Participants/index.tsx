@@ -1,11 +1,10 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import { HTMLSelect, Spinner, FileInput } from '@blueprintjs/core'
-import { IErrorResponse } from '../../../../types'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
@@ -16,9 +15,9 @@ import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import FormSection, {
   FormSectionDescription,
 } from '../../../Atoms/Form/FormSection'
-import { api, checkAndToast } from '../../../utilities'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useAuditSettings from '../../useAuditSettings'
+import useJurisdictionFile from './useJurisdictionFile'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -32,7 +31,14 @@ interface IProps {
 const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings, updateSettings] = useAuditSettings(electionId)
-  if (!auditSettings) return null // Still loading
+  const [jurisdictionFile, uploadJurisdictionFile] = useJurisdictionFile(
+    electionId
+  )
+  const [isEditing, setIsEditing] = useState<boolean>(
+    !!(jurisdictionFile && jurisdictionFile.file)
+  )
+  if (!auditSettings || !jurisdictionFile) return null // Still loading
+  const { file } = jurisdictionFile
 
   const submit = async (values: IValues) => {
     try {
@@ -40,16 +46,9 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
       if (!responseOne) return
       /* istanbul ignore else */
       if (values.csv) {
-        const formData: FormData = new FormData()
-        formData.append('jurisdictions', values.csv, values.csv.name)
-        const errorResponse: IErrorResponse = await api(
-          `/election/${electionId}/jurisdiction/file`,
-          {
-            method: 'PUT',
-            body: formData,
-          }
-        )
-        if (checkAndToast(errorResponse)) return
+        if (await uploadJurisdictionFile(values.csv)) {
+          setIsEditing(false)
+        }
       }
       /* istanbul ignore else */
       if (nextStage.activate) nextStage.activate()
@@ -112,24 +111,35 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
               </FormSectionDescription>
             </FormSection>
             <FormSection>
-              <FileInput
-                inputProps={{
-                  accept: '.csv',
-                  name: 'csv',
-                }}
-                onInputChange={e => {
-                  setFieldValue(
-                    'csv',
-                    (e.currentTarget.files && e.currentTarget.files[0]) ||
-                      undefined
-                  )
-                }}
-                hasSelection={!!values.csv}
-                text={values.csv ? values.csv.name : 'Select a CSV...'}
-                onBlur={handleBlur}
-              />
-              {errors.csv && touched.csv && (
-                <ErrorLabel>{errors.csv}</ErrorLabel>
+              {isEditing || !file ? (
+                <>
+                  <FileInput
+                    inputProps={{
+                      accept: '.csv',
+                      name: 'csv',
+                    }}
+                    onInputChange={e => {
+                      setFieldValue(
+                        'csv',
+                        (e.currentTarget.files && e.currentTarget.files[0]) ||
+                          undefined
+                      )
+                    }}
+                    hasSelection={!!values.csv}
+                    text={values.csv ? values.csv.name : 'Select a CSV...'}
+                    onBlur={handleBlur}
+                  />
+                  {errors.csv && touched.csv && (
+                    <ErrorLabel>{errors.csv}</ErrorLabel>
+                  )}
+                </>
+              ) : (
+                <>
+                  <span>{file.name} </span>
+                  <FormButton onClick={() => setIsEditing(true)}>
+                    Replace File
+                  </FormButton>
+                </>
               )}
             </FormSection>
           </FormWrapper>
