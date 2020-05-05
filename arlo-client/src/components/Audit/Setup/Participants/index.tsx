@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -34,9 +34,10 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
   const [jurisdictionFile, uploadJurisdictionFile] = useJurisdictionFile(
     electionId
   )
-  const [isEditing, setIsEditing] = useState<boolean>(
-    !!(jurisdictionFile && jurisdictionFile.file)
-  )
+  const [isEditing, setIsEditing] = useState<boolean>(true)
+  useEffect(() => setIsEditing(!(jurisdictionFile && jurisdictionFile.file)), [
+    jurisdictionFile,
+  ])
   if (!auditSettings || !jurisdictionFile) return null // Still loading
   const { file } = jurisdictionFile
 
