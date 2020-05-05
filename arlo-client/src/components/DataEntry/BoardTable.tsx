@@ -20,8 +20,8 @@ const PaddedCell = styled(Cell)`
   padding: 3px 5px;
 `
 
-const ShortTable = styled(Table)`
-  height: 500px;
+const GrowingTable = styled(Table)`
+  height: auto;
 `
 
 const ReauditLink = styled(Link)`
@@ -151,7 +151,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
           </>
         )}
       </ActionWrapper> */}
-      <ShortTable
+      <GrowingTable
         numRows={ballots.length}
         defaultRowHeight={30}
         columnWidths={cols}
@@ -165,7 +165,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
         />
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="status" name="Status" cellRenderer={renderCell} />
-      </ShortTable>
+      </GrowingTable>
     </div>
   )
 }
