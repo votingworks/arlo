@@ -3,266 +3,272 @@
 exports[`DataEntry ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="single-page sc-kkGfuU hYSMMw"
+    class="sc-hMqMXs kivpAN"
   >
     <div
-      class="sc-hMqMXs iGVKwm"
+      class="sc-kEYyzF sc-kkGfuU cOCkRu"
     >
-      <h1
-        class="bp3-heading sc-eNQAEJ ePBYIL"
-      >
-        Audit Board #1
-        : Ballot Card Data Entry
-      </h1>
-      <h3
-        class="bp3-heading"
-      >
-        Enter Ballot Information
-      </h3>
       <div
-        class="bp3-callout sc-kEYyzF jMqcBM"
+        class="sc-jKJlTe cJqkLF"
       >
-        Auditing ballot 
-        2
-         of 
-        27
-      </div>
-      <div
-        class="sc-jTzLTM dIqJyM"
-      >
-        <div
-          class="ballot-side"
+        <h1
+          class="bp3-heading sc-ckVGcZ ipbdjm"
         >
-          <h4
-            class="bp3-heading"
-          >
-            Current ballot:
-          </h4>
-          <div>
-            Tabulator: 
-            11
-          </div>
-          <div>
-            Batch: 
-            0003-04-Precinct 19 (Jonesboro Fire Department)
-          </div>
-          <div>
-            Record/Position: 
-            2112
-          </div>
+          Audit Board #1
+          : Ballot Card Data Entry
+        </h1>
+        <h3
+          class="bp3-heading"
+        >
+          Enter Ballot Information
+        </h3>
+        <div
+          class="bp3-callout sc-eNQAEJ TJXrb"
+        >
+          Auditing ballot 
+          2
+           of 
+          27
         </div>
         <div
-          class="bp3-divider sc-VigVT kLdnIU"
-        />
-        <div
-          class="ballot-main"
+          class="sc-gqjmRU kTzBLL"
         >
-          <h4
-            class="bp3-heading"
+          <div
+            class="ballot-side"
           >
-            Are you looking at the correct ballot?
-          </h4>
-          <p>
-            Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
-          </p>
-          <p>
-            <button
-              class="bp3-button bp3-intent-danger"
-              type="button"
-            >
-              <span
-                class="bp3-button-text"
-              >
-                Ballot 
-                2112
-                 not found - move to next ballot
-              </span>
-            </button>
-          </p>
-          <p>
-            <a
-              class="bp3-button bp3-intent-primary"
-              href="/election/1/board/audit-board-1"
-            >
-              Return to audit overview
-            </a>
-          </p>
-        </div>
-      </div>
-      <div
-        class="sc-jTzLTM dIqJyM"
-      >
-        <div
-          class="ballot-side"
-        />
-        <div
-          class="ballot-main"
-        >
-          <h4
-            class="bp3-heading"
-          >
-            Instructions
-          </h4>
-          <p>
-            Select 
-            <strong>
-              all
-            </strong>
-             the candidates/choices below that you see marked on the paper ballot.
-          </p>
-          <p>
-            If the voter did not vote in the contest, select "Blank vote/no mark."
-          </p>
-          <p>
-            If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
-          </p>
-          <form
-            class="sc-fjdhpX fPKDNS"
-          >
-            <h3
+            <h4
               class="bp3-heading"
             >
-              Contest Name
-            </h3>
-            <div
-              class="bp3-divider sc-VigVT kLdnIU"
-            />
-            <div
-              class="sc-jzJRlG dxGdEH"
-            >
-              <label
-                class=" bp3-control bp3-radio sc-kAzzGY maMTR"
-              >
-                <input
-                  data-testid="choice-id-1"
-                  name="interpretation"
-                  type="radio"
-                  value="choice-id-1"
-                />
-                <span
-                  class="undefined bp3-control-indicator"
-                >
-                  <span
-                    class="radio-text"
-                  >
-                    Choice One
-                  </span>
-                </span>
-              </label>
-              <label
-                class=" bp3-control bp3-radio sc-kAzzGY maMTR"
-              >
-                <input
-                  data-testid="choice-id-2"
-                  name="interpretation"
-                  type="radio"
-                  value="choice-id-2"
-                />
-                <span
-                  class="undefined bp3-control-indicator"
-                >
-                  <span
-                    class="radio-text"
-                  >
-                    Choice Two
-                  </span>
-                </span>
-              </label>
-              <label
-                class=" bp3-control bp3-radio sc-kAzzGY maMTR"
-              >
-                <input
-                  data-testid="CANT_AGREE"
-                  name="interpretation"
-                  type="radio"
-                  value="CANT_AGREE"
-                />
-                <span
-                  class="gray bp3-control-indicator"
-                >
-                  <span
-                    class="radio-text"
-                  >
-                    Audit board can't agree
-                  </span>
-                </span>
-              </label>
-              <label
-                class=" bp3-control bp3-radio sc-kAzzGY maMTR"
-              >
-                <input
-                  data-testid="BLANK"
-                  name="interpretation"
-                  type="radio"
-                  value="BLANK"
-                />
-                <span
-                  class="gray bp3-control-indicator"
-                >
-                  <span
-                    class="radio-text"
-                  >
-                    Blank vote/no mark
-                  </span>
-                </span>
-              </label>
+              Current ballot:
+            </h4>
+            <div>
+              Tabulator: 
+              11
             </div>
-            <button
-              class="bp3-button bp3-minimal"
-              type="button"
-            >
-              <span
-                class="bp3-icon bp3-icon-edit"
-                icon="edit"
-              >
-                <svg
-                  data-icon="edit"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  width="16"
-                >
-                  <desc>
-                    edit
-                  </desc>
-                  <path
-                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                    fill-rule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span
-                class="bp3-button-text"
-              >
-                Add comment
-              </span>
-            </button>
-          </form>
+            <div>
+              Batch: 
+              0003-04-Precinct 19 (Jonesboro Fire Department)
+            </div>
+            <div>
+              Record/Position: 
+              2112
+            </div>
+          </div>
           <div
-            class="sc-cSHVUG jrqJLO"
+            class="bp3-divider sc-gZMcBi jbSoiK"
+          />
+          <div
+            class="ballot-main"
           >
-            <button
-              class="bp3-button bp3-disabled bp3-intent-success sc-iwsKbI drSRDt"
-              data-testid="disabled-review"
-              disabled=""
-              tabindex="-1"
-              type="submit"
+            <h4
+              class="bp3-heading"
             >
-              <span
-                class="bp3-button-text"
+              Are you looking at the correct ballot?
+            </h4>
+            <p>
+              Before continuing, check the "Current ballot" information to make sure you are entering data for the correct ballot. If the ballot could not be found, click "Ballot not found" below and move on to the next ballot.
+            </p>
+            <p>
+              <button
+                class="bp3-button bp3-intent-danger"
+                type="button"
               >
-                Review
-              </span>
-            </button>
-            <button
-              class="bp3-button bp3-minimal"
-              type="button"
+                <span
+                  class="bp3-button-text"
+                >
+                  Ballot 
+                  2112
+                   not found - move to next ballot
+                </span>
+              </button>
+            </p>
+            <p>
+              <a
+                class="bp3-button bp3-intent-primary"
+                href="/election/1/board/audit-board-1"
+              >
+                Return to audit overview
+              </a>
+            </p>
+          </div>
+        </div>
+        <div
+          class="sc-gqjmRU kTzBLL"
+        >
+          <div
+            class="ballot-side"
+          />
+          <div
+            class="ballot-main"
+          >
+            <h4
+              class="bp3-heading"
             >
-              <span
-                class="bp3-button-text"
+              Instructions
+            </h4>
+            <p>
+              Select 
+              <strong>
+                all
+              </strong>
+               the candidates/choices below that you see marked on the paper ballot.
+            </p>
+            <p>
+              If the voter did not vote in the contest, select "Blank vote/no mark."
+            </p>
+            <p>
+              If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
+            </p>
+            <form>
+              <div
+                class="sc-VigVT eBCusi"
               >
-                Back
-              </span>
-            </button>
+                <h3
+                  class="bp3-heading"
+                >
+                  Contest Name
+                </h3>
+                <div
+                  class="bp3-divider sc-gZMcBi jbSoiK"
+                />
+                <div
+                  class="sc-jTzLTM iLZJqT"
+                >
+                  <label
+                    class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                  >
+                    <input
+                      data-testid="choice-id-1"
+                      name="interpretation-Contest Name"
+                      type="radio"
+                      value="choice-id-1"
+                    />
+                    <span
+                      class="undefined bp3-control-indicator"
+                    >
+                      <span
+                        class="radio-text"
+                      >
+                        Choice One
+                      </span>
+                    </span>
+                  </label>
+                  <label
+                    class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                  >
+                    <input
+                      data-testid="choice-id-2"
+                      name="interpretation-Contest Name"
+                      type="radio"
+                      value="choice-id-2"
+                    />
+                    <span
+                      class="undefined bp3-control-indicator"
+                    >
+                      <span
+                        class="radio-text"
+                      >
+                        Choice Two
+                      </span>
+                    </span>
+                  </label>
+                  <label
+                    class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                  >
+                    <input
+                      data-testid="CANT_AGREE"
+                      name="interpretation-Contest Name"
+                      type="radio"
+                      value="CANT_AGREE"
+                    />
+                    <span
+                      class="gray bp3-control-indicator"
+                    >
+                      <span
+                        class="radio-text"
+                      >
+                        Audit board can't agree
+                      </span>
+                    </span>
+                  </label>
+                  <label
+                    class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                  >
+                    <input
+                      data-testid="BLANK"
+                      name="interpretation-Contest Name"
+                      type="radio"
+                      value="BLANK"
+                    />
+                    <span
+                      class="gray bp3-control-indicator"
+                    >
+                      <span
+                        class="radio-text"
+                      >
+                        Blank vote/no mark
+                      </span>
+                    </span>
+                  </label>
+                </div>
+                <button
+                  class="bp3-button bp3-minimal"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-edit"
+                    icon="edit"
+                  >
+                    <svg
+                      data-icon="edit"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        edit
+                      </desc>
+                      <path
+                        d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Add comment
+                  </span>
+                </button>
+              </div>
+              <div
+                class="sc-fjdhpX hGGYTz"
+              >
+                <button
+                  class="bp3-button bp3-disabled bp3-intent-success sc-htoDjs dESvso"
+                  data-testid="disabled-review"
+                  disabled=""
+                  tabindex="-1"
+                  type="submit"
+                >
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Review
+                  </span>
+                </button>
+                <button
+                  class="bp3-button bp3-minimal"
+                  type="button"
+                >
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Back
+                  </span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -274,563 +280,567 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
 exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="single-page sc-kkGfuU hYSMMw"
+    class="sc-hMqMXs kivpAN"
   >
     <div
-      class="board-table-container"
+      class="sc-kEYyzF sc-kkGfuU cOCkRu"
     >
-      <h1
-        class="bp3-heading"
-      >
-        Audit Board #1
-        : Ballot Cards to Audit
-      </h1>
-      <p>
-        The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
-      </p>
       <div
-        class="sc-bdVaJa cDShCX"
+        class="board-table-container"
       >
-        <a
-          class="bp3-button bp3-intent-primary"
-          href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+        <h1
+          class="bp3-heading"
         >
-          Start Auditing
-        </a>
-      </div>
-      <div
-        class="bp3-table-container bp3-table-selection-enabled sc-htpNat ejHXZb"
-        tabindex="0"
-      >
+          Audit Board #1
+          : Ballot Cards to Audit
+        </h1>
+        <p>
+          The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
+        </p>
         <div
-          class="bp3-table-quadrant-stack"
+          class="sc-bdVaJa cDShCX"
+        >
+          <a
+            class="bp3-button bp3-intent-primary"
+            href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+          >
+            Start Auditing
+          </a>
+        </div>
+        <div
+          class="bp3-table-container bp3-table-selection-enabled sc-htpNat dCryYg"
+          tabindex="0"
         >
           <div
-            class="bp3-table-quadrant bp3-table-quadrant-main"
+            class="bp3-table-quadrant-stack"
           >
             <div
-              class="bp3-table-quadrant-scroll-container"
+              class="bp3-table-quadrant bp3-table-quadrant-main"
             >
               <div
-                class="bp3-table-top-container"
+                class="bp3-table-quadrant-scroll-container"
               >
                 <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
+                  class="bp3-table-top-container"
                 >
                   <div
-                    style="width: 600px;"
+                    class="bp3-table-column-headers bp3-table-selection-enabled"
                   >
                     <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 600px;"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Batch"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Batch
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Ballot Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Ballot Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Tabulator"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Tabulator
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Status"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Status
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 810px; width: 600px;"
-              >
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 810px; width: 600px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      >
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 13 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            313
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            N/A
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audited
-                            <a
-                              class="bp3-button bp3-small sc-bxivhb bAonbG"
-                              href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/313"
-                            >
-                              Re-audit
-                            </a>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 19 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            2112
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            11
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Not Audited
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 29 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            1789
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            11
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audited
-                            <a
-                              class="bp3-button bp3-small sc-bxivhb bAonbG"
-                              href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789"
-                            >
-                              Re-audit
-                            </a>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 13 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            313
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            11
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audited
-                            <a
-                              class="bp3-button bp3-small sc-bxivhb bAonbG"
-                              href="/election/1/board/audit-board-1/batch/batch-id-2/ballot/313"
-                            >
-                              Re-audit
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-top"
-            style="height: 30px; right: 0px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: 600px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 600px;"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Batch"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Batch
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Ballot Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Ballot Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Tabulator"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Tabulator
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Status"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Status
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 810px; width: 600px;"
-              >
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
                       style="width: 600px;"
                     >
                       <div
-                        class="bp3-table-body-cells"
-                      />
+                        class="bp3-table-thead bp3-table-column-header-tr"
+                        style="transform: translateX(0px); width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Batch"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Tabulator"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Tabulator
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Status"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Status
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bp3-table-bottom-container"
+                  style="height: 810px; width: 600px;"
+                >
+                  <div
+                    class="bp3-table-quadrant-body-container"
+                  >
+                    <div>
+                      <div
+                        class="bp3-table-body-virtual-client bp3-table-cell-client"
+                        style="height: 810px; width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-body-cells"
+                        >
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 13 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              313
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              N/A
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Audited
+                              <a
+                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/313"
+                              >
+                                Re-audit
+                              </a>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 19 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              2112
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              11
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Not Audited
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 29 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              1789
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              11
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Audited
+                              <a
+                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789"
+                              >
+                                Re-audit
+                              </a>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 13 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              313
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              11
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Audited
+                              <a
+                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                href="/election/1/board/audit-board-1/batch/batch-id-2/ballot/313"
+                              >
+                                Re-audit
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bp3-table-quadrant bp3-table-quadrant-top"
+              style="height: 30px; right: 0px;"
+            >
+              <div
+                class="bp3-table-quadrant-scroll-container"
+              >
+                <div
+                  class="bp3-table-top-container"
+                >
+                  <div
+                    class="bp3-table-column-headers bp3-table-selection-enabled"
+                  >
+                    <div
+                      style="width: 600px;"
+                    >
+                      <div
+                        class="bp3-table-thead bp3-table-column-header-tr"
+                        style="transform: translateX(0px); width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Batch"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Tabulator"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Tabulator
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Status"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Status
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bp3-table-bottom-container"
+                  style="height: 810px; width: 600px;"
+                >
+                  <div
+                    class="bp3-table-quadrant-body-container"
+                  >
+                    <div>
+                      <div
+                        class="bp3-table-body-virtual-client bp3-table-cell-client"
+                        style="width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-body-cells"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
-        />
-        <div
-          class="bp3-table-resize-guides bp3-table-overlay-layer"
-        />
-        <div
-          class="bp3-table-resize-sensor"
-          style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
-        >
           <div
-            class="bp3-table-resize-sensor-expand"
-            style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
+          />
+          <div
+            class="bp3-table-resize-guides bp3-table-overlay-layer"
+          />
+          <div
+            class="bp3-table-resize-sensor"
+            style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
           >
             <div
-              style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
-            />
-          </div>
-          <div
-            class="bp3-table-resize-sensor-shrink"
-            style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
-          >
+              class="bp3-table-resize-sensor-expand"
+              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            >
+              <div
+                style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
+              />
+            </div>
             <div
-              style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
-            />
+              class="bp3-table-resize-sensor-shrink"
+              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            >
+              <div
+                style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -842,563 +852,567 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 exports[`DataEntry ballot interaction renders board table with large container size 1`] = `
 <div>
   <div
-    class="single-page sc-kkGfuU hYSMMw"
+    class="sc-hMqMXs kivpAN"
   >
     <div
-      class="board-table-container"
+      class="sc-kEYyzF sc-kkGfuU cOCkRu"
     >
-      <h1
-        class="bp3-heading"
-      >
-        Audit Board #1
-        : Ballot Cards to Audit
-      </h1>
-      <p>
-        The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
-      </p>
       <div
-        class="sc-bdVaJa cDShCX"
+        class="board-table-container"
       >
-        <a
-          class="bp3-button bp3-intent-primary"
-          href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+        <h1
+          class="bp3-heading"
         >
-          Start Auditing
-        </a>
-      </div>
-      <div
-        class="bp3-table-container bp3-table-selection-enabled sc-htpNat ejHXZb"
-        tabindex="0"
-      >
+          Audit Board #1
+          : Ballot Cards to Audit
+        </h1>
+        <p>
+          The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
+        </p>
         <div
-          class="bp3-table-quadrant-stack"
+          class="sc-bdVaJa cDShCX"
+        >
+          <a
+            class="bp3-button bp3-intent-primary"
+            href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+          >
+            Start Auditing
+          </a>
+        </div>
+        <div
+          class="bp3-table-container bp3-table-selection-enabled sc-htpNat dCryYg"
+          tabindex="0"
         >
           <div
-            class="bp3-table-quadrant bp3-table-quadrant-main"
+            class="bp3-table-quadrant-stack"
           >
             <div
-              class="bp3-table-quadrant-scroll-container"
+              class="bp3-table-quadrant bp3-table-quadrant-main"
             >
               <div
-                class="bp3-table-top-container"
+                class="bp3-table-quadrant-scroll-container"
               >
                 <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
+                  class="bp3-table-top-container"
                 >
                   <div
-                    style="width: 600px;"
+                    class="bp3-table-column-headers bp3-table-selection-enabled"
                   >
                     <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 600px;"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Batch"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Batch
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Ballot Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Ballot Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Tabulator"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Tabulator
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Status"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Status
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 810px; width: 600px;"
-              >
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 810px; width: 600px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      >
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 13 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            313
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            N/A
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audited
-                            <a
-                              class="bp3-button bp3-small sc-bxivhb bAonbG"
-                              href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/313"
-                            >
-                              Re-audit
-                            </a>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 19 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            2112
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            11
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Not Audited
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 29 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            1789
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            11
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audited
-                            <a
-                              class="bp3-button bp3-small sc-bxivhb bAonbG"
-                              href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789"
-                            >
-                              Re-audit
-                            </a>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 13 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            313
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            11
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audited
-                            <a
-                              class="bp3-button bp3-small sc-bxivhb bAonbG"
-                              href="/election/1/board/audit-board-1/batch/batch-id-2/ballot/313"
-                            >
-                              Re-audit
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-top"
-            style="height: 30px; right: 0px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: 600px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 600px;"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Batch"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Batch
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Ballot Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Ballot Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Tabulator"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Tabulator
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Status"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Status
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 810px; width: 600px;"
-              >
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
                       style="width: 600px;"
                     >
                       <div
-                        class="bp3-table-body-cells"
-                      />
+                        class="bp3-table-thead bp3-table-column-header-tr"
+                        style="transform: translateX(0px); width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Batch"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Tabulator"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Tabulator
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Status"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Status
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bp3-table-bottom-container"
+                  style="height: 810px; width: 600px;"
+                >
+                  <div
+                    class="bp3-table-quadrant-body-container"
+                  >
+                    <div>
+                      <div
+                        class="bp3-table-body-virtual-client bp3-table-cell-client"
+                        style="height: 810px; width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-body-cells"
+                        >
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 13 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              313
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              N/A
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Audited
+                              <a
+                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/313"
+                              >
+                                Re-audit
+                              </a>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 19 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              2112
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              11
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Not Audited
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 29 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              1789
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              11
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Audited
+                              <a
+                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789"
+                              >
+                                Re-audit
+                              </a>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 13 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              313
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              11
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Audited
+                              <a
+                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                href="/election/1/board/audit-board-1/batch/batch-id-2/ballot/313"
+                              >
+                                Re-audit
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bp3-table-quadrant bp3-table-quadrant-top"
+              style="height: 30px; right: 0px;"
+            >
+              <div
+                class="bp3-table-quadrant-scroll-container"
+              >
+                <div
+                  class="bp3-table-top-container"
+                >
+                  <div
+                    class="bp3-table-column-headers bp3-table-selection-enabled"
+                  >
+                    <div
+                      style="width: 600px;"
+                    >
+                      <div
+                        class="bp3-table-thead bp3-table-column-header-tr"
+                        style="transform: translateX(0px); width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Batch"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Tabulator"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Tabulator
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Status"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Status
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bp3-table-bottom-container"
+                  style="height: 810px; width: 600px;"
+                >
+                  <div
+                    class="bp3-table-quadrant-body-container"
+                  >
+                    <div>
+                      <div
+                        class="bp3-table-body-virtual-client bp3-table-cell-client"
+                        style="width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-body-cells"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
-        />
-        <div
-          class="bp3-table-resize-guides bp3-table-overlay-layer"
-        />
-        <div
-          class="bp3-table-resize-sensor"
-          style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
-        >
           <div
-            class="bp3-table-resize-sensor-expand"
-            style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
+          />
+          <div
+            class="bp3-table-resize-guides bp3-table-overlay-layer"
+          />
+          <div
+            class="bp3-table-resize-sensor"
+            style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
           >
             <div
-              style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
-            />
-          </div>
-          <div
-            class="bp3-table-resize-sensor-shrink"
-            style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
-          >
+              class="bp3-table-resize-sensor-expand"
+              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            >
+              <div
+                style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
+              />
+            </div>
             <div
-              style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
-            />
+              class="bp3-table-resize-sensor-shrink"
+              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            >
+              <div
+                style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -1410,269 +1424,268 @@ exports[`DataEntry ballot interaction renders board table with large container s
 exports[`DataEntry member form renders if no audit board members set 1`] = `
 <div>
   <div
-    class="single-page sc-kkGfuU hYSMMw"
+    class="sc-hMqMXs kivpAN"
   >
-    <h1
-      class="bp3-heading"
-    >
-      Member Sign in for Audit Board: 
-      Audit Board #2
-    </h1>
-    <p>
-      Enter the information below for each member of 
-      Jurisdiction 1
-       
-      Audit Board #2
-       below, then click "Next" to proceed.
-    </p>
     <div
-      class="sc-EHOje bbbmwQ"
+      class="sc-kEYyzF sc-kkGfuU cOCkRu"
     >
-      <h2
-        class="bp3-heading sc-ifAKCX cmZyyF"
-      />
-      <form>
-        <div
-          class="sc-bZQynM ibvdum"
+      <div>
+        <h1
+          class="bp3-heading"
         >
-          <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+          Audit Board #2
+          : Member Sign-in
+        </h1>
+        <p>
+          Enter the information below for each member of 
+          Jurisdiction 1
+           
+          Audit Board #2
+           below, then click "Next" to proceed.
+        </p>
+        <form>
+          <div
+            class="sc-ifAKCX iKQdjg"
           >
-            Audit Board Member
-          </h3>
-          <label
-            for="[0]name"
-          >
-            <span
-              class="sc-gZMcBi dFfqzz"
+            <h3
+              class="bp3-heading sc-bZQynM vxpym"
             >
-              Full Name
-            </span>
-            <input
-              class="sc-gqjmRU syWeW"
-              id="[0]name"
-              name="[0]name"
-              value=""
-            />
-          </label>
-          <div>
-            <span
-              class="sc-gZMcBi dFfqzz"
+              Audit Board Member
+            </h3>
+            <label
+              for="[0]name"
             >
-              Party Affiliation 
-              <i>
-                (optional)
-              </i>
-            </span>
+              <span
+                class="sc-dnqmqq kSLuZR"
+              >
+                Full Name
+              </span>
+              <input
+                class="bp3-input sc-iwsKbI hdoOFn"
+                id="[0]name"
+                name="[0]name"
+                value=""
+              />
+            </label>
             <div>
-              <label
-                class="bp3-control bp3-radio"
+              <span
+                class="sc-dnqmqq kSLuZR"
               >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="DEM"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Democrat
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="REP"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Republican
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="LIB"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Libertarian
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="IND"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Independent/Unaffiliated
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="OTH"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Other
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="[0]affiliation"
-                  type="radio"
-                  value=""
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                None
-              </label>
+                Party Affiliation 
+                <i>
+                  (optional)
+                </i>
+              </span>
+              <div>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[0]affiliation"
+                    type="radio"
+                    value="DEM"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Democrat
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[0]affiliation"
+                    type="radio"
+                    value="REP"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Republican
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[0]affiliation"
+                    type="radio"
+                    value="LIB"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Libertarian
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[0]affiliation"
+                    type="radio"
+                    value="IND"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Independent/Unaffiliated
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[0]affiliation"
+                    type="radio"
+                    value="OTH"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Other
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    checked=""
+                    name="[0]affiliation"
+                    type="radio"
+                    value=""
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  None
+                </label>
+              </div>
             </div>
           </div>
-        </div>
-        <div
-          class="sc-bZQynM ibvdum"
-        >
-          <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+          <div
+            class="sc-ifAKCX iKQdjg"
           >
-            Audit Board Member
-          </h3>
-          <label
-            for="[1]name"
-          >
-            <span
-              class="sc-gZMcBi dFfqzz"
+            <h3
+              class="bp3-heading sc-bZQynM vxpym"
             >
-              Full Name
-            </span>
-            <input
-              class="sc-gqjmRU syWeW"
-              id="[1]name"
-              name="[1]name"
-              value=""
-            />
-          </label>
-          <div>
-            <span
-              class="sc-gZMcBi dFfqzz"
+              Audit Board Member
+            </h3>
+            <label
+              for="[1]name"
             >
-              Party Affiliation 
-              <i>
-                (optional)
-              </i>
-            </span>
+              <span
+                class="sc-dnqmqq kSLuZR"
+              >
+                Full Name
+              </span>
+              <input
+                class="bp3-input sc-iwsKbI hdoOFn"
+                id="[1]name"
+                name="[1]name"
+                value=""
+              />
+            </label>
             <div>
-              <label
-                class="bp3-control bp3-radio"
+              <span
+                class="sc-dnqmqq kSLuZR"
               >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="DEM"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Democrat
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="REP"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Republican
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="LIB"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Libertarian
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="IND"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Independent/Unaffiliated
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="OTH"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Other
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="[1]affiliation"
-                  type="radio"
-                  value=""
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                None
-              </label>
+                Party Affiliation 
+                <i>
+                  (optional)
+                </i>
+              </span>
+              <div>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[1]affiliation"
+                    type="radio"
+                    value="DEM"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Democrat
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[1]affiliation"
+                    type="radio"
+                    value="REP"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Republican
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[1]affiliation"
+                    type="radio"
+                    value="LIB"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Libertarian
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[1]affiliation"
+                    type="radio"
+                    value="IND"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Independent/Unaffiliated
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    name="[1]affiliation"
+                    type="radio"
+                    value="OTH"
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  Other
+                </label>
+                <label
+                  class="bp3-control bp3-radio"
+                >
+                  <input
+                    checked=""
+                    name="[1]affiliation"
+                    type="radio"
+                    value=""
+                  />
+                  <span
+                    class="bp3-control-indicator"
+                  />
+                  None
+                </label>
+              </div>
             </div>
           </div>
-        </div>
-        <button
-          class="bp3-button bp3-intent-primary sc-iwsKbI drSRDt"
-          type="button"
-        >
-          <span
-            class="bp3-button-text"
+          <button
+            class="bp3-button bp3-intent-primary sc-htoDjs dESvso"
+            type="button"
           >
-            Next
-          </span>
-        </button>
-      </form>
+            <span
+              class="bp3-button-text"
+            >
+              Next
+            </span>
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
@@ -1681,563 +1694,567 @@ exports[`DataEntry member form renders if no audit board members set 1`] = `
 exports[`DataEntry member form submits and goes to ballot table 1`] = `
 <div>
   <div
-    class="single-page sc-kkGfuU hYSMMw"
+    class="sc-hMqMXs kivpAN"
   >
     <div
-      class="board-table-container"
+      class="sc-kEYyzF sc-kkGfuU cOCkRu"
     >
-      <h1
-        class="bp3-heading"
-      >
-        Audit Board #1
-        : Ballot Cards to Audit
-      </h1>
-      <p>
-        The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
-      </p>
       <div
-        class="sc-bdVaJa cDShCX"
+        class="board-table-container"
       >
-        <a
-          class="bp3-button bp3-intent-primary"
-          href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+        <h1
+          class="bp3-heading"
         >
-          Start Auditing
-        </a>
-      </div>
-      <div
-        class="bp3-table-container bp3-table-selection-enabled sc-htpNat ejHXZb"
-        tabindex="0"
-      >
+          Audit Board #1
+          : Ballot Cards to Audit
+        </h1>
+        <p>
+          The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
+        </p>
         <div
-          class="bp3-table-quadrant-stack"
+          class="sc-bdVaJa cDShCX"
+        >
+          <a
+            class="bp3-button bp3-intent-primary"
+            href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+          >
+            Start Auditing
+          </a>
+        </div>
+        <div
+          class="bp3-table-container bp3-table-selection-enabled sc-htpNat dCryYg"
+          tabindex="0"
         >
           <div
-            class="bp3-table-quadrant bp3-table-quadrant-main"
+            class="bp3-table-quadrant-stack"
           >
             <div
-              class="bp3-table-quadrant-scroll-container"
+              class="bp3-table-quadrant bp3-table-quadrant-main"
             >
               <div
-                class="bp3-table-top-container"
+                class="bp3-table-quadrant-scroll-container"
               >
                 <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
+                  class="bp3-table-top-container"
                 >
                   <div
-                    style="width: 600px;"
+                    class="bp3-table-column-headers bp3-table-selection-enabled"
                   >
                     <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 600px;"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Batch"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Batch
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Ballot Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Ballot Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Tabulator"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Tabulator
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Status"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Status
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 810px; width: 600px;"
-              >
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
-                      style="height: 810px; width: 600px;"
-                    >
-                      <div
-                        class="bp3-table-body-cells"
-                      >
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 13 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            313
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            N/A
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audited
-                            <a
-                              class="bp3-button bp3-small sc-bxivhb bAonbG"
-                              href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/313"
-                            >
-                              Re-audit
-                            </a>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 19 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            2112
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            11
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Not Audited
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 29 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            1789
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            11
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audited
-                            <a
-                              class="bp3-button bp3-small sc-bxivhb bAonbG"
-                              href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789"
-                            >
-                              Re-audit
-                            </a>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            0003-04-Precinct 13 (Jonesboro Fire Department)
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            313
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            11
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                          style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-truncated-text bp3-table-no-wrap-text"
-                          >
-                            Audited
-                            <a
-                              class="bp3-button bp3-small sc-bxivhb bAonbG"
-                              href="/election/1/board/audit-board-1/batch/batch-id-2/ballot/313"
-                            >
-                              Re-audit
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bp3-table-quadrant bp3-table-quadrant-top"
-            style="height: 30px; right: 0px;"
-          >
-            <div
-              class="bp3-table-quadrant-scroll-container"
-            >
-              <div
-                class="bp3-table-top-container"
-              >
-                <div
-                  class="bp3-table-column-headers bp3-table-selection-enabled"
-                >
-                  <div
-                    style="width: 600px;"
-                  >
-                    <div
-                      class="bp3-table-thead bp3-table-column-header-tr"
-                      style="transform: translateX(0px); width: 600px;"
-                    >
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Batch"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Batch
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Ballot Position"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Ballot Position
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Tabulator"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Tabulator
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
-                        style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                      >
-                        <div
-                          class="bp3-table-column-name"
-                          title="Status"
-                        >
-                          <div
-                            class="bp3-table-column-name-text"
-                          >
-                            <div
-                              class="bp3-table-truncated-text"
-                            >
-                              Status
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header-content"
-                        />
-                        <div
-                          class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                        >
-                          <div
-                            class="bp3-table-resize-handle"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="bp3-table-bottom-container"
-                style="height: 810px; width: 600px;"
-              >
-                <div
-                  class="bp3-table-quadrant-body-container"
-                >
-                  <div>
-                    <div
-                      class="bp3-table-body-virtual-client bp3-table-cell-client"
                       style="width: 600px;"
                     >
                       <div
-                        class="bp3-table-body-cells"
-                      />
+                        class="bp3-table-thead bp3-table-column-header-tr"
+                        style="transform: translateX(0px); width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Batch"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Tabulator"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Tabulator
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Status"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Status
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bp3-table-bottom-container"
+                  style="height: 810px; width: 600px;"
+                >
+                  <div
+                    class="bp3-table-quadrant-body-container"
+                  >
+                    <div>
+                      <div
+                        class="bp3-table-body-virtual-client bp3-table-cell-client"
+                        style="height: 810px; width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-body-cells"
+                        >
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 13 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              313
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              N/A
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Audited
+                              <a
+                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/313"
+                              >
+                                Re-audit
+                              </a>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 19 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              2112
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              11
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Not Audited
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 29 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              1789
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              11
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Audited
+                              <a
+                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789"
+                              >
+                                Re-audit
+                              </a>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              0003-04-Precinct 13 (Jonesboro Fire Department)
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              313
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              11
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
+                            style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
+                          >
+                            <div
+                              class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                            >
+                              Audited
+                              <a
+                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                href="/election/1/board/audit-board-1/batch/batch-id-2/ballot/313"
+                              >
+                                Re-audit
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bp3-table-quadrant bp3-table-quadrant-top"
+              style="height: 30px; right: 0px;"
+            >
+              <div
+                class="bp3-table-quadrant-scroll-container"
+              >
+                <div
+                  class="bp3-table-top-container"
+                >
+                  <div
+                    class="bp3-table-column-headers bp3-table-selection-enabled"
+                  >
+                    <div
+                      style="width: 600px;"
+                    >
+                      <div
+                        class="bp3-table-thead bp3-table-column-header-tr"
+                        style="transform: translateX(0px); width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Batch"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Tabulator"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Tabulator
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Status"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Status
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bp3-table-bottom-container"
+                  style="height: 810px; width: 600px;"
+                >
+                  <div
+                    class="bp3-table-quadrant-body-container"
+                  >
+                    <div>
+                      <div
+                        class="bp3-table-body-virtual-client bp3-table-cell-client"
+                        style="width: 600px;"
+                      >
+                        <div
+                          class="bp3-table-body-cells"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
-        />
-        <div
-          class="bp3-table-resize-guides bp3-table-overlay-layer"
-        />
-        <div
-          class="bp3-table-resize-sensor"
-          style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
-        >
           <div
-            class="bp3-table-resize-sensor-expand"
-            style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
+          />
+          <div
+            class="bp3-table-resize-guides bp3-table-overlay-layer"
+          />
+          <div
+            class="bp3-table-resize-sensor"
+            style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
           >
             <div
-              style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
-            />
-          </div>
-          <div
-            class="bp3-table-resize-sensor-shrink"
-            style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
-          >
+              class="bp3-table-resize-sensor-expand"
+              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            >
+              <div
+                style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
+              />
+            </div>
             <div
-              style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
-            />
+              class="bp3-table-resize-sensor-shrink"
+              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            >
+              <div
+                style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
+              />
+            </div>
           </div>
         </div>
       </div>
