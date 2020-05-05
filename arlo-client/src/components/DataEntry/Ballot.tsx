@@ -64,7 +64,7 @@ const Ballot: React.FC<IProps> = ({
 
   const ballotIx = ballots.findIndex(
     b => b.position === ballotPosition && b.batch.id === batchId
-  ) /* istanbul ignore next */
+  )
   const ballot = ballots[ballotIx]
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const Ballot: React.FC<IProps> = ({
     }
   }, [ballot, contests])
 
-  return !ballot || ballotIx < 0 ? (
+  return !ballot ? (
     <Redirect to={home} />
   ) : (
     <Wrapper>
