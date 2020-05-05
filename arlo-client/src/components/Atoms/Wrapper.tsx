@@ -20,7 +20,7 @@ export const Inner = styled.div`
   margin-left: auto;
   width: 1020px;
   min-width: 1020px;
-  padding: 0 15px;
+  padding: 0 30px;
 `
 
 export default Wrapper
