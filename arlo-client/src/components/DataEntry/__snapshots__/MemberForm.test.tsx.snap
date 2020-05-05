@@ -2,31 +2,26 @@
 
 exports[`MemberForm renders correctly 1`] = `
 <div>
-  <h1
-    class="bp3-heading"
-  >
-    Member Sign in for Audit Board: 
-    board name
-  </h1>
-  <p>
-    Enter the information below for each member of 
-    jurisdiction name
-     
-    board name
-     below, then click "Next" to proceed.
-  </p>
-  <div
-    class="sc-bwzfXH hfheQC"
-  >
-    <h2
-      class="bp3-heading sc-bdVaJa ibVpPq"
-    />
+  <div>
+    <h1
+      class="bp3-heading"
+    >
+      board name
+      : Member Sign-in
+    </h1>
+    <p>
+      Enter the information below for each member of 
+      jurisdiction name
+       
+      board name
+       below, then click "Next" to proceed.
+    </p>
     <form>
       <div
-        class="sc-htpNat kLGmUl"
+        class="sc-bdVaJa fdbLH"
       >
         <h3
-          class="bp3-heading sc-ifAKCX fYInwY"
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Audit Board Member
         </h3>
@@ -34,12 +29,12 @@ exports[`MemberForm renders correctly 1`] = `
           for="[0]name"
         >
           <span
-            class="sc-gzVnrw cVHFGk"
+            class="sc-EHOje jNXuzs"
           >
             Full Name
           </span>
           <input
-            class="sc-htoDjs hpWqMX"
+            class="bp3-input sc-bZQynM eRainu"
             id="[0]name"
             name="[0]name"
             value=""
@@ -47,7 +42,7 @@ exports[`MemberForm renders correctly 1`] = `
         </label>
         <div>
           <span
-            class="sc-gzVnrw cVHFGk"
+            class="sc-EHOje jNXuzs"
           >
             Party Affiliation 
             <i>
@@ -138,10 +133,10 @@ exports[`MemberForm renders correctly 1`] = `
         </div>
       </div>
       <div
-        class="sc-htpNat kLGmUl"
+        class="sc-bdVaJa fdbLH"
       >
         <h3
-          class="bp3-heading sc-ifAKCX fYInwY"
+          class="bp3-heading sc-htpNat cNFUHJ"
         >
           Audit Board Member
         </h3>
@@ -149,12 +144,12 @@ exports[`MemberForm renders correctly 1`] = `
           for="[1]name"
         >
           <span
-            class="sc-gzVnrw cVHFGk"
+            class="sc-EHOje jNXuzs"
           >
             Full Name
           </span>
           <input
-            class="sc-htoDjs hpWqMX"
+            class="bp3-input sc-bZQynM eRainu"
             id="[1]name"
             name="[1]name"
             value=""
@@ -162,7 +157,7 @@ exports[`MemberForm renders correctly 1`] = `
         </label>
         <div>
           <span
-            class="sc-gzVnrw cVHFGk"
+            class="sc-EHOje jNXuzs"
           >
             Party Affiliation 
             <i>
@@ -253,7 +248,7 @@ exports[`MemberForm renders correctly 1`] = `
         </div>
       </div>
       <button
-        class="bp3-button bp3-intent-primary sc-bZQynM iFVUEu"
+        class="bp3-button bp3-intent-primary sc-ifAKCX zdCNs"
         type="button"
       >
         <span
