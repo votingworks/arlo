@@ -9,7 +9,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
       class="bp3-callout sc-brqgnP jodPLw"
     >
       <div
-        class="sc-kkGfuU dNbVpK"
+        class="sc-kkGfuU hbkxmN"
       >
         <div
           class="text"
@@ -26,7 +26,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
       </div>
     </div>
     <div
-      class="sc-kkGfuU dNbVpK"
+      class="sc-kkGfuU hbkxmN"
     >
       <div
         class="sc-iAyFgw crJrHI"
@@ -380,7 +380,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
       class="bp3-callout sc-brqgnP jodPLw"
     >
       <div
-        class="sc-kkGfuU dNbVpK"
+        class="sc-kkGfuU hbkxmN"
       >
         <div
           class="text"
@@ -397,7 +397,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
       </div>
     </div>
     <div
-      class="sc-kkGfuU dNbVpK"
+      class="sc-kkGfuU hbkxmN"
     >
       <div
         class="sc-iAyFgw crJrHI"

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Formik, FormikProps, Field } from 'formik'
+import { Formik, FormikProps, Field, Form } from 'formik'
 import { H4, H3, Button } from '@blueprintjs/core'
 import {
   BallotRow,
-  FormBlock,
+  ContestCard,
   RadioGroupFlex,
   ProgressActions,
   FlushDivider,
@@ -14,24 +14,20 @@ import { IBallotInterpretation, Interpretation, IContest } from '../../types'
 import FormField from '../Atoms/Form/FormField'
 
 interface IProps {
-  contest: IContest
+  contests: IContest[]
   goReview: () => void
-  interpretation: IBallotInterpretation
-  setInterpretation: (i: IBallotInterpretation) => void
+  interpretations: IBallotInterpretation[]
+  setInterpretations: (interpretations: IBallotInterpretation[]) => void
   previousBallot: () => void
 }
 
 const BallotAudit: React.FC<IProps> = ({
-  contest,
-  interpretation,
-  setInterpretation,
+  contests,
+  interpretations,
+  setInterpretations,
   goReview,
   previousBallot,
 }: IProps) => {
-  const [commenting, setCommenting] = useState(false)
-  useEffect(() => {
-    setCommenting(!!interpretation.comment)
-  }, [interpretation.comment])
   return (
     <BallotRow>
       <div className="ballot-side"></div>
@@ -51,115 +47,40 @@ const BallotAudit: React.FC<IProps> = ({
           the disagreement.
         </p>
         <Formik
-          initialValues={interpretation}
+          initialValues={{ interpretations }}
           enableReinitialize
           onSubmit={values => {
-            setInterpretation(values)
+            setInterpretations(values.interpretations)
             goReview()
           }}
           render={({
             handleSubmit,
             values,
             setFieldValue,
-          }: FormikProps<IBallotInterpretation>) => {
-            // Since the radio button values must be strings, not full objects,
-            // we condense our data model for interpretations to strings:
-            // - For buttons representing interpretation VOTE (one for each
-            // contest choice), the value is interpretation.choiceId
-            // - For buttons representing other interpretations (BLANK,
-            // CANT_AGREE), the value is interpretation.interpretation
-
-            const radioProps = {
-              name: 'interpretation',
-              handleChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                const { value } = e.currentTarget
-                if (
-                  value === Interpretation.BLANK ||
-                  value === Interpretation.CANT_AGREE
-                ) {
-                  setFieldValue('interpretation', value)
-                  setFieldValue('choiceId', null)
-                } else {
-                  setFieldValue('interpretation', Interpretation.VOTE)
-                  setFieldValue('choiceId', value)
-                }
-              },
-            }
-            const toggleCommenting = () => {
-              setCommenting(!commenting)
-              setFieldValue('comment', null)
-            }
-
-            const isVote = values.interpretation === Interpretation.VOTE
-
+          }: FormikProps<{ interpretations: IBallotInterpretation[] }>) => {
+            const submitDisabled = !values.interpretations.some(
+              ({ interpretation }) => interpretation
+            )
             return (
-              <>
-                <FormBlock>
-                  <H3>{contest.name}</H3>
-                  <FlushDivider />
-                  <RadioGroupFlex
-                    name="interpretation"
-                    onChange={
-                      /* istanbul ignore next */
-                      () => undefined
-                    } // required by blueprintjs but we're implementing on BlockRadio instead
-                    selectedValue={
-                      (isVote ? values.choiceId : values.interpretation) ||
-                      undefined
+              <Form>
+                {contests.map((contest, i) => (
+                  <BallotAuditContest
+                    key={contest.name}
+                    contest={contest}
+                    interpretation={values.interpretations[i]}
+                    setInterpretation={newInterpretation =>
+                      setFieldValue(`interpretations[${i}]`, newInterpretation)
                     }
-                  >
-                    {contest.choices.map(c => (
-                      <BlockRadio
-                        key={c.id}
-                        {...radioProps}
-                        checked={isVote && values.choiceId === c.id}
-                        value={c.id}
-                        label={c.name}
-                      />
-                    ))}
-                    <BlockRadio
-                      {...radioProps}
-                      gray
-                      checked={
-                        values.interpretation === Interpretation.CANT_AGREE
-                      }
-                      value={Interpretation.CANT_AGREE}
-                      label="Audit board can't agree"
-                    />
-                    <BlockRadio
-                      {...radioProps}
-                      gray
-                      checked={values.interpretation === Interpretation.BLANK}
-                      value={Interpretation.BLANK}
-                      label="Blank vote/no mark"
-                    />
-                  </RadioGroupFlex>
-                  <Button minimal icon="edit" onClick={toggleCommenting}>
-                    {commenting ? 'Remove comment' : 'Add comment'}
-                  </Button>
-                  {commenting && (
-                    <Field
-                      name="comment"
-                      type="textarea"
-                      data-testid="comment-textarea"
-                      component={FormField}
-                      value={values.comment || ''}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setFieldValue('comment', e.currentTarget.value)
-                      }
-                    />
-                  )}
-                </FormBlock>
+                  />
+                ))}
                 <ProgressActions>
                   <FormButton
                     type="submit"
                     onClick={handleSubmit}
-                    disabled={!values.interpretation}
+                    disabled={submitDisabled}
                     intent="success"
                     data-testid={
-                      !values.interpretation
-                        ? 'disabled-review'
-                        : 'enabled-review'
+                      submitDisabled ? 'disabled-review' : 'enabled-review'
                     }
                   >
                     Review
@@ -168,12 +89,125 @@ const BallotAudit: React.FC<IProps> = ({
                     Back
                   </Button>
                 </ProgressActions>
-              </>
+              </Form>
             )
           }}
         />
       </div>
     </BallotRow>
+  )
+}
+
+interface IBallotAuditContestProps {
+  contest: IContest
+  interpretation: IBallotInterpretation
+  setInterpretation: (i: IBallotInterpretation) => void
+}
+
+const BallotAuditContest = ({
+  contest,
+  interpretation,
+  setInterpretation,
+}: IBallotAuditContestProps) => {
+  const [commenting, setCommenting] = useState(false)
+  useEffect(() => {
+    setCommenting(!!interpretation.comment)
+  }, [interpretation.comment])
+
+  const toggleCommenting = () => {
+    setCommenting(!commenting)
+    setInterpretation({ ...interpretation, comment: null })
+  }
+
+  // Since the radio button values must be strings, not full objects,
+  // we condense our data model for interpretations to strings:
+  // - For buttons representing interpretation VOTE (one for each
+  // contest choice), the value is interpretation.choiceId
+  // - For buttons representing other interpretations (BLANK,
+  // CANT_AGREE), the value is interpretation.interpretation
+  const radioProps = {
+    name: `interpretation-${contest.name}`,
+    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.currentTarget
+      if (
+        value === Interpretation.BLANK ||
+        value === Interpretation.CANT_AGREE
+      ) {
+        setInterpretation({
+          ...interpretation,
+          interpretation: value,
+          choiceId: null,
+        })
+      } else {
+        setInterpretation({
+          ...interpretation,
+          interpretation: Interpretation.VOTE,
+          choiceId: value,
+        })
+      }
+    },
+  }
+
+  const isVote = interpretation.interpretation === Interpretation.VOTE
+
+  return (
+    <ContestCard>
+      <H3>{contest.name}</H3>
+      <FlushDivider />
+      <RadioGroupFlex
+        name="interpretation"
+        onChange={
+          /* istanbul ignore next */
+          () => undefined
+        } // required by blueprintjs but we're implementing on BlockRadio instead
+        selectedValue={
+          (isVote ? interpretation.choiceId : interpretation.interpretation) ||
+          undefined
+        }
+      >
+        {contest.choices.map(c => (
+          <BlockRadio
+            key={c.id}
+            {...radioProps}
+            checked={isVote && interpretation.choiceId === c.id}
+            value={c.id}
+            label={c.name}
+          />
+        ))}
+        <BlockRadio
+          {...radioProps}
+          gray
+          checked={interpretation.interpretation === Interpretation.CANT_AGREE}
+          value={Interpretation.CANT_AGREE}
+          label="Audit board can't agree"
+        />
+        <BlockRadio
+          {...radioProps}
+          gray
+          checked={interpretation.interpretation === Interpretation.BLANK}
+          value={Interpretation.BLANK}
+          label="Blank vote/no mark"
+        />
+      </RadioGroupFlex>
+      <Button minimal icon="edit" onClick={toggleCommenting}>
+        {commenting ? 'Remove comment' : 'Add comment'}
+      </Button>
+      {commenting && (
+        <Field
+          name={`comment-${contest.name}`}
+          type="textarea"
+          data-testid="comment-textarea"
+          component={FormField}
+          value={interpretation.comment || ''}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setInterpretation({
+              ...interpretation,
+              comment: e.currentTarget.value,
+            })
+          }
+        />
+      )}
+    </ContestCard>
   )
 }
 
