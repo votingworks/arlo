@@ -26,17 +26,6 @@ def test_ja_ballot_draws_bad_round_id(
     assert rv.status_code == 404
 
 
-def test_ja_ballot_draws_before_audit_boards_set_up(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
-):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballot-draws"
-    )
-    ballot_draws = json.loads(rv.data)["ballotDraws"]
-    assert ballot_draws == []
-
-
 def test_ja_ballot_draws_round_1(
     client: FlaskClient,
     election_id: str,
@@ -113,6 +102,29 @@ def test_ja_ballot_draws_round_1(
                     "comment": "blah blah blah",
                 }
             ],
+        },
+    )
+
+
+def test_ja_ballot_draws_before_audit_boards_set_up(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballot-draws"
+    )
+    ballot_draws = json.loads(rv.data)["ballotDraws"]
+    assert len(ballot_draws) == J1_SAMPLES_ROUND_1
+
+    compare_json(
+        ballot_draws[0],
+        {
+            "auditBoard": None,
+            "batch": {"id": assert_is_id, "name": "1", "tabulator": None},
+            "position": 12,
+            "status": "NOT_AUDITED",
+            "ticketNumber": "0.029898626",
+            "interpretations": [],
         },
     )
 

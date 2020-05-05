@@ -143,7 +143,7 @@ def serialize_ballot_draw(ballot_draw: SampledBallotDraw) -> JSONDict:
         ],
         "position": ballot.ballot_position,
         "batch": {"id": batch.id, "name": batch.name, "tabulator": batch.tabulator,},
-        "auditBoard": {"id": audit_board.id, "name": audit_board.name,},
+        "auditBoard": audit_board and {"id": audit_board.id, "name": audit_board.name,},
     }
 
 
@@ -163,7 +163,7 @@ def list_ballot_draws_for_jurisdiction(
         .join(SampledBallot)
         .join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
-        .join(AuditBoard)
+        .outerjoin(AuditBoard)
         .order_by(
             AuditBoard.name,
             Batch.name,
