@@ -114,163 +114,165 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
         <p>
           If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
         </p>
-        <form
-          class="sc-htpNat blpdRK"
-        >
-          <h3
-            class="bp3-heading"
-          >
-            Contest Name
-          </h3>
+        <form>
           <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-bxivhb eqbYCx"
+            class="sc-htpNat jWiLEy"
           >
-            <label
-              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+            <h3
+              class="bp3-heading"
             >
-              <input
-                data-testid="choice-id-1"
-                name="interpretation"
-                type="radio"
-                value="choice-id-1"
-              />
-              <span
-                class="undefined bp3-control-indicator"
-              >
-                <span
-                  class="radio-text"
-                >
-                  Choice One
-                </span>
-              </span>
-            </label>
-            <label
-              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+              Contest Name
+            </h3>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-bxivhb eqbYCx"
             >
-              <input
-                data-testid="choice-id-2"
-                name="interpretation"
-                type="radio"
-                value="choice-id-2"
-              />
-              <span
-                class="undefined bp3-control-indicator"
+              <label
+                class=" bp3-control bp3-radio sc-EHOje cmcGgn"
               >
-                <span
-                  class="radio-text"
-                >
-                  Choice Two
-                </span>
-              </span>
-            </label>
-            <label
-              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
-            >
-              <input
-                data-testid="CANT_AGREE"
-                name="interpretation"
-                type="radio"
-                value="CANT_AGREE"
-              />
-              <span
-                class="gray bp3-control-indicator"
-              >
-                <span
-                  class="radio-text"
-                >
-                  Audit board can't agree
-                </span>
-              </span>
-            </label>
-            <label
-              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
-            >
-              <input
-                data-testid="BLANK"
-                name="interpretation"
-                type="radio"
-                value="BLANK"
-              />
-              <span
-                class="gray bp3-control-indicator"
-              >
-                <span
-                  class="radio-text"
-                >
-                  Blank vote/no mark
-                </span>
-              </span>
-            </label>
-          </div>
-          <button
-            class="bp3-button bp3-minimal"
-            type="button"
-          >
-            <span
-              class="bp3-icon bp3-icon-edit"
-              icon="edit"
-            >
-              <svg
-                data-icon="edit"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
-              >
-                <desc>
-                  edit
-                </desc>
-                <path
-                  d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                  fill-rule="evenodd"
+                <input
+                  data-testid="choice-id-1"
+                  name="interpretation-Contest Name"
+                  type="radio"
+                  value="choice-id-1"
                 />
-              </svg>
-            </span>
-            <span
-              class="bp3-button-text"
+                <span
+                  class="undefined bp3-control-indicator"
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    Choice One
+                  </span>
+                </span>
+              </label>
+              <label
+                class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+              >
+                <input
+                  data-testid="choice-id-2"
+                  name="interpretation-Contest Name"
+                  type="radio"
+                  value="choice-id-2"
+                />
+                <span
+                  class="undefined bp3-control-indicator"
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    Choice Two
+                  </span>
+                </span>
+              </label>
+              <label
+                class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+              >
+                <input
+                  data-testid="CANT_AGREE"
+                  name="interpretation-Contest Name"
+                  type="radio"
+                  value="CANT_AGREE"
+                />
+                <span
+                  class="gray bp3-control-indicator"
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    Audit board can't agree
+                  </span>
+                </span>
+              </label>
+              <label
+                class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+              >
+                <input
+                  data-testid="BLANK"
+                  name="interpretation-Contest Name"
+                  type="radio"
+                  value="BLANK"
+                />
+                <span
+                  class="gray bp3-control-indicator"
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    Blank vote/no mark
+                  </span>
+                </span>
+              </label>
+            </div>
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
             >
-              Remove comment
-            </span>
-          </button>
+              <span
+                class="bp3-icon bp3-icon-edit"
+                icon="edit"
+              >
+                <svg
+                  data-icon="edit"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    edit
+                  </desc>
+                  <path
+                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+              <span
+                class="bp3-button-text"
+              >
+                Remove comment
+              </span>
+            </button>
+            <div
+              class="sc-htoDjs kKCJWi"
+            >
+              <textarea
+                class="bp3-input sc-iwsKbI hebCva"
+                data-testid="comment-textarea"
+                name="comment-Contest Name"
+              >
+                Good ballot
+              </textarea>
+            </div>
+          </div>
           <div
-            class="sc-htoDjs kKCJWi"
+            class="sc-ifAKCX jzSIMx"
           >
-            <textarea
-              class="bp3-input sc-iwsKbI hebCva"
-              data-testid="comment-textarea"
-              name="comment"
+            <button
+              class="bp3-button bp3-intent-success sc-gzVnrw kdzzfK"
+              data-testid="enabled-review"
+              type="submit"
             >
-              Good ballot
-            </textarea>
+              <span
+                class="bp3-button-text"
+              >
+                Review
+              </span>
+            </button>
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Back
+              </span>
+            </button>
           </div>
         </form>
-        <div
-          class="sc-ifAKCX jzSIMx"
-        >
-          <button
-            class="bp3-button bp3-intent-success sc-gzVnrw kdzzfK"
-            data-testid="enabled-review"
-            type="submit"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Review
-            </span>
-          </button>
-          <button
-            class="bp3-button bp3-minimal"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Back
-            </span>
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -390,154 +392,156 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
         <p>
           If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
         </p>
-        <form
-          class="sc-htpNat blpdRK"
-        >
-          <h3
-            class="bp3-heading"
-          >
-            Contest Name
-          </h3>
+        <form>
           <div
-            class="bp3-divider sc-bdVaJa gqVLlZ"
-          />
-          <div
-            class="sc-bxivhb eqbYCx"
+            class="sc-htpNat jWiLEy"
           >
-            <label
-              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+            <h3
+              class="bp3-heading"
             >
-              <input
-                data-testid="choice-id-1"
-                name="interpretation"
-                type="radio"
-                value="choice-id-1"
-              />
-              <span
-                class="undefined bp3-control-indicator"
-              >
-                <span
-                  class="radio-text"
-                >
-                  Choice One
-                </span>
-              </span>
-            </label>
-            <label
-              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+              Contest Name
+            </h3>
+            <div
+              class="bp3-divider sc-bdVaJa gqVLlZ"
+            />
+            <div
+              class="sc-bxivhb eqbYCx"
             >
-              <input
-                data-testid="choice-id-2"
-                name="interpretation"
-                type="radio"
-                value="choice-id-2"
-              />
-              <span
-                class="undefined bp3-control-indicator"
+              <label
+                class=" bp3-control bp3-radio sc-EHOje cmcGgn"
               >
-                <span
-                  class="radio-text"
-                >
-                  Choice Two
-                </span>
-              </span>
-            </label>
-            <label
-              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
-            >
-              <input
-                data-testid="CANT_AGREE"
-                name="interpretation"
-                type="radio"
-                value="CANT_AGREE"
-              />
-              <span
-                class="gray bp3-control-indicator"
-              >
-                <span
-                  class="radio-text"
-                >
-                  Audit board can't agree
-                </span>
-              </span>
-            </label>
-            <label
-              class=" bp3-control bp3-radio sc-EHOje cmcGgn"
-            >
-              <input
-                data-testid="BLANK"
-                name="interpretation"
-                type="radio"
-                value="BLANK"
-              />
-              <span
-                class="gray bp3-control-indicator"
-              >
-                <span
-                  class="radio-text"
-                >
-                  Blank vote/no mark
-                </span>
-              </span>
-            </label>
-          </div>
-          <button
-            class="bp3-button bp3-minimal"
-            type="button"
-          >
-            <span
-              class="bp3-icon bp3-icon-edit"
-              icon="edit"
-            >
-              <svg
-                data-icon="edit"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
-              >
-                <desc>
-                  edit
-                </desc>
-                <path
-                  d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
-                  fill-rule="evenodd"
+                <input
+                  data-testid="choice-id-1"
+                  name="interpretation-Contest Name"
+                  type="radio"
+                  value="choice-id-1"
                 />
-              </svg>
-            </span>
-            <span
-              class="bp3-button-text"
+                <span
+                  class="undefined bp3-control-indicator"
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    Choice One
+                  </span>
+                </span>
+              </label>
+              <label
+                class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+              >
+                <input
+                  data-testid="choice-id-2"
+                  name="interpretation-Contest Name"
+                  type="radio"
+                  value="choice-id-2"
+                />
+                <span
+                  class="undefined bp3-control-indicator"
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    Choice Two
+                  </span>
+                </span>
+              </label>
+              <label
+                class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+              >
+                <input
+                  data-testid="CANT_AGREE"
+                  name="interpretation-Contest Name"
+                  type="radio"
+                  value="CANT_AGREE"
+                />
+                <span
+                  class="gray bp3-control-indicator"
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    Audit board can't agree
+                  </span>
+                </span>
+              </label>
+              <label
+                class=" bp3-control bp3-radio sc-EHOje cmcGgn"
+              >
+                <input
+                  data-testid="BLANK"
+                  name="interpretation-Contest Name"
+                  type="radio"
+                  value="BLANK"
+                />
+                <span
+                  class="gray bp3-control-indicator"
+                >
+                  <span
+                    class="radio-text"
+                  >
+                    Blank vote/no mark
+                  </span>
+                </span>
+              </label>
+            </div>
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
             >
-              Add comment
-            </span>
-          </button>
+              <span
+                class="bp3-icon bp3-icon-edit"
+                icon="edit"
+              >
+                <svg
+                  data-icon="edit"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    edit
+                  </desc>
+                  <path
+                    d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+              <span
+                class="bp3-button-text"
+              >
+                Add comment
+              </span>
+            </button>
+          </div>
+          <div
+            class="sc-ifAKCX jzSIMx"
+          >
+            <button
+              class="bp3-button bp3-disabled bp3-intent-success sc-gzVnrw kdzzfK"
+              data-testid="disabled-review"
+              disabled=""
+              tabindex="-1"
+              type="submit"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Review
+              </span>
+            </button>
+            <button
+              class="bp3-button bp3-minimal"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Back
+              </span>
+            </button>
+          </div>
         </form>
-        <div
-          class="sc-ifAKCX jzSIMx"
-        >
-          <button
-            class="bp3-button bp3-disabled bp3-intent-success sc-gzVnrw kdzzfK"
-            data-testid="disabled-review"
-            disabled=""
-            tabindex="-1"
-            type="submit"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Review
-            </span>
-          </button>
-          <button
-            class="bp3-button bp3-minimal"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Back
-            </span>
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -639,8 +643,8 @@ exports[`Ballot selects Audit board can't agree 1`] = `
       <div
         class="ballot-main"
       >
-        <form
-          class="sc-htpNat blpdRK"
+        <div
+          class="sc-htpNat jWiLEy"
         >
           <h3
             class="bp3-heading"
@@ -696,7 +700,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
             </button>
           </div>
           <p />
-        </form>
+        </div>
         <div
           class="sc-ifAKCX jzSIMx"
         >
@@ -822,8 +826,8 @@ exports[`Ballot selects Blank vote/no mark 1`] = `
       <div
         class="ballot-main"
       >
-        <form
-          class="sc-htpNat blpdRK"
+        <div
+          class="sc-htpNat jWiLEy"
         >
           <h3
             class="bp3-heading"
@@ -879,7 +883,7 @@ exports[`Ballot selects Blank vote/no mark 1`] = `
             </button>
           </div>
           <p />
-        </form>
+        </div>
         <div
           class="sc-ifAKCX jzSIMx"
         >
@@ -1005,8 +1009,8 @@ exports[`Ballot switches audit and review views 1`] = `
       <div
         class="ballot-main"
       >
-        <form
-          class="sc-htpNat blpdRK"
+        <div
+          class="sc-htpNat jWiLEy"
         >
           <h3
             class="bp3-heading"
@@ -1062,7 +1066,7 @@ exports[`Ballot switches audit and review views 1`] = `
             </button>
           </div>
           <p />
-        </form>
+        </div>
         <div
           class="sc-ifAKCX jzSIMx"
         >
@@ -1188,8 +1192,8 @@ exports[`Ballot toggles and deletes a comment 1`] = `
       <div
         class="ballot-main"
       >
-        <form
-          class="sc-htpNat blpdRK"
+        <div
+          class="sc-htpNat jWiLEy"
         >
           <h3
             class="bp3-heading"
@@ -1245,7 +1249,7 @@ exports[`Ballot toggles and deletes a comment 1`] = `
             </button>
           </div>
           <p />
-        </form>
+        </div>
         <div
           class="sc-ifAKCX jzSIMx"
         >
@@ -1371,8 +1375,8 @@ exports[`Ballot toggles and submits comment 1`] = `
       <div
         class="ballot-main"
       >
-        <form
-          class="sc-htpNat blpdRK"
+        <div
+          class="sc-htpNat jWiLEy"
         >
           <h3
             class="bp3-heading"
@@ -1430,7 +1434,7 @@ exports[`Ballot toggles and submits comment 1`] = `
           <p>
             COMMENT: a test comment
           </p>
-        </form>
+        </div>
         <div
           class="sc-ifAKCX jzSIMx"
         >
