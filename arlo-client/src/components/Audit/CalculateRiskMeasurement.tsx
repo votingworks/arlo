@@ -58,7 +58,7 @@ const QRs: React.FC<{ electionId: string; boardIds: string[] }> = ({
       {boardIds.map(id => (
         <span key={id} id={`qr-${id}`}>
           <QRCode
-            value={`${window.location.origin}/election/${electionId}/board/${id}`}
+            value={`${window.location.origin}/election/${electionId}/audit-board/${id}`}
             size={200}
           />
         </span>

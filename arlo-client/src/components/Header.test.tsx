@@ -67,7 +67,7 @@ describe('Header', () => {
   })
 
   it('does not show logout button if not authenticated', async () => {
-    apiMock.mockImplementation(async () => ({}))
+    apiMock.mockRejectedValue(async () => ({}))
     const { queryByText } = await asyncActRender(
       <Router>
         <AuthDataProvider>
@@ -86,7 +86,7 @@ describe('Header', () => {
 
   it('does not show logout button if the authentication verification has a server error', async () => {
     checkAndToastMock.mockReturnValue(true)
-    apiMock.mockImplementation(async () => ({}))
+    apiMock.mockRejectedValue(async () => ({}))
     const { queryByText } = await asyncActRender(
       <Router>
         <AuthDataProvider>
