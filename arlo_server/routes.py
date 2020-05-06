@@ -1143,7 +1143,7 @@ def auditboard_passphrase(passphrase):
     auditboard = AuditBoard.query.filter_by(passphrase=passphrase).one()
     set_loggedin_user(UserType.AUDIT_BOARD, auditboard.id)
     return redirect(
-        f"/election/{auditboard.jurisdiction.election.id}/board/{auditboard.id}"
+        f"/election/{auditboard.jurisdiction.election.id}/audit-board/{auditboard.id}"
     )
 
 
@@ -1333,6 +1333,9 @@ def jurisdictionadmin_login_callback():
 # React App
 @app.route("/")
 @app.route("/election/<election_id>")
-@app.route("/election/<election_id>/board/<board_id>")
-def serve(election_id=None, board_id=None):  # pylint: disable=unused-argument
+@app.route("/election/<election_id>/audit-board/<board_id>")
+@app.route("/election/<election_id>/jurisdiction/<jurisdiction_id>")
+def serve(
+    election_id=None, board_id=None, jurisdiction_id=None
+):  # pylint: disable=unused-argument
     return app.send_static_file("index.html")
