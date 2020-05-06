@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Formik, FormikProps, Form } from 'formik'
 import styled from 'styled-components'
 import { HTMLSelect, FileInput, H4 } from '@blueprintjs/core'
@@ -31,7 +31,8 @@ const BallotManifest: React.FC<IProps> = ({
   uploadBallotManifest,
 }: IProps) => {
   const { file } = ballotManifest
-  const [isEditing, setIsEditing] = useState<boolean>(!!file)
+  const [isEditing, setIsEditing] = useState<boolean>(true)
+  useEffect(() => setIsEditing(file === null), [file])
 
   return (
     <Formik
@@ -100,20 +101,27 @@ const BallotManifest: React.FC<IProps> = ({
                   )}
                 </>
               ) : (
-                <>
-                  <span>{file!.name}</span>
-                  <FormButton onClick={() => setIsEditing(true)}>
-                    Replace File
-                  </FormButton>
-                </>
+                <span>
+                  <strong>Current Ballot Manifest file:</strong> {file!.name}
+                </span>
               )}
             </FormSection>
+            <FormButtonBar>
+              {isEditing ? (
+                <FormButton
+                  type="submit"
+                  intent="primary"
+                  onClick={handleSubmit}
+                >
+                  Upload File
+                </FormButton>
+              ) : (
+                <FormButton onClick={() => setIsEditing(true)}>
+                  Replace File
+                </FormButton>
+              )}
+            </FormButtonBar>
           </FormWrapper>
-          <FormButtonBar>
-            <FormButton type="submit" intent="primary" onClick={handleSubmit}>
-              Upload File
-            </FormButton>
-          </FormButtonBar>
         </Form>
       )}
     </Formik>
