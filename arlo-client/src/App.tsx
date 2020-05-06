@@ -13,7 +13,8 @@ import Header from './components/Header'
 import { Wrapper } from './components/Atoms/Wrapper'
 import {
   SingleJurisdictionAudit,
-  MultiJurisdictionAudit,
+  AuditAdminView,
+  JurisdictionAdminView,
 } from './components/Audit'
 import DataEntry from './components/DataEntry'
 import CreateAudit from './components/CreateAudit'
@@ -29,11 +30,11 @@ const Main = styled.div`
 `
 
 interface PrivateRouteProps extends RouteProps {
-  userTypes: IUserMeta['type'][]
+  userType: IUserMeta['type']
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({
-  userTypes,
+  userType,
   ...props
 }: PrivateRouteProps) => {
   const { isAuthenticated, meta } = useContext(AuthDataContext)
@@ -41,7 +42,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
     // Still loading /auth/me, don't show anything
     return <></>
   }
-  if (isAuthenticated && userTypes.includes(meta!.type)) {
+  if (isAuthenticated && userType === meta!.type) {
     return <Route {...props} />
   }
   return (
@@ -72,14 +73,19 @@ const App: React.FC = () => {
               component={SingleJurisdictionAudit}
             />
             <PrivateRoute
-              userTypes={['audit_board']}
-              path="/election/:electionId/board/:auditBoardId"
+              userType="audit_board"
+              path="/election/:electionId/audit-board/:auditBoardId"
               component={DataEntry}
             />
             <PrivateRoute
-              userTypes={['audit_admin', 'jurisdiction_admin']}
-              path="/election/:electionId"
-              component={MultiJurisdictionAudit}
+              userType="jurisdiction_admin"
+              path="/election/:electionId/jurisdiction/:jurisdictionId"
+              component={JurisdictionAdminView}
+            />
+            <PrivateRoute
+              userType="audit_admin"
+              path="/election/:electionId/:view?"
+              component={AuditAdminView}
             />
             <Route>
               <Wrapper>404 Not Found</Wrapper>
