@@ -11,7 +11,6 @@ import FormSection, {
   FormSectionDescription,
 } from '../../../Atoms/Form/FormSection'
 import { IFileInfo } from '../../useJurisdictions'
-import { isFinishedProcessing } from '../../useBallotManifest'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -31,7 +30,7 @@ const BallotManifest: React.FC<IProps> = ({
   uploadBallotManifest,
 }: IProps) => {
   const { file, processing } = ballotManifest
-  const isProcessing = !!(file && !isFinishedProcessing(ballotManifest))
+  const isProcessing = !!(processing && !processing.completedAt)
   const [isEditing, setIsEditing] = useState<boolean>(true)
   useEffect(() => setIsEditing(!file || isProcessing), [file, isProcessing])
 
@@ -107,7 +106,7 @@ const BallotManifest: React.FC<IProps> = ({
                     <strong>Current Ballot Manifest file:</strong> {file!.name}
                   </p>
                   {processing && processing.error && (
-                    <ErrorLabel>{processing!.error}</ErrorLabel>
+                    <ErrorLabel>{processing.error}</ErrorLabel>
                   )}
                 </>
               )}

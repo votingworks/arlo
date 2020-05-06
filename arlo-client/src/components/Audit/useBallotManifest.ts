@@ -39,9 +39,6 @@ const putBallotManifestFile = async (
   }
 }
 
-export const isFinishedProcessing = (manifest: IFileInfo) =>
-  !!(manifest.processing && manifest.processing.completedAt)
-
 const useBallotManifest = (
   electionId: string,
   jurisdictionId: string
@@ -63,6 +60,9 @@ const useBallotManifest = (
   }
 
   useEffect(() => {
+    const isFinishedProcessing = (manifest: IFileInfo) =>
+      !!(manifest.processing && manifest.processing.completedAt)
+
     if (!ballotManifest || isFinishedProcessing(ballotManifest)) return
 
     const isComplete = async () => {
