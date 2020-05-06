@@ -117,6 +117,7 @@ const BallotManifest: React.FC<IProps> = ({
                 </FormButton>
               ) : (
                 <FormButton key="replace" onClick={() => setIsEditing(true)}>
+                  {/* needs a key in order to not trigger submit */}
                   Replace File
                 </FormButton>
               )}
