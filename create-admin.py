@@ -16,3 +16,6 @@ if __name__ == "__main__":
     db.session.commit()
 
     print(u.id)
+    print("Now add the user to auth0: https://manage.auth0.com/")
+    print("For staging users, user the arlo-aa-staging tenant.")
+    print("For prod users, use the arlo-aa tenant.")
