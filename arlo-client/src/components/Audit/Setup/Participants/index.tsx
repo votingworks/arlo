@@ -138,7 +138,8 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
               ) : (
                 <>
                   <span>{file.name} </span>
-                  <FormButton onClick={() => setIsEditing(true)}>
+                  <FormButton key="replace" onClick={() => setIsEditing(true)}>
+                    {/* needs a key in order to not trigger submit */}
                     Replace File
                   </FormButton>
                 </>
