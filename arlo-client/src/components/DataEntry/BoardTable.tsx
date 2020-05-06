@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
-import { H1, Button } from '@blueprintjs/core'
+import { H1, AnchorButton } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
 import { IAuditBoard, IBallot, BallotStatus } from '../../types'
 
 const RightWrapper = styled.div`
   display: flex;
-  flex-direction: row-reverse;
+  justify-content: flex-end;
   margin: 20px 0;
+  .bp3-button {
+    margin-left: 10px;
+  }
   @media (max-width: 775px) {
     .bp3-button {
       width: 100%;
@@ -56,42 +59,37 @@ const KEYS: ('position' | 'tabulator' | 'batch' | 'status')[] = [
 
 const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
   const renderCell = (rI: number, cI: number) => {
-    /* istanbul ignore else */
-    if (ballots) {
-      const ballot: IBallot = ballots[rI]
-      switch (KEYS[cI]) {
-        case 'batch':
-          return <PaddedCell>{ballot.batch.name}</PaddedCell>
-        case 'position':
-          return <PaddedCell>{ballot.position}</PaddedCell>
-        case 'status':
-          return ballot.status === BallotStatus.AUDITED ? (
-            <PaddedCell>
-              <>
-                Audited
-                <ReauditLink
-                  to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
-                  className="bp3-button bp3-small"
-                >
-                  Re-audit
-                </ReauditLink>
-              </>
-            </PaddedCell>
-          ) : (
-            <PaddedCell>Not Audited</PaddedCell>
-          )
-        case 'tabulator':
-          return (
-            <PaddedCell>
-              {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
-            </PaddedCell>
-          )
-        /* istanbul ignore next */
-        default:
-          return <PaddedCell>?</PaddedCell>
-      }
-    } else {
-      return <PaddedCell loading />
+    const ballot = ballots[rI]!
+    switch (KEYS[cI]) {
+      case 'batch':
+        return <PaddedCell>{ballot.batch.name}</PaddedCell>
+      case 'position':
+        return <PaddedCell>{ballot.position}</PaddedCell>
+      case 'status':
+        return ballot.status === BallotStatus.AUDITED ? (
+          <PaddedCell>
+            <>
+              Audited
+              <ReauditLink
+                to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
+                className="bp3-button bp3-small"
+              >
+                Re-audit
+              </ReauditLink>
+            </>
+          </PaddedCell>
+        ) : (
+          <PaddedCell>Not Audited</PaddedCell>
+        )
+      case 'tabulator':
+        return (
+          <PaddedCell>
+            {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
+          </PaddedCell>
+        )
+      /* istanbul ignore next */
+      default:
+        return <PaddedCell>?</PaddedCell>
     }
   }
 
@@ -113,8 +111,9 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
     setCols(columnWidths())
   }, [ballots])
 
-  const roundComplete =
-    ballots.length && ballots.every(b => b.status === BallotStatus.AUDITED)
+  const roundComplete = ballots.every(
+    b => b.status !== BallotStatus.NOT_AUDITED
+  )
 
   const unauditedBallot = ballots.find(
     b => b.status === BallotStatus.NOT_AUDITED
@@ -127,22 +126,28 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
         The following ballots have been assigned to your audit board for this
         round of the audit. Once these ballots have been located and retrieved
         from storage, click &quot;Start Auditing&quot; to begin recording the
-        votes you see marked on the paper ballots.
+        votes you see marked on the paper ballots. When you are finished
+        auditing these ballots, click &quot;Auditing Complete - Submit
+        Results&quot; to submit the results.{' '}
+        <strong>
+          Note that you will not be able to make changes after results are
+          submitted.
+        </strong>
       </p>
       <RightWrapper>
-        {roundComplete ? (
-          <Button intent="primary">Review Complete - Finish Round</Button>
-        ) : (
-          ballots.length > 0 &&
-          unauditedBallot && (
-            <Link
-              to={`${url}/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`}
-              className="bp3-button bp3-intent-primary"
-            >
-              Start Auditing
-            </Link>
-          )
-        )}
+        <AnchorButton
+          href={
+            unauditedBallot
+              ? `${url}/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
+              : ''
+          }
+          disabled={roundComplete}
+        >
+          Start Auditing
+        </AnchorButton>
+        <AnchorButton href={`${url}/signoff`} disabled={!roundComplete}>
+          Auditing Complete - Submit Results
+        </AnchorButton>
       </RightWrapper>
       {/* <ActionWrapper> // commented out until feature is added
         {!roundComplete && (
