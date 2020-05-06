@@ -92,7 +92,6 @@ def test_metadata(client, election_id):
     response = json.loads(rv.data)
     file = response["file"]
     processing = response["processing"]
-    assert file["contents"] == "Jurisdiction,Admin Email"
     assert file["name"] == "jurisdictions.csv"
     assert file["uploadedAt"]
     assert processing["status"] == ProcessingStatus.READY_TO_PROCESS
@@ -108,13 +107,18 @@ def test_metadata(client, election_id):
     response = json.loads(rv.data)
     file = response["file"]
     processing = response["processing"]
-    assert file["contents"] == "Jurisdiction,Admin Email"
     assert file["name"] == "jurisdictions.csv"
     assert file["uploadedAt"]
     assert processing["status"] == ProcessingStatus.PROCESSED
     assert processing["startedAt"]
     assert processing["completedAt"]
     assert processing["error"] is None
+
+    rv = client.get(f"/election/{election_id}/jurisdiction/file/csv")
+    assert (
+        rv.headers["Content-Disposition"] == 'attachment; filename="jurisdictions.csv"'
+    )
+    assert rv.data.decode("utf-8") == election.jurisdictions_file.contents
 
 
 def test_replace_jurisdictions_file(client, election_id):
@@ -241,3 +245,8 @@ def test_multiple_jurisdictions_single_admin(client, election_id):
         assert [a.user.email for a in jurisdiction.jurisdiction_administrations] == [
             "a1@example.com"
         ]
+
+
+def test_download_jurisdictions_file_not_found(client, election_id):
+    rv = client.get(f"/election/{election_id}/jurisdiction/file/csv")
+    assert rv.status_code == 404

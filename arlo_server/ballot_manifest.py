@@ -1,7 +1,7 @@
 import csv, io, locale, uuid
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, NotFound
 from datetime import datetime
 
 from arlo_server import app
@@ -12,13 +12,14 @@ from arlo_server.models import (
     File,
     Jurisdiction,
 )
-from arlo_server.auth import with_jurisdiction_access
+from arlo_server.auth import with_jurisdiction_access, with_election_access
 from util.process_file import (
     process_file,
     serialize_file,
     serialize_file_processing,
     UserError,
 )
+from util.csv_download import csv_response
 
 BATCH_NAME = "Batch Name"
 NUMBER_OF_BALLOTS = "Number of Ballots"
@@ -133,7 +134,7 @@ def upload_ballot_manifest(
 )
 @with_jurisdiction_access
 def get_ballot_manifest(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
     if jurisdiction.manifest_file:
         return jsonify(
@@ -142,6 +143,25 @@ def get_ballot_manifest(
         )
     else:
         return jsonify(file=None, processing=None)
+
+
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest/csv",
+    methods=["GET"],
+)
+@with_election_access
+def download_ballot_manifest_file(
+    election: Election, jurisdiction_id: str,  # pylint: disable=unused-argument
+):
+    jurisdiction = Jurisdiction.query.filter_by(
+        election_id=election.id, id=jurisdiction_id
+    ).first()
+    if not jurisdiction or not jurisdiction.manifest_file:
+        return NotFound()
+
+    return csv_response(
+        jurisdiction.manifest_file.contents, jurisdiction.manifest_file.name
+    )
 
 
 @app.route(

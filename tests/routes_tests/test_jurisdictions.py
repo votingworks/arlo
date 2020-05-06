@@ -84,20 +84,12 @@ def test_jurisdictions_list_with_manifest(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    manifest = (
+        b"Batch Name,Number of Ballots\n" b"1,23\n" b"2,101\n" b"3,122\n" b"4,400"
+    )
     rv = client.put(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"1,23\n"
-                    b"2,101\n"
-                    b"3,122\n"
-                    b"4,400"
-                ),
-                "manifest.csv",
-            )
-        },
+        data={"manifest": (io.BytesIO(manifest), "manifest.csv",)},
     )
     assert_ok(rv)
     assert bgcompute_update_ballot_manifest_file() == 1
@@ -110,7 +102,7 @@ def test_jurisdictions_list_with_manifest(
                 "id": jurisdiction_ids[0],
                 "name": "J1",
                 "ballotManifest": {
-                    "file": {"name": "manifest.csv", "uploadedAt": assert_is_date},
+                    "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
                     "processing": {
                         "status": "PROCESSED",
                         "startedAt": assert_is_date,
@@ -148,6 +140,19 @@ def test_jurisdictions_list_with_manifest(
     }
     compare_json(jurisdictions, expected)
 
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/csv"
+    )
+    assert rv.headers["Content-Disposition"] == 'attachment; filename="manifest.csv"'
+    assert rv.data == manifest
+
+
+def test_download_ballot_manifest_not_found(client, election_id, jurisdiction_ids):
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/csv"
+    )
+    assert rv.status_code == 404
+
 
 def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
@@ -175,7 +180,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
                 "id": jurisdiction_ids[0],
                 "name": "J1",
                 "ballotManifest": {
-                    "file": {"name": "manifest.csv", "uploadedAt": assert_is_date},
+                    "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
                     "processing": {
                         "status": "ERRORED",
                         "startedAt": assert_is_date,
