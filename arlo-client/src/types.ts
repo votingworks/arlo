@@ -88,6 +88,7 @@ export interface IAuditBoard {
   jurisdictionName: string
   roundId: string
   members: IAuditBoardMember[]
+  signedOffAt: string | null
   passphrase?: string
 }
 
