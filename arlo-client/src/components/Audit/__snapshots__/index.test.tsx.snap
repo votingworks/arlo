@@ -3199,7 +3199,7 @@ exports[`RiskLimitingAuditForm renders CalculateRiskMeasurement when /audit/stat
             >
               <a
                 class="bp3-text-small"
-                href="/election/1/board/audit-board-1"
+                href="/election/1/audit-board/audit-board-1"
               >
                 Audit Board #1
               </a>

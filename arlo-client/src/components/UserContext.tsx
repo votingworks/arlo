@@ -5,8 +5,8 @@ import React, {
   useMemo,
   useContext,
 } from 'react'
-import { IAuthData, IUserMeta, IErrorResponse } from '../types'
-import { api, checkAndToast } from './utilities'
+import { IAuthData, IUserMeta } from '../types'
+import { api } from './utilities'
 
 const initialAuthData: IAuthData = { isAuthenticated: null }
 export const AuthDataContext = createContext<IAuthData>(initialAuthData)
@@ -17,15 +17,13 @@ const AuthDataProvider = (props: any) => {
 
   useEffect(() => {
     ;(async () => {
-      const currentAuthData: IUserMeta | IErrorResponse = await api('/auth/me')
-      if ('redirect' in currentAuthData || checkAndToast(currentAuthData)) {
-        setAuthData(initialAuthData)
-      } else if (currentAuthData.type) {
+      try {
+        const meta: IUserMeta = await api('/auth/me')
         setAuthData({
           isAuthenticated: true,
-          meta: currentAuthData,
+          meta,
         })
-      } else {
+      } catch (err) {
         setAuthData({ isAuthenticated: false })
       }
     })()
