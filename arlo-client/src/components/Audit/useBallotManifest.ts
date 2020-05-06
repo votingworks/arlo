@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import { api } from '../utilities'
+import { api, poll } from '../utilities'
 import { IFileInfo } from './useJurisdictions'
 
 const loadBallotManifest = async (
@@ -39,14 +39,22 @@ const putBallotManifestFile = async (
   }
 }
 
+export const isFinishedProcessing = (manifest: IFileInfo) =>
+  !!(manifest.processing && manifest.processing.completedAt)
+
 const useBallotManifest = (
   electionId: string,
   jurisdictionId: string
 ): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
   const [ballotManifest, setBallotManifest] = useState<IFileInfo | null>(null)
 
+  useEffect(() => {
+    ;(async () => {
+      setBallotManifest(await loadBallotManifest(electionId, jurisdictionId))
+    })()
+  }, [electionId, jurisdictionId])
+
   const uploadBallotManifest = async (csv: File): Promise<boolean> => {
-    // TODO poll for result of upload
     if (await putBallotManifestFile(electionId, jurisdictionId, csv)) {
       setBallotManifest(await loadBallotManifest(electionId, jurisdictionId))
       return true
@@ -55,10 +63,17 @@ const useBallotManifest = (
   }
 
   useEffect(() => {
-    ;(async () => {
+    if (!ballotManifest || isFinishedProcessing(ballotManifest)) return
+
+    const isComplete = async () => {
+      const manifest = await loadBallotManifest(electionId, jurisdictionId)
+      return !!manifest && isFinishedProcessing(manifest)
+    }
+    const onComplete = async () => {
       setBallotManifest(await loadBallotManifest(electionId, jurisdictionId))
-    })()
-  }, [electionId, jurisdictionId])
+    }
+    poll(isComplete, onComplete, err => toast.error(err.message))
+  }, [electionId, jurisdictionId, ballotManifest])
 
   return [ballotManifest, uploadBallotManifest]
 }

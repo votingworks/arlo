@@ -4,7 +4,6 @@ import { Formik, FormikProps, Form } from 'formik'
 import styled from 'styled-components'
 import { HTMLSelect, FileInput, H4 } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
-import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import schema from './schema'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
@@ -12,6 +11,7 @@ import FormSection, {
   FormSectionDescription,
 } from '../../../Atoms/Form/FormSection'
 import { IFileInfo } from '../../useJurisdictions'
+import { isFinishedProcessing } from '../../useBallotManifest'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -30,9 +30,10 @@ const BallotManifest: React.FC<IProps> = ({
   ballotManifest,
   uploadBallotManifest,
 }: IProps) => {
-  const { file } = ballotManifest
+  const { file, processing } = ballotManifest
+  const isProcessing = !!(file && !isFinishedProcessing(ballotManifest))
   const [isEditing, setIsEditing] = useState<boolean>(true)
-  useEffect(() => setIsEditing(file === null), [file])
+  useEffect(() => setIsEditing(!file || isProcessing), [file, isProcessing])
 
   return (
     <Formik
@@ -45,7 +46,6 @@ const BallotManifest: React.FC<IProps> = ({
           }
         }
       }}
-      enableReinitialize
     >
       {({
         handleSubmit,
@@ -95,23 +95,30 @@ const BallotManifest: React.FC<IProps> = ({
                     hasSelection={!!values.csv}
                     text={values.csv ? values.csv.name : 'Select a CSV...'}
                     onBlur={handleBlur}
+                    disabled={isProcessing}
                   />
                   {errors.csv && touched.csv && (
                     <ErrorLabel>{errors.csv}</ErrorLabel>
                   )}
                 </>
               ) : (
-                <span>
-                  <strong>Current Ballot Manifest file:</strong> {file!.name}
-                </span>
+                <>
+                  <p>
+                    <strong>Current Ballot Manifest file:</strong> {file!.name}
+                  </p>
+                  {processing && processing.error && (
+                    <ErrorLabel>{processing!.error}</ErrorLabel>
+                  )}
+                </>
               )}
             </FormSection>
-            <FormButtonBar>
+            <div>
               {isEditing ? (
                 <FormButton
                   type="submit"
                   intent="primary"
                   onClick={handleSubmit}
+                  loading={isProcessing}
                 >
                   Upload File
                 </FormButton>
@@ -121,7 +128,7 @@ const BallotManifest: React.FC<IProps> = ({
                   Replace File
                 </FormButton>
               )}
-            </FormButtonBar>
+            </div>
           </FormWrapper>
         </Form>
       )}
