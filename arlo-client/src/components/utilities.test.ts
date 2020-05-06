@@ -36,9 +36,10 @@ describe('utilities.ts', () => {
 
     it('throws an error', async () => {
       fetchSpy.mockImplementationOnce(async () => badResponse())
-      await expect(api('/test', { method: 'GET' })).rejects.toStrictEqual({
-        errors: [{ message: 'An error message' }],
-      })
+      const result = api('/test', { method: 'GET' })
+
+      await expect(result).rejects.toHaveProperty('message', 'An error message')
+      await expect(result).rejects.toHaveProperty('response')
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/test', {
