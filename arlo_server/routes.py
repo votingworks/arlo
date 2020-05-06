@@ -1155,7 +1155,7 @@ def auditboard_passphrase(passphrase):
     auditboard = AuditBoard.query.filter_by(passphrase=passphrase).one()
     set_loggedin_user(UserType.AUDIT_BOARD, auditboard.id)
     return redirect(
-        f"/election/{auditboard.jurisdiction.election.id}/board/{auditboard.id}"
+        f"/election/{auditboard.jurisdiction.election.id}/audit-board/{auditboard.id}"
     )
 
 
