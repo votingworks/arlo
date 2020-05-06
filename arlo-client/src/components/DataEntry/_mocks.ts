@@ -367,6 +367,7 @@ export const dummyBoards = (): IAuditBoard[] => [
         affiliation: 'LIB',
       },
     ],
+    signedOffAt: null,
   },
   {
     id: 'audit-board-2',
@@ -375,6 +376,7 @@ export const dummyBoards = (): IAuditBoard[] => [
     jurisdictionName: 'Jurisdiction 1',
     roundId: 'round-1',
     members: [],
+    signedOffAt: null,
   },
 ]
 

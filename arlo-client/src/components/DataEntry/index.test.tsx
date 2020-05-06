@@ -120,15 +120,14 @@ describe('DataEntry', () => {
             return ballotingMock(endpoint)
         }
       })
-      const { queryByText } = await asyncActRender(
+      const { container } = await asyncActRender(
         <StaticRouter {...staticRouteProps}>
           <DataEntry {...routeProps} />
         </StaticRouter>
       )
       await wait(() => {
         expect(apiMock).toBeCalledTimes(3)
-        expect(queryByText('Start Auditing')).toBeFalsy()
-        expect(queryByText('Review Complete - Finish Round')).toBeFalsy()
+        expect(container).toMatchSnapshot()
       })
     })
 
@@ -141,7 +140,10 @@ describe('DataEntry', () => {
       await wait(() => {
         expect(apiMock).toBeCalledTimes(3)
         expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
-        expect(getByText('Start Auditing')).toBeTruthy()
+        expect(getByText('Start Auditing').closest('a')).toBeTruthy()
+        expect(
+          getByText('Auditing Complete - Submit Results').closest('a')
+        ).toHaveAttribute('disabled')
         expect(container).toMatchSnapshot()
       })
     })
