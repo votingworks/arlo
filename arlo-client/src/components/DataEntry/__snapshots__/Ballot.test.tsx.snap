@@ -80,7 +80,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
         <p>
           <a
             class="bp3-button bp3-intent-primary"
-            href="/election/1/board/1"
+            href="/election/1/audit-board/1"
           >
             Return to audit overview
           </a>
@@ -358,7 +358,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
         <p>
           <a
             class="bp3-button bp3-intent-primary"
-            href="/election/1/board/1"
+            href="/election/1/audit-board/1"
           >
             Return to audit overview
           </a>
@@ -627,7 +627,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
         <p>
           <a
             class="bp3-button bp3-intent-primary"
-            href="/election/1/board/1"
+            href="/election/1/audit-board/1"
           >
             Return to audit overview
           </a>
@@ -810,7 +810,7 @@ exports[`Ballot selects Blank vote/no mark 1`] = `
         <p>
           <a
             class="bp3-button bp3-intent-primary"
-            href="/election/1/board/1"
+            href="/election/1/audit-board/1"
           >
             Return to audit overview
           </a>
@@ -993,7 +993,7 @@ exports[`Ballot switches audit and review views 1`] = `
         <p>
           <a
             class="bp3-button bp3-intent-primary"
-            href="/election/1/board/1"
+            href="/election/1/audit-board/1"
           >
             Return to audit overview
           </a>
@@ -1176,7 +1176,7 @@ exports[`Ballot toggles and deletes a comment 1`] = `
         <p>
           <a
             class="bp3-button bp3-intent-primary"
-            href="/election/1/board/1"
+            href="/election/1/audit-board/1"
           >
             Return to audit overview
           </a>
@@ -1359,7 +1359,7 @@ exports[`Ballot toggles and submits comment 1`] = `
         <p>
           <a
             class="bp3-button bp3-intent-primary"
-            href="/election/1/board/1"
+            href="/election/1/audit-board/1"
           >
             Return to audit overview
           </a>

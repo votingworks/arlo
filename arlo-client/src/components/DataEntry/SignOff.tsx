@@ -16,7 +16,6 @@ export interface IProps {
   submitSignoff: (memberNames: IMemberNames) => void
 }
 
-// TODO validate that names match
 const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
   return (
     <>

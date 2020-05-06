@@ -85,7 +85,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             <p>
               <a
                 class="bp3-button bp3-intent-primary"
-                href="/election/1/board/audit-board-1"
+                href="/election/1/audit-board/audit-board-1"
               >
                 Return to audit overview
               </a>
@@ -306,7 +306,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
         >
           <a
             class="bp3-button"
-            href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+            href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
             role="button"
             tabindex="0"
           >
@@ -530,7 +530,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                               Audited
                               <a
                                 class="bp3-button bp3-small sc-bxivhb bAonbG"
-                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/313"
+                                href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                               >
                                 Re-audit
                               </a>
@@ -616,7 +616,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                               Audited
                               <a
                                 class="bp3-button bp3-small sc-bxivhb bAonbG"
-                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789"
+                                href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                               >
                                 Re-audit
                               </a>
@@ -662,7 +662,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                               Audited
                               <a
                                 class="bp3-button bp3-small sc-bxivhb bAonbG"
-                                href="/election/1/board/audit-board-1/batch/batch-id-2/ballot/313"
+                                href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                               >
                                 Re-audit
                               </a>
@@ -900,7 +900,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
         >
           <a
             class="bp3-button"
-            href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+            href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
             role="button"
             tabindex="0"
           >
@@ -1124,7 +1124,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                               Audited
                               <a
                                 class="bp3-button bp3-small sc-bxivhb bAonbG"
-                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/313"
+                                href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                               >
                                 Re-audit
                               </a>
@@ -1210,7 +1210,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                               Audited
                               <a
                                 class="bp3-button bp3-small sc-bxivhb bAonbG"
-                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789"
+                                href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                               >
                                 Re-audit
                               </a>
@@ -1256,7 +1256,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                               Audited
                               <a
                                 class="bp3-button bp3-small sc-bxivhb bAonbG"
-                                href="/election/1/board/audit-board-1/batch/batch-id-2/ballot/313"
+                                href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                               >
                                 Re-audit
                               </a>
@@ -1506,7 +1506,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
           </a>
           <a
             class="bp3-button"
-            href="/election/1/board/audit-board-1/signoff"
+            href="/election/1/audit-board/audit-board-1/signoff"
             role="button"
             tabindex="0"
           >
@@ -2171,7 +2171,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
         >
           <a
             class="bp3-button"
-            href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+            href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/2112"
             role="button"
             tabindex="0"
           >
@@ -2395,7 +2395,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                               Audited
                               <a
                                 class="bp3-button bp3-small sc-bxivhb bAonbG"
-                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/313"
+                                href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                               >
                                 Re-audit
                               </a>
@@ -2481,7 +2481,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                               Audited
                               <a
                                 class="bp3-button bp3-small sc-bxivhb bAonbG"
-                                href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789"
+                                href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                               >
                                 Re-audit
                               </a>
@@ -2527,7 +2527,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                               Audited
                               <a
                                 class="bp3-button bp3-small sc-bxivhb bAonbG"
-                                href="/election/1/board/audit-board-1/batch/batch-id-2/ballot/313"
+                                href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                               >
                                 Re-audit
                               </a>
