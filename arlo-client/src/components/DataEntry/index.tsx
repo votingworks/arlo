@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { H1 } from '@blueprintjs/core'
 import { Route, Switch } from 'react-router-dom'
 import { History } from 'history'
 import styled from 'styled-components'
+import { toast } from 'react-toastify'
 import {
   IAuditFlowParams,
   IAuditBoard,
@@ -14,6 +16,7 @@ import { api } from '../utilities'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
 import Ballot from './Ballot'
+import SignOff, { IMemberNames } from './SignOff'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 
 const PaddedInner = styled(Inner)`
@@ -62,16 +65,20 @@ const saveMembers = async (
   auditBoardId: string,
   members: IAuditBoardMember[]
 ) => {
-  return api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${auditBoardId}`,
-    {
-      method: 'POST',
-      body: JSON.stringify({ members }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  )
+  try {
+    await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${auditBoardId}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ members }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+  } catch (err) {
+    toast.error(err.message)
+  }
 }
 
 const saveBallotInterpretations = async (
@@ -81,20 +88,47 @@ const saveBallotInterpretations = async (
   ballotPosition: number,
   interpretations: IBallotInterpretation[]
 ) => {
-  return api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/batch/${batchId}/ballot/${ballotPosition}`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        interpretations: interpretations.filter(
-          ({ interpretation }) => interpretation !== null
-        ),
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  )
+  try {
+    await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/batch/${batchId}/ballot/${ballotPosition}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          interpretations: interpretations.filter(
+            ({ interpretation }) => interpretation !== null
+          ),
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+  } catch (err) {
+    toast.error(err.message)
+  }
+}
+
+const postSignoff = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string,
+  auditBoardId: string,
+  memberNames: IMemberNames
+) => {
+  try {
+    await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/sign-off`,
+      {
+        method: 'POST',
+        body: JSON.stringify(memberNames),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+  } catch (err) {
+    toast.error(err.message)
+  }
 }
 
 const DataEntry: React.FC<IProps> = ({
@@ -155,7 +189,7 @@ const DataEntry: React.FC<IProps> = ({
       (b: IBallot) => b.batch.id === batchId && b.position === ballot
     )
     /* istanbul ignore else */
-    if (ballotIx > -1) {
+    if (ballotIx > -1 && ballots[ballotIx + 1]) {
       const b = ballots[ballotIx + 1]
       history.push(`${url}/batch/${b.batch.id}/ballot/${b.position}`)
     } else {
@@ -192,6 +226,28 @@ const DataEntry: React.FC<IProps> = ({
     setBallots(await loadBallots(electionId, jurisdictionId, roundId, id))
   }
 
+  const submitSignoff = async (memberNames: IMemberNames) => {
+    await postSignoff(
+      electionId,
+      auditBoard.jurisdictionId,
+      auditBoard.roundId,
+      auditBoardId,
+      memberNames
+    )
+    setAuditBoard(await loadAuditBoard())
+  }
+
+  if (auditBoard.signedOffAt) {
+    return (
+      <Wrapper>
+        <PaddedInner>
+          <H1>{auditBoard.name}: Auditing Complete</H1>
+          <p>Your work here is done!</p>
+        </PaddedInner>
+      </Wrapper>
+    )
+  }
+
   return (
     <Wrapper>
       <PaddedInner>
@@ -225,6 +281,12 @@ const DataEntry: React.FC<IProps> = ({
                 ballots={ballots}
                 boardName={auditBoard.name}
               />
+            )}
+          />
+          <Route
+            path={`${url}/signoff`}
+            render={() => (
+              <SignOff auditBoard={auditBoard} submitSignoff={submitSignoff} />
             )}
           />
         </Switch>
