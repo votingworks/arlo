@@ -273,6 +273,7 @@ def test_auth_me_audit_board(
         "roundId": audit_board.round_id,
         "name": audit_board.name,
         "members": [],
+        "signedOffAt": None,
     }
 
 
