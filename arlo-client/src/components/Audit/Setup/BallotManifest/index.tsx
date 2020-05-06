@@ -116,7 +116,7 @@ const BallotManifest: React.FC<IProps> = ({
                   Upload File
                 </FormButton>
               ) : (
-                <FormButton onClick={() => setIsEditing(true)}>
+                <FormButton key="replace" onClick={() => setIsEditing(true)}>
                   Replace File
                 </FormButton>
               )}

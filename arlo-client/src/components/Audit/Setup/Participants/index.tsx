@@ -138,7 +138,7 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
               ) : (
                 <>
                   <span>{file.name} </span>
-                  <FormButton onClick={() => setIsEditing(true)}>
+                  <FormButton key="replace" onClick={() => setIsEditing(true)}>
                     Replace File
                   </FormButton>
                 </>
