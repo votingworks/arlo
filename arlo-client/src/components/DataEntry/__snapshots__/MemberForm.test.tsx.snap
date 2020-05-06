@@ -26,110 +26,106 @@ exports[`MemberForm renders correctly 1`] = `
           Audit Board Member
         </h3>
         <label
+          class="sc-iwsKbI haXKLx"
           for="[0]name"
         >
-          <span
-            class="sc-EHOje jNXuzs"
-          >
-            Full Name
-          </span>
-          <input
-            class="bp3-input sc-bZQynM eRainu"
-            id="[0]name"
-            name="[0]name"
-            value=""
-          />
+          Full Name
+        </label>
+        <input
+          class="sc-gZMcBi bGIqKC"
+          id="[0]name"
+          name="[0]name"
+          value=""
+        />
+        <label
+          class="sc-iwsKbI haXKLx"
+          for="[0]affiliation"
+        >
+          Party Affiliation 
+          <i>
+            (optional)
+          </i>
         </label>
         <div>
-          <span
-            class="sc-EHOje jNXuzs"
+          <label
+            class="bp3-control bp3-radio"
           >
-            Party Affiliation 
-            <i>
-              (optional)
-            </i>
-          </span>
-          <div>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="[0]affiliation"
-                type="radio"
-                value="DEM"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Democrat
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="[0]affiliation"
-                type="radio"
-                value="REP"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Republican
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="[0]affiliation"
-                type="radio"
-                value="LIB"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Libertarian
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="[0]affiliation"
-                type="radio"
-                value="IND"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Independent/Unaffiliated
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="[0]affiliation"
-                type="radio"
-                value="OTH"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Other
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                checked=""
-                name="[0]affiliation"
-                type="radio"
-                value=""
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              None
-            </label>
-          </div>
+            <input
+              name="[0]affiliation"
+              type="radio"
+              value="DEM"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Democrat
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              name="[0]affiliation"
+              type="radio"
+              value="REP"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Republican
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              name="[0]affiliation"
+              type="radio"
+              value="LIB"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Libertarian
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              name="[0]affiliation"
+              type="radio"
+              value="IND"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Independent/Unaffiliated
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              name="[0]affiliation"
+              type="radio"
+              value="OTH"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Other
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              checked=""
+              name="[0]affiliation"
+              type="radio"
+              value=""
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            None
+          </label>
         </div>
       </div>
       <div
@@ -141,110 +137,106 @@ exports[`MemberForm renders correctly 1`] = `
           Audit Board Member
         </h3>
         <label
+          class="sc-iwsKbI haXKLx"
           for="[1]name"
         >
-          <span
-            class="sc-EHOje jNXuzs"
-          >
-            Full Name
-          </span>
-          <input
-            class="bp3-input sc-bZQynM eRainu"
-            id="[1]name"
-            name="[1]name"
-            value=""
-          />
+          Full Name
+        </label>
+        <input
+          class="sc-gZMcBi bGIqKC"
+          id="[1]name"
+          name="[1]name"
+          value=""
+        />
+        <label
+          class="sc-iwsKbI haXKLx"
+          for="[1]affiliation"
+        >
+          Party Affiliation 
+          <i>
+            (optional)
+          </i>
         </label>
         <div>
-          <span
-            class="sc-EHOje jNXuzs"
+          <label
+            class="bp3-control bp3-radio"
           >
-            Party Affiliation 
-            <i>
-              (optional)
-            </i>
-          </span>
-          <div>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="[1]affiliation"
-                type="radio"
-                value="DEM"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Democrat
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="[1]affiliation"
-                type="radio"
-                value="REP"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Republican
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="[1]affiliation"
-                type="radio"
-                value="LIB"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Libertarian
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="[1]affiliation"
-                type="radio"
-                value="IND"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Independent/Unaffiliated
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                name="[1]affiliation"
-                type="radio"
-                value="OTH"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Other
-            </label>
-            <label
-              class="bp3-control bp3-radio"
-            >
-              <input
-                checked=""
-                name="[1]affiliation"
-                type="radio"
-                value=""
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              None
-            </label>
-          </div>
+            <input
+              name="[1]affiliation"
+              type="radio"
+              value="DEM"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Democrat
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              name="[1]affiliation"
+              type="radio"
+              value="REP"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Republican
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              name="[1]affiliation"
+              type="radio"
+              value="LIB"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Libertarian
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              name="[1]affiliation"
+              type="radio"
+              value="IND"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Independent/Unaffiliated
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              name="[1]affiliation"
+              type="radio"
+              value="OTH"
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            Other
+          </label>
+          <label
+            class="bp3-control bp3-radio"
+          >
+            <input
+              checked=""
+              name="[1]affiliation"
+              type="radio"
+              value=""
+            />
+            <span
+              class="bp3-control-indicator"
+            />
+            None
+          </label>
         </div>
       </div>
       <button

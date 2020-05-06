@@ -31,7 +31,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           27
         </div>
         <div
-          class="sc-gqjmRU kTzBLL"
+          class="sc-iwsKbI eBYIfb"
         >
           <div
             class="ballot-side"
@@ -55,7 +55,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </div>
           </div>
           <div
-            class="bp3-divider sc-gZMcBi jbSoiK"
+            class="bp3-divider sc-dnqmqq dhrTKj"
           />
           <div
             class="ballot-main"
@@ -93,7 +93,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           </div>
         </div>
         <div
-          class="sc-gqjmRU kTzBLL"
+          class="sc-iwsKbI eBYIfb"
         >
           <div
             class="ballot-side"
@@ -121,7 +121,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </p>
             <form>
               <div
-                class="sc-VigVT eBCusi"
+                class="sc-gZMcBi jEkxNN"
               >
                 <h3
                   class="bp3-heading"
@@ -129,10 +129,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   Contest Name
                 </h3>
                 <div
-                  class="bp3-divider sc-gZMcBi jbSoiK"
+                  class="bp3-divider sc-dnqmqq dhrTKj"
                 />
                 <div
-                  class="sc-jTzLTM iLZJqT"
+                  class="sc-gqjmRU jqjASL"
                 >
                   <label
                     class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
@@ -242,7 +242,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </button>
               </div>
               <div
-                class="sc-fjdhpX hGGYTz"
+                class="sc-VigVT cyKuXR"
               >
                 <button
                   class="bp3-button bp3-disabled bp3-intent-success sc-htoDjs dESvso"
@@ -295,16 +295,38 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
           : Ballot Cards to Audit
         </h1>
         <p>
-          The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
+          The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots. When you are finished auditing these ballots, click "Auditing Complete - Submit Results" to submit the results.
+           
+          <strong>
+            Note that you will not be able to make changes after results are submitted.
+          </strong>
         </p>
         <div
-          class="sc-bdVaJa cDShCX"
+          class="sc-bdVaJa gKZTDn"
         >
           <a
-            class="bp3-button bp3-intent-primary"
+            class="bp3-button"
             href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+            role="button"
+            tabindex="0"
           >
-            Start Auditing
+            <span
+              class="bp3-button-text"
+            >
+              Start Auditing
+            </span>
+          </a>
+          <a
+            class="bp3-button bp3-disabled"
+            disabled=""
+            role="button"
+            tabindex="-1"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Auditing Complete - Submit Results
+            </span>
           </a>
         </div>
         <div
@@ -867,16 +889,38 @@ exports[`DataEntry ballot interaction renders board table with large container s
           : Ballot Cards to Audit
         </h1>
         <p>
-          The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
+          The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots. When you are finished auditing these ballots, click "Auditing Complete - Submit Results" to submit the results.
+           
+          <strong>
+            Note that you will not be able to make changes after results are submitted.
+          </strong>
         </p>
         <div
-          class="sc-bdVaJa cDShCX"
+          class="sc-bdVaJa gKZTDn"
         >
           <a
-            class="bp3-button bp3-intent-primary"
+            class="bp3-button"
             href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+            role="button"
+            tabindex="0"
           >
-            Start Auditing
+            <span
+              class="bp3-button-text"
+            >
+              Start Auditing
+            </span>
+          </a>
+          <a
+            class="bp3-button bp3-disabled"
+            disabled=""
+            role="button"
+            tabindex="-1"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Auditing Complete - Submit Results
+            </span>
           </a>
         </div>
         <div
@@ -1421,6 +1465,421 @@ exports[`DataEntry ballot interaction renders board table with large container s
 </div>
 `;
 
+exports[`DataEntry ballot interaction renders board table with no ballots 1`] = `
+<div>
+  <div
+    class="sc-hMqMXs kivpAN"
+  >
+    <div
+      class="sc-kEYyzF sc-kkGfuU cOCkRu"
+    >
+      <div
+        class="board-table-container"
+      >
+        <h1
+          class="bp3-heading"
+        >
+          Audit Board #1
+          : Ballot Cards to Audit
+        </h1>
+        <p>
+          The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots. When you are finished auditing these ballots, click "Auditing Complete - Submit Results" to submit the results.
+           
+          <strong>
+            Note that you will not be able to make changes after results are submitted.
+          </strong>
+        </p>
+        <div
+          class="sc-bdVaJa gKZTDn"
+        >
+          <a
+            class="bp3-button bp3-disabled"
+            disabled=""
+            role="button"
+            tabindex="-1"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Start Auditing
+            </span>
+          </a>
+          <a
+            class="bp3-button"
+            href="/election/1/board/audit-board-1/signoff"
+            role="button"
+            tabindex="0"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Auditing Complete - Submit Results
+            </span>
+          </a>
+        </div>
+        <div
+          class="bp3-table-container bp3-table-no-rows sc-htpNat dCryYg"
+          tabindex="0"
+        >
+          <div
+            class="bp3-table-quadrant-stack"
+          >
+            <div
+              class="bp3-table-quadrant bp3-table-quadrant-main"
+            >
+              <div
+                class="bp3-table-quadrant-scroll-container"
+              >
+                <div
+                  class="bp3-table-top-container"
+                >
+                  <div
+                    class="bp3-table-column-headers"
+                  >
+                    <div
+                      style="width: 320px;"
+                    >
+                      <div
+                        class="bp3-table-thead bp3-table-column-header-tr"
+                        style="transform: translateX(0px); width: 320px;"
+                      >
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Batch"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Tabulator"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Tabulator
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Status"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Status
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bp3-table-bottom-container"
+                  style="height: 0px; width: 320px;"
+                >
+                  <div
+                    class="bp3-table-quadrant-body-container"
+                  >
+                    <div>
+                      <div
+                        class="bp3-table-body-virtual-client bp3-table-cell-client"
+                        style="height: 0px; width: 320px;"
+                      >
+                        <div
+                          class="bp3-table-body-cells"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bp3-table-quadrant bp3-table-quadrant-top"
+              style="height: 30px; right: 0px;"
+            >
+              <div
+                class="bp3-table-quadrant-scroll-container"
+              >
+                <div
+                  class="bp3-table-top-container"
+                >
+                  <div
+                    class="bp3-table-column-headers"
+                  >
+                    <div
+                      style="width: 320px;"
+                    >
+                      <div
+                        class="bp3-table-thead bp3-table-column-header-tr"
+                        style="transform: translateX(0px); width: 320px;"
+                      >
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
+                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Batch"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
+                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
+                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Tabulator"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Tabulator
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Status"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Status
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bp3-table-bottom-container"
+                  style="height: 0px; width: 320px;"
+                >
+                  <div
+                    class="bp3-table-quadrant-body-container"
+                  >
+                    <div>
+                      <div
+                        class="bp3-table-body-virtual-client bp3-table-cell-client"
+                        style="height: -30px; width: 320px;"
+                      >
+                        <div
+                          class="bp3-table-body-cells"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="bp3-table-overlay-layer bp3-table-reordering-cursor-overlay"
+          />
+          <div
+            class="bp3-table-resize-guides bp3-table-overlay-layer"
+          />
+          <div
+            class="bp3-table-resize-sensor"
+            style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"
+          >
+            <div
+              class="bp3-table-resize-sensor-expand"
+              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            >
+              <div
+                style="position: absolute; left: 0px; top: 0px; transition: 0s; width: 100000px; height: 100000px;"
+              />
+            </div>
+            <div
+              class="bp3-table-resize-sensor-shrink"
+              style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"
+            >
+              <div
+                style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%;"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
 exports[`DataEntry member form renders if no audit board members set 1`] = `
 <div>
   <div
@@ -1453,110 +1912,106 @@ exports[`DataEntry member form renders if no audit board members set 1`] = `
               Audit Board Member
             </h3>
             <label
+              class="sc-jTzLTM cytaZe"
               for="[0]name"
             >
-              <span
-                class="sc-dnqmqq kSLuZR"
-              >
-                Full Name
-              </span>
-              <input
-                class="bp3-input sc-iwsKbI hdoOFn"
-                id="[0]name"
-                name="[0]name"
-                value=""
-              />
+              Full Name
+            </label>
+            <input
+              class="sc-fjdhpX jxvwtz"
+              id="[0]name"
+              name="[0]name"
+              value=""
+            />
+            <label
+              class="sc-jTzLTM cytaZe"
+              for="[0]affiliation"
+            >
+              Party Affiliation 
+              <i>
+                (optional)
+              </i>
             </label>
             <div>
-              <span
-                class="sc-dnqmqq kSLuZR"
+              <label
+                class="bp3-control bp3-radio"
               >
-                Party Affiliation 
-                <i>
-                  (optional)
-                </i>
-              </span>
-              <div>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="[0]affiliation"
-                    type="radio"
-                    value="DEM"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  Democrat
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="[0]affiliation"
-                    type="radio"
-                    value="REP"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  Republican
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="[0]affiliation"
-                    type="radio"
-                    value="LIB"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  Libertarian
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="[0]affiliation"
-                    type="radio"
-                    value="IND"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  Independent/Unaffiliated
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="[0]affiliation"
-                    type="radio"
-                    value="OTH"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  Other
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    checked=""
-                    name="[0]affiliation"
-                    type="radio"
-                    value=""
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  None
-                </label>
-              </div>
+                <input
+                  name="[0]affiliation"
+                  type="radio"
+                  value="DEM"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Democrat
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[0]affiliation"
+                  type="radio"
+                  value="REP"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Republican
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[0]affiliation"
+                  type="radio"
+                  value="LIB"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Libertarian
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[0]affiliation"
+                  type="radio"
+                  value="IND"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Independent/Unaffiliated
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[0]affiliation"
+                  type="radio"
+                  value="OTH"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Other
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  checked=""
+                  name="[0]affiliation"
+                  type="radio"
+                  value=""
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                None
+              </label>
             </div>
           </div>
           <div
@@ -1568,110 +2023,106 @@ exports[`DataEntry member form renders if no audit board members set 1`] = `
               Audit Board Member
             </h3>
             <label
+              class="sc-jTzLTM cytaZe"
               for="[1]name"
             >
-              <span
-                class="sc-dnqmqq kSLuZR"
-              >
-                Full Name
-              </span>
-              <input
-                class="bp3-input sc-iwsKbI hdoOFn"
-                id="[1]name"
-                name="[1]name"
-                value=""
-              />
+              Full Name
+            </label>
+            <input
+              class="sc-fjdhpX jxvwtz"
+              id="[1]name"
+              name="[1]name"
+              value=""
+            />
+            <label
+              class="sc-jTzLTM cytaZe"
+              for="[1]affiliation"
+            >
+              Party Affiliation 
+              <i>
+                (optional)
+              </i>
             </label>
             <div>
-              <span
-                class="sc-dnqmqq kSLuZR"
+              <label
+                class="bp3-control bp3-radio"
               >
-                Party Affiliation 
-                <i>
-                  (optional)
-                </i>
-              </span>
-              <div>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="[1]affiliation"
-                    type="radio"
-                    value="DEM"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  Democrat
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="[1]affiliation"
-                    type="radio"
-                    value="REP"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  Republican
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="[1]affiliation"
-                    type="radio"
-                    value="LIB"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  Libertarian
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="[1]affiliation"
-                    type="radio"
-                    value="IND"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  Independent/Unaffiliated
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    name="[1]affiliation"
-                    type="radio"
-                    value="OTH"
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  Other
-                </label>
-                <label
-                  class="bp3-control bp3-radio"
-                >
-                  <input
-                    checked=""
-                    name="[1]affiliation"
-                    type="radio"
-                    value=""
-                  />
-                  <span
-                    class="bp3-control-indicator"
-                  />
-                  None
-                </label>
-              </div>
+                <input
+                  name="[1]affiliation"
+                  type="radio"
+                  value="DEM"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Democrat
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[1]affiliation"
+                  type="radio"
+                  value="REP"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Republican
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[1]affiliation"
+                  type="radio"
+                  value="LIB"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Libertarian
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[1]affiliation"
+                  type="radio"
+                  value="IND"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Independent/Unaffiliated
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  name="[1]affiliation"
+                  type="radio"
+                  value="OTH"
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                Other
+              </label>
+              <label
+                class="bp3-control bp3-radio"
+              >
+                <input
+                  checked=""
+                  name="[1]affiliation"
+                  type="radio"
+                  value=""
+                />
+                <span
+                  class="bp3-control-indicator"
+                />
+                None
+              </label>
             </div>
           </div>
           <button
@@ -1709,16 +2160,38 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
           : Ballot Cards to Audit
         </h1>
         <p>
-          The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots.
+          The following ballots have been assigned to your audit board for this round of the audit. Once these ballots have been located and retrieved from storage, click "Start Auditing" to begin recording the votes you see marked on the paper ballots. When you are finished auditing these ballots, click "Auditing Complete - Submit Results" to submit the results.
+           
+          <strong>
+            Note that you will not be able to make changes after results are submitted.
+          </strong>
         </p>
         <div
-          class="sc-bdVaJa cDShCX"
+          class="sc-bdVaJa gKZTDn"
         >
           <a
-            class="bp3-button bp3-intent-primary"
+            class="bp3-button"
             href="/election/1/board/audit-board-1/batch/batch-id-1/ballot/2112"
+            role="button"
+            tabindex="0"
           >
-            Start Auditing
+            <span
+              class="bp3-button-text"
+            >
+              Start Auditing
+            </span>
+          </a>
+          <a
+            class="bp3-button bp3-disabled"
+            disabled=""
+            role="button"
+            tabindex="-1"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Auditing Complete - Submit Results
+            </span>
           </a>
         </div>
         <div
