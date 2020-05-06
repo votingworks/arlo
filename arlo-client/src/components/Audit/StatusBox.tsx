@@ -18,7 +18,6 @@ import useAuditSettings from './useAuditSettings'
 import useContests from './useContests'
 import { IRound } from './useRoundsJurisdictionAdmin'
 import { IAuditBoard } from './useAuditBoards'
-import { useAuthDataContext } from '../UserContext'
 
 const Wrapper = styled(Callout)`
   display: flex;
@@ -188,9 +187,10 @@ export const JurisdictionAdminStatusBox = ({
   ballotManifest,
   auditBoards,
 }: IJursidictionAdminProps) => {
-  const { electionId } = useParams<{ electionId: string }>()
-  const { meta } = useAuthDataContext()
-  const jurisdictionId = meta!.jurisdictions[0].id
+  const { electionId, jurisdictionId } = useParams<{
+    electionId: string
+    jurisdictionId: string
+  }>()
 
   // Audit has not started
   if (rounds.length === 0) {

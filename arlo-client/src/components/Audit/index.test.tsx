@@ -3,10 +3,9 @@ import { waitForElement, wait, fireEvent } from '@testing-library/react'
 import {
   BrowserRouter as Router,
   Router as RegularRouter,
-  useRouteMatch,
   useParams,
 } from 'react-router-dom'
-import { SingleJurisdictionAudit, MultiJurisdictionAudit } from './index'
+import { SingleJurisdictionAudit, AuditAdminView } from './index'
 import { statusStates, dummyBallots, auditSettings } from './_mocks'
 import * as utilities from '../utilities'
 import { asyncActRender, routerTestProps } from '../testUtilities'
@@ -39,14 +38,6 @@ paramsMock.mockReturnValue({
   electionId: '1',
   view: 'setup',
 })
-const routeMock = useRouteMatch as jest.Mock
-routeMock.mockReturnValue({
-  url: '/election/1/setup',
-  params: {
-    electionId: '1',
-    view: 'setup',
-  },
-})
 
 jest.mock('./useSetupMenuItems/getJurisdictionFileStatus')
 jest.mock('./useSetupMenuItems/getRoundStatus')
@@ -56,13 +47,6 @@ getRoundStatusMock.mockReturnValue(false)
 afterEach(() => {
   apiMock.mockClear()
   checkAndToastMock.mockClear()
-  routeMock.mockReturnValue({
-    url: '/election/1/setup',
-    params: {
-      electionId: '1',
-      view: 'setup',
-    },
-  })
   paramsMock.mockReturnValue({
     electionId: '1',
     view: 'setup',
@@ -208,11 +192,11 @@ describe('RiskLimitingAuditForm', () => {
 })
 
 describe('AA setup flow', () => {
-  // MultiJurisdictionAudit will only be rendered once the user is logged in, so
+  // AuditAdminView will only be rendered once the user is logged in, so
   // we simulate that.
-  const MultiJurisdictionAuditWithAuth: React.FC = () => {
+  const AuditAdminViewWithAuth: React.FC = () => {
     const { isAuthenticated } = useContext(AuthDataContext)
-    return isAuthenticated ? <MultiJurisdictionAudit /> : null
+    return isAuthenticated ? <AuditAdminView /> : null
   }
 
   beforeEach(() =>
@@ -236,6 +220,8 @@ describe('AA setup flow', () => {
           return { rounds: [] }
         case '/election/1/jurisdiction':
           return { jurisdictions: [] }
+        case '/election/1/jurisdiction/file':
+          return { file: null, processing: null }
         case '/election/1/contest':
           return contestMocks.filledTargeted
         case '/election/1/settings':
@@ -250,7 +236,7 @@ describe('AA setup flow', () => {
     const { queryAllByText, getByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
-          <MultiJurisdictionAuditWithAuth />
+          <AuditAdminViewWithAuth />
         </Router>
       </AuthDataProvider>
     )
@@ -270,7 +256,7 @@ describe('AA setup flow', () => {
     const { queryAllByText, getByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
-          <MultiJurisdictionAuditWithAuth />
+          <AuditAdminViewWithAuth />
         </Router>
       </AuthDataProvider>
     )
@@ -299,7 +285,7 @@ describe('AA setup flow', () => {
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
-          <MultiJurisdictionAuditWithAuth />
+          <AuditAdminViewWithAuth />
         </Router>
       </AuthDataProvider>
     )
@@ -311,17 +297,14 @@ describe('AA setup flow', () => {
   })
 
   it('renders sidebar when authenticated on /progress', async () => {
-    routeMock.mockReturnValue({
-      url: '/election/1/progress',
-      params: {
-        electionId: '1',
-        view: 'progress',
-      },
+    paramsMock.mockReturnValue({
+      electionId: '1',
+      view: 'progress',
     })
     const { container, queryAllByText } = await asyncActRender(
       <AuthDataProvider>
         <Router>
-          <MultiJurisdictionAuditWithAuth />
+          <AuditAdminViewWithAuth />
         </Router>
       </AuthDataProvider>
     )
@@ -334,17 +317,14 @@ describe('AA setup flow', () => {
 
   it('redirects to /progress by default', async () => {
     const routeProps = routerTestProps('/election/1', { electionId: '1' })
-    routeMock.mockReturnValue({
-      url: '/election/1',
-      params: {
-        electionId: '1',
-        view: '',
-      },
+    paramsMock.mockReturnValue({
+      electionId: '1',
+      view: '',
     })
     await asyncActRender(
       <AuthDataProvider>
         <RegularRouter {...routeProps}>
-          <MultiJurisdictionAuditWithAuth />
+          <AuditAdminViewWithAuth />
         </RegularRouter>
       </AuthDataProvider>
     )
