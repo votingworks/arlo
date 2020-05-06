@@ -49,11 +49,12 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
       if (values.csv) {
         if (await uploadJurisdictionFile(values.csv)) {
           setIsEditing(false)
+          /* istanbul ignore else */
+          if (nextStage.activate) nextStage.activate()
+          else
+            throw new Error('Wrong menuItems passed in: activate() is missing')
         }
       }
-      /* istanbul ignore else */
-      if (nextStage.activate) nextStage.activate()
-      else throw new Error('Wrong menuItems passed in: activate() is missing')
     } catch (err) {
       toast.error(err.message)
     }

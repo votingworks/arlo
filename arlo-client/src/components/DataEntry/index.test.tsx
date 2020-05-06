@@ -39,7 +39,7 @@ afterEach(() => {
 })
 
 const routeProps = routerTestProps(
-  '/election/:electionId/board/:auditBoardId',
+  '/election/:electionId/audit-board/:auditBoardId',
   {
     electionId: '1',
     auditBoardId: 'audit-board-1',
@@ -166,7 +166,7 @@ describe('DataEntry', () => {
 
     it('renders ballot route', async () => {
       const ballotRouteProps = routerTestProps(
-        '/election/:electionId/board/:auditBoardId/batch/:batchId/ballot/:ballotPosition',
+        '/election/:electionId/audit-board/:auditBoardId/batch/:batchId/ballot/:ballotPosition',
         {
           electionId: '1',
           auditBoardId: 'audit-board-1',
@@ -175,7 +175,7 @@ describe('DataEntry', () => {
         }
       )
       const { history, ...staticBallotRouteProps } = ballotRouteProps // eslint-disable-line @typescript-eslint/no-unused-vars
-      ballotRouteProps.match.url = '/election/1/board/audit-board-1'
+      ballotRouteProps.match.url = '/election/1/audit-board/audit-board-1'
       const { container, getByText } = render(
         <StaticRouter {...staticBallotRouteProps}>
           <DataEntry {...ballotRouteProps} />
@@ -190,7 +190,7 @@ describe('DataEntry', () => {
 
     it('advances ballot forward and backward', async () => {
       const ballotRouteProps = routerTestProps(
-        '/election/:electionId/board/:auditBoardId/batch/:batchId/ballot/:ballotPosition',
+        '/election/:electionId/audit-board/:auditBoardId/batch/:batchId/ballot/:ballotPosition',
         {
           electionId: '1',
           auditBoardId: 'audit-board-1',
@@ -202,7 +202,7 @@ describe('DataEntry', () => {
       const pushSpy = jest
         .spyOn(ballotRouteProps.history, 'push')
         .mockImplementation()
-      ballotRouteProps.match.url = '/election/1/board/audit-board-1'
+      ballotRouteProps.match.url = '/election/1/audit-board/audit-board-1'
       const { getByText } = await asyncActRender(
         <StaticRouter {...staticBallotRouteProps}>
           <DataEntry {...ballotRouteProps} />
@@ -225,16 +225,16 @@ describe('DataEntry', () => {
       })
 
       expect(pushSpy.mock.calls[0][0]).toBe(
-        '/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789'
+        '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
       )
       expect(pushSpy.mock.calls[1][0]).toBe(
-        '/election/1/board/audit-board-1/batch/batch-id-1/ballot/313'
+        '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313'
       )
     })
 
     it('submits ballot', async () => {
       const ballotRouteProps = routerTestProps(
-        '/election/:electionId/board/:auditBoardId/batch/:batchId/ballot/:ballotPosition',
+        '/election/:electionId/audit-board/:auditBoardId/batch/:batchId/ballot/:ballotPosition',
         {
           electionId: '1',
           auditBoardId: 'audit-board-1',
@@ -243,7 +243,7 @@ describe('DataEntry', () => {
         }
       )
       const { history, ...staticBallotRouteProps } = ballotRouteProps // eslint-disable-line @typescript-eslint/no-unused-vars
-      ballotRouteProps.match.url = '/election/1/board/audit-board-1'
+      ballotRouteProps.match.url = '/election/1/audit-board/audit-board-1'
       const { getByText, getByTestId } = await asyncActRender(
         <StaticRouter {...staticBallotRouteProps}>
           <DataEntry {...ballotRouteProps} />
@@ -261,7 +261,7 @@ describe('DataEntry', () => {
       await wait(() => {
         expect(apiMock).toBeCalledTimes(5)
         expect(history.location.pathname).toBe(
-          '/election/1/board/audit-board-1/batch/batch-id-1/ballot/1789'
+          '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
         )
       })
     })

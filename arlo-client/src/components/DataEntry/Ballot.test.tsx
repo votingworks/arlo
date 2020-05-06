@@ -12,7 +12,7 @@ describe('Ballot', () => {
     const { container } = render(
       <Router history={history}>
         <Ballot
-          home="/election/1/board/1"
+          home="/election/1/audit-board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
@@ -31,7 +31,7 @@ describe('Ballot', () => {
     const { container, getByLabelText } = render(
       <Router history={history}>
         <Ballot
-          home="/election/1/board/1"
+          home="/election/1/audit-board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
@@ -53,7 +53,7 @@ describe('Ballot', () => {
     const { container, getByText, getByTestId } = render(
       <Router history={history}>
         <Ballot
-          home="/election/1/board/1"
+          home="/election/1/audit-board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
@@ -89,7 +89,7 @@ describe('Ballot', () => {
       const { container, getByLabelText, getByText, getByTestId } = render(
         <Router history={history}>
           <Ballot
-            home="/election/1/board/1"
+            home="/election/1/audit-board/1"
             ballots={dummyBallots.ballots}
             boardName="audit board #1"
             contests={[contest]}
@@ -122,7 +122,7 @@ describe('Ballot', () => {
     const { container, getByText, getByTestId, queryByText } = render(
       <Router history={history}>
         <Ballot
-          home="/election/1/board/1"
+          home="/election/1/audit-board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
@@ -168,7 +168,7 @@ describe('Ballot', () => {
     const { container, getByText, queryByText, getByTestId } = render(
       <Router history={history}>
         <Ballot
-          home="/election/1/board/1"
+          home="/election/1/audit-board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
@@ -205,7 +205,7 @@ describe('Ballot', () => {
     const { container, getByText, getByTestId } = render(
       <Router history={history}>
         <Ballot
-          home="/election/1/board/1"
+          home="/election/1/audit-board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
@@ -242,7 +242,7 @@ describe('Ballot', () => {
     const { getByText, getByTestId } = render(
       <Router history={history}>
         <Ballot
-          home="/election/1/board/1"
+          home="/election/1/audit-board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}
@@ -277,7 +277,7 @@ describe('Ballot', () => {
     const { container } = render(
       <Router history={history}>
         <Ballot
-          home="/election/1/board/1"
+          home="/election/1/audit-board/1"
           ballots={dummyBallots.ballots}
           boardName="audit board #1"
           contests={[contest]}

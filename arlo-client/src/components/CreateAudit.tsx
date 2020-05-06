@@ -79,6 +79,11 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
       toast.error(err.message)
     }
   }
+
+  if (isAuthenticated === null) return null // Still loading
+  if (meta && meta.type === 'audit_board') {
+    return <div>404 Not Found</div>
+  }
   return (
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
@@ -156,19 +161,19 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
                   key={election.id}
                   className="bp3-button bp3-intent-primary"
                 >
-                  {election.auditName || 'Not named yet'}
+                  {election.auditName}
                   {election.state && ` (${election.state})`}
                 </AuditLink>
               ))
             )}
           {meta!.jurisdictions.length > 0 &&
-            meta!.jurisdictions.map(({ election }) => (
+            meta!.jurisdictions.map(({ id, election }) => (
               <AuditLink
-                to={`/election/${election.id}`}
+                to={`/election/${election.id}/jurisdiction/${id}`}
                 key={election.id}
                 className="bp3-button bp3-intent-primary"
               >
-                {election.auditName || 'Not named yet'}
+                {election.auditName}
                 {election.state && ` (${election.state})`}
               </AuditLink>
             ))}

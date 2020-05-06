@@ -88,22 +88,37 @@ beforeEach(() => {
 })
 
 describe('Audit Setup > Participants', () => {
+  beforeEach(() => {
+    apiMock.mockImplementation(async (endpoint: string) => {
+      switch (endpoint) {
+        case '/election/1/jurisdiction/file':
+          return { file: null, processing: null }
+        default:
+          return null
+      }
+    })
+  })
+
   it('renders empty state correctly', async () => {
     const { container } = await asyncActRender(
       <Router>
         <Participants locked={false} nextStage={nextStage} />
       </Router>
     )
-    expect(container).toMatchSnapshot()
+    await wait(() => {
+      expect(container).toMatchSnapshot()
+    })
   })
 
   it('selects a state and submits it', async () => {
-    apiMock.mockResolvedValue({ status: 'ok' })
+    apiMock
+      .mockResolvedValueOnce({ file: null, processing: null })
+      .mockResolvedValue({ status: 'ok' })
     await fillAndSubmit()
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock).toBeCalledTimes(3)
       expect(apiMock).toHaveBeenNthCalledWith(
-        1,
+        2,
         expect.stringMatching(/\/election\/[^/]+\/jurisdiction\/file/),
         { body: formData, method: 'PUT' }
       )
@@ -112,27 +127,15 @@ describe('Audit Setup > Participants', () => {
   })
 
   it('handles api error on /election/:electionId/jurisdiction/file', async () => {
-    apiMock.mockRejectedValue({ message: 'error' })
+    apiMock
+      .mockResolvedValueOnce({ file: null, processing: null })
+      .mockRejectedValue({ message: 'error' })
 
     await fillAndSubmit()
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
+      expect(apiMock).toBeCalledTimes(2)
       expect(toastSpy).toBeCalledTimes(1)
-      expect(nextStage.activate).toHaveBeenCalledTimes(0)
-    })
-  })
-
-  it('handles server error on /election/:electionId/jurisdiction/file', async () => {
-    apiMock.mockResolvedValue(undefined)
-    checkAndToastMock.mockReturnValue(true)
-
-    await fillAndSubmit()
-
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
-      expect(toastSpy).toBeCalledTimes(0)
-      expect(checkAndToastMock).toBeCalledTimes(1)
       expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })
   })
@@ -152,7 +155,7 @@ describe('Audit Setup > Participants', () => {
     await fillAndSubmit()
 
     await wait(() => {
-      expect(apiMock).toBeCalledTimes(0)
+      expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(0)
       expect(checkAndToastMock).toBeCalledTimes(0)
       expect(nextStage.activate).toHaveBeenCalledTimes(0)
