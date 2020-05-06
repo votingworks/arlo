@@ -1245,6 +1245,7 @@ def me():
             roundId=audit_board.round_id,
             name=audit_board.name,
             members=serialize_members(audit_board),
+            signedOffAt=isoformat(audit_board.signed_off_at),
         )
     else:
         return Unauthorized()

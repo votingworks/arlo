@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { Field } from 'formik'
 import { RadioGroup, Divider } from '@blueprintjs/core'
 
 export const FlushDivider = styled(Divider)`
@@ -64,4 +65,14 @@ export const ProgressActions = styled.div`
   button {
     margin-left: 20px;
   }
+`
+
+export const LabelText = styled.label`
+  display: block;
+  margin: 5px 0;
+`
+
+export const NameField = styled(Field)`
+  margin-bottom: 20px;
+  width: 300px;
 `
