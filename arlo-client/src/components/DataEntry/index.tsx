@@ -254,7 +254,7 @@ const DataEntry: React.FC<IProps> = ({
         <Switch>
           <Route
             exact
-            path="/election/:electionId/board/:auditBoardId"
+            path="/election/:electionId/audit-board/:auditBoardId"
             render={({ match: { url: routeURL } }) => (
               <BoardTable
                 boardName={auditBoard.name}

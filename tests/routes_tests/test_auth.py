@@ -177,7 +177,7 @@ def test_audit_board_log_in(
     rv = client.get(f"/auditboard/{audit_board.passphrase}")
     assert rv.status_code == 302
     location = urlparse(rv.location)
-    assert location.path == f"/election/{election_id}/board/{audit_board.id}"
+    assert location.path == f"/election/{election_id}/audit-board/{audit_board.id}"
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_user"]["type"] == UserType.AUDIT_BOARD

@@ -403,7 +403,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                           {sampleSizeSelected && audit.online && (
                             <>
                               <Link
-                                to={`/election/${electionId}/board/${audit.jurisdictions[0].auditBoards[i].id}`}
+                                to={`/election/${electionId}/audit-board/${audit.jurisdictions[0].auditBoards[i].id}`}
                                 className="bp3-text-small"
                               >
                                 {name}
