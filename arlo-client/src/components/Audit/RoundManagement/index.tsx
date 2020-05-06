@@ -3,7 +3,6 @@ import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { Wrapper } from '../../Atoms/Wrapper'
 import H2Title from '../../Atoms/H2Title'
-import { useAuthDataContext } from '../../UserContext'
 import { IRound } from '../useRoundsJurisdictionAdmin'
 import { IErrorResponse, IBallot } from '../../../types'
 import { api, checkAndToast } from '../../utilities'
@@ -26,10 +25,10 @@ interface IProps {
 }
 
 const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
-  const { electionId } = useParams<{ electionId: string }>()
-  const { meta } = useAuthDataContext()
-  const { jurisdictions } = meta!
-  const jurisdictionId = jurisdictions[0].id
+  const { electionId, jurisdictionId } = useParams<{
+    electionId: string
+    jurisdictionId: string
+  }>()
 
   const [ballots, setBallots] = useState<IBallot[]>([])
   useEffect(() => {

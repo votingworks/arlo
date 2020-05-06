@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import {
-  Redirect,
-  useRouteMatch,
-  useParams,
-  RouteComponentProps,
-} from 'react-router-dom'
+import { Redirect, useParams } from 'react-router-dom'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -13,7 +8,6 @@ import { IAudit, IErrorResponse, ElementType } from '../../types'
 import ResetButton from './ResetButton'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import Sidebar from '../Atoms/Sidebar'
-import { useAuthDataContext } from '../UserContext'
 import Setup, { setupStages } from './Setup'
 import Progress from './Progress'
 import useSetupMenuItems from './useSetupMenuItems'
@@ -26,24 +20,11 @@ import useAuditBoards from './useAuditBoards'
 
 interface IParams {
   electionId: string
-  view: 'setup' | 'progress'
+  view: 'setup' | 'progress' | ''
 }
 
-export const MultiJurisdictionAudit: React.FC = () => {
-  const { meta } = useAuthDataContext()
-  switch (meta!.type) {
-    case 'audit_admin':
-      return <AuditAdminView />
-    case 'jurisdiction_admin':
-      return <JurisdictionAdminView />
-    /* istanbul ignore next */
-    default:
-      return <Redirect to="/" />
-  }
-}
-
-const AuditAdminView: React.FC = () => {
-  const { electionId } = useParams<IParams>()
+export const AuditAdminView: React.FC = () => {
+  const { electionId, view } = useParams<IParams>()
   const [stage, setStage] = useState<ElementType<typeof setupStages>>(
     'Participants'
   )
@@ -57,10 +38,7 @@ const AuditAdminView: React.FC = () => {
     refresh()
   }, [refresh])
 
-  const match: RouteComponentProps<IParams>['match'] | null = useRouteMatch(
-    '/election/:electionId/:view?'
-  )
-  switch (match && match.params.view) {
+  switch (view) {
     case 'setup':
       return (
         <Wrapper>
@@ -95,10 +73,11 @@ const AuditAdminView: React.FC = () => {
   }
 }
 
-const JurisdictionAdminView: React.FC = () => {
-  const { electionId } = useParams<{ electionId: string }>()
-  const { meta } = useAuthDataContext()
-  const jurisdictionId = meta!.jurisdictions[0].id
+export const JurisdictionAdminView: React.FC = () => {
+  const { electionId, jurisdictionId } = useParams<{
+    electionId: string
+    jurisdictionId: string
+  }>()
 
   const rounds = useRoundsJurisdictionAdmin(electionId, jurisdictionId)
   const [ballotManifest, uploadBallotManifest] = useBallotManifest(
