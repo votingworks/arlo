@@ -19,6 +19,7 @@ import FormSection, {
 import ContestsTable from './ContestsTable'
 import SettingsTable from './SettingsTable'
 import { isSetupComplete } from '../../StatusBox'
+import useJurisdictionFile from '../Participants/useJurisdictionFile'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -41,6 +42,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const [auditSettings] = useAuditSettings(electionId)
   const { electionName, randomSeed, riskLimit, online } = auditSettings
   const jurisdictions = useJurisdictions(electionId)
+  const [jurisdictionFile] = useJurisdictionFile(electionId)
   const [contests] = useContests(electionId)
   const [sampleSizeOptions, setSampleSizeOptions] = useState<
     IStringSampleSize[]
@@ -139,7 +141,15 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           <tr>
             <td>Participating Jurisdictions:</td>
             <td>
-              <a href="/link-to-jurisdictions-file">link</a>
+              <a
+                href={`/election/${electionId}/jurisdiction/file/csv`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {jurisdictionFile && jurisdictionFile.file
+                  ? jurisdictionFile.file.name
+                  : ''}
+              </a>
             </td>
           </tr>
           <tr>
