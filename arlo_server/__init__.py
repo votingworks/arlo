@@ -5,7 +5,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from urllib.parse import urlparse
 
 from config import (
-    STATIC_FOLDER,
     SESSION_SECRET,
     DATABASE_URL,
     FLASK_ENV,
@@ -20,7 +19,7 @@ if FLASK_ENV not in DEVELOPMENT_ENVS:
     # throw an exception if it doesn't match one of the values in this list.
     Request.trusted_hosts = [str(urlparse(HTTP_ORIGIN).hostname)]
 
-app = Flask(__name__, static_folder=STATIC_FOLDER, static_url_path="")
+app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
 app.testing = FLASK_ENV == "test"
 T = Talisman(
@@ -59,6 +58,9 @@ import arlo_server.rounds
 import arlo_server.audit_boards
 import arlo_server.ballots
 import arlo_server.superadmin
+
+# static
+import arlo_server.static
 
 # Error handlers
 import arlo_server.errors
