@@ -353,6 +353,16 @@ def get_sample_size(
 
         return samples
 
+    # Handle landslides
+    if p_w == 1.0:
+        samples["asn"] = {
+            "type": "ASN",
+            "size": 1,
+            "prob": 1.0,
+        }
+
+        return samples
+
     sample_w = sample_results[worse_winner]
     sample_l = sample_results[best_loser]
 
