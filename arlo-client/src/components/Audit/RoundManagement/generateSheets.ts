@@ -75,7 +75,7 @@ export const downloadDataEntry = (auditBoards: IAuditBoard[]): void => {
   const auditBoardCreds = new jsPDF({ format: 'letter' })
   auditBoards.forEach((board, i) => {
     const qr: HTMLCanvasElement | null = document.querySelector(
-      `#qr-${board.id} > canvas`
+      `#qr-${board.passphrase} > canvas`
     )
     /* istanbul ignore else */
     if (qr) {
