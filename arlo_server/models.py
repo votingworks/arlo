@@ -1,4 +1,4 @@
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship, backref, validates
 import sqlalchemy as sa
 from enum import Enum
 from flask_sqlalchemy import SQLAlchemy, Model
@@ -116,6 +116,10 @@ class User(BaseModel):
     jurisdictions = relationship(
         "Jurisdiction", secondary="jurisdiction_administration"
     )
+
+    @validates("email")
+    def lowercase_email(self, _key, email):
+        return email.lower()
 
 
 class AuditAdministration(BaseModel):

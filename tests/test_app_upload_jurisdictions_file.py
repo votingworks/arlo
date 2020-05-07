@@ -250,3 +250,29 @@ def test_multiple_jurisdictions_single_admin(client, election_id):
 def test_download_jurisdictions_file_not_found(client, election_id):
     rv = client.get(f"/election/{election_id}/jurisdiction/file/csv")
     assert rv.status_code == 404
+
+
+def test_convert_emails_to_lowercase(client, election_id):
+    rv = client.put(
+        f"/election/{election_id}/jurisdiction/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(
+                    b"Jurisdiction,Admin Email\n"
+                    b"J1,lowecase@example.com\n"
+                    b"J2,UPPERCASE@EXAMPLE.COM\n"
+                    b"J3,MiXeDcAsE@eXaMpLe.CoM\n"
+                ),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    # Process the file in the background.
+    assert bgcompute_update_election_jurisdictions_file() == 1
+
+    election = Election.query.filter_by(id=election_id).one()
+    for jurisdiction in election.jurisdictions:
+        for a in jurisdiction.jurisdiction_administrations:
+            assert a.user.email == a.user.email.lower()
