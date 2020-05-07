@@ -32,6 +32,7 @@ def test_expected_sample_sizes(contests):
         "test8": 34,
         "test9": -1,
         "test10": 48,
+        "test11": -1,
     }
 
     for contest in true_asns:
@@ -61,6 +62,7 @@ def test_expected_sample_sizes_second_round(contests):
         "test8": 14,
         "test9": -1,
         "test10": -52,
+        "test11": -1,
     }
 
     for contest in true_asns:
@@ -284,6 +286,7 @@ def test_compute_risk(contests):
         "test8": {("cand1", "cand3"): 0.0, ("cand2", "cand3"): 0.22,},
         "test9": {("cand1", ""): 1, ("cand2", ""): 1,},
         "test10": {("cand1", "cand3"): 0, ("cand2", "cand3"): 0.01,},
+        "test11": {("cand1", "cand2"): 1},
     }
 
     expected_decisions = {
@@ -297,6 +300,7 @@ def test_compute_risk(contests):
         "test8": False,
         "test9": False,
         "test10": True,
+        "test11": False,
     }
 
     for contest in contests.values():
@@ -332,6 +336,7 @@ def test_compute_risk_empty(contests):
         "test8": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
         "test9": {("cand1", ""): 1, ("cand2", ""): 1,},
         "test10": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
+        "test11": {("cand1", "cand2"): 1,},
     }
 
     expected_decisions = {
@@ -345,6 +350,7 @@ def test_compute_risk_empty(contests):
         "test8": False,
         "test9": False,
         "test10": False,
+        "test11": False,
     }
 
     for contest in contests.values():
@@ -431,6 +437,13 @@ bravo_contests = {
         "votesAllowed": 1,
         "numWinners": 2,
     },
+    "test11": {
+        "cand1": 1000,
+        "cand2": 0,
+        "ballots": 1000,
+        "votesAllowed": 1,
+        "numWinners": 1,
+    },
 }
 
 # Useful test data
@@ -445,6 +458,7 @@ round0_sample_results = {
     "test8": {"cand1": 0, "cand2": 0, "cand3": 0},
     "test9": {"cand1": 0, "cand2": 0, "cand3": 0},
     "test10": {"cand1": 0, "cand2": 0, "cand3": 0},
+    "test11": {"cand1": 0, "cand2": 0},
 }
 
 round1_sample_results = {
@@ -458,6 +472,7 @@ round1_sample_results = {
     "test8": {"cand1": 72, "cand2": 55, "cand3": 30},
     "test9": {"cand1": 1, "cand2": 1,},
     "test10": {"cand1": 60, "cand2": 30, "cand3": 10},
+    "test11": {"cand1": 0, "cand2": 0},
 }
 
 true_sample_sizes = {
@@ -501,4 +516,5 @@ true_sample_sizes = {
     "test8": {"asn": {"type": "ASN", "size": 34, "prob": None,},},
     "test9": {"asn": {"type": "ASN", "size": -1, "prob": None,},},
     "test10": {"asn": {"type": "ASN", "size": 48, "prob": None,},},
+    "test11": {"asn": {"type": "ASN", "size": 1, "prob": 1.0,},},
 }
