@@ -85,10 +85,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
               Download Ballot Labels for Round {roundNum}
             </FormButton>
             {/* make conditional on online */}
-            <QRs
-              electionId={electionId}
-              boardIds={auditBoards.map(b => b.id)}
-            />
+            <QRs passphrases={auditBoards.map(b => b.passphrase)} />
             <FormButton
               verticalSpaced
               onClick={() => downloadDataEntry(auditBoards)}

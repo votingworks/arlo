@@ -6,19 +6,17 @@ const QRroot = styled.div`
   display: none;
 `
 
-const QRs: React.FC<{ electionId: string; boardIds: string[] }> = ({
-  electionId,
-  boardIds,
+const QRs: React.FC<{ passphrases: string[] }> = ({
+  passphrases,
 }: {
-  electionId: string
-  boardIds: string[]
+  passphrases: string[]
 }) => {
   return (
     <QRroot id="qr-root">
-      {boardIds.map(id => (
-        <span key={id} id={`qr-${id}`}>
+      {passphrases.map(passphrase => (
+        <span key={passphrase} id={`qr-${passphrase}`}>
           <QRCode
-            value={`${window.location.origin}/election/${electionId}/audit-board/${id}`}
+            value={`${window.location.origin}/auditboard/${passphrase}`}
             size={200}
           />
         </span>
