@@ -47,16 +47,11 @@ def process_file(session: Session, file: File, callback: Callable[[], None]) -> 
         return True
 
 
-def serialize_file(file: File, contents=False) -> Dict[str, Any]:
-    result = {
+def serialize_file(file: File) -> Dict[str, Any]:
+    return {
         "name": file.name,
         "uploadedAt": isoformat(file.uploaded_at),
     }
-
-    if contents:
-        result["contents"] = file.contents
-
-    return result
 
 
 def serialize_file_processing(file: File) -> Dict[str, Any]:

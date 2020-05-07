@@ -340,11 +340,22 @@ def get_jurisdictions_file(election: Election):
 
     if jurisdictions_file:
         return jsonify(
-            file=serialize_file(jurisdictions_file, contents=True),
+            file=serialize_file(jurisdictions_file),
             processing=serialize_file_processing(jurisdictions_file),
         )
     else:
         return jsonify(file=None, processing=None)
+
+
+@app.route("/election/<election_id>/jurisdiction/file/csv", methods=["GET"])
+@with_election_access
+def download_jurisdictions_file(election: Election):
+    if not election.jurisdictions_file:
+        return NotFound()
+
+    return csv_response(
+        election.jurisdictions_file.contents, election.jurisdictions_file.name
+    )
 
 
 @app.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
