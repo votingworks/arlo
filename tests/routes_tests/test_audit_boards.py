@@ -548,7 +548,8 @@ def set_up_audit_board(
     ballot_draws = (
         SampledBallotDraw.query.join(SampledBallot)
         .filter_by(audit_board_id=audit_board_id)
-        .order_by(SampledBallot.batch_id, SampledBallot.ballot_position)
+        .join(Batch)
+        .order_by(Batch.name, SampledBallot.ballot_position)
         .all()
     )
     choices = (
