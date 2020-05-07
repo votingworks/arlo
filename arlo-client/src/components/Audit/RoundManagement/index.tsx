@@ -17,6 +17,7 @@ import {
   downloadDataEntry,
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
+import QRs from './QRs'
 
 interface IProps {
   round: IRound
@@ -34,13 +35,13 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
   useEffect(() => {
     ;(async () => {
       try {
-        const response: { ballots: IBallot[] } | IErrorResponse = await api(
+        const response: { ballotDraws: IBallot[] } | IErrorResponse = await api(
           `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/ballot-draws`
         )
         // checkAndToast left here for consistency and reference but not tested since it's vestigial
         /* istanbul ignore next */
         if (checkAndToast(response)) return
-        setBallots(response.ballots)
+        setBallots(response.ballotDraws)
       } catch (err) /* istanbul ignore next */ {
         // TEST TODO
         toast.error(err.message)
@@ -84,6 +85,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
               Download Ballot Labels for Round {roundNum}
             </FormButton>
             {/* make conditional on online */}
+            <QRs passphrases={auditBoards.map(b => b.passphrase)} />
             <FormButton
               verticalSpaced
               onClick={() => downloadDataEntry(auditBoards)}
