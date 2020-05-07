@@ -1338,11 +1338,3 @@ def jurisdictionadmin_login_callback():
             set_loggedin_user(UserType.JURISDICTION_ADMIN, userinfo["email"])
 
     return redirect("/")
-
-
-# React App
-@app.route("/")
-@app.route("/election/<election_id>")
-@app.route("/election/<election_id>/board/<board_id>")
-def serve(election_id=None, board_id=None):  # pylint: disable=unused-argument
-    return app.send_static_file("index.html")
