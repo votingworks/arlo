@@ -1,7 +1,8 @@
-import io, itertools, re, locale
+import io, itertools, re, locale, os
 from enum import Enum
-from typing import List, Tuple, Iterator, Dict, Any
+from typing import List, Tuple, Iterator, Dict, Any, BinaryIO
 import csv as py_csv
+from werkzeug.exceptions import BadRequest
 
 
 class CSVParseError(Exception):
@@ -78,18 +79,28 @@ def reject_empty(csv: CSVIterator) -> CSVIterator:
 
 def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
     headers = next(csv)
-    expected_headers = [name for [name, type] in columns]
+    lowercase_headers = [header.lower() for header in headers]
 
-    if len(headers) > len(columns):
+    allowed_headers = [name for [name, type, required] in columns]
+    required_headers = [name for [name, type, required] in columns if required]
+    lowercase_allowed_headers = [h.lower() for h in allowed_headers]
+    lowercase_required_headers = [h.lower() for h in required_headers]
+
+    unexpected_headers = [
+        header
+        for header in lowercase_headers
+        if header not in lowercase_allowed_headers
+    ]
+    if len(unexpected_headers) > 0:
         raise CSVParseError(
-            f"Too many columns. Expected columns: {', '.join(expected_headers)}."
+            f"Found unexpected {pluralize('column', len(unexpected_headers))}."
+            f" Allowed columns: {', '.join(allowed_headers)}."
         )
 
-    lowercase_headers = [header.lower() for header in headers]
     missing_headers = [
-        expected_header
-        for expected_header in expected_headers
-        if expected_header.lower() not in lowercase_headers
+        required_header
+        for required_header in required_headers
+        if required_header.lower() not in lowercase_headers
     ]
     if len(missing_headers) > 0:
         raise CSVParseError(
@@ -97,11 +108,11 @@ def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
             f" {', '.join(missing_headers)}."
         )
 
-    lowercase_expected_headers = [header.lower() for header in expected_headers]
-    if lowercase_headers != lowercase_expected_headers:
-        print(headers, expected_headers)
+    ordered_headers = [h for h in allowed_headers if h.lower() in lowercase_headers]
+    lowercase_ordered_headers = [h.lower() for h in ordered_headers]
+    if lowercase_ordered_headers != lowercase_headers:
         raise CSVParseError(
-            f"Columns out of order. Expected order: {', '.join(expected_headers)}."
+            f"Columns out of order. Expected order: {', '.join(ordered_headers)}."
         )
 
     return itertools.chain([headers], csv)
@@ -142,7 +153,7 @@ def validate_values(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
     yield next(csv)  # Skip the headers
     for r, row in enumerate(csv):
 
-        for (header, value_type), value in zip(columns, row):
+        for (header, value_type, _required), value in zip(columns, row):
             where = f"column {header}, row {r+1}"
 
             if value_type is CSVValueType.NUMBER:
@@ -162,3 +173,14 @@ def validate_values(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
 
 def pluralize(word: str, n: int) -> str:
     return word if n == 1 else f"{word}s"
+
+
+def decode_csv_file(file: bytes) -> str:
+    try:
+        return file.decode("utf-8-sig")
+    except Exception:
+        raise BadRequest(
+            "Please submit a valid CSV."
+            " If you are working with an Excel spreadsheet,"
+            " make sure you export it as a .csv file before uploading"
+        )

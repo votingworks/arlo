@@ -20,11 +20,19 @@ from util.process_file import (
     UserError,
 )
 from util.csv_download import csv_response
+from util.csv_parse import decode_csv_file, parse_csv, CSVValueType
 
 BATCH_NAME = "Batch Name"
 NUMBER_OF_BALLOTS = "Number of Ballots"
 STORAGE_LOCATION = "Storage Location"
 TABULATOR = "Tabulator"
+
+BALLOT_MANIFEST_COLUMNS = [
+    (BATCH_NAME, CSVValueType.TEXT, True),
+    (NUMBER_OF_BALLOTS, CSVValueType.NUMBER, True),
+    (STORAGE_LOCATION, CSVValueType.TEXT, False),
+    (TABULATOR, CSVValueType.TEXT, False),
+]
 
 
 def process_ballot_manifest_file(
@@ -33,28 +41,13 @@ def process_ballot_manifest_file(
     assert jurisdiction.manifest_file_id == file.id
 
     def process():
-        manifest_csv = csv.DictReader(io.StringIO(file.contents))
-
-        missing_fields = [
-            field
-            for field in [BATCH_NAME, NUMBER_OF_BALLOTS]
-            if field not in manifest_csv.fieldnames
-        ]
-
-        if missing_fields:
-            raise UserError(f"Missing required CSV fields: {', '.join(missing_fields)}")
+        manifest_csv = parse_csv(jurisdiction.manifest_file, BALLOT_MANIFEST_COLUMNS)
 
         num_batches = 0
         num_ballots = 0
         for row in manifest_csv:
             num_ballots_in_batch_csv = row[NUMBER_OF_BALLOTS]
-
-            try:
-                num_ballots_in_batch = locale.atoi(num_ballots_in_batch_csv)
-            except ValueError as error:
-                raise UserError(
-                    f"Invalid value for '{NUMBER_OF_BALLOTS}' on line {manifest_csv.line_num}: {num_ballots_in_batch_csv}"
-                ) from error
+            num_ballots_in_batch = locale.atoi(num_ballots_in_batch_csv)
 
             batch = Batch(
                 id=str(uuid.uuid4()),
@@ -94,8 +87,8 @@ def validate_ballot_manifest_upload(request: Request):
 
 # We save the ballot manifest file, and bgcompute finds it and processes it in
 # the background.
-def save_ballot_manifest_file(manifest: File, jurisdiction: Jurisdiction):
-    manifest_string = manifest.read().decode("utf-8-sig")
+def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
+    manifest_string = decode_csv_file(manifest.read())
     jurisdiction.manifest_file = File(
         id=str(uuid.uuid4()),
         name=manifest.filename,

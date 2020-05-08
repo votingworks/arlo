@@ -1,10 +1,12 @@
-import pytest
-from util.csv_parse import parse_csv, CSVParseError, CSVValueType
+import pytest, os
+from util.csv_parse import parse_csv, decode_csv_file, CSVParseError, CSVValueType
+from werkzeug.exceptions import BadRequest
 
 # Column names based on ballot manifest
 BALLOT_MANIFEST_COLUMNS = [
-    ("Batch Name", CSVValueType.TEXT),
-    ("Number of Ballots", CSVValueType.NUMBER),
+    ("Batch Name", CSVValueType.TEXT, True),
+    ("Number of Ballots", CSVValueType.NUMBER, True),
+    ("Storage Location", CSVValueType.TEXT, False),
 ]
 
 JURISDICTIONS_COLUMNS = [
@@ -382,3 +384,17 @@ def test_parse_csv_real_world_examples():
     for (csv, expected_rows, columns) in REAL_WORLD_ACCEPTED_CSVS:
         parsed = list(parse_csv(csv, columns))
         assert len(parsed) == expected_rows
+
+
+def test_decode_excel_file():
+    excel_file_path = os.path.join(
+        os.path.dirname(__file__), "test-ballot-manifest.xlsx"
+    )
+    with open(excel_file_path, "rb") as excel_file:
+        with pytest.raises(BadRequest) as error:
+            decode_csv_file(excel_file.read())
+        assert error.value.description == (
+            "Please submit a valid CSV."
+            " If you are working with an Excel spreadsheet,"
+            " make sure you export it as a .csv file before uploading"
+        )

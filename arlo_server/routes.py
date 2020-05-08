@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 
 from flask import jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
-from werkzeug.exceptions import NotFound, Forbidden, Unauthorized
+from werkzeug.exceptions import NotFound, Forbidden, Unauthorized, BadRequest
 
 from audit_math import bravo, sampler_contest, sampler
 from xkcdpass import xkcd_password as xp
@@ -38,6 +38,7 @@ from arlo_server.ballot_manifest import (
 )
 from arlo_server.sample_sizes import cumulative_contest_results
 from util.binpacking import BalancedBucketList, Bucket
+from util.csv_parse import decode_csv_file
 
 from config import (
     SUPERADMIN_AUTH0_BASE_URL,
@@ -375,7 +376,7 @@ def update_jurisdictions_file(election: Election):
         )
 
     jurisdictions_file = request.files["jurisdictions"]
-    jurisdictions_file_string = jurisdictions_file.read().decode("utf-8-sig")
+    jurisdictions_file_string = decode_csv_file(jurisdictions_file.read())
 
     old_jurisdictions_file = election.jurisdictions_file
     election.jurisdictions_file = File(
@@ -384,31 +385,6 @@ def update_jurisdictions_file(election: Election):
         contents=jurisdictions_file_string,
         uploaded_at=datetime.datetime.utcnow(),
     )
-
-    jurisdictions_csv = csv.DictReader(io.StringIO(jurisdictions_file_string))
-    JURISDICTION_NAME = "Jurisdiction"
-    ADMIN_EMAIL = "Admin Email"
-
-    missing_fields = [
-        field
-        for field in [JURISDICTION_NAME, ADMIN_EMAIL]
-        if field not in (jurisdictions_csv.fieldnames or [])
-    ]
-
-    if missing_fields:
-        return (
-            jsonify(
-                errors=[
-                    {
-                        "message": f'Missing required CSV field "{field}"',
-                        "errorType": "MissingRequiredCsvField",
-                        "fieldName": field,
-                    }
-                    for field in missing_fields
-                ]
-            ),
-            400,
-        )
 
     if old_jurisdictions_file:
         db.session.delete(old_jurisdictions_file)

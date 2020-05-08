@@ -11,17 +11,25 @@ from arlo_server.models import (
     Jurisdiction,
 )
 from util.process_file import process_file
+from util.csv_parse import parse_csv, CSVValueType
 
 
 JURISDICTION_NAME = "Jurisdiction"
 ADMIN_EMAIL = "Admin Email"
+
+JURISDICTIONS_COLUMNS = [
+    ("Jurisdiction", CSVValueType.TEXT, True),
+    ("Admin Email", CSVValueType.EMAIL, True),
+]
 
 
 def process_jurisdictions_file(session, election: Election, file: File) -> None:
     assert election.jurisdictions_file_id == file.id
 
     def process():
-        jurisdictions_csv = csv.DictReader(io.StringIO(file.contents))
+        jurisdictions_csv = parse_csv(
+            election.jurisdictions_file, JURISDICTIONS_COLUMNS
+        )
 
         bulk_update_jurisdictions(
             session,
