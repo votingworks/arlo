@@ -13,20 +13,12 @@ keep things realistic, our approach should:
 
 ## Authentication Hack for Load Testing
 
-We have superadmin features that allow for impersonation of any user,
-and which uses the same cookies as normal logins. Let's reuse that.
-
-We'll build a superadmin bypass using a special HTTP header. Because
-we don't ever want that code in production, we'll keep that code in a
-special branch, `loadtesting`, that we'll need to rebase every so
-often on `master`. We'll also require that `FLASK_ENV=loadtest` as an
-extra defense-in-depth measure, just in case we mistakenly merge that
-branch into `master`. Belt _and_ suspenders. Reuse of `FLASK_ENV`
-makes it unlikely that this environment variable would be changed to
-`loadtest` in a production setting.
-
-Finally, as an extra safeguard to prevent merging the `loadtesting`
-branch, we'll fail CI with `exit 1`.
+We're going to use a special OAuth server in the loadtest server
+configuration, specifically
+[nOAuth](https://github.com/votingworks/nOAuth). This lets the test
+script easily log in as any user it wants to be, without endangering
+production since production is obviously configured with the right
+OAuth server (or we'd know immediately.)
 
 ## Tool
 
