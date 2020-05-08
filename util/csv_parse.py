@@ -81,8 +81,6 @@ def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
 
     allowed_headers = [name for (name, _type, _required) in columns]
     required_headers = [name for (name, _type, required) in columns if required]
-    lowercase_allowed_headers = [h.lower() for h in allowed_headers]
-    lowercase_required_headers = [h.lower() for h in required_headers]
 
     missing_headers = [
         required_header
@@ -95,6 +93,7 @@ def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
             f" {', '.join(missing_headers)}."
         )
 
+    lowercase_allowed_headers = [h.lower() for h in allowed_headers]
     unexpected_headers = [
         header for header in headers if header.lower() not in lowercase_allowed_headers
     ]

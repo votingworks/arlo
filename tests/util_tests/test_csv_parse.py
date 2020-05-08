@@ -2,7 +2,6 @@ import pytest, os
 from util.csv_parse import parse_csv, decode_csv_file, CSVParseError, CSVValueType
 from werkzeug.exceptions import BadRequest
 
-# Column names based on ballot manifest
 BALLOT_MANIFEST_COLUMNS = [
     ("Batch Name", CSVValueType.TEXT, True),
     ("Number of Ballots", CSVValueType.NUMBER, True),
