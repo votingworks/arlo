@@ -240,8 +240,10 @@ const DataEntry: React.FC<IProps> = ({
     return (
       <Wrapper>
         <PaddedInner>
-          <H1>{auditBoard.name}: Auditing Complete</H1>
-          <p>Your work here is done!</p>
+          <div>
+            <H1>{auditBoard.name}: Auditing Complete</H1>
+            <p>Your work here is done!</p>
+          </div>
         </PaddedInner>
       </Wrapper>
     )
