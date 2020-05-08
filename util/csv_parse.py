@@ -1,15 +1,11 @@
-import io
+import io, itertools
 from enum import Enum
-from typing import List, Tuple, Iterable
-from csv import reader, Dialect
+from typing import List, Tuple, Iterator, Dict, Any
+import csv as py_csv
 
 
 class CSVParseError(Exception):
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
+    pass
 
 
 class CSVValueType(str, Enum):
@@ -18,25 +14,124 @@ class CSVValueType(str, Enum):
     EMAIL = "email"
 
 
+CSVColumnTypes = List[Tuple[str, CSVValueType]]
+
 CSVRow = List[str]
-CSVIterator = Iterable[CSVRow]
+CSVIterator = Iterator[CSVRow]
+CSVDictIterator = Iterator[Dict[str, Any]]
 
 # Robust CSV parsing
 # "Be conservative in what you do, be liberal in what you accept from others"
 # https://en.wikipedia.org/wiki/Robustness_principle
-def parse_csv(csv_string: str, columns: List[Tuple[str, CSVValueType]]) -> CSVIterator:
-    csv = reader(io.StringIO(csv_string), delimiter=",")
+def parse_csv(csv_string: str, columns: CSVColumnTypes) -> CSVDictIterator:
+    validate_is_csv(csv_string)
+    csv: CSVIterator = py_csv.reader(io.StringIO(csv_string), delimiter=",")
     csv = strip_whitespace(csv)
-    csv = convert_rows_to_dicts(csv)
-    return csv
+    csv = reject_empty(csv)
+    csv = validate_headers(csv, columns)
+    csv = skip_empty_rows(csv)
+    csv = reject_empty_cells(csv)
+    return convert_rows_to_dicts(csv)
+
+
+def validate_is_csv(csv: str):
+    lines = csv.splitlines()
+    if len(lines) == 0:
+        raise CSVParseError("CSV cannot be empty")
+
+    dialect = None
+    try:
+        dialect = py_csv.Sniffer().sniff(lines[0], delimiters=",\t")
+        if dialect.delimiter == ",":
+            return
+    except Exception:
+        pass
+
+    detail = ""
+    if not dialect:
+        pass
+    elif dialect.delimiter == "\t":
+        detail = " This file has columns separated by tabs."
+    raise CSVParseError(
+        "Please submit a valid CSV file with columns separated by commas." + detail
+    )
 
 
 def strip_whitespace(csv: CSVIterator) -> CSVIterator:
     return ([cell.strip() for cell in row] for row in csv)
 
 
-def convert_rows_to_dicts(csv: CSVIterator) -> CSVIterator:
-    headers = next(csv, None)
-    if not headers:
+def reject_empty(csv: CSVIterator) -> CSVIterator:
+    first = next(csv, None)
+    if first is None:
         raise CSVParseError("CSV cannot be empty")
+    second = next(csv, None)
+    if second is None:
+        raise CSVParseError("CSV must contain at least one row after headers")
+    return itertools.chain([first, second], csv)
+
+
+def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
+    headers = next(csv)
+    expected_headers = [name for [name, type] in columns]
+
+    if len(headers) > len(columns):
+        raise CSVParseError(
+            f"Too many columns. Expected columns: {', '.join(expected_headers)}"
+        )
+
+    lowercase_headers = [header.lower() for header in headers]
+    missing_headers = [
+        expected_header
+        for expected_header in expected_headers
+        if expected_header.lower() not in lowercase_headers
+    ]
+    if len(missing_headers) > 0:
+        raise CSVParseError(
+            f"Missing required {pluralize('column', len(missing_headers))}:"
+            f" {', '.join(missing_headers)}"
+        )
+
+    lowercase_expected_headers = [header.lower() for header in expected_headers]
+    if lowercase_headers != lowercase_expected_headers:
+        print(headers, expected_headers)
+        raise CSVParseError(
+            f"Columns out of order. Expected order: {', '.join(expected_headers)}"
+        )
+
+    return itertools.chain([headers], csv)
+
+
+def skip_empty_rows(csv: CSVIterator) -> CSVIterator:
+    for row in csv:
+        if len(row) > 0 and not all(value == "" for value in row):
+            yield row
+
+
+def reject_empty_cells(csv: CSVIterator) -> CSVIterator:
+    headers = next(csv)
+    yield headers
+
+    for r, row in enumerate(csv):
+        if len(row) != len(headers):
+            raise CSVParseError(
+                f"Wrong number of cells in row {r+1}."
+                f" Expected {len(headers)} {pluralize('cell', len(headers))},"
+                f" got {len(row)} {pluralize('cell', len(row))}."
+            )
+        for c, value in enumerate(row):
+            if value == "":
+                raise CSVParseError(
+                    "All cells must have values."
+                    f" Got empty cell at column {headers[c]}, row {r+1}."
+                )
+        yield row
+
+
+def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
+    headers = next(csv)
     return (dict(zip(headers, row)) for row in csv)
+
+
+def pluralize(word: str, n: int) -> str:
+    return word if n == 1 else f"{word}s"
