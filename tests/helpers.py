@@ -31,6 +31,9 @@ from arlo_server.audit_boards import end_round
 SAMPLE_SIZE_ROUND_1 = 119  # Bravo sample size
 J1_SAMPLES_ROUND_1 = 81
 J1_SAMPLES_ROUND_2 = 280  # 90% probability sample size
+AB1_BALLOTS_ROUND_1 = 50
+AB2_BALLOTS_ROUND_1 = 25
+AB1_BALLOTS_ROUND_2 = 150
 
 DEFAULT_AA_EMAIL = "admin@example.com"
 DEFAULT_JA_EMAIL = "jurisdiction.admin@example.com"

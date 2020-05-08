@@ -11,6 +11,9 @@ from tests.helpers import (
     assert_ok,
     J1_SAMPLES_ROUND_1,
     J1_SAMPLES_ROUND_2,
+    AB1_BALLOTS_ROUND_1,
+    AB2_BALLOTS_ROUND_1,
+    AB1_BALLOTS_ROUND_2,
 )
 from arlo_server.auth import UserType
 from arlo_server.models import ContestChoice
@@ -157,6 +160,116 @@ def test_ja_ballot_draws_round_2(
 
     previously_audited_ballots = [b for b in ballot_draws if b["status"] == "AUDITED"]
     assert len(previously_audited_ballots) == 33
+
+
+def test_ab_list_ballot_round_1(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: str,
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    assert len(ballots) == AB1_BALLOTS_ROUND_1
+
+    compare_json(
+        ballots[0],
+        {
+            "id": assert_is_id,
+            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
+            "position": 0,
+            "status": "NOT_AUDITED",
+            "interpretations": [],
+        },
+    )
+
+    assert ballots == sorted(
+        ballots, key=lambda b: (b["batch"]["name"], b["position"]),
+    )
+
+    # Try auditing one ballot
+    choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
+    rv = post_json(
+        client,
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch/{ballots[0]['batch']['id']}/ballot/{ballots[0]['position']}",
+        {
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "VOTE",
+                    "choiceId": choice_id,
+                    "comment": "blah blah blah",
+                }
+            ]
+        },
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+
+    compare_json(
+        ballots[0],
+        {
+            "id": assert_is_id,
+            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
+            "position": 0,
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "VOTE",
+                    "choiceId": choice_id,
+                    "comment": "blah blah blah",
+                }
+            ],
+        },
+    )
+
+    # Check audit board 2 as well
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[1])
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[1]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    assert len(ballots) == AB2_BALLOTS_ROUND_1
+
+
+def test_ab_list_ballots_round_2(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_2_id: str,
+    audit_board_round_2_ids: List[str],  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_2_ids[0])
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board/{audit_board_round_2_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    assert len(ballots) == AB1_BALLOTS_ROUND_2
+
+    compare_json(
+        ballots[0],
+        {
+            "id": assert_is_id,
+            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
+            "position": 3,
+            "status": "NOT_AUDITED",
+            "interpretations": [],
+        },
+    )
+
+    previously_audited_ballots = [b for b in ballots if b["status"] == "AUDITED"]
+    assert len(previously_audited_ballots) == 21
 
 
 def test_ja_ballot_retrieval_list_bad_round_id(

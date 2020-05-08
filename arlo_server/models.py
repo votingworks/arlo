@@ -259,7 +259,7 @@ class AuditBoard(BaseModel):
         "SampledBallot",
         backref="audit_board",
         passive_deletes=True,
-        order_by="SampledBallot.batch_id, SampledBallot.ballot_position",
+        order_by="SampledBallot.id",
     )
 
     __table_args__ = (db.UniqueConstraint("jurisdiction_id", "round_id", "name"),)

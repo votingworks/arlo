@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import aggregate_order_by
 from flask import jsonify
 
 from arlo_server import app
-from arlo_server.auth import with_jurisdiction_access
+from arlo_server.auth import with_jurisdiction_access, with_audit_board_access
 from arlo_server.models import (
     Election,
     SampledBallotDraw,
@@ -147,6 +147,19 @@ def serialize_ballot_draw(ballot_draw: SampledBallotDraw) -> JSONDict:
     }
 
 
+def serialize_ballot(ballot: SampledBallot) -> JSONDict:
+    batch = ballot.batch
+    return {
+        "id": ballot.id,
+        "status": ballot.status,
+        "interpretations": [
+            serialize_interpretation(i) for i in ballot.interpretations
+        ],
+        "position": ballot.ballot_position,
+        "batch": {"id": batch.id, "name": batch.name, "tabulator": batch.tabulator,},
+    }
+
+
 @app.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballot-draws",
     methods=["GET"],
@@ -182,3 +195,24 @@ def list_ballot_draws_for_jurisdiction(
     )
     json_ballot_draws = [serialize_ballot_draw(b) for b in ballot_draws]
     return jsonify({"ballotDraws": json_ballot_draws})
+
+
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/ballots",
+    methods=["GET"],
+)
+@with_audit_board_access
+def list_ballots_for_audit_board(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    round: Round,  # pylint: disable=unused-argument
+    audit_board: AuditBoard,
+):
+    ballots = (
+        SampledBallot.query.filter_by(audit_board_id=audit_board.id)
+        .join(Batch)
+        .order_by(Batch.name, SampledBallot.ballot_position)
+        .all()
+    )
+    json_ballots = [serialize_ballot(b) for b in ballots]
+    return jsonify({"ballots": json_ballots})
