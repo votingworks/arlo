@@ -10,7 +10,7 @@ import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../../useAuditSettings'
 import useContests from '../../useContests'
 import { IContest, ISampleSizeOption } from '../../../../types'
-import useJurisdictions from '../../useJurisdictions'
+import useJurisdictions, { FileProcessingStatus } from '../../useJurisdictions'
 import { api, checkAndToast } from '../../../utilities'
 import FormSection, {
   FormSectionDescription,
@@ -118,6 +118,12 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           : ''
       ),
     }))
+
+  const completedBallotUploads = jurisdictions.filter(
+    j =>
+      j.ballotManifest.processing &&
+      j.ballotManifest.processing.status === FileProcessingStatus.PROCESSED
+  ).length
 
   return (
     <div>
@@ -264,6 +270,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         isOpen={isConfirmDialogOpen}
         handleClose={() => setIsConfirmDialogOpen(false)}
         onLaunch={submit}
+        numJurisdictions={jurisdictions.length}
+        completedBallotUploads={completedBallotUploads}
       />
     </div>
   )
