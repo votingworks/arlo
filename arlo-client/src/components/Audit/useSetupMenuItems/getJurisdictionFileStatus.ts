@@ -1,6 +1,4 @@
-import { toast } from 'react-toastify'
-import { api, checkAndToast } from '../../utilities'
-import { IErrorResponse } from '../../../types'
+import { api } from '../../utilities'
 
 export enum FileProcessingStatus {
   Blank = 'NULL', // only returned from getJurisdictionFileStatus, represents the null state from the server
@@ -26,27 +24,14 @@ export interface IJurisdictionsFileResponse {
 
 const getJurisdictionFileStatus = async (
   electionId: string
-): Promise<FileProcessingStatus> => {
+): Promise<{ status: FileProcessingStatus; error: string | null } | null> => {
   try {
-    const jurisdictionsOrError:
-      | IJurisdictionsFileResponse
-      | IErrorResponse = await api(`/election/${electionId}/jurisdiction/file`)
-    if (checkAndToast(jurisdictionsOrError)) {
-      return FileProcessingStatus.Errored
-    }
-    if (jurisdictionsOrError.processing) {
-      if (
-        jurisdictionsOrError.processing!.status ===
-        FileProcessingStatus.ReadyToProcess
-      ) {
-        return FileProcessingStatus.Processing
-      }
-      return jurisdictionsOrError.processing!.status
-    }
-    return FileProcessingStatus.Blank
+    const fileStatus: IJurisdictionsFileResponse = await api(
+      `/election/${electionId}/jurisdiction/file`
+    )
+    return fileStatus.processing
   } catch (err) {
-    toast.error(err.message)
-    return FileProcessingStatus.Errored
+    return { status: FileProcessingStatus.Errored, error: err.message }
   }
 }
 
