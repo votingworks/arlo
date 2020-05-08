@@ -56,7 +56,7 @@ def bulk_update_jurisdictions(
 
         for (name, email) in name_and_admin_email_pairs:
             # Find or create the user for this jurisdiction.
-            user = session.query(User).filter_by(email=email).one_or_none()
+            user = session.query(User).filter_by(email=email.lower()).one_or_none()
 
             if not user:
                 user = User(id=str(uuid.uuid4()), email=email)
