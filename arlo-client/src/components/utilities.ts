@@ -37,13 +37,17 @@ export const poll = (
   const endTime = Date.now() + timeout
   ;(async function p() {
     const time = Date.now()
-    const done = await condition()
-    if (done) {
-      callback()
-    } else if (time < endTime) {
-      setTimeout(p, interval)
-    } else {
-      errback(new Error(`Timed out`))
+    try {
+      const done = await condition()
+      if (done) {
+        callback()
+      } else if (time < endTime) {
+        setTimeout(p, interval)
+      } else {
+        errback(new Error(`Timed out`))
+      }
+    } catch (err) {
+      errback(err)
     }
   })()
 }
