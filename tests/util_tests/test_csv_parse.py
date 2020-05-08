@@ -16,17 +16,24 @@ JURISDICTIONS_COLUMNS = [
 
 # Happy path
 def test_parse_csv_happy_path():
-    parsed = parse_csv(
-        (
-            "Batch Name,Number of Ballots\n"
-            "Batch A,20\n"
-            "B,4\n"
-            "c1111111,100\n"
-            "box 2,100000"
-        ),
-        BALLOT_MANIFEST_COLUMNS,
+    parsed = list(
+        parse_csv(
+            (
+                "Batch Name,Number of Ballots\n"
+                "Batch A,20\n"
+                "B,4\n"
+                "c1111111,100\n"
+                "box 2,100000"
+            ),
+            BALLOT_MANIFEST_COLUMNS,
+        )
     )
-    assert len(list(parsed)) == 4
+    assert parsed == [
+        {"Batch Name": "Batch A", "Number of Ballots": "20"},
+        {"Batch Name": "B", "Number of Ballots": "4"},
+        {"Batch Name": "c1111111", "Number of Ballots": "100"},
+        {"Batch Name": "box 2", "Number of Ballots": "100000"},
+    ]
 
 
 def test_parse_csv_optional_columns():
@@ -207,15 +214,23 @@ def test_parse_csv_not_comma_delimited():
 
 
 def test_parse_csv_header_wrong_case():
-    parsed = parse_csv(
-        ("BATCH NAME,NUMBER OF BALLOTS\n" "Batch A,20\n"), BALLOT_MANIFEST_COLUMNS,
+    parsed = list(
+        parse_csv(
+            ("BATCH NAME,NUMBER OF BALLOTS\n" "Batch A,20\n"), BALLOT_MANIFEST_COLUMNS,
+        )
     )
-    assert len(list(parsed)) == 1
+    assert len(parsed) == 1
+    assert parsed[0]["Batch Name"] == "Batch A"
+    assert parsed[0]["Number of Ballots"] == "20"
 
-    parsed = parse_csv(
-        ("BaTcH nAmE,nUmBeR oF bAlLoTs\n" "Batch A,20\n"), BALLOT_MANIFEST_COLUMNS,
+    parsed = list(
+        parse_csv(
+            ("BaTcH nAmE,nUmBeR oF bAlLoTs\n" "Batch A,20\n"), BALLOT_MANIFEST_COLUMNS,
+        )
     )
-    assert len(list(parsed)) == 1
+    assert len(parsed) == 1
+    assert parsed[0]["Batch Name"] == "Batch A"
+    assert parsed[0]["Number of Ballots"] == "20"
 
 
 def test_parse_csv_space_in_header():
@@ -259,28 +274,37 @@ def test_parse_csv_space_in_value():
 
 
 def test_parse_csv_empty_row():
-    parsed = parse_csv(
-        ("Batch Name,Number of Ballots\n" "Batch A,20\n" ",\n"),
-        BALLOT_MANIFEST_COLUMNS,
+    parsed = list(
+        parse_csv(
+            ("Batch Name,Number of Ballots\n" "Batch A,20\n" ",\n"),
+            BALLOT_MANIFEST_COLUMNS,
+        )
     )
-    assert len(list(parsed)) == 1
+    assert len(parsed) == 1
 
-    parsed = parse_csv(
-        ("Batch Name,Number of Ballots\n" ",\n" "Batch A,20\n"),
-        BALLOT_MANIFEST_COLUMNS,
+    parsed = list(
+        parse_csv(
+            ("Batch Name,Number of Ballots\n" ",\n" "Batch A,20\n"),
+            BALLOT_MANIFEST_COLUMNS,
+        )
     )
-    assert len(list(parsed)) == 1
+    assert len(parsed) == 1
 
-    parsed = parse_csv(
-        ("Batch Name,Number of Ballots\n" "Batch A,20\n" "\n"), BALLOT_MANIFEST_COLUMNS,
+    parsed = list(
+        parse_csv(
+            ("Batch Name,Number of Ballots\n" "Batch A,20\n" "\n"),
+            BALLOT_MANIFEST_COLUMNS,
+        )
     )
-    assert len(list(parsed)) == 1
+    assert len(parsed) == 1
 
-    parsed = parse_csv(
-        ("Batch Name,Number of Ballots\n" "Batch A,20\n" "\n" "\n" "\n"),
-        BALLOT_MANIFEST_COLUMNS,
+    parsed = list(
+        parse_csv(
+            ("Batch Name,Number of Ballots\n" "Batch A,20\n" "\n" "\n" "\n"),
+            BALLOT_MANIFEST_COLUMNS,
+        )
     )
-    assert len(list(parsed)) == 1
+    assert len(parsed) == 1
 
 
 REAL_WORLD_REJECTED_CSVS = [
@@ -348,6 +372,31 @@ City of Frankfort,435
 
 """,
         14,
+        BALLOT_MANIFEST_COLUMNS,
+    ),
+    (
+        """BATCH NAME,NUMBER OF BALLOTS
+BENONA,403
+CLAYBANKS,157
+COLFAX,63
+CRYSTAL,100
+ELBRIDGE,203
+FERRY,229
+GOLDEN,397
+GRANT,436
+GREENWOOD,164
+HART,388
+LEAVITT,95
+NEWFIELD,471
+OTTO,114
+PENTWATER,523
+SHELBY 1,421
+SHELBY 2,198
+WEARE,271
+CITY OF HART,333
+
+""",
+        18,
         BALLOT_MANIFEST_COLUMNS,
     ),
     (

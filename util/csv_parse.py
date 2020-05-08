@@ -3,9 +3,10 @@ from enum import Enum
 from typing import List, Tuple, Iterator, Dict, Any
 import csv as py_csv
 from werkzeug.exceptions import BadRequest
+from util.process_file import UserError
 
 
-class CSVParseError(Exception):
+class CSVParseError(UserError):
     pass
 
 
@@ -37,7 +38,7 @@ def parse_csv(csv_string: str, columns: CSVColumnTypes) -> CSVDictIterator:
     csv = skip_empty_rows(csv)
     csv = reject_empty_cells(csv, columns)
     csv = validate_values(csv, columns)
-    return convert_rows_to_dicts(csv)
+    return convert_rows_to_dicts(csv, columns)
 
 
 def validate_is_csv(csv: str):
@@ -139,11 +140,6 @@ def reject_empty_cells(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator
         yield row
 
 
-def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
-    headers = next(csv)
-    return (dict(zip(headers, row)) for row in csv)
-
-
 def validate_values(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
     yield next(csv)  # Skip the headers
     for r, row in enumerate(csv):
@@ -164,6 +160,12 @@ def validate_values(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
                     )
 
         yield row
+
+
+def convert_rows_to_dicts(csv: CSVIterator, columns: CSVColumnTypes) -> CSVDictIterator:
+    next(csv)  # Skip headers
+    headers = [header for (header, _, _) in columns]
+    return (dict(zip(headers, row)) for row in csv)
 
 
 def pluralize(word: str, n: int) -> str:
