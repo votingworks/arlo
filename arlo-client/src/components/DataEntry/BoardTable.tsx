@@ -3,7 +3,8 @@ import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
 import { H1, AnchorButton } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
-import { IAuditBoard, IBallot, BallotStatus } from '../../types'
+import { IAuditBoard, BallotStatus } from '../../types'
+import { IBallot } from './Ballot'
 
 const RightWrapper = styled.div`
   display: flex;
