@@ -1,4 +1,4 @@
-import io, itertools
+import io, itertools, re, locale
 from enum import Enum
 from typing import List, Tuple, Iterator, Dict, Any
 import csv as py_csv
@@ -12,6 +12,10 @@ class CSVValueType(str, Enum):
     TEXT = "text"
     NUMBER = "number"
     EMAIL = "email"
+
+
+# https://emailregex.com/
+EMAIL_REGEX = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
 
 CSVColumnTypes = List[Tuple[str, CSVValueType]]
@@ -31,6 +35,7 @@ def parse_csv(csv_string: str, columns: CSVColumnTypes) -> CSVDictIterator:
     csv = validate_headers(csv, columns)
     csv = skip_empty_rows(csv)
     csv = reject_empty_cells(csv)
+    csv = validate_values(csv, columns)
     return convert_rows_to_dicts(csv)
 
 
@@ -131,6 +136,28 @@ def reject_empty_cells(csv: CSVIterator) -> CSVIterator:
 def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
     headers = next(csv)
     return (dict(zip(headers, row)) for row in csv)
+
+
+def validate_values(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
+    yield next(csv)  # Skip the headers
+    for r, row in enumerate(csv):
+
+        for (header, value_type), value in zip(columns, row):
+            where = f"column {header}, row {r+1}"
+
+            if value_type is CSVValueType.NUMBER:
+                try:
+                    locale.atoi(value)
+                except ValueError as error:
+                    raise CSVParseError(f"Expected a number in {where}. Got: {value}")
+
+            if value_type is CSVValueType.EMAIL:
+                if not EMAIL_REGEX.match(value):
+                    raise CSVParseError(
+                        f"Expected an email address in {where}. Got: {value}"
+                    )
+
+        yield row
 
 
 def pluralize(word: str, n: int) -> str:

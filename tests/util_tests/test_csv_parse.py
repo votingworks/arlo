@@ -74,16 +74,32 @@ def test_parse_csv_duplicate_header():
     )
 
 
-# def test_parse_csv_wrong_data_type():
-#     with pytest.raises(CSVParseError) as error:
-#         list(parse_csv(("Batch Name,Number of Ballots\n" "1,not a number"), COLUMNS))
-#     assert (
-#         str(error.value)
-#         == "Expected a number in column Number of Ballots, row 1. Got: not a number"
-#     )
+def test_parse_csv_bad_number():
+    with pytest.raises(CSVParseError) as error:
+        list(parse_csv(("Batch Name,Number of Ballots\n" "1,not a number"), COLUMNS))
+    assert (
+        str(error.value)
+        == "Expected a number in column Number of Ballots, row 1. Got: not a number"
+    )
 
 
-# TODO test email validation
+def test_parse_csv_bad_email():
+    bad_emails = ["not an email", "a@b", "@b.com", "@", "a@.com"]
+    for bad_email in bad_emails:
+        with pytest.raises(CSVParseError) as error:
+            list(
+                parse_csv(
+                    ("Jurisdiction,Admin Email\n" f"J1,{bad_email}"),
+                    [
+                        ("Jurisdiction", CSVValueType.TEXT),
+                        ("Admin Email", CSVValueType.EMAIL),
+                    ],
+                )
+            )
+        assert (
+            str(error.value)
+            == f"Expected an email address in column Admin Email, row 1. Got: {bad_email}"
+        )
 
 
 def test_parse_csv_empty_cell_in_column():
