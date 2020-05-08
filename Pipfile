@@ -31,6 +31,7 @@ sqlalchemy-utils = "*"
 uuid = "*"
 xkcdpass = "*"
 locustio = "*"
+pyquery = "*"
 
 [requires]
 python_version = "3.7"
