@@ -47,7 +47,14 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
         toast.error(err.message)
       }
     })()
-  }, [electionId, jurisdictionId, round])
+  }, [
+    electionId,
+    jurisdictionId,
+    round,
+    // We need to reload the ballots after we create the audit boards in order
+    // to populate ballot.auditBoard
+    auditBoards,
+  ])
 
   // const [{ online }] = useAuditSettings(electionId!)
 
