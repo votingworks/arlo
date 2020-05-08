@@ -42,7 +42,7 @@ def parse_csv(csv_string: str, columns: CSVColumnTypes) -> CSVDictIterator:
 def validate_is_csv(csv: str):
     lines = csv.splitlines()
     if len(lines) == 0:
-        raise CSVParseError("CSV cannot be empty")
+        raise CSVParseError("CSV cannot be empty.")
 
     dialect = None
     try:
@@ -69,10 +69,10 @@ def strip_whitespace(csv: CSVIterator) -> CSVIterator:
 def reject_empty(csv: CSVIterator) -> CSVIterator:
     first = next(csv, None)
     if first is None:
-        raise CSVParseError("CSV cannot be empty")
+        raise CSVParseError("CSV cannot be empty.")
     second = next(csv, None)
     if second is None:
-        raise CSVParseError("CSV must contain at least one row after headers")
+        raise CSVParseError("CSV must contain at least one row after headers.")
     return itertools.chain([first, second], csv)
 
 
@@ -82,7 +82,7 @@ def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
 
     if len(headers) > len(columns):
         raise CSVParseError(
-            f"Too many columns. Expected columns: {', '.join(expected_headers)}"
+            f"Too many columns. Expected columns: {', '.join(expected_headers)}."
         )
 
     lowercase_headers = [header.lower() for header in headers]
@@ -94,14 +94,14 @@ def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
     if len(missing_headers) > 0:
         raise CSVParseError(
             f"Missing required {pluralize('column', len(missing_headers))}:"
-            f" {', '.join(missing_headers)}"
+            f" {', '.join(missing_headers)}."
         )
 
     lowercase_expected_headers = [header.lower() for header in expected_headers]
     if lowercase_headers != lowercase_expected_headers:
         print(headers, expected_headers)
         raise CSVParseError(
-            f"Columns out of order. Expected order: {', '.join(expected_headers)}"
+            f"Columns out of order. Expected order: {', '.join(expected_headers)}."
         )
 
     return itertools.chain([headers], csv)
@@ -149,12 +149,12 @@ def validate_values(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
                 try:
                     locale.atoi(value)
                 except ValueError as error:
-                    raise CSVParseError(f"Expected a number in {where}. Got: {value}")
+                    raise CSVParseError(f"Expected a number in {where}. Got: {value}.")
 
             if value_type is CSVValueType.EMAIL:
                 if not EMAIL_REGEX.match(value):
                     raise CSVParseError(
-                        f"Expected an email address in {where}. Got: {value}"
+                        f"Expected an email address in {where}. Got: {value}."
                     )
 
         yield row
