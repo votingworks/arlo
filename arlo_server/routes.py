@@ -38,6 +38,7 @@ from arlo_server.ballot_manifest import (
 )
 from arlo_server.sample_sizes import cumulative_contest_results
 from util.binpacking import BalancedBucketList, Bucket
+from util.csv_parse import decode_csv_file
 
 from config import (
     SUPERADMIN_AUTH0_BASE_URL,
@@ -375,7 +376,7 @@ def update_jurisdictions_file(election: Election):
         )
 
     jurisdictions_file = request.files["jurisdictions"]
-    jurisdictions_file_string = jurisdictions_file.read().decode("utf-8-sig")
+    jurisdictions_file_string = decode_csv_file(jurisdictions_file.read())
 
     old_jurisdictions_file = election.jurisdictions_file
     election.jurisdictions_file = File(

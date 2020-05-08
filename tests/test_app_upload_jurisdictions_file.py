@@ -75,7 +75,7 @@ def test_metadata(client, election_id):
         f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email"),
+                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,ja@example.com"),
                 "jurisdictions.csv",
             )
         },
@@ -83,7 +83,9 @@ def test_metadata(client, election_id):
     assert_ok(rv)
 
     election = Election.query.filter_by(id=election_id).one()
-    assert election.jurisdictions_file.contents == "Jurisdiction,Admin Email"
+    assert election.jurisdictions_file.contents == (
+        "Jurisdiction,Admin Email\n" "J1,ja@example.com"
+    )
     assert election.jurisdictions_file.name == "jurisdictions.csv"
     assert election.jurisdictions_file.uploaded_at
 
@@ -127,7 +129,7 @@ def test_replace_jurisdictions_file(client, election_id):
         f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email"),
+                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,ja@example.com"),
                 "jurisdictions.csv",
             )
         },
@@ -140,7 +142,7 @@ def test_replace_jurisdictions_file(client, election_id):
         f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email"),
+                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J2,ja2@example.com"),
                 "jurisdictions2.csv",
             )
         },
