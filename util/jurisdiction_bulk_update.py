@@ -1,5 +1,3 @@
-import csv
-import io
 import uuid
 from typing import Tuple, List
 
@@ -28,7 +26,7 @@ def process_jurisdictions_file(session, election: Election, file: File) -> None:
 
     def process():
         jurisdictions_csv = parse_csv(
-            election.jurisdictions_file, JURISDICTIONS_COLUMNS
+            election.jurisdictions_file.contents, JURISDICTIONS_COLUMNS
         )
 
         bulk_update_jurisdictions(

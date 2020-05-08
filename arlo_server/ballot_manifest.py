@@ -1,4 +1,4 @@
-import csv, io, locale, uuid
+import locale, uuid
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, NotFound
@@ -17,7 +17,6 @@ from util.process_file import (
     process_file,
     serialize_file,
     serialize_file_processing,
-    UserError,
 )
 from util.csv_download import csv_response
 from util.csv_parse import decode_csv_file, parse_csv, CSVValueType
@@ -41,7 +40,9 @@ def process_ballot_manifest_file(
     assert jurisdiction.manifest_file_id == file.id
 
     def process():
-        manifest_csv = parse_csv(jurisdiction.manifest_file, BALLOT_MANIFEST_COLUMNS)
+        manifest_csv = parse_csv(
+            jurisdiction.manifest_file.contents, BALLOT_MANIFEST_COLUMNS
+        )
 
         num_batches = 0
         num_ballots = 0

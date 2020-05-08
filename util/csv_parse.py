@@ -19,7 +19,7 @@ class CSVValueType(str, Enum):
 EMAIL_REGEX = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
 
-CSVColumnTypes = List[Tuple[str, CSVValueType]]
+CSVColumnTypes = List[Tuple[str, CSVValueType, bool]]
 
 CSVRow = List[str]
 CSVIterator = Iterator[CSVRow]
@@ -35,7 +35,7 @@ def parse_csv(csv_string: str, columns: CSVColumnTypes) -> CSVDictIterator:
     csv = reject_empty(csv)
     csv = validate_headers(csv, columns)
     csv = skip_empty_rows(csv)
-    csv = reject_empty_cells(csv)
+    csv = reject_empty_cells(csv, columns)
     csv = validate_values(csv, columns)
     return convert_rows_to_dicts(csv)
 
@@ -47,16 +47,14 @@ def validate_is_csv(csv: str):
 
     dialect = None
     try:
-        dialect = py_csv.Sniffer().sniff(lines[0], delimiters=",\t")
-        if dialect.delimiter == ",":
+        dialect = py_csv.Sniffer().sniff(lines[0])
+        if dialect.delimiter == "," or dialect.delimiter == "i":
             return
     except Exception:
         pass
 
     detail = ""
-    if not dialect:
-        pass
-    elif dialect.delimiter == "\t":
+    if dialect and dialect.delimiter == "\t":
         detail = " This file has columns separated by tabs."
     raise CSVParseError(
         "Please submit a valid CSV file with columns separated by commas." + detail
@@ -81,8 +79,8 @@ def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
     headers = next(csv)
     lowercase_headers = [header.lower() for header in headers]
 
-    allowed_headers = [name for [name, type, required] in columns]
-    required_headers = [name for [name, type, required] in columns if required]
+    allowed_headers = [name for (name, _type, _required) in columns]
+    required_headers = [name for (name, _type, required) in columns if required]
     lowercase_allowed_headers = [h.lower() for h in allowed_headers]
     lowercase_required_headers = [h.lower() for h in required_headers]
 
@@ -121,7 +119,7 @@ def skip_empty_rows(csv: CSVIterator) -> CSVIterator:
             yield row
 
 
-def reject_empty_cells(csv: CSVIterator) -> CSVIterator:
+def reject_empty_cells(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
     headers = next(csv)
     yield headers
 
@@ -133,7 +131,8 @@ def reject_empty_cells(csv: CSVIterator) -> CSVIterator:
                 f" got {len(row)} {pluralize('cell', len(row))}."
             )
         for c, value in enumerate(row):
-            if value == "":
+            [_, _, required] = columns[c]
+            if required and value == "":
                 raise CSVParseError(
                     "All cells must have values."
                     f" Got empty cell at column {headers[c]}, row {r+1}."

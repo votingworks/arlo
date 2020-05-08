@@ -5,9 +5,7 @@ from flask.testing import FlaskClient
 from arlo_server.models import (
     Election,
     File,
-    JurisdictionAdministration,
     ProcessingStatus,
-    User,
 )
 from bgcompute import bgcompute_update_election_jurisdictions_file
 from tests.helpers import assert_ok
@@ -31,21 +29,15 @@ def test_bad_csv_file(client: FlaskClient, election_id: str):
         f"/election/{election_id}/jurisdiction/file",
         data={"jurisdictions": (io.BytesIO(b"not a CSV file"), "random.txt")},
     )
-    assert rv.status_code == 400
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "message": 'Missing required CSV field "Jurisdiction"',
-                "errorType": "MissingRequiredCsvField",
-                "fieldName": "Jurisdiction",
-            },
-            {
-                "message": 'Missing required CSV field "Admin Email"',
-                "errorType": "MissingRequiredCsvField",
-                "fieldName": "Admin Email",
-            },
-        ]
-    }
+    assert rv.status_code == 200
+
+    assert bgcompute_update_election_jurisdictions_file() == 1
+
+    rv = client.get(f"/election/{election_id}/jurisdiction/file")
+    assert (
+        json.loads(rv.data)["processing"]["error"]
+        == "Please submit a valid CSV file with columns separated by commas."
+    )
 
 
 def test_missing_one_csv_field(client, election_id):
@@ -58,16 +50,13 @@ def test_missing_one_csv_field(client, election_id):
             )
         },
     )
-    assert rv.status_code == 400
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "message": 'Missing required CSV field "Admin Email"',
-                "errorType": "MissingRequiredCsvField",
-                "fieldName": "Admin Email",
-            }
-        ]
-    }
+    assert bgcompute_update_election_jurisdictions_file() == 1
+
+    rv = client.get(f"/election/{election_id}/jurisdiction/file")
+    assert (
+        json.loads(rv.data)["processing"]["error"]
+        == "Missing required column: Admin Email."
+    )
 
 
 def test_metadata(client, election_id):
@@ -75,7 +64,7 @@ def test_metadata(client, election_id):
         f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email"),
+                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,ja@example.com"),
                 "jurisdictions.csv",
             )
         },
@@ -83,7 +72,9 @@ def test_metadata(client, election_id):
     assert_ok(rv)
 
     election = Election.query.filter_by(id=election_id).one()
-    assert election.jurisdictions_file.contents == "Jurisdiction,Admin Email"
+    assert election.jurisdictions_file.contents == (
+        "Jurisdiction,Admin Email\n" "J1,ja@example.com"
+    )
     assert election.jurisdictions_file.name == "jurisdictions.csv"
     assert election.jurisdictions_file.uploaded_at
 
@@ -127,7 +118,7 @@ def test_replace_jurisdictions_file(client, election_id):
         f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email"),
+                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,ja@example.com"),
                 "jurisdictions.csv",
             )
         },
@@ -140,7 +131,7 @@ def test_replace_jurisdictions_file(client, election_id):
         f"/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
-                io.BytesIO(b"Jurisdiction,Admin Email"),
+                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J2,ja2@example.com"),
                 "jurisdictions2.csv",
             )
         },
@@ -164,10 +155,11 @@ def test_no_jurisdiction(client, election_id):
     # Process the file in the background.
     assert bgcompute_update_election_jurisdictions_file() == 1
 
-    election = Election.query.filter_by(id=election_id).one()
-    assert election.jurisdictions == []
-    assert JurisdictionAdministration.query.count() == 0
-    assert User.query.count() == 0
+    rv = client.get(f"/election/{election_id}/jurisdiction/file")
+    assert (
+        json.loads(rv.data)["processing"]["error"]
+        == "CSV must contain at least one row after headers."
+    )
 
 
 def test_single_jurisdiction_single_admin(client, election_id):

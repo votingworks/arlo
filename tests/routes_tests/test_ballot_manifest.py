@@ -222,7 +222,7 @@ def test_ballot_manifest_upload_bad_csv(
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "Missing required CSV fields: Batch Name, Number of Ballots",
+                "error": "Please submit a valid CSV file with columns separated by commas.",
             },
         },
     )
@@ -238,7 +238,12 @@ def test_ballot_manifest_upload_missing_field(
         set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
         rv = client.put(
             f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-            data={"manifest": (io.BytesIO(header_row.encode()), "manifest.csv")},
+            data={
+                "manifest": (
+                    io.BytesIO(header_row.encode() + b"\n1,2,3"),
+                    "manifest.csv",
+                )
+            },
         )
         assert_ok(rv)
 
@@ -255,7 +260,7 @@ def test_ballot_manifest_upload_missing_field(
                     "status": ProcessingStatus.ERRORED,
                     "startedAt": assert_is_date,
                     "completedAt": assert_is_date,
-                    "error": f"Missing required CSV fields: {missing_field}",
+                    "error": f"Missing required column: {missing_field}.",
                 },
             },
         )
@@ -292,7 +297,7 @@ def test_ballot_manifest_upload_invalid_num_ballots(
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "Invalid value for 'Number of Ballots' on line 2: not a number",
+                "error": "Expected a number in column Number of Ballots, row 1. Got: not a number.",
             },
         },
     )

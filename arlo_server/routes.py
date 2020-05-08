@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 
 from flask import jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
-from werkzeug.exceptions import NotFound, Forbidden, Unauthorized, BadRequest
+from werkzeug.exceptions import NotFound, Forbidden, Unauthorized
 
 from audit_math import bravo, sampler_contest, sampler
 from xkcdpass import xkcd_password as xp
