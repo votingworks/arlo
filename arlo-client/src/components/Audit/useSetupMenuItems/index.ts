@@ -40,7 +40,10 @@ function useSetupMenuItems(
   )
 
   const setOrPollParticipantsFile = useCallback(async () => {
-    const jurisdictionStatus = await getJurisdictionFileStatus(electionId)
+    const processing = await getJurisdictionFileStatus(electionId)
+    const jurisdictionStatus = processing
+      ? processing.status
+      : FileProcessingStatus.Blank
     if (
       jurisdictionStatus === FileProcessingStatus.Errored ||
       jurisdictionStatus === FileProcessingStatus.Blank
@@ -51,11 +54,12 @@ function useSetupMenuItems(
     } else {
       setContests('processing')
       const condition = async () => {
-        const newJurisdictionStatus = await getJurisdictionFileStatus(
-          electionId
-        )
-        if (newJurisdictionStatus === FileProcessingStatus.Processed)
-          return true
+        const fileProcessing = await getJurisdictionFileStatus(electionId)
+        if (!fileProcessing) return false
+        const { status, error } = fileProcessing
+        if (status === FileProcessingStatus.Processed) return true
+        if (status === FileProcessingStatus.Errored)
+          throw new Error(error || 'File processing error')
         return false
       }
       const complete = () => {
@@ -63,7 +67,10 @@ function useSetupMenuItems(
         setStage('Target Contests')
         setRefreshId(uuidv4())
       }
-      poll(condition, complete, (err: Error) => toast.error(err.message))
+      poll(condition, complete, (err: Error) => {
+        toast.error(err.message)
+        console.error(err.message)
+      })
     }
   }, [electionId, setContests, setStage])
 
