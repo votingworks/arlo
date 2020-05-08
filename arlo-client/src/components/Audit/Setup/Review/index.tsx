@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
 import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
 import { Formik, FormikProps, Form, getIn } from 'formik'
@@ -20,6 +20,7 @@ import ContestsTable from './ContestsTable'
 import SettingsTable from './SettingsTable'
 import { isSetupComplete } from '../../StatusBox'
 import useJurisdictionFile from '../Participants/useJurisdictionFile'
+import ConfirmLaunch from './ConfirmLaunch'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -47,6 +48,9 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const [sampleSizeOptions, setSampleSizeOptions] = useState<
     IStringSampleSize[]
   >([])
+  const [sampleSize, setSampleSize] = useState('')
+  const history = useHistory()
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
   useEffect(() => {
     ;(async () => {
@@ -66,6 +70,31 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       }
     })()
   }, [electionId])
+
+  const submit = () => {
+    try {
+      const result = api(`/election/${electionId}/round`, {
+        method: 'POST',
+        body: JSON.stringify({
+          sampleSize: Number(sampleSize),
+          roundNum: 1,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      // checkAndToast left here for consistency and reference but not tested since it's vestigial
+      /* istanbul ignore next */
+      if (checkAndToast(result)) {
+        return
+      }
+      refresh()
+      history.push(`/election/${electionId}/progress`)
+    } catch (err) /* istanbul ignore next */ {
+      // TEST TODO
+      toast.error(err.message)
+    }
+  }
 
   if (!contests) return null // Still loading
 
@@ -89,30 +118,6 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           : ''
       ),
     }))
-
-  const submit = ({ sampleSize }: { sampleSize: string }) => {
-    try {
-      const result = api(`/election/${electionId}/round`, {
-        method: 'POST',
-        body: JSON.stringify({
-          sampleSize: Number(sampleSize),
-          roundNum: 1,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      // checkAndToast left here for consistency and reference but not tested since it's vestigial
-      /* istanbul ignore next */
-      if (checkAndToast(result)) {
-        return
-      }
-      refresh()
-    } catch (err) /* istanbul ignore next */ {
-      // TEST TODO
-      toast.error(err.message)
-    }
-  }
 
   return (
     <div>
@@ -196,7 +201,10 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           sampleSize: sampleSizeOptions.length ? sampleSizeOptions[0].size : '',
         }}
         enableReinitialize
-        onSubmit={submit}
+        onSubmit={v => {
+          setSampleSize(v.sampleSize)
+          setIsConfirmDialogOpen(true)
+        }}
       >
         {({
           values,
@@ -252,6 +260,11 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           </Form>
         )}
       </Formik>
+      <ConfirmLaunch
+        isOpen={isConfirmDialogOpen}
+        handleClose={() => setIsConfirmDialogOpen(false)}
+        onLaunch={submit}
+      />
     </div>
   )
 }
