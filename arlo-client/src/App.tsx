@@ -21,6 +21,7 @@ import CreateAudit from './components/CreateAudit'
 import 'react-toastify/dist/ReactToastify.css'
 import AuthDataProvider, { AuthDataContext } from './components/UserContext'
 import { IUserMeta } from './types'
+import CreateSingleJurisdictionAudit from './CreateSingleJurisdictionAudit'
 
 const Main = styled.div`
   display: flex;
@@ -68,6 +69,11 @@ const App: React.FC = () => {
           <Route path="/" component={Header} />
           <Switch>
             <Route exact path="/" component={CreateAudit} />
+            <Route
+              exact
+              path="/audit"
+              component={CreateSingleJurisdictionAudit}
+            />
             <Route
               path="/audit/:electionId"
               component={SingleJurisdictionAudit}
