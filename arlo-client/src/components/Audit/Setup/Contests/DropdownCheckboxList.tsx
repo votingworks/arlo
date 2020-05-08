@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { FormikProps } from 'formik'
+import { FormikProps, getIn } from 'formik'
 import { Popover, Position, Menu, Checkbox } from '@blueprintjs/core'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { IContest } from '../../../../types'
@@ -49,8 +49,34 @@ const DropdownCheckboxList = ({
     }
     setFieldValue(`contests[${contestIndex}].jurisdictionIds`, jurisdictionList)
   }
+  const selectAll = (checked: boolean) => {
+    if (checked) {
+      setFieldValue(
+        `contests[${contestIndex}].jurisdictionIds`,
+        optionList.map(v => v.value)
+      )
+    } else {
+      setFieldValue(`contests[${contestIndex}].jurisdictionIds`, [])
+    }
+  }
   const menu = (
     <Menu>
+      <CustomMenuItem key="select-all">
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label className="bp3-menu-item">
+          Select all
+          <Checkbox
+            inline
+            checked={
+              getIn(values, `contests[${contestIndex}].jurisdictionIds`)
+                .length === optionList.length
+            }
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              selectAll(e.currentTarget.checked)
+            }
+          />
+        </label>
+      </CustomMenuItem>
       {optionList.map(v => (
         <CustomMenuItem key={v.value}>
           {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
