@@ -18,7 +18,7 @@ export interface IProps {
 
 const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
   return (
-    <>
+    <div>
       <H1>{auditBoard.name}: Board Member Sign-off</H1>
       <p>
         Thank you for completing the ballots assigned to your Audit Board.
@@ -63,7 +63,7 @@ const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
           </Form>
         )}
       />
-    </>
+    </div>
   )
 }
 
