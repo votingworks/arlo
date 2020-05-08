@@ -234,7 +234,7 @@ export const JurisdictionAdminStatusBox = ({
     ]
     if (numCompleted !== auditBoards.length)
       details.push(
-        `Waiting for all jurisdictions to complete Round ${roundNum}`
+        `Waiting for all jurisdictions to complete Round ${roundNum}.`
       )
     return <StatusBox headline={inProgressHeadline} details={details} />
   }
