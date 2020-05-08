@@ -4,8 +4,16 @@ import styled from 'styled-components'
 import { Redirect, Link } from 'react-router-dom'
 import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
-import { IBallotInterpretation, IBallot, IContest } from '../../types'
+import { IBallotInterpretation, IContest, BallotStatus } from '../../types'
 import { BallotRow, FlushDivider } from './Atoms'
+
+export interface IBallot {
+  id: string
+  batch: { id: string; name: string; tabulator: string | null }
+  position: number
+  status: BallotStatus
+  interpretations: IBallotInterpretation[]
+}
 
 const TopH1 = styled(H1)`
   margin: 40px 0 25px 0;

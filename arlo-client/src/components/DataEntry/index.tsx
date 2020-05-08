@@ -7,7 +7,6 @@ import { toast } from 'react-toastify'
 import {
   IAuditFlowParams,
   IAuditBoard,
-  IBallot,
   IBallotInterpretation,
   IAuditBoardMember,
   IContest,
@@ -15,7 +14,7 @@ import {
 import { api } from '../utilities'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
-import Ballot from './Ballot'
+import Ballot, { IBallot } from './Ballot'
 import SignOff, { IMemberNames } from './SignOff'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 
@@ -54,7 +53,7 @@ const loadBallots = async (
   auditBoardId: string
 ): Promise<IBallot[]> => {
   const { ballots } = await api(
-    `/election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${auditBoardId}/round/${roundId}/ballot-list`
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/ballots`
   )
   return ballots
 }
