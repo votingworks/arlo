@@ -31,7 +31,7 @@ export const downloadLabels = async (
         y[0]
       )
       labels.text(
-        labels.splitTextToSize(`Batch Name: ${ballot.batch!.name}`, 60),
+        labels.splitTextToSize(`Batch Name: ${ballot.batch.name}`, 60),
         x,
         y[1]
       )
@@ -59,7 +59,7 @@ export const downloadPlaceholders = async (
         20
       )
       placeholders.text(
-        placeholders.splitTextToSize(`Batch Name: ${ballot.batch!.name}`, 180),
+        placeholders.splitTextToSize(`Batch Name: ${ballot.batch.name}`, 180),
         20,
         40
       )
