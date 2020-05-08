@@ -4,8 +4,8 @@ import { toast } from 'react-toastify'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import { Formik, FormikProps, Field } from 'formik'
 import FormButton from './Atoms/Form/FormButton'
-import { api, checkAndToast } from './utilities'
-import { ICreateAuditParams, IErrorResponse } from '../types'
+import { api } from './utilities'
+import { ICreateAuditParams } from '../types'
 import { useAuthDataContext } from './UserContext'
 import FormSection from './Atoms/Form/FormSection'
 import FormField from './Atoms/Form/FormField'
@@ -49,34 +49,22 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const onSubmit = async ({ auditName }: IValues) => {
     try {
       setLoading(true)
-      const data = isAuthenticated
-        ? {
-            organizationId: meta!.organizations[0].id,
-            auditName,
-            isMultiJurisdiction: true,
-          }
-        : { auditName, isMultiJurisdiction: false }
-      const response: { electionId: string } | IErrorResponse = await api(
-        '/election/new',
-        {
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-      if (checkAndToast(response)) {
-        return
-      }
+      const response: { electionId: string } = await api('/election/new', {
+        method: 'POST',
+        body: JSON.stringify({
+          organizationId: meta!.organizations[0].id,
+          auditName,
+          isMultiJurisdiction: true,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
       const { electionId } = response
-      if (isAuthenticated) {
-        history.push(`/election/${electionId}/setup`)
-      } else {
-        history.push(`/audit/${electionId}/setup`)
-      }
+      history.push(`/election/${electionId}/setup`)
     } catch (err) {
       toast.error(err.message)
+      setLoading(false)
     }
   }
 
@@ -87,8 +75,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   return (
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      {(!isAuthenticated ||
-        (isAuthenticated && meta!.type === 'audit_admin')) && (
+      {isAuthenticated && meta!.type === 'audit_admin' && (
         <Formik onSubmit={onSubmit} initialValues={{ auditName: '' }}>
           {({ handleSubmit }: FormikProps<IValues>) => (
             <>
