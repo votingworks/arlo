@@ -149,8 +149,6 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
           `${numCompleted} of ${jurisdictions.length} jurisdictions` +
             ` have completed Round ${roundNum}`,
         ]}
-        buttonLabel={`Start Round ${roundNum + 1}`}
-        onButtonClick={() => createRound(electionId, roundNum + 1)}
       />
     )
   }
@@ -161,8 +159,8 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       <StatusBox
         headline={`Round ${roundNum} of the audit is complete - another round is needed`}
         details={[`When you are ready, start Round ${roundNum + 1}`]}
-        buttonLabel="Download Audit Report"
-        onButtonClick={() => downloadAuditAdminReport(electionId)}
+        buttonLabel={`Start Round ${roundNum + 1}`}
+        onButtonClick={() => createRound(electionId, roundNum + 1)}
       />
     )
   }
@@ -172,6 +170,8 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
     <StatusBox
       headline="Congratulations - the audit is complete!"
       details={[]}
+      buttonLabel="Download Audit Report"
+      onButtonClick={() => downloadAuditAdminReport(electionId)}
     />
   )
 }
@@ -234,7 +234,7 @@ export const JurisdictionAdminStatusBox = ({
     ]
     if (numCompleted !== auditBoards.length)
       details.push(
-        `Waiting for all jurisdictions to complete Round ${roundNum}`
+        `Waiting for all jurisdictions to complete Round ${roundNum}.`
       )
     return <StatusBox headline={inProgressHeadline} details={details} />
   }
