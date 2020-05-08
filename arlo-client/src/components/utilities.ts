@@ -2,9 +2,9 @@ import { toast } from 'react-toastify'
 import number from '../utils/number-schema'
 import { IErrorResponse } from '../types'
 
-const tryJson = async (response: Response) => {
+const tryJson = (responseText: string) => {
   try {
-    return await response.json()
+    return JSON.parse(responseText)
   } catch (err) {
     return {}
   }
@@ -16,8 +16,12 @@ export const api = async <T>(
 ): Promise<T> => {
   const response = await fetch(endpoint, options)
   if (!response.ok) {
-    const { errors } = await tryJson(response)
-    const errorData = { ...errors[0], response }
+    const responseText = await response.text()
+    const { errors } = tryJson(responseText)
+    const error =
+      errors && errors.length ? errors[0] : { message: response.statusText }
+    const errorData = { ...error, responseText, response }
+    console.error(responseText)
     throw errorData
   }
   return response.json() as Promise<T>
