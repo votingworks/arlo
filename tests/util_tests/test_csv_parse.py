@@ -6,12 +6,13 @@ from werkzeug.exceptions import BadRequest
 BALLOT_MANIFEST_COLUMNS = [
     ("Batch Name", CSVValueType.TEXT, True),
     ("Number of Ballots", CSVValueType.NUMBER, True),
+    ("Tabulator", CSVValueType.TEXT, False),
     ("Storage Location", CSVValueType.TEXT, False),
 ]
 
 JURISDICTIONS_COLUMNS = [
-    ("Jurisdiction", CSVValueType.TEXT),
-    ("Admin Email", CSVValueType.EMAIL),
+    ("Jurisdiction", CSVValueType.TEXT, True),
+    ("Admin Email", CSVValueType.EMAIL, True),
 ]
 
 # Happy path
@@ -23,6 +24,20 @@ def test_parse_csv_happy_path():
             "B,4\n"
             "c1111111,100\n"
             "box 2,100000"
+        ),
+        BALLOT_MANIFEST_COLUMNS,
+    )
+    assert len(list(parsed)) == 4
+
+
+def test_parse_csv_optional_columns():
+    parsed = parse_csv(
+        (
+            "Batch Name,Number of Ballots,Tabulator\n"
+            "Batch A,20,1\n"
+            "B,4,2\n"
+            "c1111111,100,1\n"
+            "box 2,100000,2"
         ),
         BALLOT_MANIFEST_COLUMNS,
     )
@@ -73,20 +88,6 @@ def test_parse_csv_headers_out_of_order():
     assert (
         str(error.value)
         == "Columns out of order. Expected order: Batch Name, Number of Ballots."
-    )
-
-
-def test_parse_csv_duplicate_header():
-    with pytest.raises(CSVParseError) as error:
-        list(
-            parse_csv(
-                ("Batch Name,Number of Ballots,Batch Name\n" "1,2,3"),
-                BALLOT_MANIFEST_COLUMNS,
-            )
-        )
-    assert (
-        str(error.value)
-        == "Too many columns. Expected columns: Batch Name, Number of Ballots."
     )
 
 
@@ -174,7 +175,7 @@ def test_parse_csv_extra_column():
         )
     assert (
         str(error.value)
-        == "Too many columns. Expected columns: Batch Name, Number of Ballots."
+        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator, Storage Location."
     )
 
     with pytest.raises(CSVParseError) as error:
@@ -186,7 +187,7 @@ def test_parse_csv_extra_column():
         )
     assert (
         str(error.value)
-        == "Too many columns. Expected columns: Batch Name, Number of Ballots."
+        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator, Storage Location."
     )
 
 
@@ -201,19 +202,6 @@ def test_parse_csv_not_comma_delimited():
         str(error.value)
         == "Please submit a valid CSV file with columns separated by commas. This file has columns separated by tabs."
     )
-
-
-# def test_parse_csv_excel_file():
-#     excel_file_path = os.path.join(
-#         os.path.dirname(__file__), "test-ballot-manifest.xlsx"
-#     )
-#     with open(excel_file_path, "r") as excel_file:
-#         with pytest.raises(CSVParseError) as error:
-#             list(parse_csv(excel_file.read().decode("utf-8-sig"), BALLOT_MANIFEST_COLUMNS))
-#     assert str(error.value) == (
-#         "Please submit a valid CSV file with columns separated by commas."
-#         " If you are working with an Excel spreadsheet, make sure you export it as a CSV."
-#     )
 
 
 # Cases where we are lenient
@@ -307,7 +295,7 @@ Bliss Twp,,,199
 Carp Lake Twp,,,214
 Center Twp,,,180
 """,
-        "Too many columns. Expected columns: Batch Name, Number of Ballots.",
+        "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator, Storage Location.",
         BALLOT_MANIFEST_COLUMNS,
     ),
 ]

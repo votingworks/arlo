@@ -1,6 +1,6 @@
-import io, itertools, re, locale, os
+import io, itertools, re, locale
 from enum import Enum
-from typing import List, Tuple, Iterator, Dict, Any, BinaryIO
+from typing import List, Tuple, Iterator, Dict, Any
 import csv as py_csv
 from werkzeug.exceptions import BadRequest
 
@@ -86,17 +86,6 @@ def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
     lowercase_allowed_headers = [h.lower() for h in allowed_headers]
     lowercase_required_headers = [h.lower() for h in required_headers]
 
-    unexpected_headers = [
-        header
-        for header in lowercase_headers
-        if header not in lowercase_allowed_headers
-    ]
-    if len(unexpected_headers) > 0:
-        raise CSVParseError(
-            f"Found unexpected {pluralize('column', len(unexpected_headers))}."
-            f" Allowed columns: {', '.join(allowed_headers)}."
-        )
-
     missing_headers = [
         required_header
         for required_header in required_headers
@@ -106,6 +95,14 @@ def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
         raise CSVParseError(
             f"Missing required {pluralize('column', len(missing_headers))}:"
             f" {', '.join(missing_headers)}."
+        )
+
+    unexpected_headers = [
+        header for header in headers if header.lower() not in lowercase_allowed_headers
+    ]
+    if len(unexpected_headers) > 0:
+        raise CSVParseError(
+            f"Found unexpected columns. Allowed columns: {', '.join(allowed_headers)}."
         )
 
     ordered_headers = [h for h in allowed_headers if h.lower() in lowercase_headers]
