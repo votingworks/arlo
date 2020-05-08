@@ -386,6 +386,31 @@ def update_jurisdictions_file(election: Election):
         uploaded_at=datetime.datetime.utcnow(),
     )
 
+    jurisdictions_csv = csv.DictReader(io.StringIO(jurisdictions_file_string))
+    JURISDICTION_NAME = "Jurisdiction"
+    ADMIN_EMAIL = "Admin Email"
+
+    missing_fields = [
+        field
+        for field in [JURISDICTION_NAME, ADMIN_EMAIL]
+        if field not in (jurisdictions_csv.fieldnames or [])
+    ]
+
+    if missing_fields:
+        return (
+            jsonify(
+                errors=[
+                    {
+                        "message": f'Missing required CSV field "{field}"',
+                        "errorType": "MissingRequiredCsvField",
+                        "fieldName": field,
+                    }
+                    for field in missing_fields
+                ]
+            ),
+            400,
+        )
+
     if old_jurisdictions_file:
         db.session.delete(old_jurisdictions_file)
     db.session.add(election)
