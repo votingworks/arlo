@@ -24,7 +24,7 @@ const ballotingMock = async (endpoint: string) => {
       }
     case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/contest':
       return { contests: [contest] }
-    case '/election/1/jurisdiction/jurisdiction-1/audit-board/audit-board-1/round/round-1/ballot-list':
+    case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots':
       return dummyBallots
     case '/election/1/jurisdiction/jurisdiction-1/batch/batch-id-1/ballot/1':
       return { status: 'ok' }
@@ -114,7 +114,7 @@ describe('DataEntry', () => {
     it('renders board table with no ballots', async () => {
       apiMock.mockImplementation(async (endpoint: string) => {
         switch (endpoint) {
-          case '/election/1/jurisdiction/jurisdiction-1/audit-board/audit-board-1/round/round-1/ballot-list':
+          case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots':
             return { ballots: [] }
           default:
             return ballotingMock(endpoint)
