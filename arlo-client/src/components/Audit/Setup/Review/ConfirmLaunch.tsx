@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Classes, Dialog, Intent } from '@blueprintjs/core'
 import FormButton from '../../../Atoms/Form/FormButton'
 
@@ -11,12 +11,16 @@ export interface IDialogExampleState {
   usePortal: boolean
 }
 
-const useConfirmLaunch = (
-  launch: () => void
-): [() => void, React.ReactElement] => {
-  const [isOpen, setIsOpen] = useState(false)
-  const handleClose = () => setIsOpen(false)
-  const dialog = (
+const ConfirmLaunch = ({
+  isOpen,
+  handleClose,
+  onLaunch,
+}: {
+  isOpen: boolean
+  handleClose: () => void
+  onLaunch: () => void
+}) => {
+  return (
     <Dialog
       icon="info-sign"
       onClose={handleClose}
@@ -29,14 +33,13 @@ const useConfirmLaunch = (
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
           <FormButton onClick={handleClose}>Close Without Launching</FormButton>
-          <FormButton intent={Intent.PRIMARY} onClick={launch}>
+          <FormButton intent={Intent.PRIMARY} onClick={onLaunch}>
             Launch Audit
           </FormButton>
         </div>
       </div>
     </Dialog>
   )
-  return [() => setIsOpen(true), dialog]
 }
 
-export default useConfirmLaunch
+export default ConfirmLaunch

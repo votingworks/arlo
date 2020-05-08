@@ -20,7 +20,7 @@ import ContestsTable from './ContestsTable'
 import SettingsTable from './SettingsTable'
 import { isSetupComplete } from '../../StatusBox'
 import useJurisdictionFile from '../Participants/useJurisdictionFile'
-import useConfirmLaunch from './useConfirmLaunch'
+import ConfirmLaunch from './ConfirmLaunch'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -50,6 +50,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   >([])
   const [sampleSize, setSampleSize] = useState('')
   const history = useHistory()
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
   useEffect(() => {
     ;(async () => {
@@ -94,8 +95,6 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       toast.error(err.message)
     }
   }
-
-  const [openConfirmDialog, confirmDialog] = useConfirmLaunch(submit)
 
   if (!contests) return null // Still loading
 
@@ -204,7 +203,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         enableReinitialize
         onSubmit={v => {
           setSampleSize(v.sampleSize)
-          openConfirmDialog()
+          setIsConfirmDialogOpen(true)
         }}
       >
         {({
@@ -261,7 +260,11 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           </Form>
         )}
       </Formik>
-      {confirmDialog}
+      <ConfirmLaunch
+        isOpen={isConfirmDialogOpen}
+        handleClose={() => setIsConfirmDialogOpen(false)}
+        onLaunch={submit}
+      />
     </div>
   )
 }
