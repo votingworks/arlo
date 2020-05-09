@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
 import H2Title from '../../Atoms/H2Title'
 import useJurisdictions, { JurisdictionRoundStatus } from '../useJurisdictions'
+import FormButton from '../../Atoms/Form/FormButton'
+import JurisdictionDetail from './JurisdictionDetail'
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -20,13 +22,28 @@ interface IProps {
 const Progress: React.FC<IProps> = ({ refreshId }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const jurisdictions = useJurisdictions(electionId, refreshId)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+  const [jurisdictionDetail, setJurisdictionDetail] = useState(jurisdictions[0])
+  const openDetail = (e: React.FormEvent, index: number) => {
+    setJurisdictionDetail(jurisdictions[index])
+    setIsDetailOpen(true)
+  }
 
   const columns = [
     <Column
       key="name"
       name="Jurisdiction Name"
       cellRenderer={(row: number) => (
-        <PaddedCell>{jurisdictions[row].name}</PaddedCell>
+        <PaddedCell>
+          <FormButton
+            size="sm"
+            intent="primary"
+            minimal
+            onClick={e => openDetail(e, row)}
+          >
+            {jurisdictions[row].name}
+          </FormButton>
+        </PaddedCell>
       )}
     />,
     <Column
@@ -109,6 +126,12 @@ const Progress: React.FC<IProps> = ({ refreshId }: IProps) => {
           {columns}
         </Table>
       </div>
+      <JurisdictionDetail
+        isOpen={isDetailOpen}
+        jurisdiction={jurisdictionDetail}
+        electionId={electionId}
+        handleClose={() => setIsDetailOpen(false)}
+      />
     </Wrapper>
   )
 }
