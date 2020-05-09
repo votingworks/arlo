@@ -80,10 +80,11 @@ export const JurisdictionAdminView: React.FC = () => {
   }>()
 
   const rounds = useRoundsJurisdictionAdmin(electionId, jurisdictionId)
-  const [ballotManifest, uploadBallotManifest] = useBallotManifest(
-    electionId,
-    jurisdictionId
-  )
+  const [
+    ballotManifest,
+    uploadBallotManifest,
+    deleteBallotManifest,
+  ] = useBallotManifest(electionId, jurisdictionId)
   const [auditBoards, createAuditBoards] = useAuditBoards(
     electionId,
     jurisdictionId,
@@ -103,6 +104,7 @@ export const JurisdictionAdminView: React.FC = () => {
           <BallotManifest
             ballotManifest={ballotManifest}
             uploadBallotManifest={uploadBallotManifest}
+            deleteBallotManifest={deleteBallotManifest}
           />
         </Inner>
       </Wrapper>

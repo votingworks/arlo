@@ -39,10 +39,29 @@ const putBallotManifestFile = async (
   }
 }
 
+const deleteBallotManifestFile = async (
+  electionId: string,
+  jurisdictionId: string
+): Promise<boolean> => {
+  try {
+    return await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/ballot-manifest`,
+      { method: 'DELETE' }
+    )
+  } catch (err) {
+    toast.error(err.message)
+    return false
+  }
+}
+
 const useBallotManifest = (
   electionId: string,
   jurisdictionId: string
-): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
+): [
+  IFileInfo | null,
+  (csv: File) => Promise<boolean>,
+  () => Promise<boolean>
+] => {
   const [ballotManifest, setBallotManifest] = useState<IFileInfo | null>(null)
 
   useEffect(() => {
@@ -59,11 +78,23 @@ const useBallotManifest = (
     return false
   }
 
+  const deleteBallotManifest = async (): Promise<boolean> => {
+    if (await deleteBallotManifestFile(electionId, jurisdictionId)) {
+      setBallotManifest(await loadBallotManifest(electionId, jurisdictionId))
+      return true
+    }
+    return false
+  }
+
   useEffect(() => {
     const isFinishedProcessing = (manifest: IFileInfo) =>
       !!(manifest.processing && manifest.processing.completedAt)
 
-    if (!ballotManifest || isFinishedProcessing(ballotManifest)) return
+    if (
+      !(ballotManifest && ballotManifest.file) ||
+      isFinishedProcessing(ballotManifest)
+    )
+      return
 
     const isComplete = async () => {
       const manifest = await loadBallotManifest(electionId, jurisdictionId)
@@ -75,7 +106,7 @@ const useBallotManifest = (
     poll(isComplete, onComplete, err => toast.error(err.message))
   }, [electionId, jurisdictionId, ballotManifest])
 
-  return [ballotManifest, uploadBallotManifest]
+  return [ballotManifest, uploadBallotManifest, deleteBallotManifest]
 }
 
 export default useBallotManifest
