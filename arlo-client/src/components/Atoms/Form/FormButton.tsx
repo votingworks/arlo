@@ -25,6 +25,7 @@ interface IProps {
   loading?: boolean
   large?: boolean
   verticalSpaced?: boolean
+  minimal?: boolean
 }
 const FormButton: React.FC<IProps> = ({
   disabled,
