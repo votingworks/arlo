@@ -40,6 +40,18 @@ export interface IJurisdiction {
   } | null
 }
 
+export const prettifyStatus = (processing: IFileInfo['processing']): string => {
+  if (!processing) return 'No manifest uploaded'
+  switch (processing.status) {
+    case FileProcessingStatus.ERRORED:
+      return `Manifest upload failed: ${processing.error}`
+    case FileProcessingStatus.PROCESSED:
+      return 'Manifest received'
+    default:
+      return 'No manifest uploaded'
+  }
+}
+
 const useJurisdictions = (electionId: string, refreshId?: string) => {
   const [jurisdictions, setJurisdictions] = useState<IJurisdiction[]>([])
   useEffect(() => {
