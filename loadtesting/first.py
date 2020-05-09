@@ -41,6 +41,18 @@ def do_login(client, type, email):
     return get_auth(client)
 
 
+def upload_file_and_wait(client, url, files):
+    # upload jurisdictions
+    resp = client.put(url, files=files)
+
+    # wait for processing
+    while True:
+        time.sleep(2)
+        file_status = json.loads(client.get(url).content)
+        if file_status["processing"]["status"] == "PROCESSED":
+            break
+
+
 class JurisdictionAdmin(TaskSet):
     def setup(self):
         print("setting up: log in as audit admin and create an election")
@@ -63,35 +75,26 @@ class JurisdictionAdmin(TaskSet):
             headers=JSON_HEADERS,
         )
 
-        self.election_id = json.loads(resp.content)["electionId"]
+        election_id = json.loads(resp.content)["electionId"]
 
         # get and set settings
         settings = json.loads(
-            self.client.get(f"/election/{self.election_id}/settings").content
+            self.client.get(f"/election/{election_id}/settings").content
         )
         settings["state"] = "MI"
         self.client.put(
-            f"/election/{self.election_id}/settings",
+            f"/election/{election_id}/settings",
             data=json.dumps(settings),
             headers=JSON_HEADERS,
         )
 
-        # upload jurisdictions
-        resp = self.client.put(
-            f"/election/{self.election_id}/jurisdiction/file",
+        upload_file_and_wait(
+            self.client,
+            f"/election/{election_id}/jurisdiction/file",
             files={"jurisdictions": open(JURISDICTIONS_FILE, "rb")},
         )
 
-        # wait for jurisdictions to be processed
-        while True:
-            time.sleep(2)
-            file_status = json.loads(
-                self.client.get(
-                    f"/election/{self.election_id}/jurisdiction/file"
-                ).content
-            )
-            if file_status["processing"]["status"] == "PROCESSED":
-                break
+        JurisdictionAdmin.election_id = election_id
 
     def on_start(self):
         try:
@@ -99,9 +102,25 @@ class JurisdictionAdmin(TaskSet):
         except:
             raise StopLocust()
 
+        self.election_id = JurisdictionAdmin.election_id
+
         print(f"STARTING {self.email}")
 
+        # log in
         auth = do_login(self.client, "jurisdictionadmin", self.email)
+
+        # identify jurisdiction id
+        for j in auth["jurisdictions"]:
+            if j["election"]["id"] == self.election_id:
+                self.jurisdiction_id = j["id"]
+                break
+
+        # upload manifest
+        upload_file_and_wait(
+            self.client,
+            f"/election/{self.election_id}/jurisdiction/{self.jurisdiction_id}/ballot-manifest",
+            files={"manifest": open(BIG_MANIFEST_FILE, "rb")},
+        )
 
     @seq_task(1)
     def login(self):
