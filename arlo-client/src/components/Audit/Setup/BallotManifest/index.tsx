@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Formik, FormikProps, Form } from 'formik'
 import styled from 'styled-components'
 import { HTMLSelect, FileInput, H4 } from '@blueprintjs/core'
@@ -23,16 +23,24 @@ interface IValues {
 interface IProps {
   ballotManifest: IFileInfo
   uploadBallotManifest: (csv: File) => Promise<boolean>
+  deleteBallotManifest: () => Promise<boolean>
 }
 
-const BallotManifest: React.FC<IProps> = ({
+const BallotManifest: React.FC<IProps> = (props: IProps) => {
+  // Force the form to reset every time props.ballotManifest changes
+  // E.g. if we upload or delete a file
+  // See https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recap
+  return <BallotManifestForm key={Date.now()} {...props} />
+}
+
+const BallotManifestForm = ({
   ballotManifest,
   uploadBallotManifest,
+  deleteBallotManifest,
 }: IProps) => {
   const { file, processing } = ballotManifest
   const isProcessing = !!(processing && !processing.completedAt)
-  const [isEditing, setIsEditing] = useState<boolean>(true)
-  useEffect(() => setIsEditing(!file || isProcessing), [file, isProcessing])
+  const [isEditing, setIsEditing] = useState<boolean>(!file || isProcessing)
 
   return (
     <Formik
@@ -40,9 +48,7 @@ const BallotManifest: React.FC<IProps> = ({
       validationSchema={schema}
       onSubmit={async (values: IValues) => {
         if (values.csv) {
-          if (await uploadBallotManifest(values.csv)) {
-            setIsEditing(false)
-          }
+          uploadBallotManifest(values.csv)
         }
       }}
     >
@@ -122,10 +128,16 @@ const BallotManifest: React.FC<IProps> = ({
                   Upload File
                 </FormButton>
               ) : (
-                <FormButton key="replace" onClick={() => setIsEditing(true)}>
-                  {/* needs a key in order to not trigger submit */}
-                  Replace File
-                </FormButton>
+                // We give these buttons a key to make sure React doesn't reuse
+                // the submit button for one of them.
+                <>
+                  <FormButton key="replace" onClick={() => setIsEditing(true)}>
+                    Replace File
+                  </FormButton>
+                  <FormButton key="delete" onClick={deleteBallotManifest}>
+                    Delete File
+                  </FormButton>
+                </>
               )}
             </div>
           </FormWrapper>
