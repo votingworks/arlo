@@ -1,7 +1,7 @@
 import React from 'react'
 import { Classes, Dialog } from '@blueprintjs/core'
 import FormButton from '../../Atoms/Form/FormButton'
-import { IJurisdiction } from '../useJurisdictions'
+import { IJurisdiction, prettifyStatus } from '../useJurisdictions'
 
 export interface IDialogExampleState {
   autoFocus: boolean
@@ -13,30 +13,26 @@ export interface IDialogExampleState {
 }
 
 const JurisdictionDetail = ({
-  isOpen,
   handleClose,
   jurisdiction,
   electionId,
 }: {
-  isOpen: boolean
   handleClose: () => void
-  jurisdiction: IJurisdiction
+  jurisdiction: IJurisdiction | null
   electionId: string
 }) => {
-  if (!jurisdiction) return null // component still loading data
+  if (!jurisdiction) return null
   return (
     <Dialog
       icon="info-sign"
       onClose={handleClose}
       title={`${jurisdiction.name} Audit Information`}
-      isOpen={isOpen}
+      isOpen
     >
       <div className={Classes.DIALOG_BODY}>
         <p>
           <strong>Ballot Manifest Upload Status: </strong>
-          {jurisdiction.ballotManifest.processing
-            ? jurisdiction.ballotManifest.processing.status
-            : 'N/A'}
+          {prettifyStatus(jurisdiction.ballotManifest.processing)}
         </p>
         <p>
           <strong>Current Ballot Manifest File: </strong>
