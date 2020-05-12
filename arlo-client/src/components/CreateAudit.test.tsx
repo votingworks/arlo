@@ -50,7 +50,8 @@ describe('CreateAudit', () => {
     })
   })
 
-  it('calls the /election/new endpoint for nonauthenticated user', async () => {
+  it.skip('calls the /election/new endpoint for nonauthenticated user', async () => {
+    // we have hidden the create new audit feature for unauthenticated users currently
     apiMock
       .mockRejectedValueOnce({})
       .mockImplementation(async () => ({ electionId: '1' }))
@@ -86,7 +87,35 @@ describe('CreateAudit', () => {
   })
 
   it('requires an audit name', async () => {
-    apiMock.mockRejectedValueOnce({})
+    apiMock
+      .mockImplementationOnce(async () => ({
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      }))
+      .mockImplementationOnce(async () => ({
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      }))
+      .mockImplementationOnce(async () => ({ electionId: '1' }))
+    // apiMock.mockRejectedValueOnce({})
     const { getByText } = render(
       <AuthDataProvider>
         <CreateAudit {...routeProps} />
@@ -119,8 +148,21 @@ describe('CreateAudit', () => {
           },
         ],
       }))
+      .mockImplementationOnce(async () => ({
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      }))
       .mockImplementationOnce(async () => ({ electionId: '1' }))
-    const { getByText, getByLabelText } = render(
+    const { getByText, queryByLabelText } = render(
       <AuthDataProvider>
         <CreateAudit {...routeProps} />
       </AuthDataProvider>
@@ -130,7 +172,9 @@ describe('CreateAudit', () => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
     })
-    fireEvent.change(getByLabelText('Give your new audit a unique name.'), {
+    const auditName = queryByLabelText('Give your new audit a unique name.')
+    await wait(() => expect(auditName).toBeTruthy())
+    fireEvent.change(auditName!, {
       target: { value: 'Audit Name' },
     })
     fireEvent.click(getByText('Create a New Audit'), { bubbles: true })
@@ -154,7 +198,7 @@ describe('CreateAudit', () => {
   })
 
   it('lists associated elections for authenticated AA user', async () => {
-    apiMock.mockImplementationOnce(async () => ({
+    apiMock.mockImplementation(async () => ({
       type: 'audit_admin',
       name: 'Joe',
       email: 'test@email.org',
@@ -204,7 +248,7 @@ describe('CreateAudit', () => {
   })
 
   it('lists associated elections for authenticated JA user', async () => {
-    apiMock.mockImplementationOnce(async () => ({
+    apiMock.mockImplementation(async () => ({
       type: 'audit_admin',
       name: 'Joe',
       email: 'test@email.org',
@@ -245,10 +289,23 @@ describe('CreateAudit', () => {
     })
   })
 
-  it('handles error responses from server', async () => {
+  it.skip('handles error responses from server', async () => {
+    // this tests checkAndToast implementation, which is not implemented anymore here
     apiMock
-      .mockRejectedValueOnce({})
-      .mockImplementation(async () => ({ electionId: '1' }))
+      .mockImplementationOnce(async () => ({
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      }))
+      .mockImplementationOnce(async () => ({ electionId: '1' }))
     checkAndToastMock.mockReturnValue(true)
     const { getByText, getByLabelText } = render(
       <AuthDataProvider>

@@ -46,34 +46,6 @@ exports[`CreateAudit lists associated elections for authenticated AA user 1`] = 
         Create a New Audit
       </span>
     </button>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-1/setup"
-    >
-      Election One
-       (NY)
-    </a>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-2/setup"
-    >
-      Election Two
-       (FL)
-    </a>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-3/setup"
-    >
-      Election Three
-      
-    </a>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-4/setup"
-    >
-      Election Four
-       (WA)
-    </a>
   </div>
 </div>
 `;
@@ -124,20 +96,6 @@ exports[`CreateAudit lists associated elections for authenticated JA user 1`] = 
         Create a New Audit
       </span>
     </button>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-1/jurisdiction/jurisdiction-1"
-    >
-      Election One
-       (NY)
-    </a>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-2/jurisdiction/jurisdiction-2"
-    >
-      
-      
-    </a>
   </div>
 </div>
 `;
