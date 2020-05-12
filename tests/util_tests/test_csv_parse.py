@@ -210,6 +210,21 @@ def test_parse_csv_not_comma_delimited():
     )
 
 
+def test_parse_csv_empty_trailing_columns_with_data_in_those_columns():
+    with pytest.raises(CSVParseError) as error:
+        list(
+            parse_csv(
+                ("Batch Name,Number of Ballots,,\n" "Batch A,20,,z\n" ",,,\n"),
+                BALLOT_MANIFEST_COLUMNS,
+            )
+        )
+
+    assert (
+        str(error.value)
+        == "Empty trailing column 4 expected to have no values, but row 1 has a value: z."
+    )
+
+
 # Cases where we are lenient
 
 
@@ -305,6 +320,16 @@ def test_parse_csv_empty_row():
         )
     )
     assert len(parsed) == 1
+
+
+def test_parse_csv_empty_trailing_columns():
+    parsed = list(
+        parse_csv(
+            ("Batch Name,Number of Ballots,,\n" "Batch A,20,,\n" ",,,\n"),
+            BALLOT_MANIFEST_COLUMNS,
+        )
+    )
+    assert parsed == [{"Batch Name": "Batch A", "Number of Ballots": "20"}]
 
 
 REAL_WORLD_REJECTED_CSVS = [
@@ -407,6 +432,126 @@ Allegan County,abc+Allegan@gmail.com
 """,
         3,
         JURISDICTIONS_COLUMNS,
+    ),
+    (
+        """BATCH NAME,NUMBER OF BALLOTS,
+BREEN,140,
+BREITUNG 1,253,
+BREITUNG 2,239,
+BREITUNG 3,299,
+BREITUNG AVCB,624,
+IRON MOUNTAIN 1,329,
+IRON MOUNTAIN 2,327,
+IRON MOUNTAIN 3,361,
+IRON MOUNTAIN AVCB,323,
+KINGSFORD 1,251,
+KINGSFORD 2,325,
+ KINGSFORD AVCB,283,
+CITY OF NORWAY 1,503,
+CITY OF NORWAY AVCB,120,
+FELCH,137,
+NORWAY TWP 1,246,
+NORWAY TWP AVCB,177,
+SAGOLA,227,
+WAUCEDAH 1,215,
+WEST BRANCH,22,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+,,
+""",
+        20,
+        BALLOT_MANIFEST_COLUMNS,
+    ),
+    (
+        """Batch Name,Number of Ballots,,
+Ash #1,289,,
+Ash #2,251,,
+Ash #3,211,,
+Ash AV #1,791,,
+Bedford #1,152,,
+Bedford #2,221,,
+Bedford #3,235,,
+Bedford #4,295,,
+Bedford #5,282,,
+Bedford #6,373,,
+Bedford #7,274,,
+Bedford #8,295,,
+Bedford #9,166,,
+Bedford #10,181,,
+Bedford #11,275,,
+Bedford #12,263,,
+Bedford #13,292,,
+Bedford #14,220,,
+Bedford AV #1,2399,,
+Berlin #1,286,,
+Berlin #2,340,,
+Berlin #3,168,,
+Berlin #4,322,,
+Berlin AV #1,652,,
+Dundee #1,351,,
+Dundee #2,478,,
+Dundee #3,517,,
+Erie #1,931,,
+Erie #2,552,,
+Exeter #1,358,,
+Exeter #2,449,,
+Frenchtown #1,137,,
+Frenchtown #2,196,,
+Frenchtown #3,186,,
+Frenchtown #4,189,,
+Frenchtown #5,235,, 
+Frenchtown #6,254,,
+Frenchtown #7,360,,
+Frenchtown #8,208,,
+Frenchtown #9,142,,
+Frenchtown AV #1,833,,
+Frenchtown AV #2,960,,
+Ida #1,404,,
+Ida #2,465,,
+LaSalle #1,453,,
+LaSalle #2,428,,
+LaSalle AV #1,416,,
+London #1,541,,
+Milan #1,353,,
+Monroe #1,239,,
+Monroe #2,173,,
+Monroe #3,201,,
+Monroe #4,295,,
+Monroe #5,356,,
+Monroe #6,262,,
+Monroe AV #1,1022,,
+Raisinville #1,326,,
+Raisinville #2,360,,
+Raisinville AV #1,653,,
+Summerfield #1,497,,
+Whiteford #1,245,,
+Whiteford #2,212,,
+Whiteford AV #1,195,,
+City of Luna Pier #1,537,,
+City of Milan #1,465,,
+City of Monroe #1,363,,
+City of Monroe #2,349,,
+City of Monroe #3N,176,,
+City of Monroe #3S,165,,
+City of Monroe #4,498,,
+City of Monroe #5,438,,
+City of Monroe #6,365,,
+City of Monroe AV #1,1251,,
+City of Petersburg #1,203,,
+""",
+        74,
+        BALLOT_MANIFEST_COLUMNS,
     ),
 ]
 
