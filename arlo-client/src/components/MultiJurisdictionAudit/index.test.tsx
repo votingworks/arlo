@@ -10,7 +10,9 @@ import { auditSettings } from './_mocks'
 import * as utilities from '../utilities'
 import { asyncActRender, routerTestProps } from '../testUtilities'
 import AuthDataProvider, { AuthDataContext } from '../UserContext'
-import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
+import getJurisdictionFileStatus, {
+  FileProcessingStatus,
+} from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { contestMocks } from './Setup/Contests/_mocks'
 
@@ -81,9 +83,36 @@ describe('AA setup flow', () => {
         case '/election/1/round':
           return { rounds: [] }
         case '/election/1/jurisdiction':
-          return { jurisdictions: [] }
+          return {
+            jurisdictions: [
+              {
+                id: 'jurisdiction-id-1',
+                name: 'Jurisdiction One',
+                ballotManifest: { file: null, processing: null },
+                currentRoundStatus: null,
+              },
+              {
+                id: 'jurisdiction-id-2',
+                name: 'Jurisdiction Two',
+                ballotManifest: { file: null, processing: null },
+                currentRoundStatus: null,
+              },
+            ],
+          }
         case '/election/1/jurisdiction/file':
-          return { file: null, processing: null }
+          return {
+            file: {
+              contents: null,
+              name: 'file name',
+              uploadedAt: 'a long time ago in a galaxy far far away',
+            },
+            processing: {
+              status: FileProcessingStatus.Processed,
+              error: null,
+              startedAt: 'once upon a time',
+              endedAt: 'and they lived happily ever after',
+            },
+          }
         case '/election/1/contest':
           return contestMocks.filledTargeted
         case '/election/1/settings':
