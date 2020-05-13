@@ -1,5 +1,5 @@
 import { IAuditBoard, BallotStatus, Interpretation } from '../../types'
-import { contestMocks } from '../Audit/Setup/Contests/_mocks'
+import { contestMocks } from '../MultiJurisdictionAudit/Setup/Contests/_mocks'
 import { IBallot } from './Ballot'
 
 export const contest = contestMocks.filledTargeted.contests[0]
