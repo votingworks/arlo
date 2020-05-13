@@ -37,6 +37,7 @@ from arlo_server.ballot_manifest import (
     clear_ballot_manifest_file,
 )
 from arlo_server.sample_sizes import cumulative_contest_results
+from arlo_server.reports import pretty_affiliation
 from util.binpacking import BalancedBucketList, Bucket
 from util.csv_parse import decode_csv_file
 
@@ -1118,17 +1119,6 @@ def pretty_interpretations(interpretations: List[BallotInterpretation]) -> str:
         return str(interpretations[0].contest_choice_id)
     else:
         return str(interpretations[0].interpretation.value)
-
-
-def pretty_affiliation(affiliation):
-    mapping = {
-        "DEM": "Democrat",
-        "REP": "Republican",
-        "LIB": "Libertarian",
-        "IND": "Independent",
-        "OTH": "Other",
-    }
-    return mapping.get(affiliation, None)
 
 
 @app.route("/election/<election_id>/audit/reset", methods=["POST"])

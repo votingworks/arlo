@@ -1,0 +1,254 @@
+import io, csv, json
+from typing import Dict, List
+
+from arlo_server import app
+from arlo_server.models import (
+    Election,
+    Jurisdiction,
+    Round,
+    SampledBallot,
+    SampledBallotDraw,
+    Batch,
+    Jurisdiction,
+    BallotInterpretation,
+    Interpretation,
+)
+from arlo_server.auth import with_election_access, with_jurisdiction_access
+from util.csv_download import csv_response, election_timestamp_name
+from util.isoformat import isoformat
+from util.group_by import group_by
+
+
+def pretty_affiliation(affiliation: str) -> str:
+    mapping = {
+        "DEM": "Democrat",
+        "REP": "Republican",
+        "LIB": "Libertarian",
+        "IND": "Independent",
+        "OTH": "Other",
+    }
+    return mapping.get(affiliation, "")
+
+
+def pretty_boolean(boolean: bool) -> str:
+    return "Yes" if boolean else "No"
+
+
+def pretty_ticket_numbers(
+    ballot: SampledBallot, round_id_to_num: Dict[str, int]
+) -> str:
+    ticket_numbers = []
+    for round_num, draws in group_by(
+        ballot.draws, key=lambda d: round_id_to_num[d.round_id]
+    ).items():
+        ticket_numbers_str = ", ".join(sorted(d.ticket_number for d in draws))
+        ticket_numbers.append(f"Round {round_num}: {ticket_numbers_str}")
+    return ", ".join(ticket_numbers)
+
+
+def pretty_interpretations(
+    interpretations: List[BallotInterpretation],
+    contest_id_to_name: Dict[str, str],
+    choice_id_to_name: Dict[str, str],
+) -> str:
+    return json.dumps(
+        [
+            {
+                "contest": contest_id_to_name[interpretation.contest_id],
+                "interpretation": interpretation.interpretation,
+                "choices": [
+                    choice_id_to_name.get(interpretation.contest_choice_id, "")
+                ],
+                "comment": interpretation.comment or "",
+            }
+            for interpretation in interpretations
+        ]
+    )
+
+
+def write_heading(report, heading: str, first_section=False):
+    if not first_section:
+        report.writerow([])
+    report.writerow([f"####### {heading} ########"])
+
+
+def write_election_info(report, election: Election):
+    write_heading(report, "ELECTION INFO", first_section=True)
+    report.writerow(["Election Name", election.election_name])
+    report.writerow(["State", election.state])
+
+
+def write_contests(report, election: Election):
+    write_heading(report, "CONTESTS")
+    report.writerow(
+        [
+            "Contest Name",
+            "Targeted?",
+            "Number of Winners",
+            "Votes Allowed",
+            "Total Ballots Cast",
+            "Choices and Votes",
+        ]
+    )
+    for contest in election.contests:
+        choices = {choice.name: choice.num_votes for choice in contest.choices}
+        report.writerow(
+            [
+                contest.name,
+                "Targeted" if contest.is_targeted else "Opportunistic",
+                contest.num_winners,
+                contest.votes_allowed,
+                contest.total_ballots_cast,
+                json.dumps(choices),
+            ]
+        )
+
+
+def write_audit_settings(report, election: Election):
+    write_heading(report, "AUDIT SETTINGS")
+    report.writerow(["Audit Name", election.audit_name])
+    report.writerow(["Risk Limit", f"{election.risk_limit}%"])
+    report.writerow(["Random Seed", election.random_seed])
+    report.writerow(["Online Data Entry?", pretty_boolean(election.online)])
+
+
+def write_audit_boards(report, election: Election):
+    if election.online:
+        write_heading(report, "AUDIT BOARDS")
+        report.writerow(
+            [
+                "Jurisdiction Name",
+                "Audit Board Name",
+                "Member 1 Name",
+                "Member 1 Affiliation",
+                "Member 2 Name",
+                "Member 2 Affiliation",
+            ]
+        )
+        for jurisdiction in election.jurisdictions:
+            for audit_board in jurisdiction.audit_boards:
+                report.writerow(
+                    [
+                        jurisdiction.name,
+                        audit_board.name,
+                        audit_board.member_1,
+                        pretty_affiliation(audit_board.member_1_affiliation),
+                        audit_board.member_2,
+                        pretty_affiliation(audit_board.member_2_affiliation),
+                    ]
+                )
+
+
+def write_rounds(report, election: Election):
+    write_heading(report, "ROUNDS")
+    report.writerow(
+        [
+            "Round Number",
+            "Contest Name",
+            "Targeted?",
+            "Sample Size",
+            "Risk Limit Met?",
+            "P-Value",
+            "Start Time",
+            "End Time",
+        ]
+    )
+    # TODO audit results for each contest
+    for round in election.rounds:
+        for round_contest in round.round_contests:
+            report.writerow(
+                [
+                    round.round_num,
+                    round_contest.contest.name,
+                    "Targeted"
+                    if round_contest.contest.is_targeted
+                    else "Opportunistic",
+                    round_contest.sample_size,
+                    pretty_boolean(round_contest.is_complete),
+                    round_contest.end_p_value,
+                    isoformat(round.created_at),
+                    isoformat(round.ended_at),
+                ]
+            )
+
+
+def write_sampled_ballots(report, election: Election):
+    write_heading(report, "SAMPLED BALLOTS")
+
+    ballots = (
+        SampledBallot.query.join(SampledBallotDraw)
+        .join(Round)
+        .join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .order_by(
+            Round.round_num,
+            Jurisdiction.name,
+            Batch.name,
+            SampledBallot.ballot_position,
+        )
+        .all()
+    )
+
+    round_id_to_num = {round.id: round.round_num for round in election.rounds}
+    contest_id_to_name = {contest.id: contest.name for contest in election.contests}
+    choice_id_to_name = {
+        choice.id: choice.name
+        for contest in election.contests
+        for choice in contest.choices
+    }
+
+    report.writerow(
+        [
+            "Jurisdiction Name",
+            "Batch Name",
+            "Ballot Position",
+            "Ticket Numbers",
+            "Audited?",
+            "Audit Result",
+        ]
+    )
+    for ballot in ballots:
+        report.writerow(
+            [
+                ballot.batch.jurisdiction.name,
+                ballot.batch.name,
+                ballot.ballot_position,
+                pretty_ticket_numbers(ballot, round_id_to_num),
+                ballot.status,
+                pretty_interpretations(
+                    ballot.interpretations, contest_id_to_name, choice_id_to_name
+                ),
+            ]
+        )
+
+
+@app.route("/election/<election_id>/report", methods=["GET"])
+@with_election_access
+def audit_admin_audit_report(election: Election):
+    csv_io = io.StringIO()
+    report = csv.writer(csv_io)
+    write_election_info(report, election)
+    write_contests(report, election)
+    write_audit_settings(report, election)
+    write_audit_boards(report, election)
+    write_rounds(report, election)
+    write_sampled_ballots(report, election)
+    return csv_response(
+        csv_io.getvalue(),
+        filename=f"audit-report-{election_timestamp_name(election)}.csv",
+    )
+
+
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/report", methods=["GET"]
+)
+@with_jurisdiction_access
+def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdiction):
+    csv_io = io.StringIO()
+    report = csv.writer(csv_io)
+
+    return csv_response(
+        csv_io.getvalue(),
+        filename=f"audit-report-{election_timestamp_name(election)}.csv",
+    )

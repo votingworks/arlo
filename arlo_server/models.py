@@ -371,6 +371,7 @@ class RoundContest(BaseModel):
     contest_id = db.Column(
         db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False,
     )
+    contest = relationship("Contest")
 
     sample_size_options = db.Column(db.String(1000), nullable=True)
 
