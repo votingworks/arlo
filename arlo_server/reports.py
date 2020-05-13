@@ -56,7 +56,7 @@ def pretty_interpretations(
     interpretations: List[BallotInterpretation],
     contests: List[Contest],
     choice_id_to_name: Dict[str, str],
-) -> str:
+) -> List[str]:
     columns = []
     for contest in contests:
         interpretation = next(
@@ -77,14 +77,12 @@ def pretty_interpretations(
     return columns
 
 
-def write_heading(report, heading: str, first_section=False):
-    if not first_section:
-        report.writerow([])
+def write_heading(report, heading: str):
     report.writerow([f"####### {heading} ########"])
 
 
 def write_election_info(report, election: Election):
-    write_heading(report, "ELECTION INFO", first_section=True)
+    write_heading(report, "ELECTION INFO")
     report.writerow(["Election Name", election.election_name])
     report.writerow(["State", election.state])
 
@@ -152,9 +150,9 @@ def write_audit_boards(report, election: Election):
                 )
 
 
-def pretty_audited_votes(round_contest: RoundContest):
+def pretty_audited_votes(contest: Contest, round_contest: RoundContest):
     choice_votes = []
-    for choice in round_contest.contest.choices:
+    for choice in contest.choices:
         choice_result = next(
             (
                 result.result
@@ -183,26 +181,31 @@ def write_rounds(report, election: Election):
         ]
     )
     for round in election.rounds:
-        for round_contest in round.round_contests:
+        for contest in election.contests:
+            round_contest = next(
+                rc for rc in round.round_contests if rc.contest_id == contest.id
+            )
             report.writerow(
                 [
                     round.round_num,
-                    round_contest.contest.name,
-                    pretty_targeted(round_contest.contest.is_targeted),
+                    contest.name,
+                    pretty_targeted(contest.is_targeted),
                     round_contest.sample_size,
                     pretty_boolean(round_contest.is_complete),
                     round_contest.end_p_value,
                     isoformat(round.created_at),
                     isoformat(round.ended_at),
-                    pretty_audited_votes(round_contest),
+                    pretty_audited_votes(contest, round_contest),
                 ]
             )
 
 
-def write_sampled_ballots(report, election: Election):
+def write_sampled_ballots(
+    report, election: Election, jurisdiction: Jurisdiction = None
+):
     write_heading(report, "SAMPLED BALLOTS")
 
-    ballots = (
+    ballots_query = (
         SampledBallot.query.join(SampledBallotDraw)
         .join(Round)
         .join(Batch)
@@ -214,8 +217,10 @@ def write_sampled_ballots(report, election: Election):
             Batch.name,
             SampledBallot.ballot_position,
         )
-        .all()
     )
+    if jurisdiction:
+        ballots_query = ballots_query.filter(Jurisdiction.id == jurisdiction.id)
+    ballots = ballots_query.all()
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
     choice_id_to_name = {
@@ -254,12 +259,19 @@ def write_sampled_ballots(report, election: Election):
 def audit_admin_audit_report(election: Election):
     csv_io = io.StringIO()
     report = csv.writer(csv_io)
+
     write_election_info(report, election)
+    report.writerow([])
     write_contests(report, election)
+    report.writerow([])
     write_audit_settings(report, election)
+    report.writerow([])
     write_audit_boards(report, election)
+    report.writerow([])
     write_rounds(report, election)
+    report.writerow([])
     write_sampled_ballots(report, election)
+
     return csv_response(
         csv_io.getvalue(),
         filename=f"audit-report-{election_timestamp_name(election)}.csv",
@@ -273,6 +285,8 @@ def audit_admin_audit_report(election: Election):
 def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdiction):
     csv_io = io.StringIO()
     report = csv.writer(csv_io)
+
+    write_sampled_ballots(report, election, jurisdiction)
 
     return csv_response(
         csv_io.getvalue(),

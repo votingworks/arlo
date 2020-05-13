@@ -65,7 +65,9 @@ class Election(BaseModel):
         passive_deletes=True,
         order_by="Jurisdiction.name",
     )
-    contests = relationship("Contest", backref="election", passive_deletes=True)
+    contests = relationship(
+        "Contest", backref="election", passive_deletes=True, order_by="Contest.name",
+    )
     rounds = relationship(
         "Round", backref="election", passive_deletes=True, order_by="Round.round_num"
     )
@@ -194,7 +196,12 @@ class Contest(BaseModel):
     num_winners = db.Column(db.Integer, nullable=False)
     votes_allowed = db.Column(db.Integer, nullable=False)
 
-    choices = relationship("ContestChoice", backref="contest", passive_deletes=True)
+    choices = relationship(
+        "ContestChoice",
+        backref="contest",
+        passive_deletes=True,
+        order_by="ContestChoice.name",
+    )
     results = relationship(
         "RoundContestResult", backref="contest", passive_deletes=True
     )
@@ -371,7 +378,6 @@ class RoundContest(BaseModel):
     contest_id = db.Column(
         db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False,
     )
-    contest = relationship("Contest")
 
     sample_size_options = db.Column(db.String(1000), nullable=True)
 
