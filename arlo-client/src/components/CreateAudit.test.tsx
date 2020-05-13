@@ -51,7 +51,7 @@ describe('CreateAudit', () => {
   })
 
   it.skip('calls the /election/new endpoint for nonauthenticated user', async () => {
-    // we have hidden the create new audit feature for unauthenticated users currently
+    // we have moved the unauthenticated functionality for creating an audit to CreateSingleJurisdictionAudit
     apiMock
       .mockRejectedValueOnce({})
       .mockImplementation(async () => ({ electionId: '1' }))
