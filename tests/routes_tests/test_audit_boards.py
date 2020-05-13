@@ -513,7 +513,6 @@ def test_audit_boards_bad_round_id(
 
 CHOICE_1_VOTES = 10
 CHOICE_2_VOTES = 15
-random.seed(12345)
 
 
 def set_up_audit_board(
@@ -530,6 +529,7 @@ def set_up_audit_board(
         "Bubbikin Republican",
         "Clem O'Hat Democrat",
     ]
+    random.seed(12345)
     member_1 = random.choice(SILLY_NAMES)
     member_2 = random.choice(SILLY_NAMES)
 
