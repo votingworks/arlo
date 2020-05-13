@@ -162,7 +162,6 @@ export interface IElectionMeta {
   electionName: string
   state: string
   isMultiJurisdiction: boolean
-  electionDate: string
 }
 
 export interface IOrganizationMeta {

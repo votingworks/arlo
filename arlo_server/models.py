@@ -37,9 +37,6 @@ class Election(BaseModel):
     # election_name can be the same across audits
     election_name = db.Column(db.String(200), nullable=True)
     state = db.Column(db.String(100), nullable=True)
-    election_date = db.Column(db.Date, nullable=True)
-    election_type = db.Column(db.String(200), nullable=True)
-    meeting_date = db.Column(db.Date, nullable=True)
     risk_limit = db.Column(db.Integer, nullable=True)
     random_seed = db.Column(db.String(100), nullable=True)
 
