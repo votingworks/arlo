@@ -1,4 +1,4 @@
-import io, csv, json
+import io, csv
 from typing import Dict, List
 
 from arlo_server import app
@@ -12,6 +12,8 @@ from arlo_server.models import (
     Jurisdiction,
     BallotInterpretation,
     Interpretation,
+    Contest,
+    RoundContest,
 )
 from arlo_server.auth import with_election_access, with_jurisdiction_access
 from util.csv_download import csv_response, election_timestamp_name
@@ -34,6 +36,10 @@ def pretty_boolean(boolean: bool) -> str:
     return "Yes" if boolean else "No"
 
 
+def pretty_targeted(is_targeted: bool) -> str:
+    return "Targeted" if is_targeted else "Opportunistic"
+
+
 def pretty_ticket_numbers(
     ballot: SampledBallot, round_id_to_num: Dict[str, int]
 ) -> str:
@@ -48,22 +54,27 @@ def pretty_ticket_numbers(
 
 def pretty_interpretations(
     interpretations: List[BallotInterpretation],
-    contest_id_to_name: Dict[str, str],
+    contests: List[Contest],
     choice_id_to_name: Dict[str, str],
 ) -> str:
-    return json.dumps(
-        [
-            {
-                "contest": contest_id_to_name[interpretation.contest_id],
-                "interpretation": interpretation.interpretation,
-                "choices": [
-                    choice_id_to_name.get(interpretation.contest_choice_id, "")
-                ],
-                "comment": interpretation.comment or "",
-            }
-            for interpretation in interpretations
-        ]
-    )
+    columns = []
+    for contest in contests:
+        interpretation = next(
+            (i for i in interpretations if i.contest_id == contest.id), None,
+        )
+        if interpretation:
+            choice = (
+                choice_id_to_name[interpretation.contest_choice_id]
+                if interpretation.interpretation == Interpretation.VOTE
+                else interpretation.interpretation
+            )
+            comment = (
+                f"; COMMENT: {interpretation.comment}" if interpretation.comment else ""
+            )
+            columns.append(choice + comment)
+        else:
+            columns.append("")
+    return columns
 
 
 def write_heading(report, heading: str, first_section=False):
@@ -87,19 +98,21 @@ def write_contests(report, election: Election):
             "Number of Winners",
             "Votes Allowed",
             "Total Ballots Cast",
-            "Choices and Votes",
+            "Tabulated Votes",
         ]
     )
     for contest in election.contests:
-        choices = {choice.name: choice.num_votes for choice in contest.choices}
+        choices = "; ".join(
+            [f"{choice.name}: {choice.num_votes}" for choice in contest.choices]
+        )
         report.writerow(
             [
                 contest.name,
-                "Targeted" if contest.is_targeted else "Opportunistic",
+                pretty_targeted(contest.is_targeted),
                 contest.num_winners,
                 contest.votes_allowed,
                 contest.total_ballots_cast,
-                json.dumps(choices),
+                choices,
             ]
         )
 
@@ -139,6 +152,21 @@ def write_audit_boards(report, election: Election):
                 )
 
 
+def pretty_audited_votes(round_contest: RoundContest):
+    choice_votes = []
+    for choice in round_contest.contest.choices:
+        choice_result = next(
+            (
+                result.result
+                for result in round_contest.results
+                if result.contest_choice_id == choice.id
+            ),
+            0,
+        )
+        choice_votes.append(f"{choice.name}: {choice_result}")
+    return "; ".join(choice_votes)
+
+
 def write_rounds(report, election: Election):
     write_heading(report, "ROUNDS")
     report.writerow(
@@ -151,23 +179,22 @@ def write_rounds(report, election: Election):
             "P-Value",
             "Start Time",
             "End Time",
+            "Audited Votes",
         ]
     )
-    # TODO audit results for each contest
     for round in election.rounds:
         for round_contest in round.round_contests:
             report.writerow(
                 [
                     round.round_num,
                     round_contest.contest.name,
-                    "Targeted"
-                    if round_contest.contest.is_targeted
-                    else "Opportunistic",
+                    pretty_targeted(round_contest.contest.is_targeted),
                     round_contest.sample_size,
                     pretty_boolean(round_contest.is_complete),
                     round_contest.end_p_value,
                     isoformat(round.created_at),
                     isoformat(round.ended_at),
+                    pretty_audited_votes(round_contest),
                 ]
             )
 
@@ -191,7 +218,6 @@ def write_sampled_ballots(report, election: Election):
     )
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
-    contest_id_to_name = {contest.id: contest.name for contest in election.contests}
     choice_id_to_name = {
         choice.id: choice.name
         for contest in election.contests
@@ -205,8 +231,8 @@ def write_sampled_ballots(report, election: Election):
             "Ballot Position",
             "Ticket Numbers",
             "Audited?",
-            "Audit Result",
         ]
+        + [f"Audit Result: {contest.name}" for contest in election.contests]
     )
     for ballot in ballots:
         report.writerow(
@@ -216,10 +242,10 @@ def write_sampled_ballots(report, election: Election):
                 ballot.ballot_position,
                 pretty_ticket_numbers(ballot, round_id_to_num),
                 ballot.status,
-                pretty_interpretations(
-                    ballot.interpretations, contest_id_to_name, choice_id_to_name
-                ),
             ]
+            + pretty_interpretations(
+                ballot.interpretations, election.contests, choice_id_to_name
+            )
         )
 
 
