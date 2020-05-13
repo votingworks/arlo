@@ -69,6 +69,7 @@ function useSetupMenuItems(
       }
       poll(condition, complete, (err: Error) => {
         toast.error(err.message)
+        // eslint-disable-next-line no-console
         console.error(err.message)
       })
     }
