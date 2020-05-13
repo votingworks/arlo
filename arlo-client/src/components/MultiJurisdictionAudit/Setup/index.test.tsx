@@ -1,5 +1,5 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, MemoryRouter } from 'react-router-dom'
 import { auditSettings } from '../_mocks'
 import * as utilities from '../../utilities'
 import { asyncActRender } from '../../testUtilities'
@@ -32,10 +32,15 @@ useAuditSettingsMock.mockImplementation(() => [auditSettings.all, jest.fn()])
 
 checkAndToastMock.mockReturnValue(false)
 
+const mockHistoryPush = jest.fn()
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
   useParams: jest.fn(),
+  useHistory: () => ({
+    push: mockHistoryPush,
+  }),
 }))
+
 const routeMock = useParams as jest.Mock
 routeMock.mockReturnValue({
   electionId: '1',
@@ -50,66 +55,78 @@ afterEach(() => {
 describe('Setup', () => {
   it('renders Participants stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Participants"
-        menuItems={relativeStages('Participants').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Participants"
+          menuItems={relativeStages('Participants').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Participants stage with locked next stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Participants"
-        menuItems={relativeStages('Participants', 'locked').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Participants"
+          menuItems={relativeStages('Participants', 'locked').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Participants stage with processing next stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Participants"
-        menuItems={relativeStages('Participants', 'processing').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Participants"
+          menuItems={relativeStages('Participants', 'processing').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Target Contests stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Target Contests"
-        menuItems={relativeStages('Target Contests').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Target Contests"
+          menuItems={relativeStages('Target Contests').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Target Contests stage with locked next stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Target Contests"
-        menuItems={relativeStages('Target Contests', 'locked').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Target Contests"
+          menuItems={relativeStages('Target Contests', 'locked').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Target Contests stage with processing next stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Target Contests"
-        menuItems={relativeStages('Target Contests', 'processing').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Target Contests"
+          menuItems={relativeStages('Target Contests', 'processing').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
@@ -120,11 +137,13 @@ describe('Setup', () => {
       jest.fn(),
     ])
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Opportunistic Contests"
-        menuItems={relativeStages('Opportunistic Contests').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Opportunistic Contests"
+          menuItems={relativeStages('Opportunistic Contests').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
@@ -135,11 +154,15 @@ describe('Setup', () => {
       jest.fn(),
     ])
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Opportunistic Contests"
-        menuItems={relativeStages('Opportunistic Contests', 'locked').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Opportunistic Contests"
+          menuItems={
+            relativeStages('Opportunistic Contests', 'locked').menuItems
+          }
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
@@ -150,79 +173,93 @@ describe('Setup', () => {
       jest.fn(),
     ])
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Opportunistic Contests"
-        menuItems={
-          relativeStages('Opportunistic Contests', 'processing').menuItems
-        }
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Opportunistic Contests"
+          menuItems={
+            relativeStages('Opportunistic Contests', 'processing').menuItems
+          }
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Audit Settings stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Audit Settings"
-        menuItems={relativeStages('Audit Settings').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Audit Settings"
+          menuItems={relativeStages('Audit Settings').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Audit Settings stage with locked next stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Audit Settings"
-        menuItems={relativeStages('Audit Settings', 'locked').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Audit Settings"
+          menuItems={relativeStages('Audit Settings', 'locked').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Audit Settings stage with processing next stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Audit Settings"
-        menuItems={relativeStages('Audit Settings', 'processing').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Audit Settings"
+          menuItems={relativeStages('Audit Settings', 'processing').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Review & Launch stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Review & Launch"
-        menuItems={relativeStages('Review & Launch').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Review & Launch"
+          menuItems={relativeStages('Review & Launch').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Review & Launch stage with locked next stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Review & Launch"
-        menuItems={relativeStages('Review & Launch', 'locked').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Review & Launch"
+          menuItems={relativeStages('Review & Launch', 'locked').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })
 
   it('renders Review & Launch stage with processing next stage', async () => {
     const { container } = await asyncActRender(
-      <Setup
-        refresh={jest.fn()}
-        stage="Review & Launch"
-        menuItems={relativeStages('Review & Launch', 'processing').menuItems}
-      />
+      <MemoryRouter>
+        <Setup
+          refresh={jest.fn()}
+          stage="Review & Launch"
+          menuItems={relativeStages('Review & Launch', 'processing').menuItems}
+        />
+      </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
   })

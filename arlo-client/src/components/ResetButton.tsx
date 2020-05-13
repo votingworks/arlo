@@ -2,9 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Button } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
-import { api, checkAndToast } from '../utilities'
-import { IErrorResponse } from '../../types'
-import { useAuthDataContext } from '../UserContext'
+import { api, checkAndToast } from './utilities'
+import { IErrorResponse } from '../types'
+import { useAuthDataContext } from './UserContext'
 
 interface IProps {
   updateAudit: () => void

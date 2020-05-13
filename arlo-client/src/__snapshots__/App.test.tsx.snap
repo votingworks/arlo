@@ -6,7 +6,7 @@ exports[`App renders properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-uJMKN kIyMQK"
+    class="sc-fYxtnH hGXXnf"
   >
     <div
       class="bp3-navbar sc-EHOje kGnsSl"
@@ -39,71 +39,6 @@ exports[`App renders properly 1`] = `
           />
         </div>
       </div>
-    </div>
-    <div
-      class="sc-jbKcbu dZqbbS"
-    >
-      <img
-        alt="Arlo, by VotingWorks"
-        height="50px"
-        src="/arlo.png"
-      />
-      <div
-        class="sc-gzVnrw coBAaV"
-      >
-        <label
-          for="audit-name"
-          id="audit-name-label"
-        >
-          Give your new audit a unique name.
-          <div
-            class="sc-jqCOkK diELAR sc-gqjmRU egaEhI"
-          >
-            <div
-              class="bp3-input-group sc-VigVT hfLuvB"
-            >
-              <input
-                aria-labelledby="audit-name-label"
-                class="bp3-input"
-                id="audit-name"
-                name="auditName"
-                style="padding-right: 10px;"
-                value=""
-              />
-            </div>
-          </div>
-        </label>
-      </div>
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hqyNC sUzDH sc-bwzfXH eBfcXh"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Create a New Audit
-        </span>
-      </button>
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hqyNC sUzDH sc-bdVaJa gLVjYw"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Log in as an Audit Admin
-        </span>
-      </button>
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hqyNC sUzDH sc-bdVaJa gLVjYw"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Log in as a Jurisdiction Admin
-        </span>
-      </button>
     </div>
   </div>
 </div>

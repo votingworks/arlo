@@ -46,34 +46,6 @@ exports[`CreateAudit lists associated elections for authenticated AA user 1`] = 
         Create a New Audit
       </span>
     </button>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-1/setup"
-    >
-      Election One
-       (NY)
-    </a>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-2/setup"
-    >
-      Election Two
-       (FL)
-    </a>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-3/setup"
-    >
-      Election Three
-      
-    </a>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-4/setup"
-    >
-      Election Four
-       (WA)
-    </a>
   </div>
 </div>
 `;
@@ -124,20 +96,6 @@ exports[`CreateAudit lists associated elections for authenticated JA user 1`] = 
         Create a New Audit
       </span>
     </button>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-1/jurisdiction/jurisdiction-1"
-    >
-      Election One
-       (NY)
-    </a>
-    <a
-      class="bp3-button bp3-intent-primary sc-gqjmRU gbnvnx"
-      href="/election/election-2/jurisdiction/jurisdiction-2"
-    >
-      
-      
-    </a>
   </div>
 </div>
 `;
@@ -152,42 +110,6 @@ exports[`CreateAudit renders correctly 1`] = `
       height="50px"
       src="/arlo.png"
     />
-    <div
-      class="sc-htpNat kLGmUl"
-    >
-      <label
-        for="audit-name"
-        id="audit-name-label"
-      >
-        Give your new audit a unique name.
-        <div
-          class="sc-VigVT kxLHnZ sc-EHOje bXavad"
-        >
-          <div
-            class="bp3-input-group sc-bZQynM fFGKEg"
-          >
-            <input
-              aria-labelledby="audit-name-label"
-              class="bp3-input"
-              id="audit-name"
-              name="auditName"
-              style="padding-right: 10px;"
-              value=""
-            />
-          </div>
-        </div>
-      </label>
-    </div>
-    <button
-      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-iwsKbI kljBkO sc-bwzfXH eBfcXh"
-      type="button"
-    >
-      <span
-        class="bp3-button-text"
-      >
-        Create a New Audit
-      </span>
-    </button>
     <button
       class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-iwsKbI kljBkO sc-bdVaJa gLVjYw"
       type="button"

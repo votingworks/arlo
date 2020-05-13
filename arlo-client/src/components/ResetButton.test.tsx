@@ -2,8 +2,8 @@ import React from 'react'
 import { render, fireEvent, wait } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import ResetButton from './ResetButton'
-import * as utilities from '../utilities'
-import AuthDataProvider from '../UserContext'
+import * as utilities from './utilities'
+import AuthDataProvider from './UserContext'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
