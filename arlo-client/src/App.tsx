@@ -12,10 +12,10 @@ import { ToastContainer } from 'react-toastify'
 import Header from './components/Header'
 import { Wrapper } from './components/Atoms/Wrapper'
 import {
-  SingleJurisdictionAudit,
   AuditAdminView,
   JurisdictionAdminView,
-} from './components/Audit'
+} from './components/MultiJurisdictionAudit'
+import SingleJurisdictionAudit from './components/SingleJurisdictionAudit'
 import DataEntry from './components/DataEntry'
 import CreateAudit from './components/CreateAudit'
 import 'react-toastify/dist/ReactToastify.css'

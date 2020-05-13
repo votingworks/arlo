@@ -1,16 +1,18 @@
 import React, { useContext } from 'react'
-import { waitForElement, wait, fireEvent } from '@testing-library/react'
+import { wait, fireEvent } from '@testing-library/react'
 import {
   BrowserRouter as Router,
   Router as RegularRouter,
   useParams,
 } from 'react-router-dom'
-import { SingleJurisdictionAudit, AuditAdminView } from './index'
-import { statusStates, dummyBallots, auditSettings } from './_mocks'
+import { AuditAdminView } from './index'
+import { auditSettings } from './_mocks'
 import * as utilities from '../utilities'
 import { asyncActRender, routerTestProps } from '../testUtilities'
 import AuthDataProvider, { AuthDataContext } from '../UserContext'
-import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
+import getJurisdictionFileStatus, {
+  FileProcessingStatus,
+} from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { contestMocks } from './Setup/Contests/_mocks'
 
@@ -53,144 +55,6 @@ afterEach(() => {
   })
 })
 
-describe('RiskLimitingAuditForm', () => {
-  it('fetches initial state from api', async () => {
-    apiMock.mockImplementation(async () => statusStates.empty)
-    const { container } = await asyncActRender(
-      <Router>
-        <SingleJurisdictionAudit />
-      </Router>
-    )
-
-    expect(container).toMatchSnapshot()
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock.mock.calls[0][0]).toMatch(
-        /\/election\/[^/]+\/audit\/status/
-      )
-      expect(apiMock.mock.results[0].value).resolves.toBe(statusStates.empty)
-    })
-  })
-
-  it('renders correctly with initialData', async () => {
-    const { container } = await asyncActRender(
-      <Router>
-        <SingleJurisdictionAudit />
-      </Router>
-    )
-    expect(container).toMatchSnapshot()
-  })
-
-  it('still renders if there is a server error', async () => {
-    checkAndToastMock.mockReturnValueOnce(true)
-    await asyncActRender(
-      <Router>
-        <SingleJurisdictionAudit />
-      </Router>
-    )
-    expect(checkAndToastMock).toBeCalledTimes(1)
-  })
-
-  it('does not render SelectBallotsToAudit when /audit/status is processing samplesizes', async () => {
-    apiMock.mockImplementation(async () => statusStates.contestFirstRound)
-    const { container, queryByTestId } = await asyncActRender(
-      <Router>
-        <SingleJurisdictionAudit />
-      </Router>
-    )
-
-    expect(queryByTestId('form-two')).toBeNull()
-    expect(container).toMatchSnapshot()
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock.mock.calls[0][0]).toMatch(
-        /\/election\/[^/]+\/audit\/status/
-      )
-      expect(apiMock.mock.results[0].value).resolves.toBe(
-        statusStates.contestFirstRound
-      )
-    })
-  })
-
-  it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
-    apiMock.mockImplementation(async () => statusStates.sampleSizeOptions)
-    const { container, getByTestId } = await asyncActRender(
-      <Router>
-        <SingleJurisdictionAudit />
-      </Router>
-    )
-
-    const fillFormTwo = await waitForElement(() => getByTestId('form-two'), {
-      container,
-    })
-
-    expect(fillFormTwo).toBeTruthy()
-    expect(container).toMatchSnapshot()
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock.mock.calls[0][0]).toMatch(
-        /\/election\/[^/]+\/audit\/status/
-      )
-      expect(apiMock.mock.results[0].value).resolves.toBe(
-        statusStates.sampleSizeOptions
-      )
-    })
-  })
-
-  it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
-    apiMock.mockImplementation(async () => statusStates.jurisdictionsInitial)
-    const { container, getByTestId, queryByTestId } = await asyncActRender(
-      <Router>
-        <SingleJurisdictionAudit />
-      </Router>
-    ) // this one will not have the first empty round
-
-    const fillFormTwo = await waitForElement(() => getByTestId('form-two'), {
-      container,
-    })
-
-    expect(fillFormTwo).toBeTruthy()
-    expect(queryByTestId('form-three-1')).toBeNull()
-    expect(container).toMatchSnapshot()
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock.mock.calls[0][0]).toMatch(
-        /\/election\/[^/]+\/audit\/status/
-      )
-      expect(apiMock.mock.results[0].value).resolves.toBe(
-        statusStates.jurisdictionsInitial
-      )
-    })
-  })
-
-  it('renders CalculateRiskMeasurement when /audit/status returns round data', async () => {
-    apiMock
-      .mockImplementationOnce(async () => statusStates.ballotManifestProcessed)
-      .mockImplementationOnce(async () => dummyBallots)
-    const { container, getByTestId } = await asyncActRender(
-      <Router>
-        <SingleJurisdictionAudit />
-      </Router>
-    ) // this one will not have the first empty round
-
-    const formThree = await waitForElement(() => getByTestId('form-three-1'), {
-      container,
-    })
-
-    expect(formThree).toBeTruthy()
-    expect(container).toMatchSnapshot()
-    await wait(() => {
-      expect(apiMock).toBeCalledTimes(2)
-      expect(apiMock.mock.calls[0][0]).toMatch(
-        /\/election\/[^/]+\/audit\/status/
-      )
-      expect(apiMock.mock.results[0].value).resolves.toBe(
-        statusStates.ballotManifestProcessed
-      )
-    })
-  })
-})
-
 describe('AA setup flow', () => {
   // AuditAdminView will only be rendered once the user is logged in, so
   // we simulate that.
@@ -219,9 +83,36 @@ describe('AA setup flow', () => {
         case '/election/1/round':
           return { rounds: [] }
         case '/election/1/jurisdiction':
-          return { jurisdictions: [] }
+          return {
+            jurisdictions: [
+              {
+                id: 'jurisdiction-id-1',
+                name: 'Jurisdiction One',
+                ballotManifest: { file: null, processing: null },
+                currentRoundStatus: null,
+              },
+              {
+                id: 'jurisdiction-id-2',
+                name: 'Jurisdiction Two',
+                ballotManifest: { file: null, processing: null },
+                currentRoundStatus: null,
+              },
+            ],
+          }
         case '/election/1/jurisdiction/file':
-          return { file: null, processing: null }
+          return {
+            file: {
+              contents: null,
+              name: 'file name',
+              uploadedAt: 'a long time ago in a galaxy far far away',
+            },
+            processing: {
+              status: FileProcessingStatus.Processed,
+              error: null,
+              startedAt: 'once upon a time',
+              endedAt: 'and they lived happily ever after',
+            },
+          }
         case '/election/1/contest':
           return contestMocks.filledTargeted
         case '/election/1/settings':

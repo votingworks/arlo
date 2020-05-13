@@ -14,7 +14,7 @@ import {
   InputLabel,
   FlexField,
   Action,
-} from '../../EstimateSampleSize'
+} from '../../../SingleJurisdictionAudit/EstimateSampleSize'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import schema from './schema'
