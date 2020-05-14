@@ -195,6 +195,7 @@ const DataEntry: React.FC<IProps> = ({
       /* istanbul ignore next */ // covered in end to end testing
       history.push(url)
     }
+    window.scrollTo(0, 0)
   }
 
   const previousBallot = (batchId: string, ballot: number) => () => {
@@ -209,6 +210,7 @@ const DataEntry: React.FC<IProps> = ({
       /* istanbul ignore next */ // covered in end to end testing
       history.push(url)
     }
+    window.scrollTo(0, 0)
   }
 
   const submitBallot = (batchId: string, ballotPosition: number) => async (
