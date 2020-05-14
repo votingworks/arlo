@@ -68,6 +68,8 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
         <CreateAuditBoards
           auditBoards={auditBoards}
           createAuditBoards={createAuditBoards}
+          numBallots={ballots.length}
+          roundNum={roundNum}
         />
         {auditBoards.length > 0 && (
           <>
