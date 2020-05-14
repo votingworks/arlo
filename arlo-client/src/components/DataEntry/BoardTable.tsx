@@ -67,10 +67,14 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
       case 'position':
         return <PaddedCell>{ballot.position}</PaddedCell>
       case 'status':
-        return ballot.status === BallotStatus.AUDITED ? (
+        return ballot.status !== BallotStatus.NOT_AUDITED ? (
           <PaddedCell>
             <>
-              Audited
+              {ballot.status === BallotStatus.AUDITED ? (
+                <>Audited</>
+              ) : (
+                <>Not Found</>
+              )}
               <ReauditLink
                 to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
                 className="bp3-button bp3-small"
