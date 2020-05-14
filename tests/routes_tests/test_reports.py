@@ -60,8 +60,8 @@ Online Data Entry?,Yes
 
 ####### AUDIT BOARDS ########
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation
-J1,Audit Board #1,Derk Clerk,Republican,Derk Clerk,Democrat
-J1,Audit Board #2,Derk Clerk,Democrat,Clem O'Hat Democrat,Republican
+J1,Audit Board #1,Bubbikin Republican,Democrat,Joe Schmo,Republican
+J1,Audit Board #2,Bubbikin Republican,Democrat,Joe Schmo,Republican
 
 ####### ROUNDS ########
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes
