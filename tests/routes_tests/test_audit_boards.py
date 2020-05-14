@@ -529,9 +529,9 @@ def set_up_audit_board(
         "Bubbikin Republican",
         "Clem O'Hat Democrat",
     ]
-    random.seed(12345)
-    member_1 = random.choice(SILLY_NAMES)
-    member_2 = random.choice(SILLY_NAMES)
+    rand = random.Random(12345)
+    member_1 = rand.choice(SILLY_NAMES)
+    member_2 = rand.choice(SILLY_NAMES)
 
     # Order of the names shouldn't matter for sign-off, so we shuffle
     # the names each time we set up the audit board members
@@ -539,7 +539,7 @@ def set_up_audit_board(
         {"name": member_1, "affiliation": "DEM"},
         {"name": member_2, "affiliation": "REP"},
     ]
-    random.shuffle(member_names)
+    rand.shuffle(member_names)
 
     # Set up the audit board
     rv = post_json(
