@@ -44,7 +44,7 @@ interface IProps {
   contests: IContest[]
   previousBallot: () => void
   nextBallot: () => void
-  submitBallot: (interpretations: IBallotInterpretation[]) => void
+  submitBallot: (interpretations?: IBallotInterpretation[]) => void
 }
 
 const emptyInterpretation = (contest: IContest) => ({
@@ -74,6 +74,11 @@ const Ballot: React.FC<IProps> = ({
     b => b.position === ballotPosition && b.batch.id === batchId
   )
   const ballot = ballots[ballotIx]
+
+  const setNotFound = async () => {
+    await submitBallot()
+    nextBallot()
+  }
 
   useEffect(() => {
     if (ballot) {
@@ -113,7 +118,7 @@ const Ballot: React.FC<IProps> = ({
             and move on to the next ballot.
           </p>
           <p>
-            <Button onClick={nextBallot} intent="danger">
+            <Button onClick={setNotFound} intent="danger">
               Ballot {ballotPosition} not found - move to next ballot
             </Button>
           </p>

@@ -17,11 +17,16 @@ describe('BoardTable', () => {
     )
     await wait(() => {
       expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
+
+      const notFound = getByText('Not Found')
+      expect(notFound).toBeTruthy()
+
       const button = getByText('Auditing Complete - Submit Results').closest(
         'a'
       )
       expect(button).toBeTruthy()
       expect(button!.getAttribute('disabled')).toBeFalsy()
+
       expect(container).toMatchSnapshot()
     })
   })
