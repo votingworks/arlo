@@ -49,7 +49,6 @@ interface IProps {
   goAudit: () => void
   interpretations: IBallotInterpretation[]
   nextBallot: () => void
-  previousBallot: () => void
   submitBallot: (interpretations: IBallotInterpretation[]) => void
 }
 
@@ -58,7 +57,6 @@ const BallotReview: React.FC<IProps> = ({
   goAudit,
   interpretations,
   nextBallot,
-  previousBallot,
   submitBallot,
 }: IProps) => {
   const handleSubmit = async () => {
@@ -93,7 +91,7 @@ const BallotReview: React.FC<IProps> = ({
           <FormButton type="submit" onClick={handleSubmit} intent="success">
             Submit &amp; Next Ballot
           </FormButton>
-          <Button onClick={previousBallot} minimal>
+          <Button onClick={goAudit} minimal>
             Back
           </Button>
         </ProgressActions>

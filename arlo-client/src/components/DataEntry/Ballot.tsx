@@ -138,10 +138,6 @@ const Ballot: React.FC<IProps> = ({
           interpretations={interpretations}
           goAudit={() => setAuditing(true)}
           nextBallot={nextBallot}
-          previousBallot={() => {
-            setAuditing(true)
-            previousBallot()
-          }}
           submitBallot={submitBallot}
         />
       )}
