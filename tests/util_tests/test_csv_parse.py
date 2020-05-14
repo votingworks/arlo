@@ -1,6 +1,13 @@
-import pytest, os
-from util.csv_parse import parse_csv, decode_csv_file, CSVParseError, CSVValueType
+import pytest, os, io
+from util.csv_parse import (
+    parse_csv,
+    decode_csv_file,
+    CSVParseError,
+    CSVValueType,
+    CSVColumnTypes,
+)
 from werkzeug.exceptions import BadRequest
+from typing import Union
 
 BALLOT_MANIFEST_COLUMNS = [
     ("Batch Name", CSVValueType.TEXT, True),
@@ -553,17 +560,29 @@ City of Petersburg #1,203,,
         74,
         BALLOT_MANIFEST_COLUMNS,
     ),
+    (
+        io.FileIO(
+            os.path.join(os.path.dirname(__file__), "windows1252-encoded.csv")
+        ).read(),
+        245,
+        BALLOT_MANIFEST_COLUMNS,
+    ),
 ]
 
 
 def test_parse_csv_real_world_examples():
+    def do_parse(csv: Union[str, bytes], columns: CSVColumnTypes) -> list:
+        if isinstance(csv, bytes):
+            csv = decode_csv_file(csv)
+        return list(parse_csv(csv, columns))
+
     for (csv, expected_error, columns) in REAL_WORLD_REJECTED_CSVS:
         with pytest.raises(CSVParseError) as error:
-            list(parse_csv(csv, columns))
+            do_parse(csv, columns)
         assert str(error.value) == expected_error
 
     for (csv, expected_rows, columns) in REAL_WORLD_ACCEPTED_CSVS:
-        parsed = list(parse_csv(csv, columns))
+        parsed = do_parse(csv, columns)
         assert len(parsed) == expected_rows
 
 
