@@ -61,6 +61,7 @@ export interface IBallotInterpretation {
 export enum BallotStatus {
   NOT_AUDITED = 'NOT_AUDITED',
   AUDITED = 'AUDITED',
+  NOT_FOUND = 'NOT_FOUND',
 }
 
 export interface IBallot {

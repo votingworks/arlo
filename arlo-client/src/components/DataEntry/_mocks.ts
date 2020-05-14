@@ -39,6 +39,17 @@ export const doneDummyBallots: { ballots: IBallot[] } = {
       status: BallotStatus.AUDITED,
       interpretations: [],
     },
+    {
+      id: 'ballot-id-4',
+      batch: {
+        name: '0003-04-Precinct 31 (Jonesboro Fire Department)',
+        id: 'batch-id-1',
+        tabulator: '11',
+      },
+      position: 1965,
+      status: BallotStatus.NOT_FOUND,
+      interpretations: [],
+    },
   ],
 }
 
