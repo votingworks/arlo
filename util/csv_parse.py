@@ -201,15 +201,13 @@ def pluralize(word: str, n: int) -> str:
 
 def decode_csv_file(file: bytes) -> str:
     try:
-        detect_result = chardet.detect(file)
-
-        if detect_result["confidence"] > 0:
-            try:
-                return file.decode(detect_result["encoding"])
-            except UnicodeDecodeError:
-                pass
-
-        return file.decode("utf-8-sig")
+        try:
+            return file.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            detect_result = chardet.detect(file)
+            if not detect_result["encoding"]:
+                raise
+            return file.decode(detect_result["encoding"])
     except UnicodeDecodeError:
         raise BadRequest(
             "Please submit a valid CSV."
