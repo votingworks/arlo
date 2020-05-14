@@ -134,8 +134,6 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
         )
         db.session.add(sampled_ballot_draw)
 
-    db.session.commit()
-
 
 @app.route("/election/<election_id>/round", methods=["GET"])
 @with_election_access
@@ -182,8 +180,8 @@ def create_round(election: Election):
         )
         db.session.add(round_contest)
 
-    db.session.commit()
-
     sample_ballots(election, round, sample_size)
+
+    db.session.commit()
 
     return jsonify({"status": "ok"})
