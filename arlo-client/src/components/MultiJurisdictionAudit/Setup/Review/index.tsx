@@ -71,9 +71,9 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
     })()
   }, [electionId])
 
-  const submit = () => {
+  const submit = async () => {
     try {
-      const result = api(`/election/${electionId}/round`, {
+      const result = await api(`/election/${electionId}/round`, {
         method: 'POST',
         body: JSON.stringify({
           sampleSize: Number(sampleSize),
