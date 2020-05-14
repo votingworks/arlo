@@ -20,6 +20,7 @@ module.exports = function(app) {
   app.use(proxy('/election/*/sample-sizes', { target }))
   app.use(proxy('/election/*/contest', { target }))
   app.use(proxy('/election/*/round', { target }))
+  app.use(proxy('/election/*/report', { target }))
   app.use(proxy('/election/*/jurisdictions', { target }))
   app.use(proxy('/election/*/jurisdiction', { target }))
   app.use(proxy('/election/*/jurisdiction/file', { target }))
