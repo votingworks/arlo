@@ -16,7 +16,12 @@ from tests.helpers import (
     audit_ballot,
     DEFAULT_JA_EMAIL,
     J1_SAMPLES_ROUND_1,
+    J1_BALLOTS_ROUND_2,
+    J1_BALLOTS_ROUND_1,
     J1_SAMPLES_ROUND_2,
+    AB1_BALLOTS_ROUND_1,
+    AB1_BALLOTS_ROUND_2,
+    AB2_BALLOTS_ROUND_2,
 )
 from arlo_server.models import (
     db,
@@ -107,7 +112,11 @@ def test_audit_boards_create_one(
 
 
 def test_audit_boards_list_one(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
@@ -131,7 +140,7 @@ def test_audit_boards_list_one(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
-                        "numSampledBallots": J1_SAMPLES_ROUND_1,
+                        "numSampledBallots": J1_BALLOTS_ROUND_1,
                         "numAuditedBallots": 0,
                     },
                 }
@@ -141,10 +150,8 @@ def test_audit_boards_list_one(
 
     # Fake auditing some ballots
     audit_board = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
-    num_audited_samples = 0
     for ballot in audit_board.sampled_ballots[:10]:
-        ballot.status = BallotStatus.AUDITED
-        num_audited_samples += len(ballot.draws)
+        audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     db.session.commit()
 
     rv = client.get(
@@ -161,8 +168,8 @@ def test_audit_boards_list_one(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
-                        "numSampledBallots": J1_SAMPLES_ROUND_1,
-                        "numAuditedBallots": num_audited_samples,
+                        "numSampledBallots": J1_BALLOTS_ROUND_1,
+                        "numAuditedBallots": 10,
                     },
                 }
             ]
@@ -172,7 +179,7 @@ def test_audit_boards_list_one(
     # Finish auditing ballots and sign off
     audit_board = db.session.merge(audit_board)
     for ballot in audit_board.sampled_ballots[10:]:
-        ballot.status = BallotStatus.AUDITED
+        audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     audit_board.signed_off_at = datetime.utcnow()
     db.session.commit()
 
@@ -190,8 +197,8 @@ def test_audit_boards_list_one(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": assert_is_date,
                     "currentRoundStatus": {
-                        "numSampledBallots": J1_SAMPLES_ROUND_1,
-                        "numAuditedBallots": J1_SAMPLES_ROUND_1,
+                        "numSampledBallots": J1_BALLOTS_ROUND_1,
+                        "numAuditedBallots": J1_BALLOTS_ROUND_1,
                     },
                 }
             ]
@@ -218,10 +225,13 @@ def test_audit_boards_create_two(
 
 
 def test_audit_boards_list_two(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    AB1_SAMPLES = 54
 
     rv = post_json(
         client,
@@ -244,7 +254,7 @@ def test_audit_boards_list_two(
                     "signedOffAt": None,
                     "passphrase": assert_is_passphrase,
                     "currentRoundStatus": {
-                        "numSampledBallots": AB1_SAMPLES,
+                        "numSampledBallots": AB1_BALLOTS_ROUND_1,
                         "numAuditedBallots": 0,
                     },
                 },
@@ -254,7 +264,7 @@ def test_audit_boards_list_two(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
-                        "numSampledBallots": J1_SAMPLES_ROUND_1 - AB1_SAMPLES,
+                        "numSampledBallots": J1_BALLOTS_ROUND_1 - AB1_BALLOTS_ROUND_1,
                         "numAuditedBallots": 0,
                     },
                 },
@@ -264,15 +274,11 @@ def test_audit_boards_list_two(
 
     # Fake auditing some ballots
     audit_board_1 = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
-    num_audited_samples_1 = 0
     for ballot in audit_board_1.sampled_ballots[:10]:
-        ballot.status = BallotStatus.AUDITED
-        num_audited_samples_1 += len(ballot.draws)
+        audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     audit_board_2 = AuditBoard.query.get(audit_boards["auditBoards"][1]["id"])
-    num_audited_samples_2 = 0
     for ballot in audit_board_2.sampled_ballots[:20]:
-        ballot.status = BallotStatus.AUDITED
-        num_audited_samples_2 += len(ballot.draws)
+        audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     db.session.commit()
 
     rv = client.get(
@@ -281,18 +287,18 @@ def test_audit_boards_list_two(
     audit_boards = json.loads(rv.data)["auditBoards"]
 
     assert audit_boards[0]["currentRoundStatus"] == {
-        "numSampledBallots": AB1_SAMPLES,
-        "numAuditedBallots": num_audited_samples_1,
+        "numSampledBallots": AB1_BALLOTS_ROUND_1,
+        "numAuditedBallots": 10,
     }
     assert audit_boards[1]["currentRoundStatus"] == {
-        "numSampledBallots": J1_SAMPLES_ROUND_1 - AB1_SAMPLES,
-        "numAuditedBallots": num_audited_samples_2,
+        "numSampledBallots": J1_BALLOTS_ROUND_1 - AB1_BALLOTS_ROUND_1,
+        "numAuditedBallots": 20,
     }
 
     # Finish auditing ballots and sign off
     audit_board_1 = db.session.merge(audit_board_1)
     for ballot in audit_board_1.sampled_ballots[10:]:
-        ballot.status = BallotStatus.AUDITED
+        audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     audit_board_1.signed_off_at = datetime.utcnow()
     db.session.commit()
 
@@ -303,13 +309,13 @@ def test_audit_boards_list_two(
 
     assert_is_date(audit_boards[0]["signedOffAt"])
     assert audit_boards[0]["currentRoundStatus"] == {
-        "numSampledBallots": AB1_SAMPLES,
-        "numAuditedBallots": AB1_SAMPLES,
+        "numSampledBallots": AB1_BALLOTS_ROUND_1,
+        "numAuditedBallots": AB1_BALLOTS_ROUND_1,
     }
     assert audit_boards[1]["signedOffAt"] is None
     assert audit_boards[1]["currentRoundStatus"] == {
-        "numSampledBallots": J1_SAMPLES_ROUND_1 - AB1_SAMPLES,
-        "numAuditedBallots": num_audited_samples_2,
+        "numSampledBallots": J1_BALLOTS_ROUND_1 - AB1_BALLOTS_ROUND_1,
+        "numAuditedBallots": 20,
     }
 
 
@@ -344,8 +350,6 @@ def test_audit_boards_list_round_2(
     round_2_id: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    AB1_SAMPLES_ROUND_2 = 176
-    AB2_SAMPLES_ROUND_2 = 56
 
     rv = post_json(
         client,
@@ -372,9 +376,9 @@ def test_audit_boards_list_round_2(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
-                        "numSampledBallots": AB1_SAMPLES_ROUND_2,
+                        "numSampledBallots": AB1_BALLOTS_ROUND_2,
                         # Some ballots got audited in round 1 and sampled again in round 2
-                        "numAuditedBallots": 22,
+                        "numAuditedBallots": 21,
                     },
                 },
                 {
@@ -383,8 +387,8 @@ def test_audit_boards_list_round_2(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
-                        "numSampledBallots": AB2_SAMPLES_ROUND_2,
-                        "numAuditedBallots": 6,
+                        "numSampledBallots": AB2_BALLOTS_ROUND_2,
+                        "numAuditedBallots": 5,
                     },
                 },
                 {
@@ -393,10 +397,10 @@ def test_audit_boards_list_round_2(
                     "passphrase": assert_is_passphrase,
                     "signedOffAt": None,
                     "currentRoundStatus": {
-                        "numSampledBallots": J1_SAMPLES_ROUND_2
-                        - AB1_SAMPLES_ROUND_2
-                        - AB2_SAMPLES_ROUND_2,
-                        "numAuditedBallots": 5,
+                        "numSampledBallots": J1_BALLOTS_ROUND_2
+                        - AB1_BALLOTS_ROUND_2
+                        - AB2_BALLOTS_ROUND_2,
+                        "numAuditedBallots": 3,
                     },
                 },
             ]
@@ -545,6 +549,8 @@ def set_up_audit_board(
     assert_ok(rv)
 
     # Fake auditing all the ballots
+    # We iterate over the ballot draws so that we can ensure the computed
+    # results are counting based on the samples, not the ballots.
     ballot_draws = (
         SampledBallotDraw.query.join(SampledBallot)
         .filter_by(audit_board_id=audit_board_id)

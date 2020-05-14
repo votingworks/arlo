@@ -9,8 +9,8 @@ from tests.helpers import (
     compare_json,
     post_json,
     assert_ok,
-    J1_SAMPLES_ROUND_1,
-    J1_SAMPLES_ROUND_2,
+    J1_BALLOTS_ROUND_1,
+    J1_BALLOTS_ROUND_2,
     AB1_BALLOTS_ROUND_1,
     AB2_BALLOTS_ROUND_1,
     AB1_BALLOTS_ROUND_2,
@@ -19,17 +19,17 @@ from arlo_server.auth import UserType
 from arlo_server.models import ContestChoice
 
 
-def test_ja_ballot_draws_bad_round_id(
+def test_ja_ballots_bad_round_id(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/invalid-round-id/ballot-draws"
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/invalid-round-id/ballots"
     )
     assert rv.status_code == 404
 
 
-def test_ja_ballot_draws_round_1(
+def test_ja_ballots_round_1(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -39,38 +39,38 @@ def test_ja_ballot_draws_round_1(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballot-draws"
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
     )
-    ballot_draws = json.loads(rv.data)["ballotDraws"]
+    ballots = json.loads(rv.data)["ballots"]
 
-    assert len(ballot_draws) == J1_SAMPLES_ROUND_1
+    assert len(ballots) == J1_BALLOTS_ROUND_1
     compare_json(
-        ballot_draws[0],
+        ballots[0],
         {
+            "id": assert_is_id,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
             "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
             "position": 0,
             "status": "NOT_AUDITED",
-            "ticketNumber": "0.100384496",
             "interpretations": [],
         },
     )
 
     ballot_with_wrong_status = next(
-        (b for b in ballot_draws if b["status"] != "NOT_AUDITED"), None
+        (b for b in ballots if b["status"] != "NOT_AUDITED"), None
     )
     assert ballot_with_wrong_status is None
 
-    assert ballot_draws == sorted(
-        ballot_draws,
-        key=lambda b: (b["auditBoard"]["name"], b["batch"]["name"], b["position"],),
+    assert ballots == sorted(
+        ballots,
+        key=lambda b: (b["auditBoard"]["name"], b["batch"]["name"], b["position"]),
     )
 
     # Try auditing one ballot
     choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch/{ballot_draws[0]['batch']['id']}/ballot/{ballot_draws[0]['position']}",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch/{ballots[0]['batch']['id']}/ballot/{ballots[0]['position']}",
         {
             "interpretations": [
                 {
@@ -85,18 +85,18 @@ def test_ja_ballot_draws_round_1(
     assert_ok(rv)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballot-draws"
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
     )
-    ballot_draws = json.loads(rv.data)["ballotDraws"]
+    ballots = json.loads(rv.data)["ballots"]
 
     compare_json(
-        ballot_draws[0],
+        ballots[0],
         {
+            "id": assert_is_id,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
             "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
             "position": 0,
             "status": "AUDITED",
-            "ticketNumber": "0.100384496",
             "interpretations": [
                 {
                     "contestId": contest_ids[0],
@@ -109,24 +109,24 @@ def test_ja_ballot_draws_round_1(
     )
 
 
-def test_ja_ballot_draws_before_audit_boards_set_up(
+def test_ja_ballots_before_audit_boards_set_up(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballot-draws"
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
     )
-    ballot_draws = json.loads(rv.data)["ballotDraws"]
-    assert len(ballot_draws) == J1_SAMPLES_ROUND_1
+    ballots = json.loads(rv.data)["ballots"]
+    assert len(ballots) == J1_BALLOTS_ROUND_1
 
     compare_json(
-        ballot_draws[0],
+        ballots[0],
         {
+            "id": assert_is_id,
             "auditBoard": None,
             "batch": {"id": assert_is_id, "name": "1", "tabulator": None},
             "position": 12,
             "status": "NOT_AUDITED",
-            "ticketNumber": "0.029898626",
             "interpretations": [],
         },
     )
@@ -141,25 +141,25 @@ def test_ja_ballot_draws_round_2(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/ballot-draws"
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/ballots"
     )
-    ballot_draws = json.loads(rv.data)["ballotDraws"]
+    ballots = json.loads(rv.data)["ballots"]
 
-    assert len(ballot_draws) == J1_SAMPLES_ROUND_2
+    assert len(ballots) == J1_BALLOTS_ROUND_2
     compare_json(
-        ballot_draws[0],
+        ballots[0],
         {
+            "id": assert_is_id,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
             "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
             "position": 3,
             "status": "NOT_AUDITED",
-            "ticketNumber": "0.306411348",
             "interpretations": [],
         },
     )
 
-    previously_audited_ballots = [b for b in ballot_draws if b["status"] == "AUDITED"]
-    assert len(previously_audited_ballots) == 33
+    previously_audited_ballots = [b for b in ballots if b["status"] == "AUDITED"]
+    assert len(previously_audited_ballots) == 29
 
 
 def test_ab_list_ballot_round_1(
@@ -185,6 +185,7 @@ def test_ab_list_ballot_round_1(
             "position": 0,
             "status": "NOT_AUDITED",
             "interpretations": [],
+            "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
         },
     )
 
@@ -231,6 +232,7 @@ def test_ab_list_ballot_round_1(
                     "comment": "blah blah blah",
                 }
             ],
+            "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
         },
     )
 
@@ -265,6 +267,7 @@ def test_ab_list_ballots_round_2(
             "position": 3,
             "status": "NOT_AUDITED",
             "interpretations": [],
+            "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
         },
     )
 
@@ -314,6 +317,7 @@ def test_ja_ballot_retrieval_list_round_1(
     assert "attachment; filename=" in rv.headers["Content-Disposition"]
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
+    assert len(retrieval_list.splitlines()) == J1_BALLOTS_ROUND_1 + 1
     assert retrieval_list == EXPECTED_RETRIEVAL_LIST_ROUND_1
 
 
@@ -332,6 +336,7 @@ def test_ja_ballot_retrieval_list_round_2(
     assert "attachment; filename=" in rv.headers["Content-Disposition"]
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
+    assert len(retrieval_list.splitlines()) == J1_BALLOTS_ROUND_2 + 1
     assert retrieval_list == EXPECTED_RETRIEVAL_LIST_ROUND_2
 
 

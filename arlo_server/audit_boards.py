@@ -139,19 +139,15 @@ def round_status_by_audit_board(
         jurisdiction_id=jurisdiction_id, round_id=round_id
     ).all()
     sampled_ballots_by_audit_board = dict(
-        SampledBallotDraw.query.filter_by(round_id=round_id)
-        .join(SampledBallot)
-        .join(AuditBoard)
+        SampledBallot.query.join(AuditBoard)
         .filter_by(jurisdiction_id=jurisdiction_id)
         .group_by(AuditBoard.id)
         .values(AuditBoard.id, func.count())
     )
     audited_ballots_by_audit_board = dict(
-        SampledBallotDraw.query.filter_by(round_id=round_id)
-        .join(SampledBallot)
-        .filter(SampledBallot.status != BallotStatus.NOT_AUDITED)
-        .join(AuditBoard)
+        SampledBallot.query.join(AuditBoard)
         .filter_by(jurisdiction_id=jurisdiction_id)
+        .filter(SampledBallot.status != BallotStatus.NOT_AUDITED)
         .group_by(AuditBoard.id)
         .values(AuditBoard.id, func.count())
     )
@@ -219,7 +215,7 @@ def count_audited_votes(election: Election, round: Round):
         .join(SampledBallotDraw)
         .filter_by(round_id=round.id)
         .group_by(BallotInterpretation.contest_choice_id)
-        .values(BallotInterpretation.contest_choice_id, func.count(),)
+        .values(BallotInterpretation.contest_choice_id, func.count())
     )
 
     for contest in election.contests:

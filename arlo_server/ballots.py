@@ -131,12 +131,11 @@ def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
     }
 
 
-def serialize_ballot_draw(ballot_draw: SampledBallotDraw) -> JSONDict:
-    ballot = ballot_draw.sampled_ballot
-    audit_board = ballot.audit_board
+def serialize_ballot(ballot: SampledBallot) -> JSONDict:
     batch = ballot.batch
+    audit_board = ballot.audit_board
     return {
-        "ticketNumber": ballot_draw.ticket_number,
+        "id": ballot.id,
         "status": ballot.status,
         "interpretations": [
             serialize_interpretation(i) for i in ballot.interpretations
@@ -147,54 +146,32 @@ def serialize_ballot_draw(ballot_draw: SampledBallotDraw) -> JSONDict:
     }
 
 
-def serialize_ballot(ballot: SampledBallot) -> JSONDict:
-    batch = ballot.batch
-    return {
-        "id": ballot.id,
-        "status": ballot.status,
-        "interpretations": [
-            serialize_interpretation(i) for i in ballot.interpretations
-        ],
-        "position": ballot.ballot_position,
-        "batch": {"id": batch.id, "name": batch.name, "tabulator": batch.tabulator,},
-    }
-
-
 @app.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballot-draws",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballots",
     methods=["GET"],
 )
 @with_jurisdiction_access
-def list_ballot_draws_for_jurisdiction(
+def list_ballots_for_jurisdiction(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
     round_id: str,
 ):
     Round.query.get_or_404(round_id)
-    ballot_draws = (
-        SampledBallotDraw.query.filter_by(round_id=round_id)
-        .join(SampledBallot)
-        .join(Batch)
+    ballots = (
+        SampledBallot.query.join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
+        .join(SampledBallotDraw)
+        .filter_by(round_id=round_id)
         .outerjoin(AuditBoard)
-        .order_by(
-            AuditBoard.name,
-            Batch.name,
-            SampledBallot.ballot_position,
-            SampledBallotDraw.ticket_number,
-        )
+        .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position,)
         .options(
-            contains_eager(SampledBallotDraw.sampled_ballot).contains_eager(
-                SampledBallot.batch
-            ),
-            contains_eager(SampledBallotDraw.sampled_ballot).contains_eager(
-                SampledBallot.audit_board
-            ),
+            contains_eager(SampledBallot.batch),
+            contains_eager(SampledBallot.audit_board),
         )
         .all()
     )
-    json_ballot_draws = [serialize_ballot_draw(b) for b in ballot_draws]
-    return jsonify({"ballotDraws": json_ballot_draws})
+    json_ballots = [serialize_ballot(b) for b in ballots]
+    return jsonify({"ballots": json_ballots})
 
 
 @app.route(
@@ -212,6 +189,7 @@ def list_ballots_for_audit_board(
         SampledBallot.query.filter_by(audit_board_id=audit_board.id)
         .join(Batch)
         .order_by(Batch.name, SampledBallot.ballot_position)
+        .options(contains_eager(SampledBallot.batch))
         .all()
     )
     json_ballots = [serialize_ballot(b) for b in ballots]
