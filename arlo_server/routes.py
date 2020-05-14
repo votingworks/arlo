@@ -852,22 +852,26 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, rou
     )
 
 
-@app.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>",
-    methods=["POST"],
-)
-def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
-    attributes = request.get_json()
-    ballots = (
+def get_ballot(election_id, jurisdiction_id, batch_id, ballot_position):
+    return (
         SampledBallot.query.filter_by(
             batch_id=batch_id, ballot_position=ballot_position
         )
         .join(SampledBallot.batch)
         .filter_by(jurisdiction_id=jurisdiction_id)
-        .all()
+        .filter(Jurisdiction.election_id == election_id)
+        .one_or_none()
     )
 
-    if not ballots:
+
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>/set-not-found",
+    methods=["POST"],
+)
+def ballot_set_not_found(election_id, jurisdiction_id, batch_id, ballot_position):
+    ballot = get_ballot(election_id, jurisdiction_id, batch_id, ballot_position)
+
+    if not ballot:
         return (
             jsonify(
                 errors=[
@@ -879,20 +883,37 @@ def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
             ),
             404,
         )
-    elif len(ballots) > 1:
+
+    # explicitly remove existing interpretations in case this ballot was previously set.
+    ballot.interpretations = []
+    ballot.status = BallotStatus.NOT_FOUND
+
+    db.session.commit()
+
+    return jsonify(status="ok")
+
+
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>",
+    methods=["POST"],
+)
+def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
+    attributes = request.get_json()
+    ballot = get_ballot(election_id, jurisdiction_id, batch_id, ballot_position)
+
+    if not ballot:
         return (
             jsonify(
                 errors=[
                     {
-                        "message": f"Multiple ballots found with election_id={election_id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}",
-                        "errorType": "BadRequest",
+                        "message": f"No ballot found with election_id={election_id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}",
+                        "errorType": "NotFoundError",
                     }
                 ]
             ),
-            400,
+            404,
         )
 
-    ballot = ballots[0]
     ballot.interpretations = [
         deserialize_interpretation(ballot.id, interpretation)
         for interpretation in attributes["interpretations"]
