@@ -107,6 +107,24 @@ const saveBallotInterpretations = async (
   }
 }
 
+const setBallotNotFound = async (
+  electionId: string,
+  jurisdictionId: string,
+  batchId: string,
+  ballotPosition: number
+) => {
+  try {
+    await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/batch/${batchId}/ballot/${ballotPosition}/set-not-found`,
+      {
+        method: 'POST',
+      }
+    )
+  } catch (err) {
+    toast.error(err.message)
+  }
+}
+
 const postSignoff = async (
   electionId: string,
   jurisdictionId: string,
@@ -214,16 +232,25 @@ const DataEntry: React.FC<IProps> = ({
   }
 
   const submitBallot = (batchId: string, ballotPosition: number) => async (
-    interpretations: IBallotInterpretation[]
+    interpretations?: IBallotInterpretation[]
   ) => {
     const { jurisdictionId, roundId, id } = auditBoard
-    await saveBallotInterpretations(
-      electionId,
-      jurisdictionId,
-      batchId,
-      ballotPosition,
-      interpretations
-    )
+    if (interpretations) {
+      await saveBallotInterpretations(
+        electionId,
+        jurisdictionId,
+        batchId,
+        ballotPosition,
+        interpretations
+      )
+    } else {
+      await setBallotNotFound(
+        electionId,
+        jurisdictionId,
+        batchId,
+        ballotPosition
+      )
+    }
     setBallots(await loadBallots(electionId, jurisdictionId, roundId, id))
   }
 
