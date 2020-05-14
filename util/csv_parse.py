@@ -1,6 +1,6 @@
 import io, itertools, re, locale, chardet
 from enum import Enum
-from typing import List, Tuple, Iterator, Dict, Any
+from typing import List, Iterator, Dict, Any, NamedTuple, Set
 import csv as py_csv
 from werkzeug.exceptions import BadRequest
 from util.process_file import UserError
@@ -16,11 +16,15 @@ class CSVValueType(str, Enum):
     EMAIL = "email"
 
 
+class CSVColumnType(NamedTuple):
+    name: str
+    value_type: CSVValueType
+    required: bool = True
+    unique: bool = False
+
+
 # https://emailregex.com/
 EMAIL_REGEX = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
-
-
-CSVColumnTypes = List[Tuple[str, CSVValueType, bool]]
 
 CSVRow = List[str]
 CSVIterator = Iterator[CSVRow]
@@ -29,7 +33,7 @@ CSVDictIterator = Iterator[Dict[str, Any]]
 # Robust CSV parsing
 # "Be conservative in what you do, be liberal in what you accept from others"
 # https://en.wikipedia.org/wiki/Robustness_principle
-def parse_csv(csv_string: str, columns: CSVColumnTypes) -> CSVDictIterator:
+def parse_csv(csv_string: str, columns: List[CSVColumnType]) -> CSVDictIterator:
     validate_is_csv(csv_string)
     csv: CSVIterator = py_csv.reader(io.StringIO(csv_string), delimiter=",")
     csv = strip_whitespace(csv)
@@ -38,6 +42,7 @@ def parse_csv(csv_string: str, columns: CSVColumnTypes) -> CSVDictIterator:
     csv = skip_empty_rows(csv)
     csv = reject_empty_cells(csv, columns)
     csv = validate_values(csv, columns)
+    csv = reject_duplicate_values(csv, columns)
     return convert_rows_to_dicts(csv, columns)
 
 
@@ -76,7 +81,7 @@ def reject_empty(csv: CSVIterator) -> CSVIterator:
     return itertools.chain([first, second], csv)
 
 
-def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
+def validate_headers(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterator:
     headers = next(csv)
 
     # Count empty trailing columns so we can ignore them.
@@ -91,8 +96,8 @@ def validate_headers(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
 
     lowercase_headers = [header.lower() for header in headers]
 
-    allowed_headers = [name for (name, _type, _required) in columns]
-    required_headers = [name for (name, _type, required) in columns if required]
+    allowed_headers = [c.name for c in columns]
+    required_headers = [c.name for c in columns if c.required]
 
     missing_headers = [
         required_header
@@ -146,7 +151,7 @@ def skip_empty_rows(csv: CSVIterator) -> CSVIterator:
             yield row
 
 
-def reject_empty_cells(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
+def reject_empty_cells(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterator:
     headers = next(csv)
     yield headers
 
@@ -158,8 +163,7 @@ def reject_empty_cells(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator
                 f" got {len(row)} {pluralize('cell', len(row))}."
             )
         for c, value in enumerate(row):
-            [_, _, required] = columns[c]
-            if required and value == "":
+            if columns[c].required and value == "":
                 raise CSVParseError(
                     "All cells must have values."
                     f" Got empty cell at column {headers[c]}, row {r+1}."
@@ -167,20 +171,20 @@ def reject_empty_cells(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator
         yield row
 
 
-def validate_values(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
+def validate_values(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterator:
     yield next(csv)  # Skip the headers
     for r, row in enumerate(csv):
 
-        for (header, value_type, _required), value in zip(columns, row):
-            where = f"column {header}, row {r+1}"
+        for column, value in zip(columns, row):
+            where = f"column {column.name}, row {r+1}"
 
-            if value_type is CSVValueType.NUMBER:
+            if column.value_type is CSVValueType.NUMBER:
                 try:
                     locale.atoi(value)
                 except ValueError as error:
                     raise CSVParseError(f"Expected a number in {where}. Got: {value}.")
 
-            if value_type is CSVValueType.EMAIL:
+            if column.value_type is CSVValueType.EMAIL:
                 if not EMAIL_REGEX.match(value):
                     raise CSVParseError(
                         f"Expected an email address in {where}. Got: {value}."
@@ -189,9 +193,30 @@ def validate_values(csv: CSVIterator, columns: CSVColumnTypes) -> CSVIterator:
         yield row
 
 
-def convert_rows_to_dicts(csv: CSVIterator, columns: CSVColumnTypes) -> CSVDictIterator:
+def reject_duplicate_values(
+    csv: CSVIterator, columns: List[CSVColumnType]
+) -> CSVIterator:
+    yield next(csv)  # Skip the headers
+
+    seen: Dict[str, Set[str]] = {column.name: set() for column in columns}
+    for row in csv:
+        for column, value in zip(columns, row):
+            if column.unique and value in seen[column.name]:
+                raise CSVParseError(
+                    f"Values in column {column.name} must be unique."
+                    + f" Found duplicate value: {value}."
+                )
+            else:
+                seen[column.name].add(value)
+
+        yield row
+
+
+def convert_rows_to_dicts(
+    csv: CSVIterator, columns: List[CSVColumnType]
+) -> CSVDictIterator:
     next(csv)  # Skip headers
-    headers = [header for (header, _, _) in columns]
+    headers = [c.name for c in columns]
     return (dict(zip(headers, row)) for row in csv)
 
 

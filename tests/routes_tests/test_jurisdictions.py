@@ -1,5 +1,3 @@
-import pytest
-from sqlalchemy.exc import SQLAlchemyError
 from flask.testing import FlaskClient
 
 import json, io, uuid
@@ -12,7 +10,6 @@ from tests.helpers import (
     post_json,
     compare_json,
     assert_is_date,
-    asserts_startswith,
     set_logged_in_user,
     DEFAULT_JA_EMAIL,
     SAMPLE_SIZE_ROUND_1,
@@ -167,10 +164,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
     )
     assert_ok(rv)
 
-    with pytest.raises(SQLAlchemyError):
-        bgcompute_update_ballot_manifest_file()
-
-    db.session.rollback()
+    bgcompute_update_ballot_manifest_file()
 
     rv = client.get(f"/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)
@@ -185,9 +179,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
                         "status": "ERRORED",
                         "startedAt": assert_is_date,
                         "completedAt": assert_is_date,
-                        "error": asserts_startswith(
-                            '(psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "batch_jurisdiction_id_name_key"'
-                        ),
+                        "error": "Values in column Batch Name must be unique. Found duplicate value: 1.",
                     },
                     "numBallots": None,
                     "numBatches": None,

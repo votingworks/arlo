@@ -19,7 +19,7 @@ from util.process_file import (
     serialize_file_processing,
 )
 from util.csv_download import csv_response
-from util.csv_parse import decode_csv_file, parse_csv, CSVValueType
+from util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
 
 BATCH_NAME = "Batch Name"
 NUMBER_OF_BALLOTS = "Number of Ballots"
@@ -27,10 +27,10 @@ STORAGE_LOCATION = "Storage Location"
 TABULATOR = "Tabulator"
 
 BALLOT_MANIFEST_COLUMNS = [
-    (BATCH_NAME, CSVValueType.TEXT, True),
-    (NUMBER_OF_BALLOTS, CSVValueType.NUMBER, True),
-    (STORAGE_LOCATION, CSVValueType.TEXT, False),
-    (TABULATOR, CSVValueType.TEXT, False),
+    CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True),
+    CSVColumnType(NUMBER_OF_BALLOTS, CSVValueType.NUMBER),
+    CSVColumnType(STORAGE_LOCATION, CSVValueType.TEXT, required=False),
+    CSVColumnType(TABULATOR, CSVValueType.TEXT, required=False),
 ]
 
 

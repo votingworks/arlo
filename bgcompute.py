@@ -6,8 +6,6 @@ from arlo_server.routes import compute_sample_sizes
 from arlo_server.ballot_manifest import process_ballot_manifest_file
 from util.jurisdiction_bulk_update import process_jurisdictions_file
 
-from sqlalchemy.exc import SQLAlchemyError
-
 
 def bgcompute():
     bgcompute_compute_round_contests_sample_sizes()
@@ -70,8 +68,6 @@ def bgcompute_update_ballot_manifest_file() -> int:
         try:
             jurisdiction = Jurisdiction.query.filter_by(manifest_file_id=file.id).one()
             process_ballot_manifest_file(db.session, jurisdiction, file)
-        except SQLAlchemyError as e:
-            raise e
         except:
             print("ERROR updating ballot manifest file")
 
