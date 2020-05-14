@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { Wrapper } from '../../Atoms/Wrapper'
 import H2Title from '../../Atoms/H2Title'
 import { IRound } from '../useRoundsJurisdictionAdmin'
-import { IErrorResponse, IBallot } from '../../../types'
+import { IBallot } from '../../../types'
 import { api, checkAndToast } from '../../utilities'
 // import useAuditSettings from '../Setup/useAuditSettings'
 import CreateAuditBoards from './CreateAuditBoards'
@@ -31,17 +31,17 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
     jurisdictionId: string
   }>()
 
-  const [ballots, setBallots] = useState<IBallot[]>([])
+  const [ballots, setBallots] = useState<IBallot[] | null>(null)
   useEffect(() => {
     ;(async () => {
       try {
-        const response: { ballotDraws: IBallot[] } | IErrorResponse = await api(
+        const response: { ballots: IBallot[] } = await api(
           `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/ballots`
         )
         // checkAndToast left here for consistency and reference but not tested since it's vestigial
         /* istanbul ignore next */
         if (checkAndToast(response)) return
-        setBallots(response.ballotDraws)
+        setBallots(response.ballots)
       } catch (err) /* istanbul ignore next */ {
         // TEST TODO
         toast.error(err.message)
@@ -57,6 +57,8 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
   ])
 
   // const [{ online }] = useAuditSettings(electionId!)
+
+  if (!ballots) return null // Still loading
 
   if (!round.isAuditComplete) {
     const { roundNum } = round
