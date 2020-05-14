@@ -3,23 +3,13 @@ from util.csv_parse import (
     parse_csv,
     decode_csv_file,
     CSVParseError,
-    CSVValueType,
-    CSVColumnTypes,
+    CSVColumnType,
 )
 from werkzeug.exceptions import BadRequest
-from typing import Union
+from typing import Union, List
+from arlo_server.ballot_manifest import BALLOT_MANIFEST_COLUMNS
+from util.jurisdiction_bulk_update import JURISDICTIONS_COLUMNS
 
-BALLOT_MANIFEST_COLUMNS = [
-    ("Batch Name", CSVValueType.TEXT, True),
-    ("Number of Ballots", CSVValueType.NUMBER, True),
-    ("Tabulator", CSVValueType.TEXT, False),
-    ("Storage Location", CSVValueType.TEXT, False),
-]
-
-JURISDICTIONS_COLUMNS = [
-    ("Jurisdiction", CSVValueType.TEXT, True),
-    ("Admin Email", CSVValueType.EMAIL, True),
-]
 
 # Happy path
 def test_parse_csv_happy_path():
@@ -188,7 +178,7 @@ def test_parse_csv_extra_column():
         )
     assert (
         str(error.value)
-        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator, Storage Location."
+        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Storage Location, Tabulator."
     )
 
     with pytest.raises(CSVParseError) as error:
@@ -200,7 +190,7 @@ def test_parse_csv_extra_column():
         )
     assert (
         str(error.value)
-        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator, Storage Location."
+        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Storage Location, Tabulator."
     )
 
 
@@ -229,6 +219,20 @@ def test_parse_csv_empty_trailing_columns_with_data_in_those_columns():
     assert (
         str(error.value)
         == "Empty trailing column 4 expected to have no values, but row 1 has a value: z."
+    )
+
+
+def test_parse_csv_duplicate_value_in_unique_column():
+    with pytest.raises(CSVParseError) as error:
+        list(
+            parse_csv(
+                ("Batch Name,Number of Ballots\n" "1,2\n" "1,3"),
+                BALLOT_MANIFEST_COLUMNS,
+            )
+        )
+    assert (
+        str(error.value)
+        == "Values in column Batch Name must be unique. Found duplicate value: 1."
     )
 
 
@@ -350,7 +354,33 @@ Bliss Twp,,,199
 Carp Lake Twp,,,214
 Center Twp,,,180
 """,
-        "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator, Storage Location.",
+        "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Storage Location, Tabulator.",
+        BALLOT_MANIFEST_COLUMNS,
+    ),
+    (
+        """Batch Name,Number of Ballots
+"Blue Lake Township, Precinct 1",485
+"Casnovia Township, Precinct 1",440
+"Cedar Creek Township, Precinct 1",544
+"Dalton Township, Precinct 1",270
+"Dalton Township, Precinct 1 AV",229
+"Dalton Township, Precinct 2",225
+"Dalton Township, Precinct 2 AV",75
+"Ravenna Township, Precinct 1",278
+"Ravenna Township, Precinct 1 AV",297
+"Sullivan Township, Precinct 1",309
+"Sullivan Township, Precinct 1 AV",220
+"White River Township, Precinct 1",358
+"Whitehall Township, Precinct 1",288
+"Whitehall Township, Precinct 1",168
+"Whitehall Township, Precinct 1",493
+"City of Montague, Precinct 1",562
+"City of Muskegon, Precinct 1",189
+"City of Muskegon, Precinct 1 AV",181
+"City of Whitehall, Precinct 1",495
+"City of Whitehall, Precinct 1",813
+""",
+        "Values in column Batch Name must be unique. Found duplicate value: Whitehall Township, Precinct 1.",
         BALLOT_MANIFEST_COLUMNS,
     ),
 ]
@@ -571,7 +601,7 @@ City of Petersburg #1,203,,
 
 
 def test_parse_csv_real_world_examples():
-    def do_parse(csv: Union[str, bytes], columns: CSVColumnTypes) -> list:
+    def do_parse(csv: Union[str, bytes], columns: List[CSVColumnType]) -> list:
         if isinstance(csv, bytes):
             csv = decode_csv_file(csv)
         return list(parse_csv(csv, columns))

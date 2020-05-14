@@ -301,3 +301,42 @@ def test_ballot_manifest_upload_invalid_num_ballots(
             },
         },
     )
+
+
+def test_ballot_manifest_upload_duplicate_batch_name(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.put(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Batch Name,Number of Ballots,Storage Location,Tabulator\n"
+                    b"12,23,Bin 2,Tabulator 1\n"
+                    b"12,100,Bin 3,Tabulator 2\n"
+                    b"6,0,,\n"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    bgcompute_update_ballot_manifest_file()
+
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "manifest.csv", "uploadedAt": assert_is_date,},
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Values in column Batch Name must be unique. Found duplicate value: 12.",
+            },
+        },
+    )

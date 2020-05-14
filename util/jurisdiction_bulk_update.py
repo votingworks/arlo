@@ -9,15 +9,15 @@ from arlo_server.models import (
     Jurisdiction,
 )
 from util.process_file import process_file
-from util.csv_parse import parse_csv, CSVValueType
+from util.csv_parse import parse_csv, CSVValueType, CSVColumnType
 
 
 JURISDICTION_NAME = "Jurisdiction"
 ADMIN_EMAIL = "Admin Email"
 
 JURISDICTIONS_COLUMNS = [
-    ("Jurisdiction", CSVValueType.TEXT, True),
-    ("Admin Email", CSVValueType.EMAIL, True),
+    CSVColumnType("Jurisdiction", CSVValueType.TEXT),
+    CSVColumnType("Admin Email", CSVValueType.EMAIL),
 ]
 
 
