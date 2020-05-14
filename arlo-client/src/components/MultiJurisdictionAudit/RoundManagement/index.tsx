@@ -36,7 +36,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
     ;(async () => {
       try {
         const response: { ballotDraws: IBallot[] } | IErrorResponse = await api(
-          `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/ballot-draws`
+          `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/ballots`
         )
         // checkAndToast left here for consistency and reference but not tested since it's vestigial
         /* istanbul ignore next */
