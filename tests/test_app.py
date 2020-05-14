@@ -1202,6 +1202,26 @@ def test_ballot_set(client, election_id):
         }
     ]
 
+    ## mark the ballot not found
+    rv = client.post(
+        f"{url_prefix}/jurisdiction/{jurisdiction_id}/batch/{batch_id}/ballot/{ballot_position}/set-not-found"
+    )
+
+    response = json.loads(rv.data)
+    assert response["status"] == "ok"
+
+    ## verify the update actually did something
+    rv = client.get(
+        "{}/jurisdiction/{}/round/{}/ballot-list".format(
+            url_prefix, jurisdiction_id, round_id
+        )
+    )
+    response = json.loads(rv.data)
+    ballot = [b for b in response["ballots"] if b["position"] == ballot_position][0]
+
+    assert ballot["status"] == "NOT_FOUND"
+    assert ballot["interpretations"] == []
+
 
 def test_audit_board(client, election_id):
     (
