@@ -79,7 +79,7 @@ const createRound = async (electionId: string, roundNum: number) => {
 }
 
 const downloadAuditAdminReport = (electionId: string) => {
-  window.open(`/election/${electionId}/audit/report`)
+  window.open(`/election/${electionId}/report`)
 }
 
 const downloadJurisdictionAdminReport = (
