@@ -16,6 +16,7 @@ black = "==19.10b0"
 
 [packages]
 authlib = "*"
+chardet = "*"
 consistent_sampler = "*"
 cryptorandom = "*"
 flask = "*"

@@ -1,4 +1,4 @@
-import io, itertools, re, locale
+import io, itertools, re, locale, chardet
 from enum import Enum
 from typing import List, Tuple, Iterator, Dict, Any
 import csv as py_csv
@@ -201,8 +201,16 @@ def pluralize(word: str, n: int) -> str:
 
 def decode_csv_file(file: bytes) -> str:
     try:
+        detect_result = chardet.detect(file)
+
+        if detect_result["confidence"] > 0:
+            try:
+                return file.decode(detect_result["encoding"])
+            except UnicodeDecodeError:
+                pass
+
         return file.decode("utf-8-sig")
-    except Exception:
+    except UnicodeDecodeError:
         raise BadRequest(
             "Please submit a valid CSV."
             " If you are working with an Excel spreadsheet,"
