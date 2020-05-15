@@ -147,7 +147,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
             meta!.organizations.map(o =>
               o.elections.map(election => (
                 <AuditLink
-                  to={`/election/${election.id}/setup`}
+                  to={`/election/${election.id}`}
                   key={election.id}
                   className="bp3-button bp3-intent-primary"
                 >
