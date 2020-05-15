@@ -256,6 +256,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
               <FormButton
                 intent="primary"
                 disabled={
+                  locked ||
                   !isSetupComplete(jurisdictions, contests, auditSettings)
                 }
                 onClick={handleSubmit}
