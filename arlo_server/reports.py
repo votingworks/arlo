@@ -83,8 +83,8 @@ def write_heading(report, heading: str):
 
 def write_election_info(report, election: Election):
     write_heading(report, "ELECTION INFO")
-    report.writerow(["Election Name", election.election_name])
-    report.writerow(["State", election.state])
+    report.writerow(["Election Name", "State"])
+    report.writerow([election.election_name, election.state])
 
 
 def write_contests(report, election: Election):
@@ -117,10 +117,15 @@ def write_contests(report, election: Election):
 
 def write_audit_settings(report, election: Election):
     write_heading(report, "AUDIT SETTINGS")
-    report.writerow(["Audit Name", election.audit_name])
-    report.writerow(["Risk Limit", f"{election.risk_limit}%"])
-    report.writerow(["Random Seed", election.random_seed])
-    report.writerow(["Online Data Entry?", pretty_boolean(election.online)])
+    report.writerow(["Audit Name", "Risk Limit", "Random Seed", "Online Data Entry?"])
+    report.writerow(
+        [
+            election.audit_name,
+            f"{election.risk_limit}%",
+            election.random_seed,
+            pretty_boolean(election.online),
+        ]
+    )
 
 
 def write_audit_boards(report, election: Election):
