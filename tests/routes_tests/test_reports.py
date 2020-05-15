@@ -44,8 +44,8 @@ def test_jurisdiction_admin_report(
 
 
 EXPECTED_AA_REPORT = """####### ELECTION INFO ########
-Election Name,Test Election
-State,CA
+Election Name,State
+Test Election,CA
 
 ####### CONTESTS ########
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes
@@ -53,10 +53,8 @@ Contest 1,Targeted,1,1,1000,candidate 1: 600; candidate 2: 400
 Contest 2,Opportunistic,2,2,600,candidate 1: 200; candidate 2: 300; candidate 3: 100
 
 ####### AUDIT SETTINGS ########
-Audit Name,Test Audit
-Risk Limit,10%
-Random Seed,1234567890
-Online Data Entry?,Yes
+Audit Name,Risk Limit,Random Seed,Online Data Entry?
+Test Audit,10%,1234567890,Yes
 
 ####### AUDIT BOARDS ########
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation
