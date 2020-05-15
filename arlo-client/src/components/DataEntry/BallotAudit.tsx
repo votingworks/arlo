@@ -119,6 +119,14 @@ const BallotAuditContest = ({
     setInterpretation({ ...interpretation, comment: null })
   }
 
+  const clearSelection = () => {
+    setInterpretation({
+      ...interpretation,
+      interpretation: null,
+      comment: null,
+    })
+  }
+
   // Since the radio button values must be strings, not full objects,
   // we condense our data model for interpretations to strings:
   // - For buttons representing interpretation VOTE (one for each
@@ -192,6 +200,14 @@ const BallotAuditContest = ({
       <Button minimal icon="edit" onClick={toggleCommenting}>
         {commenting ? 'Remove comment' : 'Add comment'}
       </Button>
+      {interpretation.interpretation && (
+        <>
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+          <Button minimal icon="reset" onClick={clearSelection}>
+            Clear
+          </Button>
+        </>
+      )}
       {commenting && (
         <Field
           name={`comment-${contest.name}`}
