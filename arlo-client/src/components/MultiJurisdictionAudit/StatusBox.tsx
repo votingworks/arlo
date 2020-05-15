@@ -232,7 +232,7 @@ export const JurisdictionAdminStatusBox = ({
     const details = [
       `${numCompleted} of ${auditBoards.length} audit boards complete.`,
     ]
-    if (numCompleted !== auditBoards.length)
+    if (numCompleted === auditBoards.length)
       details.push(
         `Waiting for all jurisdictions to complete Round ${roundNum}.`
       )
