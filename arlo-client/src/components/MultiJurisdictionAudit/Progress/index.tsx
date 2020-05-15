@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Table, Column, Cell } from '@blueprintjs/table'
 import H2Title from '../../Atoms/H2Title'
-import useJurisdictions, {
+import {
   JurisdictionRoundStatus,
   IJurisdiction,
   prettifyStatus,
@@ -20,12 +20,11 @@ const PaddedCell = styled(Cell)`
 `
 
 interface IProps {
-  refreshId: string
+  jurisdictions: IJurisdiction[]
 }
 
-const Progress: React.FC<IProps> = ({ refreshId }: IProps) => {
+const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const jurisdictions = useJurisdictions(electionId, refreshId)
   const [
     jurisdictionDetail,
     setJurisdictionDetail,

@@ -3,8 +3,7 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Callout, H4 } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
-import useRoundsAuditAdmin from './useRoundsAuditAdmin'
-import useJurisdictions, {
+import {
   IJurisdiction,
   FileProcessingStatus,
   JurisdictionRoundStatus,
@@ -14,8 +13,6 @@ import FormButton from '../Atoms/Form/FormButton'
 import { api } from '../utilities'
 import { Inner } from '../Atoms/Wrapper'
 import { IAuditSettings, IContest } from '../../types'
-import useAuditSettings from './useAuditSettings'
-import useContests from './useContests'
 import { IRound } from './useRoundsJurisdictionAdmin'
 import { IAuditBoard } from './useAuditBoards'
 
@@ -99,19 +96,19 @@ export const isSetupComplete = (
   Object.values(auditSettings).every(v => v !== null)
 
 interface IAuditAdminProps {
-  refreshId: string
+  rounds: IRound[]
+  jurisdictions: IJurisdiction[]
+  contests: IContest[]
+  auditSettings: IAuditSettings
 }
 
 export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
-  refreshId,
+  rounds,
+  jurisdictions,
+  contests,
+  auditSettings,
 }: IAuditAdminProps) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const rounds = useRoundsAuditAdmin(electionId, refreshId)
-  const jurisdictions = useJurisdictions(electionId, refreshId)
-  const [contests] = useContests(electionId, refreshId)
-  const [auditSettings] = useAuditSettings(electionId, refreshId)
-
-  if (!rounds || !contests) return null // Still loading
 
   // Audit setup
   if (rounds.length === 0) {
