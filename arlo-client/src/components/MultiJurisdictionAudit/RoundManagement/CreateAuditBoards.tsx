@@ -11,6 +11,16 @@ const Wrapper = styled.div`
   margin: 20px 0;
 `
 
+const AuditBoardsInput = styled(Field)`
+  margin-left: 0;
+  width: 100px;
+`
+
+const BallotsToAudit = styled.p`
+  margin: 15px 0;
+  font-weight: 500;
+`
+
 interface IValues {
   numAuditBoards: number
 }
@@ -18,9 +28,16 @@ interface IValues {
 interface IProps {
   createAuditBoards: (auditBoards: { name: string }[]) => Promise<boolean>
   auditBoards: IAuditBoard[]
+  numBallots: number
+  roundNum: number
 }
 
-const CreateAuditBoards = ({ createAuditBoards, auditBoards }: IProps) => {
+const CreateAuditBoards = ({
+  createAuditBoards,
+  auditBoards,
+  numBallots,
+  roundNum,
+}: IProps) => {
   const submit = async ({ numAuditBoards }: IValues) => {
     const boards = [...Array(numAuditBoards).keys()].map(i => ({
       name: `Audit Board #${i + 1}`,
@@ -47,21 +64,20 @@ const CreateAuditBoards = ({ createAuditBoards, auditBoards }: IProps) => {
       >
         {({ handleSubmit, setFieldValue }) => (
           <>
-            <label htmlFor="auditBoards">
-              Set the number of audit boards you wish to use.
-              <Field
-                component={Select}
-                id="numAuditBoards"
-                name="numAuditBoards"
-                onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-                  setFieldValue('numAuditBoards', Number(e.currentTarget.value))
-                }
-                disabled={disabled}
-              >
-                {generateOptions(15)}
-              </Field>
-            </label>
-            <br />
+            <AuditBoardsInput
+              component={Select}
+              id="numAuditBoards"
+              name="numAuditBoards"
+              onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                setFieldValue('numAuditBoards', Number(e.currentTarget.value))
+              }
+              disabled={disabled}
+            >
+              {generateOptions(15)}
+            </AuditBoardsInput>
+            <BallotsToAudit>
+              {numBallots} Ballots to Audit in Round {roundNum}
+            </BallotsToAudit>
             {!disabled && (
               <FormButton onClick={handleSubmit}>Save &amp; Next</FormButton>
             )}
