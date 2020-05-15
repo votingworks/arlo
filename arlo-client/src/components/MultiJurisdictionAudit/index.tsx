@@ -9,9 +9,17 @@ import useSetupMenuItems from './useSetupMenuItems'
 import BallotManifest from './Setup/BallotManifest'
 import RoundManagement from './RoundManagement'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
-import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from './StatusBox'
+import {
+  AuditAdminStatusBox,
+  JurisdictionAdminStatusBox,
+  isSetupComplete,
+} from './StatusBox'
 import useBallotManifest from './useBallotManifest'
 import useAuditBoards from './useAuditBoards'
+import useAuditSettings from './useAuditSettings'
+import useJurisdictions from './useJurisdictions'
+import useContests from './useContests'
+import useRoundsAuditAdmin from './useRoundsAuditAdmin'
 
 interface IParams {
   electionId: string
@@ -20,6 +28,7 @@ interface IParams {
 
 export const AuditAdminView: React.FC = () => {
   const { electionId, view } = useParams<IParams>()
+
   const [stage, setStage] = useState<ElementType<typeof setupStages>>(
     'Participants'
   )
@@ -29,15 +38,27 @@ export const AuditAdminView: React.FC = () => {
     electionId
   )
 
+  const rounds = useRoundsAuditAdmin(electionId, refreshId)
+  const jurisdictions = useJurisdictions(electionId, refreshId)
+  const [contests] = useContests(electionId, refreshId)
+  const [auditSettings] = useAuditSettings(electionId, refreshId)
+
   useEffect(() => {
     refresh()
   }, [refresh])
+
+  if (!contests || !rounds) return null // Still loading
 
   switch (view) {
     case 'setup':
       return (
         <Wrapper>
-          <AuditAdminStatusBox refreshId={refreshId} />
+          <AuditAdminStatusBox
+            rounds={rounds}
+            jurisdictions={jurisdictions}
+            contests={contests}
+            auditSettings={auditSettings}
+          />
           <Inner>
             <Sidebar title="Audit Setup" menuItems={menuItems} />
             <Setup stage={stage} refresh={refresh} menuItems={menuItems} />
@@ -47,7 +68,12 @@ export const AuditAdminView: React.FC = () => {
     case 'progress':
       return (
         <Wrapper>
-          <AuditAdminStatusBox refreshId={refreshId} />
+          <AuditAdminStatusBox
+            rounds={rounds}
+            jurisdictions={jurisdictions}
+            contests={contests}
+            auditSettings={auditSettings}
+          />
           <Inner>
             <Sidebar
               title="Audit Progress"
@@ -59,12 +85,20 @@ export const AuditAdminView: React.FC = () => {
                 },
               ]}
             />
-            <Progress refreshId={refreshId} />
+            <Progress jurisdictions={jurisdictions} />
           </Inner>
         </Wrapper>
       )
     default:
-      return <Redirect to={`/election/${electionId}/progress`} />
+      return (
+        <Redirect
+          to={
+            isSetupComplete(jurisdictions, contests, auditSettings)
+              ? `/election/${electionId}/progress`
+              : `/election/${electionId}/setup`
+          }
+        />
+      )
   }
 }
 
