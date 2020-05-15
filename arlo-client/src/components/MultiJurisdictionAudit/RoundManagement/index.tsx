@@ -96,13 +96,13 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
               Download Ballot Labels for Round {roundNum}
             </FormButton>
             {/* make conditional on online */}
-            <QRs passphrases={auditBoards.map(b => b.passphrase)} />
             <FormButton
               verticalSpaced
               onClick={() => downloadDataEntry(auditBoards)}
             >
               Download Audit Board Credentials for Data Entry
             </FormButton>
+            <QRs passphrases={auditBoards.map(b => b.passphrase)} />
             <RoundProgress auditBoards={auditBoards} round={round} />
             {/* {online ? <RoundProgress /> : <RoundDataEntry />} */}
           </>
