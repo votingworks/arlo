@@ -30,7 +30,7 @@ const renderInterpretation = (
         return choice!.name
       }
       case Interpretation.BLANK:
-        return 'Blank vote/no mark'
+        return 'Overvote/Blank vote/Not on Ballot'
       case Interpretation.CANT_AGREE:
         return "Audit board can't agree"
       default:
