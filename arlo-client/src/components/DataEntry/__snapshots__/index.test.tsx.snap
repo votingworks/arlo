@@ -114,7 +114,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                the candidates/choices below that you see marked on the paper ballot.
             </p>
             <p>
-              If the voter did not vote in the contest, select "Blank vote/no mark."
+              If the voter did not vote in the contest, select "Overvote/Blank vote/Not on Ballot."
             </p>
             <p>
               If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
@@ -206,7 +206,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                       <span
                         class="radio-text"
                       >
-                        Blank vote/no mark
+                        Overvote/Blank vote/Not on Ballot
                       </span>
                     </span>
                   </label>

@@ -83,7 +83,10 @@ describe('Ballot', () => {
     })
   })
 
-  const buttonLabels = ["Audit board can't agree", 'Blank vote/no mark']
+  const buttonLabels = [
+    "Audit board can't agree",
+    'Overvote/Blank vote/Not on Ballot',
+  ]
   buttonLabels.forEach(buttonLabel => {
     it(`selects ${buttonLabel}`, async () => {
       const { container, getByLabelText, getByText, getByTestId } = render(
@@ -108,9 +111,7 @@ describe('Ballot', () => {
       await wait(() =>
         fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
       )
-      await wait(() => {
-        expect(getByText('Submit & Next Ballot')).toBeTruthy()
-      })
+      await wait(() => expect(getByText('Submit & Next Ballot')).toBeTruthy())
       await wait(() => {
         expect(getByText(buttonLabel)).toBeTruthy()
         expect(container).toMatchSnapshot()
