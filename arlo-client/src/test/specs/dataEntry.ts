@@ -88,7 +88,7 @@ describe('audit flow', () => {
     $('.bp3-callout*=auditing ballot 3 of').waitForExist()
     ballotNext("Audit board can't agree")
     $('.bp3-callout*=auditing ballot 4 of').waitForExist()
-    ballotNext('Blank vote/no mark')
+    ballotNext('Overvote/Blank vote/Not on Ballot')
     $('.bp3-callout*=auditing ballot 5 of').waitForExist()
   })
 
