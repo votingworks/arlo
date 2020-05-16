@@ -38,8 +38,8 @@ const BallotAudit: React.FC<IProps> = ({
           marked on the paper ballot.
         </p>
         <p>
-          If the voter did not vote in the contest, select &quot;Blank vote/no
-          mark.&quot;
+          If the voter did not vote in the contest, select &quot;Overvote/Blank
+          vote/Not on Ballot.&quot;
         </p>
         <p>
           If the audit board cannot agree, select &quot;Audit board can&apos;t
@@ -194,7 +194,7 @@ const BallotAuditContest = ({
           gray
           checked={interpretation.interpretation === Interpretation.BLANK}
           value={Interpretation.BLANK}
-          label="Blank vote/no mark"
+          label="Overvote/Blank vote/Not on Ballot"
         />
       </RadioGroupFlex>
       <Button minimal icon="edit" onClick={toggleCommenting}>
