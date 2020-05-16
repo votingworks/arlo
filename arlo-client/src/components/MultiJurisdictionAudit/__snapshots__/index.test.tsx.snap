@@ -22,6 +22,9 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
           <p>
             Audit setup is not complete.
           </p>
+          <p>
+            0 of 2 jurisdictions have completed file uploads.
+          </p>
         </div>
       </div>
     </div>
@@ -64,7 +67,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
         </h2>
         <div>
           <div
-            class="bp3-table-container bp3-table-no-rows"
+            class="bp3-table-container bp3-table-selection-enabled"
             tabindex="0"
           >
             <div
@@ -80,7 +83,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                     class="bp3-table-top-container"
                   >
                     <div
-                      class="bp3-table-column-headers"
+                      class="bp3-table-column-headers bp3-table-selection-enabled"
                     >
                       <div
                         style="width: 600px;"
@@ -183,7 +186,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                   </div>
                   <div
                     class="bp3-table-bottom-container"
-                    style="height: 0px; width: 600px;"
+                    style="height: 60px; width: 600px;"
                   >
                     <div
                       class="bp3-table-quadrant-body-container"
@@ -191,11 +194,106 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                       <div>
                         <div
                           class="bp3-table-body-virtual-client bp3-table-cell-client"
-                          style="height: 0px; width: 600px;"
+                          style="height: 60px; width: 600px;"
                         >
                           <div
                             class="bp3-table-body-cells"
-                          />
+                          >
+                            <div
+                              class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-iAyFgw ebPmAO"
+                              style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
+                            >
+                              <div
+                                class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                              >
+                                <button
+                                  class="bp3-button bp3-minimal bp3-small bp3-intent-primary sc-gzVnrw kdzzfK"
+                                  parentcellheight="30"
+                                  parentcellwidth="150"
+                                  type="button"
+                                >
+                                  <span
+                                    class="bp3-button-text"
+                                  >
+                                    Jurisdiction One
+                                  </span>
+                                </button>
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-iAyFgw ebPmAO"
+                              style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
+                            >
+                              <div
+                                class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                              >
+                                No manifest uploaded
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-iAyFgw ebPmAO"
+                              style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
+                            >
+                              <div
+                                class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                              />
+                            </div>
+                            <div
+                              class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-iAyFgw ebPmAO"
+                              style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
+                            >
+                              <div
+                                class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                              />
+                            </div>
+                            <div
+                              class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-iAyFgw ebPmAO"
+                              style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
+                            >
+                              <div
+                                class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                              >
+                                <button
+                                  class="bp3-button bp3-minimal bp3-small bp3-intent-primary sc-gzVnrw kdzzfK"
+                                  parentcellheight="30"
+                                  parentcellwidth="150"
+                                  type="button"
+                                >
+                                  <span
+                                    class="bp3-button-text"
+                                  >
+                                    Jurisdiction Two
+                                  </span>
+                                </button>
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-iAyFgw ebPmAO"
+                              style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
+                            >
+                              <div
+                                class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                              >
+                                No manifest uploaded
+                              </div>
+                            </div>
+                            <div
+                              class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-iAyFgw ebPmAO"
+                              style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
+                            >
+                              <div
+                                class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                              />
+                            </div>
+                            <div
+                              class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-iAyFgw ebPmAO"
+                              style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
+                            >
+                              <div
+                                class="bp3-table-truncated-text bp3-table-no-wrap-text"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -213,7 +311,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                     class="bp3-table-top-container"
                   >
                     <div
-                      class="bp3-table-column-headers"
+                      class="bp3-table-column-headers bp3-table-selection-enabled"
                     >
                       <div
                         style="width: 600px;"
@@ -316,7 +414,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                   </div>
                   <div
                     class="bp3-table-bottom-container"
-                    style="height: 0px; width: 600px;"
+                    style="height: 60px; width: 600px;"
                   >
                     <div
                       class="bp3-table-quadrant-body-container"
@@ -324,7 +422,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                       <div>
                         <div
                           class="bp3-table-body-virtual-client bp3-table-cell-client"
-                          style="height: -30px; width: 600px;"
+                          style="width: 600px;"
                         >
                           <div
                             class="bp3-table-body-cells"
@@ -392,6 +490,9 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           </h4>
           <p>
             Audit setup is not complete.
+          </p>
+          <p>
+            0 of 2 jurisdictions have completed file uploads.
           </p>
         </div>
       </div>
@@ -928,20 +1029,20 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           <div
             class="sc-dnqmqq HzlIh"
           >
-            <label
-              class="bp3-file-input"
+            <span>
+              file name
+               
+            </span>
+            <button
+              class="bp3-button sc-gzVnrw kdzzfK"
+              type="button"
             >
-              <input
-                accept=".csv"
-                name="csv"
-                type="file"
-              />
               <span
-                class="bp3-file-upload-input"
+                class="bp3-button-text"
               >
-                Select a CSV...
+                Replace File
               </span>
-            </label>
+            </button>
           </div>
         </div>
         <div
