@@ -2,14 +2,33 @@
 <a href="./">back to organizations</a>
 
 <p><p>
-  
+
 <ul>
   {% for jurisdiction in election.jurisdictions %}
   <form method="post" action="./jurisdictionadmin-login">
     <li> {{jurisdiction.name}}
+      ({% for ja in jurisdiction.jurisdiction_administrations %}
+      {{ja.user.email}}, 
+      {% endfor %})
       <input type="hidden" name="email" value="{{jurisdiction.jurisdiction_administrations[0].user.email}}">
       <input type="submit" value="log in as">
     </li>
   </form>
   {% endfor %}
 </ul>
+
+
+<h2>Clone this Election</h2>
+
+<form method="post" action="election-clone">
+  <input type="hidden" name="election_id" value="{{election.id}}">
+  Organization:
+  <select name="organization_id">
+    {% for org in organizations %}
+    <option value="{{org.id}}">{{org.name}}</option>
+    {% endfor %}
+  </select>
+  <br>
+  New Name: <input type="text" name="name" value="Clone of {{election.audit_name}}">
+  <input type="submit">
+</form>
