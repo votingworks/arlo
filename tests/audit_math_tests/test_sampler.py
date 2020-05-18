@@ -133,6 +133,21 @@ def test_draw_more_macro_sample(macro_batches, macro_contest):
         )
 
 
+def test_draw_all_ballots():
+    manifest = {
+        "pct 1": 25,
+        "pct 2": 25,
+        "pct 3": 25,
+        "pct 4": 25,
+    }
+
+    sample = sampler.draw_sample(seed, manifest, 100, 0)
+
+    assert len(sample) == 100
+    ballot_positions = sorted([position for (_, (_, position), _) in sample])
+    assert ballot_positions == sorted(list(range(1, 26)) * 4)
+
+
 expected_sample = [
     ("0.000617786129909912", ("pct 2", 3), 1),
     ("0.002991631653037245", ("pct 3", 24), 1),
