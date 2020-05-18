@@ -3,7 +3,7 @@ import { IBallot } from '../../../types'
 import { IAuditBoard } from '../useAuditBoards'
 
 export const downloadLabels = async (
-  r: number,
+  roundNum: number,
   ballots: IBallot[]
 ): Promise<void> => {
   /* istanbul ignore else */
@@ -38,12 +38,12 @@ export const downloadLabels = async (
       labels.text(`Ballot Number: ${ballot.position}`, x, y[2])
     })
     labels.autoPrint()
-    labels.save(`Round ${r + 1} Labels.pdf`)
+    labels.save(`Round ${roundNum} Labels.pdf`)
   }
 }
 
 export const downloadPlaceholders = async (
-  r: number,
+  roundNum: number,
   ballots: IBallot[]
 ): Promise<void> => {
   /* istanbul ignore else */
@@ -67,7 +67,7 @@ export const downloadPlaceholders = async (
       pageCount += 1
     })
     placeholders.autoPrint()
-    placeholders.save(`Round ${r + 1} Placeholders.pdf`)
+    placeholders.save(`Round ${roundNum} Placeholders.pdf`)
   }
 }
 
