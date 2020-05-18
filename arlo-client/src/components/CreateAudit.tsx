@@ -69,9 +69,6 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   }
 
   if (isAuthenticated === null) return null // Still loading
-  if (meta && meta.type === 'audit_board') {
-    return <div>404 Not Found</div>
-  }
   return (
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
@@ -108,7 +105,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
           )}
         </Formik>
       )}
-      {!isAuthenticated ? (
+      {!isAuthenticated || (meta && meta.type === 'audit_board') ? (
         <>
           <Button
             verticalSpaced
