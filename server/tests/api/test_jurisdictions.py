@@ -13,6 +13,10 @@ from ..helpers import (
     DEFAULT_JA_EMAIL,
     SAMPLE_SIZE_ROUND_1,
     J1_SAMPLES_ROUND_1,
+    J1_BALLOTS_ROUND_1,
+    BALLOTS_ROUND_1,
+    AB1_SAMPLES_ROUND_1,
+    AB1_BALLOTS_ROUND_1,
 )
 from ...app import db
 from ...auth import UserType
@@ -208,80 +212,70 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
     compare_json(jurisdictions, expected)
 
 
-def test_jurisdictions_round_status(
+def test_jurisdictions_status_round_1_no_audit_boards(
     client: FlaskClient,
     election_id: str,
-    jurisdiction_ids: List[str],
     round_1_id: str,  # pylint: disable=unused-argument
 ):
-
     rv = client.get(f"/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "NOT_STARTED",
-        "numBallotsSampled": J1_SAMPLES_ROUND_1,
+        "numSamples": J1_SAMPLES_ROUND_1,
+        "numSamplesAudited": 0,
+        "numBallots": J1_BALLOTS_ROUND_1,
         "numBallotsAudited": 0,
     }
     assert jurisdictions[1]["currentRoundStatus"] == {
         "status": "NOT_STARTED",
-        "numBallotsSampled": SAMPLE_SIZE_ROUND_1 - J1_SAMPLES_ROUND_1,
+        "numSamples": SAMPLE_SIZE_ROUND_1 - J1_SAMPLES_ROUND_1,
+        "numSamplesAudited": 0,
+        "numBallots": BALLOTS_ROUND_1 - J1_BALLOTS_ROUND_1,
         "numBallotsAudited": 0,
     }
     assert jurisdictions[2]["currentRoundStatus"] == {
         "status": "COMPLETE",
-        "numBallotsSampled": 0,
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numBallots": 0,
         "numBallotsAudited": 0,
     }
 
-    # Simulate creating some audit boards
-    rv = client.get(f"/election/{election_id}/round")
-    round = json.loads(rv.data)["rounds"][0]
 
-    ballots = (
-        SampledBallot.query.join(SampledBallotDraw)
-        .filter_by(round_id=round["id"])
-        .all()
-    )
-    audit_board_1_id = str(uuid.uuid4())
-    audit_board_1 = AuditBoard(
-        id=audit_board_1_id,
-        jurisdiction_id=jurisdiction_ids[0],
-        round_id=round["id"],
-        sampled_ballots=ballots[: AB1_SAMPLES + 1],
-    )
-    audit_board_2_id = str(uuid.uuid4())
-    audit_board_2 = AuditBoard(
-        id=audit_board_2_id,
-        jurisdiction_id=jurisdiction_ids[0],
-        round_id=round["id"],
-        sampled_ballots=ballots[AB1_SAMPLES + 1 :],
-    )
-    db.session.add(audit_board_1)
-    db.session.add(audit_board_2)
-    db.session.commit()
-
+def test_jurisdictions_status_round_1_with_audit_boards(
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
+    audit_board_round_1_ids: List[str],
+):
     rv = client.get(f"/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "IN_PROGRESS",
-        "numBallotsSampled": J1_SAMPLES_ROUND_1,
+        "numSamples": J1_SAMPLES_ROUND_1,
+        "numSamplesAudited": 0,
+        "numBallots": J1_BALLOTS_ROUND_1,
         "numBallotsAudited": 0,
     }
     assert jurisdictions[1]["currentRoundStatus"] == {
         "status": "NOT_STARTED",
-        "numBallotsSampled": SAMPLE_SIZE_ROUND_1 - J1_SAMPLES_ROUND_1,
+        "numSamples": SAMPLE_SIZE_ROUND_1 - J1_SAMPLES_ROUND_1,
+        "numSamplesAudited": 0,
+        "numBallots": BALLOTS_ROUND_1 - J1_BALLOTS_ROUND_1,
         "numBallotsAudited": 0,
     }
     assert jurisdictions[2]["currentRoundStatus"] == {
         "status": "COMPLETE",
-        "numBallotsSampled": 0,
+        "numSamples": 0,
+        "numSamplesAudited": 0,
+        "numBallots": 0,
         "numBallotsAudited": 0,
     }
 
     # Simulate one audit board auditing all its ballots and signing off
-    audit_board_1 = AuditBoard.query.get(audit_board_1_id)
+    audit_board_1 = AuditBoard.query.get(audit_board_round_1_ids[0])
     for ballot in audit_board_1.sampled_ballots:
         ballot.status = BallotStatus.AUDITED
     audit_board_1.signed_off_at = datetime.utcnow()
@@ -292,12 +286,14 @@ def test_jurisdictions_round_status(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "IN_PROGRESS",
-        "numBallotsSampled": J1_SAMPLES_ROUND_1,
-        "numBallotsAudited": AB1_SAMPLES,
+        "numSamples": J1_SAMPLES_ROUND_1,
+        "numSamplesAudited": AB1_SAMPLES_ROUND_1,
+        "numBallots": J1_BALLOTS_ROUND_1,
+        "numBallotsAudited": AB1_BALLOTS_ROUND_1,
     }
 
     # Simulate the other audit board auditing all its ballots and signing off
-    audit_board_2 = AuditBoard.query.get(audit_board_2_id)
+    audit_board_2 = AuditBoard.query.get(audit_board_round_1_ids[1])
     for ballot in audit_board_2.sampled_ballots:
         ballot.status = BallotStatus.AUDITED
     audit_board_2.signed_off_at = datetime.utcnow()
@@ -308,8 +304,10 @@ def test_jurisdictions_round_status(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "COMPLETE",
-        "numBallotsSampled": J1_SAMPLES_ROUND_1,
-        "numBallotsAudited": J1_SAMPLES_ROUND_1,
+        "numSamples": J1_SAMPLES_ROUND_1,
+        "numSamplesAudited": J1_SAMPLES_ROUND_1,
+        "numBallots": J1_BALLOTS_ROUND_1,
+        "numBallotsAudited": J1_BALLOTS_ROUND_1,
     }
 
 
@@ -344,7 +342,9 @@ def test_jurisdictions_round_status_offline(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "NOT_STARTED",
-        "numBallotsSampled": J1_SAMPLES_ROUND_1,
+        "numSamples": J1_SAMPLES_ROUND_1,
+        "numSamplesAudited": 0,
+        "numBallots": J1_BALLOTS_ROUND_1,
         "numBallotsAudited": 0,
     }
 
@@ -371,7 +371,9 @@ def test_jurisdictions_round_status_offline(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "IN_PROGRESS",
-        "numBallotsSampled": J1_SAMPLES_ROUND_1,
+        "numSamples": J1_SAMPLES_ROUND_1,
+        "numSamplesAudited": 0,
+        "numBallots": J1_BALLOTS_ROUND_1,
         "numBallotsAudited": 0,
     }
 
@@ -385,6 +387,8 @@ def test_jurisdictions_round_status_offline(
 
     assert jurisdictions[0]["currentRoundStatus"] == {
         "status": "COMPLETE",
-        "numBallotsSampled": J1_SAMPLES_ROUND_1,
-        "numBallotsAudited": J1_SAMPLES_ROUND_1,
+        "numSamples": J1_SAMPLES_ROUND_1,
+        "numSamplesAudited": J1_SAMPLES_ROUND_1,
+        "numBallots": J1_BALLOTS_ROUND_1,
+        "numBallotsAudited": J1_BALLOTS_ROUND_1,
     }
