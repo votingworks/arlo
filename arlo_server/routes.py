@@ -920,7 +920,7 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     retrieval_list_csv = ballot_retrieval_list(jurisdiction, round)
     return csv_response(
         retrieval_list_csv,
-        filename=f"ballot-retrieval-{election_timestamp_name(election)}",
+        filename=f"ballot-retrieval-{election_timestamp_name(election)}.csv",
     )
 
 

@@ -315,6 +315,7 @@ def test_ja_ballot_retrieval_list_round_1(
     )
     assert rv.status_code == 200
     assert "attachment; filename=" in rv.headers["Content-Disposition"]
+    assert ".csv" in rv.headers["Content-Disposition"]
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     assert len(retrieval_list.splitlines()) == J1_BALLOTS_ROUND_1 + 1
