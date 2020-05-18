@@ -50,6 +50,7 @@ def test_draw_sample():
 
     sample = sampler.draw_sample(SEED, manifest, 20, 0)
 
+    print(sample)
     for i, item in enumerate(sample):
         expected = expected_sample[i]
         assert item == expected, "Draw sample failed: got {}, expected {}".format(
@@ -83,6 +84,7 @@ def test_draw_more_samples():
     assert samp_size == len(sample), "Received sample of size {}, expected {}".format(
         samp_size, len(sample)
     )
+    print(sample)
     for i, item in enumerate(sample):
         expected = expected_second_sample[i]
         assert item == expected, "Draw sample failed: got {}, expected {}".format(
@@ -133,7 +135,7 @@ def test_draw_more_macro_sample(macro_batches, macro_contest):
         )
 
 
-def test_draw_all_ballots():
+def test_ballot_labels():
     manifest = {
         "pct 1": 25,
         "pct 2": 25,
@@ -141,16 +143,19 @@ def test_draw_all_ballots():
         "pct 4": 25,
     }
 
-    sample = sampler.draw_sample(seed, manifest, 100, 0)
+    sample = sampler.draw_sample(SEED, manifest, 100, 0)
 
     assert len(sample) == 100
-    ballot_positions = sorted([position for (_, (_, position), _) in sample])
-    assert ballot_positions == sorted(list(range(1, 26)) * 4)
+    for item in sample:
+        ballot = item[1][1]
+        batch = item[1][0]
+        assert 1 <= ballot and ballot <= manifest[batch]
 
 
 expected_sample = [
     ("0.000617786129909912", ("pct 2", 3), 1),
     ("0.002991631653037245", ("pct 3", 24), 1),
+    ("0.012057030610635061", ("pct 1", 25), 1),
     ("0.017930028930651931", ("pct 4", 19), 1),
     ("0.025599454926985137", ("pct 3", 15), 1),
     ("0.045351055354441163", ("pct 1", 7), 1),
@@ -160,6 +165,7 @@ expected_sample = [
     ("0.090240829778172783", ("pct 3", 12), 1),
     ("0.096136506157297637", ("pct 1", 20), 2),
     ("0.104280162683637014", ("pct 4", 17), 1),
+    ("0.108948480696023984", ("pct 1", 25), 2),
     ("0.111195681310332785", ("pct 1", 4), 1),
     ("0.114438612046531251", ("pct 4", 3), 1),
     ("0.130457464320709301", ("pct 2", 1), 1),
@@ -167,8 +173,6 @@ expected_sample = [
     ("0.134519219670087860", ("pct 3", 20), 1),
     ("0.135840440920085144", ("pct 3", 10), 1),
     ("0.138772253094235762", ("pct 4", 20), 1),
-    ("0.145377629080170387", ("pct 2", 9), 1),
-    ("0.146681466396519279", ("pct 1", 20), 3),
 ]
 
 expected_macro_sample = [
@@ -187,6 +191,7 @@ expected_macro_sample = [
 expected_first_sample = [
     ("0.000617786129909912", ("pct 2", 3), 1),
     ("0.002991631653037245", ("pct 3", 24), 1),
+    ("0.012057030610635061", ("pct 1", 25), 1),
     ("0.017930028930651931", ("pct 4", 19), 1),
     ("0.025599454926985137", ("pct 3", 15), 1),
     ("0.045351055354441163", ("pct 1", 7), 1),
@@ -194,11 +199,12 @@ expected_first_sample = [
     ("0.064553852798863609", ("pct 1", 22), 1),
     ("0.078998835671540970", ("pct 1", 20), 1),
     ("0.090240829778172783", ("pct 3", 12), 1),
-    ("0.096136506157297637", ("pct 1", 20), 2),
 ]
 
 expected_second_sample = [
+    ("0.096136506157297637", ("pct 1", 20), 2),
     ("0.104280162683637014", ("pct 4", 17), 1),
+    ("0.108948480696023984", ("pct 1", 25), 2),
     ("0.111195681310332785", ("pct 1", 4), 1),
     ("0.114438612046531251", ("pct 4", 3), 1),
     ("0.130457464320709301", ("pct 2", 1), 1),
@@ -206,8 +212,6 @@ expected_second_sample = [
     ("0.134519219670087860", ("pct 3", 20), 1),
     ("0.135840440920085144", ("pct 3", 10), 1),
     ("0.138772253094235762", ("pct 4", 20), 1),
-    ("0.145377629080170387", ("pct 2", 9), 1),
-    ("0.146681466396519279", ("pct 1", 20), 3),
 ]
 
 expected_first_macro_sample = [
