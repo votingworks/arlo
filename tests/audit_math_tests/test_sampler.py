@@ -51,7 +51,6 @@ def test_draw_sample():
 
     sample = sampler.draw_sample(SEED, manifest, 20, 0)
 
-    print(sample)
     for i, item in enumerate(sample):
         expected = expected_sample[i]
         assert item == expected, "Draw sample failed: got {}, expected {}".format(
@@ -85,7 +84,6 @@ def test_draw_more_samples():
     assert samp_size == len(sample), "Received sample of size {}, expected {}".format(
         samp_size, len(sample)
     )
-    print(sample)
     for i, item in enumerate(sample):
         expected = expected_second_sample[i]
         assert item == expected, "Draw sample failed: got {}, expected {}".format(
@@ -137,7 +135,8 @@ def test_draw_more_macro_sample(macro_batches, macro_contest):
 
 
 def random_manifest():
-    return {f"pct {n}": random.randint(1, 10) for n in range(random.randint(1, 10))}
+    rand = random.Random(12345)
+    return {f"pct {n}": rand.randint(1, 10) for n in range(rand.randint(1, 10))}
 
 
 def test_ballot_labels():

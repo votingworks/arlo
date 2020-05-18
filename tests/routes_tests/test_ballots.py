@@ -50,7 +50,7 @@ def test_ja_ballots_round_1(
             "id": assert_is_id,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
             "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "position": 0,
+            "position": 8,
             "status": "NOT_AUDITED",
             "interpretations": [],
         },
@@ -95,7 +95,7 @@ def test_ja_ballots_round_1(
             "id": assert_is_id,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
             "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "position": 0,
+            "position": 8,
             "status": "AUDITED",
             "interpretations": [
                 {
@@ -159,7 +159,7 @@ def test_ja_ballot_draws_round_2(
     )
 
     previously_audited_ballots = [b for b in ballots if b["status"] == "AUDITED"]
-    assert len(previously_audited_ballots) == 29
+    assert len(previously_audited_ballots) == 30
 
 
 def test_ab_list_ballot_round_1(
@@ -182,7 +182,7 @@ def test_ab_list_ballot_round_1(
         {
             "id": assert_is_id,
             "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "position": 0,
+            "position": 8,
             "status": "NOT_AUDITED",
             "interpretations": [],
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
@@ -222,7 +222,7 @@ def test_ab_list_ballot_round_1(
         {
             "id": assert_is_id,
             "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "position": 0,
+            "position": 8,
             "status": "AUDITED",
             "interpretations": [
                 {
@@ -272,7 +272,7 @@ def test_ab_list_ballots_round_2(
     )
 
     previously_audited_ballots = [b for b in ballots if b["status"] == "AUDITED"]
-    assert len(previously_audited_ballots) == 21
+    assert len(previously_audited_ballots) == 22
 
 
 def test_ja_ballot_retrieval_list_bad_round_id(
@@ -342,7 +342,6 @@ def test_ja_ballot_retrieval_list_round_2(
 
 
 EXPECTED_RETRIEVAL_LIST_ROUND_1 = """Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board
-4,0,,,0.100384496097445567,N,Audit Board #1
 4,8,,,0.036908465434400494,N,Audit Board #1
 4,19,,,0.039175371814673076,N,Audit Board #1
 4,23,,,0.054130711915358102,N,Audit Board #1
@@ -350,6 +349,7 @@ EXPECTED_RETRIEVAL_LIST_ROUND_1 = """Batch Name,Ballot Number,Storage Location,T
 4,30,,,0.080450545227510568,N,Audit Board #1
 4,50,,,0.009800391720019182,N,Audit Board #1
 4,70,,,0.103837055385035441,N,Audit Board #1
+4,72,,,0.127406532353632486,N,Audit Board #1
 4,76,,,0.097877511235874384,N,Audit Board #1
 4,79,,,0.011004647116851367,N,Audit Board #1
 4,90,,,0.019140572102897510,N,Audit Board #1
@@ -447,7 +447,7 @@ EXPECTED_RETRIEVAL_LIST_ROUND_2 = """Batch Name,Ballot Number,Storage Location,T
 4,63,,,0.204642104702160748,N,Audit Board #1
 4,65,,,0.241732220355374323,N,Audit Board #1
 4,69,,,0.202386800800755779,N,Audit Board #1
-4,72,,,"0.127406532353632486,0.358831679935357021",N,Audit Board #1
+4,72,,,0.358831679935357021,Y,Audit Board #1
 4,79,,,0.187370388059469513,Y,Audit Board #1
 4,80,,,"0.246313513303732254,0.256750991845787224",N,Audit Board #1
 4,81,,,0.276734544241692461,N,Audit Board #1
@@ -483,7 +483,7 @@ EXPECTED_RETRIEVAL_LIST_ROUND_2 = """Batch Name,Ballot Number,Storage Location,T
 4,168,,,0.220869134243115557,Y,Audit Board #1
 4,169,,,0.300405096223246956,N,Audit Board #1
 4,172,,,0.160129098050367937,N,Audit Board #1
-4,174,,,0.177505094215438844,N,Audit Board #1
+4,174,,,"0.177505094215438844,0.404139525671973333",N,Audit Board #1
 4,175,,,"0.157283754574064975,0.199598730526236048",N,Audit Board #1
 4,177,,,0.280104783036490531,N,Audit Board #1
 4,179,,,0.360049016169898874,Y,Audit Board #1
@@ -570,86 +570,88 @@ EXPECTED_RETRIEVAL_LIST_ROUND_2 = """Batch Name,Ballot Number,Storage Location,T
 4,395,,,0.388505712968604608,N,Audit Board #1
 4,396,,,0.150389099170367506,N,Audit Board #1
 4,399,,,0.212018104629186137,N,Audit Board #1
-1,1,,,0.402094775253951676,N,Audit Board #2
-1,4,,,0.324042377098893634,N,Audit Board #2
-1,9,,,0.132689946437387284,N,Audit Board #2
-1,11,,,"0.207665625706123397,0.399137345787306591",N,Audit Board #2
-1,12,,,"0.297461947303584663,0.325109398758329824",Y,Audit Board #2
-1,14,,,0.240944230586866400,N,Audit Board #2
-1,16,,,"0.190466245667745342,0.306202075916034411",N,Audit Board #2
-1,17,,,"0.273780364695661186,0.329960353982547167",N,Audit Board #2
-2,0,,,"0.131870811737180870,0.357557989142566268",N,Audit Board #2
-2,2,,,0.167137437393171549,N,Audit Board #2
-2,4,,,0.306919456770704777,N,Audit Board #2
-2,7,,,0.226025316117575774,N,Audit Board #2
-2,8,,,0.362663944804304192,N,Audit Board #2
-2,13,,,0.192723560293089118,N,Audit Board #2
-2,14,,,0.180598277948515100,N,Audit Board #2
-2,20,,,0.345599518389345618,N,Audit Board #2
-2,22,,,"0.200669850018450383,0.283886729678307297",N,Audit Board #2
-2,23,,,"0.197006552171014235,0.396775025108512251",N,Audit Board #2
-2,24,,,0.259035957968990462,N,Audit Board #2
-2,25,,,0.171305534115507825,Y,Audit Board #2
-2,26,,,0.343163592705193077,Y,Audit Board #2
-2,27,,,0.318973879768862371,N,Audit Board #2
-2,29,,,0.352816770028922916,N,Audit Board #2
-2,32,,,0.287205383586779603,Y,Audit Board #2
-2,36,,,0.223023220812230709,N,Audit Board #2
-2,37,,,0.309522790171255885,N,Audit Board #2
-2,38,,,0.336775177950930063,N,Audit Board #2
-2,44,,,0.159172433450509894,N,Audit Board #2
-2,46,,,0.178731041606223023,Y,Audit Board #2
-2,48,,,0.192414966031967046,N,Audit Board #2
-2,49,,,0.196372471412485630,N,Audit Board #2
-2,57,,,0.354356172197626989,N,Audit Board #2
-2,61,,,0.212722813992165652,N,Audit Board #2
-2,65,,,0.235476826903854232,N,Audit Board #2
-2,69,,,0.310179158452875371,N,Audit Board #2
-2,72,,,0.390854262487571526,N,Audit Board #2
-2,78,,,0.258352375161172463,N,Audit Board #2
-2,81,,,0.337196608869407609,N,Audit Board #2
-2,86,,,0.235252480673820769,N,Audit Board #2
-2,87,,,0.350639499212726446,N,Audit Board #2
-2,89,,,0.301024248295436693,N,Audit Board #2
-2,92,,,0.322053795301590963,N,Audit Board #2
-2,93,,,"0.127706314641282704,0.197977963694367102,0.258885741307674245,0.273845938272679551,0.401104595824653305",N,Audit Board #2
-2,97,,,0.267717075668126765,N,Audit Board #2
-2,98,,,0.375013588395034996,N,Audit Board #2
-3,1,,,0.274337091625085796,N,Audit Board #3
-3,2,,,0.263722564263092911,Y,Audit Board #3
-3,4,,,"0.136601709208394123,0.167735444853610913,0.194774719925369337",N,Audit Board #3
-3,5,,,"0.213932100721321182,0.290313761959614874",N,Audit Board #3
-3,7,,,0.334280253810737261,N,Audit Board #3
-3,8,,,0.223227529699281574,N,Audit Board #3
-3,16,,,0.173243514732274589,N,Audit Board #3
-3,18,,,0.128081777119071425,N,Audit Board #3
-3,21,,,0.316761530678365521,N,Audit Board #3
-3,25,,,"0.257292797242253511,0.268171402232172039",N,Audit Board #3
-3,28,,,0.402169931708703726,N,Audit Board #3
-3,30,,,0.380450047374936018,N,Audit Board #3
-3,31,,,0.230995046716874522,N,Audit Board #3
-3,32,,,0.306176707363038789,N,Audit Board #3
-3,33,,,"0.210116781781480885,0.316099773972591371",N,Audit Board #3
-3,34,,,"0.147643625630823737,0.314993647381652264",Y,Audit Board #3
-3,42,,,0.271018875375780382,N,Audit Board #3
-3,44,,,"0.251773458197558949,0.357068207314194438",N,Audit Board #3
-3,54,,,0.245478477936016402,N,Audit Board #3
-3,56,,,0.152865409160814813,N,Audit Board #3
-3,61,,,0.383435671903186085,N,Audit Board #3
-3,62,,,0.328651285297138741,N,Audit Board #3
-3,63,,,0.272241589624410823,N,Audit Board #3
-3,66,,,0.211645841308148762,N,Audit Board #3
-3,67,,,"0.218831076203344455,0.338535049980805144",Y,Audit Board #3
-3,72,,,0.159025454106288321,N,Audit Board #3
-3,73,,,"0.220378204001520967,0.361511999872437411",N,Audit Board #3
-3,74,,,0.197935246624845083,N,Audit Board #3
-3,79,,,0.139035204830238171,N,Audit Board #3
-3,82,,,0.264853527186577205,N,Audit Board #3
-3,95,,,0.388828930445990200,N,Audit Board #3
-3,98,,,"0.225170121374186778,0.378558432159249945,0.380349262011752089",N,Audit Board #3
-3,108,,,0.128526780226929741,N,Audit Board #3
-3,109,,,0.152475017498047046,N,Audit Board #3
-3,113,,,0.244603560871716267,N,Audit Board #3
-3,114,,,0.352673196348310797,N,Audit Board #3
-3,118,,,0.388189334199859480,N,Audit Board #3
+4,400,,,0.209064647162605946,N,Audit Board #1
+3,1,,,0.274337091625085796,N,Audit Board #2
+3,2,,,0.263722564263092911,Y,Audit Board #2
+3,4,,,"0.136601709208394123,0.167735444853610913,0.194774719925369337",N,Audit Board #2
+3,5,,,"0.213932100721321182,0.290313761959614874",N,Audit Board #2
+3,7,,,0.334280253810737261,N,Audit Board #2
+3,8,,,0.223227529699281574,N,Audit Board #2
+3,16,,,0.173243514732274589,N,Audit Board #2
+3,18,,,0.128081777119071425,N,Audit Board #2
+3,21,,,0.316761530678365521,N,Audit Board #2
+3,25,,,"0.257292797242253511,0.268171402232172039",N,Audit Board #2
+3,28,,,0.402169931708703726,N,Audit Board #2
+3,30,,,0.380450047374936018,N,Audit Board #2
+3,31,,,0.230995046716874522,N,Audit Board #2
+3,32,,,0.306176707363038789,N,Audit Board #2
+3,33,,,"0.210116781781480885,0.316099773972591371",N,Audit Board #2
+3,34,,,"0.147643625630823737,0.314993647381652264",Y,Audit Board #2
+3,42,,,0.271018875375780382,N,Audit Board #2
+3,44,,,"0.251773458197558949,0.357068207314194438",N,Audit Board #2
+3,54,,,0.245478477936016402,N,Audit Board #2
+3,56,,,0.152865409160814813,N,Audit Board #2
+3,61,,,0.383435671903186085,N,Audit Board #2
+3,62,,,0.328651285297138741,N,Audit Board #2
+3,63,,,0.272241589624410823,N,Audit Board #2
+3,66,,,0.211645841308148762,N,Audit Board #2
+3,67,,,"0.218831076203344455,0.338535049980805144",Y,Audit Board #2
+3,72,,,0.159025454106288321,N,Audit Board #2
+3,73,,,"0.220378204001520967,0.361511999872437411",N,Audit Board #2
+3,74,,,0.197935246624845083,N,Audit Board #2
+3,79,,,0.139035204830238171,N,Audit Board #2
+3,82,,,0.264853527186577205,N,Audit Board #2
+3,95,,,0.388828930445990200,N,Audit Board #2
+3,98,,,"0.225170121374186778,0.378558432159249945,0.380349262011752089",N,Audit Board #2
+3,108,,,0.128526780226929741,N,Audit Board #2
+3,109,,,0.152475017498047046,N,Audit Board #2
+3,113,,,0.244603560871716267,N,Audit Board #2
+3,114,,,0.352673196348310797,N,Audit Board #2
+3,118,,,0.388189334199859480,N,Audit Board #2
+3,122,,,0.309353622615295679,N,Audit Board #2
+1,1,,,0.402094775253951676,N,Audit Board #3
+1,4,,,0.324042377098893634,N,Audit Board #3
+1,9,,,0.132689946437387284,N,Audit Board #3
+1,11,,,"0.207665625706123397,0.399137345787306591",N,Audit Board #3
+1,12,,,"0.297461947303584663,0.325109398758329824",Y,Audit Board #3
+1,14,,,0.240944230586866400,N,Audit Board #3
+1,16,,,"0.190466245667745342,0.306202075916034411",N,Audit Board #3
+1,17,,,"0.273780364695661186,0.329960353982547167",N,Audit Board #3
+2,2,,,0.167137437393171549,N,Audit Board #3
+2,4,,,0.306919456770704777,N,Audit Board #3
+2,7,,,0.226025316117575774,N,Audit Board #3
+2,8,,,0.362663944804304192,N,Audit Board #3
+2,13,,,0.192723560293089118,N,Audit Board #3
+2,14,,,0.180598277948515100,N,Audit Board #3
+2,20,,,0.345599518389345618,N,Audit Board #3
+2,22,,,"0.200669850018450383,0.283886729678307297",N,Audit Board #3
+2,23,,,"0.197006552171014235,0.396775025108512251",N,Audit Board #3
+2,24,,,0.259035957968990462,N,Audit Board #3
+2,25,,,0.171305534115507825,Y,Audit Board #3
+2,26,,,0.343163592705193077,Y,Audit Board #3
+2,27,,,0.318973879768862371,N,Audit Board #3
+2,29,,,0.352816770028922916,N,Audit Board #3
+2,32,,,0.287205383586779603,Y,Audit Board #3
+2,36,,,0.223023220812230709,N,Audit Board #3
+2,37,,,0.309522790171255885,N,Audit Board #3
+2,38,,,0.336775177950930063,N,Audit Board #3
+2,44,,,0.159172433450509894,N,Audit Board #3
+2,46,,,0.178731041606223023,Y,Audit Board #3
+2,48,,,0.192414966031967046,N,Audit Board #3
+2,49,,,0.196372471412485630,N,Audit Board #3
+2,57,,,0.354356172197626989,N,Audit Board #3
+2,61,,,0.212722813992165652,N,Audit Board #3
+2,65,,,0.235476826903854232,N,Audit Board #3
+2,69,,,0.310179158452875371,N,Audit Board #3
+2,72,,,0.390854262487571526,N,Audit Board #3
+2,78,,,0.258352375161172463,N,Audit Board #3
+2,81,,,0.337196608869407609,N,Audit Board #3
+2,86,,,0.235252480673820769,N,Audit Board #3
+2,87,,,0.350639499212726446,N,Audit Board #3
+2,89,,,0.301024248295436693,N,Audit Board #3
+2,92,,,0.322053795301590963,N,Audit Board #3
+2,93,,,"0.127706314641282704,0.197977963694367102,0.258885741307674245,0.273845938272679551,0.401104595824653305",N,Audit Board #3
+2,97,,,0.267717075668126765,N,Audit Board #3
+2,98,,,0.375013588395034996,N,Audit Board #3
+2,101,,,0.158181746325504760,N,Audit Board #3
 """
