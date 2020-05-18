@@ -1,3 +1,4 @@
+import random
 import pytest
 from audit_math import sampler
 from audit_math.sampler_contest import Contest
@@ -135,21 +136,16 @@ def test_draw_more_macro_sample(macro_batches, macro_contest):
         )
 
 
+def random_manifest():
+    return {f"pct {n}": random.randint(1, 10) for n in range(random.randint(1, 10))}
+
+
 def test_ballot_labels():
-    manifest = {
-        "pct 1": 25,
-        "pct 2": 25,
-        "pct 3": 25,
-        "pct 4": 25,
-    }
-
-    sample = sampler.draw_sample(SEED, manifest, 100, 0)
-
-    assert len(sample) == 100
-    for item in sample:
-        ballot = item[1][1]
-        batch = item[1][0]
-        assert 1 <= ballot and ballot <= manifest[batch]
+    for _ in range(100):
+        manifest = random_manifest()
+        sample = sampler.draw_sample(SEED, manifest, 100, 0)
+        for (_, (batch, ballot_number), _) in sample:
+            assert 1 <= ballot_number <= manifest[batch]
 
 
 expected_sample = [
