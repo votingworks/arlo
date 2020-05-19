@@ -78,7 +78,7 @@ def pretty_interpretations(
 
 
 def write_heading(report, heading: str):
-    report.writerow([f"####### {heading} ########"])
+    report.writerow([f"######## {heading} ########"])
 
 
 def write_election_info(report, election: Election):

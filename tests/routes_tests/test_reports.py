@@ -43,30 +43,30 @@ def test_jurisdiction_admin_report(
     assert report.splitlines() == EXPECTED_JA_REPORT.splitlines()
 
 
-EXPECTED_AA_REPORT = """####### ELECTION INFO ########
+EXPECTED_AA_REPORT = """######## ELECTION INFO ########
 Election Name,State
 Test Election,CA
 
-####### CONTESTS ########
+######## CONTESTS ########
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes
 Contest 1,Targeted,1,1,1000,candidate 1: 600; candidate 2: 400
 Contest 2,Opportunistic,2,2,600,candidate 1: 200; candidate 2: 300; candidate 3: 100
 
-####### AUDIT SETTINGS ########
+######## AUDIT SETTINGS ########
 Audit Name,Risk Limit,Random Seed,Online Data Entry?
 Test Audit,10%,1234567890,Yes
 
-####### AUDIT BOARDS ########
+######## AUDIT BOARDS ########
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation
 J1,Audit Board #1,Bubbikin Republican,Democrat,Joe Schmo,Republican
 J1,Audit Board #2,Bubbikin Republican,Democrat,Joe Schmo,Republican
 
-####### ROUNDS ########
+######## ROUNDS ########
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes
 1,Contest 1,Targeted,119,No,,DATETIME,,candidate 1: 0; candidate 2: 0
 1,Contest 2,Opportunistic,119,No,,DATETIME,,candidate 1: 0; candidate 2: 0; candidate 3: 0
 
-####### SAMPLED BALLOTS ########
+######## SAMPLED BALLOTS ########
 Jurisdiction Name,Batch Name,Ballot Position,Ticket Numbers,Audited?,Audit Result: Contest 1,Audit Result: Contest 2
 J1,1,12,Round 1: 0.029898626,AUDITED,candidate 1,
 J1,1,21,Round 1: 0.097507658,AUDITED,candidate 1,
@@ -180,7 +180,7 @@ J2,4,29,Round 1: 0.122889862,NOT_AUDITED,,
 J2,4,30,Round 1: 0.035663218,NOT_AUDITED,,
 """
 
-EXPECTED_JA_REPORT = """####### SAMPLED BALLOTS ########
+EXPECTED_JA_REPORT = """######## SAMPLED BALLOTS ########
 Jurisdiction Name,Batch Name,Ballot Position,Ticket Numbers,Audited?,Audit Result: Contest 1,Audit Result: Contest 2
 J1,1,12,Round 1: 0.029898626,AUDITED,candidate 1,
 J1,1,21,Round 1: 0.097507658,AUDITED,candidate 1,
