@@ -8,18 +8,8 @@ from werkzeug.exceptions import (
     InternalServerError,
     Forbidden,
 )
-from sqlalchemy.exc import IntegrityError
 
 from arlo_server import app
-
-
-def handle_unique_constraint_error(
-    e: IntegrityError, constraint_name: str, message: str
-):
-    if e.orig.diag.constraint_name == constraint_name:
-        raise Conflict(message)
-    else:
-        raise e
 
 
 @app.errorhandler(ValidationError)
