@@ -721,9 +721,9 @@ def test_small_election(client, election_id):
     assert round_contest["endMeasurements"]["isComplete"]
     assert math.floor(round_contest["endMeasurements"]["pvalue"] * 100) <= 9
 
-    rv = client.get(f"/election/{election_id}/audit/report")
+    rv = client.get(f"/election/{election_id}/report")
     lines = rv.data.decode("utf-8").splitlines()
-    assert lines[0] == "Contest Name,Contest 1"
+    assert lines[0] == "######## ELECTION INFO ########"
     assert "attachment" in rv.headers["Content-Disposition"]
 
 
@@ -1038,9 +1038,9 @@ def test_multi_winner_election(client, election_id):
     assert round_contest["endMeasurements"]["isComplete"]
     assert math.floor(round_contest["endMeasurements"]["pvalue"] * 100) <= 9
 
-    rv = client.get(f"/election/{election_id}/audit/report")
-    lines = rv.data.decode("utf-8").split("\r\n")
-    assert lines[0] == "Contest Name,Contest 1"
+    rv = client.get(f"/election/{election_id}/report")
+    lines = rv.data.decode("utf-8").splitlines()
+    assert lines[0] == "######## ELECTION INFO ########"
     assert "attachment" in rv.headers["Content-Disposition"]
 
 
