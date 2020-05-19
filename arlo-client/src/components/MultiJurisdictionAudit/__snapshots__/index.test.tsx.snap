@@ -20,7 +20,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
             The audit has not started.
           </h4>
           <p>
-            Audit setup is not complete.
+            Audit setup is complete.
           </p>
           <p>
             0 of 2 jurisdictions have completed file uploads.
@@ -489,7 +489,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             The audit has not started.
           </h4>
           <p>
-            Audit setup is not complete.
+            Audit setup is complete.
           </p>
           <p>
             0 of 2 jurisdictions have completed file uploads.

@@ -116,7 +116,7 @@ describe('AA setup flow', () => {
         case '/election/1/contest':
           return contestMocks.filledTargeted
         case '/election/1/settings':
-          return auditSettings.otherSettings
+          return auditSettings.all
         default:
           return null
       }
@@ -136,10 +136,10 @@ describe('AA setup flow', () => {
       expect(queryAllByText('Participants').length).toBe(2)
     })
 
-    fireEvent.click(getByText('Target Contests'), { bubbles: true })
+    fireEvent.click(getByText('Audit Settings'), { bubbles: true })
 
     await wait(() => {
-      expect(queryAllByText('Target Contests').length).toBe(2)
+      expect(queryAllByText('Audit Settings').length).toBe(2)
     })
   })
 
