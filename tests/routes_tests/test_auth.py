@@ -401,21 +401,25 @@ def test_with_jurisdiction_access_wrong_org(
 
 
 def test_with_jurisdiction_access_wrong_election(
-    client: FlaskClient, org_id: str, election_id: str, jurisdiction_id: str
+    client: FlaskClient, org_id: str, election_id: str
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, AA_EMAIL)
     election_id_2 = create_election(
         client, audit_name="Audit 2", organization_id=org_id
     )
-    create_jurisdiction_and_admin(election_id_2, user_email="ja2@example.com")
+    jurisdiction_id_2, _ = create_jurisdiction_and_admin(
+        election_id_2, user_email="ja2@example.com"
+    )
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "ja2@example.com")
-    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth")
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_id_2}/test_auth"
+    )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
         "errors": [
             {
                 "errorType": "Forbidden",
-                "message": f"ja2@example.com does not have access to jurisdiction {jurisdiction_id}",
+                "message": f"Jurisdiction {jurisdiction_id_2} is not associated with election {election_id}",
             }
         ]
     }

@@ -170,7 +170,9 @@ def with_election_access(route: Callable):
     @functools.wraps(route)
     def wrapper(*args, **kwargs):
         if "election_id" not in kwargs:
-            raise Exception(f"expected 'election_id' in kwargs but got: {kwargs}")
+            raise Exception(
+                f"expected 'election_id' in kwargs but got: {kwargs}"
+            )  # pragma: no cover
 
         election = Election.query.get_or_404(kwargs.pop("election_id"))
 
@@ -200,7 +202,9 @@ def with_jurisdiction_access(route: Callable):
     def wrapper(*args, **kwargs):
         for key in ["election_id", "jurisdiction_id"]:
             if key not in kwargs:
-                raise Exception(f"expected '{key}' in kwargs but got: {kwargs}")
+                raise Exception(
+                    f"expected '{key}' in kwargs but got: {kwargs}"
+                )  # pragma: no cover
 
         election = Election.query.get_or_404(kwargs.pop("election_id"))
         jurisdiction = Jurisdiction.query.get_or_404(kwargs.pop("jurisdiction_id"))
@@ -237,7 +241,9 @@ def with_audit_board_access(route: Callable):
     def wrapper(*args, **kwargs):
         for key in ["election_id", "jurisdiction_id", "round_id", "audit_board_id"]:
             if key not in kwargs:
-                raise Exception(f"expected '{key}' in kwargs but got: {kwargs}")
+                raise Exception(
+                    f"expected '{key}' in kwargs but got: {kwargs}"
+                )  # pragma: no cover
 
         election = Election.query.get_or_404(kwargs.pop("election_id"))
         jurisdiction = Jurisdiction.query.get_or_404(kwargs.pop("jurisdiction_id"))
