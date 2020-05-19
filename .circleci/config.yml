@@ -1,4 +1,6 @@
-version: 2
+version: 2.1
+orbs:
+  circleci-images: circleci/circleci-images@0.7.0
 jobs:
   build-and-test:
     docker:
@@ -16,6 +18,8 @@ jobs:
           name: install
           command: |
             make install install-development
+      - circleci-images/install-chrome
+      - circleci-images/install-chromedriver
       - run:
           name: create data model
           command: |
