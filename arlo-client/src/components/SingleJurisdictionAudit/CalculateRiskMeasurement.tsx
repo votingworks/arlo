@@ -132,7 +132,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
 
   const downloadAuditReport = async (e: React.FormEvent) => {
     e.preventDefault()
-    window.open(`/election/${electionId}/audit/report`)
+    window.open(`/election/${electionId}/report`)
     updateAudit()
   }
 
