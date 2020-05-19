@@ -116,7 +116,7 @@ describe('AA setup flow', () => {
         case '/election/1/contest':
           return contestMocks.filledTargeted
         case '/election/1/settings':
-          return auditSettings.otherSettings
+          return auditSettings.all
         default:
           return null
       }
