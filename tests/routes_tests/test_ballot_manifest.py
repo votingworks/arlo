@@ -173,6 +173,11 @@ def test_ballot_manifest_clear(
     )
     assert_ok(rv)
 
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+    )
+    assert json.loads(rv.data) == {"file": None, "processing": None}
+
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
     assert jurisdiction.manifest_num_batches is None
     assert jurisdiction.manifest_num_ballots is None
