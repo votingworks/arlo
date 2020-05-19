@@ -2,7 +2,7 @@ import pytest
 from flask.testing import FlaskClient
 import io, uuid, json
 from typing import List, Generator
-from flask import jsonify
+from flask import jsonify, abort
 
 from arlo_server import app, db
 from arlo_server.models import (
@@ -292,3 +292,17 @@ def auth_decorator_test_routes():
         assert round
         assert audit_board
         return jsonify([election.id, jurisdiction.id, round.id, audit_board.id])
+
+
+# Add special routes to test our error handlers. This fixture will run once before
+# the test session starts. We have to add the route before starting any tests
+# or else Flask complains. See test_errors.py for the tests that use these routes.
+@pytest.fixture(scope="session", autouse=True)
+def error_test_routes():
+    @app.route("/test_uncaught_exception")
+    def fake_uncaught_exception_route():
+        raise Exception("Catch me if you can!")
+
+    @app.route("/test_internal_error")
+    def fake_internal_error_route():
+        abort(500)
