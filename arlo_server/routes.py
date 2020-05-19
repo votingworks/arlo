@@ -3,12 +3,11 @@ from typing import Dict, List, Tuple
 
 from flask import jsonify, request, Response, redirect, session
 from flask_httpauth import HTTPBasicAuth
-from werkzeug.exceptions import NotFound, Forbidden, Unauthorized
+from werkzeug.exceptions import NotFound, Forbidden, Unauthorized, Conflict
 
 from audit_math import bravo, sampler_contest, sampler
 from xkcdpass import xkcd_password as xp
 
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 
 from authlib.flask.client import OAuth
@@ -25,7 +24,6 @@ from arlo_server.auth import (
     with_election_access,
 )
 from arlo_server.models import *
-from arlo_server.errors import handle_unique_constraint_error
 from arlo_server.ballots import (
     ballot_retrieval_list,
     serialize_interpretation,
@@ -57,7 +55,7 @@ from config import (
 )
 
 from util.isoformat import isoformat
-from util.jsonschema import validate
+from util.jsonschema import validate, JSONDict
 from util.process_file import serialize_file, serialize_file_processing
 from util.csv_download import election_timestamp_name, csv_response
 
@@ -304,13 +302,27 @@ ELECTION_NEW_SCHEMA = {
 }
 
 
+def validate_new_election(election: JSONDict, organization_id: str):
+    validate(election, ELECTION_NEW_SCHEMA)
+    if (
+        organization_id
+        and Election.query.filter_by(
+            audit_name=election["auditName"], organization_id=organization_id
+        ).first()
+    ):
+        raise Conflict(
+            f"An audit with name '{election['auditName']}' already exists within your organization"
+        )
+
+
 @app.route("/election/new", methods=["POST"])
 def election_new():
     election = request.get_json()
-    validate(election, ELECTION_NEW_SCHEMA)
 
     organization_id = election.get("organizationId", None)
     require_audit_admin_for_organization(organization_id)
+
+    validate_new_election(election, organization_id)
 
     election = Election(
         id=str(uuid.uuid4()),
@@ -320,14 +332,7 @@ def election_new():
     )
     db.session.add(election)
 
-    try:
-        db.session.commit()
-    except IntegrityError as e:
-        handle_unique_constraint_error(
-            e,
-            constraint_name="election_organization_id_audit_name_key",
-            message=f"An audit with name '{election.audit_name}' already exists within your organization",
-        )
+    db.session.commit()
 
     return jsonify(electionId=election.id)
 
