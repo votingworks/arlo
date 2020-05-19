@@ -136,10 +136,10 @@ describe('AA setup flow', () => {
       expect(queryAllByText('Participants').length).toBe(2)
     })
 
-    fireEvent.click(getByText('Target Contests'), { bubbles: true })
+    fireEvent.click(getByText('Audit Settings'), { bubbles: true })
 
     await wait(() => {
-      expect(queryAllByText('Target Contests').length).toBe(2)
+      expect(queryAllByText('Audit Settings').length).toBe(2)
     })
   })
 
