@@ -270,7 +270,7 @@ describe('Ballot', () => {
     })
     fireEvent.click(getByText('Back'), { bubbles: true })
     await wait(() => {
-      expect(previousBallotMock).toBeCalledTimes(2)
+      expect(getByText('Review')).toBeTruthy()
     })
   })
 
