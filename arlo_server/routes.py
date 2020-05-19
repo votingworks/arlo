@@ -10,7 +10,6 @@ from xkcdpass import xkcd_password as xp
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
-from sqlalchemy.orm import contains_eager
 
 from authlib.flask.client import OAuth
 
@@ -37,7 +36,6 @@ from arlo_server.ballot_manifest import (
     clear_ballot_manifest_file,
 )
 from arlo_server.sample_sizes import cumulative_contest_results
-from arlo_server.reports import pretty_affiliation
 from util.binpacking import BalancedBucketList, Bucket
 from util.csv_parse import decode_csv_file
 
@@ -61,7 +59,6 @@ from config import (
 from util.isoformat import isoformat
 from util.jsonschema import validate
 from util.process_file import serialize_file, serialize_file_processing
-from util.group_by import group_by
 from util.csv_download import election_timestamp_name, csv_response
 
 AUDIT_BOARD_MEMBER_COUNT = 2
@@ -977,169 +974,6 @@ def jurisdiction_results(election_id, jurisdiction_id, round_num):
     db.session.commit()
 
     return jsonify(status="ok")
-
-
-@app.route("/election/<election_id>/audit/report", methods=["GET"])
-def audit_report(election_id):
-    election = get_election(election_id)
-    jurisdiction = election.jurisdictions[0]
-
-    csv_io = io.StringIO()
-    report_writer = csv.writer(csv_io)
-
-    contest = election.contests[0]
-    choices = contest.choices
-
-    report_writer.writerow(["Contest Name", contest.name])
-    report_writer.writerow(["Number of Winners", contest.num_winners])
-    report_writer.writerow(["Votes Allowed", contest.votes_allowed])
-    report_writer.writerow(["Total Ballots Cast", contest.total_ballots_cast])
-
-    for choice in choices:
-        report_writer.writerow(["{:s} Votes".format(choice.name), choice.num_votes])
-
-    report_writer.writerow(["Risk Limit", "{:d}%".format(election.risk_limit)])
-    report_writer.writerow(["Random Seed", election.random_seed])
-
-    if election.online:
-        for audit_board in jurisdiction.audit_boards:
-            report_writer.writerow(
-                [
-                    audit_board.name,
-                    audit_board.member_1,
-                    pretty_affiliation(audit_board.member_1_affiliation),
-                ]
-            )
-            report_writer.writerow(
-                [
-                    audit_board.name,
-                    audit_board.member_2,
-                    pretty_affiliation(audit_board.member_2_affiliation),
-                ]
-            )
-
-    all_sampled_ballot_draws = []
-
-    for round in election.rounds:
-        round_contest = round.round_contests[0]
-        round_contest_results = round_contest.results
-
-        report_writer.writerow(
-            [
-                "Round {:d} Sample Size".format(round.round_num),
-                round_contest.sample_size,
-            ]
-        )
-
-        for result in round_contest_results:
-            report_writer.writerow(
-                [
-                    "Round {:d} Audited Votes for {:s}".format(
-                        round.round_num, result.contest_choice.name
-                    ),
-                    result.result,
-                ]
-            )
-
-        report_writer.writerow(
-            ["Round {:d} P-Value".format(round.round_num), round_contest.end_p_value]
-        )
-        report_writer.writerow(
-            [
-                "Round {:d} Risk Limit Met?".format(round.round_num),
-                "Yes" if round_contest.is_complete else "No",
-            ]
-        )
-
-        report_writer.writerow(
-            ["Round {:d} Start".format(round.round_num), round.created_at]
-        )
-        report_writer.writerow(
-            ["Round {:d} End".format(round.round_num), round.ended_at]
-        )
-
-        ballot_draws = (
-            SampledBallotDraw.query.filter_by(round_id=round.id)
-            .join(SampledBallot)
-            .join(Batch)
-            .filter_by(jurisdiction_id=jurisdiction.id)
-            .order_by("batch_id", "ballot_position")
-            .options(
-                contains_eager(SampledBallotDraw.sampled_ballot).contains_eager(
-                    SampledBallot.batch
-                )
-            )
-            .all()
-        )
-        all_sampled_ballot_draws += ballot_draws
-
-        report_writer.writerow(
-            [
-                "Round {:d} Samples".format(round.round_num),
-                " ".join(
-                    [
-                        "(Batch {:s}, #{:d}, Ticket #{:s})".format(
-                            b.sampled_ballot.batch.name,
-                            b.sampled_ballot.ballot_position,
-                            b.ticket_number,
-                        )
-                        for b in ballot_draws
-                    ]
-                ),
-            ]
-        )
-
-    if election.online:
-        report_writer.writerow(["All Sampled Ballots"])
-        report_writer.writerow(["Ballot", "Ticket Numbers", "Audited?", "Audit Result"])
-        # Write a row for each ballot that looks like this:
-        # "Batch 1, #13",Round 1: 0.123,Audited,some_candidate_id
-        # The Ticket Numbers column is a bit tricky:
-        # If a ballot was sampled multiple times in a round: Round 1: 0.123, 0.456
-        # If a ballot was sampled in multiple rounds: Round 1: 0.123, Round 2: 0.456
-
-        # First group all the ballot draws by the actual ballot
-        for _, ballot_draws in group_by(
-            all_sampled_ballot_draws, key=lambda b: b.ballot_id
-        ).items():
-            b = ballot_draws[0]
-
-            # Then group the draws for this ballot by round
-            ticket_numbers = []
-            for round_num, round_draws in group_by(
-                ballot_draws, key=lambda b: b.round.round_num
-            ).items():
-                ticket_numbers_str = ", ".join(
-                    sorted(d.ticket_number for d in round_draws)
-                )
-                ticket_numbers.append(
-                    "Round {:d}: {:s}".format(round_num, ticket_numbers_str)
-                )
-
-            report_writer.writerow(
-                [
-                    "Batch {:s}, #{:d}".format(
-                        b.sampled_ballot.batch.name, b.sampled_ballot.ballot_position
-                    ),
-                    ", ".join(ticket_numbers),
-                    b.sampled_ballot.status,
-                    pretty_interpretations(b.sampled_ballot.interpretations),
-                ]
-            )
-
-    return csv_response(
-        csv_io.getvalue(),
-        filename=f"audit-report-{election_timestamp_name(election)}.csv",
-    )
-
-
-# TODO make this work for multiple contests
-# TODO include comments
-def pretty_interpretations(interpretations: List[BallotInterpretation]) -> str:
-    if interpretations[0].interpretation == Interpretation.VOTE:
-        return str(interpretations[0].contest_choice_id)
-    else:
-        return str(interpretations[0].interpretation.value)
 
 
 @app.route("/election/<election_id>/audit/reset", methods=["POST"])
