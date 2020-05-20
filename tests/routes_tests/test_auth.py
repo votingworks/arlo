@@ -91,7 +91,7 @@ def check_redirect_contains_redirect_uri(response, expected_url):
     # which makes a double slash like 'http://localhost//authorize'
     # which won't work. So testing to make sure there is no '//'
     # other than '://'
-    assert re.search("[^:]\/\/", redirect_uri) is None
+    assert re.search("[^:]//", redirect_uri) is None
     assert expected_url in redirect_uri
 
 

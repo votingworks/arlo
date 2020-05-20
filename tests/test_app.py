@@ -874,7 +874,6 @@ def test_multi_round_audit(client, election_id):
     assert already_audited == EXPECTED_ALREADY_AUDITED_BALLOTS
 
 
-@pytest.mark.quick
 def test_multi_winner_election(client, election_id):
     contest_id = str(uuid.uuid4())
     candidate_id_1 = str(uuid.uuid4())
