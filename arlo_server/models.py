@@ -55,7 +55,7 @@ class Election(BaseModel):
         db.String(200), db.ForeignKey("organization.id", ondelete="cascade"),
     )
 
-    frozen_at = db.Column(db.DateTime(timezone=False))
+    frozen_at = db.Column(db.DateTime)
 
     jurisdictions = relationship(
         "Jurisdiction",
@@ -256,7 +256,7 @@ class AuditBoard(BaseModel):
     member_2 = db.Column(db.String(200))
     member_2_affiliation = db.Column(db.String(200))
     passphrase = db.Column(db.String(1000), unique=True)
-    signed_off_at = db.Column(db.DateTime(timezone=False))
+    signed_off_at = db.Column(db.DateTime)
 
     sampled_ballots = relationship(
         "SampledBallot",
@@ -414,11 +414,11 @@ class File(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     name = db.Column(db.String(250), nullable=False)
     contents = db.Column(db.Text, nullable=False)
-    uploaded_at = db.Column(db.DateTime(timezone=False), nullable=False)
+    uploaded_at = db.Column(db.DateTime, nullable=False)
 
     # Metadata for processing files in the background.
-    processing_started_at = db.Column(db.DateTime(timezone=False))
-    processing_completed_at = db.Column(db.DateTime(timezone=False))
+    processing_started_at = db.Column(db.DateTime)
+    processing_completed_at = db.Column(db.DateTime)
     processing_error = db.Column(db.Text)
 
 
