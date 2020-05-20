@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 from typing import List
 from tests.routes_tests.test_audit_boards import set_up_audit_board
 
-DATETIME_REGEX = re.compile("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{6}")
+DATETIME_REGEX = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{6}")
 
 # TODO This is just a basic snapshot test. We still need to implement more
 # comprehensive testing.
