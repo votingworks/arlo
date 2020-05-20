@@ -129,7 +129,7 @@
     "@wdio/local-runner": "^5.14.4",
     "@wdio/spec-reporter": "^5.16.11",
     "babel-jest": "^24.9.0",
-    "chromedriver": "80.0.0",
+    "chromedriver": "83.0.0",
     "is-ci-cli": "^1.1.1",
     "jest-canvas-mock": "^2.1.1",
     "jest-fetch-mock": "^2.1.2",
