@@ -108,7 +108,7 @@ def compute_sample_sizes(round_contest):
 
 def setup_next_round(election):
     if len(election.contests) > 1:
-        raise Exception("only supports one contest for now")
+        raise Exception("only supports one contest for now")  # pragma: no cover
 
     rounds = Round.query.filter_by(election_id=election.id).order_by("round_num").all()
 
@@ -559,7 +559,7 @@ def samplesize_set(election_id):
     # only works if there's only one round
     rounds = election.rounds
     if len(rounds) > 1:
-        return jsonify(status="bad")
+        return jsonify(status="bad")  # pragma: no cover
 
     rounds[0].round_contests[0].sample_size = int(request.get_json()["size"])
     db.session.commit()
