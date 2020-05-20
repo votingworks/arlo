@@ -9,7 +9,7 @@ import {
 
 describe('create audit page', () => {
   it('should have a button', () => {
-    browser.url('/')
+    browser.url('/audit')
     const title = browser.getTitle()
     expect(title).toBe('Arlo (by VotingWorks)')
 

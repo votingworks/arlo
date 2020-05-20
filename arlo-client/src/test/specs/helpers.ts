@@ -6,7 +6,7 @@ const filePath = path.join(
 )
 
 export const start = () => {
-  browser.url('/')
+  browser.url('/audit')
   $('#audit-name').addValue('Audit Name')
   $('.bp3-button-text=Create a New Audit').click()
   $('#election-name').waitForExist(5000)
