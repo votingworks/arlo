@@ -110,16 +110,30 @@ describe('useSetupMenuItems', () => {
     )
   })
 
-  it('handles errors from /jurisdiction/file api', async () => {
-    checkAndToastMock.mockReturnValueOnce(true).mockReturnValue(false)
+  it('handles ERRORED response from /jurisdiction/file api', async () => {
+    apiMock.mockImplementation(
+      generateApiMock(
+        { rounds: [] },
+        {
+          file: null,
+          processing: {
+            status: FileProcessingStatus.Errored,
+            startedAt: '',
+            error: null,
+            completedAt: null,
+          },
+        }
+      )
+    )
     const { result, waitForNextUpdate } = renderHook(() =>
       useSetupMenuItems('Participants', jest.fn(), '1')
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await wait(() =>
-      expect(result.current[0].every(i => i.state === 'locked')).toBeTruthy()
-    )
+    await wait(() => {
+      expect(result.current[0][1].state === 'locked').toBeTruthy()
+      expect(result.current[0][2].state === 'locked').toBeTruthy()
+    })
   })
 
   it('handles NULL response from /jurisdiction/file api', async () => {

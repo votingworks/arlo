@@ -43,20 +43,14 @@ const generateApiMock = (
     | { jurisdictions: IJurisdiction[] }
     | Error
     | { status: 'ok' }
-) => async (
-  endpoint: string
-): Promise<
-  | { contests: IContest[] }
-  | { sampleSizes: ISampleSizeOption[] }
-  | { jurisdictions: IJurisdiction[] }
-  | Error
-  | { status: 'ok' }
-> => {
+) => async (endpoint: string) => {
   switch (endpoint) {
     case '/election/1/sample-sizes':
       return sampleSizeReturn
     case '/election/1/jurisdiction':
       return jurisdictionReturn
+    case '/election/1/jurisdiction/file':
+      return { file: null, processing: { status: 'PROCESSED' } }
     case '/election/1/contest':
       return contestsReturn
     case '/election/1/round':
@@ -202,16 +196,19 @@ describe('Audit Setup > Review & Launch', () => {
         dummyJurisdictions
       )
     )
-    const { findByText } = await asyncActRender(
+    const { findByText, getAllByText } = await asyncActRender(
       <Router>
         <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
       </Router>
     )
     const launchButton = await findByText('Launch Audit')
     fireEvent.click(launchButton, { bubbles: true })
+    await findByText('Are you sure you want to launch the audit?')
+    const confirmLaunchButton = getAllByText('Launch Audit')[1]
+    fireEvent.click(confirmLaunchButton, { bubbles: true })
     await wait(() => {
-      expect(apiMock).toHaveBeenCalledTimes(4)
-      expect(apiMock.mock.calls[3][1]).toMatchObject({
+      expect(apiMock).toHaveBeenCalledTimes(5)
+      expect(apiMock.mock.calls[4][1]).toMatchObject({
         body: JSON.stringify({
           sampleSize: 46,
           roundNum: 1,
@@ -232,7 +229,7 @@ describe('Audit Setup > Review & Launch', () => {
         dummyJurisdictions
       )
     )
-    const { getByText } = await asyncActRender(
+    const { getByText, findByText, getAllByText } = await asyncActRender(
       <Router>
         <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
       </Router>
@@ -243,9 +240,12 @@ describe('Audit Setup > Review & Launch', () => {
     fireEvent.click(newSampleSize, { bubbles: true })
     const launchButton = getByText('Launch Audit')
     fireEvent.click(launchButton, { bubbles: true })
+    await findByText('Are you sure you want to launch the audit?')
+    const confirmLaunchButton = getAllByText('Launch Audit')[1]
+    fireEvent.click(confirmLaunchButton, { bubbles: true })
     await wait(() => {
-      expect(apiMock).toHaveBeenCalledTimes(4)
-      expect(apiMock.mock.calls[3][1]).toMatchObject({
+      expect(apiMock).toHaveBeenCalledTimes(5)
+      expect(apiMock.mock.calls[4][1]).toMatchObject({
         body: JSON.stringify({
           sampleSize: 67,
           roundNum: 1,
