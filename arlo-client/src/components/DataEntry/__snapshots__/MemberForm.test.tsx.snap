@@ -240,7 +240,9 @@ exports[`MemberForm renders correctly 1`] = `
         </div>
       </div>
       <button
-        class="bp3-button bp3-intent-primary sc-ifAKCX zdCNs"
+        class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
+        disabled=""
+        tabindex="-1"
         type="button"
       >
         <span

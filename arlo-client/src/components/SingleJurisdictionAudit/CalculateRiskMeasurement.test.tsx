@@ -390,7 +390,7 @@ describe('CalculateRiskMeasurement', () => {
     fireEvent.click(getByText('Download Audit Report'), { bubbles: true })
 
     expect(window.open).toBeCalledTimes(1)
-    expect(window.open).toBeCalledWith(`/election/1/audit/report`)
+    expect(window.open).toBeCalledWith(`/election/1/report`)
   })
 
   it('handles errors from api', async () => {
