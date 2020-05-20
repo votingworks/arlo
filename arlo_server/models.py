@@ -150,7 +150,7 @@ class JurisdictionAdministration(BaseModel):
     jurisdiction_id = db.Column(
         db.String(200),
         db.ForeignKey("jurisdiction.id", ondelete="cascade"),
-        nullable=True,
+        nullable=False,
     )
 
     jurisdiction = relationship(
