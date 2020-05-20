@@ -39,7 +39,7 @@ def contests():
     for contest in macro_contests:
         contests[contest] = Contest(contest, macro_contests[contest])
 
-    yield contests
+    return contests
 
 
 @pytest.fixture
@@ -97,7 +97,7 @@ def batches():
             "numWinners": 1,
         }
 
-    yield batches
+    return batches
 
 
 def test_max_error(contests, batches):
