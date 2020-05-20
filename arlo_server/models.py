@@ -35,13 +35,13 @@ class Election(BaseModel):
     # audit_name must be unique within each Organization
     audit_name = db.Column(db.String(200), nullable=False)
     # election_name can be the same across audits
-    election_name = db.Column(db.String(200), nullable=True)
-    state = db.Column(db.String(100), nullable=True)
-    election_date = db.Column(db.Date, nullable=True)
-    election_type = db.Column(db.String(200), nullable=True)
-    meeting_date = db.Column(db.Date, nullable=True)
-    risk_limit = db.Column(db.Integer, nullable=True)
-    random_seed = db.Column(db.String(100), nullable=True)
+    election_name = db.Column(db.String(200))
+    state = db.Column(db.String(100))
+    election_date = db.Column(db.Date)
+    election_type = db.Column(db.String(200))
+    meeting_date = db.Column(db.Date)
+    risk_limit = db.Column(db.Integer)
+    random_seed = db.Column(db.String(100))
 
     # an election is "online" if every ballot is entered online, vs. offline in a tally sheet.
     online = db.Column(db.Boolean, nullable=False, default=False)
@@ -52,12 +52,10 @@ class Election(BaseModel):
 
     # Who does this election belong to?
     organization_id = db.Column(
-        db.String(200),
-        db.ForeignKey("organization.id", ondelete="cascade"),
-        nullable=True,
+        db.String(200), db.ForeignKey("organization.id", ondelete="cascade"),
     )
 
-    frozen_at = db.Column(db.DateTime(timezone=False), nullable=True)
+    frozen_at = db.Column(db.DateTime)
 
     jurisdictions = relationship(
         "Jurisdiction",
@@ -73,7 +71,7 @@ class Election(BaseModel):
     )
 
     jurisdictions_file_id = db.Column(
-        db.String(200), db.ForeignKey("file.id", ondelete="set null"), nullable=True
+        db.String(200), db.ForeignKey("file.id", ondelete="set null")
     )
     jurisdictions_file = relationship("File")
 
@@ -91,7 +89,7 @@ class Jurisdiction(BaseModel):
     manifest_num_batches = db.Column(db.Integer)
 
     manifest_file_id = db.Column(
-        db.String(200), db.ForeignKey("file.id", ondelete="set null"), nullable=True
+        db.String(200), db.ForeignKey("file.id", ondelete="set null")
     )
     manifest_file = relationship("File")
 
@@ -112,7 +110,7 @@ class Jurisdiction(BaseModel):
 class User(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     email = db.Column(db.String(200), unique=True, nullable=False)
-    external_id = db.Column(db.String(200), unique=True, nullable=True)
+    external_id = db.Column(db.String(200), unique=True)
 
     organizations = relationship("Organization", secondary="audit_administration")
     jurisdictions = relationship(
@@ -152,7 +150,7 @@ class JurisdictionAdministration(BaseModel):
     jurisdiction_id = db.Column(
         db.String(200),
         db.ForeignKey("jurisdiction.id", ondelete="cascade"),
-        nullable=True,
+        nullable=False,
     )
 
     jurisdiction = relationship(
@@ -176,8 +174,8 @@ class Batch(BaseModel):
     )
     name = db.Column(db.String(200), nullable=False)
     num_ballots = db.Column(db.Integer, nullable=False)
-    storage_location = db.Column(db.String(200), nullable=True)
-    tabulator = db.Column(db.String(200), nullable=True)
+    storage_location = db.Column(db.String(200))
+    tabulator = db.Column(db.String(200))
 
     ballots = relationship("SampledBallot", backref="batch", passive_deletes=True)
 
@@ -250,17 +248,15 @@ class AuditBoard(BaseModel):
         db.ForeignKey("jurisdiction.id", ondelete="cascade"),
         nullable=False,
     )
-    round_id = db.Column(
-        db.String(200), db.ForeignKey("round.id", ondelete="cascade"), nullable=True
-    )
+    round_id = db.Column(db.String(200), db.ForeignKey("round.id", ondelete="cascade"))
 
     name = db.Column(db.String(200))
-    member_1 = db.Column(db.String(200), nullable=True)
-    member_1_affiliation = db.Column(db.String(200), nullable=True)
-    member_2 = db.Column(db.String(200), nullable=True)
-    member_2_affiliation = db.Column(db.String(200), nullable=True)
-    passphrase = db.Column(db.String(1000), unique=True, nullable=True)
-    signed_off_at = db.Column(db.DateTime(timezone=False), nullable=True)
+    member_1 = db.Column(db.String(200))
+    member_1_affiliation = db.Column(db.String(200))
+    member_2 = db.Column(db.String(200))
+    member_2_affiliation = db.Column(db.String(200))
+    passphrase = db.Column(db.String(1000), unique=True)
+    signed_off_at = db.Column(db.DateTime)
 
     sampled_ballots = relationship(
         "SampledBallot",
@@ -278,7 +274,7 @@ class Round(BaseModel):
         db.String(200), db.ForeignKey("election.id", ondelete="cascade"), nullable=False
     )
     round_num = db.Column(db.Integer, nullable=False)
-    ended_at = db.Column(db.DateTime, nullable=True)
+    ended_at = db.Column(db.DateTime)
 
     __table_args__ = (db.UniqueConstraint("election_id", "round_num"),)
 
@@ -313,9 +309,7 @@ class SampledBallot(BaseModel):
     )
 
     audit_board_id = db.Column(
-        db.String(200),
-        db.ForeignKey("audit_board.id", ondelete="cascade"),
-        nullable=True,
+        db.String(200), db.ForeignKey("audit_board.id", ondelete="cascade"),
     )
     status = db.Column(db.Enum(BallotStatus), nullable=False)
     interpretations = relationship(
@@ -368,7 +362,7 @@ class BallotInterpretation(BaseModel):
     contest_choice_id = db.Column(
         db.String(200), db.ForeignKey("contest_choice.id", ondelete="cascade")
     )
-    comment = db.Column(db.Text, nullable=True)
+    comment = db.Column(db.Text)
 
 
 class RoundContest(BaseModel):
@@ -379,7 +373,7 @@ class RoundContest(BaseModel):
         db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False,
     )
 
-    sample_size_options = db.Column(db.String(1000), nullable=True)
+    sample_size_options = db.Column(db.String(1000))
 
     results = relationship(
         "RoundContestResult", backref="round_contest", passive_deletes=True
@@ -413,19 +407,19 @@ class RoundContestResult(BaseModel):
         db.ForeignKey("contest_choice.id", ondelete="cascade"),
         nullable=False,
     )
-    result = db.Column(db.Integer)
+    result = db.Column(db.Integer, nullable=False)
 
 
 class File(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     name = db.Column(db.String(250), nullable=False)
     contents = db.Column(db.Text, nullable=False)
-    uploaded_at = db.Column(db.DateTime(timezone=False), nullable=False)
+    uploaded_at = db.Column(db.DateTime, nullable=False)
 
     # Metadata for processing files in the background.
-    processing_started_at = db.Column(db.DateTime(timezone=False), nullable=True)
-    processing_completed_at = db.Column(db.DateTime(timezone=False), nullable=True)
-    processing_error = db.Column(db.Text, nullable=True)
+    processing_started_at = db.Column(db.DateTime)
+    processing_completed_at = db.Column(db.DateTime)
+    processing_error = db.Column(db.Text)
 
 
 class ProcessingStatus(str, Enum):
