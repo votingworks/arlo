@@ -1,8 +1,7 @@
-import os, datetime, csv, io, json, uuid, hmac, urllib.parse
+import datetime, csv, io, json, uuid, urllib.parse
 from typing import Dict, List, Tuple
 
-from flask import jsonify, request, Response, redirect, session
-from flask_httpauth import HTTPBasicAuth
+from flask import jsonify, request, redirect, session
 from werkzeug.exceptions import NotFound, Forbidden, Unauthorized, Conflict
 
 from audit_math import bravo, sampler_contest, sampler
@@ -261,29 +260,6 @@ def serialize_members(audit_board):
         members.append({"name": name, "affiliation": affiliation})
 
     return members
-
-
-ADMIN_PASSWORD = os.environ.get("ARLO_ADMIN_PASSWORD", None)
-
-# this is a temporary approach to getting all running audits
-# before we actually tie audits to a single user / login.
-#
-# only allow this URL if an admin password has been set.
-if ADMIN_PASSWORD:
-    auth = HTTPBasicAuth()
-
-    @auth.verify_password
-    def verify_password(_username, password):
-        # use a comparison method that prevents timing attacks:
-        # https://securitypitfalls.wordpress.com/2018/08/03/constant-time-compare-in-python/
-        return password is not None and hmac.compare_digest(password, ADMIN_PASSWORD)
-
-    @app.route("/admin", methods=["GET"])
-    @auth.login_required
-    def admin():
-        elections = Election.query.all()
-        result = "\n".join(["%s - %s" % (e.id, e.name) for e in elections])
-        return Response(result, content_type="text/plain")
 
 
 ELECTION_NEW_SCHEMA = {
