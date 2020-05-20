@@ -407,7 +407,7 @@ class RoundContestResult(BaseModel):
         db.ForeignKey("contest_choice.id", ondelete="cascade"),
         nullable=False,
     )
-    result = db.Column(db.Integer)
+    result = db.Column(db.Integer, nullable=False)
 
 
 class File(BaseModel):
