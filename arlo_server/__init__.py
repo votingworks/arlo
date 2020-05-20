@@ -17,7 +17,7 @@ if FLASK_ENV not in DEVELOPMENT_ENVS:
     # Restrict which hosts we trust when not in dev/test. This works by causing
     # anything accessing the request URL (i.e. `request.url` or similar) to
     # throw an exception if it doesn't match one of the values in this list.
-    Request.trusted_hosts = [str(urlparse(HTTP_ORIGIN).hostname)]
+    Request.trusted_hosts = [str(urlparse(HTTP_ORIGIN).hostname)]  # pragma: no cover
 
 app = Flask(__name__, static_folder=None)
 app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
