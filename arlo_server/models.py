@@ -375,9 +375,7 @@ class RoundContest(BaseModel):
 
     sample_size_options = db.Column(db.String(1000))
 
-    results = relationship(
-        "RoundContestResult", backref="round_contest", passive_deletes=True
-    )
+    results = relationship("RoundContestResult", passive_deletes=True)
 
     __table_args__ = (db.PrimaryKeyConstraint("round_id", "contest_id"),)
 
