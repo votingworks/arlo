@@ -280,9 +280,15 @@ SIGN_OFF_AUDIT_BOARD_REQUEST_SCHEMA = {
 def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):
     validate(sign_off_request, SIGN_OFF_AUDIT_BOARD_REQUEST_SCHEMA)
 
-    for name in [sign_off_request["memberName1"], sign_off_request["memberName2"]]:
-        if name not in {audit_board.member_1, audit_board.member_2}:
-            raise BadRequest(f"Audit board member name did not match: {name}")
+    if sign_off_request["memberName1"] != audit_board.member_1:
+        raise BadRequest(
+            f"Audit board member name did not match: {sign_off_request['memberName1']}"
+        )
+
+    if audit_board.member_2 and sign_off_request["memberName2"] != audit_board.member_2:
+        raise BadRequest(
+            f"Audit board member name did not match: {sign_off_request['memberName2']}"
+        )
 
     if any(b.status == BallotStatus.NOT_AUDITED for b in audit_board.sampled_ballots):
         raise Conflict(f"Audit board is not finished auditing all assigned ballots")

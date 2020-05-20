@@ -66,7 +66,12 @@ const MemberForm: React.FC<IProps> = ({
                 </RadioGroup>
               </FormSection>
             ))}
-            <FormButton intent="primary" type="button" onClick={handleSubmit}>
+            <FormButton
+              intent="primary"
+              type="button"
+              disabled={!(values[0].name || (values[0].name && values[1].name))}
+              onClick={handleSubmit}
+            >
               Next
             </FormButton>
           </Form>

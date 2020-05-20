@@ -15,7 +15,7 @@ import { api } from '../utilities'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
 import Ballot, { IBallot } from './Ballot'
-import SignOff, { IMemberNames } from './SignOff'
+import SignOff from './SignOff'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 
 const PaddedInner = styled(Inner)`
@@ -130,14 +130,17 @@ const postSignoff = async (
   jurisdictionId: string,
   roundId: string,
   auditBoardId: string,
-  memberNames: IMemberNames
+  memberNames: string[]
 ) => {
   try {
     await api(
       `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/sign-off`,
       {
         method: 'POST',
-        body: JSON.stringify(memberNames),
+        body: JSON.stringify({
+          memberName1: memberNames[0] || '',
+          memberName2: memberNames[1] || '',
+        }),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -254,7 +257,7 @@ const DataEntry: React.FC<IProps> = ({
     setBallots(await loadBallots(electionId, jurisdictionId, roundId, id))
   }
 
-  const submitSignoff = async (memberNames: IMemberNames) => {
+  const submitSignoff = async (memberNames: string[]) => {
     await postSignoff(
       electionId,
       auditBoard.jurisdictionId,
