@@ -6,14 +6,9 @@ import { LabelText, NameField } from './Atoms'
 import FormButton from '../Atoms/Form/FormButton'
 import { IAuditBoard } from '../../types'
 
-export interface IMemberNames {
-  memberName1: string
-  memberName2: string
-}
-
 export interface IProps {
   auditBoard: IAuditBoard
-  submitSignoff: (memberNames: IMemberNames) => void
+  submitSignoff: (memberNames: string[]) => void
 }
 
 const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
@@ -31,32 +26,24 @@ const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
         officials.
       </p>
       <Formik
-        initialValues={{ memberName1: '', memberName2: '' }}
+        initialValues={auditBoard.members.map(() => '')}
         onSubmit={submitSignoff}
         render={({ values, handleSubmit }) => (
           <Form>
-            <FormSection
-              label={`Audit Board Member: ${auditBoard.members[0].name}`}
-            >
-              <LabelText htmlFor="memberName1">Full Name</LabelText>
-              <NameField name="memberName1" />
-            </FormSection>
-            <FormSection
-              label={`Audit Board Member: ${auditBoard.members[1].name}`}
-            >
-              <LabelText htmlFor="memberName2">Full Name</LabelText>
-              <NameField name="memberName2" />
-            </FormSection>
+            {auditBoard.members.map((member, i) => (
+              <FormSection
+                key={member.name}
+                label={`Audit Board Member: ${member.name}`}
+              >
+                <LabelText htmlFor={`[${i}]`}>Full Name</LabelText>
+                <NameField name={`[${i}]`} />
+              </FormSection>
+            ))}
             <FormButton
               intent="primary"
               type="button"
               onClick={handleSubmit}
-              disabled={
-                !(
-                  values.memberName1 === auditBoard.members[0].name &&
-                  values.memberName2 === auditBoard.members[1].name
-                )
-              }
+              disabled={auditBoard.members.some((_, i) => !values[i])}
             >
               Sign Off
             </FormButton>

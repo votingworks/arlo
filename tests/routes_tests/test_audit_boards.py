@@ -521,6 +521,7 @@ def set_up_audit_board(
     jurisdiction_id: str,
     contest_id: str,
     audit_board_id: str,
+    only_one_member=False,
 ) -> Tuple[str, str]:
     SILLY_NAMES = [
         "Joe Schmo",
@@ -533,13 +534,10 @@ def set_up_audit_board(
     member_1 = rand.choice(SILLY_NAMES)
     member_2 = rand.choice(SILLY_NAMES)
 
-    # Order of the names shouldn't matter for sign-off, so we shuffle
-    # the names each time we set up the audit board members
     member_names = [
         {"name": member_1, "affiliation": "DEM"},
-        {"name": member_2, "affiliation": "REP"},
+        {"name": "" if only_one_member else member_2, "affiliation": ""},
     ]
-    rand.shuffle(member_names)
 
     # Set up the audit board
     rv = post_json(
@@ -768,6 +766,68 @@ def test_audit_boards_sign_off_before_finished(
             {
                 "errorType": "Conflict",
                 "message": "Audit board is not finished auditing all assigned ballots",
+            }
+        ]
+    }
+
+
+def test_audit_board_only_one_member_sign_off_happy_path(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    audit_board_id = audit_board_round_1_ids[0]
+    member_1, member_2 = set_up_audit_board(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        contest_ids[0],
+        audit_board_id,
+        only_one_member=True,
+    )
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
+
+    rv = post_json(
+        client,
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
+        {"memberName1": member_1, "memberName2": ""},
+    )
+    assert_ok(rv)
+
+
+def test_audit_board_only_one_member_sign_off_wrong_name(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    audit_board_id = audit_board_round_1_ids[0]
+    member_1, member_2 = set_up_audit_board(
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        contest_ids[0],
+        audit_board_id,
+        only_one_member=True,
+    )
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
+
+    rv = post_json(
+        client,
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
+        {"memberName1": "Wrong Name", "memberName2": ""},
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": f"Audit board member name did not match: Wrong Name",
             }
         ]
     }
