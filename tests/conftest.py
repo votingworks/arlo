@@ -54,14 +54,12 @@ def client() -> Generator[FlaskClient, None, None]:
 
 
 @pytest.fixture
-def election_id(client: FlaskClient) -> Generator[str, None, None]:
-    yield create_election(client)
+def election_id(client: FlaskClient) -> str:
+    return create_election(client)
 
 
 @pytest.fixture
-def jurisdiction_ids(
-    client: FlaskClient, election_id: str
-) -> Generator[List[str], None, None]:
+def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     rv = client.put(
         f"/election/{election_id}/jurisdiction/file",
         data={
@@ -87,7 +85,7 @@ def jurisdiction_ids(
         .order_by(Jurisdiction.name)
         .all()
     )
-    yield [j.id for j in jurisdictions]
+    return [j.id for j in jurisdictions]
 
 
 @pytest.fixture
@@ -129,7 +127,7 @@ def contest_ids(
 
 
 @pytest.fixture
-def election_settings(client: FlaskClient, election_id: str) -> None:
+def election_settings(client: FlaskClient, election_id: str):
     settings = {
         "electionName": "Test Election",
         "online": True,
@@ -187,7 +185,7 @@ def round_1_id(
     contest_ids: str,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
-) -> Generator[str, None, None]:
+) -> str:
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(
         client,
@@ -197,7 +195,7 @@ def round_1_id(
     assert_ok(rv)
     rv = client.get(f"/election/{election_id}/round",)
     rounds = json.loads(rv.data)["rounds"]
-    yield rounds[0]["id"]
+    return str(rounds[0]["id"])
 
 
 @pytest.fixture
@@ -207,7 +205,7 @@ def round_2_id(
     contest_ids: str,
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
-) -> Generator[str, None, None]:
+) -> str:
     run_audit_round(round_1_id, contest_ids[0], 0.5)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -216,13 +214,13 @@ def round_2_id(
 
     rv = client.get(f"/election/{election_id}/round",)
     rounds = json.loads(rv.data)["rounds"]
-    yield rounds[1]["id"]
+    return str(rounds[1]["id"])
 
 
 @pytest.fixture
 def audit_board_round_1_ids(
     client: FlaskClient, election_id: str, jurisdiction_ids: str, round_1_id: str,
-) -> Generator[List[str], None, None]:
+) -> List[str]:
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
@@ -234,13 +232,13 @@ def audit_board_round_1_ids(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board"
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
-    yield [ab["id"] for ab in audit_boards]
+    return [ab["id"] for ab in audit_boards]
 
 
 @pytest.fixture
 def audit_board_round_2_ids(
     client: FlaskClient, election_id: str, jurisdiction_ids: str, round_2_id: str,
-) -> Generator[List[str], None, None]:
+) -> List[str]:
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
@@ -256,7 +254,7 @@ def audit_board_round_2_ids(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board"
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
-    yield [ab["id"] for ab in audit_boards]
+    return [ab["id"] for ab in audit_boards]
 
 
 # Add special routes to test our auth decorators. This fixture will run once before

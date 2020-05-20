@@ -1,5 +1,4 @@
 from flask.testing import FlaskClient
-from typing import Generator
 import pytest, json
 
 from arlo_server.auth import UserType
@@ -21,19 +20,19 @@ SA_TEST_JA_EMAIL = "sa-test-ja-email@example.com"
 
 
 @pytest.fixture()
-def organization_id() -> Generator[str, None, None]:
+def organization_id() -> str:
     org_id, audit_admin_id = create_org_and_admin(user_email=SA_TEST_AA_EMAIL)
-    yield org_id
+    return org_id
 
 
 @pytest.fixture()
-def election_id(client: FlaskClient, organization_id) -> Generator[str, None, None]:
+def election_id(client: FlaskClient, organization_id) -> str:
     set_logged_in_user(client, UserType.AUDIT_ADMIN, SA_TEST_AA_EMAIL)
     election_id = create_election(
         client, organization_id=organization_id, is_multi_jurisdiction=True
     )
     clear_logged_in_user(client)
-    yield election_id
+    return election_id
 
 
 def assert_superadmin_access(client: FlaskClient, url):

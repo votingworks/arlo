@@ -4,7 +4,7 @@ from util.binpacking import Bucket, BucketList, BalancedBucketList
 
 @pytest.fixture
 def bucket():
-    yield Bucket("1")
+    return Bucket("1")
 
 
 @pytest.fixture
@@ -31,7 +31,7 @@ def bucketlist():
     b.add_batch("8", 200)
     buckets.append(b)
 
-    yield BucketList(buckets)
+    return BucketList(buckets)
 
 
 @pytest.fixture
@@ -58,7 +58,7 @@ def balancedbucketlist():
     b.add_batch("8", 200)
     buckets.append(b)
 
-    yield BalancedBucketList(buckets)
+    return BalancedBucketList(buckets)
 
 
 class TestBucket:

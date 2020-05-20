@@ -1,7 +1,6 @@
 import os, math, uuid
 import json, csv, io
 from flask.testing import FlaskClient
-from typing import Generator
 import pytest
 
 from tests.helpers import assert_ok, post_json, create_election
@@ -12,8 +11,8 @@ small_manifest_file_path = os.path.join(os.path.dirname(__file__), "small-manife
 
 
 @pytest.fixture()
-def election_id(client: FlaskClient) -> Generator[str, None, None]:
-    yield create_election(client, is_multi_jurisdiction=False)
+def election_id(client: FlaskClient) -> str:
+    return create_election(client, is_multi_jurisdiction=False)
 
 
 def test_index(client):
