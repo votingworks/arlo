@@ -70,10 +70,6 @@ def create_organization(name=""):
     return org
 
 
-def init_db():
-    db.create_all()
-
-
 def get_election(election_id):
     return Election.query.filter_by(id=election_id).one()
 

@@ -1,6 +1,6 @@
 import sys
 
-from arlo_server.routes import init_db
+from arlo_server import db
 from config import DATABASE_URL
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database, drop_database
@@ -23,4 +23,4 @@ if __name__ == "__main__":
         create_database(engine.url)
 
     print("creating tables…")
-    init_db()
+    db.create_all()
