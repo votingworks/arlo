@@ -2,10 +2,10 @@
 # Sections are named for $FLASK_ENV environment variable values.
 
 [development]
-database_url = postgres://arlo:arlo@localhost:5432/arlo
+database_url = postgresql://arlo:arlo@localhost:5432/arlo
 
 [test]
-database_url = postgres://arlo:arlo@localhost:5432/arlotest
+database_url = postgresql://arlo:arlo@localhost:5432/arlotest
 
 # [staging]
 # omitted, perhaps provided by $DATABASE_URL environment variable
