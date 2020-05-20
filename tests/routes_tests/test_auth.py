@@ -3,6 +3,8 @@ from flask.testing import FlaskClient
 import json, re, uuid
 from unittest.mock import Mock, MagicMock
 from urllib.parse import urlparse, parse_qs
+from typing import List, Optional
+from util.jsonschema import JSONDict
 
 from arlo_server.auth import UserType
 from arlo_server.models import db, AuditBoard, Round
@@ -111,6 +113,7 @@ def test_superadmin_callback(
 
     rv = client.get("/auth/superadmin/callback?code=foobar")
     assert rv.status_code == 302
+    assert urlparse(rv.location).path == "/superadmin/"
 
     with client.session_transaction() as session:  # type: ignore
         assert session["_superadmin"]
@@ -118,6 +121,28 @@ def test_superadmin_callback(
 
     assert auth0_sa.authorize_access_token.called
     assert auth0_sa.get.called
+
+
+def test_superadmin_callback_rejected(
+    client: FlaskClient, org_id: str,  # pylint: disable=unused-argument
+):
+    BAD_USER_INFOS: List[Optional[JSONDict]] = [None, {}, {"email": AA_EMAIL}]
+    for bad_user_info in BAD_USER_INFOS:
+        auth0_sa.authorize_access_token = MagicMock(return_value=None)
+
+        mock_response = Mock()
+        mock_response.json = MagicMock(return_value=bad_user_info)
+        auth0_sa.get = Mock(return_value=mock_response)
+
+        rv = client.get("/auth/superadmin/callback?code=foobar")
+        assert rv.status_code == 302
+        assert urlparse(rv.location).path == "/"
+
+        with client.session_transaction() as session:  # type: ignore
+            assert "_superadmin" not in session
+
+        assert auth0_sa.authorize_access_token.called
+        assert auth0_sa.get.called
 
 
 def test_auditadmin_start(client: FlaskClient):
