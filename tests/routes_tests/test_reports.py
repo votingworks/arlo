@@ -58,8 +58,8 @@ Test Audit,10%,1234567890,Yes
 
 ######## AUDIT BOARDS ########
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation
-J1,Audit Board #1,Bubbikin Republican,Democrat,Joe Schmo,Republican
-J1,Audit Board #2,Bubbikin Republican,Democrat,Joe Schmo,Republican
+J1,Audit Board #1,Bubbikin Republican,Democrat,Joe Schmo,
+J1,Audit Board #2,Bubbikin Republican,Democrat,Joe Schmo,
 
 ######## ROUNDS ########
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes
