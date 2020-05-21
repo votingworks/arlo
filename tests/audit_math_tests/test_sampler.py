@@ -21,7 +21,7 @@ def macro_batches():
             "test1": {"cand1": 20, "cand2": 30, "ballots": 50}
         }
 
-    yield batches
+    return batches
 
 
 @pytest.fixture
@@ -36,7 +36,7 @@ def macro_contest():
         "votesAllowed": 1,
     }
 
-    yield Contest(name, info_dict)
+    return Contest(name, info_dict)
 
 
 def test_draw_sample():

@@ -15,7 +15,7 @@ def contests():
     for contest in bravo_contests:
         contests[contest] = Contest(contest, bravo_contests[contest])
 
-    yield contests
+    return contests
 
 
 def test_expected_sample_sizes(contests):

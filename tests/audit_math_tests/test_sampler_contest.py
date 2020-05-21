@@ -10,7 +10,7 @@ def contests():
     for contest in bravo_contests:
         contests.append(Contest(contest, bravo_contests[contest]))
 
-    yield contests
+    return contests
 
 
 def test_compute_margins(contests):
