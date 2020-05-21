@@ -391,9 +391,8 @@ def update_jurisdictions_file(election: Election):
 
 
 @app.route("/election/<election_id>/audit/status", methods=["GET"])
-def audit_status(election_id=None):
-    election = get_election(election_id)
-
+@with_election_access
+def audit_status(election):
     return jsonify(
         organizationId=election.organization_id,
         name=election.election_name,
@@ -491,8 +490,8 @@ def audit_status(election_id=None):
 
 
 @app.route("/election/<election_id>/audit/basic", methods=["POST"])
-def audit_basic_update(election_id):
-    election = get_election(election_id)
+@with_election_access
+def audit_basic_update(election):
     info = request.get_json()
     election.election_name = info["name"]
     election.risk_limit = info["riskLimit"]
@@ -549,9 +548,8 @@ def audit_basic_update(election_id):
 
 
 @app.route("/election/<election_id>/audit/sample-size", methods=["POST"])
-def samplesize_set(election_id):
-    election = get_election(election_id)
-
+@with_election_access
+def samplesize_set(election):
     # only works if there's only one round
     rounds = election.rounds
     if len(rounds) > 1:
@@ -564,8 +562,8 @@ def samplesize_set(election_id):
 
 
 @app.route("/election/<election_id>/audit/jurisdictions", methods=["POST"])
-def jurisdictions_set(election_id):
-    election = get_election(election_id)
+@with_election_access
+def jurisdictions_set(election):
     jurisdictions = request.get_json()["jurisdictions"]
 
     Jurisdiction.query.filter_by(election_id=election.id).delete()
@@ -602,8 +600,8 @@ def jurisdictions_set(election_id):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/manifest",
     methods=["DELETE", "PUT"],
 )
-def jurisdiction_manifest(jurisdiction_id, election_id):
-    election = get_election(election_id)
+@with_election_access
+def jurisdiction_manifest(election, jurisdiction_id):
     jurisdiction = Jurisdiction.query.filter_by(
         election_id=election.id, id=jurisdiction_id
     ).first()
@@ -623,9 +621,8 @@ def jurisdiction_manifest(jurisdiction_id, election_id):
 
 
 @app.route("/election/<election_id>/audit/freeze", methods=["POST"])
-def audit_launch(election_id):
-    election = get_election(election_id)
-
+@with_election_access
+def audit_launch(election):
     # don't freeze an already frozen election
     if election.frozen_at:
         return jsonify(status="ok")
@@ -645,11 +642,12 @@ def audit_launch(election_id):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>",
     methods=["GET"],
 )
-def audit_board(election_id, jurisdiction_id, audit_board_id):
+@with_election_access
+def audit_board(election, jurisdiction_id, audit_board_id):
     audit_boards = (
         AuditBoard.query.filter_by(id=audit_board_id)
         .join(AuditBoard.jurisdiction)
-        .filter_by(id=jurisdiction_id, election_id=election_id)
+        .filter_by(id=jurisdiction_id, election_id=election.id)
         .all()
     )
 
@@ -670,12 +668,13 @@ def audit_board(election_id, jurisdiction_id, audit_board_id):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>",
     methods=["POST"],
 )
-def set_audit_board(election_id, jurisdiction_id, audit_board_id):
+@with_election_access
+def set_audit_board(election, jurisdiction_id, audit_board_id):
     attributes = request.get_json()
     audit_boards = (
         AuditBoard.query.filter_by(id=audit_board_id)
         .join(Jurisdiction)
-        .filter_by(id=jurisdiction_id, election_id=election_id)
+        .filter_by(id=jurisdiction_id, election_id=election.id)
         .all()
     )
 
@@ -741,7 +740,8 @@ def set_audit_board(election_id, jurisdiction_id, audit_board_id):
 @app.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballot-list"
 )
-def ballot_list(election_id, jurisdiction_id, round_id):
+@with_election_access
+def ballot_list(election, jurisdiction_id, round_id):
     query = (
         SampledBallotDraw.query.join(SampledBallot)
         .join(SampledBallot.batch)
@@ -751,7 +751,7 @@ def ballot_list(election_id, jurisdiction_id, round_id):
         .add_entity(Batch)
         .add_entity(AuditBoard)
         .filter(Round.id == round_id)
-        .filter(Round.election_id == election_id)
+        .filter(Round.election_id == election.id)
         .filter(Batch.jurisdiction_id == jurisdiction_id)
         .order_by(
             AuditBoard.name,
@@ -786,7 +786,8 @@ def ballot_list(election_id, jurisdiction_id, round_id):
 @app.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>/round/<round_id>/ballot-list"
 )
-def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, round_id):
+@with_election_access
+def ballot_list_by_audit_board(election, jurisdiction_id, audit_board_id, round_id):
     query = (
         SampledBallotDraw.query.join(Round)
         .join(SampledBallot)
@@ -794,7 +795,7 @@ def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, rou
         .add_entity(SampledBallot)
         .add_entity(Batch)
         .filter(Round.id == round_id)
-        .filter(Round.election_id == election_id)
+        .filter(Round.election_id == election.id)
         .filter(Batch.jurisdiction_id == jurisdiction_id)
         .filter(SampledBallot.audit_board_id == audit_board_id)
         .order_by(
@@ -838,15 +839,16 @@ def get_ballot(election_id, jurisdiction_id, batch_id, ballot_position):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>/set-not-found",
     methods=["POST"],
 )
-def ballot_set_not_found(election_id, jurisdiction_id, batch_id, ballot_position):
-    ballot = get_ballot(election_id, jurisdiction_id, batch_id, ballot_position)
+@with_election_access
+def ballot_set_not_found(election, jurisdiction_id, batch_id, ballot_position):
+    ballot = get_ballot(election.id, jurisdiction_id, batch_id, ballot_position)
 
     if not ballot:
         return (
             jsonify(
                 errors=[
                     {
-                        "message": f"No ballot found with election_id={election_id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}",
+                        "message": f"No ballot found with election_id={election.id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}",
                         "errorType": "NotFoundError",
                     }
                 ]
@@ -867,16 +869,17 @@ def ballot_set_not_found(election_id, jurisdiction_id, batch_id, ballot_position
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>",
     methods=["POST"],
 )
-def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
+@with_election_access
+def ballot_set(election, jurisdiction_id, batch_id, ballot_position):
     attributes = request.get_json()
-    ballot = get_ballot(election_id, jurisdiction_id, batch_id, ballot_position)
+    ballot = get_ballot(election.id, jurisdiction_id, batch_id, ballot_position)
 
     if not ballot:
         return (
             jsonify(
                 errors=[
                     {
-                        "message": f"No ballot found with election_id={election_id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}",
+                        "message": f"No ballot found with election_id={election.id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}",
                         "errorType": "NotFoundError",
                     }
                 ]
@@ -899,9 +902,8 @@ def ballot_set(election_id, jurisdiction_id, batch_id, ballot_position):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list",
     methods=["GET"],
 )
-def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
-    election = get_election(election_id)
-
+@with_election_access
+def jurisdiction_retrieval_list(election, jurisdiction_id, round_num):
     # check the jurisdiction and round
     jurisdiction = Jurisdiction.query.filter_by(
         election_id=election.id, id=jurisdiction_id
@@ -919,8 +921,8 @@ def jurisdiction_retrieval_list(election_id, jurisdiction_id, round_num):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/results",
     methods=["POST"],
 )
-def jurisdiction_results(election_id, jurisdiction_id, round_num):
-    election = get_election(election_id)
+@with_election_access
+def jurisdiction_results(election, jurisdiction_id, round_num):
     results = request.get_json()
 
     # check the round ownership
@@ -950,14 +952,14 @@ def jurisdiction_results(election_id, jurisdiction_id, round_num):
 
 
 @app.route("/election/<election_id>/audit/reset", methods=["POST"])
-def audit_reset(election_id):
-    election = Election.query.get_or_404(election_id)
+@with_election_access
+def audit_reset(election):
     # deleting the election cascades to all the data structures
     db.session.delete(election)
     db.session.commit()
 
     election = Election(
-        id=election_id,
+        id=election.id,
         audit_name=election.audit_name,
         organization_id=election.organization_id,
         is_multi_jurisdiction=election.is_multi_jurisdiction,
