@@ -8,13 +8,13 @@ import {
   FileProcessingStatus,
   JurisdictionRoundStatus,
   IFileInfo,
-} from './useJurisdictions'
-import FormButton from '../Atoms/Form/FormButton'
-import { api } from '../utilities'
-import { Inner } from '../Atoms/Wrapper'
-import { IAuditSettings, IContest } from '../../types'
-import { IRound } from './useRoundsJurisdictionAdmin'
-import { IAuditBoard } from './useAuditBoards'
+} from '../useJurisdictions'
+import FormButton from '../../Atoms/Form/FormButton'
+import { api } from '../../utilities'
+import { Inner } from '../../Atoms/Wrapper'
+import { IAuditSettings, IContest } from '../../../types'
+import { IRound } from '../useRoundsJurisdictionAdmin'
+import { IAuditBoard } from '../useAuditBoards'
 
 const Wrapper = styled(Callout)`
   display: flex;
@@ -173,7 +173,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
   )
 }
 
-interface IJursidictionAdminProps {
+interface IJurisdictionAdminProps {
   rounds: IRound[]
   ballotManifest: IFileInfo
   auditBoards: IAuditBoard[]
@@ -183,7 +183,7 @@ export const JurisdictionAdminStatusBox = ({
   rounds,
   ballotManifest,
   auditBoards,
-}: IJursidictionAdminProps) => {
+}: IJurisdictionAdminProps) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string
