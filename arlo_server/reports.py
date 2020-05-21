@@ -9,7 +9,6 @@ from arlo_server.models import (
     SampledBallot,
     SampledBallotDraw,
     Batch,
-    Jurisdiction,
     BallotInterpretation,
     Interpretation,
     Contest,

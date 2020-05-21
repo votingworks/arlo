@@ -1,8 +1,8 @@
+from urllib.parse import urlparse
 from flask import Flask
 from flask_talisman import Talisman
 from werkzeug.wrappers import Request
 from werkzeug.middleware.proxy_fix import ProxyFix
-from urllib.parse import urlparse
 
 from config import (
     SESSION_SECRET,
@@ -43,6 +43,7 @@ db.init_app(app)
 
 # The order of these imports is important as it defines route precedence.
 # Be careful when re-ordering them.
+# pylint: disable=wrong-import-position,cyclic-import
 
 # Single-jurisdiction flow routes
 # (Plus some routes for multi-jurisdiction flow that were created before we had

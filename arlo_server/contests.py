@@ -30,7 +30,6 @@ CONTEST_CHOICE_SCHEMA = {
     },
     "additionalProperties": False,
     "required": ["id", "name", "numVotes"],
-    "additionalProperties": False,
 }
 
 CONTEST_SCHEMA = {
@@ -56,7 +55,6 @@ CONTEST_SCHEMA = {
         "votesAllowed",
         "jurisdictionIds",
     ],
-    "additionalProperties": False,
 }
 
 

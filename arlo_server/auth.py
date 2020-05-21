@@ -1,7 +1,7 @@
 import functools
 from enum import Enum
-from flask import session
 from typing import Callable, Optional, Tuple, Union
+from flask import session
 from werkzeug.exceptions import Unauthorized, Forbidden
 
 from arlo_server.models import Election, User, Jurisdiction, Round, AuditBoard

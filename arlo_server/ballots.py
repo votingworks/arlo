@@ -21,7 +21,7 @@ from util.jsonschema import JSONDict
 
 
 def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
-    previous_ballots_query = (
+    previous_ballots = set(
         SampledBallotDraw.query.join(Round)
         .filter(Round.round_num < round.round_num)
         .join(SampledBallot)
@@ -29,10 +29,6 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
         .filter_by(jurisdiction_id=jurisdiction.id)
         .values(Batch.name, SampledBallot.ballot_position)
     )
-    previous_ballots = {
-        (batch_name, ballot_position)
-        for batch_name, ballot_position in previous_ballots_query
-    }
 
     ballots = (
         SampledBallotDraw.query.filter_by(round_id=round.id)
