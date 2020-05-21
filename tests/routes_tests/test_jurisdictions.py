@@ -1,8 +1,7 @@
-from flask.testing import FlaskClient
-
 import json, io, uuid
 from datetime import datetime
 from typing import List
+from flask.testing import FlaskClient
 
 from tests.helpers import (
     assert_ok,
@@ -25,6 +24,8 @@ from arlo_server.models import (
     BallotStatus,
 )
 from bgcompute import bgcompute_update_ballot_manifest_file
+
+AB1_SAMPLES = 23  # Arbitrary num of ballots to assign to audit board 1
 
 
 def test_jurisdictions_list_empty(client: FlaskClient, election_id: str):
@@ -219,7 +220,6 @@ def test_jurisdictions_round_status(
     jurisdiction_ids: List[str],
     round_1_id: str,  # pylint: disable=unused-argument
 ):
-    AB1_SAMPLES = 23  # Arbitrary num of ballots to assign to audit board 1
 
     rv = client.get(f"/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]

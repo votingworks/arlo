@@ -2,8 +2,8 @@ import pytest
 from audit_math import sampler
 from audit_math.sampler_contest import Contest
 
-seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
-risk_limit = 0.1
+SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
+RISK_LIMIT = 0.1
 
 
 @pytest.fixture
@@ -48,7 +48,7 @@ def test_draw_sample():
         "pct 4": 25,
     }
 
-    sample = sampler.draw_sample(seed, manifest, 20, 0)
+    sample = sampler.draw_sample(SEED, manifest, 20, 0)
 
     for i, item in enumerate(sample):
         expected = expected_sample[i]
@@ -67,7 +67,7 @@ def test_draw_more_samples():
     }
 
     samp_size = 10
-    sample = sampler.draw_sample(seed, manifest, 10, 0)
+    sample = sampler.draw_sample(SEED, manifest, 10, 0)
     assert samp_size == len(sample), "Received sample of size {}, expected {}".format(
         samp_size, len(sample)
     )
@@ -79,7 +79,7 @@ def test_draw_more_samples():
         )
 
     samp_size = 10
-    sample = sampler.draw_sample(seed, manifest, 10, num_sampled=10)
+    sample = sampler.draw_sample(SEED, manifest, 10, num_sampled=10)
     assert samp_size == len(sample), "Received sample of size {}, expected {}".format(
         samp_size, len(sample)
     )
@@ -93,7 +93,7 @@ def test_draw_more_samples():
 def test_draw_macro_sample(macro_batches, macro_contest):
     # Test getting a sample
     sample = sampler.draw_ppeb_sample(
-        seed, macro_contest, 10, 0, batch_results=macro_batches
+        SEED, macro_contest, 10, 0, batch_results=macro_batches
     )
 
     for i, item in enumerate(sample):
@@ -107,7 +107,7 @@ def test_draw_more_macro_sample(macro_batches, macro_contest):
     # Test getting a sample
     samp_size = 5
     sample = sampler.draw_ppeb_sample(
-        seed, macro_contest, samp_size, 0, batch_results=macro_batches,
+        SEED, macro_contest, samp_size, 0, batch_results=macro_batches,
     )
     assert samp_size == len(sample), "Received sample of size {}, expected {}".format(
         samp_size, len(sample)
@@ -121,7 +121,7 @@ def test_draw_more_macro_sample(macro_batches, macro_contest):
 
     samp_size = 5
     sample = sampler.draw_ppeb_sample(
-        seed, macro_contest, samp_size, num_sampled=5, batch_results=macro_batches
+        SEED, macro_contest, samp_size, num_sampled=5, batch_results=macro_batches
     )
     assert samp_size == len(sample), "Received sample of size {}, expected {}".format(
         samp_size, len(sample)

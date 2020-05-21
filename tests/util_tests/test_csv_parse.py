@@ -1,14 +1,14 @@
-import pytest, os, io
+from typing import Union, List
+import os, io, pytest
+from werkzeug.exceptions import BadRequest
+from arlo_server.ballot_manifest import BALLOT_MANIFEST_COLUMNS
+from util.jurisdiction_bulk_update import JURISDICTIONS_COLUMNS
 from util.csv_parse import (
     parse_csv,
     decode_csv_file,
     CSVParseError,
     CSVColumnType,
 )
-from werkzeug.exceptions import BadRequest
-from typing import Union, List
-from arlo_server.ballot_manifest import BALLOT_MANIFEST_COLUMNS
-from util.jurisdiction_bulk_update import JURISDICTIONS_COLUMNS
 
 
 # Happy path
@@ -511,6 +511,7 @@ WEST BRANCH,22,
         BALLOT_MANIFEST_COLUMNS,
     ),
     (
+        # pylint: disable=trailing-whitespace
         """Batch Name,Number of Ballots,,
 Ash #1,289,,
 Ash #2,251,,

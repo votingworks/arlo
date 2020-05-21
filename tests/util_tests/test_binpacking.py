@@ -11,25 +11,25 @@ def bucket():
 def bucketlist():
     buckets = []
 
-    b = Bucket("1")
-    b.add_batch("1", 100)
-    b.add_batch("2", 50)
-    buckets.append(b)
+    bucket = Bucket("1")
+    bucket.add_batch("1", 100)
+    bucket.add_batch("2", 50)
+    buckets.append(bucket)
 
-    b = Bucket("2")
-    b.add_batch("3", 100)
-    b.add_batch("4", 150)
-    buckets.append(b)
+    bucket = Bucket("2")
+    bucket.add_batch("3", 100)
+    bucket.add_batch("4", 150)
+    buckets.append(bucket)
 
-    b = Bucket("3")
-    b.add_batch("5", 50)
-    b.add_batch("6", 50)
-    buckets.append(b)
+    bucket = Bucket("3")
+    bucket.add_batch("5", 50)
+    bucket.add_batch("6", 50)
+    buckets.append(bucket)
 
-    b = Bucket("4")
-    b.add_batch("7", 100)
-    b.add_batch("8", 200)
-    buckets.append(b)
+    bucket = Bucket("4")
+    bucket.add_batch("7", 100)
+    bucket.add_batch("8", 200)
+    buckets.append(bucket)
 
     return BucketList(buckets)
 
@@ -38,25 +38,25 @@ def bucketlist():
 def balancedbucketlist():
     buckets = []
 
-    b = Bucket("1")
-    b.add_batch("1", 100)
-    b.add_batch("2", 50)
-    buckets.append(b)
+    bucket = Bucket("1")
+    bucket.add_batch("1", 100)
+    bucket.add_batch("2", 50)
+    buckets.append(bucket)
 
-    b = Bucket("2")
-    b.add_batch("3", 100)
-    b.add_batch("4", 150)
-    buckets.append(b)
+    bucket = Bucket("2")
+    bucket.add_batch("3", 100)
+    bucket.add_batch("4", 150)
+    buckets.append(bucket)
 
-    b = Bucket("3")
-    b.add_batch("5", 50)
-    b.add_batch("6", 50)
-    buckets.append(b)
+    bucket = Bucket("3")
+    bucket.add_batch("5", 50)
+    bucket.add_batch("6", 50)
+    buckets.append(bucket)
 
-    b = Bucket("4")
-    b.add_batch("7", 100)
-    b.add_batch("8", 200)
-    buckets.append(b)
+    bucket = Bucket("4")
+    bucket.add_batch("7", 100)
+    bucket.add_batch("8", 200)
+    buckets.append(bucket)
 
     return BalancedBucketList(buckets)
 
@@ -222,8 +222,8 @@ class TestBucketList:
             new_bl.deviation(), bucketlist.deviation()
         )
 
-        num_batches = sum([len(b.batches) for b in bucketlist.buckets])
-        balanced_num_batches = sum([len(b.batches) for b in new_bl.buckets])
+        num_batches = sum([len(bucket.batches) for bucket in bucketlist.buckets])
+        balanced_num_batches = sum([len(bucket.batches) for bucket in new_bl.buckets])
 
         assert (
             num_batches == balanced_num_batches
@@ -232,19 +232,11 @@ class TestBucketList:
         )
 
         batches = set()
-        [
-            batches.union(s)
-            for s in [
-                set(batch.keys()) for batch in [b.batches for b in bucketlist.buckets]
-            ]
-        ]
+        for batch in [bucket.batches for bucket in bucketlist.buckets]:
+            batches.union(set(batch.keys()))
         new_batches = set()
-        [
-            new_batches.union(s)
-            for s in [
-                set(batch.keys()) for batch in [b.batches for b in new_bl.buckets]
-            ]
-        ]
+        for batch in [bucket.batches for bucket in new_bl.buckets]:
+            new_batches.union(set(batch.keys()))
 
         assert (
             batches == new_batches
@@ -273,8 +265,8 @@ class TestBalancedBucketList:
             bbl.deviation, new_bl.deviation
         )
 
-        num_batches = sum([len(b.batches) for b in bucketlist.buckets])
-        balanced_num_batches = sum([len(b.batches) for b in bbl.buckets])
+        num_batches = sum([len(bucket.batches) for bucket in bucketlist.buckets])
+        balanced_num_batches = sum([len(bucket.batches) for bucket in bbl.buckets])
 
         assert (
             num_batches == balanced_num_batches
@@ -283,17 +275,11 @@ class TestBalancedBucketList:
         )
 
         batches = set()
-        [
-            batches.union(s)
-            for s in [
-                set(batch.keys()) for batch in [b.batches for b in bucketlist.buckets]
-            ]
-        ]
+        for batch in [bucket.batches for bucket in bucketlist.buckets]:
+            batches.union(set(batch.keys()))
         new_batches = set()
-        [
-            new_batches.union(s)
-            for s in [set(batch.keys()) for batch in [b.batches for b in bbl.buckets]]
-        ]
+        for batch in [bucket.batches for bucket in new_bl.buckets]:
+            new_batches.union(set(batch.keys()))
 
         assert (
             batches == new_batches

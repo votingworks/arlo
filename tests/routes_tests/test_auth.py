@@ -1,10 +1,9 @@
-import pytest
-from flask.testing import FlaskClient
 import json, re, uuid
+from typing import List, Optional
 from unittest.mock import Mock, MagicMock
 from urllib.parse import urlparse, parse_qs
-from typing import List, Optional
-from util.jsonschema import JSONDict
+import pytest
+from flask.testing import FlaskClient
 
 from arlo_server.auth import UserType
 from arlo_server.models import db, AuditBoard, Round
@@ -13,6 +12,7 @@ from arlo_server.routes import (
     auth0_aa,
     auth0_ja,
 )
+from util.jsonschema import JSONDict
 from tests.helpers import (
     set_logged_in_user,
     set_superadmin,
@@ -31,7 +31,7 @@ JA_EMAIL = "ja@example.com"
 
 @pytest.fixture
 def org_id() -> str:
-    org_id, aa_id = create_org_and_admin("Test Org", AA_EMAIL)
+    org_id, _ = create_org_and_admin("Test Org", AA_EMAIL)
     return org_id
 
 
@@ -43,9 +43,7 @@ def election_id(client: FlaskClient, org_id: str) -> str:
 
 @pytest.fixture
 def jurisdiction_id(election_id: str) -> str:
-    jurisdiction_id, ja_id = create_jurisdiction_and_admin(
-        election_id, user_email=JA_EMAIL
-    )
+    jurisdiction_id, _ = create_jurisdiction_and_admin(election_id, user_email=JA_EMAIL)
     return jurisdiction_id
 
 
@@ -62,12 +60,12 @@ def round_id(election_id: str) -> str:
 
 
 def create_audit_board(jurisdiction_id: str, round_id: str) -> str:
-    id = str(uuid.uuid4())
+    audit_board_id = str(uuid.uuid4())
     audit_board = AuditBoard(
-        id=id,
+        id=audit_board_id,
         jurisdiction_id=jurisdiction_id,
         round_id=round_id,
-        passphrase=f"passphrase-{id}",
+        passphrase=f"passphrase-{audit_board_id}",
     )
     db.session.add(audit_board)
     db.session.commit()
@@ -126,8 +124,8 @@ def test_superadmin_callback(
 def test_superadmin_callback_rejected(
     client: FlaskClient, org_id: str,  # pylint: disable=unused-argument
 ):
-    BAD_USER_INFOS: List[Optional[JSONDict]] = [None, {}, {"email": AA_EMAIL}]
-    for bad_user_info in BAD_USER_INFOS:
+    bad_user_infos: List[Optional[JSONDict]] = [None, {}, {"email": AA_EMAIL}]
+    for bad_user_info in bad_user_infos:
         auth0_sa.authorize_access_token = MagicMock(return_value=None)
 
         mock_response = Mock()
@@ -340,7 +338,7 @@ def test_with_election_access_not_found(
     client: FlaskClient, election_id: str  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "aa2@example.com")
-    rv = client.get(f"/election/not-a-real-id/test_auth")
+    rv = client.get("/election/not-a-real-id/test_auth")
     assert rv.status_code == 404
 
 

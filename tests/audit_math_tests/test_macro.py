@@ -3,9 +3,8 @@ import pytest
 from audit_math import macro
 from audit_math.sampler_contest import Contest
 
-seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
-
-risk_limit = 0.25
+SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
+RISK_LIMIT = 0.25
 
 macro_contests = {
     "Contest A": {
@@ -159,7 +158,7 @@ def test_compute_risk(contests, batches):
 
     for contest in contests:
         computed_p, result = macro.compute_risk(
-            risk_limit, contests[contest], batches, sample
+            RISK_LIMIT, contests[contest], batches, sample
         )
 
         expected_p = 0.247688222

@@ -279,5 +279,5 @@ def test_convert_emails_to_lowercase(client, election_id):
 
     election = Election.query.filter_by(id=election_id).one()
     for jurisdiction in election.jurisdictions:
-        for a in jurisdiction.jurisdiction_administrations:
-            assert a.user.email == a.user.email.lower()
+        for admin in jurisdiction.jurisdiction_administrations:
+            assert admin.user.email == admin.user.email.lower()

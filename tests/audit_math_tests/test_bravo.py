@@ -1,11 +1,12 @@
-import pytest
+# pylint: disable=invalid-name
 import math
+import pytest
 
 from audit_math import bravo
 from audit_math.sampler_contest import Contest
 
-seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
-risk_limit = 0.1
+SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
+RISK_LIMIT = 0.1
 
 
 @pytest.fixture
@@ -38,7 +39,7 @@ def test_expected_sample_sizes(contests):
 
     for contest in true_asns:
         computed = bravo.get_expected_sample_sizes(
-            risk_limit, contests[contest], round0_sample_results[contest]
+            RISK_LIMIT, contests[contest], round0_sample_results[contest]
         )
         expected = true_asns[contest]
 
@@ -64,13 +65,12 @@ def test_expected_sample_sizes_second_round(contests):
         "test9": -1,
         "test10": -52,
         "test11": -1,
-        "test1": -12,
     }
 
     for contest in true_asns:
         expected = true_asns[contest]
         computed = bravo.get_expected_sample_sizes(
-            risk_limit, contests[contest], round1_sample_results[contest]
+            RISK_LIMIT, contests[contest], round1_sample_results[contest]
         )
 
         assert (
@@ -89,7 +89,7 @@ def test_bravo_sample_sizes():
 
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
-            risk_limit=risk_limit,
+            risk_limit=RISK_LIMIT,
             p_w=0.4,
             p_r=0.32,
             sample_w=r0_sample_win,
@@ -107,7 +107,7 @@ def test_bravo_sample_sizes():
 
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
-            risk_limit=risk_limit,
+            risk_limit=RISK_LIMIT,
             p_w=0.36,
             p_r=0.32,
             sample_w=r0_sample_win,
@@ -125,7 +125,7 @@ def test_bravo_sample_sizes():
 
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
-            risk_limit=risk_limit,
+            risk_limit=RISK_LIMIT,
             p_w=0.36,
             p_r=0.32,
             sample_w=r0_sample_win,
@@ -143,7 +143,7 @@ def test_bravo_sample_sizes():
 
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
-            risk_limit=risk_limit,
+            risk_limit=RISK_LIMIT,
             p_w=0.52,
             p_r=0.47,
             sample_w=r0_sample_win,
@@ -166,7 +166,7 @@ def test_bravo_sample_sizes_round1_finish():
 
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
-            risk_limit,
+            RISK_LIMIT,
             p_w=0.52,
             p_r=0.47,
             sample_w=r0_sample_win,
@@ -188,7 +188,7 @@ def test_bravo_sample_sizes_round1_incomplete():
 
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
-            risk_limit,
+            RISK_LIMIT,
             p_w=0.52,
             p_r=0.47,
             sample_w=r0_sample_win,
@@ -207,7 +207,7 @@ def test_get_sample_size(contests):
 
     for contest in contests:
         computed = bravo.get_sample_size(
-            risk_limit, contests[contest], round0_sample_results[contest]
+            RISK_LIMIT, contests[contest], round0_sample_results[contest]
         )
 
         expected = true_sample_sizes[contest]
@@ -259,7 +259,7 @@ def test_bravo_expected_prob():
 
     computed_prob1 = round(
         bravo.expected_prob(
-            risk_limit,
+            RISK_LIMIT,
             p_w=0.6,
             p_r=0.4,
             sample_w=r0_sample_win,
@@ -309,7 +309,7 @@ def test_compute_risk(contests):
 
     for contest in contests.values():
         sample = round1_sample_results[contest.name]
-        T, decision = bravo.compute_risk(risk_limit, contest, sample)
+        T, decision = bravo.compute_risk(RISK_LIMIT, contest, sample)
         expected_T = expected_Ts[contest.name]
         for pair in expected_T:
             diff = T[pair] - expected_T[pair]
@@ -361,7 +361,7 @@ def test_compute_risk_empty(contests):
 
     for contest in contests.values():
         sample = round0_sample_results[contest.name]
-        T, decision = bravo.compute_risk(risk_limit, contest, sample)
+        T, decision = bravo.compute_risk(RISK_LIMIT, contest, sample)
         expected_T = expected_Ts[contest.name]
         for pair in expected_T:
             diff = T[pair] - expected_T[pair]

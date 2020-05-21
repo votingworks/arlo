@@ -1,6 +1,6 @@
 import io, json
-from flask.testing import FlaskClient
 from typing import List
+from flask.testing import FlaskClient
 
 from arlo_server.models import Jurisdiction, File
 from tests.helpers import (
