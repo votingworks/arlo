@@ -1,4 +1,4 @@
-import io, itertools, re, locale, chardet
+import io, re, locale, chardet
 from enum import Enum
 from typing import List, Iterator, Dict, Any, NamedTuple, Set
 import csv as py_csv
@@ -37,7 +37,7 @@ def parse_csv(csv_string: str, columns: List[CSVColumnType]) -> CSVDictIterator:
     validate_is_csv(csv_string)
     csv: CSVIterator = py_csv.reader(io.StringIO(csv_string), delimiter=",")
     csv = strip_whitespace(csv)
-    csv = reject_empty(csv)
+    csv = reject_no_rows(csv)
     csv = validate_headers(csv, columns)
     csv = skip_empty_rows(csv)
     csv = reject_empty_cells(csv, columns)
@@ -71,14 +71,13 @@ def strip_whitespace(csv: CSVIterator) -> CSVIterator:
     return ([cell.strip() for cell in row] for row in csv)
 
 
-def reject_empty(csv: CSVIterator) -> CSVIterator:
-    first = next(csv, None)
-    if first is None:
-        raise CSVParseError("CSV cannot be empty.")
+def reject_no_rows(csv: CSVIterator) -> CSVIterator:
+    yield next(csv)
     second = next(csv, None)
     if second is None:
         raise CSVParseError("CSV must contain at least one row after headers.")
-    return itertools.chain([first, second], csv)
+    yield second
+    yield from csv
 
 
 def validate_headers(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterator:

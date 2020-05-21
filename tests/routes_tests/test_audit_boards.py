@@ -440,10 +440,10 @@ def test_audit_boards_duplicate_name(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}, {"name": "Audit Board #1"}],
     )
-    assert rv.status_code == 409
+    assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
-            {"errorType": "Conflict", "message": "Audit board names must be unique",}
+            {"errorType": "Bad Request", "message": "Audit board names must be unique",}
         ]
     }
 

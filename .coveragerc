@@ -9,7 +9,7 @@ omit =
     config/*
 
 [report]
-fail_under = 95.62
+fail_under = 97.6
 precision = 2
 skip_covered = true
 show_missing = true

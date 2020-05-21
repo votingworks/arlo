@@ -71,6 +71,9 @@ def test_missing_one_csv_field(client, election_id):
 
 
 def test_metadata(client, election_id):
+    rv = client.get(f"/election/{election_id}/jurisdiction/file")
+    assert json.loads(rv.data) == {"file": None, "processing": None}
+
     rv = client.put(
         f"/election/{election_id}/jurisdiction/file",
         data={

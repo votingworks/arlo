@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import List, Dict
 from xkcdpass import xkcd_password as xp
 from werkzeug.exceptions import Conflict, BadRequest
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func, and_
 from sqlalchemy.orm import contains_eager
 
@@ -23,7 +22,6 @@ from arlo_server.models import (
     RoundContestResult,
     BallotInterpretation,
 )
-from arlo_server.errors import handle_unique_constraint_error
 from arlo_server.sample_sizes import cumulative_contest_results
 from util.jsonschema import validate, JSONDict
 from util.binpacking import BalancedBucketList, Bucket
@@ -57,6 +55,9 @@ def validate_audit_boards(
     validate(
         audit_boards, {"type": "array", "items": CREATE_AUDIT_BOARD_REQUEST_SCHEMA}
     )
+
+    if len(set(ab["name"] for ab in audit_boards)) != len(audit_boards):
+        raise BadRequest("Audit board names must be unique")
 
 
 def assign_sampled_ballots(
@@ -93,8 +94,6 @@ def assign_sampled_ballots(
             ballot.audit_board_id = bucket.name
             db.session.add(ballot)
 
-    db.session.commit()
-
 
 @app.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board",
@@ -118,16 +117,9 @@ def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round_id
     ]
     db.session.add_all(audit_boards)
 
-    try:
-        db.session.commit()
-    except IntegrityError as e:
-        handle_unique_constraint_error(
-            e,
-            constraint_name="audit_board_jurisdiction_id_round_id_name_key",
-            message="Audit board names must be unique",
-        )
-
     assign_sampled_ballots(jurisdiction, round, audit_boards)
+
+    db.session.commit()
 
     return jsonify(status="ok")
 

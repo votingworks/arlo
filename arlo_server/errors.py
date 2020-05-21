@@ -8,18 +8,8 @@ from werkzeug.exceptions import (
     InternalServerError,
     Forbidden,
 )
-from sqlalchemy.exc import IntegrityError
 
 from arlo_server import app
-
-
-def handle_unique_constraint_error(
-    e: IntegrityError, constraint_name: str, message: str
-):
-    if e.orig.diag.constraint_name == constraint_name:
-        raise Conflict(message)
-    else:
-        raise e
 
 
 @app.errorhandler(ValidationError)
@@ -41,7 +31,7 @@ def handle_400(e):
 @app.errorhandler(Unauthorized)
 def handle_401(e):
     return (
-        jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
+        jsonify(errors=[{"message": e.description, "errorType": "Unauthorized"}]),
         Unauthorized.code,
     )
 
@@ -49,7 +39,7 @@ def handle_401(e):
 @app.errorhandler(Conflict)
 def handle_409(e):
     return (
-        jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
+        jsonify(errors=[{"message": e.description, "errorType": "Conflict"}]),
         Conflict.code,
     )
 
@@ -57,7 +47,7 @@ def handle_409(e):
 @app.errorhandler(Forbidden)
 def handle_403(e):
     return (
-        jsonify(errors=[{"message": e.description, "errorType": type(e).__name__}]),
+        jsonify(errors=[{"message": e.description, "errorType": "Forbidden"}]),
         Forbidden.code,
     )
 
@@ -73,7 +63,7 @@ def handle_500(e):
     # wrapped unhandled error
     return (
         jsonify(
-            errors=[{"message": str(original), "errorType": type(original).__name__}]
+            errors=[{"message": str(original), "errorType": "Internal Server Error"}]
         ),
         InternalServerError.code,
     )

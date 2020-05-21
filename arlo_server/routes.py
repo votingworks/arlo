@@ -1,14 +1,12 @@
-import os, datetime, csv, io, json, uuid, hmac, urllib.parse
+import datetime, csv, io, json, uuid, urllib.parse
 from typing import Dict, List, Tuple
 
-from flask import jsonify, request, Response, redirect, session
-from flask_httpauth import HTTPBasicAuth
-from werkzeug.exceptions import NotFound, Forbidden, Unauthorized
+from flask import jsonify, request, redirect, session
+from werkzeug.exceptions import NotFound, Forbidden, Unauthorized, Conflict
 
 from audit_math import bravo, sampler_contest, sampler
 from xkcdpass import xkcd_password as xp
 
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session
 
 from authlib.flask.client import OAuth
@@ -25,7 +23,6 @@ from arlo_server.auth import (
     with_election_access,
 )
 from arlo_server.models import *
-from arlo_server.errors import handle_unique_constraint_error
 from arlo_server.ballots import (
     ballot_retrieval_list,
     serialize_interpretation,
@@ -57,7 +54,7 @@ from config import (
 )
 
 from util.isoformat import isoformat
-from util.jsonschema import validate
+from util.jsonschema import validate, JSONDict
 from util.process_file import serialize_file, serialize_file_processing
 from util.csv_download import election_timestamp_name, csv_response
 
@@ -70,10 +67,6 @@ def create_organization(name=""):
     db.session.add(org)
     db.session.commit()
     return org
-
-
-def init_db():
-    db.create_all()
 
 
 def get_election(election_id):
@@ -115,7 +108,7 @@ def compute_sample_sizes(round_contest):
 
 def setup_next_round(election):
     if len(election.contests) > 1:
-        raise Exception("only supports one contest for now")
+        raise Exception("only supports one contest for now")  # pragma: no cover
 
     rounds = Round.query.filter_by(election_id=election.id).order_by("round_num").all()
 
@@ -269,29 +262,6 @@ def serialize_members(audit_board):
     return members
 
 
-ADMIN_PASSWORD = os.environ.get("ARLO_ADMIN_PASSWORD", None)
-
-# this is a temporary approach to getting all running audits
-# before we actually tie audits to a single user / login.
-#
-# only allow this URL if an admin password has been set.
-if ADMIN_PASSWORD:
-    auth = HTTPBasicAuth()
-
-    @auth.verify_password
-    def verify_password(_username, password):
-        # use a comparison method that prevents timing attacks:
-        # https://securitypitfalls.wordpress.com/2018/08/03/constant-time-compare-in-python/
-        return password is not None and hmac.compare_digest(password, ADMIN_PASSWORD)
-
-    @app.route("/admin", methods=["GET"])
-    @auth.login_required
-    def admin():
-        elections = Election.query.all()
-        result = "\n".join(["%s - %s" % (e.id, e.name) for e in elections])
-        return Response(result, content_type="text/plain")
-
-
 ELECTION_NEW_SCHEMA = {
     "type": "object",
     "properties": {
@@ -304,13 +274,27 @@ ELECTION_NEW_SCHEMA = {
 }
 
 
+def validate_new_election(election: JSONDict, organization_id: str):
+    validate(election, ELECTION_NEW_SCHEMA)
+    if (
+        organization_id
+        and Election.query.filter_by(
+            audit_name=election["auditName"], organization_id=organization_id
+        ).first()
+    ):
+        raise Conflict(
+            f"An audit with name '{election['auditName']}' already exists within your organization"
+        )
+
+
 @app.route("/election/new", methods=["POST"])
 def election_new():
     election = request.get_json()
-    validate(election, ELECTION_NEW_SCHEMA)
 
     organization_id = election.get("organizationId", None)
     require_audit_admin_for_organization(organization_id)
+
+    validate_new_election(election, organization_id)
 
     election = Election(
         id=str(uuid.uuid4()),
@@ -320,14 +304,7 @@ def election_new():
     )
     db.session.add(election)
 
-    try:
-        db.session.commit()
-    except IntegrityError as e:
-        handle_unique_constraint_error(
-            e,
-            constraint_name="election_organization_id_audit_name_key",
-            message=f"An audit with name '{election.audit_name}' already exists within your organization",
-        )
+    db.session.commit()
 
     return jsonify(electionId=election.id)
 
@@ -582,7 +559,7 @@ def samplesize_set(election_id):
     # only works if there's only one round
     rounds = election.rounds
     if len(rounds) > 1:
-        return jsonify(status="bad")
+        return jsonify(status="bad")  # pragma: no cover
 
     rounds[0].round_contests[0].sample_size = int(request.get_json()["size"])
     db.session.commit()
