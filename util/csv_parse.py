@@ -1,7 +1,8 @@
-import io, re, locale, chardet
+# pylint: disable=stop-iteration-return
 from enum import Enum
 from typing import List, Iterator, Dict, Any, NamedTuple, Set
 import csv as py_csv
+import io, re, locale, chardet
 from werkzeug.exceptions import BadRequest
 from util.process_file import UserError
 
@@ -154,6 +155,7 @@ def reject_empty_cells(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIte
     headers = next(csv)
     yield headers
 
+    # pylint: disable=invalid-name
     for r, row in enumerate(csv):
         if len(row) != len(headers):
             raise CSVParseError(
@@ -172,6 +174,8 @@ def reject_empty_cells(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIte
 
 def validate_values(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterator:
     yield next(csv)  # Skip the headers
+
+    # pylint: disable=invalid-name
     for r, row in enumerate(csv):
 
         for column, value in zip(columns, row):
@@ -180,7 +184,7 @@ def validate_values(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterat
             if column.value_type is CSVValueType.NUMBER:
                 try:
                     locale.atoi(value)
-                except ValueError as error:
+                except ValueError:
                     raise CSVParseError(f"Expected a number in {where}. Got: {value}.")
 
             if column.value_type is CSVValueType.EMAIL:
@@ -219,8 +223,8 @@ def convert_rows_to_dicts(
     return (dict(zip(headers, row)) for row in csv)
 
 
-def pluralize(word: str, n: int) -> str:
-    return word if n == 1 else f"{word}s"
+def pluralize(word: str, num: int) -> str:
+    return word if num == 1 else f"{word}s"
 
 
 def decode_csv_file(file: bytes) -> str:
