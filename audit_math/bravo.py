@@ -1,13 +1,14 @@
+# pylint: disable=invalid-name
 """
 Library for performing a BRAVO-style ballot polling risk-limiting audit,
 as described by Lindeman and Stark here: https://www.usenix.org/system/files/conference/evtwote12/evtwote12-final27.pdf
 
-Note that this library works for one contest at a time, as if each contest being 
-targeted is being audited completely independently. 
+Note that this library works for one contest at a time, as if each contest being
+targeted is being audited completely independently.
 """
 import math
-from scipy import stats
 from typing import Dict, Tuple, Union, Optional
+from scipy import stats
 
 from .sampler_contest import Contest
 
@@ -295,7 +296,7 @@ def get_sample_size(
                     ...
                     asn: {
                         "size": sample_size,
-                        "prob": prob       # the probability the asn terminates 
+                        "prob": prob       # the probability the asn terminates
                                            # in one round
                     }
 
@@ -315,7 +316,7 @@ def get_sample_size(
     worse_winner = ""
 
     # For multi-winner, do nothing
-    if contest.numWinners != 1:
+    if contest.num_winners != 1:
         return {"asn": {"type": "ASN", "size": asn, "prob": None}}
 
     margin = contest.margins
@@ -387,7 +388,7 @@ def compute_risk(
 
     Inputs:
         risk_limit     - the risk-limit for this audit
-        contest        - a sampler_contest object for the contest being measured 
+        contest        - a sampler_contest object for the contest being measured
         sample_results - mapping of candidates to votes in the (cumulative)
                          sample:
                 {
@@ -398,7 +399,7 @@ def compute_risk(
 
     Outputs:
         measurements    - the p-value of the hypotheses that the election
-                          result is correct based on the sample, for each 
+                          result is correct based on the sample, for each
                           winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """

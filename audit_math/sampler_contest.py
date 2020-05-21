@@ -33,7 +33,7 @@ def from_db_contest(db_contest):
 class Contest:
     """
     An object for storing per-contest information, including total number of
-    ballots, the candidates and vote totals, and the number of winners. 
+    ballots, the candidates and vote totals, and the number of winners.
     """
 
     candidates: Dict[str, int]  # Dict mapping candidates to their vote totals
@@ -62,8 +62,8 @@ class Contest:
         self.name = name
 
         self.ballots = contest_info_dict["ballots"]
-        self.numWinners = contest_info_dict["numWinners"]
-        self.votesAllowed = contest_info_dict["votesAllowed"]
+        self.num_winners = contest_info_dict["numWinners"]
+        self.votes_allowed = contest_info_dict["votesAllowed"]
 
         self.candidates = {}
 
@@ -76,6 +76,7 @@ class Contest:
 
             self.candidates[cand] = contest_info_dict[cand]
 
+        # pylint: disable=pointless-string-statement
         """
         Initialize a dictionary of diluted margin info:
         {
@@ -112,8 +113,8 @@ class Contest:
             reverse=True,
         )
 
-        self.winners = cast(List[Tuple[str, int]], cand_vec[: self.numWinners])
-        self.losers = cand_vec[self.numWinners :]
+        self.winners = cast(List[Tuple[str, int]], cand_vec[: self.num_winners])
+        self.losers = cand_vec[self.num_winners :]
 
         v_wl = sum([c[1] for c in self.winners + self.losers])
 
@@ -138,9 +139,13 @@ class Contest:
             }
 
     def __repr__(self) -> str:
-        """ 
-        Generates a string representation of this object, for debugging. 
+        """
+        Generates a string representation of this object, for debugging.
         """
         return "Contest({}): numWinners: {}, votesAllowed: {}, total ballots: {}, candidates: {}".format(
-            self.name, self.numWinners, self.votesAllowed, self.ballots, self.candidates
+            self.name,
+            self.num_winners,
+            self.votes_allowed,
+            self.ballots,
+            self.candidates,
         )
