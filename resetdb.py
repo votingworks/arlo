@@ -1,9 +1,8 @@
 import sys
-
-from arlo_server import db
-from config import DATABASE_URL
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database, drop_database
+from arlo_server import db
+from config import DATABASE_URL
 
 if __name__ == "__main__":
     # a simple flag to skip DB creation

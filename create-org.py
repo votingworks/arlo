@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 import sys
 
 from arlo_server.routes import create_organization
