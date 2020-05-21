@@ -95,8 +95,7 @@ def deserialize_contest_choice(contest_choice: JSONDict, contest_id: str) -> Con
 
 def deserialize_contest(contest: JSONDict, election_id: str) -> Contest:
     jurisdictions = (
-        db.session.query(Jurisdiction)
-        .filter_by(election_id=election_id)
+        Jurisdiction.query.filter_by(election_id=election_id)
         .filter(Jurisdiction.id.in_(contest["jurisdictionIds"]))
         .all()
     )

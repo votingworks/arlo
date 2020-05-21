@@ -486,6 +486,8 @@ def audit_status(election_id=None):
                         ),
                         "sampleSize": round_contest.sample_size,
                     }
+                    # pylint: disable=no-member
+                    # (seems like a pylint bug)
                     for round_contest in round.round_contests
                 ],
             }
@@ -504,7 +506,7 @@ def audit_basic_update(election_id):
     election.online = info["online"]
 
     errors = []
-    db.session.query(Contest).filter_by(election_id=election.id).delete()
+    Contest.query.filter_by(election_id=election.id).delete()
 
     for contest in info["contests"]:
         total_allowed_votes_in_contest = (
@@ -572,7 +574,7 @@ def jurisdictions_set(election_id):
     election = get_election(election_id)
     jurisdictions = request.get_json()["jurisdictions"]
 
-    db.session.query(Jurisdiction).filter_by(election_id=election.id).delete()
+    Jurisdiction.query.filter_by(election_id=election.id).delete()
 
     for jurisdiction in jurisdictions:
         contests = (

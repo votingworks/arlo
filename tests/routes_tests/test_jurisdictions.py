@@ -249,14 +249,16 @@ def test_jurisdictions_round_status(
         .filter_by(round_id=round["id"])
         .all()
     )
+    audit_board_1_id = str(uuid.uuid4())
     audit_board_1 = AuditBoard(
-        id=str(uuid.uuid4()),
+        id=audit_board_1_id,
         jurisdiction_id=jurisdiction_ids[0],
         round_id=round["id"],
         sampled_ballots=ballots[: AB1_SAMPLES + 1],
     )
+    audit_board_2_id = str(uuid.uuid4())
     audit_board_2 = AuditBoard(
-        id=str(uuid.uuid4()),
+        id=audit_board_2_id,
         jurisdiction_id=jurisdiction_ids[0],
         round_id=round["id"],
         sampled_ballots=ballots[AB1_SAMPLES + 1 :],
@@ -285,7 +287,7 @@ def test_jurisdictions_round_status(
     }
 
     # Simulate one audit board auditing all its ballots and signing off
-    audit_board_1 = db.session.merge(audit_board_1)  # Reload into the session
+    audit_board_1 = AuditBoard.query.get(audit_board_1_id)
     for ballot in audit_board_1.sampled_ballots:
         ballot.status = BallotStatus.AUDITED
     audit_board_1.signed_off_at = datetime.utcnow()
@@ -301,7 +303,7 @@ def test_jurisdictions_round_status(
     }
 
     # Simulate the other audit board auditing all its ballots and signing off
-    audit_board_2 = db.session.merge(audit_board_2)  # Reload into the session
+    audit_board_2 = AuditBoard.query.get(audit_board_2_id)
     for ballot in audit_board_2.sampled_ballots:
         ballot.status = BallotStatus.AUDITED
     audit_board_2.signed_off_at = datetime.utcnow()
@@ -325,8 +327,6 @@ def test_jurisdictions_round_status_offline(
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    AB1_SAMPLES = 23  # Arbitrary num of ballots to assign to audit board 1
-
     # Change the settings to offline
     settings = {
         "electionName": "Test Election",

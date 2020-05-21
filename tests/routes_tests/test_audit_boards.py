@@ -177,7 +177,7 @@ def test_audit_boards_list_one(
     )
 
     # Finish auditing ballots and sign off
-    audit_board = db.session.merge(audit_board)
+    audit_board = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
     for ballot in audit_board.sampled_ballots[10:]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     audit_board.signed_off_at = datetime.utcnow()
@@ -243,40 +243,38 @@ def test_audit_boards_list_two(
     rv = client.get(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
-    audit_boards = json.loads(rv.data)
+    audit_boards = json.loads(rv.data)["auditBoards"]
     compare_json(
         audit_boards,
-        {
-            "auditBoards": [
-                {
-                    "id": assert_is_id,
-                    "name": "Audit Board #1",
-                    "signedOffAt": None,
-                    "passphrase": assert_is_passphrase,
-                    "currentRoundStatus": {
-                        "numSampledBallots": AB1_BALLOTS_ROUND_1,
-                        "numAuditedBallots": 0,
-                    },
+        [
+            {
+                "id": assert_is_id,
+                "name": "Audit Board #1",
+                "signedOffAt": None,
+                "passphrase": assert_is_passphrase,
+                "currentRoundStatus": {
+                    "numSampledBallots": AB1_BALLOTS_ROUND_1,
+                    "numAuditedBallots": 0,
                 },
-                {
-                    "id": assert_is_id,
-                    "name": "Audit Board #2",
-                    "passphrase": assert_is_passphrase,
-                    "signedOffAt": None,
-                    "currentRoundStatus": {
-                        "numSampledBallots": J1_BALLOTS_ROUND_1 - AB1_BALLOTS_ROUND_1,
-                        "numAuditedBallots": 0,
-                    },
+            },
+            {
+                "id": assert_is_id,
+                "name": "Audit Board #2",
+                "passphrase": assert_is_passphrase,
+                "signedOffAt": None,
+                "currentRoundStatus": {
+                    "numSampledBallots": J1_BALLOTS_ROUND_1 - AB1_BALLOTS_ROUND_1,
+                    "numAuditedBallots": 0,
                 },
-            ]
-        },
+            },
+        ],
     )
 
     # Fake auditing some ballots
-    audit_board_1 = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
+    audit_board_1 = AuditBoard.query.get(audit_boards[0]["id"])
     for ballot in audit_board_1.sampled_ballots[:10]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
-    audit_board_2 = AuditBoard.query.get(audit_boards["auditBoards"][1]["id"])
+    audit_board_2 = AuditBoard.query.get(audit_boards[1]["id"])
     for ballot in audit_board_2.sampled_ballots[:20]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     db.session.commit()
@@ -296,7 +294,7 @@ def test_audit_boards_list_two(
     }
 
     # Finish auditing ballots and sign off
-    audit_board_1 = db.session.merge(audit_board_1)
+    audit_board_1 = AuditBoard.query.get(audit_boards[0]["id"])
     for ballot in audit_board_1.sampled_ballots[10:]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     audit_board_1.signed_off_at = datetime.utcnow()
