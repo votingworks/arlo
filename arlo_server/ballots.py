@@ -2,9 +2,10 @@ import io, csv
 from sqlalchemy import func, literal_column
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.dialects.postgresql import aggregate_order_by
-from flask import jsonify
+from flask import jsonify, request
+from werkzeug.exceptions import BadRequest
 
-from arlo_server import app
+from arlo_server import app, db
 from arlo_server.auth import with_jurisdiction_access, with_audit_board_access
 from arlo_server.models import (
     Election,
@@ -15,9 +16,13 @@ from arlo_server.models import (
     SampledBallot,
     Jurisdiction,
     BallotInterpretation,
+    BallotStatus,
+    Interpretation,
+    Contest,
+    ContestChoice,
 )
 from util.csv_download import csv_response, election_timestamp_name
-from util.jsonschema import JSONDict
+from util.jsonschema import JSONDict, validate
 
 
 def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
@@ -190,3 +195,98 @@ def list_ballots_for_audit_board(
     )
     json_ballots = [serialize_ballot(b) for b in ballots]
     return jsonify({"ballots": json_ballots})
+
+
+BALLOT_INTERPRETATION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "contestId": {"type": "string"},
+        "interpretation": {
+            "type": "string",
+            "enum": [interpretation.value for interpretation in Interpretation],
+        },
+        "choiceId": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "comment": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+    },
+    "additionalProperties": False,
+    "required": ["contestId", "interpretation", "choiceId", "comment"],
+}
+
+AUDIT_BALLOT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "status": {"type": "string", "enum": [status.value for status in BallotStatus]},
+        "interpretations": {"type": "array", "items": BALLOT_INTERPRETATION_SCHEMA},
+    },
+    "additionalProperties": False,
+    "required": ["status", "interpretations"],
+}
+
+
+def validate_interpretation(interpretation: JSONDict):
+    contest = Contest.query.get(interpretation["contestId"])
+    if not contest:
+        raise BadRequest(f"Contest not found: {interpretation['contestId']}")
+
+    if interpretation["interpretation"] == Interpretation.VOTE:
+        if not interpretation["choiceId"]:
+            raise BadRequest(
+                f"Must include choiceId with interpretation {Interpretation.VOTE} for contest {interpretation['contestId']}"
+            )
+        choice = ContestChoice.query.get(interpretation["choiceId"])
+        if not choice:
+            raise BadRequest(f"Contest choice not found: {interpretation['choiceId']}")
+        if choice.contest_id != interpretation["contestId"]:
+            raise BadRequest(
+                f"Contest choice {interpretation['choiceId']} is not associated with contest {interpretation['contestId']}"
+            )
+    else:
+        if interpretation["choiceId"]:
+            raise BadRequest(
+                f"Cannot include choiceId with interpretation {interpretation['interpretation']} for contest {interpretation['contestId']}"
+            )
+
+
+def validate_audit_ballot(ballot_audit: JSONDict):
+    validate(ballot_audit, AUDIT_BALLOT_SCHEMA)
+
+    if ballot_audit["status"] == BallotStatus.AUDITED:
+        if len(ballot_audit["interpretations"]) == 0:
+            raise BadRequest(
+                f"Must include interpretations with ballot status {BallotStatus.AUDITED}."
+            )
+        for interpretation in ballot_audit["interpretations"]:
+            validate_interpretation(interpretation)
+
+    else:
+        if len(ballot_audit["interpretations"]) > 0:
+            raise BadRequest(
+                f"Cannot include interpretations with ballot status {ballot_audit['status']}."
+            )
+
+
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/ballots/<ballot_id>",
+    methods=["PUT"],
+)
+@with_audit_board_access
+def audit_ballot(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    round: Round,  # pylint: disable=unused-argument
+    audit_board: AuditBoard,  # pylint: disable=unused-argument
+    ballot_id: str,
+):
+    ballot = SampledBallot.query.get_or_404(ballot_id)
+    ballot_audit = request.get_json()
+    validate_audit_ballot(ballot_audit)
+
+    ballot.status = ballot_audit["status"]
+    ballot.interpretations = [
+        deserialize_interpretation(ballot.id, interpretation)
+        for interpretation in ballot_audit["interpretations"]
+    ]
+
+    db.session.commit()
+
+    return jsonify(status="ok")

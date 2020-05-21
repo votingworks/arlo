@@ -7,7 +7,7 @@ from tests.helpers import (
     DEFAULT_JA_EMAIL,
     assert_is_id,
     compare_json,
-    post_json,
+    put_json,
     assert_ok,
     J1_BALLOTS_ROUND_1,
     J1_BALLOTS_ROUND_2,
@@ -17,6 +17,7 @@ from tests.helpers import (
 )
 from arlo_server.auth import UserType
 from arlo_server.models import ContestChoice
+from util.jsonschema import JSONDict
 
 
 def test_ja_ballots_bad_round_id(
@@ -67,11 +68,13 @@ def test_ja_ballots_round_1(
     )
 
     # Try auditing one ballot
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
-    rv = post_json(
+    rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch/{ballots[0]['batch']['id']}/ballot/{ballots[0]['position']}",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballots[0]['id']}",
         {
+            "status": "AUDITED",
             "interpretations": [
                 {
                     "contestId": contest_ids[0],
@@ -79,11 +82,12 @@ def test_ja_ballots_round_1(
                     "choiceId": choice_id,
                     "comment": "blah blah blah",
                 }
-            ]
+            ],
         },
     )
     assert_ok(rv)
 
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
     )
@@ -132,7 +136,7 @@ def test_ja_ballots_before_audit_boards_set_up(
     )
 
 
-def test_ja_ballot_draws_round_2(
+def test_ja_ballots_round_2(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -195,10 +199,11 @@ def test_ab_list_ballot_round_1(
 
     # Try auditing one ballot
     choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
-    rv = post_json(
+    rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch/{ballots[0]['batch']['id']}/ballot/{ballots[0]['position']}",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballots[0]['id']}",
         {
+            "status": "AUDITED",
             "interpretations": [
                 {
                     "contestId": contest_ids[0],
@@ -206,7 +211,7 @@ def test_ab_list_ballot_round_1(
                     "choiceId": choice_id,
                     "comment": "blah blah blah",
                 }
-            ]
+            ],
         },
     )
     assert_ok(rv)
@@ -273,6 +278,356 @@ def test_ab_list_ballots_round_2(
 
     previously_audited_ballots = [b for b in ballots if b["status"] == "AUDITED"]
     assert len(previously_audited_ballots) == 22
+
+
+def test_ab_audit_ballot_not_found(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = put_json(
+        client,
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/not-a-real-ballot-id",
+        {},
+    )
+    assert rv.status_code == 404
+
+
+def test_ab_audit_ballot_happy_path(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    ballot = ballots[0]
+
+    choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
+    audit_requests: List[JSONDict] = [
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "VOTE",
+                    "choiceId": choice_id,
+                    "comment": "blah blah blah",
+                }
+            ],
+        },
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "BLANK",
+                    "choiceId": None,
+                    "comment": None,
+                }
+            ],
+        },
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "CANT_AGREE",
+                    "choiceId": None,
+                    "comment": None,
+                }
+            ],
+        },
+        {"status": "NOT_AUDITED", "interpretations": [],},
+        {"status": "NOT_FOUND", "interpretations": [],},
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "VOTE",
+                    "choiceId": choice_id,
+                    "comment": None,
+                },
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "CANT_AGREE",
+                    "choiceId": None,
+                    "comment": "weird scribble",
+                },
+            ],
+        },
+    ]
+
+    for audit_request in audit_requests:
+        rv = put_json(
+            client,
+            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
+            audit_request,
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+        )
+        ballots = json.loads(rv.data)["ballots"]
+
+        ballots[0]["interpretations"] = sorted(
+            ballots[0]["interpretations"], key=lambda i: i["contestId"]
+        )
+        audit_request["interpretations"] = sorted(
+            audit_request["interpretations"], key=lambda i: i["contestId"]
+        )
+
+        assert ballots[0] == {**ballot, **audit_request}
+
+
+def test_ab_audit_ballot_invalid(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    ballot = ballots[0]
+
+    choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
+
+    for missing_field in ["status", "interpretations"]:
+        audit_request = {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "VOTE",
+                    "choiceId": choice_id,
+                    "comment": "blah blah blah",
+                }
+            ],
+        }
+        del audit_request[missing_field]
+        rv = put_json(
+            client,
+            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
+            audit_request,
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Bad Request",
+                    "message": f"'{missing_field}' is a required property",
+                }
+            ]
+        }
+
+    for missing_field in ["contestId", "interpretation", "choiceId", "comment"]:
+        interpretation = {
+            "contestId": contest_ids[0],
+            "interpretation": "VOTE",
+            "choiceId": choice_id,
+            "comment": "blah blah blah",
+        }
+        del interpretation[missing_field]
+        rv = put_json(
+            client,
+            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
+            {"status": "AUDITED", "interpretations": [interpretation],},
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Bad Request",
+                    "message": f"'{missing_field}' is a required property",
+                }
+            ]
+        }
+
+    invalid_requests = [
+        (
+            {
+                "status": "audited",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceId": choice_id,
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            "'audited' is not one of ['NOT_AUDITED', 'AUDITED', 'NOT_FOUND']",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "vote",
+                        "choiceId": choice_id,
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            "'vote' is not one of ['BLANK', 'CANT_AGREE', 'VOTE']",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceId": None,
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            f"Must include choiceId with interpretation VOTE for contest {contest_ids[0]}",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceId": "",
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            f"Must include choiceId with interpretation VOTE for contest {contest_ids[0]}",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": "12345",
+                        "interpretation": "VOTE",
+                        "choiceId": choice_id,
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            "Contest not found: 12345",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceId": "12345",
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            "Contest choice not found: 12345",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "VOTE",
+                        "choiceId": choice_id,
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            f"Contest choice {choice_id} is not associated with contest {contest_ids[1]}",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "BLANK",
+                        "choiceId": choice_id,
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            f"Cannot include choiceId with interpretation BLANK for contest {contest_ids[0]}",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "CANT_AGREE",
+                        "choiceId": choice_id,
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            f"Cannot include choiceId with interpretation CANT_AGREE for contest {contest_ids[0]}",
+        ),
+        (
+            {"status": "AUDITED", "interpretations": [],},
+            "Must include interpretations with ballot status AUDITED.",
+        ),
+        (
+            {
+                "status": "NOT_FOUND",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceId": choice_id,
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            "Cannot include interpretations with ballot status NOT_FOUND.",
+        ),
+        (
+            {
+                "status": "NOT_AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceId": choice_id,
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            "Cannot include interpretations with ballot status NOT_AUDITED.",
+        ),
+    ]
+    for (invalid_request, expected_message) in invalid_requests:
+        rv = put_json(
+            client,
+            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
+            invalid_request,
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [{"errorType": "Bad Request", "message": expected_message}]
+        }
 
 
 def test_ja_ballot_retrieval_list_bad_round_id(
