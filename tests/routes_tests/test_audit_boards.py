@@ -1,8 +1,8 @@
 import json, random
-from flask.testing import FlaskClient
 from typing import List, Tuple
 from datetime import datetime
 from collections import defaultdict
+from flask.testing import FlaskClient
 
 from tests.helpers import (
     post_json,
@@ -76,10 +76,10 @@ def assert_ballots_got_assigned_correctly(
     for audit_board in audit_boards:
         for ballot in audit_board.sampled_ballots:
             audit_boards_by_batch[ballot.batch_id].add(audit_board.id)
-    for batch_id, audit_board_ids in audit_boards_by_batch.items():
+    for audit_board_ids in audit_boards_by_batch.values():
         assert (
             len(audit_board_ids) == 1
-        ), f"Different audit boards assigned ballots from the same batch"
+        ), "Different audit boards assigned ballots from the same batch"
 
 
 def test_audit_boards_list_empty(
@@ -177,7 +177,7 @@ def test_audit_boards_list_one(
     )
 
     # Finish auditing ballots and sign off
-    audit_board = db.session.merge(audit_board)
+    audit_board = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
     for ballot in audit_board.sampled_ballots[10:]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     audit_board.signed_off_at = datetime.utcnow()
@@ -243,40 +243,38 @@ def test_audit_boards_list_two(
     rv = client.get(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
-    audit_boards = json.loads(rv.data)
+    audit_boards = json.loads(rv.data)["auditBoards"]
     compare_json(
         audit_boards,
-        {
-            "auditBoards": [
-                {
-                    "id": assert_is_id,
-                    "name": "Audit Board #1",
-                    "signedOffAt": None,
-                    "passphrase": assert_is_passphrase,
-                    "currentRoundStatus": {
-                        "numSampledBallots": AB1_BALLOTS_ROUND_1,
-                        "numAuditedBallots": 0,
-                    },
+        [
+            {
+                "id": assert_is_id,
+                "name": "Audit Board #1",
+                "signedOffAt": None,
+                "passphrase": assert_is_passphrase,
+                "currentRoundStatus": {
+                    "numSampledBallots": AB1_BALLOTS_ROUND_1,
+                    "numAuditedBallots": 0,
                 },
-                {
-                    "id": assert_is_id,
-                    "name": "Audit Board #2",
-                    "passphrase": assert_is_passphrase,
-                    "signedOffAt": None,
-                    "currentRoundStatus": {
-                        "numSampledBallots": J1_BALLOTS_ROUND_1 - AB1_BALLOTS_ROUND_1,
-                        "numAuditedBallots": 0,
-                    },
+            },
+            {
+                "id": assert_is_id,
+                "name": "Audit Board #2",
+                "passphrase": assert_is_passphrase,
+                "signedOffAt": None,
+                "currentRoundStatus": {
+                    "numSampledBallots": J1_BALLOTS_ROUND_1 - AB1_BALLOTS_ROUND_1,
+                    "numAuditedBallots": 0,
                 },
-            ]
-        },
+            },
+        ],
     )
 
     # Fake auditing some ballots
-    audit_board_1 = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
+    audit_board_1 = AuditBoard.query.get(audit_boards[0]["id"])
     for ballot in audit_board_1.sampled_ballots[:10]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
-    audit_board_2 = AuditBoard.query.get(audit_boards["auditBoards"][1]["id"])
+    audit_board_2 = AuditBoard.query.get(audit_boards[1]["id"])
     for ballot in audit_board_2.sampled_ballots[:20]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     db.session.commit()
@@ -296,7 +294,7 @@ def test_audit_boards_list_two(
     }
 
     # Finish auditing ballots and sign off
-    audit_board_1 = db.session.merge(audit_board_1)
+    audit_board_1 = AuditBoard.query.get(audit_boards[0]["id"])
     for ballot in audit_board_1.sampled_ballots[10:]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     audit_board_1.signed_off_at = datetime.utcnow()
@@ -523,7 +521,7 @@ def set_up_audit_board(
     audit_board_id: str,
     only_one_member=False,
 ) -> Tuple[str, str]:
-    SILLY_NAMES = [
+    silly_names = [
         "Joe Schmo",
         "Jane Plain",
         "Derk Clerk",
@@ -531,8 +529,8 @@ def set_up_audit_board(
         "Clem O'Hat Democrat",
     ]
     rand = random.Random(12345)
-    member_1 = rand.choice(SILLY_NAMES)
-    member_2 = rand.choice(SILLY_NAMES)
+    member_1 = rand.choice(silly_names)
+    member_2 = rand.choice(silly_names)
 
     member_names = [
         {"name": member_1, "affiliation": "DEM"},
@@ -611,9 +609,9 @@ def test_audit_boards_sign_off_happy_path(
     assert round.ended_at is None
 
     # Create an audit board for the other jurisdiction that had some ballots sampled
-    EMAIL = "ja1@example.com"
-    create_jurisdiction_admin(jurisdiction_ids[1], EMAIL)
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, EMAIL)
+    email = "ja1@example.com"
+    create_jurisdiction_admin(jurisdiction_ids[1], email)
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, email)
     rv = post_json(
         client,
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
@@ -780,7 +778,7 @@ def test_audit_board_only_one_member_sign_off_happy_path(
     audit_board_round_1_ids: List[str],
 ):
     audit_board_id = audit_board_round_1_ids[0]
-    member_1, member_2 = set_up_audit_board(
+    member_1, _ = set_up_audit_board(
         client,
         election_id,
         jurisdiction_ids[0],
@@ -807,7 +805,7 @@ def test_audit_board_only_one_member_sign_off_wrong_name(
     audit_board_round_1_ids: List[str],
 ):
     audit_board_id = audit_board_round_1_ids[0]
-    member_1, member_2 = set_up_audit_board(
+    set_up_audit_board(
         client,
         election_id,
         jurisdiction_ids[0],
@@ -827,7 +825,7 @@ def test_audit_board_only_one_member_sign_off_wrong_name(
         "errors": [
             {
                 "errorType": "Bad Request",
-                "message": f"Audit board member name did not match: Wrong Name",
+                "message": "Audit board member name did not match: Wrong Name",
             }
         ]
     }

@@ -1,7 +1,8 @@
+import json, pytest
 from flask.testing import FlaskClient
-import pytest, json
 
 from arlo_server.auth import UserType
+from arlo_server.models import Organization
 from ..helpers import (
     set_superadmin,
     clear_superadmin,
@@ -12,8 +13,6 @@ from ..helpers import (
     clear_logged_in_user,
 )
 
-from arlo_server.models import Organization
-
 
 SA_TEST_AA_EMAIL = "sa-test-aa-email@example.com"
 SA_TEST_JA_EMAIL = "sa-test-ja-email@example.com"
@@ -21,7 +20,7 @@ SA_TEST_JA_EMAIL = "sa-test-ja-email@example.com"
 
 @pytest.fixture()
 def organization_id() -> str:
-    org_id, audit_admin_id = create_org_and_admin(user_email=SA_TEST_AA_EMAIL)
+    org_id, _ = create_org_and_admin(user_email=SA_TEST_AA_EMAIL)
     return org_id
 
 
@@ -64,9 +63,7 @@ def test_superadmin_organizations(client: FlaskClient, organization_id):
 
 
 def test_superadmin_jurisdictions(client: FlaskClient, election_id):
-    jurisdiction_id, ja_id = create_jurisdiction_and_admin(
-        election_id=election_id, user_email=SA_TEST_JA_EMAIL
-    )
+    create_jurisdiction_and_admin(election_id=election_id, user_email=SA_TEST_JA_EMAIL)
 
     data = assert_superadmin_access(
         client, f"/superadmin/jurisdictions?election_id={election_id}"

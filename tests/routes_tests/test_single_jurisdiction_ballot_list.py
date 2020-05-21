@@ -19,8 +19,8 @@ def test_ballot_list_jurisdiction_two_rounds(client, election_id):
         candidate_id_1,
         candidate_id_2,
         jurisdiction_id,
-        audit_board_id_1,
-        audit_board_id_2,
+        _audit_board_id_1,
+        _audit_board_id_2,
         num_ballots,
     ) = setup_whole_audit(
         client, election_id, "Primary 2019", 10, "12345678901234567890"
@@ -151,13 +151,13 @@ def test_ballot_list_audit_board_two_rounds(client, election_id):
 def test_ballot_list_jurisdiction_ordering(client, election_id):
     (
         url_prefix,
-        contest_id,
-        candidate_id_1,
-        candidate_id_2,
+        _contest_id,
+        _candidate_id_1,
+        _candidate_id_2,
         jurisdiction_id,
-        audit_board_id_1,
-        audit_board_id_2,
-        num_ballots,
+        _audit_board_id_1,
+        _audit_board_id_2,
+        _num_ballots,
     ) = setup_whole_audit(
         client, election_id, "Primary 2019", 10, "12345678901234567890"
     )
@@ -189,13 +189,13 @@ def test_ballot_list_jurisdiction_ordering(client, election_id):
 def test_ballot_list_audit_board_ordering(client, election_id):
     (
         url_prefix,
-        contest_id,
-        candidate_id_1,
-        candidate_id_2,
+        _contest_id,
+        _candidate_id_1,
+        _candidate_id_2,
         jurisdiction_id,
         audit_board_id_1,
         audit_board_id_2,
-        num_ballots,
+        _num_ballots,
     ) = setup_whole_audit(
         client, election_id, "Primary 2019", 10, "12345678901234567890"
     )

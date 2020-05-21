@@ -1,8 +1,8 @@
-import pytest
-from flask.testing import FlaskClient
 import io, uuid, json
 from typing import List, Generator
+from flask.testing import FlaskClient
 from flask import jsonify, abort
+import pytest
 
 from arlo_server import app, db
 from arlo_server.models import (
@@ -264,13 +264,15 @@ def audit_board_round_2_ids(
 def auth_decorator_test_routes():
     @app.route("/election/<election_id>/test_auth")
     @with_election_access
-    def fake_election_route(election: Election):
+    def fake_election_route(election: Election):  # pylint: disable=unused-variable
         assert election
         return jsonify(election.id)
 
     @app.route("/election/<election_id>/jurisdiction/<jurisdiction_id>/test_auth")
     @with_jurisdiction_access
-    def fake_jurisdiction_route(election: Election, jurisdiction: Jurisdiction):
+    def fake_jurisdiction_route(
+        election: Election, jurisdiction: Jurisdiction
+    ):  # pylint: disable=unused-variable
         assert election
         assert jurisdiction
         return jsonify([election.id, jurisdiction.id])
@@ -284,7 +286,7 @@ def auth_decorator_test_routes():
         jurisdiction: Jurisdiction,
         round: Round,
         audit_board: AuditBoard,
-    ):
+    ):  # pylint: disable=unused-variable
         assert election
         assert jurisdiction
         assert round
@@ -298,9 +300,9 @@ def auth_decorator_test_routes():
 @pytest.fixture(scope="session", autouse=True)
 def error_test_routes():
     @app.route("/test_uncaught_exception")
-    def fake_uncaught_exception_route():
+    def fake_uncaught_exception_route():  # pylint: disable=unused-variable
         raise Exception("Catch me if you can!")
 
     @app.route("/test_internal_error")
-    def fake_internal_error_route():
+    def fake_internal_error_route():  # pylint: disable=unused-variable
         abort(500)

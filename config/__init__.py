@@ -13,13 +13,13 @@ DEVELOPMENT_ENVS = ("development", "test")
 def setup_flask_config() -> Tuple[str, bool]:
     """
     Configure Flask-specific environment variables.
-    
+
     We do this here because Flask attempts to set some of its application config
     based on `FLASK_ENV` and `FLASK_DEBUG` environment variables, and that
     happens _after_ initialization and initial configuration, when calling
     `app.run(…)`. Therefore, we set them here to ensure they end up with the
     right values.
-    
+
     Specifically, setting FLASK_ENV=test by itself means `app.debug` will remain
     `False`, which isn't what we want.
     """
@@ -55,11 +55,11 @@ def read_database_url_config() -> str:
             file=sys.stderr,
         )
         print(
-            f"To configure your own database url, either run with a DATABASE_URL environment variable",
+            "To configure your own database url, either run with a DATABASE_URL environment variable",
             file=sys.stderr,
         )
         print(
-            f"or copy `config/database.cfg.example` to `config/database.cfg` and edit it as needed.",
+            "or copy `config/database.cfg.example` to `config/database.cfg` and edit it as needed.",
             file=sys.stderr,
         )
 

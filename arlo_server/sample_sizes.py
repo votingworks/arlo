@@ -1,7 +1,7 @@
-from flask import jsonify
 from collections import defaultdict
-from werkzeug.exceptions import BadRequest
 from typing import Dict
+from flask import jsonify
+from werkzeug.exceptions import BadRequest
 
 from arlo_server import app
 from arlo_server.models import Election, Contest

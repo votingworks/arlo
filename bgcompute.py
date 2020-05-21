@@ -34,7 +34,7 @@ def bgcompute_compute_round_contests_sample_sizes():
                     round_contest.sample_size_options,
                 )
             )
-        except:
+        except Exception:
             print("ERROR while computing sample size options, continuing to next one.")
 
 
@@ -51,8 +51,8 @@ def bgcompute_update_election_jurisdictions_file() -> int:
             print(f"updating jurisdictions file for election ID {election.id}")
             process_jurisdictions_file(db.session, election, file)
             print(f"done updating jurisdictions file for election ID {election.id}")
-        except:
-            print("ERROR whie updating jurisdictions file")
+        except Exception:
+            print("ERROR while updating jurisdictions file")
 
     return len(files)
 
@@ -68,7 +68,7 @@ def bgcompute_update_ballot_manifest_file() -> int:
         try:
             jurisdiction = Jurisdiction.query.filter_by(manifest_file_id=file.id).one()
             process_ballot_manifest_file(db.session, jurisdiction, file)
-        except:
+        except Exception:
             print("ERROR updating ballot manifest file")
 
     return len(files)

@@ -1,6 +1,6 @@
-from flask.testing import FlaskClient
 from typing import List
 import json
+from flask.testing import FlaskClient
 
 from arlo_server.models import (
     SampledBallotDraw,

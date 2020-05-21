@@ -1,16 +1,18 @@
+# pylint: disable=invalid-name
 """
-An implemenation of per-contest batch comparison audits, loosely based on MACRO. 
-Since MACRO applies to all contests being audited (hence across-contest), this
-code acts as if each contest is independently audited according it its maximum
-relative overstatement (as if we did MACRO only one one contest).
+An implemenation of per-contest batch comparison audits, loosely based on
+MACRO. Since MACRO applies to all contests being audited (hence
+across-contest), this code acts as if each contest is independently audited
+according it its maximum relative overstatement (as if we did MACRO only one
+one contest).
 
-MACRO was developed by Philip Stark
-(see https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the publication).
+MACRO was developed by Philip Stark (see
+https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the
+publication).
 """
 import math
-from .sampler_contest import Contest
-
 from typing import Dict, Tuple
+from .sampler_contest import Contest
 
 
 def compute_error(
@@ -31,7 +33,7 @@ def compute_error(
                               },
                               ...
                           }
-        contest         - a sampler_contest object of the contest to compute 
+        contest         - a sampler_contest object of the contest to compute
                           the error for
         sampled_results - the actual votes in this batch after auditing, of the
                           same form as batch_results
@@ -76,7 +78,7 @@ def compute_max_error(
                               },
                               ...
                           }
-        contest         - a sampler_contest object of the contest to compute 
+        contest         - a sampler_contest object of the contest to compute
                           the error for
 
     Outputs:
@@ -115,7 +117,7 @@ def compute_U(
     i.e. the maximum amount of possible overstatement in a given election.
     Inputs:
         reported_results - the reported votes in every batch
-                           { 
+                           {
                                'batch': {
                                  'contest': {
                                      'cand1': votes,
@@ -126,7 +128,7 @@ def compute_U(
                                }
                                ...
                            }
-        contest         - a sampler_contest object of the contest to compute 
+        contest         - a sampler_contest object of the contest to compute
                           the error for
 
     Outputs:
@@ -154,10 +156,10 @@ def get_sample_sizes(
 
     Inputs:
         risk_limit       - the risk-limit for this audit
-        contest          - a sampler_contest object of the contest to compute 
+        contest          - a sampler_contest object of the contest to compute
                            the error for
         reported_results - the reported votes in every batch
-                           { 
+                           {
                                'batch': {
                                  'contest': {
                                      'cand1': votes,
@@ -169,7 +171,7 @@ def get_sample_sizes(
                                ...
                            }
         sample_results - if a sample has already been drawn, this will
-                         contain its results, of the same form as 
+                         contain its results, of the same form as
                          reported_results
 
     Outputs:
@@ -203,10 +205,10 @@ def compute_risk(
 
     Inputs:
         risk_limit       - the risk-limit for this audit
-        contest          - a sampler_contest object of the contest to compute 
+        contest          - a sampler_contest object of the contest to compute
                            the error for
         reported_results - the reported votes in every batch
-                           { 
+                           {
                                'batch': {
                                  'contest': {
                                      'cand1': votes,
@@ -218,11 +220,11 @@ def compute_risk(
                                ...
                            }
         sample_results - if a sample has already been drawn, this will
-                         contain its results, of the same form as 
+                         contain its results, of the same form as
                          reported_results
     Outputs:
         measurements    - the p-value of the hypotheses that the election
-                          result is correct based on the sample for each 
+                          result is correct based on the sample for each
                           winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """

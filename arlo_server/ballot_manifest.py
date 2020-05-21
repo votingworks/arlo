@@ -1,8 +1,8 @@
 import locale, uuid
+from datetime import datetime
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, NotFound
-from datetime import datetime
 
 from arlo_server import app
 from arlo_server.models import (
@@ -75,6 +75,7 @@ def process_ballot_manifest_file(
     # upload manifests, and is triggered by a different endpoint.
     if not election.is_multi_jurisdiction:
         # Import this here to avoid circular dependencies
+        # pylint: disable=import-outside-toplevel,cyclic-import
         from arlo_server.routes import sample_ballots
 
         sample_ballots(session, election, election.rounds[0])

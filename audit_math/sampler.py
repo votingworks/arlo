@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 # Handles generating sample sizes and taking samples
 from typing import cast, Any, Dict, List, Tuple
 import consistent_sampler
@@ -70,15 +71,15 @@ def draw_ppeb_sample(
     Draws sample with replacement of size <sample_size> from the
     provided ballot manifest using proportional-with-error-bound (PPEB) sampling.
     PPEB was developed by Aslam, Popa and Rivest here: https://www.usenix.org/legacy/event/evt08/tech/full_papers/aslam/aslam.pdf
-    Stark further applied PPEB to batch audits here: https://www.stat.berkeley.edu/~stark/Preprints/ppebwrwd08.pdf 
-    For use with batch audits like MACRO. 
+    Stark further applied PPEB to batch audits here: https://www.stat.berkeley.edu/~stark/Preprints/ppebwrwd08.pdf
+    For use with batch audits like MACRO.
 
     Inputs:
         seed    - the random seed to use in sampling
         sample_size - number of ballots to randomly draw
         num_sampled - number of ballots that have already been sampled
         batch_results - the result of the election, per batch:
-                        { 
+                        {
                             'batch': {
                                 'contest': {
                                     'cand1': votes,

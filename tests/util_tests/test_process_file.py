@@ -1,6 +1,6 @@
 import datetime
-import pytest
 import uuid
+import pytest
 from sqlalchemy import insert
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -97,7 +97,7 @@ def test_session_stuck(db):
 
     try:
         process_file(db.session, file, process)
-    except SQLAlchemyError as error:
+    except SQLAlchemyError:
         pass
 
     assert isinstance(file.processing_started_at, datetime.datetime)

@@ -1,6 +1,6 @@
-from flask import jsonify
 from typing import List, Dict, Optional
 from enum import Enum
+from flask import jsonify
 from sqlalchemy import func
 
 from arlo_server import app

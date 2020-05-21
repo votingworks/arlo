@@ -1,7 +1,7 @@
-from flask import jsonify, request
 import uuid
 from datetime import datetime
 from typing import List, Dict
+from flask import jsonify, request
 from xkcdpass import xkcd_password as xp
 from werkzeug.exceptions import Conflict, BadRequest
 from sqlalchemy import func, and_
@@ -173,7 +173,7 @@ def list_audit_boards(
     jurisdiction: Jurisdiction,
     round_id: str,
 ):
-    round = Round.query.get_or_404(round_id)
+    Round.query.get_or_404(round_id)
     audit_boards = (
         AuditBoard.query.filter_by(jurisdiction_id=jurisdiction.id, round_id=round_id)
         .order_by(AuditBoard.name)
@@ -283,7 +283,7 @@ def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):
         )
 
     if any(b.status == BallotStatus.NOT_AUDITED for b in audit_board.sampled_ballots):
-        raise Conflict(f"Audit board is not finished auditing all assigned ballots")
+        raise Conflict("Audit board is not finished auditing all assigned ballots")
 
 
 @app.route(

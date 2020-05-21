@@ -1,9 +1,9 @@
+from enum import Enum
+from datetime import datetime as dt
 from sqlalchemy.orm import relationship, backref, validates
 import sqlalchemy as sa
-from enum import Enum
 from flask_sqlalchemy import SQLAlchemy, Model
 from flask_sqlalchemy.model import DefaultMeta
-from datetime import datetime as dt
 
 
 class Base(Model):

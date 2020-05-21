@@ -383,9 +383,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     assert jurisdiction["contests"] == [contest_id]
 
     # choose a sample size
-    sample_size_asn = [
-        option for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"]
-    ]
+    sample_size_asn = status["rounds"][0]["contests"][0]["sampleSizeOptions"]
     assert len(sample_size_asn) == 1
     sample_size = sample_size_asn[0]["size"]
 
@@ -475,8 +473,8 @@ def run_whole_audit_flow(client, election_id, name, risk_limit, random_seed):
         candidate_id_1,
         candidate_id_2,
         jurisdiction_id,
-        audit_board_id_1,
-        audit_board_id_2,
+        _audit_board_id_1,
+        _audit_board_id_2,
         num_ballots,
     ) = setup_whole_audit(client, election_id, name, risk_limit, random_seed)
 
@@ -530,8 +528,7 @@ def run_election_reset(client, election_id):
 
 
 def get_lines_from_retrieval_list(rv):
-    lines = csv.DictReader(io.StringIO(rv.data.decode("utf-8")))
-    return [line for line in lines]
+    return list(csv.DictReader(io.StringIO(rv.data.decode("utf-8"))))
 
 
 def get_num_ballots_from_retrieval_list(rv):
@@ -804,8 +801,8 @@ def test_multi_round_audit(client, election_id):
         candidate_id_1,
         candidate_id_2,
         jurisdiction_id,
-        audit_board_id_1,
-        audit_board_id_2,
+        _audit_board_id_1,
+        _audit_board_id_2,
         num_ballots,
     ) = setup_whole_audit(
         client, election_id, "Multi-Round Audit", 10, "32423432423432"
@@ -958,9 +955,7 @@ def test_multi_winner_election(client, election_id):
     assert jurisdiction["contests"] == [contest_id]
 
     # choose a sample size
-    sample_size_asn = [
-        option for option in status["rounds"][0]["contests"][0]["sampleSizeOptions"]
-    ]
+    sample_size_asn = status["rounds"][0]["contests"][0]["sampleSizeOptions"]
     assert len(sample_size_asn) == 1
     sample_size = sample_size_asn[0]["size"]
 
@@ -1050,8 +1045,8 @@ def test_multi_round_multi_winner_audit(client, election_id):
         candidate_id_2,
         candidate_id_3,
         jurisdiction_id,
-        audit_board_id_1,
-        audit_board_id_2,
+        _audit_board_id_1,
+        _audit_board_id_2,
         num_ballots,
     ) = setup_whole_multi_winner_audit(
         client, election_id, "Multi-Round Multi-winner Audit", 10, "32423432423432"
@@ -1116,12 +1111,12 @@ def test_ballot_set(client, election_id):
         url_prefix,
         contest_id,
         candidate_id_1,
-        candidate_id_2,
-        candidate_id_3,
+        _candidate_id_2,
+        _candidate_id_3,
         jurisdiction_id,
-        audit_board_id_1,
-        audit_board_id_2,
-        num_ballots,
+        _audit_board_id_1,
+        _audit_board_id_2,
+        _num_ballots,
     ) = setup_whole_multi_winner_audit(
         client, election_id, "Multi-Round Multi-winner Audit", 10, "32423432423432"
     )
@@ -1129,9 +1124,6 @@ def test_ballot_set(client, election_id):
     ## find a sampled ballot to update
     rv = client.get("{}/audit/status".format(url_prefix))
     response = json.loads(rv.data)
-    jurisdiction = [j for j in response["jurisdictions"] if j["id"] == jurisdiction_id][
-        0
-    ]
     rounds = response["rounds"]
     batch_id = None
     round_id = None
@@ -1224,14 +1216,14 @@ def test_ballot_set(client, election_id):
 def test_audit_board(client, election_id):
     (
         url_prefix,
-        contest_id,
-        candidate_id_1,
-        candidate_id_2,
-        candidate_id_3,
+        _contest_id,
+        _candidate_id_1,
+        _candidate_id_2,
+        _candidate_id_3,
         jurisdiction_id,
         audit_board_id_1,
-        audit_board_id_2,
-        num_ballots,
+        _audit_board_id_2,
+        _num_ballots,
     ) = setup_whole_multi_winner_audit(
         client, election_id, "Multi-Round Multi-winner Audit", 10, "32423432423432"
     )

@@ -4,7 +4,6 @@ from werkzeug.exceptions import (
     Conflict,
     BadRequest,
     Unauthorized,
-    Conflict,
     InternalServerError,
     Forbidden,
 )
@@ -13,52 +12,52 @@ from arlo_server import app
 
 
 @app.errorhandler(ValidationError)
-def handle_validation_error(e):
+def handle_validation_error(error):
     return (
-        jsonify(errors=[{"message": e.message, "errorType": "Bad Request"}]),
+        jsonify(errors=[{"message": error.message, "errorType": "Bad Request"}]),
         BadRequest.code,
     )
 
 
 @app.errorhandler(BadRequest)
-def handle_400(e):
+def handle_400(error):
     return (
-        jsonify(errors=[{"message": e.description, "errorType": "Bad Request"}]),
+        jsonify(errors=[{"message": error.description, "errorType": "Bad Request"}]),
         BadRequest.code,
     )
 
 
 @app.errorhandler(Unauthorized)
-def handle_401(e):
+def handle_401(error):
     return (
-        jsonify(errors=[{"message": e.description, "errorType": "Unauthorized"}]),
+        jsonify(errors=[{"message": error.description, "errorType": "Unauthorized"}]),
         Unauthorized.code,
     )
 
 
 @app.errorhandler(Conflict)
-def handle_409(e):
+def handle_409(error):
     return (
-        jsonify(errors=[{"message": e.description, "errorType": "Conflict"}]),
+        jsonify(errors=[{"message": error.description, "errorType": "Conflict"}]),
         Conflict.code,
     )
 
 
 @app.errorhandler(Forbidden)
-def handle_403(e):
+def handle_403(error):
     return (
-        jsonify(errors=[{"message": e.description, "errorType": "Forbidden"}]),
+        jsonify(errors=[{"message": error.description, "errorType": "Forbidden"}]),
         Forbidden.code,
     )
 
 
 @app.errorhandler(InternalServerError)
-def handle_500(e):
-    original = getattr(e, "original_exception", None)
+def handle_500(error):
+    original = getattr(error, "original_exception", None)
 
     if original is None:
         # direct 500 error, such as abort(500)
-        return e
+        return error
 
     # wrapped unhandled error
     return (

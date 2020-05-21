@@ -20,14 +20,14 @@ def election_id(client: FlaskClient) -> str:
 
 def test_audit_status(client, election_id):
     (
-        url_prefix,
+        _url_prefix,
         contest_id,
         candidate_id_1,
         candidate_id_2,
-        jurisdiction_id,
+        _jurisdiction_id,
         audit_board_id_1,
         audit_board_id_2,
-        num_ballots,
+        _num_ballots,
     ) = setup_whole_audit(client, election_id, "Audit Status Test", 10, "1234567890")
 
     rv = client.get(f"/election/{election_id}/audit/status")

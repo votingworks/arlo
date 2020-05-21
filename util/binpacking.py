@@ -1,6 +1,6 @@
+from typing import Dict, Optional, Tuple, List, cast
 import operator
 import numpy
-from typing import Dict, Optional, Tuple, List, cast
 
 
 class Bucket:
@@ -68,9 +68,9 @@ class BucketList:
 
     def balance(self) -> "BucketList":
         """
-        Assign all batches that are bigger than the average size to buckets, 
-        minimizing the amount of size deviation from the average.
-        Then iterate through all the rest of the batches and add them to the 
+        Assign all batches that are bigger than the average size to buckets,
+        minimizing the amount of size deviation from the average. Then
+        iterate through all the rest of the batches and add them to the
         buckets, minimizing the deviation from the average.
         """
 
@@ -98,10 +98,10 @@ class BucketList:
                 # Find the least-bad bucket
                 (min_idx, _min_del) = min(
                     enumerate(
-                        map(
-                            lambda bucket: bucket.size + batch[1] - self.avg_size,
-                            new_buckets,
-                        )
+                        [
+                            bucket.size + batch[1] - self.avg_size
+                            for bucket in new_buckets
+                        ]
                     ),
                     key=operator.itemgetter(1),
                 )
@@ -152,10 +152,10 @@ class BalancedBucketList:
 
     def __init__(self, buckets):
         """
-        Assign all batches that are bigger than the average size to buckets, 
+        Assign all batches that are bigger than the average size to buckets,
         minimizing the amount of size deviation from the average.
 
-        Then iterate through all the rest of the batches and add them to the 
+        Then iterate through all the rest of the batches and add them to the
         buckets, minimizing the deviation from the average.
         """
 
@@ -183,10 +183,10 @@ class BalancedBucketList:
                 # Find the least-bad bucket
                 (min_idx, _min_del) = min(
                     enumerate(
-                        map(
-                            lambda bucket: bucket.size + batch[1] - self.avg_size,
-                            self.buckets,
-                        )
+                        [
+                            bucket.size + batch[1] - self.avg_size
+                            for bucket in self.buckets
+                        ]
                     ),
                     key=operator.itemgetter(1),
                 )
@@ -231,47 +231,45 @@ class BalancedBucketList:
                 print("\t", batch, bucket.batches[batch])
 
 
-"""
-batches = {}
-for line in csv.DictReader(open('washtenaw-retrieval.csv')):
-    if line['Batch Name'] in batches:
-        batches[line['Batch Name']] += 1
-    else:
-        batches[line['Batch Name']] = 1 
-audit_boards = 15 
+# batches = {}
+# for line in csv.DictReader(open('washtenaw-retrieval.csv')):
+#     if line['Batch Name'] in batches:
+#         batches[line['Batch Name']] += 1
+#     else:
+#         batches[line['Batch Name']] = 1
+# audit_boards = 15
 
-buckets = []
-for i in range(audit_boards):
-    buckets.append(Bucket(i))
+# buckets = []
+# for i in range(audit_boards):
+#     buckets.append(Bucket(i))
 
-# Assigne batches to buckets
-for i, batch in enumerate(batches):
-    buckets[i%audit_boards].add_batch(str(batch), int(batches[str(batch)]))
-    
-bl = BucketList(buckets)
+# # Assigne batches to buckets
+# for i, batch in enumerate(batches):
+#     buckets[i%audit_boards].add_batch(str(batch), int(batches[str(batch)]))
 
-bl.pretty_print()
-bl.balance()
-bl.pretty_print()
+# bl = BucketList(buckets)
 
-bl_batches = 0
-for bucket in bl.buckets:
-    bl_batches += len(bucket.batches)
+# bl.pretty_print()
+# bl.balance()
+# bl.pretty_print()
 
-print('------')
-new_bl = BalancedBucketList(buckets)
-new_bl.pretty_print()
+# bl_batches = 0
+# for bucket in bl.buckets:
+#     bl_batches += len(bucket.batches)
 
-nnew_bl_batches = 0
-new_bl_batches = set()
-for bucket in new_bl.buckets:
-    nnew_bl_batches += len(bucket.batches)
-    for batch in bucket.batches:
-        new_bl_batches.add(batch)
+# print('------')
+# new_bl = BalancedBucketList(buckets)
+# new_bl.pretty_print()
+
+# nnew_bl_batches = 0
+# new_bl_batches = set()
+# for bucket in new_bl.buckets:
+#     nnew_bl_batches += len(bucket.batches)
+#     for batch in bucket.batches:
+#         new_bl_batches.add(batch)
 
 
-print('////////')
-print(len(batches), bl_batches, nnew_bl_batches) 
-print(bl.deviation(), new_bl.deviation())
-print(len(new_bl_batches.intersection(set(batches.keys()))))
-"""
+# print('////////')
+# print(len(batches), bl_batches, nnew_bl_batches)
+# print(bl.deviation(), new_bl.deviation())
+# print(len(new_bl_batches.intersection(set(batches.keys()))))

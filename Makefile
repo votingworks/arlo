@@ -37,7 +37,7 @@ format-server:
 	${PIPENV} run black .
 
 lint-server:
-	find . -name '*.py' | xargs ${PIPENV} run pylint
+	find . -name '*.py' | xargs ${PIPENV} run pylint --load-plugins pylint_flask_sqlalchemy
 
 test-client:
 	yarn --cwd arlo-client lint

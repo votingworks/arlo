@@ -1,6 +1,6 @@
+from typing import Any, Dict, List, Union
 import jsonschema
 import jsonschema.validators
-from typing import Any, Dict, List, Union
 
 # An approximation of a JSON object type, since mypy doesn't support
 # recursive types.

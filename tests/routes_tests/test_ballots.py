@@ -1,6 +1,6 @@
-from flask.testing import FlaskClient
 from typing import List
 import json
+from flask.testing import FlaskClient
 
 from tests.helpers import (
     set_logged_in_user,

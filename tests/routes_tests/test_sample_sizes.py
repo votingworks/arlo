@@ -1,5 +1,5 @@
-from flask.testing import FlaskClient
 import json
+from flask.testing import FlaskClient
 
 
 def test_sample_sizes_without_contests(client: FlaskClient, election_id: str):

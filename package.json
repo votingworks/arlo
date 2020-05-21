@@ -16,7 +16,7 @@
     ],
     "*.py": [
       "python3.7 -m pipenv run black",
-      "python3.7 -m pipenv run pylint"
+      "python3.7 -m pipenv run pylint --load-plugins pylint_flask_sqlalchemy"
     ],
     "package.json": [
       "sort-package-json"

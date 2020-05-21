@@ -15,6 +15,10 @@
 				"remotePort": 3000
 			}
 		],
-		"python.formatting.provider": "black"
+		"python.formatting.provider": "black",
+		"python.linting.pylintArgs": [
+			"--load-plugins",
+			"pylint_flask_sqlalchemy"
+		]
 	}
 }

@@ -4,7 +4,6 @@ from typing import Dict, List, Tuple
 from flask import jsonify, request, redirect, session
 from werkzeug.exceptions import NotFound, Forbidden, Unauthorized, Conflict
 
-from audit_math import bravo, sampler_contest, sampler
 from xkcdpass import xkcd_password as xp
 
 from sqlalchemy.orm.session import Session
@@ -22,7 +21,7 @@ from arlo_server.auth import (
     clear_superadmin,
     with_election_access,
 )
-from arlo_server.models import *
+from arlo_server.models import *  # pylint: disable=wildcard-import
 from arlo_server.ballots import (
     ballot_retrieval_list,
     serialize_interpretation,
@@ -33,9 +32,7 @@ from arlo_server.ballot_manifest import (
     clear_ballot_manifest_file,
 )
 from arlo_server.sample_sizes import cumulative_contest_results
-from util.binpacking import BalancedBucketList, Bucket
-from util.csv_parse import decode_csv_file
-
+from audit_math import bravo, sampler_contest, sampler
 from config import (
     SUPERADMIN_AUTH0_BASE_URL,
     SUPERADMIN_AUTH0_CLIENT_ID,
@@ -52,7 +49,8 @@ from config import (
     JURISDICTIONADMIN_AUTH0_CLIENT_ID,
     JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
 )
-
+from util.binpacking import BalancedBucketList, Bucket
+from util.csv_parse import decode_csv_file
 from util.isoformat import isoformat
 from util.jsonschema import validate, JSONDict
 from util.process_file import serialize_file, serialize_file_processing
@@ -207,10 +205,10 @@ def sample_ballots(session: Session, election: Election, round: Round):
         buckets[i % len(audit_boards)].add_batch(batch, batch_sizes[batch])
 
     # Now assign batchest fairly
-    bl = BalancedBucketList(buckets)
+    bucket_list = BalancedBucketList(buckets)
 
     # read audit board and batch info out
-    for audit_board_num, bucket in enumerate(bl.buckets):
+    for audit_board_num, bucket in enumerate(bucket_list.buckets):
         audit_board = audit_boards[audit_board_num]
         for batch_name in bucket.batches:
 
@@ -319,8 +317,7 @@ def get_jurisdictions_file(election: Election):
             file=serialize_file(jurisdictions_file),
             processing=serialize_file_processing(jurisdictions_file),
         )
-    else:
-        return jsonify(file=None, processing=None)
+    return jsonify(file=None, processing=None)
 
 
 @app.route("/election/<election_id>/jurisdiction/file/csv", methods=["GET"])
@@ -332,6 +329,10 @@ def download_jurisdictions_file(election: Election):
     return csv_response(
         election.jurisdictions_file.contents, election.jurisdictions_file.name
     )
+
+
+JURISDICTION_NAME = "Jurisdiction"
+ADMIN_EMAIL = "Admin Email"
 
 
 @app.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
@@ -362,8 +363,6 @@ def update_jurisdictions_file(election: Election):
     )
 
     jurisdictions_csv = csv.DictReader(io.StringIO(jurisdictions_file_string))
-    JURISDICTION_NAME = "Jurisdiction"
-    ADMIN_EMAIL = "Admin Email"
 
     missing_fields = [
         field
@@ -475,17 +474,17 @@ def audit_status(election_id=None):
                             "pvalue": round_contest.end_p_value,
                             "isComplete": round_contest.is_complete,
                         },
-                        "results": dict(
-                            [
-                                [result.contest_choice_id, result.result]
-                                for result in round_contest.results
-                            ]
-                        ),
+                        "results": {
+                            result.contest_choice_id: result.result
+                            for result in round_contest.results
+                        },
                         "sampleSizeOptions": json.loads(
                             round_contest.sample_size_options or "null"
                         ),
                         "sampleSize": round_contest.sample_size,
                     }
+                    # pylint: disable=no-member
+                    # (seems like a pylint bug)
                     for round_contest in round.round_contests
                 ],
             }
@@ -504,7 +503,7 @@ def audit_basic_update(election_id):
     election.online = info["online"]
 
     errors = []
-    db.session.query(Contest).filter_by(election_id=election.id).delete()
+    Contest.query.filter_by(election_id=election.id).delete()
 
     for contest in info["contests"]:
         total_allowed_votes_in_contest = (
@@ -572,7 +571,7 @@ def jurisdictions_set(election_id):
     election = get_election(election_id)
     jurisdictions = request.get_json()["jurisdictions"]
 
-    db.session.query(Jurisdiction).filter_by(election_id=election.id).delete()
+    Jurisdiction.query.filter_by(election_id=election.id).delete()
 
     for jurisdiction in jurisdictions:
         contests = (
@@ -1048,7 +1047,7 @@ def serialize_election(election):
 
 
 @app.route("/auth/me")
-def me():
+def auth_me():
     user_type, user_key = get_loggedin_user()
     if user_type in [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN]:
         user = User.query.filter_by(email=user_key).one()

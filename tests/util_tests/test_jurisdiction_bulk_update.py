@@ -1,3 +1,5 @@
+import uuid
+import pytest
 from util.jurisdiction_bulk_update import bulk_update_jurisdictions
 from arlo_server.models import (
     Election,
@@ -7,8 +9,6 @@ from arlo_server.models import (
     User,
 )
 import arlo_server
-import pytest
-import uuid
 
 
 @pytest.fixture

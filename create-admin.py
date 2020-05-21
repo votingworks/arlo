@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 # type: ignore
 import sys, uuid
 
@@ -8,7 +9,7 @@ if __name__ == "__main__":
         print("Usage: python create-admin.py <org_id> <user_email>")
         sys.exit(1)
 
-    org_id, email = sys.argv[1:]
+    org_id, email = sys.argv[1:]  # pylint: disable=unbalanced-tuple-unpacking
     u = User(id=str(uuid.uuid4()), email=email, external_id=email)
     audit_admin = AuditAdministration(user_id=u.id, organization_id=org_id)
     db.session.add(u)

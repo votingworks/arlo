@@ -1,7 +1,7 @@
 import uuid, json, re
-import pytest
 import datetime
 from typing import Any, List, Union, Tuple, Optional
+import pytest
 from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
 from sqlalchemy.orm import joinedload
@@ -55,7 +55,7 @@ def put_json(client: FlaskClient, url: str, obj) -> Any:
 
 
 def assert_ok(rv: Response):
-    __tracebackhide__ = True
+    __tracebackhide__ = True  # pylint: disable=unused-variable
     assert (
         rv.status_code == 200
     ), f"Expected status code 200, got {rv.status_code}, body: {rv.data}"
@@ -96,23 +96,25 @@ def create_org_and_admin(
     org_name: str = "Test Org", user_email: str = DEFAULT_AA_EMAIL
 ) -> Tuple[str, str]:
     org = create_organization(org_name)
-    aa = create_user(user_email)
-    db.session.add(aa)
-    admin = AuditAdministration(organization_id=org.id, user_id=aa.id)
+    audit_admin = create_user(user_email)
+    db.session.add(audit_admin)
+    admin = AuditAdministration(organization_id=org.id, user_id=audit_admin.id)
     db.session.add(admin)
     db.session.commit()
-    return org.id, aa.id
+    return org.id, audit_admin.id
 
 
 def create_jurisdiction_admin(
     jurisdiction_id: str, user_email: str = DEFAULT_JA_EMAIL
 ) -> str:
-    ja = create_user(user_email)
-    db.session.add(ja)
-    admin = JurisdictionAdministration(user_id=ja.id, jurisdiction_id=jurisdiction_id)
+    jurisdiction_admin = create_user(user_email)
+    db.session.add(jurisdiction_admin)
+    admin = JurisdictionAdministration(
+        user_id=jurisdiction_admin.id, jurisdiction_id=jurisdiction_id
+    )
     db.session.add(admin)
     db.session.commit()
-    return str(ja.id)
+    return str(jurisdiction_admin.id)
 
 
 def create_jurisdiction_and_admin(
@@ -194,36 +196,38 @@ def run_audit_round(round_id: str, contest_id: str, vote_ratio: float):
     db.session.commit()
 
 
-def assert_is_id(x):
-    __tracebackhide__ = True
-    assert isinstance(x, str)
-    uuid.UUID(x, version=4)  # Will raise exception on non-UUID strings
+def assert_is_id(value):
+    __tracebackhide__ = True  # pylint: disable=unused-variable
+    assert isinstance(value, str)
+    uuid.UUID(value, version=4)  # Will raise exception on non-UUID strings
 
 
-def assert_is_date(x):
+def assert_is_date(value):
     """
     Asserts that a value is a string formatted as an ISO-8601 string
     specifically as formatted by `datetime.datetime.isoformat`. Not all
     ISO-8601 strings are supported.
-    
+
     See https://docs.python.org/3.8/library/datetime.html#datetime.date.fromisoformat.
     """
-    __tracebackhide__ = True
-    assert isinstance(x, str)
-    datetime.datetime.fromisoformat(x)
+    __tracebackhide__ = True  # pylint: disable=unused-variable
+    assert isinstance(value, str)
+    datetime.datetime.fromisoformat(value)
 
 
-def assert_is_passphrase(x):
-    __tracebackhide__ = True
-    assert isinstance(x, str)
-    assert re.match(r"[a-z]+-[a-z]+-[a-z]+-[a-z]+", x)
+def assert_is_passphrase(value):
+    __tracebackhide__ = True  # pylint: disable=unused-variable
+    assert isinstance(value, str)
+    assert re.match(r"[a-z]+-[a-z]+-[a-z]+-[a-z]+", value)
 
 
 def asserts_startswith(prefix: str):
-    def assert_startswith(x: str):
-        __tracebackhide__ = True
-        assert isinstance(x, str)
-        assert x.startswith(prefix), f"expected:\n\n{x}\n\nto start with: {prefix}"
+    def assert_startswith(value: str):
+        __tracebackhide__ = True  # pylint: disable=unused-variable
+        assert isinstance(value, str)
+        assert value.startswith(
+            prefix
+        ), f"expected:\n\n{value}\n\nto start with: {prefix}"
 
     return assert_startswith
 
@@ -234,7 +238,7 @@ def compare_json(actual_json, expected_json):
     expected dict. The expected dict can contain assertion functions in place of
     any non-deterministic values.
     """
-    __tracebackhide__ = True
+    __tracebackhide__ = True  # pylint: disable=unused-variable
 
     def serialize_keypath(keypath: List[Union[str, int]]) -> str:
         return f"root{''.join([f'[{serialize_key(key)}]' for key in keypath])}"
@@ -245,7 +249,7 @@ def compare_json(actual_json, expected_json):
     def inner_compare_json(
         actual_json, expected_json, current_keypath: List[Union[str, int]]
     ):
-        __tracebackhide__ = True
+        __tracebackhide__ = True  # pylint: disable=unused-variable
         if isinstance(expected_json, dict):
             assert isinstance(
                 actual_json, dict
@@ -280,10 +284,10 @@ def compare_json(actual_json, expected_json):
 
 
 def test_compare_json():
-    def asserts_gt(n: int):
+    def asserts_gt(num: int):
         def assert_gt(value: int):
             assert isinstance(value, int)
-            assert value > n
+            assert value > num
 
         return assert_gt
 

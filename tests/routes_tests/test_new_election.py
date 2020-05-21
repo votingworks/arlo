@@ -169,7 +169,7 @@ def test_in_org_duplicate_audit_name(client: FlaskClient):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": f"An audit with name 'Test Audit' already exists within your organization",
+                "message": "An audit with name 'Test Audit' already exists within your organization",
                 "errorType": "Conflict",
             }
         ]

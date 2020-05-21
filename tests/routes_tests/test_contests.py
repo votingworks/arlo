@@ -1,7 +1,7 @@
+import json, uuid
+from typing import List
 import pytest
 from flask.testing import FlaskClient
-from typing import List
-import json, uuid
 
 from tests.helpers import (
     assert_ok,
@@ -256,7 +256,7 @@ def test_contest_too_many_votes(client: FlaskClient, election_id: str):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": f"Too many votes cast in contest: Contest 1 (501 votes, 500 allowed)",
+                "message": "Too many votes cast in contest: Contest 1 (501 votes, 500 allowed)",
                 "errorType": "Bad Request",
             }
         ]
@@ -281,7 +281,7 @@ def test_contest_too_many_votes(client: FlaskClient, election_id: str):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": f"Too many votes cast in contest: Contest 1 (1001 votes, 1000 allowed)",
+                "message": "Too many votes cast in contest: Contest 1 (1001 votes, 1000 allowed)",
                 "errorType": "Bad Request",
             }
         ]

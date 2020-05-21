@@ -1,8 +1,8 @@
+import uuid
+from typing import Optional
 from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
-import uuid
-from typing import Optional
 
 from arlo_server import app, db
 from arlo_server.models import (
@@ -32,13 +32,13 @@ CREATE_ROUND_REQUEST_SCHEMA = {
 }
 
 
-def serialize_round(r: Round) -> dict:
+def serialize_round(round: Round) -> dict:
     return {
-        "id": r.id,
-        "roundNum": r.round_num,
-        "startedAt": isoformat(r.created_at),
-        "endedAt": isoformat(r.ended_at),
-        "isAuditComplete": is_audit_complete(r.id),
+        "id": round.id,
+        "roundNum": round.round_num,
+        "startedAt": isoformat(round.created_at),
+        "endedAt": isoformat(round.ended_at),
+        "isAuditComplete": is_audit_complete(round.id),
     }
 
 
@@ -58,19 +58,19 @@ def is_audit_complete(round_id: str):
 
 
 # Raises if invalid
-def validate_round(r: dict, election: Election):
-    validate(r, CREATE_ROUND_REQUEST_SCHEMA)
+def validate_round(round: dict, election: Election):
+    validate(round, CREATE_ROUND_REQUEST_SCHEMA)
 
     current_round = get_current_round(election)
     next_round_num = current_round.round_num + 1 if current_round else 1
-    if r["roundNum"] != next_round_num:
+    if round["roundNum"] != next_round_num:
         raise BadRequest(f"The next round should be round number {next_round_num}")
 
     if current_round and not current_round.ended_at:
-        raise Conflict(f"The current round is not complete")
+        raise Conflict("The current round is not complete")
 
-    if r["roundNum"] == 1 and "sampleSize" not in r:
-        raise BadRequest(f"Sample size is required for round 1")
+    if round["roundNum"] == 1 and "sampleSize" not in round:
+        raise BadRequest("Sample size is required for round 1")
 
 
 def sample_ballots(election: Election, round: Round, sample_size: int):
