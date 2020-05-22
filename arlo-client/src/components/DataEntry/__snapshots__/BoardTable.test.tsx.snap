@@ -194,7 +194,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
             </div>
             <div
               class="bp3-table-bottom-container"
-              style="height: 120px; width: 600px;"
+              style="height: 160px; width: 600px;"
             >
               <div
                 class="bp3-table-quadrant-body-container"
@@ -202,14 +202,14 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                 <div>
                   <div
                     class="bp3-table-body-virtual-client bp3-table-cell-client"
-                    style="height: 120px; width: 600px;"
+                    style="height: 160px; width: 600px;"
                   >
                     <div
                       class="bp3-table-body-cells"
                     >
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 0px; position: absolute; top: 0px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -218,8 +218,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 150px; position: absolute; top: 0px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -228,8 +228,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 300px; position: absolute; top: 0px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -238,15 +238,17 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 450px; position: absolute; top: 0px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          Audited
+                          <span>
+                            Audited
+                          </span>
                           <a
-                            class="bp3-button bp3-small sc-bxivhb bAonbG"
+                            class="bp3-button bp3-small"
                             href="/home/batch/batch-id-1/ballot/313"
                           >
                             Re-audit
@@ -254,8 +256,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 0px; position: absolute; top: 40px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -264,8 +266,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 150px; position: absolute; top: 40px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -274,8 +276,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 300px; position: absolute; top: 40px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -284,15 +286,17 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 450px; position: absolute; top: 40px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          Audited
+                          <span>
+                            Audited
+                          </span>
                           <a
-                            class="bp3-button bp3-small sc-bxivhb bAonbG"
+                            class="bp3-button bp3-small"
                             href="/home/batch/batch-id-1/ballot/2112"
                           >
                             Re-audit
@@ -300,8 +304,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 0px; position: absolute; top: 60px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 0px; position: absolute; top: 80px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -310,8 +314,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 150px; position: absolute; top: 60px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 150px; position: absolute; top: 80px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -320,8 +324,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 300px; position: absolute; top: 60px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 300px; position: absolute; top: 80px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -330,15 +334,17 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 450px; position: absolute; top: 80px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          Audited
+                          <span>
+                            Audited
+                          </span>
                           <a
-                            class="bp3-button bp3-small sc-bxivhb bAonbG"
+                            class="bp3-button bp3-small"
                             href="/home/batch/batch-id-1/ballot/1789"
                           >
                             Re-audit
@@ -346,8 +352,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 0px; position: absolute; top: 120px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -356,8 +362,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 150px; position: absolute; top: 120px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -366,8 +372,8 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 300px; position: absolute; top: 120px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -376,15 +382,17 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                         </div>
                       </div>
                       <div
-                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                        style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
+                        class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                        style="height: 40px; left: 450px; position: absolute; top: 120px; width: 150px;"
                       >
                         <div
                           class="bp3-table-truncated-text bp3-table-no-wrap-text"
                         >
-                          Not Found
+                          <span>
+                            Not Found
+                          </span>
                           <a
-                            class="bp3-button bp3-small sc-bxivhb bAonbG"
+                            class="bp3-button bp3-small"
                             href="/home/batch/batch-id-1/ballot/1965"
                           >
                             Re-audit
@@ -540,7 +548,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
             </div>
             <div
               class="bp3-table-bottom-container"
-              style="height: 120px; width: 600px;"
+              style="height: 160px; width: 600px;"
             >
               <div
                 class="bp3-table-quadrant-body-container"
