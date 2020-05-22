@@ -1,5 +1,3 @@
-PIPENV=python3.7 -m pipenv
-
 deps:
 	sudo apt install python3.7 python3-pip nodejs libpython3.7-dev libpq-dev
 	python3.7 -m pip install pipenv
@@ -12,13 +10,13 @@ initdevdb:
 	sudo -u postgres psql -c "create database arlo with owner arlo;"
 
 install:
-	${PIPENV} install
+	pipenv install
 	yarn install
 	yarn --cwd arlo-client install
 	yarn --cwd arlo-client build
 
 install-development:
-	${PIPENV} install --dev
+	pipenv install --dev
 	yarn install
 	yarn --cwd arlo-client install
 
@@ -26,18 +24,18 @@ resettestdb:
 	FLASK_ENV=test make resetdb
 
 resetdb:
-	FLASK_ENV=$${FLASK_ENV:-development} ${PIPENV} run python resetdb.py
+	FLASK_ENV=$${FLASK_ENV:-development} pipenv run python resetdb.py
 
 dev-environment: deps initdevdb install-development resetdb
 
 typecheck-server:
-	${PIPENV} run mypy .
+	pipenv run mypy .
 
 format-server:
-	${PIPENV} run black .
+	pipenv run black .
 
 lint-server:
-	find . -name '*.py' | xargs ${PIPENV} run pylint --load-plugins pylint_flask_sqlalchemy
+	find . -name '*.py' | xargs pipenv run pylint --load-plugins pylint_flask_sqlalchemy
 
 test-client:
 	yarn --cwd arlo-client lint
@@ -47,7 +45,7 @@ test-client:
 # To run specific test files: FILE=<file path> make test-server
 # To pass in additional flags to pytest: FLAGS=<extra flags> make test-server
 test-server:
-	FLASK_ENV=test ${PIPENV} run python -m pytest ${FILE} \
+	FLASK_ENV=test pipenv run pytest ${FILE} \
 		-k '${TEST}' --ignore=arlo-client -vv ${FLAGS}
 
 test-server-coverage:
@@ -61,6 +59,3 @@ test-utils:
 
 test-routes:
 	FILE=tests/routes_tests make test-server
-
-python-shell:
-	${PIPENV} run python
