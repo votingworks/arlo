@@ -55,6 +55,7 @@ def draw_sample(
                 take=sample_size + num_sampled,
                 with_replacement=True,
                 output="tuple",
+                digits=18,
             )
         )[num_sampled:],
     )
