@@ -79,7 +79,7 @@ export interface IBallot {
 
 export interface IAuditBoardMember {
   name: string
-  affiliation: string
+  affiliation: string | null
 }
 
 export interface IAuditBoard {

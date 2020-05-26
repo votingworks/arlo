@@ -59,18 +59,19 @@ const loadBallots = async (
   return ballots
 }
 
-const saveMembers = async (
+const putMembers = async (
   electionId: string,
   jurisdictionId: string,
+  roundId: string,
   auditBoardId: string,
   members: IAuditBoardMember[]
 ) => {
   try {
     await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/audit-board/${auditBoardId}`,
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}`,
       {
-        method: 'POST',
-        body: JSON.stringify({ members }),
+        method: 'PUT',
+        body: JSON.stringify(members),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -160,9 +161,10 @@ const DataEntry: React.FC<IProps> = ({
   }, [electionId, auditBoard])
 
   const submitMembers = async (members: IAuditBoardMember[]) => {
-    await saveMembers(
+    await putMembers(
       electionId,
       auditBoard!.jurisdictionId,
+      auditBoard!.roundId,
       auditBoardId,
       members
     )

@@ -80,7 +80,7 @@ describe('DataEntry', () => {
         switch (endpoint) {
           case '/auth/me':
             return posted ? dummyBoards()[0] : dummyBoards()[1]
-          case '/election/1/jurisdiction/jurisdiction-1/audit-board/audit-board-1':
+          case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1':
             posted = true
             return { status: 'ok' }
           default:
