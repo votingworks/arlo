@@ -6,6 +6,7 @@ from flask.testing import FlaskClient
 
 from tests.helpers import (
     post_json,
+    put_json,
     assert_ok,
     compare_json,
     assert_is_id,
@@ -38,6 +39,7 @@ from arlo_server.models import (
     SampledBallotDraw,
 )
 from arlo_server.auth import UserType
+from util.jsonschema import JSONDict
 
 
 def assert_ballots_got_assigned_correctly(
@@ -509,6 +511,77 @@ def test_audit_boards_bad_round_id(
     assert rv.status_code == 404
 
 
+def test_audit_boards_set_members_valid(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    member_requests = [
+        [{"name": "Audit Board #1", "affiliation": "DEM"}],
+        [
+            {"name": "Audit Board #1", "affiliation": "REP"},
+            {"name": "Audit Board #2", "affiliation": None},
+        ],
+    ]
+    for member_request in member_requests:
+        rv = put_json(
+            client,
+            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}",
+            member_request,
+        )
+        assert_ok(rv)
+
+        rv = client.get("/auth/me")
+        audit_board = json.loads(rv.data)
+        assert audit_board["members"] == member_request
+
+
+def test_audit_boards_set_members_invalid(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    invalid_member_requests = [
+        ([{"affiliation": "DEM"}], "'name' is a required property"),
+        ([{"name": "Joe Schmo"}], "'affiliation' is a required property"),
+        ([{"name": "", "affiliation": "DEM"}], "'name' must not be empty."),
+        ([{"name": None, "affiliation": "DEM"}], "None is not of type 'string'"),
+        (
+            [{"name": "Jane Plain", "affiliation": ""}],
+            "'' is not one of ['DEM', 'REP', 'LIB', 'IND', 'OTH']",
+        ),
+        (
+            [{"name": "Jane Plain", "affiliation": "Democrat"}],
+            "'Democrat' is not one of ['DEM', 'REP', 'LIB', 'IND', 'OTH']",
+        ),
+        ([], "Must have at least one member.",),
+        (
+            [
+                {"name": "Joe Schmo", "affiliation": "DEM"},
+                {"name": "Jane Plain", "affiliation": "REP"},
+                {"name": "Extra Member", "affiliation": "IND"},
+            ],
+            "Cannot have more than two members.",
+        ),
+    ]
+    for invalid_member_request, expected_message in invalid_member_requests:
+        set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+        rv = put_json(
+            client,
+            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}",
+            invalid_member_request,
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [{"errorType": "Bad Request", "message": expected_message}]
+        }
+
+
 CHOICE_1_VOTES = 10
 CHOICE_2_VOTES = 15
 
@@ -517,6 +590,7 @@ def set_up_audit_board(
     client: FlaskClient,
     election_id: str,
     jurisdiction_id: str,
+    round_id: str,
     contest_id: str,
     audit_board_id: str,
     only_one_member=False,
@@ -532,16 +606,16 @@ def set_up_audit_board(
     member_1 = rand.choice(silly_names)
     member_2 = rand.choice(silly_names)
 
-    member_names = [
-        {"name": member_1, "affiliation": "DEM"},
-        {"name": "" if only_one_member else member_2, "affiliation": ""},
-    ]
+    member_names: List[JSONDict] = [{"name": member_1, "affiliation": "DEM"}]
+    if not only_one_member:
+        member_names.append({"name": member_2, "affiliation": None})
 
     # Set up the audit board
-    rv = post_json(
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
+    rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/audit-board/{audit_board_id}",
-        {"members": member_names},
+        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}",
+        member_names,
     )
     assert_ok(rv)
 
@@ -585,7 +659,12 @@ def test_audit_boards_sign_off_happy_path(
 ):
     def run_audit_board_flow(jurisdiction_id: str, audit_board_id: str):
         member_1, member_2 = set_up_audit_board(
-            client, election_id, jurisdiction_id, contest_ids[0], audit_board_id
+            client,
+            election_id,
+            jurisdiction_id,
+            round_1_id,
+            contest_ids[0],
+            audit_board_id,
         )
         set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
         rv = post_json(
@@ -685,7 +764,12 @@ def test_audit_boards_sign_off_missing_name(
 ):
     audit_board_id = audit_board_round_1_ids[0]
     member_1, member_2 = set_up_audit_board(
-        client, election_id, jurisdiction_ids[0], contest_ids[0], audit_board_id
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        contest_ids[0],
+        audit_board_id,
     )
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
 
@@ -720,7 +804,12 @@ def test_audit_boards_sign_off_wrong_name(
 ):
     audit_board_id = audit_board_round_1_ids[0]
     member_1, member_2 = set_up_audit_board(
-        client, election_id, jurisdiction_ids[0], contest_ids[0], audit_board_id
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        contest_ids[0],
+        audit_board_id,
     )
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
 
@@ -756,7 +845,12 @@ def test_audit_boards_sign_off_before_finished(
 ):
     audit_board_id = audit_board_round_1_ids[0]
     member_1, member_2 = set_up_audit_board(
-        client, election_id, jurisdiction_ids[0], contest_ids[0], audit_board_id
+        client,
+        election_id,
+        jurisdiction_ids[0],
+        round_1_id,
+        contest_ids[0],
+        audit_board_id,
     )
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
 
@@ -795,6 +889,7 @@ def test_audit_board_only_one_member_sign_off_happy_path(
         client,
         election_id,
         jurisdiction_ids[0],
+        round_1_id,
         contest_ids[0],
         audit_board_id,
         only_one_member=True,
@@ -822,6 +917,7 @@ def test_audit_board_only_one_member_sign_off_wrong_name(
         client,
         election_id,
         jurisdiction_ids[0],
+        round_1_id,
         contest_ids[0],
         audit_board_id,
         only_one_member=True,

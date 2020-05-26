@@ -21,6 +21,7 @@ from arlo_server.models import (
     Batch,
     RoundContestResult,
     BallotInterpretation,
+    Affiliation,
 )
 from arlo_server.sample_sizes import cumulative_contest_results
 from util.jsonschema import validate, JSONDict
@@ -184,6 +185,70 @@ def list_audit_boards(
         serialize_audit_board(ab, round_status[ab.id]) for ab in audit_boards
     ]
     return jsonify({"auditBoards": json_audit_boards})
+
+
+MEMBER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "affiliation": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [affiliation.value for affiliation in Affiliation],
+                },
+                {"type": "null"},
+            ]
+        },
+    },
+    "additionalProperties": False,
+    "required": ["name", "affiliation"],
+}
+
+SET_MEMBERS_SCHEMA = {
+    "type": "array",
+    "items": MEMBER_SCHEMA,
+}
+
+
+def validate_members(members: List[JSONDict]):
+    # You can do all of these checks using JSON schema, but the resulting error
+    # messages aren't very good.
+    if len(members) == 0:
+        raise BadRequest("Must have at least one member.")
+    if len(members) > 2:
+        raise BadRequest("Cannot have more than two members.")
+
+    validate(members, SET_MEMBERS_SCHEMA)
+
+    for member in members:
+        if member["name"] == "":
+            raise BadRequest("'name' must not be empty.")
+
+
+@app.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>",
+    methods=["PUT"],
+)
+@with_audit_board_access
+def set_audit_board_members(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    round: Round,  # pylint: disable=unused-argument
+    audit_board: AuditBoard,
+):
+    members = request.get_json()
+    validate_members(members)
+
+    audit_board.member_1 = members[0]["name"]
+    audit_board.member_1_affiliation = members[0]["affiliation"]
+    if len(members) == 2:
+        audit_board.member_2 = members[1]["name"]
+        audit_board.member_2_affiliation = members[1]["affiliation"]
+
+    db.session.commit()
+
+    return jsonify(status="ok")
 
 
 def calculate_risk_measurements(election: Election, round: Round):

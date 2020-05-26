@@ -241,6 +241,16 @@ contest_jurisdiction = db.Table(
 )
 
 
+# TODO we should use this enum in the AuditBoard schema, but that would require
+# a data model change and db migration
+class Affiliation(str, Enum):
+    DEMOCRAT = "DEM"
+    REPUBLICAN = "REP"
+    LIBERTARIAN = "LIB"
+    INDEPENDENT = "IND"
+    OTHER = "OTH"
+
+
 class AuditBoard(BaseModel):
     id = db.Column(db.String(200), primary_key=True)
     jurisdiction_id = db.Column(
