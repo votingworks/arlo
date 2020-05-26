@@ -228,7 +228,7 @@ def end_round(election: Election, round: Round):
 
 
 def is_round_complete(election: Election, round: Round) -> bool:
-    num_jurisdictions_without_audit_boards_set_up = (
+    num_jurisdictions_without_audit_boards_set_up: int = (
         # For each jurisdiction...
         Jurisdiction.query.filter_by(election_id=election.id)
         # Where there are ballots that haven't been audited...
@@ -251,11 +251,15 @@ def is_round_complete(election: Election, round: Round) -> bool:
         .having(func.count(AuditBoard.id) == 0)
         .count()
     )
-    all_audit_boards_set_up = num_jurisdictions_without_audit_boards_set_up == 0
-    all_audit_boards_signed_off = all(
-        ab.signed_off_at is not None for ab in round.audit_boards
+    num_audit_boards_with_ballots_not_signed_off: int = (
+        AuditBoard.query.filter_by(round_id=round.id, signed_off_at=None)
+        .join(SampledBallot)
+        .count()
     )
-    return all_audit_boards_set_up and all_audit_boards_signed_off
+    return (
+        num_jurisdictions_without_audit_boards_set_up == 0
+        and num_audit_boards_with_ballots_not_signed_off == 0
+    )
 
 
 SIGN_OFF_AUDIT_BOARD_REQUEST_SCHEMA = {

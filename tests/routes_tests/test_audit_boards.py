@@ -618,10 +618,23 @@ def test_audit_boards_sign_off_happy_path(
         [{"name": "Audit Board #1"}],
     )
     assert_ok(rv)
+
     rv = client.get(
         f"/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board"
     )
     audit_board = json.loads(rv.data)["auditBoards"][0]
+
+    # Create another audit board that doesn't have any ballots assigned. Even
+    # though this audit board doesn't sign off, it shouldn't stop the round
+    # from being completed.
+    audit_board_without_ballots = AuditBoard(
+        id="audit-board-without-ballots",
+        jurisdiction_id=jurisdiction_ids[1],
+        round_id=round_1_id,
+        name="Audit Board Without Ballots",
+    )
+    db.session.add(audit_board_without_ballots)
+    db.session.commit()
 
     run_audit_board_flow(jurisdiction_ids[1], audit_board["id"])
 
