@@ -41,7 +41,7 @@ def draw_sample(
     # First build a faux list of ballots
     for batch in manifest:
         for i in range(manifest[batch]):
-            ballots.append((batch, i))
+            ballots.append((batch, i + 1))
 
     return cast(
         # The signature of `consistent_sampler.sampler` can't be represented by

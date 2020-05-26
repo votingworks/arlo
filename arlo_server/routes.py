@@ -215,9 +215,6 @@ def sample_ballots(session: Session, election: Election, round: Round):
             for (ballot_position, ticket_number, sample_number) in batches_to_ballots[
                 batch_name
             ]:
-                # sampler is 0-indexed, we're 1-indexing here
-                ballot_position += 1
-
                 batch_id = batch_id_from_name[batch_name]
 
                 if sample_number == 1:
