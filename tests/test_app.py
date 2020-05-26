@@ -533,9 +533,6 @@ def get_lines_from_retrieval_list(rv):
 
 def get_num_ballots_from_retrieval_list(rv):
     lines = get_lines_from_retrieval_list(rv)
-
-    for line in lines:
-        print(line)
     return sum([len(line["Ticket Numbers"].split(",")) for line in lines])
 
 
