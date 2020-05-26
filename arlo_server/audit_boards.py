@@ -254,6 +254,7 @@ def is_round_complete(election: Election, round: Round) -> bool:
     num_audit_boards_with_ballots_not_signed_off: int = (
         AuditBoard.query.filter_by(round_id=round.id, signed_off_at=None)
         .join(SampledBallot)
+        .group_by(AuditBoard.id)
         .count()
     )
     return (

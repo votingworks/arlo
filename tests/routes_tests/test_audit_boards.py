@@ -1,4 +1,4 @@
-import json, random
+import json, random, uuid
 from typing import List, Tuple
 from datetime import datetime
 from collections import defaultdict
@@ -628,7 +628,7 @@ def test_audit_boards_sign_off_happy_path(
     # though this audit board doesn't sign off, it shouldn't stop the round
     # from being completed.
     audit_board_without_ballots = AuditBoard(
-        id="audit-board-without-ballots",
+        id=str(uuid.uuid4()),
         jurisdiction_id=jurisdiction_ids[1],
         round_id=round_1_id,
         name="Audit Board Without Ballots",
