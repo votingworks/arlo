@@ -39,8 +39,11 @@ const CreateAuditBoards = ({
   roundNum,
 }: IProps) => {
   const submit = async ({ numAuditBoards }: IValues) => {
+    const maxAuditBoardsIndexLength = numAuditBoards.toString().length
     const boards = [...Array(numAuditBoards).keys()].map(i => ({
-      name: `Audit Board #${i + 1}`,
+      name: `Audit Board #${(i + 1)
+        .toString()
+        .padStart(maxAuditBoardsIndexLength, '0')}`,
     }))
     createAuditBoards(boards)
   }
@@ -67,6 +70,7 @@ const CreateAuditBoards = ({
             <AuditBoardsInput
               component={Select}
               id="numAuditBoards"
+              data-testid="numAuditBoards"
               name="numAuditBoards"
               onChange={(e: React.FormEvent<HTMLSelectElement>) =>
                 setFieldValue('numAuditBoards', Number(e.currentTarget.value))
