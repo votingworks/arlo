@@ -26,7 +26,7 @@ const ballotingMock = async (endpoint: string) => {
       return { contests: [contest] }
     case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots':
       return dummyBallots
-    case '/election/1/jurisdiction/jurisdiction-1/batch/batch-id-1/ballot/1':
+    case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots/ballot-id-1':
       return { status: 'ok' }
     default:
       return null

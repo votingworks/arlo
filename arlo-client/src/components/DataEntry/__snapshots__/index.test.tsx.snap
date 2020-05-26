@@ -3,16 +3,16 @@
 exports[`DataEntry ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="sc-hMqMXs kivpAN"
+    class="sc-eNQAEJ hubqqz"
   >
     <div
-      class="sc-kEYyzF sc-kkGfuU cOCkRu"
+      class="sc-hMqMXs sc-kEYyzF jYziDw"
     >
       <div
-        class="sc-jKJlTe cJqkLF"
+        class="sc-ckVGcZ bxAWbg"
       >
         <h1
-          class="bp3-heading sc-ckVGcZ ipbdjm"
+          class="bp3-heading sc-dxgOiQ huYUSL"
         >
           Audit Board #1
           : Ballot Card Data Entry
@@ -23,7 +23,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           Enter Ballot Information
         </h3>
         <div
-          class="bp3-callout sc-eNQAEJ TJXrb"
+          class="bp3-callout sc-jKJlTe hzNJni"
         >
           Auditing ballot 
           2
@@ -31,7 +31,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           27
         </div>
         <div
-          class="sc-iwsKbI eBYIfb"
+          class="sc-dnqmqq etEanz"
         >
           <div
             class="ballot-side"
@@ -55,7 +55,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </div>
           </div>
           <div
-            class="bp3-divider sc-dnqmqq dhrTKj"
+            class="bp3-divider sc-htoDjs kvcmFh"
           />
           <div
             class="ballot-main"
@@ -93,7 +93,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
           </div>
         </div>
         <div
-          class="sc-iwsKbI eBYIfb"
+          class="sc-dnqmqq etEanz"
         >
           <div
             class="ballot-side"
@@ -121,7 +121,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             </p>
             <form>
               <div
-                class="sc-gZMcBi jEkxNN"
+                class="sc-iwsKbI zTyzr"
               >
                 <h3
                   class="bp3-heading"
@@ -129,13 +129,13 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   Contest Name
                 </h3>
                 <div
-                  class="bp3-divider sc-dnqmqq dhrTKj"
+                  class="bp3-divider sc-htoDjs kvcmFh"
                 />
                 <div
-                  class="sc-gqjmRU jqjASL"
+                  class="sc-gZMcBi kDeHJh"
                 >
                   <label
-                    class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                    class=" bp3-control bp3-radio sc-fjdhpX fzoDpv"
                   >
                     <input
                       data-testid="choice-id-1"
@@ -154,7 +154,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                     </span>
                   </label>
                   <label
-                    class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                    class=" bp3-control bp3-radio sc-fjdhpX fzoDpv"
                   >
                     <input
                       data-testid="choice-id-2"
@@ -173,7 +173,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                     </span>
                   </label>
                   <label
-                    class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                    class=" bp3-control bp3-radio sc-fjdhpX fzoDpv"
                   >
                     <input
                       data-testid="CANT_AGREE"
@@ -192,7 +192,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                     </span>
                   </label>
                   <label
-                    class=" bp3-control bp3-radio sc-jzJRlG dDGZgH"
+                    class=" bp3-control bp3-radio sc-fjdhpX fzoDpv"
                   >
                     <input
                       data-testid="BLANK"
@@ -242,10 +242,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 </button>
               </div>
               <div
-                class="sc-VigVT cyKuXR"
+                class="sc-gqjmRU imtrkY"
               >
                 <button
-                  class="bp3-button bp3-disabled bp3-intent-success sc-htoDjs dESvso"
+                  class="bp3-button bp3-disabled bp3-intent-success sc-gzVnrw kdzzfK"
                   data-testid="disabled-review"
                   disabled=""
                   tabindex="-1"
@@ -280,10 +280,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
 exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-hMqMXs kivpAN"
+    class="sc-eNQAEJ hubqqz"
   >
     <div
-      class="sc-kEYyzF sc-kkGfuU cOCkRu"
+      class="sc-hMqMXs sc-kEYyzF jYziDw"
     >
       <div
         class="board-table-container"
@@ -477,7 +477,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 810px; width: 600px;"
+                  style="height: 1080px; width: 600px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -485,14 +485,14 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: 810px; width: 600px;"
+                        style="height: 1080px; width: 600px;"
                       >
                         <div
                           class="bp3-table-body-cells"
                         >
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -501,8 +501,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -511,8 +511,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -521,15 +521,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
                             >
-                              Audited
+                              <span>
+                                Audited
+                              </span>
                               <a
-                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                class="bp3-button bp3-small"
                                 href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                               >
                                 Re-audit
@@ -537,8 +539,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -547,8 +549,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -557,8 +559,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -567,8 +569,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -577,8 +579,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -587,8 +589,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -597,8 +599,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -607,15 +609,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
                             >
-                              Audited
+                              <span>
+                                Audited
+                              </span>
                               <a
-                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                class="bp3-button bp3-small"
                                 href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                               >
                                 Re-audit
@@ -623,8 +627,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -633,8 +637,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -643,8 +647,8 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -653,15 +657,17 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
                             >
-                              Audited
+                              <span>
+                                Audited
+                              </span>
                               <a
-                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                class="bp3-button bp3-small"
                                 href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                               >
                                 Re-audit
@@ -817,7 +823,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 810px; width: 600px;"
+                  style="height: 1080px; width: 600px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -874,10 +880,10 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 exports[`DataEntry ballot interaction renders board table with large container size 1`] = `
 <div>
   <div
-    class="sc-hMqMXs kivpAN"
+    class="sc-eNQAEJ hubqqz"
   >
     <div
-      class="sc-kEYyzF sc-kkGfuU cOCkRu"
+      class="sc-hMqMXs sc-kEYyzF jYziDw"
     >
       <div
         class="board-table-container"
@@ -1071,7 +1077,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 810px; width: 600px;"
+                  style="height: 1080px; width: 600px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -1079,14 +1085,14 @@ exports[`DataEntry ballot interaction renders board table with large container s
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: 810px; width: 600px;"
+                        style="height: 1080px; width: 600px;"
                       >
                         <div
                           class="bp3-table-body-cells"
                         >
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1095,8 +1101,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1105,8 +1111,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1115,15 +1121,17 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
                             >
-                              Audited
+                              <span>
+                                Audited
+                              </span>
                               <a
-                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                class="bp3-button bp3-small"
                                 href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                               >
                                 Re-audit
@@ -1131,8 +1139,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1141,8 +1149,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1151,8 +1159,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1161,8 +1169,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1171,8 +1179,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1181,8 +1189,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1191,8 +1199,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1201,15 +1209,17 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
                             >
-                              Audited
+                              <span>
+                                Audited
+                              </span>
                               <a
-                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                class="bp3-button bp3-small"
                                 href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                               >
                                 Re-audit
@@ -1217,8 +1227,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1227,8 +1237,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1237,8 +1247,8 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -1247,15 +1257,17 @@ exports[`DataEntry ballot interaction renders board table with large container s
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
                             >
-                              Audited
+                              <span>
+                                Audited
+                              </span>
                               <a
-                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                class="bp3-button bp3-small"
                                 href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                               >
                                 Re-audit
@@ -1411,7 +1423,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 810px; width: 600px;"
+                  style="height: 1080px; width: 600px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -1468,10 +1480,10 @@ exports[`DataEntry ballot interaction renders board table with large container s
 exports[`DataEntry ballot interaction renders board table with no ballots 1`] = `
 <div>
   <div
-    class="sc-hMqMXs kivpAN"
+    class="sc-eNQAEJ hubqqz"
   >
     <div
-      class="sc-kEYyzF sc-kkGfuU cOCkRu"
+      class="sc-hMqMXs sc-kEYyzF jYziDw"
     >
       <div
         class="board-table-container"
@@ -1834,7 +1846,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: -30px; width: 320px;"
+                        style="height: -40px; width: 320px;"
                       >
                         <div
                           class="bp3-table-body-cells"
@@ -1883,10 +1895,10 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
 exports[`DataEntry member form renders if no audit board members set 1`] = `
 <div>
   <div
-    class="sc-hMqMXs kivpAN"
+    class="sc-eNQAEJ hubqqz"
   >
     <div
-      class="sc-kEYyzF sc-kkGfuU cOCkRu"
+      class="sc-hMqMXs sc-kEYyzF jYziDw"
     >
       <div>
         <h1
@@ -1904,27 +1916,27 @@ exports[`DataEntry member form renders if no audit board members set 1`] = `
         </p>
         <form>
           <div
-            class="sc-ifAKCX iKQdjg"
+            class="sc-bxivhb bpsXkZ"
           >
             <h3
-              class="bp3-heading sc-bZQynM vxpym"
+              class="bp3-heading sc-EHOje kACsXT"
             >
               Audit Board Member
             </h3>
             <label
-              class="sc-jTzLTM cytaZe"
+              class="sc-VigVT dhMzYU"
               for="[0]name"
             >
               Full Name
             </label>
             <input
-              class="sc-fjdhpX jxvwtz"
+              class="sc-jTzLTM ihKPmv"
               id="[0]name"
               name="[0]name"
               value=""
             />
             <label
-              class="sc-jTzLTM cytaZe"
+              class="sc-VigVT dhMzYU"
               for="[0]affiliation"
             >
               Party Affiliation 
@@ -2015,27 +2027,27 @@ exports[`DataEntry member form renders if no audit board members set 1`] = `
             </div>
           </div>
           <div
-            class="sc-ifAKCX iKQdjg"
+            class="sc-bxivhb bpsXkZ"
           >
             <h3
-              class="bp3-heading sc-bZQynM vxpym"
+              class="bp3-heading sc-EHOje kACsXT"
             >
               Audit Board Member
             </h3>
             <label
-              class="sc-jTzLTM cytaZe"
+              class="sc-VigVT dhMzYU"
               for="[1]name"
             >
               Full Name
             </label>
             <input
-              class="sc-fjdhpX jxvwtz"
+              class="sc-jTzLTM ihKPmv"
               id="[1]name"
               name="[1]name"
               value=""
             />
             <label
-              class="sc-jTzLTM cytaZe"
+              class="sc-VigVT dhMzYU"
               for="[1]affiliation"
             >
               Party Affiliation 
@@ -2126,7 +2138,7 @@ exports[`DataEntry member form renders if no audit board members set 1`] = `
             </div>
           </div>
           <button
-            class="bp3-button bp3-disabled bp3-intent-primary sc-htoDjs dESvso"
+            class="bp3-button bp3-disabled bp3-intent-primary sc-gzVnrw kdzzfK"
             disabled=""
             tabindex="-1"
             type="button"
@@ -2147,10 +2159,10 @@ exports[`DataEntry member form renders if no audit board members set 1`] = `
 exports[`DataEntry member form submits and goes to ballot table 1`] = `
 <div>
   <div
-    class="sc-hMqMXs kivpAN"
+    class="sc-eNQAEJ hubqqz"
   >
     <div
-      class="sc-kEYyzF sc-kkGfuU cOCkRu"
+      class="sc-hMqMXs sc-kEYyzF jYziDw"
     >
       <div
         class="board-table-container"
@@ -2344,7 +2356,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 810px; width: 600px;"
+                  style="height: 1080px; width: 600px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -2352,14 +2364,14 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: 810px; width: 600px;"
+                        style="height: 1080px; width: 600px;"
                       >
                         <div
                           class="bp3-table-body-cells"
                         >
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2368,8 +2380,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2378,8 +2390,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2388,15 +2400,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 0px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-0 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 0px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
                             >
-                              Audited
+                              <span>
+                                Audited
+                              </span>
                               <a
-                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                class="bp3-button bp3-small"
                                 href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313"
                               >
                                 Re-audit
@@ -2404,8 +2418,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-0 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2414,8 +2428,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-1 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2424,8 +2438,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-2 bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2434,8 +2448,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 30px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-1 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 40px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2444,8 +2458,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-0 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2454,8 +2468,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-1 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2464,8 +2478,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-2 bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2474,15 +2488,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 60px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-2 bp3-table-cell-col-3 bp3-table-last-in-row bp3-table-cell-ledger-even sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 80px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
                             >
-                              Audited
+                              <span>
+                                Audited
+                              </span>
                               <a
-                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                class="bp3-button bp3-small"
                                 href="/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789"
                               >
                                 Re-audit
@@ -2490,8 +2506,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 0px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-0 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 0px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2500,8 +2516,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 150px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-1 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 150px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2510,8 +2526,8 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 300px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-2 bp3-table-last-in-column bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 300px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
@@ -2520,15 +2536,17 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                             </div>
                           </div>
                           <div
-                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH iBSpJa"
-                            style="height: 30px; left: 450px; position: absolute; top: 90px; width: 150px;"
+                            class="bp3-table-cell bp3-table-truncated-cell bp3-table-cell-row-3 bp3-table-cell-col-3 bp3-table-last-in-column bp3-table-last-in-row bp3-table-cell-ledger-odd sc-bwzfXH gVsDMd"
+                            style="height: 40px; left: 450px; position: absolute; top: 120px; width: 150px;"
                           >
                             <div
                               class="bp3-table-truncated-text bp3-table-no-wrap-text"
                             >
-                              Audited
+                              <span>
+                                Audited
+                              </span>
                               <a
-                                class="bp3-button bp3-small sc-bxivhb bAonbG"
+                                class="bp3-button bp3-small"
                                 href="/election/1/audit-board/audit-board-1/batch/batch-id-2/ballot/313"
                               >
                                 Re-audit
@@ -2684,7 +2702,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 810px; width: 600px;"
+                  style="height: 1080px; width: 600px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"

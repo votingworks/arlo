@@ -10,6 +10,7 @@ import {
   IBallotInterpretation,
   IAuditBoardMember,
   IContest,
+  BallotStatus,
 } from '../../types'
 import { api } from '../utilities'
 import BoardTable from './BoardTable'
@@ -80,44 +81,24 @@ const saveMembers = async (
   }
 }
 
-const saveBallotInterpretations = async (
+const putBallotAudit = async (
   electionId: string,
   jurisdictionId: string,
-  batchId: string,
-  ballotPosition: number,
+  roundId: string,
+  auditBoardId: string,
+  ballotId: string,
+  status: BallotStatus,
   interpretations: IBallotInterpretation[]
 ) => {
   try {
     await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/batch/${batchId}/ballot/${ballotPosition}`,
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/ballots/${ballotId}`,
       {
-        method: 'POST',
-        body: JSON.stringify({
-          interpretations: interpretations.filter(
-            ({ interpretation }) => interpretation !== null
-          ),
-        }),
+        method: 'PUT',
+        body: JSON.stringify({ status, interpretations }),
         headers: {
           'Content-Type': 'application/json',
         },
-      }
-    )
-  } catch (err) {
-    toast.error(err.message)
-  }
-}
-
-const setBallotNotFound = async (
-  electionId: string,
-  jurisdictionId: string,
-  batchId: string,
-  ballotPosition: number
-) => {
-  try {
-    await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/batch/${batchId}/ballot/${ballotPosition}/set-not-found`,
-      {
-        method: 'POST',
       }
     )
   } catch (err) {
@@ -234,27 +215,24 @@ const DataEntry: React.FC<IProps> = ({
     window.scrollTo(0, 0)
   }
 
-  const submitBallot = (batchId: string, ballotPosition: number) => async (
-    interpretations?: IBallotInterpretation[]
+  const submitBallot = async (
+    ballotId: string,
+    status: BallotStatus,
+    interpretations: IBallotInterpretation[]
   ) => {
-    const { jurisdictionId, roundId, id } = auditBoard
-    if (interpretations) {
-      await saveBallotInterpretations(
-        electionId,
-        jurisdictionId,
-        batchId,
-        ballotPosition,
-        interpretations
-      )
-    } else {
-      await setBallotNotFound(
-        electionId,
-        jurisdictionId,
-        batchId,
-        ballotPosition
-      )
-    }
-    setBallots(await loadBallots(electionId, jurisdictionId, roundId, id))
+    const { jurisdictionId, roundId } = auditBoard
+    await putBallotAudit(
+      electionId,
+      jurisdictionId,
+      roundId,
+      auditBoardId,
+      ballotId,
+      status,
+      interpretations
+    )
+    setBallots(
+      await loadBallots(electionId, jurisdictionId, roundId, auditBoardId)
+    )
   }
 
   const submitSignoff = async (memberNames: string[]) => {
@@ -307,7 +285,7 @@ const DataEntry: React.FC<IProps> = ({
                 home={url}
                 previousBallot={previousBallot(batchId, Number(ballotPosition))}
                 nextBallot={nextBallot(batchId, Number(ballotPosition))}
-                submitBallot={submitBallot(batchId, Number(ballotPosition))}
+                submitBallot={submitBallot}
                 contests={contests}
                 batchId={batchId}
                 ballotPosition={Number(ballotPosition)}

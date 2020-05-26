@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { Table, Column, Cell } from '@blueprintjs/table'
+import { Table as BPTable, Column, Cell as BPCell } from '@blueprintjs/table'
 import { H1, AnchorButton } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
 import { IAuditBoard, BallotStatus } from '../../types'
@@ -20,16 +20,19 @@ const RightWrapper = styled.div`
   }
 `
 
-const PaddedCell = styled(Cell)`
-  padding: 3px 5px;
+const Cell = styled(BPCell)`
+  padding: 7px 10px;
+  font-size: inherit;
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
 `
 
-const GrowingTable = styled(Table)`
+const Table = styled(BPTable)`
   height: auto;
-`
-
-const ReauditLink = styled(Link)`
-  margin-left: 50px;
 `
 
 // const ActionWrapper = styled.div` // commented out until feature is used
@@ -63,38 +66,38 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
     const ballot = ballots[rI]!
     switch (KEYS[cI]) {
       case 'batch':
-        return <PaddedCell>{ballot.batch.name}</PaddedCell>
+        return <Cell>{ballot.batch.name}</Cell>
       case 'position':
-        return <PaddedCell>{ballot.position}</PaddedCell>
+        return <Cell>{ballot.position}</Cell>
       case 'status':
         return ballot.status !== BallotStatus.NOT_AUDITED ? (
-          <PaddedCell>
+          <Cell>
             <>
               {ballot.status === BallotStatus.AUDITED ? (
-                <>Audited</>
+                <span>Audited</span>
               ) : (
-                <>Not Found</>
+                <span>Not Found</span>
               )}
-              <ReauditLink
+              <Link
                 to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
                 className="bp3-button bp3-small"
               >
                 Re-audit
-              </ReauditLink>
+              </Link>
             </>
-          </PaddedCell>
+          </Cell>
         ) : (
-          <PaddedCell>Not Audited</PaddedCell>
+          <Cell>Not Audited</Cell>
         )
       case 'tabulator':
         return (
-          <PaddedCell>
+          <Cell>
             {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
-          </PaddedCell>
+          </Cell>
         )
       /* istanbul ignore next */
       default:
-        return <PaddedCell>?</PaddedCell>
+        return <Cell>?</Cell>
     }
   }
 
@@ -161,9 +164,9 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
           </>
         )}
       </ActionWrapper> */}
-      <GrowingTable
+      <Table
         numRows={ballots.length}
-        defaultRowHeight={30}
+        defaultRowHeight={40}
         columnWidths={cols}
         enableRowHeader={false}
       >
@@ -175,7 +178,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
         />
         <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="status" name="Status" cellRenderer={renderCell} />
-      </GrowingTable>
+      </Table>
     </div>
   )
 }

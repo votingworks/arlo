@@ -44,7 +44,11 @@ interface IProps {
   contests: IContest[]
   previousBallot: () => void
   nextBallot: () => void
-  submitBallot: (interpretations?: IBallotInterpretation[]) => void
+  submitBallot: (
+    ballotId: string,
+    status: BallotStatus,
+    interpretations: IBallotInterpretation[]
+  ) => void
 }
 
 const emptyInterpretation = (contest: IContest) => ({
@@ -75,8 +79,8 @@ const Ballot: React.FC<IProps> = ({
   )
   const ballot = ballots[ballotIx]
 
-  const setNotFound = async () => {
-    await submitBallot()
+  const submitNotFound = async () => {
+    await submitBallot(ballot.id, BallotStatus.NOT_FOUND, [])
     nextBallot()
   }
 
@@ -118,7 +122,7 @@ const Ballot: React.FC<IProps> = ({
             and move on to the next ballot.
           </p>
           <p>
-            <Button onClick={setNotFound} intent="danger">
+            <Button onClick={submitNotFound} intent="danger">
               Ballot {ballotPosition} not found - move to next ballot
             </Button>
           </p>
@@ -143,7 +147,15 @@ const Ballot: React.FC<IProps> = ({
           interpretations={interpretations}
           goAudit={() => setAuditing(true)}
           nextBallot={nextBallot}
-          submitBallot={submitBallot}
+          submitBallot={ballotInterpretations =>
+            submitBallot(
+              ballot.id,
+              BallotStatus.AUDITED,
+              ballotInterpretations.filter(
+                ({ interpretation }) => interpretation !== null
+              )
+            )
+          }
         />
       )}
     </Wrapper>
