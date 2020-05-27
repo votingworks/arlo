@@ -14,7 +14,13 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
-    "types": ["node", "@wdio/sync", "@wdio/jasmine-framework", "@types/jest"],
+    "types": [
+      "node",
+      "@wdio/sync",
+      "@wdio/jasmine-framework",
+      "@types/jest",
+      "@testing-library/jest-dom"
+    ],
     "noUnusedLocals": true
   },
   "include": ["src"]
