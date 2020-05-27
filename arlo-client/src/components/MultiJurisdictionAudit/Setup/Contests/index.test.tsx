@@ -319,7 +319,7 @@ describe('Audit Setup > Contests', () => {
     await waitFor(() => {
       // 30 ballots * 2 allowed votes / ballot = 60 allowed votes
       // 21 actual votes in choice #1 + 40 actual votes in choice #2 = 61 actual votes
-      expect(getByTestId(`${totalBallotInput.name}-error`).textContent).toBe(
+      expect(getByTestId(`${totalBallotInput.name}-error`)).toHaveTextContent(
         'Must be greater than or equal to the sum of votes for each candidate/choice'
       )
     })
