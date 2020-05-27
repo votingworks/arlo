@@ -1,4 +1,4 @@
-import { wait } from '@testing-library/react'
+import { waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import { api, testNumber, poll, checkAndToast } from './utilities'
 
@@ -68,8 +68,8 @@ describe('utilities.ts', () => {
       const error = () => {
         result = 'an error'
       }
-      poll(condition, callback, error)
-      await wait(() => {
+      poll(condition, callback, error, undefined, 1)
+      await waitFor(() => {
         expect(result).toBe('callback completed')
       })
     })
@@ -84,7 +84,7 @@ describe('utilities.ts', () => {
         result = 'an error'
       }
       poll(condition, callback, error, 50, 10)
-      await wait(() => {
+      await waitFor(() => {
         expect(result).toBe('an error')
       })
     })
@@ -105,7 +105,7 @@ describe('utilities.ts', () => {
         result = 'an error'
       }
       poll(condition, callback, error)
-      await wait(() => {
+      await waitFor(() => {
         expect(result).toBe('an error')
         expect(dateSpy).toBeCalledTimes(2)
       })

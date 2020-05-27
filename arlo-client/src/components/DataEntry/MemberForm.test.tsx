@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, fireEvent, wait } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import MemberForm from './MemberForm'
 
 describe('MemberForm', () => {
@@ -38,7 +38,7 @@ describe('MemberForm', () => {
 
     const nextButton = getByText('Next')
     fireEvent.click(nextButton, { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(submitMembersMock).toBeCalledTimes(1)
     })
   })

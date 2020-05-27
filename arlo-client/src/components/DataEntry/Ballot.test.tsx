@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, fireEvent, wait, waitForElement } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 import Ballot from './Ballot'
@@ -67,17 +67,17 @@ describe('Ballot', () => {
     )
 
     fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-    await wait(() =>
+    await waitFor(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
     })
-    await wait(() => {
+    await waitFor(() => {
       expect(container).toMatchSnapshot()
     })
     fireEvent.click(getByText('Edit'), { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText('Choice One')).toBeTruthy()
       expect(getByText('Review')).toBeTruthy()
     })
@@ -108,11 +108,13 @@ describe('Ballot', () => {
       fireEvent.click(getByLabelText(buttonLabel), {
         bubbles: true,
       })
-      await wait(() =>
+      await waitFor(() =>
         fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
       )
-      await wait(() => expect(getByText('Submit & Next Ballot')).toBeTruthy())
-      await wait(() => {
+      await waitFor(() =>
+        expect(getByText('Submit & Next Ballot')).toBeTruthy()
+      )
+      await waitFor(() => {
         expect(getByText(buttonLabel)).toBeTruthy()
         expect(container).toMatchSnapshot()
       })
@@ -142,10 +144,10 @@ describe('Ballot', () => {
     fireEvent.change(commentInput, { target: { value: 'a test comment' } })
 
     fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-    await wait(() =>
+    await waitFor(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
       expect(getByText('COMMENT: a test comment')).toBeTruthy()
       expect(container).toMatchSnapshot()
@@ -157,10 +159,10 @@ describe('Ballot', () => {
     fireEvent.change(commentInput, { target: { value: '' } })
 
     fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-    await wait(() =>
+    await waitFor(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
-    await wait(() => {
+    await waitFor(() => {
       expect(queryByText('COMMENT:')).toBeFalsy()
     })
   })
@@ -190,10 +192,10 @@ describe('Ballot', () => {
     fireEvent.click(getByText('Remove comment'), { bubbles: true })
 
     fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-    await wait(() =>
+    await waitFor(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
       expect(queryByText('COMMENT: a test comment')).toBeFalsy()
       expect(container).toMatchSnapshot()
@@ -203,7 +205,7 @@ describe('Ballot', () => {
   it('submits review and progresses to next ballot', async () => {
     const submitMock = jest.fn()
     const nextBallotMock = jest.fn()
-    const { container, getByText, getByTestId } = render(
+    const { findByText, findByTestId, getByTestId } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/audit-board/1"
@@ -221,18 +223,12 @@ describe('Ballot', () => {
 
     fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
 
-    const reviewButton = await waitForElement(
-      () => getByTestId('enabled-review'),
-      { container }
-    )
+    const reviewButton = await findByTestId('enabled-review')
     fireEvent.click(reviewButton, { bubbles: true })
-    const nextButton = await waitForElement(
-      () => getByText('Submit & Next Ballot'),
-      { container }
-    )
+    const nextButton = await findByText('Submit & Next Ballot')
     fireEvent.click(nextButton, { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(nextBallotMock).toBeCalled()
       expect(submitMock).toHaveBeenCalledTimes(1)
     })
@@ -257,19 +253,19 @@ describe('Ballot', () => {
     )
     fireEvent.click(getByText('Back'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(previousBallotMock).toBeCalledTimes(1)
     })
 
     fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-    await wait(() =>
+    await waitFor(() =>
       fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
     )
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
     })
     fireEvent.click(getByText('Back'), { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText('Review')).toBeTruthy()
     })
   })
@@ -291,7 +287,7 @@ describe('Ballot', () => {
       </Router>
     )
 
-    await wait(() => {
+    await waitFor(() => {
       expect(container).toMatchSnapshot()
     })
   })

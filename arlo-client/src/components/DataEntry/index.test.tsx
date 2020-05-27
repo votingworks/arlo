@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, wait, fireEvent } from '@testing-library/react'
+import { render, waitFor, fireEvent } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
 import { routerTestProps, asyncActRender } from '../testUtilities'
 import DataEntry from './index'
@@ -102,7 +102,7 @@ describe('DataEntry', () => {
       )
       fireEvent.click(getByText('Next'), { bubbles: true })
 
-      await wait(() => {
+      await waitFor(() => {
         expect(apiMock).toBeCalledTimes(1 + 4)
         expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
         expect(container).toMatchSnapshot()
@@ -125,7 +125,7 @@ describe('DataEntry', () => {
           <DataEntry {...routeProps} />
         </StaticRouter>
       )
-      await wait(() => {
+      await waitFor(() => {
         expect(apiMock).toBeCalledTimes(3)
         expect(container).toMatchSnapshot()
       })
@@ -137,7 +137,7 @@ describe('DataEntry', () => {
           <DataEntry {...routeProps} />
         </StaticRouter>
       )
-      await wait(() => {
+      await waitFor(() => {
         expect(apiMock).toBeCalledTimes(3)
         expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
         expect(getByText('Start Auditing').closest('a')).toBeTruthy()
@@ -158,7 +158,7 @@ describe('DataEntry', () => {
           <DataEntry {...routeProps} />
         </StaticRouter>
       )
-      await wait(() => {
+      await waitFor(() => {
         expect(apiMock).toBeCalledTimes(3)
         expect(container).toMatchSnapshot()
       })
@@ -181,7 +181,7 @@ describe('DataEntry', () => {
           <DataEntry {...ballotRouteProps} />
         </StaticRouter>
       )
-      await wait(() => {
+      await waitFor(() => {
         expect(apiMock).toBeCalledTimes(3)
         expect(getByText('Enter Ballot Information')).toBeTruthy()
         expect(container).toMatchSnapshot()
@@ -215,12 +215,12 @@ describe('DataEntry', () => {
           bubbles: true,
         }
       )
-      await wait(() => {
+      await waitFor(() => {
         expect(pushSpy).toBeCalledTimes(1)
       })
 
       fireEvent.click(getByText('Back'), { bubbles: true })
-      await wait(() => {
+      await waitFor(() => {
         expect(pushSpy).toBeCalledTimes(2)
       })
 
@@ -251,14 +251,14 @@ describe('DataEntry', () => {
       )
 
       fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-      await wait(() =>
+      await waitFor(() =>
         fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
       )
-      await wait(() => {
+      await waitFor(() => {
         fireEvent.click(getByText('Submit & Next Ballot'), { bubbles: true })
       })
 
-      await wait(() => {
+      await waitFor(() => {
         expect(apiMock).toBeCalledTimes(5)
         expect(history.location.pathname).toBe(
           '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'

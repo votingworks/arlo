@@ -1,5 +1,5 @@
 import React from 'react'
-import { waitForElement, wait } from '@testing-library/react'
+import { waitFor } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import SingleJurisdictionAudit from './index'
 import { statusStates, dummyBallots } from './_mocks'
@@ -47,7 +47,7 @@ describe('RiskLimitingAuditForm', () => {
     )
 
     expect(container).toMatchSnapshot()
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/
@@ -85,7 +85,7 @@ describe('RiskLimitingAuditForm', () => {
 
     expect(queryByTestId('form-two')).toBeNull()
     expect(container).toMatchSnapshot()
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/
@@ -98,19 +98,15 @@ describe('RiskLimitingAuditForm', () => {
 
   it('renders SelectBallotsToAudit when /audit/status returns contest data', async () => {
     apiMock.mockImplementation(async () => statusStates.sampleSizeOptions)
-    const { container, getByTestId } = await asyncActRender(
+    const { container, findByTestId } = await asyncActRender(
       <Router>
         <SingleJurisdictionAudit />
       </Router>
     )
 
-    const fillFormTwo = await waitForElement(() => getByTestId('form-two'), {
-      container,
-    })
-
-    expect(fillFormTwo).toBeTruthy()
+    await findByTestId('form-two')
     expect(container).toMatchSnapshot()
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/
@@ -123,20 +119,16 @@ describe('RiskLimitingAuditForm', () => {
 
   it('does not render CalculateRiskMeasurement when audit.jurisdictions has length but audit.rounds does not', async () => {
     apiMock.mockImplementation(async () => statusStates.jurisdictionsInitial)
-    const { container, getByTestId, queryByTestId } = await asyncActRender(
+    const { container, findByTestId, queryByTestId } = await asyncActRender(
       <Router>
         <SingleJurisdictionAudit />
       </Router>
     ) // this one will not have the first empty round
 
-    const fillFormTwo = await waitForElement(() => getByTestId('form-two'), {
-      container,
-    })
-
-    expect(fillFormTwo).toBeTruthy()
+    await findByTestId('form-two')
     expect(queryByTestId('form-three-1')).toBeNull()
     expect(container).toMatchSnapshot()
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/
@@ -151,19 +143,15 @@ describe('RiskLimitingAuditForm', () => {
     apiMock
       .mockImplementationOnce(async () => statusStates.ballotManifestProcessed)
       .mockImplementationOnce(async () => dummyBallots)
-    const { container, getByTestId } = await asyncActRender(
+    const { container, findByTestId } = await asyncActRender(
       <Router>
         <SingleJurisdictionAudit />
       </Router>
     ) // this one will not have the first empty round
 
-    const formThree = await waitForElement(() => getByTestId('form-three-1'), {
-      container,
-    })
-
-    expect(formThree).toBeTruthy()
+    await findByTestId('form-three-1')
     expect(container).toMatchSnapshot()
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(2)
       expect(apiMock.mock.calls[0][0]).toMatch(
         /\/election\/[^/]+\/audit\/status/

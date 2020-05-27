@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, wait } from '@testing-library/react'
+import { fireEvent, waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { regexpEscape, asyncActRender } from '../../../testUtilities'
@@ -167,7 +167,7 @@ describe('Audit Setup > Contests', () => {
         .length
     ).toBe(1)
     expect(getByText('Contest Name')).toBeTruthy()
-    await wait(() => {
+    await waitFor(() => {
       expect(queryByText('Contest 2')).not.toBeInTheDocument()
       expect(queryByText('Remove Contest 1')).not.toBeInTheDocument()
     })
@@ -193,7 +193,7 @@ describe('Audit Setup > Contests', () => {
 
     fireEvent.click(getByText('Remove choice 1'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByText(/Remove choice \d/i).length).toBe(0)
       expect(getAllByText(/Name of Candidate\/Choice \d/i).length).toBe(2)
       expect(getAllByText(/Votes for Candidate\/Choice \d/i).length).toBe(2)
@@ -222,7 +222,7 @@ describe('Audit Setup > Contests', () => {
     })
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(3)
       expect(apiMock.mock.calls[2][0]).toBe('/election/1/contest')
       expect(apiMock.mock.calls[2][1]).toMatchObject({
@@ -263,7 +263,7 @@ describe('Audit Setup > Contests', () => {
         }) as HTMLInputElement
         const errorID = `${input.name}-error`
         typeInto(input, value)
-        await wait(() => {
+        await waitFor(() => {
           expect({
             text: getByTestId(errorID).textContent,
             context: `${key}, ${value}: ${input.value}, ${error}`,
@@ -276,7 +276,7 @@ describe('Audit Setup > Contests', () => {
     )
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })
   })
@@ -316,7 +316,7 @@ describe('Audit Setup > Contests', () => {
     }) as HTMLInputElement
     typeInto(totalBallotInput, '30')
 
-    await wait(() => {
+    await waitFor(() => {
       // 30 ballots * 2 allowed votes / ballot = 60 allowed votes
       // 21 actual votes in choice #1 + 40 actual votes in choice #2 = 61 actual votes
       expect(getByTestId(`${totalBallotInput.name}-error`).textContent).toBe(
@@ -360,7 +360,7 @@ describe('Audit Setup > Contests', () => {
     }) as HTMLInputElement
     typeInto(totalBallotInput, '30')
 
-    await wait(() => {
+    await waitFor(() => {
       // 30 ballots * 2 allowed votes / ballot = 60 allowed votes
       // 20 actual votes in choice #1 + 40 actual votes in choice #2 = 60 actual votes
       expect(queryByTestId(`${totalBallotInput.name}-error`)).toBeNull()
@@ -379,7 +379,7 @@ describe('Audit Setup > Contests', () => {
         {...relativeStages('Target Contests')}
       />
     )
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(2)
       expect(toastSpy).toBeCalledTimes(1)
       expect(toastSpy).toHaveBeenCalledWith('Network error')
@@ -417,7 +417,7 @@ describe('Audit Setup > Contests', () => {
     })
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(3)
       expect(toastSpy).toHaveBeenCalledTimes(1)
       expect(toastSpy).toHaveBeenCalledWith('Network error')
@@ -459,7 +459,7 @@ describe('Audit Setup > Contests', () => {
 
     const submit = getAllByText('Save & Next')
     fireEvent.click(submit[submit.length - 1], { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(3)
       expect(toastSpy).toHaveBeenCalledTimes(0)
       if (apiMock.mock.calls[2][1]!.body) {
@@ -510,7 +510,7 @@ describe('Audit Setup > Contests', () => {
     fireEvent.click(dropDown, { bubbles: true })
     const jurisdictionOne = queryByLabelText('Jurisdiction One')
     const jurisdictionTwo = queryByLabelText('Jurisdiction Two')
-    await wait(() => {
+    await waitFor(() => {
       expect(jurisdictionOne).toBeTruthy()
       expect(jurisdictionTwo).toBeTruthy()
     })
@@ -521,7 +521,7 @@ describe('Audit Setup > Contests', () => {
     }
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(3)
       expect(apiMock.mock.calls[2][0]).toBe('/election/1/contest')
       expect(apiMock.mock.calls[2][1]).toMatchObject({

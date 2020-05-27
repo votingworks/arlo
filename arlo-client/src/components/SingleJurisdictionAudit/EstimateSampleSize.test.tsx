@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, fireEvent, wait } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import EstimateSampleSize, {
   TwoColumnSection,
@@ -355,22 +355,14 @@ describe('EstimateSampleSize', () => {
     )
 
     const auditToggleOffline = getByLabelText(
-      new RegExp(regexpEscape('Offline')),
-      {
-        selector: 'select',
-      }
+      new RegExp(regexpEscape('Offline'))
     )
     expect(auditToggleOffline).toBeInstanceOf(HTMLInputElement)
     if (auditToggleOffline instanceof HTMLInputElement) {
       fireEvent.click(auditToggleOffline, { bubbles: true })
     }
 
-    const auditToggleOnline = getByLabelText(
-      new RegExp(regexpEscape('Online')),
-      {
-        selector: 'select',
-      }
-    )
+    const auditToggleOnline = getByLabelText(new RegExp(regexpEscape('Online')))
     expect(auditToggleOnline).toBeInstanceOf(HTMLInputElement)
     if (auditToggleOnline instanceof HTMLInputElement) {
       fireEvent.click(auditToggleOnline, { bubbles: true })
@@ -406,7 +398,7 @@ describe('EstimateSampleSize', () => {
         .length
     ).toBe(1)
     expect(getByText('Contest Name')).toBeTruthy()
-    await wait(() => {
+    await waitFor(() => {
       expect(queryByText('Contest 2')).not.toBeInTheDocument()
       expect(queryByText('Remove Contest 1')).not.toBeInTheDocument()
     })
@@ -432,14 +424,14 @@ describe('EstimateSampleSize', () => {
 
     fireEvent.click(getByText('Remove choice 1'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByText(/Remove choice \d/i).length).toBe(0)
       expect(getAllByText(/Name of Candidate\/Choice \d/i).length).toBe(2)
       expect(getAllByText(/Votes for Candidate\/Choice \d/i).length).toBe(2)
     })
   })
 
-  it('is able to submit the form successfully', async () => {
+  it.only('is able to submit the form successfully', async () => {
     apiMock.mockImplementation(async () => ({
       message: 'success',
       ok: true,
@@ -464,28 +456,33 @@ describe('EstimateSampleSize', () => {
     )
 
     estimateSampleSizeMocks.inputs.forEach(inputData => {
-      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
-        selector: 'input',
-      }) as HTMLInputElement
+      const input = getByLabelText(
+        new RegExp(regexpEscape(inputData.key))
+      ) as HTMLInputElement
       typeInto(input, inputData.value)
       expect(input.value).toBe(inputData.value)
     })
 
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
-    await wait(() => {
-      const { body } = apiMock.mock.calls[0][1] as { body: string }
-      expect(setIsLoadingMock).toBeCalledTimes(2)
-      expect(apiMock).toBeCalledTimes(2)
-      expect(apiMock.mock.calls[0][0]).toMatch(
-        /\/election\/[^/]+\/audit\/basic/
-      )
-      expect(apiMock.mock.calls[1][0]).toMatch(
-        /\/election\/[^/]+\/audit\/freeze/
-      )
-      expect(JSON.parse(body)).toMatchObject(estimateSampleSizeMocks.post.body)
-      expect(getStatusMock).toBeCalledTimes(3)
-      expect(updateAuditMock).toBeCalledTimes(1)
-    })
+    await waitFor(
+      () => {
+        const { body } = apiMock.mock.calls[0][1] as { body: string }
+        expect(setIsLoadingMock).toBeCalledTimes(2)
+        expect(apiMock).toBeCalledTimes(2)
+        expect(apiMock.mock.calls[0][0]).toMatch(
+          /\/election\/[^/]+\/audit\/basic/
+        )
+        expect(apiMock.mock.calls[1][0]).toMatch(
+          /\/election\/[^/]+\/audit\/freeze/
+        )
+        expect(JSON.parse(body)).toMatchObject(
+          estimateSampleSizeMocks.post.body
+        )
+        expect(getStatusMock).toBeCalledTimes(3)
+        expect(updateAuditMock).toBeCalledTimes(1)
+      },
+      { timeout: 3000 }
+    )
   })
 
   it('handles background process timeout', async () => {
@@ -522,15 +519,15 @@ describe('EstimateSampleSize', () => {
     )
 
     estimateSampleSizeMocks.inputs.forEach(inputData => {
-      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
-        selector: 'input',
-      }) as HTMLInputElement
+      const input = getByLabelText(
+        new RegExp(regexpEscape(inputData.key))
+      ) as HTMLInputElement
       typeInto(input, inputData.value)
       expect(input.value).toBe(inputData.value)
     })
 
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalled()
       const { body } = apiMock.mock.calls[0][1] as { body: string }
       expect(apiMock.mock.calls[0][0]).toMatch(
@@ -562,12 +559,12 @@ describe('EstimateSampleSize', () => {
       estimateSampleSizeMocks.errorInputs,
       async inputData => {
         const { key, value, error } = inputData
-        const input = getByLabelText(new RegExp(regexpEscape(key)), {
-          selector: 'input',
-        }) as HTMLInputElement
+        const input = getByLabelText(
+          new RegExp(regexpEscape(key))
+        ) as HTMLInputElement
         const errorID = `${input.name}-error`
         typeInto(input, value)
-        await wait(() => {
+        await waitFor(() => {
           expect({
             text: getByTestId(errorID).textContent,
             context: `${key}, ${value}: ${input.value}, ${error}`,
@@ -580,7 +577,7 @@ describe('EstimateSampleSize', () => {
     )
 
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock.mock.calls.length).toBe(0) // doesn't post because of errors
     })
   })
@@ -623,7 +620,7 @@ describe('EstimateSampleSize', () => {
     }) as HTMLInputElement
     typeInto(totalBallotInput, '30')
 
-    await wait(() => {
+    await waitFor(() => {
       // 30 ballots * 2 allowed votes / ballot = 60 allowed votes
       // 21 actual votes in choice #1 + 40 actual votes in choice #2 = 61 actual votes
       expect(getByTestId(`${totalBallotInput.name}-error`).textContent).toBe(
@@ -670,7 +667,7 @@ describe('EstimateSampleSize', () => {
     }) as HTMLInputElement
     typeInto(totalBallotInput, '30')
 
-    await wait(() => {
+    await waitFor(() => {
       // 30 ballots * 2 allowed votes / ballot = 60 allowed votes
       // 20 actual votes in choice #1 + 40 actual votes in choice #2 = 60 actual votes
       expect(queryByTestId(`${totalBallotInput.name}-error`)).toBeNull()
@@ -696,16 +693,16 @@ describe('EstimateSampleSize', () => {
     )
 
     estimateSampleSizeMocks.inputs.forEach(inputData => {
-      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
-        selector: 'input',
-      }) as HTMLInputElement
+      const input = getByLabelText(
+        new RegExp(regexpEscape(inputData.key))
+      ) as HTMLInputElement
       fireEvent.change(input, { target: { value: inputData.value } })
       expect(input.value).toBe(inputData.value)
     })
 
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock.mock.calls.length).toBe(1)
       expect(toastSpy).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledWith('A test error')
@@ -729,16 +726,16 @@ describe('EstimateSampleSize', () => {
     )
 
     estimateSampleSizeMocks.inputs.forEach(inputData => {
-      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
-        selector: 'input',
-      }) as HTMLInputElement
+      const input = getByLabelText(
+        new RegExp(regexpEscape(inputData.key))
+      ) as HTMLInputElement
       fireEvent.change(input, { target: { value: inputData.value } })
       expect(input.value).toBe(inputData.value)
     })
 
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(checkAndToastMock).toBeCalledTimes(1)
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(0)
@@ -762,16 +759,16 @@ describe('EstimateSampleSize', () => {
     )
 
     estimateSampleSizeMocks.inputs.forEach(inputData => {
-      const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
-        selector: 'input',
-      }) as HTMLInputElement
+      const input = getByLabelText(
+        new RegExp(regexpEscape(inputData.key))
+      ) as HTMLInputElement
       fireEvent.change(input, { target: { value: inputData.value } })
       expect(input.value).toBe(inputData.value)
     })
 
     fireEvent.click(getByText('Estimate Sample Size'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(checkAndToastMock).toBeCalledTimes(2)
       expect(apiMock).toBeCalledTimes(2)
       expect(toastSpy).toBeCalledTimes(0)

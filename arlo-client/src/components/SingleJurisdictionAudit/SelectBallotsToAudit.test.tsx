@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, fireEvent, wait } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
@@ -41,7 +41,7 @@ async function inputAndSubmitForm() {
   const manifestInput = getByLabelText('Select manifest...')
   fireEvent.change(manifestInput, { target: { files: [] } })
   fireEvent.blur(manifestInput)
-  await wait(() => {
+  await waitFor(() => {
     expect(getByText('You must upload a manifest')).toBeTruthy()
   })
   fireEvent.change(manifestInput, { target: { files: [ballotManifest] } })
@@ -163,31 +163,31 @@ describe('SelectBallotsToAudit', () => {
       'Enter your own sample size (not recommended)'
     )
     fireEvent.click(customRadio, { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByTestId('customSampleSize[contest-1]').length).toBe(1)
     })
     fireEvent.click(getByText('BRAVO Average Sample Number: 269 samples'), {
       bubbles: true,
     })
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByTestId('customSampleSize[contest-1]').length).toBe(0)
     })
     fireEvent.click(customRadio, { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByTestId('customSampleSize[contest-1]').length).toBe(1)
     })
 
     const customInput = getByTestId('customSampleSize[contest-1]')
     fireEvent.change(customInput, { target: { value: '3000' } })
     fireEvent.blur(customInput)
-    await wait(() => {
+    await waitFor(() => {
       expect(
         getByText('Must be less than or equal to the total number of ballots')
       ).toBeTruthy()
     })
     fireEvent.change(customInput, { target: { value: '11' } })
     fireEvent.blur(customInput)
-    await wait(() => {
+    await waitFor(() => {
       expect(
         queryAllByText(
           'Must be less than or equal to the total number of ballots'
@@ -201,7 +201,7 @@ describe('SelectBallotsToAudit', () => {
     const submitButton = getByText('Select Ballots To Audit')
     fireEvent.click(submitButton, { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(3)
 
       expect(apiMock.mock.calls[0][0]).toMatch(
@@ -249,7 +249,7 @@ describe('SelectBallotsToAudit', () => {
     const submitButton = getByText('Select Ballots To Audit')
     fireEvent.click(submitButton, { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(3)
 
       expect(getStatusMock).toBeCalledTimes(2)
@@ -284,7 +284,7 @@ describe('SelectBallotsToAudit', () => {
     const submitButton = getByText('Select Ballots To Audit')
     fireEvent.click(submitButton, { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(3)
 
       expect(getStatusMock).toBeCalledTimes(2)
@@ -330,7 +330,7 @@ describe('SelectBallotsToAudit', () => {
     const submitButton = getByText('Select Ballots To Audit')
     fireEvent.click(submitButton, { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(3)
       expect(dateSpy).toBeCalled()
       expect(updateAuditMock).toBeCalledTimes(0)
@@ -394,7 +394,7 @@ describe('SelectBallotsToAudit', () => {
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(3)
 
       expect(apiMock.mock.calls[0]).toMatchObject([
@@ -455,7 +455,7 @@ describe('SelectBallotsToAudit', () => {
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(1)
 
@@ -472,7 +472,7 @@ describe('SelectBallotsToAudit', () => {
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(2)
       expect(toastSpy).toBeCalledTimes(1)
 
@@ -489,7 +489,7 @@ describe('SelectBallotsToAudit', () => {
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(3)
       expect(toastSpy).toBeCalledTimes(1)
 
@@ -504,7 +504,7 @@ describe('SelectBallotsToAudit', () => {
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(0)
       expect(checkAndToastMock).toBeCalledTimes(1)
@@ -522,7 +522,7 @@ describe('SelectBallotsToAudit', () => {
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(2)
       expect(toastSpy).toBeCalledTimes(0)
       expect(checkAndToastMock).toBeCalledTimes(2)
@@ -541,7 +541,7 @@ describe('SelectBallotsToAudit', () => {
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(3)
       expect(toastSpy).toBeCalledTimes(0)
       expect(checkAndToastMock).toBeCalledTimes(3)

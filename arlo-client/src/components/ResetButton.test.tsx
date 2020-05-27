@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, fireEvent, wait } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import ResetButton from './ResetButton'
 import * as utilities from './utilities'
@@ -77,7 +77,7 @@ describe('ResetButton', () => {
 
     fireEvent.click(getByText('Clear & Restart'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(checkAndToastMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(1)
@@ -97,7 +97,7 @@ describe('ResetButton', () => {
 
     fireEvent.click(getByText('Clear & Restart'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(checkAndToastMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(0)
@@ -121,7 +121,7 @@ describe('ResetButton', () => {
 
     fireEvent.click(getByText('Clear & Restart'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(checkAndToastMock).toBeCalledTimes(0)
       expect(updateAuditMock).toBeCalledTimes(0)

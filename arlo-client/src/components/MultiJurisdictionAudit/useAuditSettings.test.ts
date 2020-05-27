@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks'
-import { wait } from '@testing-library/react'
+import { waitFor } from '@testing-library/react'
 import * as utilities from '../utilities'
 import useAuditSettings from './useAuditSettings'
 import { auditSettings } from './_mocks'
@@ -44,7 +44,7 @@ describe('useAuditSettings', () => {
     } = renderHook(() => useAuditSettings('1'))
     updateSettings(auditSettings.all)
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(3)
       expect(checkAndToastMock).toHaveBeenCalledTimes(3)
       expect(settings).toStrictEqual(auditSettings.all)
@@ -60,7 +60,7 @@ describe('useAuditSettings', () => {
       },
     } = renderHook(() => useAuditSettings('1'))
 
-    await wait(() => {
+    await waitFor(() => {
       expect(checkAndToastMock).toHaveBeenCalledTimes(1)
       expect(settings).toStrictEqual(auditSettings.blank)
     })
@@ -79,7 +79,7 @@ describe('useAuditSettings', () => {
     const success = await result.current[1](auditSettings.all)
 
     expect(success).toBeFalsy()
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(3)
       expect(checkAndToastMock).toHaveBeenCalledTimes(3)
       expect(result.current[0]).toStrictEqual(auditSettings.blank)
