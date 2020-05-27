@@ -36,10 +36,28 @@ def test_sample_sizes_round_1(
     client: FlaskClient,
     election_id: str,
     contest_ids: str,  # pylint: disable=unused-argument
-    election_settings: None,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
 ):
     rv = client.get(f"/election/{election_id}/sample-sizes")
     sample_sizes = json.loads(rv.data)
+    assert sample_sizes == {
+        "sampleSizes": [
+            {"prob": 0.52, "size": 119, "type": "ASN"},
+            {"prob": 0.7, "size": 184, "type": None},
+            {"prob": 0.8, "size": 244, "type": None},
+            {"prob": 0.9, "size": 351, "type": None},
+        ]
+    }
+
+
+def test_sample_sizes_round_2(
+    client: FlaskClient,
+    election_id: str,
+    round_2_id: str,  # pylint: disable=unused-argument
+):
+    rv = client.get(f"/election/{election_id}/sample-sizes")
+    sample_sizes = json.loads(rv.data)
+    # Should still return round 1 sample sizes
     assert sample_sizes == {
         "sampleSizes": [
             {"prob": 0.52, "size": 119, "type": "ASN"},
