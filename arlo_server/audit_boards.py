@@ -22,6 +22,7 @@ from arlo_server.models import (
     RoundContestResult,
     BallotInterpretation,
     Affiliation,
+    ContestChoice,
 )
 from arlo_server.sample_sizes import cumulative_contest_results
 from util.jsonschema import validate, JSONDict
@@ -268,11 +269,13 @@ def calculate_risk_measurements(election: Election, round: Round):
 
 def count_audited_votes(election: Election, round: Round):
     vote_counts = dict(
-        BallotInterpretation.query.join(SampledBallot)
+        BallotInterpretation.query.filter_by(is_overvote=False)
+        .join(SampledBallot)
         .join(SampledBallotDraw)
         .filter_by(round_id=round.id)
-        .group_by(BallotInterpretation.contest_choice_id)
-        .values(BallotInterpretation.contest_choice_id, func.count())
+        .join(BallotInterpretation.selected_choices)
+        .group_by(ContestChoice.id)
+        .values(ContestChoice.id, func.count())
     )
 
     for contest in election.contests:

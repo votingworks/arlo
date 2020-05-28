@@ -79,7 +79,7 @@ def test_ja_ballots_round_1(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -105,7 +105,7 @@ def test_ja_ballots_round_1(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -208,7 +208,7 @@ def test_ab_list_ballot_round_1(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -233,7 +233,7 @@ def test_ab_list_ballot_round_1(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -319,7 +319,7 @@ def test_ab_audit_ballot_happy_path(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -330,7 +330,7 @@ def test_ab_audit_ballot_happy_path(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "BLANK",
-                    "choiceId": None,
+                    "choiceIds": [],
                     "comment": None,
                 }
             ],
@@ -341,7 +341,7 @@ def test_ab_audit_ballot_happy_path(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "CANT_AGREE",
-                    "choiceId": None,
+                    "choiceIds": [],
                     "comment": None,
                 }
             ],
@@ -354,13 +354,13 @@ def test_ab_audit_ballot_happy_path(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": None,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "CANT_AGREE",
-                    "choiceId": None,
+                    "choiceIds": [],
                     "comment": "weird scribble",
                 },
             ],
@@ -414,7 +414,7 @@ def test_ab_audit_ballot_invalid(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -435,11 +435,11 @@ def test_ab_audit_ballot_invalid(
             ]
         }
 
-    for missing_field in ["contestId", "interpretation", "choiceId", "comment"]:
+    for missing_field in ["contestId", "interpretation", "choiceIds", "comment"]:
         interpretation = {
             "contestId": contest_ids[0],
             "interpretation": "VOTE",
-            "choiceId": choice_id,
+            "choiceIds": [choice_id],
             "comment": "blah blah blah",
         }
         del interpretation[missing_field]
@@ -466,7 +466,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
@@ -480,7 +480,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "vote",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
@@ -494,12 +494,12 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": None,
+                        "choiceIds": [],
                         "comment": "blah blah blah",
                     }
                 ],
             },
-            f"Must include choiceId with interpretation VOTE for contest {contest_ids[0]}",
+            f"Must include choiceIds with interpretation VOTE for contest {contest_ids[0]}",
         ),
         (
             {
@@ -508,12 +508,12 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": "",
+                        "choiceIds": [""],
                         "comment": "blah blah blah",
                     }
                 ],
             },
-            f"Must include choiceId with interpretation VOTE for contest {contest_ids[0]}",
+            "Contest choices not found: ",
         ),
         (
             {
@@ -522,7 +522,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": "12345",
                         "interpretation": "VOTE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
@@ -536,12 +536,12 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": "12345",
+                        "choiceIds": ["12345"],
                         "comment": "blah blah blah",
                     }
                 ],
             },
-            "Contest choice not found: 12345",
+            "Contest choices not found: 12345",
         ),
         (
             {
@@ -550,7 +550,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "VOTE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
@@ -564,12 +564,12 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "BLANK",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
             },
-            f"Cannot include choiceId with interpretation BLANK for contest {contest_ids[0]}",
+            f"Cannot include choiceIds with interpretation BLANK for contest {contest_ids[0]}",
         ),
         (
             {
@@ -578,12 +578,12 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "CANT_AGREE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
             },
-            f"Cannot include choiceId with interpretation CANT_AGREE for contest {contest_ids[0]}",
+            f"Cannot include choiceIds with interpretation CANT_AGREE for contest {contest_ids[0]}",
         ),
         (
             {"status": "AUDITED", "interpretations": [],},
@@ -596,7 +596,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
@@ -610,7 +610,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
