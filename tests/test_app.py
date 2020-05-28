@@ -1162,7 +1162,7 @@ def test_ballot_set(client, election_id):
                 {
                     "contestId": contest_id,
                     "interpretation": "VOTE",
-                    "choiceId": candidate_id_1,
+                    "choiceIds": [candidate_id_1],
                     "comment": "This one had a hanging chad.",
                 }
             ]
@@ -1187,7 +1187,7 @@ def test_ballot_set(client, election_id):
         {
             "contestId": contest_id,
             "interpretation": "VOTE",
-            "choiceId": candidate_id_1,
+            "choiceIds": [candidate_id_1],
             "comment": "This one had a hanging chad.",
         }
     ]

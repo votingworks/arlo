@@ -1,6 +1,6 @@
 import uuid, json, re
 import datetime
-from typing import Any, List, Union, Tuple, Optional
+from typing import Any, List, Union, Tuple
 import pytest
 from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
@@ -25,6 +25,7 @@ from arlo_server.models import (
     BallotStatus,
     BallotInterpretation,
     Interpretation,
+    ContestChoice,
 )
 from arlo_server.audit_boards import end_round
 
@@ -156,7 +157,7 @@ def audit_ballot(
     ballot: SampledBallot,
     contest_id: str,
     interpretation: Interpretation,
-    choice_id: Optional[str] = None,
+    choices: List[ContestChoice] = None,
 ):
     if ballot.status != BallotStatus.AUDITED:
         db.session.add(
@@ -164,7 +165,8 @@ def audit_ballot(
                 ballot_id=ballot.id,
                 contest_id=contest_id,
                 interpretation=interpretation,
-                contest_choice_id=choice_id,
+                selected_choices=choices or [],
+                is_overvote=False,
             )
         )
         ballot.status = BallotStatus.AUDITED
@@ -183,14 +185,14 @@ def run_audit_round(round_id: str, contest_id: str, vote_ratio: float):
             ballot_draw.sampled_ballot,
             contest.id,
             Interpretation.VOTE,
-            contest.choices[0].id,
+            [contest.choices[0]],
         )
     for ballot_draw in round.sampled_ballot_draws[winner_votes:]:
         audit_ballot(
             ballot_draw.sampled_ballot,
             contest.id,
             Interpretation.VOTE,
-            contest.choices[1].id,
+            [contest.choices[1]],
         )
     end_round(round.election, round)
     db.session.commit()

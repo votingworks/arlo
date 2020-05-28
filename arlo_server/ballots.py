@@ -114,12 +114,17 @@ def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round_id:
 def deserialize_interpretation(
     ballot_id: str, interpretation: JSONDict
 ) -> BallotInterpretation:
+    choices = ContestChoice.query.filter(
+        ContestChoice.id.in_(interpretation["choiceIds"])
+    ).all()
+    contest = Contest.query.get(interpretation["contestId"])
     return BallotInterpretation(
         ballot_id=ballot_id,
         contest_id=interpretation["contestId"],
         interpretation=interpretation["interpretation"],
-        contest_choice_id=interpretation["choiceId"],
+        selected_choices=choices,
         comment=interpretation["comment"],
+        is_overvote=len(choices) > contest.votes_allowed,
     )
 
 
@@ -127,7 +132,7 @@ def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
     return {
         "contestId": interpretation.contest_id,
         "interpretation": interpretation.interpretation,
-        "choiceId": interpretation.contest_choice_id,
+        "choiceIds": [choice.id for choice in interpretation.selected_choices],
         "comment": interpretation.comment,
     }
 
@@ -205,11 +210,11 @@ BALLOT_INTERPRETATION_SCHEMA = {
             "type": "string",
             "enum": [interpretation.value for interpretation in Interpretation],
         },
-        "choiceId": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "choiceIds": {"type": "array", "items": {"type": "string"}},
         "comment": {"anyOf": [{"type": "string"}, {"type": "null"}]},
     },
     "additionalProperties": False,
-    "required": ["contestId", "interpretation", "choiceId", "comment"],
+    "required": ["contestId", "interpretation", "choiceIds", "comment"],
 }
 
 AUDIT_BALLOT_SCHEMA = {
@@ -229,21 +234,25 @@ def validate_interpretation(interpretation: JSONDict):
         raise BadRequest(f"Contest not found: {interpretation['contestId']}")
 
     if interpretation["interpretation"] == Interpretation.VOTE:
-        if not interpretation["choiceId"]:
+        if len(interpretation["choiceIds"]) == 0:
             raise BadRequest(
-                f"Must include choiceId with interpretation {Interpretation.VOTE} for contest {interpretation['contestId']}"
+                f"Must include choiceIds with interpretation {Interpretation.VOTE} for contest {interpretation['contestId']}"
             )
-        choice = ContestChoice.query.get(interpretation["choiceId"])
-        if not choice:
-            raise BadRequest(f"Contest choice not found: {interpretation['choiceId']}")
-        if choice.contest_id != interpretation["contestId"]:
-            raise BadRequest(
-                f"Contest choice {interpretation['choiceId']} is not associated with contest {interpretation['contestId']}"
-            )
+        choices = ContestChoice.query.filter(
+            ContestChoice.id.in_(interpretation["choiceIds"])
+        ).all()
+        missing_choices = set(interpretation["choiceIds"]) - set(c.id for c in choices)
+        if len(missing_choices) > 0:
+            raise BadRequest(f"Contest choices not found: {', '.join(missing_choices)}")
+        for choice in choices:
+            if choice.contest_id != interpretation["contestId"]:
+                raise BadRequest(
+                    f"Contest choice {choice.id} is not associated with contest {interpretation['contestId']}"
+                )
     else:
-        if interpretation["choiceId"]:
+        if len(interpretation["choiceIds"]) > 0:
             raise BadRequest(
-                f"Cannot include choiceId with interpretation {interpretation['interpretation']} for contest {interpretation['contestId']}"
+                f"Cannot include choiceIds with interpretation {interpretation['interpretation']} for contest {interpretation['contestId']}"
             )
 
 

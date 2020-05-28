@@ -357,15 +357,13 @@ class BallotInterpretation(BaseModel):
     ballot_id = db.Column(
         db.String(200),
         db.ForeignKey("sampled_ballot.id", ondelete="cascade"),
-        primary_key=True,
         nullable=False,
     )
     contest_id = db.Column(
-        db.String(200),
-        db.ForeignKey("contest.id", ondelete="cascade"),
-        primary_key=True,
-        nullable=False,
+        db.String(200), db.ForeignKey("contest.id", ondelete="cascade"), nullable=False
     )
+
+    __table_args__ = (db.PrimaryKeyConstraint("ballot_id", "contest_id"),)
 
     interpretation = db.Column(db.Enum(Interpretation), nullable=False)
     selected_choices = relationship(
@@ -376,7 +374,7 @@ class BallotInterpretation(BaseModel):
     # If the number of selected_choices is greater than Contest.votes_allowed,
     # then the voter overvoted. We cache a flag here so we don't have to
     # recompute this in different places.
-    is_overvote = db.Column(db.Boolean)
+    is_overvote = db.Column(db.Boolean, nullable=False)
 
 
 # Represents the choices selected on the ballot (as interpreted by an audit board).

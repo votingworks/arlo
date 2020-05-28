@@ -635,13 +635,9 @@ def set_up_audit_board(
         .all()
     )
     for draw in ballot_draws[:CHOICE_1_VOTES]:
-        audit_ballot(
-            draw.sampled_ballot, contest_id, Interpretation.VOTE, choices[0].id
-        )
+        audit_ballot(draw.sampled_ballot, contest_id, Interpretation.VOTE, [choices[0]])
     for draw in ballot_draws[CHOICE_1_VOTES : CHOICE_1_VOTES + CHOICE_2_VOTES]:
-        audit_ballot(
-            draw.sampled_ballot, contest_id, Interpretation.VOTE, choices[1].id
-        )
+        audit_ballot(draw.sampled_ballot, contest_id, Interpretation.VOTE, [choices[1]])
     for draw in ballot_draws[CHOICE_1_VOTES + CHOICE_2_VOTES :]:
         audit_ballot(draw.sampled_ballot, contest_id, Interpretation.BLANK)
     db.session.commit()
