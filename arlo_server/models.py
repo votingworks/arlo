@@ -348,6 +348,7 @@ class Interpretation(str, Enum):
     BLANK = "BLANK"
     CANT_AGREE = "CANT_AGREE"
     VOTE = "VOTE"
+    OVERVOTE = "OVERVOTE"
 
 
 # Represents how the audit board interpreted the vote for a specific contest
@@ -365,12 +366,36 @@ class BallotInterpretation(BaseModel):
     __table_args__ = (db.PrimaryKeyConstraint("ballot_id", "contest_id"),)
 
     interpretation = db.Column(db.Enum(Interpretation), nullable=False)
-    # If interpretation is VOTE, contest_choice_id holds the id for the choice
-    # that was voted for. Otherwise null.
-    contest_choice_id = db.Column(
-        db.String(200), db.ForeignKey("contest_choice.id", ondelete="cascade")
-    )
     comment = db.Column(db.Text)
+
+
+# If an ballot is interpretated as VOTE or OVERVOTE, this table stores the
+# choices that the audit board sees are selected on the ballot.
+ballot_interpretation_contest_choice = db.Table(
+    "ballot_interpretation_contest_choice",
+    db.Column(
+        "ballot_id",
+        db.String(200),
+        db.ForeignKey(
+            "ballot_interpretation.ballot_id", primary_key=True, ondelete="cascade"
+        ),
+        nullable=False,
+    ),
+    db.Column(
+        "contest_id",
+        db.String(200),
+        db.ForeignKey(
+            "ballot_interpretation.contest_id", primary_key=True, ondelete="cascade"
+        ),
+        nullable=False,
+    ),
+    db.Column(
+        "contest_choice_id",
+        db.String(200),
+        db.ForeignKey("contest_choice.id", primary_key=True, ondelete="cascade"),
+        nullable=False,
+    ),
+)
 
 
 class RoundContest(BaseModel):
