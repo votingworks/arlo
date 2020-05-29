@@ -66,10 +66,11 @@ def pretty_interpretations(
                 if interpretation.interpretation == Interpretation.VOTE
                 else interpretation.interpretation
             )
+            overvote = "OVERVOTE; " if interpretation.is_overvote else ""
             comment = (
                 f"; COMMENT: {interpretation.comment}" if interpretation.comment else ""
             )
-            columns.append(choices + comment)
+            columns.append(overvote + choices + comment)
         else:
             columns.append("")
     return columns
