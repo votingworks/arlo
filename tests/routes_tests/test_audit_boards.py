@@ -42,6 +42,7 @@ from arlo_server.models import (
 from arlo_server.auth import UserType
 from arlo_server.audit_boards import count_audited_votes
 from util.jsonschema import JSONDict
+from arlo_server.audit_boards import count_audited_votes
 
 
 def assert_ballots_got_assigned_correctly(
