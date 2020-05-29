@@ -1,4 +1,4 @@
-import json, random, uuid
+import json, random, uuid, itertools
 from typing import List, Tuple
 from datetime import datetime
 from collections import defaultdict
@@ -37,8 +37,10 @@ from arlo_server.models import (
     ContestChoice,
     Interpretation,
     SampledBallotDraw,
+    Election,
 )
 from arlo_server.auth import UserType
+from arlo_server.audit_boards import count_audited_votes
 from util.jsonschema import JSONDict
 
 
@@ -748,6 +750,92 @@ def test_audit_boards_sign_off_happy_path(
     for round_contest in round_contests:
         assert round_contest.end_p_value is not None
         assert round_contest.is_complete is not None
+
+
+def test_count_audited_votes(
+    election_id: str,
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    election = Election.query.get(election_id)
+    round = Round.query.get(round_1_id)
+
+    count_audited_votes(election, round)
+
+    for round_contest in round.round_contests:
+        for result in round_contest.results:
+            assert result.result == 0
+
+    db.session.rollback()
+
+    contest_id = contest_ids[1]
+    ballot_draws = (
+        SampledBallotDraw.query.join(SampledBallot)
+        .filter_by(audit_board_id=audit_board_round_1_ids[0])
+        .join(Batch)
+        .order_by(Batch.name, SampledBallot.ballot_position)
+        .all()
+    )
+    choices = (
+        ContestChoice.query.filter_by(contest_id=contest_id)
+        .order_by(ContestChoice.name)
+        .all()
+    )
+    choice_1_and_2_votes = 20
+    choice_2_and_3_votes = 20
+    overvotes = 10
+
+    # Make sure audit at least one ballot that was sampled multiple times
+    # to ensure our test is testing the difference between counting votes for
+    # ballots and ballot draws
+    draws_to_audit = ballot_draws[
+        : choice_1_and_2_votes + choice_2_and_3_votes + overvotes
+    ]
+    assert len({draw.sampled_ballot.id for draw in draws_to_audit}) < len(
+        draws_to_audit
+    )
+
+    ballot_draws = iter(ballot_draws)
+    for draw in itertools.islice(ballot_draws, choice_1_and_2_votes):
+        audit_ballot(
+            draw.sampled_ballot,
+            contest_id,
+            Interpretation.VOTE,
+            [choices[0], choices[1]],
+        )
+    for draw in itertools.islice(ballot_draws, choice_2_and_3_votes):
+        audit_ballot(
+            draw.sampled_ballot,
+            contest_id,
+            Interpretation.VOTE,
+            [choices[1], choices[2]],
+        )
+    # Overvotes shouldn't be counted in the totals
+    for draw in itertools.islice(ballot_draws, overvotes):
+        audit_ballot(
+            draw.sampled_ballot,
+            contest_id,
+            Interpretation.VOTE,
+            [choices[0], choices[1], choices[2]],
+            is_overvote=True,
+        )
+
+    count_audited_votes(election, round)
+
+    choice_1_result = RoundContestResult.query.filter_by(
+        round_id=round_1_id, contest_id=contest_id, contest_choice_id=choices[0].id
+    ).first()
+    choice_2_result = RoundContestResult.query.filter_by(
+        round_id=round_1_id, contest_id=contest_id, contest_choice_id=choices[1].id
+    ).first()
+    choice_3_result = RoundContestResult.query.filter_by(
+        round_id=round_1_id, contest_id=contest_id, contest_choice_id=choices[2].id
+    ).first()
+
+    assert choice_1_result.result == choice_1_and_2_votes
+    assert choice_2_result.result == choice_1_and_2_votes + choice_2_and_3_votes
+    assert choice_3_result.result == choice_2_and_3_votes
 
 
 def test_audit_boards_sign_off_missing_name(

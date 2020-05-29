@@ -158,6 +158,7 @@ def audit_ballot(
     contest_id: str,
     interpretation: Interpretation,
     choices: List[ContestChoice] = None,
+    is_overvote: bool = False,
 ):
     if ballot.status != BallotStatus.AUDITED:
         db.session.add(
@@ -166,7 +167,7 @@ def audit_ballot(
                 contest_id=contest_id,
                 interpretation=interpretation,
                 selected_choices=choices or [],
-                is_overvote=False,
+                is_overvote=is_overvote,
             )
         )
         ballot.status = BallotStatus.AUDITED
