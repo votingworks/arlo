@@ -5,7 +5,7 @@ import {
   // Router as RegularRouter,
   useParams,
 } from 'react-router-dom'
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, screen } from '@testing-library/react'
 import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from '.'
 import {
   auditSettings,
@@ -44,7 +44,7 @@ afterEach(() => {
 describe('StatusBox', () => {
   describe('AuditAdminStatusBox', () => {
     it('renders initial state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
@@ -54,12 +54,12 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('Audit setup is not complete.')).toBeTruthy()
-      expect(getByText('The audit has not started.')).toBeTruthy()
+      screen.getByText('Audit setup is not complete.')
+      screen.getByText('The audit has not started.')
     })
 
     it('renders partial upload state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
@@ -69,15 +69,13 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('Audit setup is not complete.')).toBeTruthy()
-      expect(getByText('The audit has not started.')).toBeTruthy()
-      expect(
-        getByText('1 of 2 jurisdictions have completed file uploads.')
-      ).toBeTruthy()
+      screen.getByText('Audit setup is not complete.')
+      screen.getByText('The audit has not started.')
+      screen.getByText('1 of 2 jurisdictions have completed file uploads.')
     })
 
     it('renders full uploads state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
@@ -87,15 +85,13 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('Audit setup is not complete.')).toBeTruthy()
-      expect(getByText('The audit has not started.')).toBeTruthy()
-      expect(
-        getByText('2 of 2 jurisdictions have completed file uploads.')
-      ).toBeTruthy()
+      screen.getByText('Audit setup is not complete.')
+      screen.getByText('The audit has not started.')
+      screen.getByText('2 of 2 jurisdictions have completed file uploads.')
     })
 
     it('renders finished setup state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
@@ -105,15 +101,13 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('Audit setup is complete.')).toBeTruthy()
-      expect(getByText('The audit has not started.')).toBeTruthy()
-      expect(
-        getByText('2 of 2 jurisdictions have completed file uploads.')
-      ).toBeTruthy()
+      screen.getByText('Audit setup is complete.')
+      screen.getByText('The audit has not started.')
+      screen.getByText('2 of 2 jurisdictions have completed file uploads.')
     })
 
     it('renders one of two jurisdictions done round one state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleIncomplete}
@@ -123,14 +117,12 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('Round 1 of the audit is in progress')).toBeTruthy()
-      expect(
-        getByText('1 of 2 jurisdictions have completed Round 1')
-      ).toBeTruthy()
+      screen.getByText('Round 1 of the audit is in progress')
+      screen.getByText('1 of 2 jurisdictions have completed Round 1')
     })
 
     it('renders round complete, need another round state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.needAnother}
@@ -140,11 +132,11 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(
-        getByText('Round 1 of the audit is complete - another round is needed')
-      ).toBeTruthy()
-      expect(getByText('When you are ready, start Round 2')).toBeTruthy()
-      expect(getByText('Start Round 2')).toBeTruthy()
+      screen.getByText(
+        'Round 1 of the audit is complete - another round is needed'
+      )
+      screen.getByText('When you are ready, start Round 2')
+      screen.getByText('Start Round 2')
     })
 
     it('creates the next round', () => {
@@ -152,7 +144,7 @@ describe('StatusBox', () => {
         message: 'success',
         ok: true,
       }))
-      const { getByText } = render(
+      render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.needAnother}
@@ -162,7 +154,9 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      fireEvent.click(getByText('Start Round 2'), { bubbles: true })
+      fireEvent.click(screen.getByRole('button', { name: 'Start Round 2' }), {
+        bubbles: true,
+      })
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock).toHaveBeenCalledWith('/election/1/round', {
         method: 'POST',
@@ -179,7 +173,7 @@ describe('StatusBox', () => {
       apiMock.mockImplementationOnce(() => {
         throw new Error('A test error')
       })
-      const { getByText } = render(
+      render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.needAnother}
@@ -189,7 +183,9 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      fireEvent.click(getByText('Start Round 2'), { bubbles: true })
+      fireEvent.click(screen.getByRole('button', { name: 'Start Round 2' }), {
+        bubbles: true,
+      })
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock).toHaveBeenCalledWith('/election/1/round', {
         method: 'POST',
@@ -205,7 +201,7 @@ describe('StatusBox', () => {
     })
 
     it('renders audit completion state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleComplete}
@@ -215,13 +211,13 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('Congratulations - the audit is complete!')).toBeTruthy()
-      expect(getByText('Download Audit Report')).toBeTruthy()
+      screen.getByText('Congratulations - the audit is complete!')
+      screen.getByText('Download Audit Report')
     })
 
     it('downloads audit report', () => {
       window.open = jest.fn()
-      const { getByText } = render(
+      render(
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleComplete}
@@ -231,7 +227,12 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      fireEvent.click(getByText('Download Audit Report'), { bubbles: true })
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Download Audit Report' }),
+        {
+          bubbles: true,
+        }
+      )
       expect(window.open).toHaveBeenCalledTimes(1)
       expect(window.open).toBeCalledWith(`/election/1/report`)
     })
@@ -239,7 +240,7 @@ describe('StatusBox', () => {
 
   describe('JurisdictionAdminStatusBox', () => {
     it('renders unuploaded ballot manifest initial state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <JurisdictionAdminStatusBox
             rounds={[]}
@@ -248,12 +249,12 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('The audit has not started.')).toBeTruthy()
-      expect(getByText('Ballot manifest not uploaded.')).toBeTruthy()
+      screen.getByText('The audit has not started.')
+      screen.getByText('Ballot manifest not uploaded.')
     })
 
     it('renders uploaded ballot manifest state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <JurisdictionAdminStatusBox
             rounds={[]}
@@ -265,15 +266,13 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('The audit has not started.')).toBeTruthy()
-      expect(getByText('Ballot manifest uploaded.')).toBeTruthy()
-      expect(
-        getByText('Waiting for Audit Administrator to launch audit.')
-      ).toBeTruthy()
+      screen.getByText('The audit has not started.')
+      screen.getByText('Ballot manifest uploaded.')
+      screen.getByText('Waiting for Audit Administrator to launch audit.')
     })
 
     it('renders 1st round in progress, has not set up audit boards state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <JurisdictionAdminStatusBox
             rounds={roundMocks.singleIncomplete}
@@ -285,12 +284,12 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('Round 1 of the audit is in progress.')).toBeTruthy()
-      expect(getByText('Audit boards not set up.')).toBeTruthy()
+      screen.getByText('Round 1 of the audit is in progress.')
+      screen.getByText('Audit boards not set up.')
     })
 
     it('renders 1st round in progress, audit boards set up, unfinished audited state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <JurisdictionAdminStatusBox
             rounds={roundMocks.singleIncomplete}
@@ -302,12 +301,12 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('Round 1 of the audit is in progress.')).toBeTruthy()
-      expect(getByText('0 of 1 audit boards complete.')).toBeTruthy()
+      screen.getByText('Round 1 of the audit is in progress.')
+      screen.getByText('0 of 1 audit boards complete.')
     })
 
     it('renders 1st round finished, incomplete audit state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <JurisdictionAdminStatusBox
             rounds={roundMocks.singleIncomplete}
@@ -319,15 +318,13 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('Round 1 of the audit is in progress.')).toBeTruthy()
-      expect(getByText('1 of 1 audit boards complete.')).toBeTruthy()
-      expect(
-        getByText('Waiting for all jurisdictions to complete Round 1.')
-      ).toBeTruthy()
+      screen.getByText('Round 1 of the audit is in progress.')
+      screen.getByText('1 of 1 audit boards complete.')
+      screen.getByText('Waiting for all jurisdictions to complete Round 1.')
     })
 
     it('renders completion in first round state', () => {
-      const { getByText } = render(
+      render(
         <Router>
           <JurisdictionAdminStatusBox
             rounds={roundMocks.singleComplete}
@@ -339,14 +336,14 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      expect(getByText('The audit is complete')).toBeTruthy()
-      expect(getByText('Download the audit report.')).toBeTruthy()
-      expect(getByText('Download Audit Report')).toBeTruthy()
+      screen.getByText('The audit is complete')
+      screen.getByText('Download the audit report.')
+      screen.getByText('Download Audit Report')
     })
 
     it('downloads audit report', () => {
       window.open = jest.fn()
-      const { getByText } = render(
+      render(
         <Router>
           <JurisdictionAdminStatusBox
             rounds={roundMocks.singleComplete}
@@ -358,7 +355,12 @@ describe('StatusBox', () => {
           />
         </Router>
       )
-      fireEvent.click(getByText('Download Audit Report'), { bubbles: true })
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Download Audit Report' }),
+        {
+          bubbles: true,
+        }
+      )
       expect(window.open).toHaveBeenCalledTimes(1)
       expect(window.open).toHaveBeenCalledWith(
         '/election/1/jurisdiction/1/report'
