@@ -125,10 +125,8 @@ describe('SelectBallotsToAudit', () => {
 
     // correct default should be selected
     expect(
-      getByLabelText('BRAVO Average Sample Number: 269 samples').hasAttribute(
-        'checked'
-      )
-    ).toBeTruthy()
+      getByLabelText('BRAVO Average Sample Number: 269 samples')
+    ).toBeChecked()
   })
 
   it('conditionally shows custom text input and submits', async () => {
@@ -357,8 +355,8 @@ describe('SelectBallotsToAudit', () => {
     expect(
       getByLabelText(
         '379 samples (80% chance of reaching risk limit and completing the audit in one round)'
-      ).hasAttribute('checked')
-    ).toBeTruthy()
+      )
+    ).toBeChecked()
   })
 
   it('changes number of audits', () => {

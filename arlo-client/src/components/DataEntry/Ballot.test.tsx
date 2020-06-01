@@ -45,7 +45,7 @@ describe('Ballot', () => {
     )
     const choiceOneButton = getByLabelText('Choice One')
     expect(choiceOneButton).toBeTruthy()
-    expect(choiceOneButton).toHaveProperty('checked', true)
+    expect(choiceOneButton).toBeChecked()
     expect(container).toMatchSnapshot()
   })
 

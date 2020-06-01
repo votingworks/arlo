@@ -140,10 +140,10 @@ describe('DataEntry', () => {
       await waitFor(() => {
         expect(apiMock).toBeCalledTimes(3)
         expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
-        expect(getByText('Start Auditing').closest('a')).toBeTruthy()
+        expect(getByText('Start Auditing').closest('a')).toBeEnabled()
         expect(
           getByText('Auditing Complete - Submit Results').closest('a')
-        ).toHaveAttribute('disabled')
+        ).toHaveAttribute('disabled') // eslint-disable-line jest-dom/prefer-enabled-disabled
         expect(container).toMatchSnapshot()
       })
     })

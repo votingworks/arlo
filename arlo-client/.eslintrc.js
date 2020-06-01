@@ -24,6 +24,8 @@ module.exports = {
     'plugin:jsx-a11y/recommended',
     'prettier/react', // Overrides some of the rules in 'airbnb' to have more relaxed formatting in react.
     'plugin:cypress/recommended',
+    'plugin:testing-library/react',
+    'plugin:jest-dom/recommended',
   ],
   globals: {
     browser: true,
@@ -49,6 +51,8 @@ module.exports = {
     'cypress',
     'jsx-a11y',
     'react-hooks',
+    'testing-library',
+    'jest-dom',
   ],
   settings: {
     react: {
@@ -93,5 +97,7 @@ module.exports = {
     'class-methods-use-this': 'off',
     'no-nested-ternary': 'off',
     'new-cap': 'off',
+    'testing-library/prefer-wait-for': 'error',
+    'testing-library/no-wait-for-empty-callback': 'error',
   },
 }

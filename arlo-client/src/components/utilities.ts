@@ -21,7 +21,7 @@ export const api = async <T>(
     const error =
       errors && errors.length ? errors[0] : { message: response.statusText }
     const errorData = { ...error, responseText, response }
-    console.error(responseText)
+    console.error(responseText) // eslint-disable-line no-console
     throw errorData
   }
   return response.json() as Promise<T>
