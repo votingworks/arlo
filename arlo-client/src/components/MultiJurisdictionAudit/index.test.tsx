@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { wait, fireEvent } from '@testing-library/react'
+import { waitFor, fireEvent } from '@testing-library/react'
 import {
   BrowserRouter as Router,
   Router as RegularRouter,
@@ -132,13 +132,13 @@ describe('AA setup flow', () => {
       </AuthDataProvider>
     )
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByText('Participants').length).toBe(2)
     })
 
     fireEvent.click(getByText('Audit Settings'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByText('Audit Settings').length).toBe(2)
     })
   })
@@ -152,22 +152,22 @@ describe('AA setup flow', () => {
       </AuthDataProvider>
     )
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByText('Participants').length).toBe(2)
     })
 
     fireEvent.click(getByText('Audit Settings'), { bubbles: true })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByText('Audit Settings').length).toBe(2)
     })
 
     fireEvent.click(getByText('Save & Next'))
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByText('Review & Launch').length).toBe(2)
     })
     fireEvent.click(getByText('Back'))
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByText('Audit Settings').length).toBe(2)
     })
   })
@@ -181,7 +181,7 @@ describe('AA setup flow', () => {
       </AuthDataProvider>
     )
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByText('Participants').length).toBe(2)
       expect(container).toMatchSnapshot()
     })
@@ -200,7 +200,7 @@ describe('AA setup flow', () => {
       </AuthDataProvider>
     )
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryAllByText('Jurisdictions').length).toBe(1)
       expect(container).toMatchSnapshot()
     })
@@ -219,7 +219,7 @@ describe('AA setup flow', () => {
         </RegularRouter>
       </AuthDataProvider>
     )
-    await wait(() => {
+    await waitFor(() => {
       expect(routeProps.history.location.pathname).toEqual(
         '/election/1/progress'
       )

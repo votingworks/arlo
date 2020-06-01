@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, wait, fireEvent } from '@testing-library/react'
+import { render, waitFor, fireEvent } from '@testing-library/react'
 import CreateAuditBoards from './CreateAuditBoards'
 
 test('names audit boards numerically', async () => {
@@ -16,7 +16,7 @@ test('names audit boards numerically', async () => {
   fireEvent.change(getByTestId('numAuditBoards'), { target: { value: '3' } })
   fireEvent.click(getByText('Save & Next'))
 
-  await wait(() => {
+  await waitFor(() => {
     expect(createAuditBoards).toHaveBeenCalledWith([
       { name: 'Audit Board #1' },
       { name: 'Audit Board #2' },
@@ -39,7 +39,7 @@ test('names audit boards such that the names sort sensibly', async () => {
   fireEvent.change(getByTestId('numAuditBoards'), { target: { value: '10' } })
   fireEvent.click(getByText('Save & Next'))
 
-  await wait(() => {
+  await waitFor(() => {
     expect(createAuditBoards).toHaveBeenCalledWith([
       { name: 'Audit Board #01' },
       { name: 'Audit Board #02' },

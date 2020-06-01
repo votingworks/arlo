@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, fireEvent, wait } from '@testing-library/react'
+import { render, fireEvent, waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import jsPDF from 'jspdf'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -148,7 +148,7 @@ describe('CalculateRiskMeasurement', () => {
       fireEvent.blur(choiceTwo)
       expect(choiceOne.value).toBe('-1')
       expect(choiceTwo.value).toBe('-1')
-      await wait(() => {
+      await waitFor(() => {
         expect(queryAllByText('Must be a positive number').length).toBe(2)
       })
 
@@ -158,7 +158,7 @@ describe('CalculateRiskMeasurement', () => {
       fireEvent.blur(choiceTwo)
       expect(choiceOne.value).toBe('0.5')
       expect(choiceTwo.value).toBe('0.5')
-      await wait(() => {
+      await waitFor(() => {
         expect(queryAllByText('Must be an integer').length).toBe(2)
       })
 
@@ -168,7 +168,7 @@ describe('CalculateRiskMeasurement', () => {
       fireEvent.blur(choiceTwo)
       expect(choiceOne.value).toBe('')
       expect(choiceTwo.value).toBe('')
-      await wait(() => {
+      await waitFor(() => {
         expect(queryAllByText('Must be a number').length).toBe(2)
       })
 
@@ -182,7 +182,7 @@ describe('CalculateRiskMeasurement', () => {
         bubbles: true,
       })
 
-      await wait(() => {
+      await waitFor(() => {
         expect(apiMock).toBeCalledTimes(1)
         expect(sharedSetIsLoadingMock).toBeCalledTimes(2)
         expect(sharedGetStatusMock).toBeCalledTimes(1)
@@ -230,7 +230,7 @@ describe('CalculateRiskMeasurement', () => {
       bubbles: true,
     })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(dateSpy).toBeCalled()
       expect(sharedToastSpy).toBeCalledTimes(1)
       expect(apiMock).toBeCalled()
@@ -271,7 +271,7 @@ describe('CalculateRiskMeasurement', () => {
       bubbles: true,
     })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(checkAndToastMock).toBeCalledTimes(1)
       expect(sharedToastSpy).toBeCalledTimes(0)
       expect(apiMock).toBeCalled()
@@ -288,7 +288,7 @@ describe('CalculateRiskMeasurement', () => {
       bubbles: true,
     })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(checkAndToastMock).toHaveBeenCalledTimes(3)
       expect(jspdfMock).toHaveBeenCalledTimes(0)
     })
@@ -311,7 +311,7 @@ describe('CalculateRiskMeasurement', () => {
       bubbles: true,
     })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(jspdfMock).toHaveBeenCalledTimes(1)
     })
@@ -339,7 +339,7 @@ describe('CalculateRiskMeasurement', () => {
       bubbles: true,
     })
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(jspdfMock).toHaveBeenCalledTimes(1)
     })
@@ -427,7 +427,7 @@ describe('CalculateRiskMeasurement', () => {
         bubbles: true,
       })
 
-      await wait(() => {
+      await waitFor(() => {
         expect(apiMock).toBeCalledTimes(1)
         expect(sharedSetIsLoadingMock).toBeCalledTimes(1)
         expect(sharedUpdateAuditMock).toBeCalledTimes(0)
@@ -457,7 +457,7 @@ describe('CalculateRiskMeasurement', () => {
       }
     )
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(jspdfMock).toHaveBeenCalledTimes(1)
     })

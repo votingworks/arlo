@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-hooks'
-import { wait } from '@testing-library/react'
+import { waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import * as utilities from '../utilities'
 import useSetupMenuItems from './useSetupMenuItems/index'
@@ -105,7 +105,7 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await wait(() =>
+    await waitFor(() =>
       expect(result.current[0].every(i => i.state === 'locked')).toBeTruthy()
     )
   })
@@ -130,7 +130,7 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await wait(() => {
+    await waitFor(() => {
       expect(result.current[0][1].state === 'locked').toBeTruthy()
       expect(result.current[0][2].state === 'locked').toBeTruthy()
     })
@@ -155,7 +155,7 @@ describe('useSetupMenuItems', () => {
       useSetupMenuItems('Participants', jest.fn(), '1')
     )
     act(() => result.current[1]())
-    await wait(() => {
+    await waitFor(() => {
       expect(result.current[0][1].state === 'locked').toBeTruthy()
       expect(result.current[0][2].state === 'locked').toBeTruthy()
     })
@@ -181,7 +181,7 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await wait(() => {
+    await waitFor(() => {
       expect(result.current[0][1].state === 'processing').toBeTruthy()
       expect(result.current[0][2].state === 'processing').toBeTruthy()
     })
@@ -222,7 +222,7 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await wait(() => {
+    await waitFor(() => {
       expect(result.current[0][1].state).toBe('live')
       expect(result.current[0][2].state).toBe('live')
     })
@@ -247,7 +247,7 @@ describe('useSetupMenuItems', () => {
       useSetupMenuItems('Participants', jest.fn(), '1')
     )
     act(() => result.current[1]())
-    await wait(() => {
+    await waitFor(() => {
       expect(result.current[0][1].state === 'live').toBeTruthy()
       expect(result.current[0][2].state === 'live').toBeTruthy()
     })
@@ -272,7 +272,7 @@ describe('useSetupMenuItems', () => {
       useSetupMenuItems('Participants', jest.fn(), '1')
     )
     act(() => result.current[1]())
-    await wait(() => {
+    await waitFor(() => {
       expect(result.current[0][1].state === 'processing').toBeTruthy()
       expect(result.current[0][2].state === 'processing').toBeTruthy()
     })
@@ -309,7 +309,7 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(3)
       expect(dateSpy).toHaveBeenCalled()
       expect(toastSpy).toHaveBeenCalledTimes(1)

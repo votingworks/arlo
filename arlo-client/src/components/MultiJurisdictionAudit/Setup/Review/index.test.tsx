@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, wait } from '@testing-library/react'
+import { fireEvent, waitFor } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
@@ -206,7 +206,7 @@ describe('Audit Setup > Review & Launch', () => {
     await findByText('Are you sure you want to launch the audit?')
     const confirmLaunchButton = getAllByText('Launch Audit')[1]
     fireEvent.click(confirmLaunchButton, { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(5)
       expect(apiMock.mock.calls[4][1]).toMatchObject({
         body: JSON.stringify({
@@ -243,7 +243,7 @@ describe('Audit Setup > Review & Launch', () => {
     await findByText('Are you sure you want to launch the audit?')
     const confirmLaunchButton = getAllByText('Launch Audit')[1]
     fireEvent.click(confirmLaunchButton, { bubbles: true })
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(5)
       expect(apiMock.mock.calls[4][1]).toMatchObject({
         body: JSON.stringify({

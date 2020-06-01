@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, wait } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import Header from './Header'
 import * as utilities from './utilities'
@@ -59,7 +59,7 @@ describe('Header', () => {
     )
 
     const loginButton = queryByText('Log out')
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock).toHaveBeenCalledWith('/auth/me')
       expect(loginButton).toBeTruthy()
@@ -77,7 +77,7 @@ describe('Header', () => {
     )
 
     const loginButton = queryByText('Log out')
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock).toHaveBeenCalledWith('/auth/me')
       expect(loginButton).toBeFalsy()
@@ -96,7 +96,7 @@ describe('Header', () => {
     )
 
     const loginButton = queryByText('Log out')
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock).toHaveBeenCalledWith('/auth/me')
       expect(loginButton).toBeFalsy()
@@ -119,7 +119,7 @@ describe('Header', () => {
         </AuthDataProvider>
       </Router>
     )
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText('Audit Setup')).toBeTruthy()
       expect(getByText('Audit Progress')).toBeTruthy()
       expect(getByText('View Audits')).toBeTruthy()

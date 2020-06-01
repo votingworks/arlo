@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, wait } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
 import BoardTable from './BoardTable'
 import { doneDummyBallots } from './_mocks'
@@ -15,7 +15,7 @@ describe('BoardTable', () => {
         />
       </StaticRouter>
     )
-    await wait(() => {
+    await waitFor(() => {
       expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
 
       const notFound = getByText('Not Found')

@@ -1,9 +1,9 @@
 import React from 'react'
-import { fireEvent, wait } from '@testing-library/react'
+import { fireEvent, waitFor } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import relativeStages from '../_mocks'
 import Settings from './index'
-import { asyncActRender, regexpEscape } from '../../../testUtilities'
+import { asyncActRender } from '../../../testUtilities'
 import useAuditSettings from '../../useAuditSettings'
 
 jest.mock('react-router-dom', () => ({
@@ -42,12 +42,7 @@ const fillAndSubmit = async () => {
     target: { value: 'Election Name' },
   })
 
-  const auditToggleOffline = getByLabelText(
-    new RegExp(regexpEscape('Offline')),
-    {
-      selector: 'select',
-    }
-  )
+  const auditToggleOffline = getByLabelText('Offline')
   expect(auditToggleOffline).toBeInstanceOf(HTMLInputElement)
   if (auditToggleOffline instanceof HTMLInputElement) {
     fireEvent.click(auditToggleOffline, { bubbles: true })
@@ -84,7 +79,7 @@ describe('Setup > Settings', () => {
 
     await fillAndSubmit()
 
-    await wait(() => {
+    await waitFor(() => {
       expect(nextStage.activate).toHaveBeenCalledTimes(0)
     })
   })

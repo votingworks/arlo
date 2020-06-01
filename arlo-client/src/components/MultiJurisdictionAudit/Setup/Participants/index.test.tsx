@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, wait } from '@testing-library/react'
+import { fireEvent, waitFor } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
@@ -69,11 +69,15 @@ const fillAndSubmit = async () => {
   const csvInput = getByLabelText('Select a CSV...')
   fireEvent.change(csvInput, { target: { files: [] } })
   fireEvent.blur(csvInput)
-  await wait(() => expect(queryByText('You must upload a file')).toBeTruthy())
+  await waitFor(() =>
+    expect(queryByText('You must upload a file')).toBeTruthy()
+  )
   fireEvent.change(csvInput, { target: { files: [jurisdictionFile] } })
-  await wait(() => expect(queryByText('You must upload a file')).toBeFalsy())
-  await wait(() => expect(queryByLabelText('Select a CSV...')).toBeFalsy())
-  await wait(() => expect(queryByLabelText('jurisdictions.csv')).toBeTruthy())
+  await waitFor(() => expect(queryByText('You must upload a file')).toBeFalsy())
+  await waitFor(() => expect(queryByLabelText('Select a CSV...')).toBeFalsy())
+  await waitFor(() =>
+    expect(queryByLabelText('jurisdictions.csv')).toBeTruthy()
+  )
 
   fireEvent.click(getByText('Save & Next'), { bubbles: true })
 }
@@ -105,7 +109,7 @@ describe('Audit Setup > Participants', () => {
         <Participants locked={false} nextStage={nextStage} />
       </Router>
     )
-    await wait(() => {
+    await waitFor(() => {
       expect(container).toMatchSnapshot()
     })
   })
@@ -115,7 +119,7 @@ describe('Audit Setup > Participants', () => {
       .mockResolvedValueOnce({ file: null, processing: null })
       .mockResolvedValue({ status: 'ok' })
     await fillAndSubmit()
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(3)
       expect(apiMock).toHaveBeenNthCalledWith(
         2,
@@ -133,7 +137,7 @@ describe('Audit Setup > Participants', () => {
 
     await fillAndSubmit()
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(2)
       expect(toastSpy).toBeCalledTimes(1)
       expect(nextStage.activate).toHaveBeenCalledTimes(0)
@@ -154,7 +158,7 @@ describe('Audit Setup > Participants', () => {
 
     await fillAndSubmit()
 
-    await wait(() => {
+    await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
       expect(toastSpy).toBeCalledTimes(0)
       expect(checkAndToastMock).toBeCalledTimes(0)
