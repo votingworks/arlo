@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "types": [
+      "node",
+      "@wdio/sync",
+      "@wdio/jasmine-framework",
+      "@types/jest",
+      "@testing-library/jest-dom"
+    ]
+  }
+}
