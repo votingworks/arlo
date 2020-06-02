@@ -13,6 +13,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "types": [
+      "node",
+      "@wdio/sync",
+      "@wdio/jasmine-framework",
+      "@types/jest",
+      "@testing-library/jest-dom"
+    ],
     "jsx": "preserve"
   },
   "include": ["src"],
