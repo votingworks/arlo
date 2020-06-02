@@ -1,10 +1,6 @@
 import React from 'react'
 import { toast } from 'react-toastify'
-import {
-  BrowserRouter as Router,
-  // Router as RegularRouter,
-  useParams,
-} from 'react-router-dom'
+import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { render, fireEvent, screen } from '@testing-library/react'
 import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from '.'
 import {
@@ -140,10 +136,7 @@ describe('StatusBox', () => {
     })
 
     it('creates the next round', () => {
-      apiMock.mockImplementation(async () => ({
-        message: 'success',
-        ok: true,
-      }))
+      apiMock.mockImplementation(async () => ({ status: 'ok' }))
       render(
         <Router>
           <AuditAdminStatusBox
