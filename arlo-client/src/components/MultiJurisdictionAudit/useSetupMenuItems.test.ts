@@ -7,7 +7,8 @@ import {
   IJurisdictionsFileResponse,
   FileProcessingStatus,
 } from './useSetupMenuItems/getJurisdictionFileStatus'
-import { IRound } from '../../types'
+import { IRound } from './useRoundsJurisdictionAdmin'
+import { roundMocks } from './_mocks'
 
 jest.unmock('./useSetupMenuItems/index')
 
@@ -36,7 +37,10 @@ const generateApiMock = (
 }
 
 apiMock.mockImplementation(
-  generateApiMock({ rounds: [] }, { file: null, processing: null })
+  generateApiMock(
+    { rounds: roundMocks.empty },
+    { file: null, processing: null }
+  )
 )
 checkAndToastMock.mockReturnValue(false)
 
@@ -71,31 +75,7 @@ describe('useSetupMenuItems', () => {
     apiMock.mockImplementation(
       generateApiMock(
         {
-          rounds: [
-            // content doesn't matter, just that it has a non-zero length and matches the type
-            {
-              contests: [
-                {
-                  endMeasurements: {
-                    isComplete: null,
-                    pvalue: null,
-                  },
-                  id: 'contest-1',
-                  results: {},
-                  sampleSize: 379,
-                  sampleSizeOptions: [
-                    { size: 269, type: 'ASN', prob: null },
-                    { size: 379, prob: 0.8, type: null },
-                    { size: 78, prob: null, type: null },
-                  ],
-                },
-              ],
-              endedAt: null,
-              isAuditComplete: false,
-              startedAt: '2019-07-18T16:34:07.000Z',
-              id: 'round-1',
-            },
-          ],
+          rounds: roundMocks.singleIncomplete,
         },
         { file: null, processing: null }
       )
@@ -113,7 +93,7 @@ describe('useSetupMenuItems', () => {
   it('handles ERRORED response from /jurisdiction/file api', async () => {
     apiMock.mockImplementation(
       generateApiMock(
-        { rounds: [] },
+        { rounds: roundMocks.empty },
         {
           file: null,
           processing: {
@@ -139,7 +119,7 @@ describe('useSetupMenuItems', () => {
   it('handles NULL response from /jurisdiction/file api', async () => {
     apiMock.mockImplementation(
       generateApiMock(
-        { rounds: [] },
+        { rounds: roundMocks.empty },
         {
           file: null,
           processing: {
@@ -164,7 +144,7 @@ describe('useSetupMenuItems', () => {
   it('handles PROCESSING response from /jurisdiction/file api', async () => {
     apiMock.mockImplementation(
       generateApiMock(
-        { rounds: [] },
+        { rounds: roundMocks.empty },
         {
           file: null,
           processing: {
@@ -191,7 +171,7 @@ describe('useSetupMenuItems', () => {
     apiMock
       .mockImplementationOnce(
         generateApiMock(
-          { rounds: [] },
+          { rounds: roundMocks.empty },
           {
             file: null,
             processing: {
@@ -205,7 +185,7 @@ describe('useSetupMenuItems', () => {
       )
       .mockImplementation(
         generateApiMock(
-          { rounds: [] },
+          { rounds: roundMocks.empty },
           {
             file: null,
             processing: {
@@ -231,7 +211,7 @@ describe('useSetupMenuItems', () => {
   it('handles PROCESSED response from /jurisdiction/file api', async () => {
     apiMock.mockImplementation(
       generateApiMock(
-        { rounds: [] },
+        { rounds: roundMocks.empty },
         {
           file: null,
           processing: {
@@ -256,7 +236,7 @@ describe('useSetupMenuItems', () => {
   it('handles READY_TO_PROCESS response from /jurisdiction/file api', async () => {
     apiMock.mockImplementation(
       generateApiMock(
-        { rounds: [] },
+        { rounds: roundMocks.empty },
         {
           file: null,
           processing: {
@@ -292,7 +272,7 @@ describe('useSetupMenuItems', () => {
       .mockImplementation(() => dateIncrementor.next().value)
     apiMock.mockImplementation(
       generateApiMock(
-        { rounds: [] },
+        { rounds: roundMocks.empty },
         {
           file: null,
           processing: {
