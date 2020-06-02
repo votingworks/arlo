@@ -41,21 +41,8 @@ test-client:
 	yarn --cwd arlo-client lint
 	yarn --cwd arlo-client test
 
-# To run tests matching a search string: TEST=<search string> make test-server
-# To run specific test files: FILE=<file path> make test-server
-# To pass in additional flags to pytest: FLAGS=<extra flags> make test-server
 test-server:
-	FLASK_ENV=test pipenv run pytest ${FILE} \
-		-k '${TEST}' --ignore=arlo-client -vv ${FLAGS}
+	pipenv run pytest
 
 test-server-coverage:
-	FLAGS='--cov=. ${FLAGS}' make test-server
-
-test-math:
-	FILE=tests/audit_math_tests make test-server
-
-test-utils:
-	FILE=tests/util_tests make test-server
-
-test-routes:
-	FILE=tests/routes_tests make test-server
+	pipenv run pytest --cov=.
