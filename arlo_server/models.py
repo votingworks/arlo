@@ -241,8 +241,6 @@ contest_jurisdiction = db.Table(
 )
 
 
-# TODO we should use this enum in the AuditBoard schema, but that would require
-# a data model change and db migration
 class Affiliation(str, Enum):
     DEMOCRAT = "DEM"
     REPUBLICAN = "REP"
@@ -262,9 +260,9 @@ class AuditBoard(BaseModel):
 
     name = db.Column(db.String(200))
     member_1 = db.Column(db.String(200))
-    member_1_affiliation = db.Column(db.String(200))
+    member_1_affiliation = db.Column(db.Enum(Affiliation))
     member_2 = db.Column(db.String(200))
-    member_2_affiliation = db.Column(db.String(200))
+    member_2_affiliation = db.Column(db.Enum(Affiliation))
     passphrase = db.Column(db.String(1000), unique=True)
     signed_off_at = db.Column(db.DateTime)
 

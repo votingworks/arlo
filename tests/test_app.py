@@ -75,7 +75,7 @@ def setup_audit_board(client, election_id, jurisdiction_id, audit_board_id):
             "name": "Audit Board #1",
             "members": [
                 {"name": "Joe Schmo", "affiliation": "REP"},
-                {"name": "Jane Plain", "affiliation": ""},
+                {"name": "Jane Plain", "affiliation": None},
             ],
         },
     )
@@ -1246,8 +1246,8 @@ def test_audit_board(client, election_id):
         {
             "name": "Awesome Audit Board",
             "members": [
-                {"name": "Darth Vader", "affiliation": "EMP"},
-                {"name": "Leia Organa", "affiliation": "REB"},
+                {"name": "Darth Vader", "affiliation": "REP"},
+                {"name": "Leia Organa", "affiliation": "DEM"},
             ],
         },
     )
@@ -1262,8 +1262,8 @@ def test_audit_board(client, election_id):
     assert response["id"] == audit_board_id_1
     assert response["name"] == "Awesome Audit Board"
     assert response["members"] == [
-        {"name": "Darth Vader", "affiliation": "EMP"},
-        {"name": "Leia Organa", "affiliation": "REB"},
+        {"name": "Darth Vader", "affiliation": "REP"},
+        {"name": "Leia Organa", "affiliation": "DEM"},
     ]
 
 
