@@ -35,7 +35,16 @@ const MemberForm: React.FC<IProps> = ({
             affiliation: '',
           },
         ]}
-        onSubmit={submitMembers}
+        onSubmit={members =>
+          submitMembers(
+            members
+              .filter(({ name }) => name)
+              .map(({ name, affiliation }) => ({
+                name,
+                affiliation: affiliation || null,
+              }))
+          )
+        }
         render={({
           setFieldValue,
           values,

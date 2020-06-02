@@ -13,6 +13,7 @@ from arlo_server.models import (
     Interpretation,
     Contest,
     RoundContest,
+    Affiliation,
 )
 from arlo_server.auth import with_election_access, with_jurisdiction_access
 from util.csv_download import csv_response, election_timestamp_name
@@ -20,13 +21,13 @@ from util.isoformat import isoformat
 from util.group_by import group_by
 
 
-def pretty_affiliation(affiliation: str) -> str:
+def pretty_affiliation(affiliation: Affiliation) -> str:
     mapping = {
-        "DEM": "Democrat",
-        "REP": "Republican",
-        "LIB": "Libertarian",
-        "IND": "Independent",
-        "OTH": "Other",
+        Affiliation.DEMOCRAT: "Democrat",
+        Affiliation.REPUBLICAN: "Republican",
+        Affiliation.LIBERTARIAN: "Libertarian",
+        Affiliation.INDEPENDENT: "Independent",
+        Affiliation.OTHER: "Other",
     }
     return mapping.get(affiliation, "")
 

@@ -67,7 +67,7 @@ def test_audit_status(client, election_id):
                             "id": audit_board_id_1,
                             "members": [
                                 {"affiliation": "REP", "name": "Joe Schmo"},
-                                {"affiliation": "", "name": "Jane Plain"},
+                                {"affiliation": None, "name": "Jane Plain"},
                             ],
                             "name": "Audit Board #1",
                             "passphrase": assert_is_passphrase,
