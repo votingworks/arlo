@@ -52,7 +52,7 @@ export const roundMocks: {
   empty: [],
   singleIncomplete: [
     {
-      endedAt: '',
+      endedAt: null,
       roundNum: 1,
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000Z',
@@ -61,14 +61,14 @@ export const roundMocks: {
   ],
   twoIncomplete: [
     {
-      endedAt: '',
+      endedAt: null,
       roundNum: 1,
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000Z',
       id: 'round-1',
     },
     {
-      endedAt: '',
+      endedAt: null,
       roundNum: 2,
       isAuditComplete: false,
       startedAt: '2019-07-18T16:34:07.000Z',
