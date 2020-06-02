@@ -227,7 +227,7 @@ def validate_members(members: List[JSONDict]):
 
 
 @app.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/members",
     methods=["PUT"],
 )
 @with_audit_board_access
@@ -242,7 +242,7 @@ def set_audit_board_members(
 
     audit_board.member_1 = members[0]["name"]
     audit_board.member_1_affiliation = members[0]["affiliation"]
-    if len(members) == 2:
+    if len(members) > 1:
         audit_board.member_2 = members[1]["name"]
         audit_board.member_2_affiliation = members[1]["affiliation"]
 

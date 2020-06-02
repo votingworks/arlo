@@ -529,7 +529,7 @@ def test_audit_boards_set_members_valid(
     for member_request in member_requests:
         rv = put_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}",
+            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/members",
             member_request,
         )
         assert_ok(rv)
@@ -573,7 +573,7 @@ def test_audit_boards_set_members_invalid(
         set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
         rv = put_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}",
+            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/members",
             invalid_member_request,
         )
         assert rv.status_code == 400
@@ -614,7 +614,7 @@ def set_up_audit_board(
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}",
+        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/members",
         member_names,
     )
     assert_ok(rv)

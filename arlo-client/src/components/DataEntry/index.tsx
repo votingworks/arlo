@@ -68,7 +68,7 @@ const putMembers = async (
 ) => {
   try {
     await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}`,
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/members`,
       {
         method: 'PUT',
         body: JSON.stringify(members),
