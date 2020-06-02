@@ -1,8 +1,13 @@
-import io, uuid, json
+import io, uuid, json, os
 from typing import List, Generator
 from flask.testing import FlaskClient
 from flask import jsonify, abort
 import pytest
+
+# Before we set up the Flask app, set the env. That way it will use the test
+# config and we can still run tests without setting the env var manually.
+os.environ["FLASK_ENV"] = "test"
+# pylint: disable=wrong-import-position
 
 from arlo_server import app, db
 from arlo_server.models import (
