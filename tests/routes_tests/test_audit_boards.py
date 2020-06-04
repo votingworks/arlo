@@ -586,6 +586,7 @@ def test_audit_boards_set_members_invalid(
 
 CHOICE_1_VOTES = 10
 CHOICE_2_VOTES = 15
+OVERVOTES = 3
 
 
 def set_up_audit_board(
@@ -636,11 +637,20 @@ def set_up_audit_board(
         .order_by(ContestChoice.name)
         .all()
     )
-    for draw in ballot_draws[:CHOICE_1_VOTES]:
+    ballot_draws = iter(ballot_draws)
+    for draw in itertools.islice(ballot_draws, CHOICE_1_VOTES):
         audit_ballot(draw.sampled_ballot, contest_id, Interpretation.VOTE, [choices[0]])
-    for draw in ballot_draws[CHOICE_1_VOTES : CHOICE_1_VOTES + CHOICE_2_VOTES]:
+    for draw in itertools.islice(ballot_draws, CHOICE_2_VOTES):
         audit_ballot(draw.sampled_ballot, contest_id, Interpretation.VOTE, [choices[1]])
-    for draw in ballot_draws[CHOICE_1_VOTES + CHOICE_2_VOTES :]:
+    for draw in itertools.islice(ballot_draws, OVERVOTES):
+        audit_ballot(
+            draw.sampled_ballot,
+            contest_id,
+            Interpretation.VOTE,
+            [choices[0], choices[1]],
+            is_overvote=True,
+        )
+    for draw in ballot_draws:
         audit_ballot(draw.sampled_ballot, contest_id, Interpretation.BLANK)
     db.session.commit()
 
