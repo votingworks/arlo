@@ -14,6 +14,7 @@ pylint-flask-sqlalchemy = "*"
 # black only has pre-releases available, so we have to specify a specific version
 # for now (or enable pre-releases for all packages, which we don't want)
 black = "==19.10b0"
+snapshottest = "*"
 
 [packages]
 authlib = "*"
