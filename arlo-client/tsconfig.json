@@ -13,7 +13,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "preserve",
     "types": [
       "node",
       "@wdio/sync",
@@ -21,7 +20,13 @@
       "@types/jest",
       "@testing-library/jest-dom"
     ],
-    "noUnusedLocals": true
+    "jsx": "preserve"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "**/_mocks.ts",
+    "**/*.test.*",
+    "**/testUtilities.ts",
+    "src/test/**"
+  ]
 }
