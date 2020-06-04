@@ -1851,11 +1851,6 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react-tap-event-plugin@^0.0.30":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@types/react-tap-event-plugin/-/react-tap-event-plugin-0.0.30.tgz#123f35080412f489b6770c5a65c159ff96654cb5"
-  integrity sha1-Ej81CAQS9Im2dwxaZcFZ/5ZlTLU=
-
 "@types/react-test-renderer@*":
   version "16.9.2"
   resolved "https://registry.yarnpkg.com/@types/react-test-renderer/-/react-test-renderer-16.9.2.tgz#e1c408831e8183e5ad748fdece02214a7c2ab6c5"
