@@ -1492,6 +1492,11 @@
   dependencies:
     any-observable "^0.3.0"
 
+"@scarf/scarf@^1.0.4":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@scarf/scarf/-/scarf-1.0.5.tgz#accee0bce88a9047672f7c8faf3cada59c996b81"
+  integrity sha512-9WKaGVpQH905Aqkk+BczFEeLQxS07rl04afFRPUG9IcSlOwmo5EVVuuNu0d4M9LMYucObvK0LoAe+5HfMW2QhQ==
+
 "@sinonjs/commons@^1.7.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.0.tgz#c8d68821a854c555bba172f3b06959a0039b236d"
@@ -1849,6 +1854,13 @@
   integrity sha512-PZtnBuyfL07sqCJvGg3z+0+kt6fobc/xmle08jBiezLS8FrmGeiGkJnuxL/8Zgy9L83ypUhniV5atZn/L8n9MQ==
   dependencies:
     "@types/history" "*"
+    "@types/react" "*"
+
+"@types/react-table@^7.0.18":
+  version "7.0.18"
+  resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-7.0.18.tgz#df61f8272fd3add86b442a90baa6dbaef9b1f32a"
+  integrity sha512-O4iKmVYVQz+6Nl9LsLtWQz9Unsmq0UySJrh5hpV5d+wrf15skhB0dqI9ocCNovJpcYxGjHrn3VbeSyAcaxHZtA==
+  dependencies:
     "@types/react" "*"
 
 "@types/react-test-renderer@*":
@@ -11742,6 +11754,13 @@ react-scripts@3.4.0:
     workbox-webpack-plugin "4.3.1"
   optionalDependencies:
     fsevents "2.1.2"
+
+react-table@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.1.0.tgz#c975cd67e917c54190b6c9df29f085285b0c3f4e"
+  integrity sha512-AZpgW0Xpo6Z7jxXZIBovzCGoYVkuBwATsJh7X4+JXwq9JtDaorOmxWC9gKx5Hui4d+n+I99enyyJS+LRtKydxA==
+  dependencies:
+    "@scarf/scarf" "^1.0.4"
 
 react-test-renderer@^16.13.1:
   version "16.13.1"
