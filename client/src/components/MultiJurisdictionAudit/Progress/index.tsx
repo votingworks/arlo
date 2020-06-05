@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell } from 'react-table'
@@ -9,9 +9,7 @@ import {
   IJurisdiction,
   prettifyStatus,
 } from '../useJurisdictions'
-import FormButton from '../../Atoms/Form/FormButton'
 import JurisdictionDetail from './JurisdictionDetail'
-import jurisdictionFile from '../Setup/Participants/_mocks'
 import Table, { sortByRank } from '../../Atoms/Table'
 
 const Wrapper = styled.div`
@@ -44,6 +42,7 @@ const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
           {jurisdiction.name}
         </Button>
       ),
+      filter: 'text',
     },
     {
       Header: 'Status',
