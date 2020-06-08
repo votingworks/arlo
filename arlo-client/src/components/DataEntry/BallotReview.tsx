@@ -32,7 +32,7 @@ const renderInterpretation = (
         return choices.join(', ')
       }
       case Interpretation.BLANK:
-        return 'Overvote/Blank vote/Not on Ballot'
+        return 'Blank vote/Not on Ballot'
       case Interpretation.CANT_AGREE:
         return "Audit board can't agree"
       default:
