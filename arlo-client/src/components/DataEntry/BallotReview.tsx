@@ -19,15 +19,17 @@ const LockedButton = styled(FormButton)`
 `
 
 const renderInterpretation = (
-  { interpretation, choiceId }: IBallotInterpretation,
+  { interpretation, choiceIds }: IBallotInterpretation,
   contest: IContest
 ) => {
   if (!interpretation) return <div />
   const label = (() => {
     switch (interpretation) {
       case Interpretation.VOTE: {
-        const choice = contest.choices.find(c => c.id === choiceId)
-        return choice!.name
+        const choices = contest.choices
+          .filter(c => choiceIds.some(v => v === c.id))
+          .map(c => c.name)
+        return choices.join(', ')
       }
       case Interpretation.BLANK:
         return 'Overvote/Blank vote/Not on Ballot'

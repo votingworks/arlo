@@ -54,7 +54,7 @@ interface IProps {
 const emptyInterpretation = (contest: IContest) => ({
   contestId: contest.id,
   interpretation: null,
-  choiceId: null,
+  choiceIds: [],
   comment: null,
 })
 

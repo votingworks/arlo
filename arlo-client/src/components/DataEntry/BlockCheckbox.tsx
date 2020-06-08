@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Block = styled.label`
-  &.bp3-control.bp3-radio {
+  &.bp3-control.bp3-checkbox {
     display: inline-block;
     position: relative;
     margin-right: 20px;
@@ -16,7 +16,7 @@ const Block = styled.label`
       &::before {
         display: none;
       }
-      .radio-text {
+      .checkbox-text {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
@@ -52,17 +52,17 @@ const BlockCheckbox = ({
   gray,
   checked,
 }: IProps) => (
-  <Block className={`${className || ''} bp3-control bp3-radio`}>
+  <Block className={`${className || ''} bp3-control bp3-checkbox`}>
     <input
-      type="radio"
+      type="checkbox"
       name={name}
       data-testid={value}
       value={value}
       onChange={handleChange}
       checked={checked}
     />
-    <span className={`${gray && 'gray'} bp3-control-indicator`}>
-      <span className="radio-text">{label}</span>
+    <span className={`${gray && !checked && 'gray'} bp3-control-indicator`}>
+      <span className="checkbox-text">{label}</span>
     </span>
   </Block>
 )

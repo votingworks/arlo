@@ -8,10 +8,11 @@ import {
   ProgressActions,
   FlushDivider,
 } from './Atoms'
-import BlockRadio from './BlockRadio'
+// import BlockRadio from './BlockRadio'
 import FormButton from '../Atoms/Form/FormButton'
 import { IBallotInterpretation, Interpretation, IContest } from '../../types'
 import FormField from '../Atoms/Form/FormField'
+import BlockCheckbox from './BlockCheckbox'
 
 interface IProps {
   contests: IContest[]
@@ -38,8 +39,8 @@ const BallotAudit: React.FC<IProps> = ({
           marked on the paper ballot.
         </p>
         <p>
-          If the voter did not vote in the contest, select &quot;Overvote/Blank
-          vote/Not on Ballot.&quot;
+          If the voter did not vote in the contest, select &quot;Blank vote/Not
+          on Ballot.&quot;
         </p>
         <p>
           If the audit board cannot agree, select &quot;Audit board can&apos;t
@@ -58,14 +59,11 @@ const BallotAudit: React.FC<IProps> = ({
             values,
             setFieldValue,
           }: FormikProps<{ interpretations: IBallotInterpretation[] }>) => {
-            const submitDisabled = !values.interpretations.some(
-              ({ interpretation }) => interpretation
-            )
             return (
               <Form>
                 {contests.map((contest, i) => (
                   <BallotAuditContest
-                    key={contest.name}
+                    key={contest.id}
                     contest={contest}
                     interpretation={values.interpretations[i]}
                     setInterpretation={newInterpretation =>
@@ -77,11 +75,8 @@ const BallotAudit: React.FC<IProps> = ({
                   <FormButton
                     type="submit"
                     onClick={handleSubmit}
-                    disabled={submitDisabled}
                     intent="success"
-                    data-testid={
-                      submitDisabled ? 'disabled-review' : 'enabled-review'
-                    }
+                    data-testid="enabled-review"
                   >
                     Review
                   </FormButton>
@@ -127,34 +122,48 @@ const BallotAuditContest = ({
     })
   }
 
-  // Since the radio button values must be strings, not full objects,
+  // Since the checkbox button values must be strings, not full objects,
   // we condense our data model for interpretations to strings:
   // - For buttons representing interpretation VOTE (one for each
   // contest choice), the value is interpretation.choiceId
   // - For buttons representing other interpretations (BLANK,
   // CANT_AGREE), the value is interpretation.interpretation
-  const radioProps = {
-    name: `interpretation-${contest.name}`,
+  const checkboxProps = (value: string) => ({
+    name: `interpretation-${contest.name}-${value}`,
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { value } = e.currentTarget
+      const { checked } = e.currentTarget
       if (
         value === Interpretation.BLANK ||
         value === Interpretation.CANT_AGREE
       ) {
+        if (checked) {
+          setInterpretation({
+            ...interpretation,
+            interpretation: value,
+            choiceIds: [],
+          })
+        } else {
+          setInterpretation({
+            ...interpretation,
+            interpretation: null,
+            choiceIds: [],
+          })
+        }
+      } else if (checked) {
         setInterpretation({
           ...interpretation,
-          interpretation: value,
-          choiceId: null,
+          interpretation: Interpretation.VOTE,
+          choiceIds: [...interpretation.choiceIds, value],
         })
       } else {
         setInterpretation({
           ...interpretation,
           interpretation: Interpretation.VOTE,
-          choiceId: value,
+          choiceIds: interpretation.choiceIds.filter(v => v !== value),
         })
       }
     },
-  }
+  })
 
   const isVote = interpretation.interpretation === Interpretation.VOTE
 
@@ -169,32 +178,33 @@ const BallotAuditContest = ({
           () => undefined
         } // required by blueprintjs but we're implementing on BlockRadio instead
         selectedValue={
-          (isVote ? interpretation.choiceId : interpretation.interpretation) ||
-          undefined
+          (isVote
+            ? interpretation.choiceIds.length
+            : interpretation.interpretation) || undefined
         }
       >
         {contest.choices.map(c => (
-          <BlockRadio
+          <BlockCheckbox
             key={c.id}
-            {...radioProps}
-            checked={isVote && interpretation.choiceId === c.id}
+            {...checkboxProps(c.id)}
+            checked={isVote && interpretation.choiceIds.some(v => v === c.id)}
             value={c.id}
             label={c.name}
           />
         ))}
-        <BlockRadio
-          {...radioProps}
+        <BlockCheckbox
+          {...checkboxProps(Interpretation.CANT_AGREE)}
           gray
           checked={interpretation.interpretation === Interpretation.CANT_AGREE}
           value={Interpretation.CANT_AGREE}
           label="Audit board can't agree"
         />
-        <BlockRadio
-          {...radioProps}
+        <BlockCheckbox
+          {...checkboxProps(Interpretation.BLANK)}
           gray
           checked={interpretation.interpretation === Interpretation.BLANK}
           value={Interpretation.BLANK}
-          label="Overvote/Blank vote/Not on Ballot"
+          label="Blank vote/Not on Ballot"
         />
       </RadioGroupFlex>
       <Button minimal icon="edit" onClick={toggleCommenting}>
