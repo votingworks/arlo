@@ -10,10 +10,13 @@ import {
   prettifyStatus,
 } from '../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
-import Table, { sortByRank } from '../../Atoms/Table'
+import { Table, sortByRank, FilterInput } from '../../Atoms/Table'
 
 const Wrapper = styled.div`
   flex-grow: 1;
+  > p {
+    margin-bottom: 25px;
+  }
 `
 
 interface IProps {
@@ -41,6 +44,10 @@ const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
         >
           {jurisdiction.name}
         </Button>
+      ),
+      // eslint-disable-next-line react/display-name
+      Filter: props => (
+        <FilterInput {...props} placeholder="Filter by jurisdiction name..." />
       ),
       filter: 'text',
     },
@@ -90,6 +97,12 @@ const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
   return (
     <Wrapper>
       <H2Title>Audit Progress by Jurisdiction</H2Title>
+      <p>
+        Click on a column name to sort by that column&apos;s data. To reverse
+        sort, click on the column name again.
+        <br /> To view a single jurisdiction&apos;s data, click the name of the
+        jurisdiction.
+      </p>
       <Table data={jurisdictions} columns={columns} />
       <JurisdictionDetail
         jurisdiction={jurisdictionDetail}

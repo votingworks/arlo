@@ -59,7 +59,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
-            jurisdictions={jurisdictionMocks.oneUnprocessedOneProcessed}
+            jurisdictions={jurisdictionMocks.oneManifest}
             contests={[]}
             auditSettings={auditSettings.blank}
           />
@@ -67,7 +67,7 @@ describe('StatusBox', () => {
       )
       screen.getByText('Audit setup is not complete.')
       screen.getByText('The audit has not started.')
-      screen.getByText('1 of 2 jurisdictions have completed file uploads.')
+      screen.getByText('1 of 3 jurisdictions have completed file uploads.')
     })
 
     it('renders full uploads state', () => {
@@ -75,7 +75,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
-            jurisdictions={jurisdictionMocks.twoProcessed}
+            jurisdictions={jurisdictionMocks.allManifests}
             contests={[]}
             auditSettings={auditSettings.blank}
           />
@@ -83,7 +83,7 @@ describe('StatusBox', () => {
       )
       screen.getByText('Audit setup is not complete.')
       screen.getByText('The audit has not started.')
-      screen.getByText('2 of 2 jurisdictions have completed file uploads.')
+      screen.getByText('3 of 3 jurisdictions have completed file uploads.')
     })
 
     it('renders finished setup state', () => {
@@ -91,7 +91,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={[]}
-            jurisdictions={jurisdictionMocks.twoProcessed}
+            jurisdictions={jurisdictionMocks.allManifests}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
           />
@@ -99,7 +99,7 @@ describe('StatusBox', () => {
       )
       screen.getByText('Audit setup is complete.')
       screen.getByText('The audit has not started.')
-      screen.getByText('2 of 2 jurisdictions have completed file uploads.')
+      screen.getByText('3 of 3 jurisdictions have completed file uploads.')
     })
 
     it('renders one of two jurisdictions done round one state', () => {
@@ -114,7 +114,7 @@ describe('StatusBox', () => {
         </Router>
       )
       screen.getByText('Round 1 of the audit is in progress')
-      screen.getByText('1 of 2 jurisdictions have completed Round 1')
+      screen.getByText('1 of 3 jurisdictions have completed Round 1')
     })
 
     it('renders round complete, need another round state', () => {
@@ -122,7 +122,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.needAnother}
-            jurisdictions={jurisdictionMocks.twoComplete}
+            jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
           />
@@ -141,7 +141,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.needAnother}
-            jurisdictions={jurisdictionMocks.twoComplete}
+            jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
           />
@@ -170,7 +170,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.needAnother}
-            jurisdictions={jurisdictionMocks.twoComplete}
+            jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
           />
@@ -198,7 +198,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleComplete}
-            jurisdictions={jurisdictionMocks.twoComplete}
+            jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
           />
@@ -214,7 +214,7 @@ describe('StatusBox', () => {
         <Router>
           <AuditAdminStatusBox
             rounds={roundMocks.singleComplete}
-            jurisdictions={jurisdictionMocks.twoComplete}
+            jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
             auditSettings={auditSettings.all}
           />

@@ -44,23 +44,22 @@ const StyledTable = styled.table`
   }
 `
 
-interface ITableProps<T extends object> {
-  data: T[]
-  columns: Column<T>[]
+interface IFilterInputProps<T extends object> {
+  column: ColumnInstance<T>
+  placeholder: string
 }
 
-const FilterInput = <T extends object>({
+export const FilterInput = <T extends object>({
   column: { filterValue, setFilter },
-}: {
-  column: ColumnInstance<T>
-}) => (
+  placeholder,
+}: IFilterInputProps<T>) => (
   <FilterWrapper>
     <div className="bp3-input-group .modifier">
       <span className="bp3-icon bp3-icon-filter"></span>
       <input
         type="text"
         className="bp3-input"
-        placeholder="Filter by jurisdiction name..."
+        placeholder={placeholder}
         value={filterValue || ''}
         onChange={e => setFilter(e.target.value || undefined)}
       />
@@ -68,7 +67,12 @@ const FilterInput = <T extends object>({
   </FilterWrapper>
 )
 
-const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
+interface ITableProps<T extends object> {
+  data: T[]
+  columns: Column<T>[]
+}
+
+export const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -92,7 +96,6 @@ const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
   if (filterableColumns.length > 1)
     throw Error('Only allowed to have one filterable column max')
   const [filterColumn] = filterableColumns
-  console.log(headers, headers[0].canFilter, filterColumn)
 
   return (
     <Wrapper>
@@ -101,7 +104,11 @@ const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
         <thead>
           <tr>
             {headers.map(column => (
-              <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+              <th
+                {...column.getHeaderProps(
+                  column.getSortByToggleProps({ title: column.Header })
+                )}
+              >
                 {column.render('Header')}
                 <span>
                   {column.isSorted ? (
@@ -136,6 +143,8 @@ const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
 }
 
 export const sortByRank = <T extends object>(rank: (data: T) => number) =>
+  // react-table requires the sortBy function be memoized, but the linter only
+  // expects useCallback to be called directly within a component/hook.
   // eslint-disable-next-line react-hooks/rules-of-hooks
   React.useCallback(
     (rowA: Row<T>, rowB: Row<T>) => rank(rowA.original) - rank(rowB.original),

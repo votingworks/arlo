@@ -4,6 +4,7 @@ import {
   FileProcessingStatus,
   IFileInfo,
   JurisdictionRoundStatus,
+  IBallotManifestInfo,
 } from './useJurisdictions' // uses IFileInfo instead of IBallotManifest and allows `file: null`
 import { IRound } from './useRoundsJurisdictionAdmin' // has roundNum
 import { IAuditBoard } from './useAuditBoards'
@@ -95,113 +96,127 @@ export const roundMocks: {
   ],
 }
 
-export const jurisdictionMocks: {
-  [key in
-    | 'empty'
-    | 'twoUnprocessed'
-    | 'oneUnprocessedOneProcessed'
-    | 'twoProcessed'
-    | 'oneComplete'
-    | 'twoComplete']: IJurisdiction[]
-} = {
+const manifestMocks: { [key: string]: IBallotManifestInfo } = {
+  empty: {
+    file: null,
+    processing: null,
+    numBatches: 0,
+    numBallots: 0,
+  },
+  processed: {
+    file: { name: 'manifest.csv', uploadedAt: '2020-06-08T21:39:05.765Z' },
+    processing: {
+      status: FileProcessingStatus.PROCESSED,
+      startedAt: '2020-06-08T21:39:05.765Z',
+      completedAt: '2020-06-08T21:39:14.574Z',
+      error: null,
+    },
+    numBatches: 10,
+    numBallots: 2117,
+  },
+  errored: {
+    file: {
+      name: 'manifest.csv',
+      uploadedAt: '2020-05-05T17:25:25.663592',
+    },
+    processing: {
+      completedAt: '2020-05-05T17:25:26.099157',
+      error: 'Invalid CSV',
+      startedAt: '2020-05-05T17:25:26.097433',
+      status: FileProcessingStatus.ERRORED,
+    },
+    numBallots: null,
+    numBatches: null,
+  },
+}
+
+export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
   empty: [],
-  twoUnprocessed: [
+  noManifests: [
     {
       id: 'jurisdiction-id-1',
-      name: 'Jurisdiction One',
-      ballotManifest: { file: null, processing: null },
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.empty,
       currentRoundStatus: null,
     },
     {
       id: 'jurisdiction-id-2',
-      name: 'Jurisdiction Two',
-      ballotManifest: { file: null, processing: null },
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.empty,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.empty,
       currentRoundStatus: null,
     },
   ],
-  oneUnprocessedOneProcessed: [
+  oneManifest: [
     {
       id: 'jurisdiction-id-1',
-      name: 'Jurisdiction One',
-      ballotManifest: {
-        file: null,
-        processing: {
-          status: FileProcessingStatus.PROCESSED,
-          startedAt: 'sometime',
-          completedAt: 'a different time',
-          error: null,
-        },
-      },
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.errored,
       currentRoundStatus: null,
     },
     {
       id: 'jurisdiction-id-2',
-      name: 'Jurisdiction Two',
-      ballotManifest: { file: null, processing: null },
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.empty,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
       currentRoundStatus: null,
     },
   ],
-  twoProcessed: [
+  allManifests: [
     {
       id: 'jurisdiction-id-1',
-      name: 'Jurisdiction One',
-      ballotManifest: {
-        file: null,
-        processing: {
-          status: FileProcessingStatus.PROCESSED,
-          startedAt: 'sometime',
-          completedAt: 'a different time',
-          error: null,
-        },
-      },
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.processed,
       currentRoundStatus: null,
     },
     {
       id: 'jurisdiction-id-2',
-      name: 'Jurisdiction Two',
-      ballotManifest: {
-        file: null,
-        processing: {
-          status: FileProcessingStatus.PROCESSED,
-          startedAt: 'sometime',
-          completedAt: 'a different time',
-          error: null,
-        },
-      },
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.processed,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
       currentRoundStatus: null,
     },
   ],
   oneComplete: [
     {
       id: 'jurisdiction-id-1',
-      name: 'Jurisdiction One',
-      ballotManifest: {
-        file: null,
-        processing: {
-          status: FileProcessingStatus.PROCESSED,
-          startedAt: 'sometime',
-          completedAt: 'a different time',
-          error: null,
-        },
-      },
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.processed,
       currentRoundStatus: {
         status: JurisdictionRoundStatus.IN_PROGRESS,
-        numBallotsAudited: 0,
-        numBallotsSampled: 30,
+        numBallotsAudited: 4,
+        numBallotsSampled: 10,
       },
     },
     {
       id: 'jurisdiction-id-2',
-      name: 'Jurisdiction Two',
-      ballotManifest: {
-        file: null,
-        processing: {
-          status: FileProcessingStatus.PROCESSED,
-          startedAt: 'sometime',
-          completedAt: 'a different time',
-          error: null,
-        },
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.NOT_STARTED,
+        numBallotsAudited: 0,
+        numBallotsSampled: 20,
       },
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
         numBallotsAudited: 30,
@@ -209,37 +224,31 @@ export const jurisdictionMocks: {
       },
     },
   ],
-  twoComplete: [
+  allComplete: [
     {
       id: 'jurisdiction-id-1',
-      name: 'Jurisdiction One',
-      ballotManifest: {
-        file: null,
-        processing: {
-          status: FileProcessingStatus.PROCESSED,
-          startedAt: 'sometime',
-          completedAt: 'a different time',
-          error: null,
-        },
-      },
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.processed,
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
-        numBallotsAudited: 30,
-        numBallotsSampled: 30,
+        numBallotsAudited: 10,
+        numBallotsSampled: 10,
       },
     },
     {
       id: 'jurisdiction-id-2',
-      name: 'Jurisdiction Two',
-      ballotManifest: {
-        file: null,
-        processing: {
-          status: FileProcessingStatus.PROCESSED,
-          startedAt: 'sometime',
-          completedAt: 'a different time',
-          error: null,
-        },
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.processed,
+      currentRoundStatus: {
+        status: JurisdictionRoundStatus.COMPLETE,
+        numBallotsAudited: 20,
+        numBallotsSampled: 20,
       },
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
         numBallotsAudited: 30,
