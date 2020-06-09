@@ -72,11 +72,7 @@ export const downloadPlaceholders = async (
 }
 
 export const downloadDataEntry = (auditBoards: IAuditBoard[]): void => {
-  const auditBoardsWithoutBallots: string[] = [
-    'test one',
-    'test two',
-    'test three',
-  ]
+  const auditBoardsWithoutBallots: string[] = []
   const auditBoardCreds = new jsPDF({ format: 'letter' })
   auditBoards.forEach((board, i) => {
     const qr: HTMLCanvasElement | null = document.querySelector(
@@ -116,7 +112,7 @@ export const downloadDataEntry = (auditBoards: IAuditBoard[]): void => {
   if (auditBoardsWithoutBallots.length) {
     auditBoardCreds.addPage('letter')
     auditBoardsWithoutBallots.forEach((name, i) => {
-      auditBoardCreds.text(name, 20, i * 10 + 20)
+      auditBoardCreds.text(`${name}: No ballots`, 20, i * 10 + 20)
     })
   }
   auditBoardCreds.autoPrint()
