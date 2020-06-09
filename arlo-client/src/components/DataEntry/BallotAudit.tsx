@@ -107,14 +107,6 @@ const BallotAuditContest = ({
     setInterpretation({ ...interpretation, comment: null })
   }
 
-  const clearSelection = () => {
-    setInterpretation({
-      ...interpretation,
-      interpretation: null,
-      comment: null,
-    })
-  }
-
   const checkboxProps = (value: string) => ({
     value,
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,14 +165,6 @@ const BallotAuditContest = ({
       <Button minimal icon="edit" onClick={toggleCommenting}>
         {commenting ? 'Remove comment' : 'Add comment'}
       </Button>
-      {interpretation.interpretation && (
-        <>
-          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-          <Button minimal icon="reset" onClick={clearSelection}>
-            Clear
-          </Button>
-        </>
-      )}
       {commenting && (
         <Field
           name={`comment-${contest.name}`}
