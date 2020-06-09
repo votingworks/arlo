@@ -1,7 +1,5 @@
 {
-  "addons": [
-    "heroku-postgresql:hobby-free"
-  ],
+  "addons": ["heroku-postgresql:hobby-free"],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
@@ -28,7 +26,7 @@
   },
   "name": "arlo",
   "scripts": {
-    "postdeploy": "python create.py"
+    "postdeploy": "heroku pg:backups:restore vx-arlo-staging:: -a $HEROKU_APP_NAME --confirm $HEROKU_APP_NAME"
   },
   "stack": "heroku-18"
 }
