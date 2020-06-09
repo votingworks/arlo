@@ -23,7 +23,7 @@
   },
   "name": "arlo",
   "scripts": {
-    "postdeploy": "HEROKU_API_KEY=`heroku authorizations:create --expires-in 600 --short` heroku pg:backups:restore vx-arlo-staging:: -a $HEROKU_APP_NAME --confirm $HEROKU_APP_NAME"
+    "postdeploy": "heroku pg:backups:restore vx-arlo-staging:: -a $HEROKU_APP_NAME --confirm $HEROKU_APP_NAME"
   },
   "stack": "heroku-18"
 }
