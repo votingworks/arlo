@@ -72,13 +72,17 @@ export const downloadPlaceholders = async (
 }
 
 export const downloadDataEntry = (auditBoards: IAuditBoard[]): void => {
+  const auditBoardsWithoutBallots: string[] = [
+    'test one',
+    'test two',
+    'test three',
+  ]
   const auditBoardCreds = new jsPDF({ format: 'letter' })
   auditBoards.forEach((board, i) => {
     const qr: HTMLCanvasElement | null = document.querySelector(
       `#qr-${board.passphrase} > canvas`
     )
-    /* istanbul ignore else */
-    if (qr) {
+    if (qr && board.currentRoundStatus.numSampledBallots > 0) {
       if (i > 0) auditBoardCreds.addPage('letter')
       const url = qr.toDataURL()
       auditBoardCreds.setFontSize(22)
@@ -105,8 +109,16 @@ export const downloadDataEntry = (auditBoards: IAuditBoard[]): void => {
         20,
         140
       )
+    } else if (board.currentRoundStatus.numSampledBallots === 0) {
+      auditBoardsWithoutBallots.push(board.name)
     }
   })
+  if (auditBoardsWithoutBallots.length) {
+    auditBoardCreds.addPage('letter')
+    auditBoardsWithoutBallots.forEach((name, i) => {
+      auditBoardCreds.text(name, 20, i * 10 + 20)
+    })
+  }
   auditBoardCreds.autoPrint()
   auditBoardCreds.save(`Audit Boards Credentials for Data Entry.pdf`)
 }
