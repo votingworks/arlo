@@ -53,9 +53,7 @@ def pretty_ticket_numbers(
 
 
 def pretty_interpretations(
-    interpretations: List[BallotInterpretation],
-    contests: List[Contest],
-    choice_id_to_name: Dict[str, str],
+    interpretations: List[BallotInterpretation], contests: List[Contest],
 ) -> List[str]:
     columns = []
     for contest in contests:
@@ -63,15 +61,16 @@ def pretty_interpretations(
             (i for i in interpretations if i.contest_id == contest.id), None,
         )
         if interpretation:
-            choice = (
-                choice_id_to_name[interpretation.contest_choice_id]
+            choices = (
+                ", ".join(choice.name for choice in interpretation.selected_choices)
                 if interpretation.interpretation == Interpretation.VOTE
                 else interpretation.interpretation
             )
+            overvote = "OVERVOTE; " if interpretation.is_overvote else ""
             comment = (
                 f"; COMMENT: {interpretation.comment}" if interpretation.comment else ""
             )
-            columns.append(choice + comment)
+            columns.append(overvote + choices + comment)
         else:
             columns.append("")
     return columns
@@ -228,11 +227,6 @@ def write_sampled_ballots(
     ballots = ballots_query.all()
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
-    choice_id_to_name = {
-        choice.id: choice.name
-        for contest in election.contests
-        for choice in contest.choices
-    }
 
     report.writerow(
         [
@@ -253,9 +247,7 @@ def write_sampled_ballots(
                 pretty_ticket_numbers(ballot, round_id_to_num),
                 ballot.status,
             ]
-            + pretty_interpretations(
-                ballot.interpretations, election.contests, choice_id_to_name
-            )
+            + pretty_interpretations(ballot.interpretations, election.contests)
         )
 
 

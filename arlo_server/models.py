@@ -222,6 +222,7 @@ class ContestChoice(BaseModel):
     results = relationship(
         "RoundContestResult", backref="contest_choice", passive_deletes=True
     )
+    __table_args__ = (db.UniqueConstraint("id", "contest_id"),)
 
 
 contest_jurisdiction = db.Table(
@@ -229,13 +230,13 @@ contest_jurisdiction = db.Table(
     db.Column(
         "contest_id",
         db.String(200),
-        db.ForeignKey("contest.id", primary_key=True, ondelete="cascade"),
+        db.ForeignKey("contest.id", ondelete="cascade"),
         nullable=False,
     ),
     db.Column(
         "jurisdiction_id",
         db.String(200),
-        db.ForeignKey("jurisdiction.id", primary_key=True, ondelete="cascade"),
+        db.ForeignKey("jurisdiction.id", ondelete="cascade"),
         nullable=False,
     ),
 )
@@ -365,12 +366,32 @@ class BallotInterpretation(BaseModel):
     __table_args__ = (db.PrimaryKeyConstraint("ballot_id", "contest_id"),)
 
     interpretation = db.Column(db.Enum(Interpretation), nullable=False)
-    # If interpretation is VOTE, contest_choice_id holds the id for the choice
-    # that was voted for. Otherwise null.
-    contest_choice_id = db.Column(
-        db.String(200), db.ForeignKey("contest_choice.id", ondelete="cascade")
+    selected_choices = relationship(
+        "ContestChoice", secondary="ballot_interpretation_contest_choice"
     )
     comment = db.Column(db.Text)
+
+    # If the number of selected_choices is greater than Contest.votes_allowed,
+    # then the voter overvoted. We cache a flag here so we don't have to
+    # recompute this in different places.
+    is_overvote = db.Column(db.Boolean, nullable=False)
+
+
+# Represents the choices selected on the ballot (as interpreted by an audit board).
+ballot_interpretation_contest_choice = db.Table(
+    "ballot_interpretation_contest_choice",
+    db.Column("ballot_id", db.String(200), nullable=False),
+    db.Column("contest_id", db.String(200), nullable=False),
+    db.Column("contest_choice_id", db.String(200), nullable=False),
+    db.ForeignKeyConstraint(
+        ["ballot_id", "contest_id"],
+        ["ballot_interpretation.ballot_id", "ballot_interpretation.contest_id"],
+    ),
+    db.ForeignKeyConstraint(
+        ["contest_choice_id", "contest_id"],
+        ["contest_choice.id", "contest_choice.contest_id"],
+    ),
+)
 
 
 class RoundContest(BaseModel):

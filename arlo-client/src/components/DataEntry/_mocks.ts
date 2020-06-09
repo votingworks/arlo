@@ -68,7 +68,7 @@ export const dummyBallots: { ballots: IBallot[] } = {
         {
           contestId: contest.id,
           interpretation: Interpretation.VOTE,
-          choiceId: contest.choices[0].id,
+          choiceIds: [contest.choices[0].id],
           comment: 'Good ballot',
         },
       ],

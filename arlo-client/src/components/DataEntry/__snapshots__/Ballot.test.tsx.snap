@@ -109,7 +109,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
            the candidates/choices below that you see marked on the paper ballot.
         </p>
         <p>
-          If the voter did not vote in the contest, select "Overvote/Blank vote/Not on Ballot."
+          If the voter did not vote in the contest, select "Blank vote/Not on Ballot."
         </p>
         <p>
           If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
@@ -126,86 +126,74 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
             <div
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
-            <div
-              class="sc-bxivhb eqbYCx"
+            <label
+              class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
             >
-              <label
-                class=" bp3-control bp3-radio sc-gzVnrw mNtiM"
+              <input
+                data-testid="choice-id-1"
+                type="checkbox"
+              />
+              <span
+                class="undefined bp3-control-indicator"
               >
-                <input
-                  data-testid="choice-id-1"
-                  name="interpretation-Contest Name"
-                  type="radio"
-                  value="choice-id-1"
-                />
                 <span
-                  class="undefined bp3-control-indicator"
+                  class="checkbox-text"
                 >
-                  <span
-                    class="radio-text"
-                  >
-                    Choice One
-                  </span>
+                  Choice One
                 </span>
-              </label>
-              <label
-                class=" bp3-control bp3-radio sc-gzVnrw mNtiM"
+              </span>
+            </label>
+            <label
+              class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
+            >
+              <input
+                data-testid="choice-id-2"
+                type="checkbox"
+              />
+              <span
+                class="undefined bp3-control-indicator"
               >
-                <input
-                  data-testid="choice-id-2"
-                  name="interpretation-Contest Name"
-                  type="radio"
-                  value="choice-id-2"
-                />
                 <span
-                  class="undefined bp3-control-indicator"
+                  class="checkbox-text"
                 >
-                  <span
-                    class="radio-text"
-                  >
-                    Choice Two
-                  </span>
+                  Choice Two
                 </span>
-              </label>
-              <label
-                class=" bp3-control bp3-radio sc-gzVnrw mNtiM"
+              </span>
+            </label>
+            <label
+              class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
+            >
+              <input
+                data-testid="CANT_AGREE"
+                type="checkbox"
+              />
+              <span
+                class="gray bp3-control-indicator"
               >
-                <input
-                  data-testid="CANT_AGREE"
-                  name="interpretation-Contest Name"
-                  type="radio"
-                  value="CANT_AGREE"
-                />
                 <span
-                  class="gray bp3-control-indicator"
+                  class="checkbox-text"
                 >
-                  <span
-                    class="radio-text"
-                  >
-                    Audit board can't agree
-                  </span>
+                  Audit board can't agree
                 </span>
-              </label>
-              <label
-                class=" bp3-control bp3-radio sc-gzVnrw mNtiM"
+              </span>
+            </label>
+            <label
+              class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
+            >
+              <input
+                data-testid="BLANK"
+                type="checkbox"
+              />
+              <span
+                class="gray bp3-control-indicator"
               >
-                <input
-                  data-testid="BLANK"
-                  name="interpretation-Contest Name"
-                  type="radio"
-                  value="BLANK"
-                />
                 <span
-                  class="gray bp3-control-indicator"
+                  class="checkbox-text"
                 >
-                  <span
-                    class="radio-text"
-                  >
-                    Overvote/Blank vote/Not on Ballot
-                  </span>
+                  Blank vote/Not on Ballot
                 </span>
-              </label>
-            </div>
+              </span>
+            </label>
             <button
               class="bp3-button bp3-minimal"
               type="button"
@@ -266,10 +254,10 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               </span>
             </button>
             <div
-              class="sc-iwsKbI btmaIR"
+              class="sc-dnqmqq dvJRiU"
             >
               <textarea
-                class="bp3-input sc-gqjmRU kmAUGh"
+                class="bp3-input sc-gZMcBi fkRAtG"
                 data-testid="comment-textarea"
                 name="comment-Contest Name"
               >
@@ -281,7 +269,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
             class="sc-ifAKCX jzSIMx"
           >
             <button
-              class="bp3-button bp3-intent-success sc-dnqmqq iQfLYL"
+              class="bp3-button bp3-intent-success sc-htoDjs dESvso"
               data-testid="enabled-review"
               type="submit"
             >
@@ -417,7 +405,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
            the candidates/choices below that you see marked on the paper ballot.
         </p>
         <p>
-          If the voter did not vote in the contest, select "Overvote/Blank vote/Not on Ballot."
+          If the voter did not vote in the contest, select "Blank vote/Not on Ballot."
         </p>
         <p>
           If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
@@ -434,86 +422,74 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
             <div
               class="bp3-divider sc-bdVaJa gqVLlZ"
             />
-            <div
-              class="sc-bxivhb eqbYCx"
+            <label
+              class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
             >
-              <label
-                class=" bp3-control bp3-radio sc-gzVnrw mNtiM"
+              <input
+                data-testid="choice-id-1"
+                type="checkbox"
+              />
+              <span
+                class="undefined bp3-control-indicator"
               >
-                <input
-                  data-testid="choice-id-1"
-                  name="interpretation-Contest Name"
-                  type="radio"
-                  value="choice-id-1"
-                />
                 <span
-                  class="undefined bp3-control-indicator"
+                  class="checkbox-text"
                 >
-                  <span
-                    class="radio-text"
-                  >
-                    Choice One
-                  </span>
+                  Choice One
                 </span>
-              </label>
-              <label
-                class=" bp3-control bp3-radio sc-gzVnrw mNtiM"
+              </span>
+            </label>
+            <label
+              class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
+            >
+              <input
+                data-testid="choice-id-2"
+                type="checkbox"
+              />
+              <span
+                class="undefined bp3-control-indicator"
               >
-                <input
-                  data-testid="choice-id-2"
-                  name="interpretation-Contest Name"
-                  type="radio"
-                  value="choice-id-2"
-                />
                 <span
-                  class="undefined bp3-control-indicator"
+                  class="checkbox-text"
                 >
-                  <span
-                    class="radio-text"
-                  >
-                    Choice Two
-                  </span>
+                  Choice Two
                 </span>
-              </label>
-              <label
-                class=" bp3-control bp3-radio sc-gzVnrw mNtiM"
+              </span>
+            </label>
+            <label
+              class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
+            >
+              <input
+                data-testid="CANT_AGREE"
+                type="checkbox"
+              />
+              <span
+                class="gray bp3-control-indicator"
               >
-                <input
-                  data-testid="CANT_AGREE"
-                  name="interpretation-Contest Name"
-                  type="radio"
-                  value="CANT_AGREE"
-                />
                 <span
-                  class="gray bp3-control-indicator"
+                  class="checkbox-text"
                 >
-                  <span
-                    class="radio-text"
-                  >
-                    Audit board can't agree
-                  </span>
+                  Audit board can't agree
                 </span>
-              </label>
-              <label
-                class=" bp3-control bp3-radio sc-gzVnrw mNtiM"
+              </span>
+            </label>
+            <label
+              class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
+            >
+              <input
+                data-testid="BLANK"
+                type="checkbox"
+              />
+              <span
+                class="gray bp3-control-indicator"
               >
-                <input
-                  data-testid="BLANK"
-                  name="interpretation-Contest Name"
-                  type="radio"
-                  value="BLANK"
-                />
                 <span
-                  class="gray bp3-control-indicator"
+                  class="checkbox-text"
                 >
-                  <span
-                    class="radio-text"
-                  >
-                    Overvote/Blank vote/Not on Ballot
-                  </span>
+                  Blank vote/Not on Ballot
                 </span>
-              </label>
-            </div>
+              </span>
+            </label>
             <button
               class="bp3-button bp3-minimal"
               type="button"
@@ -548,10 +524,8 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
             class="sc-ifAKCX jzSIMx"
           >
             <button
-              class="bp3-button bp3-disabled bp3-intent-success sc-dnqmqq iQfLYL"
-              data-testid="disabled-review"
-              disabled=""
-              tabindex="-1"
+              class="bp3-button bp3-intent-success sc-htoDjs dESvso"
+              data-testid="enabled-review"
               type="submit"
             >
               <span
@@ -688,7 +662,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
             class="sc-fjdhpX hpwbXA"
           >
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-jzJRlG cJPPfk sc-dnqmqq iQfLYL"
+              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-jzJRlG cJPPfk sc-htoDjs dESvso"
               disabled=""
               tabindex="-1"
               type="button"
@@ -735,7 +709,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
           class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-intent-success sc-dnqmqq iQfLYL"
+            class="bp3-button bp3-intent-success sc-htoDjs dESvso"
             type="submit"
           >
             <span
@@ -761,7 +735,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
 </div>
 `;
 
-exports[`Ballot selects Overvote/Blank vote/Not on Ballot 1`] = `
+exports[`Ballot selects Blank vote/Not on Ballot 1`] = `
 <div>
   <div
     class="sc-kAzzGY jLybqU"
@@ -871,7 +845,7 @@ exports[`Ballot selects Overvote/Blank vote/Not on Ballot 1`] = `
             class="sc-fjdhpX hpwbXA"
           >
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-jzJRlG cJPPfk sc-dnqmqq iQfLYL"
+              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-jzJRlG cJPPfk sc-htoDjs dESvso"
               disabled=""
               tabindex="-1"
               type="button"
@@ -879,7 +853,7 @@ exports[`Ballot selects Overvote/Blank vote/Not on Ballot 1`] = `
               <span
                 class="bp3-button-text"
               >
-                Overvote/Blank vote/Not on Ballot
+                Blank vote/Not on Ballot
               </span>
             </button>
             <button
@@ -918,7 +892,7 @@ exports[`Ballot selects Overvote/Blank vote/Not on Ballot 1`] = `
           class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-intent-success sc-dnqmqq iQfLYL"
+            class="bp3-button bp3-intent-success sc-htoDjs dESvso"
             type="submit"
           >
             <span
@@ -1054,7 +1028,7 @@ exports[`Ballot switches audit and review views 1`] = `
             class="sc-fjdhpX hpwbXA"
           >
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-jzJRlG cJPPfk sc-dnqmqq iQfLYL"
+              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-jzJRlG cJPPfk sc-htoDjs dESvso"
               disabled=""
               tabindex="-1"
               type="button"
@@ -1101,7 +1075,7 @@ exports[`Ballot switches audit and review views 1`] = `
           class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-intent-success sc-dnqmqq iQfLYL"
+            class="bp3-button bp3-intent-success sc-htoDjs dESvso"
             type="submit"
           >
             <span
@@ -1237,7 +1211,7 @@ exports[`Ballot toggles and deletes a comment 1`] = `
             class="sc-fjdhpX hpwbXA"
           >
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-jzJRlG cJPPfk sc-dnqmqq iQfLYL"
+              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-jzJRlG cJPPfk sc-htoDjs dESvso"
               disabled=""
               tabindex="-1"
               type="button"
@@ -1284,7 +1258,7 @@ exports[`Ballot toggles and deletes a comment 1`] = `
           class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-intent-success sc-dnqmqq iQfLYL"
+            class="bp3-button bp3-intent-success sc-htoDjs dESvso"
             type="submit"
           >
             <span
@@ -1420,7 +1394,7 @@ exports[`Ballot toggles and submits comment 1`] = `
             class="sc-fjdhpX hpwbXA"
           >
             <button
-              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-jzJRlG cJPPfk sc-dnqmqq iQfLYL"
+              class="bp3-button bp3-disabled bp3-large bp3-intent-primary sc-jzJRlG cJPPfk sc-htoDjs dESvso"
               disabled=""
               tabindex="-1"
               type="button"
@@ -1469,7 +1443,7 @@ exports[`Ballot toggles and submits comment 1`] = `
           class="sc-ifAKCX jzSIMx"
         >
           <button
-            class="bp3-button bp3-intent-success sc-dnqmqq iQfLYL"
+            class="bp3-button bp3-intent-success sc-htoDjs dESvso"
             type="submit"
           >
             <span

@@ -16,7 +16,7 @@ from tests.helpers import (
     AB1_BALLOTS_ROUND_2,
 )
 from arlo_server.auth import UserType
-from arlo_server.models import ContestChoice
+from arlo_server.models import ContestChoice, BallotInterpretation, Contest
 from util.jsonschema import JSONDict
 
 
@@ -79,7 +79,7 @@ def test_ja_ballots_round_1(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -105,7 +105,7 @@ def test_ja_ballots_round_1(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -208,7 +208,7 @@ def test_ab_list_ballot_round_1(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -233,7 +233,7 @@ def test_ab_list_ballot_round_1(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -312,6 +312,7 @@ def test_ab_audit_ballot_happy_path(
     ballot = ballots[0]
 
     choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
+    contest_2_choices = ContestChoice.query.filter_by(contest_id=contest_ids[1]).all()
     audit_requests: List[JSONDict] = [
         {
             "status": "AUDITED",
@@ -319,7 +320,7 @@ def test_ab_audit_ballot_happy_path(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -330,7 +331,7 @@ def test_ab_audit_ballot_happy_path(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "BLANK",
-                    "choiceId": None,
+                    "choiceIds": [],
                     "comment": None,
                 }
             ],
@@ -341,7 +342,7 @@ def test_ab_audit_ballot_happy_path(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "CANT_AGREE",
-                    "choiceId": None,
+                    "choiceIds": [],
                     "comment": None,
                 }
             ],
@@ -354,14 +355,25 @@ def test_ab_audit_ballot_happy_path(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": None,
                 },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "CANT_AGREE",
-                    "choiceId": None,
+                    "choiceIds": [],
                     "comment": "weird scribble",
+                },
+            ],
+        },
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "VOTE",
+                    "choiceIds": [c.id for c in contest_2_choices[0:2]],
+                    "comment": None,
                 },
             ],
         },
@@ -390,6 +402,67 @@ def test_ab_audit_ballot_happy_path(
         assert ballots[0] == {**ballot, **audit_request}
 
 
+def test_ab_audit_ballot_overvote(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    ballot_id = ballots[0]["id"]
+
+    contest_id = contest_ids[1]
+    contest = Contest.query.get(contest_id)
+    choice_ids = [c.id for c in contest.choices]
+    assert len(choice_ids) > contest.votes_allowed
+
+    rv = put_json(
+        client,
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot_id}",
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_id,
+                    "interpretation": "VOTE",
+                    "choiceIds": choice_ids,
+                    "comment": None,
+                },
+            ],
+        },
+    )
+    assert_ok(rv)
+
+    interpretation = BallotInterpretation.query.get((ballot_id, contest_id))
+    assert interpretation.is_overvote
+
+    rv = put_json(
+        client,
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot_id}",
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_id,
+                    "interpretation": "VOTE",
+                    "choiceIds": choice_ids[0:2],
+                    "comment": None,
+                },
+            ],
+        },
+    )
+    assert_ok(rv)
+
+    interpretation = BallotInterpretation.query.get((ballot_id, contest_id))
+    assert not interpretation.is_overvote
+
+
 def test_ab_audit_ballot_invalid(
     client: FlaskClient,
     election_id: str,
@@ -414,7 +487,7 @@ def test_ab_audit_ballot_invalid(
                 {
                     "contestId": contest_ids[0],
                     "interpretation": "VOTE",
-                    "choiceId": choice_id,
+                    "choiceIds": [choice_id],
                     "comment": "blah blah blah",
                 }
             ],
@@ -435,11 +508,11 @@ def test_ab_audit_ballot_invalid(
             ]
         }
 
-    for missing_field in ["contestId", "interpretation", "choiceId", "comment"]:
+    for missing_field in ["contestId", "interpretation", "choiceIds", "comment"]:
         interpretation = {
             "contestId": contest_ids[0],
             "interpretation": "VOTE",
-            "choiceId": choice_id,
+            "choiceIds": [choice_id],
             "comment": "blah blah blah",
         }
         del interpretation[missing_field]
@@ -466,7 +539,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
@@ -480,7 +553,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "vote",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
@@ -494,12 +567,12 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": None,
+                        "choiceIds": [],
                         "comment": "blah blah blah",
                     }
                 ],
             },
-            f"Must include choiceId with interpretation VOTE for contest {contest_ids[0]}",
+            f"Must include choiceIds with interpretation VOTE for contest {contest_ids[0]}",
         ),
         (
             {
@@ -508,12 +581,12 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": "",
+                        "choiceIds": [""],
                         "comment": "blah blah blah",
                     }
                 ],
             },
-            f"Must include choiceId with interpretation VOTE for contest {contest_ids[0]}",
+            "Contest choices not found: ",
         ),
         (
             {
@@ -522,7 +595,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": "12345",
                         "interpretation": "VOTE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
@@ -536,12 +609,12 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": "12345",
+                        "choiceIds": ["12345"],
                         "comment": "blah blah blah",
                     }
                 ],
             },
-            "Contest choice not found: 12345",
+            "Contest choices not found: 12345",
         ),
         (
             {
@@ -550,7 +623,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[1],
                         "interpretation": "VOTE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
@@ -564,12 +637,12 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "BLANK",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
             },
-            f"Cannot include choiceId with interpretation BLANK for contest {contest_ids[0]}",
+            f"Cannot include choiceIds with interpretation BLANK for contest {contest_ids[0]}",
         ),
         (
             {
@@ -578,12 +651,12 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "CANT_AGREE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
             },
-            f"Cannot include choiceId with interpretation CANT_AGREE for contest {contest_ids[0]}",
+            f"Cannot include choiceIds with interpretation CANT_AGREE for contest {contest_ids[0]}",
         ),
         (
             {"status": "AUDITED", "interpretations": [],},
@@ -596,7 +669,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],
@@ -610,7 +683,7 @@ def test_ab_audit_ballot_invalid(
                     {
                         "contestId": contest_ids[0],
                         "interpretation": "VOTE",
-                        "choiceId": choice_id,
+                        "choiceIds": [choice_id],
                         "comment": "blah blah blah",
                     }
                 ],

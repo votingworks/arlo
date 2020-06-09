@@ -19,29 +19,34 @@ const LockedButton = styled(FormButton)`
 `
 
 const renderInterpretation = (
-  { interpretation, choiceId }: IBallotInterpretation,
+  { interpretation, choiceIds }: IBallotInterpretation,
   contest: IContest
 ) => {
   if (!interpretation) return <div />
-  const label = (() => {
-    switch (interpretation) {
-      case Interpretation.VOTE: {
-        const choice = contest.choices.find(c => c.id === choiceId)
-        return choice!.name
-      }
-      case Interpretation.BLANK:
-        return 'Overvote/Blank vote/Not on Ballot'
-      case Interpretation.CANT_AGREE:
-        return "Audit board can't agree"
-      default:
-        return ''
-    }
-  })()
-  return (
-    <LockedButton disabled large intent="primary">
-      {label}
-    </LockedButton>
-  )
+  switch (interpretation) {
+    case Interpretation.VOTE:
+      return contest.choices.map(choice =>
+        choiceIds.includes(choice.id) ? (
+          <LockedButton key={choice.id} disabled large intent="primary">
+            {choice.name}
+          </LockedButton>
+        ) : null
+      )
+    case Interpretation.BLANK:
+      return (
+        <LockedButton disabled large intent="primary">
+          Blank vote/Not on Ballot
+        </LockedButton>
+      )
+    case Interpretation.CANT_AGREE:
+      return (
+        <LockedButton disabled large intent="primary">
+          Audit board can&apos;t agree
+        </LockedButton>
+      )
+    default:
+      return null
+  }
 }
 
 interface IProps {

@@ -83,10 +83,7 @@ describe('Ballot', () => {
     })
   })
 
-  const buttonLabels = [
-    "Audit board can't agree",
-    'Overvote/Blank vote/Not on Ballot',
-  ]
+  const buttonLabels = ["Audit board can't agree", 'Blank vote/Not on Ballot']
   buttonLabels.forEach(buttonLabel => {
     it(`selects ${buttonLabel}`, async () => {
       const { container, getByLabelText, getByText, getByTestId } = render(
