@@ -51,12 +51,18 @@ const RoundProgress = ({
           currentRoundStatus: { numAuditedBallots, numSampledBallots },
         }) => (
           <SmallBarWrapper key={id}>
-            <span>{`${name}: ${numAuditedBallots} of ${numSampledBallots} ballots audited `}</span>
-            <ProgressBar
-              value={numAuditedBallots / numSampledBallots}
-              animate={numAuditedBallots < numSampledBallots}
-              intent="primary"
-            />
+            {numSampledBallots > 0 ? (
+              <>
+                <span>{`${name}: ${numAuditedBallots} of ${numSampledBallots} ballots audited `}</span>
+                <ProgressBar
+                  value={numAuditedBallots / numSampledBallots}
+                  animate={numAuditedBallots < numSampledBallots}
+                  intent="primary"
+                />
+              </>
+            ) : (
+              <span>{name}: no ballots to audit</span>
+            )}
           </SmallBarWrapper>
         )
       )}
