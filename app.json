@@ -1,12 +1,9 @@
 {
   "addons": ["heroku-postgresql:hobby-free"],
   "buildpacks": [
-    {
-      "url": "heroku/nodejs"
-    },
-    {
-      "url": "heroku/python"
-    }
+    { "url": "heroku/nodejs" },
+    { "url": "heroku/python" },
+    { "url": "heroku-community/cli" }
   ],
   "env": {
     "ARLO_SESSION_SECRET": {
@@ -26,7 +23,7 @@
   },
   "name": "arlo",
   "scripts": {
-    "postdeploy": "heroku pg:backups:restore vx-arlo-staging:: -a $HEROKU_APP_NAME --confirm $HEROKU_APP_NAME"
+    "postdeploy": "HEROKU_API_KEY=`heroku authorizations:create --expires-in 600 --short` heroku pg:backups:restore vx-arlo-staging:: -a $HEROKU_APP_NAME --confirm $HEROKU_APP_NAME"
   },
   "stack": "heroku-18"
 }
