@@ -131,86 +131,74 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 <div
                   class="bp3-divider sc-htoDjs kvcmFh"
                 />
-                <div
-                  class="sc-gZMcBi kDeHJh"
+                <label
+                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
                 >
-                  <label
-                    class=" bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  <input
+                    data-testid="choice-id-1"
+                    type="checkbox"
+                  />
+                  <span
+                    class="undefined bp3-control-indicator"
                   >
-                    <input
-                      data-testid="choice-id-1"
-                      name="interpretation-Contest Name-choice-id-1"
-                      type="checkbox"
-                      value="choice-id-1"
-                    />
                     <span
-                      class="undefined bp3-control-indicator"
+                      class="checkbox-text"
                     >
-                      <span
-                        class="checkbox-text"
-                      >
-                        Choice One
-                      </span>
+                      Choice One
                     </span>
-                  </label>
-                  <label
-                    class=" bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  </span>
+                </label>
+                <label
+                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                >
+                  <input
+                    data-testid="choice-id-2"
+                    type="checkbox"
+                  />
+                  <span
+                    class="undefined bp3-control-indicator"
                   >
-                    <input
-                      data-testid="choice-id-2"
-                      name="interpretation-Contest Name-choice-id-2"
-                      type="checkbox"
-                      value="choice-id-2"
-                    />
                     <span
-                      class="undefined bp3-control-indicator"
+                      class="checkbox-text"
                     >
-                      <span
-                        class="checkbox-text"
-                      >
-                        Choice Two
-                      </span>
+                      Choice Two
                     </span>
-                  </label>
-                  <label
-                    class=" bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  </span>
+                </label>
+                <label
+                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                >
+                  <input
+                    data-testid="CANT_AGREE"
+                    type="checkbox"
+                  />
+                  <span
+                    class="gray bp3-control-indicator"
                   >
-                    <input
-                      data-testid="CANT_AGREE"
-                      name="interpretation-Contest Name-CANT_AGREE"
-                      type="checkbox"
-                      value="CANT_AGREE"
-                    />
                     <span
-                      class="gray bp3-control-indicator"
+                      class="checkbox-text"
                     >
-                      <span
-                        class="checkbox-text"
-                      >
-                        Audit board can't agree
-                      </span>
+                      Audit board can't agree
                     </span>
-                  </label>
-                  <label
-                    class=" bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                  </span>
+                </label>
+                <label
+                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                >
+                  <input
+                    data-testid="BLANK"
+                    type="checkbox"
+                  />
+                  <span
+                    class="gray bp3-control-indicator"
                   >
-                    <input
-                      data-testid="BLANK"
-                      name="interpretation-Contest Name-BLANK"
-                      type="checkbox"
-                      value="BLANK"
-                    />
                     <span
-                      class="gray bp3-control-indicator"
+                      class="checkbox-text"
                     >
-                      <span
-                        class="checkbox-text"
-                      >
-                        Blank vote/Not on Ballot
-                      </span>
+                      Blank vote/Not on Ballot
                     </span>
-                  </label>
-                </div>
+                  </span>
+                </label>
                 <button
                   class="bp3-button bp3-minimal"
                   type="button"

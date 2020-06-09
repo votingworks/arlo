@@ -33,33 +33,27 @@ const Block = styled.label`
 `
 
 interface IProps {
-  name: string
-  value: string
   label: string
+  value: string
   handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   locked?: boolean
-  className?: string
   checked?: boolean
   gray?: boolean
 }
 
 const BlockCheckbox = ({
-  name,
-  value,
   label,
+  value,
   handleChange,
-  className,
   gray,
   checked,
 }: IProps) => (
-  <Block className={`${className || ''} bp3-control bp3-checkbox`}>
+  <Block className="bp3-control bp3-checkbox">
     <input
       type="checkbox"
-      name={name}
-      data-testid={value}
-      value={value}
       onChange={handleChange}
       checked={checked}
+      data-testid={value}
     />
     <span className={`${gray && !checked && 'gray'} bp3-control-indicator`}>
       <span className="checkbox-text">{label}</span>
