@@ -22,5 +22,11 @@
     ],
     "jsx": "preserve"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "**/_mocks.ts",
+    "**/*.test.*",
+    "**/testUtilities.ts",
+    "src/test/**"
+  ]
 }

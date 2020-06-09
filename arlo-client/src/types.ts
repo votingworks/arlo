@@ -54,7 +54,7 @@ export enum Interpretation {
 export interface IBallotInterpretation {
   contestId: string
   interpretation: Interpretation | null
-  choiceId: string | null
+  choiceIds: string[]
   comment: string | null
 }
 
