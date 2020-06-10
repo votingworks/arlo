@@ -1,2 +1,2 @@
-web: python server/main.py
-worker: python server/bgcompute.py
+web: python -m server.main
+worker: python -m server.bgcompute
