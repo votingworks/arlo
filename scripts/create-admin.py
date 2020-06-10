@@ -6,7 +6,7 @@ from server.models import User, AuditAdministration, db
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python create-admin.py <org_id> <user_email>")
+        print("Usage: python -m scripts.create-admin <org_id> <user_email>")
         sys.exit(1)
 
     org_id, email = sys.argv[1:]  # pylint: disable=unbalanced-tuple-unpacking
