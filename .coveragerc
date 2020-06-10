@@ -1,12 +1,9 @@
 [run]
 omit = 
-    app.py
-    tests/*
-    create.py
-    create-org.py
-    create-admin.py
-    resetdb.py
-    config/*
+    server/main.py
+    server/tests/*
+    server/config/*
+    scripts/*
 
 [report]
 fail_under = 97.6

@@ -12,19 +12,19 @@ initdevdb:
 install:
 	pipenv install
 	yarn install
-	yarn --cwd arlo-client install
-	yarn --cwd arlo-client build
+	yarn --cwd client install
+	yarn --cwd client build
 
 install-development:
 	pipenv install --dev
 	yarn install
-	yarn --cwd arlo-client install
+	yarn --cwd client install
 
 resettestdb:
 	FLASK_ENV=test make resetdb
 
 resetdb:
-	FLASK_ENV=$${FLASK_ENV:-development} pipenv run python resetdb.py
+	FLASK_ENV=$${FLASK_ENV:-development} pipenv run python scripts/resetdb.py
 
 dev-environment: deps initdevdb install-development resetdb
 
@@ -35,11 +35,11 @@ format-server:
 	pipenv run black .
 
 lint-server:
-	find . -name '*.py' | xargs pipenv run pylint --load-plugins pylint_flask_sqlalchemy
+	pipenv run pylint --load-plugins pylint_flask_sqlalchemy server scripts
 
 test-client:
-	yarn --cwd arlo-client lint
-	yarn --cwd arlo-client test
+	yarn --cwd client lint
+	yarn --cwd client test
 
 test-server:
 	pipenv run pytest

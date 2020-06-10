@@ -1,4 +1,4 @@
-arlo-client/**/_mocks.ts
-arlo-client/**/*.test.*
-arlo-client/**/testUtilities.ts
-arlo-client/src/test/**
+client/**/_mocks.ts
+client/**/*.test.*
+client/**/testUtilities.ts
+client/src/test/**

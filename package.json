@@ -2,12 +2,12 @@
   "name": "arlo",
   "private": true,
   "scripts": {
-    "build": "yarn --cwd arlo-client install && yarn --cwd arlo-client build",
+    "build": "yarn --cwd client install && yarn --cwd client build",
     "heroku-postbuild": "yarn build"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged && yarn --cwd arlo-client lint-staged && make typecheck-server"
+      "pre-commit": "lint-staged && yarn --cwd client lint-staged && make typecheck-server"
     }
   },
   "lint-staged": {
