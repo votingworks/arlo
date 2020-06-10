@@ -463,6 +463,42 @@ def test_ab_audit_ballot_overvote(
     assert not interpretation.is_overvote
 
 
+def test_ab_audit_ballot_wrong_audit_board(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
+    rv = client.get(
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+    ballot = ballots[0]
+
+    choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
+
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[1])
+    rv = put_json(
+        client,
+        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[1]}/ballots/{ballot['id']}",
+        {
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "VOTE",
+                    "choiceIds": [choice_id],
+                    "comment": "blah blah blah",
+                }
+            ],
+        },
+    )
+    assert rv.status_code == 404
+
+
 def test_ab_audit_ballot_invalid(
     client: FlaskClient,
     election_id: str,
