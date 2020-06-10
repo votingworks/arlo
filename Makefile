@@ -29,7 +29,7 @@ resetdb:
 dev-environment: deps initdevdb install-development resetdb
 
 typecheck-server:
-	pipenv run mypy .
+	pipenv run mypy server scripts
 
 format-server:
 	pipenv run black .
