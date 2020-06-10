@@ -3,7 +3,7 @@ from sqlalchemy import func, literal_column
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from flask import jsonify, request
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, NotFound
 
 from arlo_server import app, db
 from arlo_server.auth import with_jurisdiction_access, with_audit_board_access
@@ -286,7 +286,12 @@ def audit_ballot(
     audit_board: AuditBoard,  # pylint: disable=unused-argument
     ballot_id: str,
 ):
-    ballot = SampledBallot.query.get_or_404(ballot_id)
+    ballot = SampledBallot.query.filter_by(
+        id=ballot_id, audit_board_id=audit_board.id
+    ).first()
+    if not ballot:
+        raise NotFound()
+
     ballot_audit = request.get_json()
     validate_audit_ballot(ballot_audit)
 
