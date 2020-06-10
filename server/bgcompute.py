@@ -1,10 +1,10 @@
 import time
 
-from .app import db
-from .models import *  # pylint: disable=wildcard-import
-from .api.routes import compute_sample_sizes
-from .api.ballot_manifest import process_ballot_manifest_file
-from .util.jurisdiction_bulk_update import process_jurisdictions_file
+from server.app import db
+from server.models import *  # pylint: disable=wildcard-import
+from server.api.routes import compute_sample_sizes
+from server.api.ballot_manifest import process_ballot_manifest_file
+from server.util.jurisdiction_bulk_update import process_jurisdictions_file
 
 
 def bgcompute():

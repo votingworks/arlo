@@ -46,3 +46,6 @@ test-server:
 
 test-server-coverage:
 	pipenv run pytest --cov=.
+
+run-dev:
+	./run-dev.sh
