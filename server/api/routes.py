@@ -1,7 +1,7 @@
 import datetime, csv, io, json, uuid
 from typing import Dict, List, Tuple
 
-from flask import jsonify, request, session
+from flask import jsonify, request
 from werkzeug.exceptions import NotFound, Forbidden, Conflict
 
 from xkcdpass import xkcd_password as xp
@@ -9,7 +9,7 @@ from xkcdpass import xkcd_password as xp
 from sqlalchemy.orm.session import Session
 
 
-from ..app import app
+from . import api
 from ..auth import with_election_access, require_audit_admin_for_organization
 from ..models import *  # pylint: disable=wildcard-import
 from .ballots import (
@@ -242,7 +242,7 @@ def validate_new_election(election: JSONDict, organization_id: str):
         )
 
 
-@app.route("/election/new", methods=["POST"])
+@api.route("/election/new", methods=["POST"])
 def election_new():
     election = request.get_json()
 
@@ -264,7 +264,7 @@ def election_new():
     return jsonify(electionId=election.id)
 
 
-@app.route("/election/<election_id>/jurisdiction/file", methods=["GET"])
+@api.route("/election/<election_id>/jurisdiction/file", methods=["GET"])
 @with_election_access
 def get_jurisdictions_file(election: Election):
     jurisdictions_file = election.jurisdictions_file
@@ -277,7 +277,7 @@ def get_jurisdictions_file(election: Election):
     return jsonify(file=None, processing=None)
 
 
-@app.route("/election/<election_id>/jurisdiction/file/csv", methods=["GET"])
+@api.route("/election/<election_id>/jurisdiction/file/csv", methods=["GET"])
 @with_election_access
 def download_jurisdictions_file(election: Election):
     if not election.jurisdictions_file:
@@ -292,7 +292,7 @@ JURISDICTION_NAME = "Jurisdiction"
 ADMIN_EMAIL = "Admin Email"
 
 
-@app.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
+@api.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
 @with_election_access
 def update_jurisdictions_file(election: Election):
     if "jurisdictions" not in request.files:
@@ -350,7 +350,7 @@ def update_jurisdictions_file(election: Election):
     return jsonify(status="ok")
 
 
-@app.route("/election/<election_id>/audit/status", methods=["GET"])
+@api.route("/election/<election_id>/audit/status", methods=["GET"])
 @with_election_access
 def audit_status(election):
     return jsonify(
@@ -449,7 +449,7 @@ def audit_status(election):
     )
 
 
-@app.route("/election/<election_id>/audit/basic", methods=["POST"])
+@api.route("/election/<election_id>/audit/basic", methods=["POST"])
 @with_election_access
 def audit_basic_update(election):
     info = request.get_json()
@@ -507,7 +507,7 @@ def audit_basic_update(election):
     return jsonify(status="ok")
 
 
-@app.route("/election/<election_id>/audit/sample-size", methods=["POST"])
+@api.route("/election/<election_id>/audit/sample-size", methods=["POST"])
 @with_election_access
 def samplesize_set(election):
     # only works if there's only one round
@@ -521,7 +521,7 @@ def samplesize_set(election):
     return jsonify(status="ok")
 
 
-@app.route("/election/<election_id>/audit/jurisdictions", methods=["POST"])
+@api.route("/election/<election_id>/audit/jurisdictions", methods=["POST"])
 @with_election_access
 def jurisdictions_set(election):
     jurisdictions = request.get_json()["jurisdictions"]
@@ -556,7 +556,7 @@ def jurisdictions_set(election):
     return jsonify(status="ok")
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/manifest",
     methods=["DELETE", "PUT"],
 )
@@ -580,7 +580,7 @@ def jurisdiction_manifest(election, jurisdiction_id):
     return jsonify(status="ok")
 
 
-@app.route("/election/<election_id>/audit/freeze", methods=["POST"])
+@api.route("/election/<election_id>/audit/freeze", methods=["POST"])
 @with_election_access
 def audit_launch(election):
     # don't freeze an already frozen election
@@ -598,7 +598,7 @@ def audit_launch(election):
     return jsonify(status="ok")
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>",
     methods=["GET"],
 )
@@ -624,7 +624,7 @@ def audit_board(election, jurisdiction_id, audit_board_id):
     )
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>",
     methods=["POST"],
 )
@@ -697,7 +697,7 @@ def set_audit_board(election, jurisdiction_id, audit_board_id):
     return jsonify(status="ok")
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballot-list"
 )
 @with_election_access
@@ -743,7 +743,7 @@ def ballot_list(election, jurisdiction_id, round_id):
     )
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>/round/<round_id>/ballot-list"
 )
 @with_election_access
@@ -795,7 +795,7 @@ def get_ballot(election_id, jurisdiction_id, batch_id, ballot_position):
     )
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>/set-not-found",
     methods=["POST"],
 )
@@ -825,7 +825,7 @@ def ballot_set_not_found(election, jurisdiction_id, batch_id, ballot_position):
     return jsonify(status="ok")
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>",
     methods=["POST"],
 )
@@ -858,7 +858,7 @@ def ballot_set(election, jurisdiction_id, batch_id, ballot_position):
     return jsonify(status="ok")
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list",
     methods=["GET"],
 )
@@ -877,7 +877,7 @@ def jurisdiction_retrieval_list(election, jurisdiction_id, round_num):
     )
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/results",
     methods=["POST"],
 )
@@ -911,7 +911,7 @@ def jurisdiction_results(election, jurisdiction_id, round_num):
     return jsonify(status="ok")
 
 
-@app.route("/election/<election_id>/audit/reset", methods=["POST"])
+@api.route("/election/<election_id>/audit/reset", methods=["POST"])
 @with_election_access
 def audit_reset(election):
     # deleting the election cascades to all the data structures
@@ -928,14 +928,3 @@ def audit_reset(election):
     db.session.commit()
 
     return jsonify(status="ok")
-
-
-# Test endpoint for the session.
-@app.route("/incr")
-def incr():
-    if "count" in session:
-        session["count"] += 1
-    else:
-        session["count"] = 1
-
-    return jsonify(count=session["count"])

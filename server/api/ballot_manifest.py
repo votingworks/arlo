@@ -4,7 +4,7 @@ from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, NotFound
 
-from ..app import app, db
+from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_jurisdiction_access, with_election_access
 from ..util.process_file import (
@@ -102,7 +102,7 @@ def clear_ballot_manifest_file(jurisdiction: Jurisdiction):
     Batch.query.filter_by(jurisdiction=jurisdiction).delete()
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest",
     methods=["PUT"],
 )
@@ -117,7 +117,7 @@ def upload_ballot_manifest(
     return jsonify(status="ok")
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest",
     methods=["GET"],
 )
@@ -134,7 +134,7 @@ def get_ballot_manifest(
         return jsonify(file=None, processing=None)
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest/csv",
     methods=["GET"],
 )
@@ -153,7 +153,7 @@ def download_ballot_manifest_file(
     )
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest",
     methods=["DELETE"],
 )

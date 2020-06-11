@@ -3,7 +3,7 @@ from flask import request, jsonify
 from werkzeug.exceptions import BadRequest
 from sqlalchemy import func
 
-from ..app import app, db
+from . import api
 from ..auth import with_election_access, with_audit_board_access
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import get_current_round
@@ -148,7 +148,7 @@ def round_status_by_contest(
     }
 
 
-@app.route("/election/<election_id>/contest", methods=["PUT"])
+@api.route("/election/<election_id>/contest", methods=["PUT"])
 @with_election_access
 def create_or_update_all_contests(election: Election):
     json_contests = request.get_json()
@@ -165,7 +165,7 @@ def create_or_update_all_contests(election: Election):
     return jsonify(status="ok")
 
 
-@app.route("/election/<election_id>/contest", methods=["GET"])
+@api.route("/election/<election_id>/contest", methods=["GET"])
 @with_election_access
 def list_contests(election: Election):
     current_round = get_current_round(election)
@@ -177,7 +177,7 @@ def list_contests(election: Election):
     return jsonify({"contests": json_contests})
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/contest",
     methods=["GET"],
 )

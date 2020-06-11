@@ -9,7 +9,7 @@ from ..helpers import assert_ok, create_org_and_admin, set_logged_in_user, post_
 def test_without_org_with_anonymous_user(client: FlaskClient):
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {"auditName": "Test Audit", "isMultiJurisdiction": False},
     )
     assert rv.status_code == 200
@@ -20,7 +20,7 @@ def test_in_org_with_anonymous_user(client: FlaskClient):
     org = create_organization()
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {
             "auditName": "Test Audit",
             "organizationId": org.id,
@@ -44,7 +44,7 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
 
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {
             "auditName": "Test Audit",
             "organizationId": org_id,
@@ -55,7 +55,7 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
     election_id = response.get("electionId", None)
     assert election_id, response
 
-    rv = client.get(f"/election/{election_id}/audit/status")
+    rv = client.get(f"/api/election/{election_id}/audit/status")
 
     assert json.loads(rv.data)["organizationId"] == org_id
 
@@ -67,7 +67,7 @@ def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
 
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {
             "auditName": "Test Audit",
             "organizationId": org2_id,
@@ -91,7 +91,7 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
 
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {
             "auditName": "Test Audit",
             "organizationId": org_id,
@@ -110,7 +110,7 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
 
 
 def test_missing_audit_name(client: FlaskClient):
-    rv = post_json(client, "/election/new", {})
+    rv = post_json(client, "/api/election/new", {})
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
@@ -125,7 +125,7 @@ def test_missing_audit_name(client: FlaskClient):
 def test_without_org_duplicate_audit_name(client: FlaskClient):
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {"auditName": "Test Audit", "isMultiJurisdiction": False},
     )
     assert rv.status_code == 200
@@ -133,7 +133,7 @@ def test_without_org_duplicate_audit_name(client: FlaskClient):
 
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {"auditName": "Test Audit", "isMultiJurisdiction": False},
     )
     assert rv.status_code == 200
@@ -146,7 +146,7 @@ def test_in_org_duplicate_audit_name(client: FlaskClient):
 
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {
             "auditName": "Test Audit",
             "organizationId": org_id,
@@ -158,7 +158,7 @@ def test_in_org_duplicate_audit_name(client: FlaskClient):
 
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {
             "auditName": "Test Audit",
             "organizationId": org_id,
@@ -183,7 +183,7 @@ def test_two_orgs_same_name(client: FlaskClient):
 
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {
             "auditName": "Test Audit",
             "organizationId": org_id_1,
@@ -197,7 +197,7 @@ def test_two_orgs_same_name(client: FlaskClient):
 
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {
             "auditName": "Test Audit",
             "organizationId": org_id_2,
@@ -209,10 +209,10 @@ def test_two_orgs_same_name(client: FlaskClient):
 
 
 def test_election_reset(client, election_id):
-    rv = client.post(f"/election/{election_id}/audit/reset")
+    rv = client.post(f"/api/election/{election_id}/audit/reset")
     assert_ok(rv)
 
-    rv = client.get(f"/election/{election_id}/audit/status")
+    rv = client.get(f"/api/election/{election_id}/audit/status")
     status = json.loads(rv.data)
 
     assert status["riskLimit"] is None
@@ -223,5 +223,5 @@ def test_election_reset(client, election_id):
 
 
 def test_election_reset_not_found(client):
-    rv = client.post(f"/election/{str(uuid.uuid4())}/audit/reset")
+    rv = client.post(f"/api/election/{str(uuid.uuid4())}/audit/reset")
     assert rv.status_code == 404

@@ -6,7 +6,7 @@ from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
 from sqlalchemy.orm import joinedload
 
-from ..auth import (
+from ..auth.lib import (
     UserType,
     _USER,
     _SUPERADMIN,
@@ -128,7 +128,7 @@ def create_election(
 ) -> str:
     rv = post_json(
         client,
-        "/election/new",
+        "/api/election/new",
         {
             "auditName": audit_name,
             "organizationId": organization_id,

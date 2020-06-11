@@ -6,7 +6,7 @@ from ..helpers import assert_ok, put_json, compare_json, asserts_startswith
 
 
 def test_get_empty(client: FlaskClient, election_id: str):
-    rv = client.get(f"/election/{election_id}/settings")
+    rv = client.get(f"/api/election/{election_id}/settings")
     assert rv.status_code == 200, f"unexpected response: {rv.data}"
     assert json.loads(rv.data) == {
         "electionName": None,
@@ -19,7 +19,7 @@ def test_get_empty(client: FlaskClient, election_id: str):
 
 def test_update_election(client: FlaskClient, election_id: str):
     # Get the existing data.
-    rv = client.get(f"/election/{election_id}/settings")
+    rv = client.get(f"/api/election/{election_id}/settings")
 
     # Update the values.
     election = json.loads(rv.data)
@@ -29,7 +29,7 @@ def test_update_election(client: FlaskClient, election_id: str):
     election["riskLimit"] = 15
     election["state"] = USState.Mississippi
 
-    rv = put_json(client, f"/election/{election_id}/settings", election)
+    rv = put_json(client, f"/api/election/{election_id}/settings", election)
     assert_ok(rv)
 
     election_record = Election.query.filter_by(id=election_id).one()
@@ -42,14 +42,14 @@ def test_update_election(client: FlaskClient, election_id: str):
 
 def test_invalid_state(client: FlaskClient, election_id: str):
     # Get the existing data.
-    rv = client.get(f"/election/{election_id}/settings")
+    rv = client.get(f"/api/election/{election_id}/settings")
 
     # Set an invalid state.
     election = json.loads(rv.data)
     election["state"] = "XX"
 
     # Attempt to write invalid data.
-    rv = put_json(client, f"/election/{election_id}/settings", election)
+    rv = put_json(client, f"/api/election/{election_id}/settings", election)
 
     assert rv.status_code == 400, f"unexpected response: {rv.data}"
     compare_json(
@@ -67,14 +67,14 @@ def test_invalid_state(client: FlaskClient, election_id: str):
 
 def test_invalid_risk_limit(client: FlaskClient, election_id: str):
     # Get the existing data.
-    rv = client.get(f"/election/{election_id}/settings")
+    rv = client.get(f"/api/election/{election_id}/settings")
 
     # Set an invalid state.
     election = json.loads(rv.data)
     election["riskLimit"] = -1
 
     # Attempt to write invalid data.
-    rv = put_json(client, f"/election/{election_id}/settings", election)
+    rv = put_json(client, f"/api/election/{election_id}/settings", election)
 
     assert rv.status_code == 400, f"unexpected response: {rv.data}"
     compare_json(
@@ -93,7 +93,7 @@ def test_invalid_risk_limit(client: FlaskClient, election_id: str):
 def test_invalid_additional_property(client: FlaskClient, election_id: str):
     rv = put_json(
         client,
-        f"/election/{election_id}/settings",
+        f"/api/election/{election_id}/settings",
         {"electionNameTypo": "An Updated Name"},
     )
     assert rv.status_code == 400, f"unexpected response: {rv.data}"

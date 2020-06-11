@@ -50,7 +50,7 @@ def election_id(client: FlaskClient) -> str:
 @pytest.fixture
 def jurisdiction_ids(client: FlaskClient, election_id: str) -> List[str]:
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/file",
+        f"/api/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
                 # We expect the API to order the jurisdictions by name, so we
@@ -110,7 +110,7 @@ def contest_ids(
             "jurisdictionIds": jurisdiction_ids[:2],
         },
     ]
-    rv = put_json(client, f"/election/{election_id}/contest", contests)
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
     assert_ok(rv)
     return [str(c["id"]) for c in contests]
 
@@ -124,7 +124,7 @@ def election_settings(client: FlaskClient, election_id: str):
         "riskLimit": 10,
         "state": USState.California,
     }
-    rv = put_json(client, f"/election/{election_id}/settings", settings)
+    rv = put_json(client, f"/api/election/{election_id}/settings", settings)
     assert_ok(rv)
 
 
@@ -132,7 +132,7 @@ def election_settings(client: FlaskClient, election_id: str):
 def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -148,7 +148,7 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
     )
     assert_ok(rv)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -178,11 +178,11 @@ def round_1_id(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/round",
+        f"/api/election/{election_id}/round",
         {"roundNum": 1, "sampleSize": SAMPLE_SIZE_ROUND_1},
     )
     assert_ok(rv)
-    rv = client.get(f"/election/{election_id}/round",)
+    rv = client.get(f"/api/election/{election_id}/round",)
     rounds = json.loads(rv.data)["rounds"]
     return str(rounds[0]["id"])
 
@@ -198,10 +198,10 @@ def round_2_id(
     run_audit_round(round_1_id, contest_ids[0], 0.5)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
     assert_ok(rv)
 
-    rv = client.get(f"/election/{election_id}/round",)
+    rv = client.get(f"/api/election/{election_id}/round",)
     rounds = json.loads(rv.data)["rounds"]
     return str(rounds[1]["id"])
 
@@ -213,12 +213,12 @@ def audit_board_round_1_ids(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
     )
     assert_ok(rv)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board"
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
     return [ab["id"] for ab in audit_boards]
@@ -231,7 +231,7 @@ def audit_board_round_2_ids(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
         [
             {"name": "Audit Board #1"},
             {"name": "Audit Board #2"},
@@ -240,7 +240,7 @@ def audit_board_round_2_ids(
     )
     assert_ok(rv)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board"
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
     return [ab["id"] for ab in audit_boards]
@@ -251,13 +251,13 @@ def audit_board_round_2_ids(
 # or else Flask complains. See test_auth.py for the tests that use these routes.
 @pytest.fixture(scope="session", autouse=True)
 def auth_decorator_test_routes():
-    @app.route("/election/<election_id>/test_auth")
+    @app.route("/api/election/<election_id>/test_auth")
     @with_election_access
     def fake_election_route(election: Election):  # pylint: disable=unused-variable
         assert election
         return jsonify(election.id)
 
-    @app.route("/election/<election_id>/jurisdiction/<jurisdiction_id>/test_auth")
+    @app.route("/api/election/<election_id>/jurisdiction/<jurisdiction_id>/test_auth")
     @with_jurisdiction_access
     def fake_jurisdiction_route(
         election: Election, jurisdiction: Jurisdiction
@@ -267,7 +267,7 @@ def auth_decorator_test_routes():
         return jsonify([election.id, jurisdiction.id])
 
     @app.route(
-        "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/test_auth"
+        "/api/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/test_auth"
     )
     @with_audit_board_access
     def fake_audit_board_route(

@@ -25,7 +25,7 @@ def test_ja_ballots_bad_round_id(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/invalid-round-id/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/invalid-round-id/ballots"
     )
     assert rv.status_code == 404
 
@@ -40,7 +40,7 @@ def test_ja_ballots_round_1(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
 
@@ -72,7 +72,7 @@ def test_ja_ballots_round_1(
     choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
     rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballots[0]['id']}",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballots[0]['id']}",
         {
             "status": "AUDITED",
             "interpretations": [
@@ -89,7 +89,7 @@ def test_ja_ballots_round_1(
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
 
@@ -118,7 +118,7 @@ def test_ja_ballots_before_audit_boards_set_up(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
     assert len(ballots) == J1_BALLOTS_ROUND_1
@@ -145,7 +145,7 @@ def test_ja_ballots_round_2(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
 
@@ -176,7 +176,7 @@ def test_ab_list_ballot_round_1(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
     assert len(ballots) == AB1_BALLOTS_ROUND_1
@@ -201,7 +201,7 @@ def test_ab_list_ballot_round_1(
     choice_id = ContestChoice.query.filter_by(contest_id=contest_ids[0]).first().id
     rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballots[0]['id']}",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballots[0]['id']}",
         {
             "status": "AUDITED",
             "interpretations": [
@@ -218,7 +218,7 @@ def test_ab_list_ballot_round_1(
 
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
 
@@ -244,7 +244,7 @@ def test_ab_list_ballot_round_1(
     # Check audit board 2 as well
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[1])
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[1]}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[1]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
     assert len(ballots) == AB2_BALLOTS_ROUND_1
@@ -259,7 +259,7 @@ def test_ab_list_ballots_round_2(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_2_ids[0])
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board/{audit_board_round_2_ids[0]}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board/{audit_board_round_2_ids[0]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
     assert len(ballots) == AB1_BALLOTS_ROUND_2
@@ -290,7 +290,7 @@ def test_ab_audit_ballot_not_found(
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/not-a-real-ballot-id",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/not-a-real-ballot-id",
         {},
     )
     assert rv.status_code == 404
@@ -306,7 +306,7 @@ def test_ab_audit_ballot_happy_path(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
     ballot = ballots[0]
@@ -382,13 +382,13 @@ def test_ab_audit_ballot_happy_path(
     for audit_request in audit_requests:
         rv = put_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
             audit_request,
         )
         assert_ok(rv)
 
         rv = client.get(
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
         )
         ballots = json.loads(rv.data)["ballots"]
 
@@ -412,7 +412,7 @@ def test_ab_audit_ballot_overvote(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
     ballot_id = ballots[0]["id"]
@@ -424,7 +424,7 @@ def test_ab_audit_ballot_overvote(
 
     rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot_id}",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot_id}",
         {
             "status": "AUDITED",
             "interpretations": [
@@ -444,7 +444,7 @@ def test_ab_audit_ballot_overvote(
 
     rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot_id}",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot_id}",
         {
             "status": "AUDITED",
             "interpretations": [
@@ -473,7 +473,7 @@ def test_ab_audit_ballot_wrong_audit_board(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
     ballot = ballots[0]
@@ -483,7 +483,7 @@ def test_ab_audit_ballot_wrong_audit_board(
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[1])
     rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[1]}/ballots/{ballot['id']}",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[1]}/ballots/{ballot['id']}",
         {
             "status": "AUDITED",
             "interpretations": [
@@ -509,7 +509,7 @@ def test_ab_audit_ballot_invalid(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
     ballot = ballots[0]
@@ -531,7 +531,7 @@ def test_ab_audit_ballot_invalid(
         del audit_request[missing_field]
         rv = put_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
             audit_request,
         )
         assert rv.status_code == 400
@@ -554,7 +554,7 @@ def test_ab_audit_ballot_invalid(
         del interpretation[missing_field]
         rv = put_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
             {"status": "AUDITED", "interpretations": [interpretation],},
         )
         assert rv.status_code == 400
@@ -730,7 +730,7 @@ def test_ab_audit_ballot_invalid(
     for (invalid_request, expected_message) in invalid_requests:
         rv = put_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots/{ballot['id']}",
             invalid_request,
         )
         assert rv.status_code == 400
@@ -744,7 +744,7 @@ def test_ja_ballot_retrieval_list_bad_round_id(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/invalid-round-id/retrieval-list"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/invalid-round-id/retrieval-list"
     )
     assert rv.status_code == 404
 
@@ -754,7 +754,7 @@ def test_ja_ballot_retrieval_list_before_audit_boards_set_up(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/retrieval-list"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/retrieval-list"
     )
     assert rv.status_code == 200
     assert "attachment; filename=" in rv.headers["Content-Disposition"]
@@ -775,7 +775,7 @@ def test_ja_ballot_retrieval_list_round_1(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/retrieval-list"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/retrieval-list"
     )
     assert rv.status_code == 200
     assert "attachment; filename=" in rv.headers["Content-Disposition"]
@@ -795,7 +795,7 @@ def test_ja_ballot_retrieval_list_round_2(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/retrieval-list"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/retrieval-list"
     )
     assert rv.status_code == 200
     assert "attachment; filename=" in rv.headers["Content-Disposition"]

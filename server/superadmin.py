@@ -1,6 +1,5 @@
-from flask import render_template, redirect, request
+from flask import render_template, redirect, request, Blueprint
 
-from .app import app
 from .models import *  # pylint: disable=wildcard-import
 from .auth import (
     UserType,
@@ -8,8 +7,10 @@ from .auth import (
     set_loggedin_user,
 )
 
+superadmin = Blueprint("superadmin", __name__)
 
-@app.route(
+
+@superadmin.route(
     "/superadmin/", methods=["GET"],
 )
 @with_superadmin_access
@@ -18,7 +19,7 @@ def superadmin_organizations():
     return render_template("superadmin/organizations.html", organizations=organizations)
 
 
-@app.route(
+@superadmin.route(
     "/superadmin/jurisdictions", methods=["GET"],
 )
 @with_superadmin_access
@@ -28,7 +29,7 @@ def superadmin_jurisdictions():
     return render_template("superadmin/jurisdictions.html", election=election)
 
 
-@app.route(
+@superadmin.route(
     "/superadmin/auditadmin-login", methods=["POST"],
 )
 @with_superadmin_access
@@ -38,7 +39,7 @@ def superadmin_auditadmin_login():
     return redirect("/")
 
 
-@app.route(
+@superadmin.route(
     "/superadmin/jurisdictionadmin-login", methods=["POST"],
 )
 @with_superadmin_access

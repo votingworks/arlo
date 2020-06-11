@@ -30,7 +30,7 @@ def test_audit_status(client, election_id):
         _num_ballots,
     ) = setup_whole_audit(client, election_id, "Audit Status Test", 10, "1234567890")
 
-    rv = client.get(f"/election/{election_id}/audit/status")
+    rv = client.get(f"/api/election/{election_id}/audit/status")
     status = json.loads(rv.data)
 
     compare_json(

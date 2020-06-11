@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import aggregate_order_by
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, NotFound
 
-from ..app import app, db
+from . import api
 from ..auth import with_jurisdiction_access, with_audit_board_access
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_download import csv_response, election_timestamp_name
@@ -84,7 +84,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
     return csv_io.getvalue()
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/retrieval-list",
     methods=["GET"],
 )
@@ -139,7 +139,7 @@ def serialize_ballot(ballot: SampledBallot) -> JSONDict:
     }
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballots",
     methods=["GET"],
 )
@@ -167,7 +167,7 @@ def list_ballots_for_jurisdiction(
     return jsonify({"ballots": json_ballots})
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/ballots",
     methods=["GET"],
 )
@@ -261,7 +261,7 @@ def validate_audit_ballot(ballot_audit: JSONDict):
             )
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/ballots/<ballot_id>",
     methods=["PUT"],
 )

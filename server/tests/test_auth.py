@@ -5,11 +5,11 @@ from urllib.parse import urlparse, parse_qs
 import pytest
 from flask.testing import FlaskClient
 
-from ...auth import UserType
-from ...api.auth_routes import auth0_sa, auth0_aa, auth0_ja
-from ...models import *  # pylint: disable=wildcard-import
-from ...util.jsonschema import JSONDict
-from ..helpers import *  # pylint: disable=wildcard-import
+from ..auth import UserType
+from ..auth.routes import auth0_sa, auth0_aa, auth0_ja
+from ..models import *  # pylint: disable=wildcard-import
+from ..util.jsonschema import JSONDict
+from .helpers import *  # pylint: disable=wildcard-import
 
 
 SA_EMAIL = "sa@voting.works"
@@ -300,7 +300,7 @@ def test_auth_me_not_logged_in(client: FlaskClient,):
 
 def test_with_election_access_audit_admin(client: FlaskClient, election_id: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, AA_EMAIL)
-    rv = client.get(f"/election/{election_id}/test_auth")
+    rv = client.get(f"/api/election/{election_id}/test_auth")
     assert rv.status_code == 200
     assert json.loads(rv.data) == election_id
 
@@ -310,7 +310,7 @@ def test_with_election_access_wrong_org(
 ):
     create_org_and_admin("Org 2", "aa2@example.com")
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "aa2@example.com")
-    rv = client.get(f"/election/{election_id}/test_auth")
+    rv = client.get(f"/api/election/{election_id}/test_auth")
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
         "errors": [
@@ -326,7 +326,7 @@ def test_with_election_access_not_found(
     client: FlaskClient, election_id: str  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "aa2@example.com")
-    rv = client.get("/election/not-a-real-id/test_auth")
+    rv = client.get("/api/election/not-a-real-id/test_auth")
     assert rv.status_code == 404
 
 
@@ -337,7 +337,7 @@ def test_with_election_access_jurisdiction_admin(
     jurisdiction_id: str,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
-    rv = client.get(f"/election/{election_id}/test_auth")
+    rv = client.get(f"/api/election/{election_id}/test_auth")
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
         "errors": [
@@ -354,7 +354,7 @@ def test_with_election_access_audit_board_user(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
 
-    rv = client.get(f"/election/{election_id}/test_auth")
+    rv = client.get(f"/api/election/{election_id}/test_auth")
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
         "errors": [
@@ -370,7 +370,7 @@ def test_with_election_access_anonymous_user(
     client: FlaskClient, org_id: str, election_id: str
 ):
     clear_logged_in_user(client)
-    rv = client.get(f"/election/{election_id}/test_auth")
+    rv = client.get(f"/api/election/{election_id}/test_auth")
     assert rv.status_code == 401
     assert json.loads(rv.data) == {
         "errors": [
@@ -386,7 +386,9 @@ def test_with_jurisdiction_access_jurisdiction_admin(
     client: FlaskClient, election_id: str, jurisdiction_id: str
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
-    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth"
+    )
     assert rv.status_code == 200
     assert json.loads(rv.data) == [election_id, jurisdiction_id]
 
@@ -399,7 +401,9 @@ def test_with_jurisdiction_access_wrong_org(
     election_id_2 = create_election(client, organization_id=org_id_2)
     create_jurisdiction_and_admin(election_id_2, user_email="ja2@example.com")
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "ja2@example.com")
-    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth"
+    )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
         "errors": [
@@ -423,7 +427,7 @@ def test_with_jurisdiction_access_wrong_election(
     )
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "ja2@example.com")
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id_2}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id_2}/test_auth"
     )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
@@ -446,7 +450,7 @@ def test_with_jurisdiction_access_wrong_jurisdiction(
     )
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id_2}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id_2}/test_auth"
     )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
@@ -465,7 +469,9 @@ def test_with_jurisdiction_access_election_not_found(
     jurisdiction_id: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
-    rv = client.get(f"/election/not-a-real-id/jurisdiction/{jurisdiction_id}/test_auth")
+    rv = client.get(
+        f"/api/election/not-a-real-id/jurisdiction/{jurisdiction_id}/test_auth"
+    )
     assert rv.status_code == 404
 
 
@@ -475,7 +481,7 @@ def test_with_jurisdiction_access_jurisdiction_not_found(
     jurisdiction_id: str,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
-    rv = client.get(f"/election/{election_id}/jurisdiction/not-a-real-id/test_auth")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction/not-a-real-id/test_auth")
     assert rv.status_code == 404
 
 
@@ -483,7 +489,9 @@ def test_with_jurisdiction_access_audit_admin(
     client: FlaskClient, election_id: str, jurisdiction_id: str
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, AA_EMAIL)
-    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth"
+    )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
         "errors": [
@@ -499,7 +507,9 @@ def test_with_jurisdiction_access_audit_board_user(
     client: FlaskClient, election_id: str, jurisdiction_id: str, audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
-    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth"
+    )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
         "errors": [
@@ -515,7 +525,9 @@ def test_with_jurisdiction_access_anonymous_user(
     client: FlaskClient, election_id: str, jurisdiction_id: str
 ):
     clear_logged_in_user(client)
-    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth"
+    )
     assert rv.status_code == 401
     assert json.loads(rv.data) == {
         "errors": [
@@ -536,7 +548,7 @@ def test_with_audit_board_access_audit_board_user(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == [
@@ -557,7 +569,7 @@ def test_with_audit_board_access_audit_admin(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, AA_EMAIL)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
@@ -580,7 +592,7 @@ def test_with_audit_board_access_jurisdiction_admin(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
@@ -603,7 +615,7 @@ def test_with_audit_board_access_anonymous_user(
     clear_logged_in_user(client)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 401
     assert json.loads(rv.data) == {
@@ -635,7 +647,7 @@ def test_with_audit_board_access_wrong_org(
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id_2)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
@@ -662,7 +674,7 @@ def test_with_audit_board_access_wrong_election(
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
 
     rv = client.get(
-        f"/election/{election_id_2}/jurisdiction/{jurisdiction_id_2}/round/{round_id_2}/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/{election_id_2}/jurisdiction/{jurisdiction_id_2}/round/{round_id_2}/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
@@ -686,7 +698,7 @@ def test_with_audit_board_access_wrong_jurisdiction(
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id_2}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id_2}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
@@ -705,7 +717,7 @@ def test_with_audit_board_access_wrong_round(
     round_id_2 = create_round(election_id, round_num=2)
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id_2}/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id_2}/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
@@ -728,7 +740,7 @@ def test_with_audit_board_access_wrong_audit_board(
     audit_board_id_2 = create_audit_board(jurisdiction_id, round_id)
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id_2}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id_2}/test_auth"
     )
     assert rv.status_code == 403
     assert json.loads(rv.data) == {
@@ -746,7 +758,7 @@ def test_with_audit_board_access_election_not_found(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
-        f"/election/not-a-real-id/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/not-a-real-id/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 404
 
@@ -756,7 +768,7 @@ def test_with_audit_board_access_jurisdiction_not_found(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/not-a-real-id/round/{round_id}/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/not-a-real-id/round/{round_id}/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 404
 
@@ -766,7 +778,7 @@ def test_with_audit_board_access_round_not_found(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/not-a-real-id/audit-board/{audit_board_id}/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/not-a-real-id/audit-board/{audit_board_id}/test_auth"
     )
     assert rv.status_code == 404
 
@@ -780,7 +792,7 @@ def test_with_audit_board_access_audit_board_not_found(
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/not-a-real-id/test_auth"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/not-a-real-id/test_auth"
     )
     assert rv.status_code == 404
 
