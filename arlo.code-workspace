@@ -1,24 +1,21 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "arlo-client"
-		}
-	],
-	"settings": {
-		"remote.SSH.defaultForwardedPorts": [
-			{
-				"localPort": 3000,
-				"name": "Arlo Web",
-				"remotePort": 3000
-			}
-		],
-		"python.formatting.provider": "black",
-		"python.linting.pylintArgs": [
-			"--load-plugins",
-			"pylint_flask_sqlalchemy"
-		]
-	}
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "client"
+    }
+  ],
+  "settings": {
+    "remote.SSH.defaultForwardedPorts": [
+      {
+        "localPort": 3000,
+        "name": "Arlo Web",
+        "remotePort": 3000
+      }
+    ],
+    "python.formatting.provider": "black",
+    "python.linting.pylintArgs": ["--load-plugins", "pylint_flask_sqlalchemy"]
+  }
 }

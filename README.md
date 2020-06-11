@@ -110,13 +110,13 @@ mirrored in the appropriate auth0 tenant user database.
 
 To create an organization in the database:
 
-`pipenv run python create-org.py <org_name>`
+`pipenv run python -m scripts.create-org <org_name>`
 
 which returns the `organization_id`.
 
 Then, to create an administrator for the organization:
 
-`pipenv run python create-admin.py <org_id> <admin_email>`
+`pipenv run python -m scripts.create-admin <org_id> <admin_email>`
 
 which returns the `user_id`.
 
@@ -133,7 +133,7 @@ destruction and recreation cannot be done from Python, because the
 database is provisioned externally, the steps are then:
 
 - clear the database, e.g. on heroku `heroku pg:reset -a <app_name>`
-- create just the data model, e.g. on heroku `heroku run -a <app_name> python resetdb.py --skip-db-creation`
+- create just the data model, e.g. on heroku `heroku run -a <app_name> python -m scripts.resetdb --skip-db-creation`
 - you may need to restart servers, e.g. on heroku `heroku restart -a <app_name>`
 
 ### Setting up the dev environment
