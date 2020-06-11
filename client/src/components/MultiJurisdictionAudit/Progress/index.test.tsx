@@ -59,6 +59,31 @@ describe('Progress screen', () => {
     expect(container).toMatchSnapshot()
   })
 
+  it('toggles between ballots and samples', () => {
+    render(<Progress jurisdictions={jurisdictionMocks.oneComplete} />)
+
+    const ballotsSwitch = screen.getByRole('checkbox', {
+      name: 'Count unique sampled ballots',
+    })
+    userEvent.click(ballotsSwitch)
+    let rows = screen.getAllByRole('row')
+    within(rows[1]).getByRole('cell', { name: '5' })
+    within(rows[1]).getByRole('cell', { name: '6' })
+    within(rows[2]).getByRole('cell', { name: '0' })
+    within(rows[2]).getByRole('cell', { name: '22' })
+    within(rows[3]).getByRole('cell', { name: '31' })
+    within(rows[3]).getByRole('cell', { name: '0' })
+
+    userEvent.click(ballotsSwitch)
+    rows = screen.getAllByRole('row')
+    within(rows[1]).getByRole('cell', { name: '4' })
+    within(rows[1]).getByRole('cell', { name: '6' })
+    within(rows[2]).getByRole('cell', { name: '0' })
+    within(rows[2]).getByRole('cell', { name: '20' })
+    within(rows[3]).getByRole('cell', { name: '30' })
+    within(rows[3]).getByRole('cell', { name: '0' })
+  })
+
   it('shows the detail modal', () => {
     const { container } = render(
       <Progress jurisdictions={jurisdictionMocks.oneManifest} />

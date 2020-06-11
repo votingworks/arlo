@@ -39,7 +39,9 @@ export interface IJurisdiction {
   ballotManifest: IBallotManifestInfo
   currentRoundStatus: {
     status: JurisdictionRoundStatus
-    numBallotsSampled: number
+    numSamples: number
+    numSamplesAudited: number
+    numBallots: number
     numBallotsAudited: number
   } | null
 }

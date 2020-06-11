@@ -200,7 +200,9 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: {
         status: JurisdictionRoundStatus.IN_PROGRESS,
         numBallotsAudited: 4,
-        numBallotsSampled: 10,
+        numBallots: 10,
+        numSamplesAudited: 5,
+        numSamples: 11,
       },
     },
     {
@@ -210,7 +212,9 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: {
         status: JurisdictionRoundStatus.NOT_STARTED,
         numBallotsAudited: 0,
-        numBallotsSampled: 20,
+        numBallots: 20,
+        numSamplesAudited: 0,
+        numSamples: 22,
       },
     },
     {
@@ -220,7 +224,9 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
         numBallotsAudited: 30,
-        numBallotsSampled: 30,
+        numBallots: 30,
+        numSamplesAudited: 31,
+        numSamples: 31,
       },
     },
   ],
@@ -232,7 +238,9 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
         numBallotsAudited: 10,
-        numBallotsSampled: 10,
+        numBallots: 10,
+        numSamplesAudited: 11,
+        numSamples: 11,
       },
     },
     {
@@ -242,7 +250,9 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
         numBallotsAudited: 20,
-        numBallotsSampled: 20,
+        numBallots: 20,
+        numSamplesAudited: 22,
+        numSamples: 22,
       },
     },
     {
@@ -252,7 +262,9 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
         numBallotsAudited: 30,
-        numBallotsSampled: 30,
+        numBallots: 30,
+        numSamplesAudited: 31,
+        numSamples: 31,
       },
     },
   ],
