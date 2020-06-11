@@ -5,7 +5,7 @@ import { Wrapper } from '../../Atoms/Wrapper'
 import H2Title from '../../Atoms/H2Title'
 import { IRound } from '../useRoundsJurisdictionAdmin'
 import { IBallot } from '../../../types'
-import { api, checkAndToast } from '../../utilities'
+import { api, checkAndToast, apiDownload } from '../../utilities'
 // import useAuditSettings from '../Setup/useAuditSettings'
 import CreateAuditBoards from './CreateAuditBoards'
 import RoundProgress from './RoundProgress'
@@ -76,7 +76,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
             <FormButton
               verticalSpaced
               onClick={() =>
-                window.open(
+                apiDownload(
                   `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/retrieval-list`
                 )
               }

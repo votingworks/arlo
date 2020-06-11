@@ -29,7 +29,7 @@ describe('utilities.ts', () => {
 
       expect(result).toEqual({ success: true })
       expect(window.fetch).toBeCalledTimes(1)
-      expect(window.fetch).toBeCalledWith('/test', {
+      expect(window.fetch).toBeCalledWith('/api/test', {
         method: 'GET',
       })
     })
@@ -42,7 +42,7 @@ describe('utilities.ts', () => {
       await expect(result).rejects.toHaveProperty('response')
       expect(window.fetch).toBeCalledTimes(1)
 
-      expect(window.fetch).toBeCalledWith('/test', {
+      expect(window.fetch).toBeCalledWith('/api/test', {
         method: 'GET',
       })
     })

@@ -17,7 +17,7 @@ const checkAndToastMock: jest.SpyInstance<
 
 const ballotingMock = async (endpoint: string) => {
   switch (endpoint) {
-    case '/auth/me':
+    case '/me':
       return {
         type: 'AUDIT_BOARD',
         ...dummyBoards()[0],
@@ -57,7 +57,7 @@ describe('DataEntry', () => {
     it('renders if no audit board members set', async () => {
       apiMock.mockImplementation(async endpoint => {
         switch (endpoint) {
-          case '/auth/me':
+          case '/me':
             return dummyBoards()[1] // No members set
           default:
             return ballotingMock(endpoint)
@@ -78,7 +78,7 @@ describe('DataEntry', () => {
       let posted = false
       apiMock.mockImplementation(async endpoint => {
         switch (endpoint) {
-          case '/auth/me':
+          case '/me':
             return posted ? dummyBoards()[0] : dummyBoards()[1]
           case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/members':
             posted = true

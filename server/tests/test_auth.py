@@ -211,7 +211,7 @@ def test_logout(client: FlaskClient):
     assert rv.status_code == 302
 
 
-# Tests for /auth/me
+# Tests for /api/me
 
 
 def test_auth_me_audit_admin(
@@ -219,7 +219,7 @@ def test_auth_me_audit_admin(
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, AA_EMAIL)
 
-    rv = client.get("/auth/me")
+    rv = client.get("/api/me")
     assert json.loads(rv.data) == {
         "type": UserType.AUDIT_ADMIN,
         "email": AA_EMAIL,
@@ -248,7 +248,7 @@ def test_auth_me_jurisdiction_admin(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, JA_EMAIL)
 
-    rv = client.get("/auth/me")
+    rv = client.get("/api/me")
     assert json.loads(rv.data) == {
         "type": UserType.JURISDICTION_ADMIN,
         "email": JA_EMAIL,
@@ -274,7 +274,7 @@ def test_auth_me_audit_board(
     client: FlaskClient, audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
-    rv = client.get("/auth/me")
+    rv = client.get("/api/me")
     audit_board = AuditBoard.query.get(audit_board_id)
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
@@ -290,7 +290,7 @@ def test_auth_me_audit_board(
 
 def test_auth_me_not_logged_in(client: FlaskClient,):
     clear_logged_in_user(client)
-    rv = client.get("/auth/me")
+    rv = client.get("/api/me")
     assert rv.status_code == 401
 
 

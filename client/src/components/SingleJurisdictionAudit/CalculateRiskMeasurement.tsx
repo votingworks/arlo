@@ -15,7 +15,7 @@ import FormWrapper from '../Atoms/Form/FormWrapper'
 import FormButton from '../Atoms/Form/FormButton'
 import FormField from '../Atoms/Form/FormField'
 import FormButtonBar from '../Atoms/Form/FormButtonBar'
-import { api, testNumber, poll, checkAndToast } from '../utilities'
+import { api, testNumber, poll, checkAndToast, apiDownload } from '../utilities'
 import {
   IContest,
   IRound,
@@ -125,14 +125,14 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
   const downloadBallotRetrievalList = (id: number, e: React.FormEvent) => {
     e.preventDefault()
     const jurisdictionID: string = audit.jurisdictions[0].id
-    window.open(
+    apiDownload(
       `/election/${electionId}/jurisdiction/${jurisdictionID}/${id}/retrieval-list`
     )
   }
 
   const downloadAuditReport = async (e: React.FormEvent) => {
     e.preventDefault()
-    window.open(`/election/${electionId}/report`)
+    apiDownload(`/election/${electionId}/report`)
     updateAudit()
   }
 

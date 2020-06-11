@@ -503,7 +503,7 @@ def test_audit_boards_set_members_valid(
         )
         assert_ok(rv)
 
-        rv = client.get("/auth/me")
+        rv = client.get("/api/me")
         audit_board = json.loads(rv.data)
         assert audit_board["members"] == member_request
 

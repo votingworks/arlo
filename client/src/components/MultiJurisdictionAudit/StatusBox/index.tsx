@@ -10,7 +10,7 @@ import {
   IFileInfo,
 } from '../useJurisdictions'
 import FormButton from '../../Atoms/Form/FormButton'
-import { api } from '../../utilities'
+import { api, apiDownload } from '../../utilities'
 import { Inner } from '../../Atoms/Wrapper'
 import { IAuditSettings, IContest } from '../../../types'
 import { IRound } from '../useRoundsJurisdictionAdmin'
@@ -76,14 +76,14 @@ const createRound = async (electionId: string, roundNum: number) => {
 }
 
 const downloadAuditAdminReport = (electionId: string) => {
-  window.open(`/election/${electionId}/report`)
+  apiDownload(`/election/${electionId}/report`)
 }
 
 const downloadJurisdictionAdminReport = (
   electionId: string,
   jurisdictionId: string
 ) => {
-  window.open(`/election/${electionId}/jurisdiction/${jurisdictionId}/report`)
+  apiDownload(`/election/${electionId}/jurisdiction/${jurisdictionId}/report`)
 }
 
 export const isSetupComplete = (

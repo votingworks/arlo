@@ -79,7 +79,7 @@ def serialize_election(election):
     }
 
 
-@auth.route("/auth/me")
+@auth.route("/api/me")
 def auth_me():
     user_type, user_key = get_loggedin_user()
     if user_type in [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN]:

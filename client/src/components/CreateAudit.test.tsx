@@ -169,7 +169,7 @@ describe('CreateAudit', () => {
 
     await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
-      expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
+      expect(apiMock).toHaveBeenNthCalledWith(1, '/me')
     })
     const auditName = queryByLabelText('Give your new audit a unique name.')
     await waitFor(() => expect(auditName).toBeTruthy())
@@ -240,7 +240,7 @@ describe('CreateAudit', () => {
     )
 
     await waitFor(() => expect(apiMock).toBeCalledTimes(1))
-    expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
+    expect(apiMock).toHaveBeenNthCalledWith(1, '/me')
     expect(container).toMatchSnapshot()
   })
 
@@ -280,7 +280,7 @@ describe('CreateAudit', () => {
     )
 
     await waitFor(() => expect(apiMock).toBeCalledTimes(1))
-    expect(apiMock).toHaveBeenNthCalledWith(1, '/auth/me')
+    expect(apiMock).toHaveBeenNthCalledWith(1, '/me')
     expect(container).toMatchSnapshot()
   })
 

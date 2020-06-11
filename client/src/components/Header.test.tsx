@@ -61,7 +61,7 @@ describe('Header', () => {
     const loginButton = queryByText('Log out')
     await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
-      expect(apiMock).toHaveBeenCalledWith('/auth/me')
+      expect(apiMock).toHaveBeenCalledWith('/me')
       expect(loginButton).toBeTruthy()
     })
   })
@@ -79,7 +79,7 @@ describe('Header', () => {
     const loginButton = queryByText('Log out')
     await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
-      expect(apiMock).toHaveBeenCalledWith('/auth/me')
+      expect(apiMock).toHaveBeenCalledWith('/me')
       expect(loginButton).toBeFalsy()
     })
   })
@@ -98,7 +98,7 @@ describe('Header', () => {
     const loginButton = queryByText('Log out')
     await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
-      expect(apiMock).toHaveBeenCalledWith('/auth/me')
+      expect(apiMock).toHaveBeenCalledWith('/me')
       expect(loginButton).toBeFalsy()
     })
   })

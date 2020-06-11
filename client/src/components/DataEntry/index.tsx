@@ -32,7 +32,7 @@ interface IProps {
 }
 
 const loadAuditBoard = async (): Promise<IAuditBoard> => {
-  return api(`/auth/me`)
+  return api(`/me`)
 }
 
 const loadContests = async (

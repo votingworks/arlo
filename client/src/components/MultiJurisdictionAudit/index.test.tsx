@@ -66,7 +66,7 @@ describe('AA setup flow', () => {
   beforeEach(() =>
     apiMock.mockImplementation(async (endpoint: string) => {
       switch (endpoint) {
-        case '/auth/me':
+        case '/api/me':
           return {
             type: 'audit_admin',
             name: 'Joe',

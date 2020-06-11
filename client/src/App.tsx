@@ -40,7 +40,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 }: PrivateRouteProps) => {
   const { isAuthenticated, meta } = useContext(AuthDataContext)
   if (isAuthenticated === null) {
-    // Still loading /auth/me, don't show anything
+    // Still loading /api/me, don't show anything
     return <></>
   }
   if (isAuthenticated && userType === meta!.type) {
