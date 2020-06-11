@@ -41,9 +41,10 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.app = app
 db.init_app(app)
 
-# The order of these imports is important as it defines route precedence.
-# Be careful when re-ordering them.
 # pylint: disable=wrong-import-position,cyclic-import,unused-import
+
+# Authentication
+from .api import auth_routes
 
 # Single-jurisdiction flow routes
 from .api import routes

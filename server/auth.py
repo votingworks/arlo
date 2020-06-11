@@ -2,7 +2,7 @@ import functools
 from enum import Enum
 from typing import Callable, Optional, Tuple, Union
 from flask import session
-from werkzeug.exceptions import Unauthorized, Forbidden
+from werkzeug.exceptions import Forbidden, Unauthorized
 
 from .models import *  # pylint: disable=wildcard-import
 

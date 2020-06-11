@@ -6,22 +6,10 @@ import pytest
 from flask.testing import FlaskClient
 
 from ...auth import UserType
-from ...models import db, AuditBoard, Round
-from ...api.routes import (
-    auth0_sa,
-    auth0_aa,
-    auth0_ja,
-)
+from ...api.auth_routes import auth0_sa, auth0_aa, auth0_ja
+from ...models import *  # pylint: disable=wildcard-import
 from ...util.jsonschema import JSONDict
-from ..helpers import (
-    set_logged_in_user,
-    set_superadmin,
-    clear_superadmin,
-    clear_logged_in_user,
-    create_org_and_admin,
-    create_jurisdiction_and_admin,
-    create_election,
-)
+from ..helpers import *  # pylint: disable=wildcard-import
 
 
 SA_EMAIL = "sa@voting.works"
