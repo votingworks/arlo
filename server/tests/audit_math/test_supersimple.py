@@ -1,8 +1,8 @@
 # pylint: disable=invalid-name
 import pytest
 
-from audit_math.sampler_contest import Contest
-import audit_math.supersimple as supersimple
+from ...audit_math import supersimple
+from ...audit_math.sampler_contest import Contest
 
 seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
 risk_limit = 0.1
