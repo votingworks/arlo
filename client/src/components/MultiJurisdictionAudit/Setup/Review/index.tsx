@@ -153,7 +153,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
             <td>Participating Jurisdictions:</td>
             <td>
               <a
-                href={`/election/${electionId}/jurisdiction/file/csv`}
+                href={`/api/election/${electionId}/jurisdiction/file/csv`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

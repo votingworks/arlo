@@ -148,6 +148,5 @@
     "stylelint-processor-styled-components": "^1.7.0",
     "ts-node": "^8.4.1",
     "wdio-chromedriver-service": "^5.0.2"
-  },
-  "proxy": "http://localhost:3001/"
+  }
 }

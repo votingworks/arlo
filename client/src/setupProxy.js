@@ -8,11 +8,11 @@
 /* tslint:disable */
 
 const proxy = require('http-proxy-middleware')
-const target = process.env.ARLO_BACKEND_URL || 'http://localhost:3001/'
+const target = 'http://localhost:3001/'
 
 module.exports = function(app) {
-  // app.use(proxy('/auth/**', { target }))
-  // app.use(proxy('/superadmin/**', { target }))
-  // app.use(proxy('/api/**', { target }))
-  // app.use(proxy('/auditboard/*', { target }))
+  app.use(proxy('/auth/**', { target }))
+  app.use(proxy('/api/**', { target }))
+  app.use(proxy('/superadmin/**', { target }))
+  app.use(proxy('/auditboard/*', { target }))
 }
