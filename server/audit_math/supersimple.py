@@ -1,19 +1,24 @@
 # pylint: disable=invalid-name
 import math
+from typing import Dict, Tuple, Union
 
-l = 0.5
-gamma = 1.03905  # This gamma is used in Stark's tool, AGI, and CORLA
+from .sampler_contest import Contest
+
+l: float = 0.5
+gamma: float = 1.03905  # This gamma is used in Stark's tool, AGI, and CORLA
 
 # This sets the expected number of one-vote misstatements at 1 in 1000
-o1 = 0.001
-u1 = 0.001
+o1: float = 0.001
+u1: float = 0.001
 
 # This sets the expected two-vote misstatements at 1 in 10000
-o2 = 0.0001
-u2 = 0.0001
+o2: float = 0.0001
+u2: float = 0.0001
 
 
-def nMin(risk_limit, contest, o1, o2, u1, u2):
+def nMin(
+    risk_limit: float, contest: Contest, o1: float, o2: float, u1: float, u2: float
+) -> float:
     """
     Computes a sample size parameterized by expected under and overstatements
     and the margin.
@@ -35,7 +40,9 @@ def nMin(risk_limit, contest, o1, o2, u1, u2):
     )
 
 
-def get_sample_sizes(risk_limit, contest, sample_results):
+def get_sample_sizes(
+    risk_limit: float, contest: Contest, sample_results: Dict[str, Union[int, float]]
+) -> float:
     """
     Computes initial sample sizes parameterized by likelihood that the
     initial sample will confirm the election result, assuming no
@@ -54,15 +61,7 @@ def get_sample_sizes(risk_limit, contest, sample_results):
                          }
 
     Outputs:
-        samples - dictionary mapping confirmation likelihood to sample size:
-                {
-                   contest1:  {
-                        likelihood1: sample_size,
-                        likelihood2: sample_size,
-                        ...
-                    },
-                    ...
-                }
+        sample_size    - the sample size needed for this audit
     """
 
     obs_o1 = sample_results["1-over"]
@@ -102,7 +101,12 @@ def get_sample_sizes(risk_limit, contest, sample_results):
     return nMin(risk_limit, contest, r1, r2, s1, s2)
 
 
-def compute_risk(risk_limit, contest, cvrs, sample_cvr):
+def compute_risk(
+    risk_limit: float,
+    contest: Contest,
+    cvrs: Dict[str, Dict[str, Dict[str, int]]],
+    sample_cvr: Dict[str, Dict[str, Dict[str, int]]],
+) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 
@@ -136,7 +140,7 @@ def compute_risk(risk_limit, contest, cvrs, sample_cvr):
         confirmed       - a boolean indicating whether the audit can stop
     """
 
-    p = 1
+    p = 1.0
 
     V = contest.diluted_margin * len(cvrs)
 
@@ -144,7 +148,7 @@ def compute_risk(risk_limit, contest, cvrs, sample_cvr):
 
     result = False
     for ballot in sample_cvr:
-        e_r = 0
+        e_r = 0.0
 
         if contest.name not in sample_cvr[ballot]:
             continue

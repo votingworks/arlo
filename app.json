@@ -1,0 +1,29 @@
+{
+  "addons": ["heroku-postgresql:hobby-free"],
+  "buildpacks": [
+    { "url": "heroku/nodejs" },
+    { "url": "heroku/python" },
+    { "url": "heroku-community/cli" }
+  ],
+  "env": {
+    "ARLO_SESSION_SECRET": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "standard-1x"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "standard-1x"
+    }
+  },
+  "name": "arlo",
+  "scripts": {
+    "postdeploy": "heroku pg:backups:restore vx-arlo-staging:: -a $HEROKU_APP_NAME --confirm $HEROKU_APP_NAME"
+  },
+  "stack": "heroku-18"
+}
