@@ -1,7 +1,7 @@
 import sys
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from server.models import db
+from server.app import db
 from server.config import DATABASE_URL
 
 if __name__ == "__main__":
