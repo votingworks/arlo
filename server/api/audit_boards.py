@@ -152,6 +152,21 @@ def serialize_audit_board(audit_board: AuditBoard, round_status: JSONDict) -> JS
     }
 
 
+def serialize_members(audit_board):
+    members = []
+
+    for i in range(0, 2):
+        name = getattr(audit_board, f"member_{i + 1}")
+        affiliation = getattr(audit_board, f"member_{i + 1}_affiliation")
+
+        if not name:
+            break
+
+        members.append({"name": name, "affiliation": affiliation})
+
+    return members
+
+
 @app.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board",
     methods=["GET"],
