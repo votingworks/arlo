@@ -72,7 +72,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
           </td>
           <td>
             <a
-              href="/election/1/jurisdiction/file/csv"
+              href="/api/election/1/jurisdiction/file/csv"
               rel="noopener noreferrer"
               target="_blank"
             />
@@ -319,7 +319,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
           </td>
           <td>
             <a
-              href="/election/1/jurisdiction/file/csv"
+              href="/api/election/1/jurisdiction/file/csv"
               rel="noopener noreferrer"
               target="_blank"
             />
@@ -566,7 +566,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
           </td>
           <td>
             <a
-              href="/election/1/jurisdiction/file/csv"
+              href="/api/election/1/jurisdiction/file/csv"
               rel="noopener noreferrer"
               target="_blank"
             />
@@ -811,7 +811,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
           </td>
           <td>
             <a
-              href="/election/1/jurisdiction/file/csv"
+              href="/api/election/1/jurisdiction/file/csv"
               rel="noopener noreferrer"
               target="_blank"
             />
@@ -1056,7 +1056,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
           </td>
           <td>
             <a
-              href="/election/1/jurisdiction/file/csv"
+              href="/api/election/1/jurisdiction/file/csv"
               rel="noopener noreferrer"
               target="_blank"
             />
@@ -1303,7 +1303,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
           </td>
           <td>
             <a
-              href="/election/1/jurisdiction/file/csv"
+              href="/api/election/1/jurisdiction/file/csv"
               rel="noopener noreferrer"
               target="_blank"
             />

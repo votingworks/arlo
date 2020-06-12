@@ -217,7 +217,6 @@ def test_jurisdictions_status_round_1_no_audit_boards(
     election_id: str,
     round_1_id: str,  # pylint: disable=unused-argument
 ):
-
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
@@ -243,45 +242,11 @@ def test_jurisdictions_status_round_1_no_audit_boards(
         "numBallotsAudited": 0,
     }
 
-<<<<<<< HEAD
 
 def test_jurisdictions_status_round_1_with_audit_boards(
-    client: FlaskClient,
-    election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
-    audit_board_round_1_ids: List[str],
+    client: FlaskClient, election_id: str, audit_board_round_1_ids: List[str],
 ):
-    rv = client.get(f"/election/{election_id}/jurisdiction")
-=======
-    # Simulate creating some audit boards
-    rv = client.get(f"/api/election/{election_id}/round")
-    round = json.loads(rv.data)["rounds"][0]
-
-    ballots = (
-        SampledBallot.query.join(SampledBallotDraw)
-        .filter_by(round_id=round["id"])
-        .all()
-    )
-    audit_board_1_id = str(uuid.uuid4())
-    audit_board_1 = AuditBoard(
-        id=audit_board_1_id,
-        jurisdiction_id=jurisdiction_ids[0],
-        round_id=round["id"],
-        sampled_ballots=ballots[: AB1_SAMPLES + 1],
-    )
-    audit_board_2_id = str(uuid.uuid4())
-    audit_board_2 = AuditBoard(
-        id=audit_board_2_id,
-        jurisdiction_id=jurisdiction_ids[0],
-        round_id=round["id"],
-        sampled_ballots=ballots[AB1_SAMPLES + 1 :],
-    )
-    db.session.add(audit_board_1)
-    db.session.add(audit_board_2)
-    db.session.commit()
-
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
->>>>>>> Prefix API routes with /api
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
     assert jurisdictions[0]["currentRoundStatus"] == {

@@ -1747,7 +1747,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
           </td>
           <td>
             <a
-              href="/election/1/jurisdiction/file/csv"
+              href="/api/election/1/jurisdiction/file/csv"
               rel="noopener noreferrer"
               target="_blank"
             />
@@ -1910,7 +1910,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
           </td>
           <td>
             <a
-              href="/election/1/jurisdiction/file/csv"
+              href="/api/election/1/jurisdiction/file/csv"
               rel="noopener noreferrer"
               target="_blank"
             />
@@ -2073,7 +2073,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
           </td>
           <td>
             <a
-              href="/election/1/jurisdiction/file/csv"
+              href="/api/election/1/jurisdiction/file/csv"
               rel="noopener noreferrer"
               target="_blank"
             />
