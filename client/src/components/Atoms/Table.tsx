@@ -1,26 +1,7 @@
 import React from 'react'
-import {
-  useTable,
-  useSortBy,
-  useFilters,
-  Column,
-  Row,
-  ColumnInstance,
-} from 'react-table'
+import { useTable, useSortBy, Column, Row } from 'react-table'
 import styled from 'styled-components'
 import { Icon } from '@blueprintjs/core'
-
-const Wrapper = styled.div``
-
-const FilterWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.5rem;
-
-  > div {
-    width: 50%;
-  }
-`
 
 const StyledTable = styled.table`
   width: 100%;
@@ -45,26 +26,26 @@ const StyledTable = styled.table`
 `
 
 interface IFilterInputProps<T extends object> {
-  column: ColumnInstance<T>
   placeholder: string
+  value: string
+  onChange: (value: string) => void
 }
 
 export const FilterInput = <T extends object>({
-  column: { filterValue, setFilter },
   placeholder,
+  value,
+  onChange,
 }: IFilterInputProps<T>) => (
-  <FilterWrapper>
-    <div className="bp3-input-group .modifier">
-      <span className="bp3-icon bp3-icon-filter"></span>
-      <input
-        type="text"
-        className="bp3-input"
-        placeholder={placeholder}
-        value={filterValue || ''}
-        onChange={e => setFilter(e.target.value || undefined)}
-      />
-    </div>
-  </FilterWrapper>
+  <div className="bp3-input-group .modifier">
+    <span className="bp3-icon bp3-icon-filter"></span>
+    <input
+      type="text"
+      className="bp3-input"
+      placeholder={placeholder}
+      value={value}
+      onChange={e => onChange(e.target.value)}
+    />
+  </div>
 )
 
 interface ITableProps<T extends object> {
@@ -83,62 +64,52 @@ export const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
     {
       data: React.useMemo(() => data, [data]),
       columns: React.useMemo(() => columns, [columns]),
-      defaultColumn: React.useMemo(() => ({ Filter: FilterInput }), []),
     },
-    useFilters,
     useSortBy
   )
 
   /* eslint-disable react/jsx-key */
   /* All the keys are added automatically by react-table */
 
-  const filterableColumns = headers.filter(column => column.filter)
-  if (filterableColumns.length > 1)
-    throw Error('Only allowed to have one filterable column max')
-  const [filterColumn] = filterableColumns
-
   return (
-    <Wrapper>
-      {filterColumn && filterColumn.render('Filter')}
-      <StyledTable {...getTableProps()}>
-        <thead>
-          <tr>
-            {headers.map(column => (
-              <th
-                {...column.getHeaderProps(
-                  column.getSortByToggleProps({ title: column.Header })
-                )}
-              >
-                {column.render('Header')}
-                <span>
-                  {column.isSorted ? (
-                    column.isSortedDesc ? (
-                      <Icon icon="caret-down" />
-                    ) : (
-                      <Icon icon="caret-up" />
-                    )
+    <StyledTable {...getTableProps()}>
+      <thead>
+        <tr>
+          {headers.map(column => (
+            <th
+              {...column.getHeaderProps(
+                column.getSortByToggleProps({ title: column.Header })
+              )}
+            >
+              {column.render('Header')}
+              <span>
+                {column.isSorted ? (
+                  column.isSortedDesc ? (
+                    <Icon icon="caret-down" />
                   ) : (
-                    <Icon icon="double-caret-vertical" />
-                  )}
-                </span>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map(row => {
-            prepareRow(row)
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => (
-                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                ))}
-              </tr>
-            )
-          })}
-        </tbody>
-      </StyledTable>
-    </Wrapper>
+                    <Icon icon="caret-up" />
+                  )
+                ) : (
+                  <Icon icon="double-caret-vertical" />
+                )}
+              </span>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {rows.map(row => {
+          prepareRow(row)
+          return (
+            <tr {...row.getRowProps()}>
+              {row.cells.map(cell => (
+                <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+              ))}
+            </tr>
+          )
+        })}
+      </tbody>
+    </StyledTable>
   )
 }
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Column, Cell } from 'react-table'
-import { Button } from '@blueprintjs/core'
+import { Button, Switch } from '@blueprintjs/core'
 import H2Title from '../../Atoms/H2Title'
 import {
   JurisdictionRoundStatus,
@@ -19,12 +19,25 @@ const Wrapper = styled.div`
   }
 `
 
+const TableControls = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+
+  > div {
+    width: 50%;
+  }
+`
+
 interface IProps {
   jurisdictions: IJurisdiction[]
 }
 
 const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
+  const [filter, setFilter] = useState<string>('')
+  const [isShowingBallots, setIsShowingBallots] = useState<boolean>(true)
   const [
     jurisdictionDetail,
     setJurisdictionDetail,
@@ -45,11 +58,6 @@ const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
           {jurisdiction.name}
         </Button>
       ),
-      // eslint-disable-next-line react/display-name
-      Filter: props => (
-        <FilterInput {...props} placeholder="Filter by jurisdiction name..." />
-      ),
-      filter: 'text',
     },
     {
       Header: 'Status',
@@ -82,17 +90,22 @@ const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
     },
     {
       Header: 'Total Audited',
-      accessor: ({ currentRoundStatus }) =>
-        currentRoundStatus && currentRoundStatus.numBallotsAudited,
+      accessor: ({ currentRoundStatus: s }) =>
+        s && (isShowingBallots ? s.numBallotsAudited : s.numSamplesAudited),
     },
     {
       Header: 'Remaining in Round',
-      accessor: ({ currentRoundStatus }) =>
-        currentRoundStatus &&
-        currentRoundStatus.numBallotsSampled -
-          currentRoundStatus.numBallotsAudited,
+      accessor: ({ currentRoundStatus: s }) =>
+        s &&
+        (isShowingBallots
+          ? s.numBallots - s.numBallotsAudited
+          : s.numSamples - s.numSamplesAudited),
     },
   ]
+
+  const filteredJurisdictions = jurisdictions.filter(({ name }) =>
+    name.toLowerCase().includes(filter.toLowerCase())
+  )
 
   return (
     <Wrapper>
@@ -103,7 +116,19 @@ const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
         <br /> To view a single jurisdiction&apos;s data, click the name of the
         jurisdiction.
       </p>
-      <Table data={jurisdictions} columns={columns} />
+      <TableControls>
+        <Switch
+          checked={isShowingBallots}
+          label="Count unique sampled ballots"
+          onChange={() => setIsShowingBallots(!isShowingBallots)}
+        />
+        <FilterInput
+          placeholder="Filter by jurisdiction name..."
+          value={filter}
+          onChange={value => setFilter(value)}
+        />
+      </TableControls>
+      <Table data={filteredJurisdictions} columns={columns} />
       <JurisdictionDetail
         jurisdiction={jurisdictionDetail}
         electionId={electionId}

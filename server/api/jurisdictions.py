@@ -55,14 +55,38 @@ def round_status_by_jurisdiction(
         .values(AuditBoard.jurisdiction_id, func.count())
     )
 
-    sampled_ballot_count_by_jurisdiction = dict(
+    ballots_in_round = (
+        SampledBallot.query.join(SampledBallotDraw)
+        .filter_by(round_id=round.id)
+        .distinct(SampledBallot.id)
+        .subquery()
+    )
+    ballot_count_by_jurisdiction = dict(
+        SampledBallot.query.join(
+            ballots_in_round, SampledBallot.id == ballots_in_round.columns.id
+        )
+        .join(Batch)
+        .group_by(Batch.jurisdiction_id)
+        .values(Batch.jurisdiction_id, func.count())
+    )
+    audited_ballot_count_by_jurisdiction = dict(
+        SampledBallot.query.join(
+            ballots_in_round, SampledBallot.id == ballots_in_round.columns.id
+        )
+        .filter(SampledBallot.status != BallotStatus.NOT_AUDITED)
+        .join(Batch)
+        .group_by(Batch.jurisdiction_id)
+        .values(Batch.jurisdiction_id, func.count(SampledBallot.id))
+    )
+
+    sample_count_by_jurisdiction = dict(
         SampledBallotDraw.query.filter_by(round_id=round.id)
         .join(SampledBallot)
         .join(Batch)
         .group_by(Batch.jurisdiction_id)
         .values(Batch.jurisdiction_id, func.count())
     )
-    audited_ballot_count_by_jurisdiction = dict(
+    audited_sample_count_by_jurisdiction = dict(
         SampledBallotDraw.query.filter_by(round_id=round.id)
         .join(SampledBallot)
         .filter(SampledBallot.status != BallotStatus.NOT_AUDITED)
@@ -71,8 +95,11 @@ def round_status_by_jurisdiction(
         .values(Batch.jurisdiction_id, func.count())
     )
 
-    def num_ballots_sampled(jurisdiction_id: str) -> int:
-        return sampled_ballot_count_by_jurisdiction.get(jurisdiction_id, 0)
+    def num_samples(jurisdiction_id: str) -> int:
+        return sample_count_by_jurisdiction.get(jurisdiction_id, 0)
+
+    def num_ballots(jurisdiction_id: str) -> int:
+        return ballot_count_by_jurisdiction.get(jurisdiction_id, 0)
 
     # NOT_STARTED = the jurisdiction hasn’t set up any audit boards
     # IN_PROGRESS = the audit boards are set up
@@ -80,7 +107,7 @@ def round_status_by_jurisdiction(
     def status(jurisdiction_id: str) -> JurisdictionStatus:
         num_set_up = audit_boards_set_up.get(jurisdiction_id, 0)
         num_signed_off = audit_boards_signed_off.get(jurisdiction_id, 0)
-        num_sampled = num_ballots_sampled(jurisdiction_id)
+        num_sampled = num_samples(jurisdiction_id)
 
         # Special case: jurisdictions that don't get any ballots assigned are
         # COMPLETE from the get-go
@@ -93,23 +120,35 @@ def round_status_by_jurisdiction(
         else:
             return JurisdictionStatus.COMPLETE
 
+    def num_samples_audited(jurisdiction_id: str) -> int:
+        if online:
+            return audited_sample_count_by_jurisdiction.get(jurisdiction_id, 0)
+        else:
+            # For offline audits, we can't track incremental progress on
+            # auditing ballots, so we just report 0 ballots until the round is
+            # complete, then report all the samples.
+            return (
+                0
+                if status(jurisdiction_id) != JurisdictionStatus.COMPLETE
+                else num_samples(jurisdiction_id)
+            )
+
     def num_ballots_audited(jurisdiction_id: str) -> int:
         if online:
             return audited_ballot_count_by_jurisdiction.get(jurisdiction_id, 0)
         else:
-            # For offline audits, we can't track incremental progress on
-            # auditing ballots, so we just report 0 ballots until the round is
-            # complete, then report all the sampled ballots.
             return (
                 0
                 if status(jurisdiction_id) != JurisdictionStatus.COMPLETE
-                else num_ballots_sampled(jurisdiction_id)
+                else num_ballots(jurisdiction_id)
             )
 
     return {
         j.id: {
             "status": status(j.id),
-            "numBallotsSampled": num_ballots_sampled(j.id),
+            "numSamples": num_samples(j.id),
+            "numSamplesAudited": num_samples_audited(j.id),
+            "numBallots": num_ballots(j.id),
             "numBallotsAudited": num_ballots_audited(j.id),
         }
         for j in jurisdictions
