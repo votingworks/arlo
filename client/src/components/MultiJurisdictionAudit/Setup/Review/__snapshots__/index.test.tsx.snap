@@ -601,7 +601,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
             Contest Name
           </td>
           <td>
-            Jurisdiction One, Jurisdiction Two
+            Jurisdiction 1, Jurisdiction 2
           </td>
         </tr>
       </tbody>
@@ -846,7 +846,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
             Contest Name
           </td>
           <td>
-            Jurisdiction One, Jurisdiction Two
+            Jurisdiction 1, Jurisdiction 2
           </td>
         </tr>
       </tbody>
@@ -1106,7 +1106,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
             Contest Name
           </td>
           <td>
-            Jurisdiction One, Jurisdiction Two
+            Jurisdiction 1, Jurisdiction 2
           </td>
         </tr>
       </tbody>
@@ -1338,7 +1338,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
             Contest Name
           </td>
           <td>
-            Jurisdiction One, Jurisdiction Two
+            Jurisdiction 1, Jurisdiction 2
           </td>
         </tr>
       </tbody>

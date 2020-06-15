@@ -11,7 +11,6 @@ export enum FileProcessingStatus {
 
 export interface IFileInfo {
   file: {
-    contents: null | string
     name: string
     uploadedAt: string
   } | null
@@ -23,6 +22,11 @@ export interface IFileInfo {
   } | null
 }
 
+export interface IBallotManifestInfo extends IFileInfo {
+  numBallots: number | null
+  numBatches: number | null
+}
+
 export enum JurisdictionRoundStatus {
   NOT_STARTED = 'NOT_STARTED',
   IN_PROGRESS = 'IN_PROGRESS',
@@ -32,7 +36,7 @@ export enum JurisdictionRoundStatus {
 export interface IJurisdiction {
   id: string
   name: string
-  ballotManifest: IFileInfo
+  ballotManifest: IBallotManifestInfo
   currentRoundStatus: {
     status: JurisdictionRoundStatus
     numBallotsSampled: number

@@ -10,6 +10,7 @@ import { contestsInputMocks, contestMocks } from './_mocks'
 import { numberifyContest, IContestNumbered } from '../../useContests'
 import { IJurisdiction } from '../../useJurisdictions'
 import { IContest } from '../../../../types'
+import { jurisdictionMocks } from '../../_mocks'
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 const apiMock: jest.SpyInstance<
@@ -483,20 +484,7 @@ describe('Audit Setup > Contests', () => {
   it('selects, deselections, and submits jurisdictions', async () => {
     apiMock.mockImplementation(
       generateApiMock(contestMocks.filledTargeted, {
-        jurisdictions: [
-          {
-            id: '1',
-            name: 'Jurisdiction One',
-            ballotManifest: { file: null, processing: null },
-            currentRoundStatus: null,
-          },
-          {
-            id: '2',
-            name: 'Jurisdiction Two',
-            ballotManifest: { file: null, processing: null },
-            currentRoundStatus: null,
-          },
-        ],
+        jurisdictions: jurisdictionMocks.noManifests,
       })
     )
     const { getByText, queryByLabelText } = await asyncActRender(
@@ -508,8 +496,8 @@ describe('Audit Setup > Contests', () => {
     )
     const dropDown = getByText('Select Jurisdictions')
     fireEvent.click(dropDown, { bubbles: true })
-    const jurisdictionOne = queryByLabelText('Jurisdiction One')
-    const jurisdictionTwo = queryByLabelText('Jurisdiction Two')
+    const jurisdictionOne = queryByLabelText('Jurisdiction 1')
+    const jurisdictionTwo = queryByLabelText('Jurisdiction 2')
     await waitFor(() => {
       expect(jurisdictionOne).toBeTruthy()
       expect(jurisdictionTwo).toBeTruthy()
@@ -533,7 +521,9 @@ describe('Audit Setup > Contests', () => {
       if (apiMock.mock.calls[2][1]!.body) {
         const submittedBody: IContestNumbered[] = JSON.parse(apiMock.mock
           .calls[2][1]!.body as string)
-        expect(submittedBody[0].jurisdictionIds).toMatchObject(['2'])
+        expect(submittedBody[0].jurisdictionIds).toMatchObject([
+          'jurisdiction-id-2',
+        ])
       }
     })
   })
