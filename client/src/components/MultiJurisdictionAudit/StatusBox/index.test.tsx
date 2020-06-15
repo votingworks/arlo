@@ -227,7 +227,7 @@ describe('StatusBox', () => {
         }
       )
       expect(window.open).toHaveBeenCalledTimes(1)
-      expect(window.open).toBeCalledWith(`/election/1/report`)
+      expect(window.open).toBeCalledWith(`/api/election/1/report`)
     })
   })
 
@@ -356,7 +356,7 @@ describe('StatusBox', () => {
       )
       expect(window.open).toHaveBeenCalledTimes(1)
       expect(window.open).toHaveBeenCalledWith(
-        '/election/1/jurisdiction/1/report'
+        '/api/election/1/jurisdiction/1/report'
       )
     })
   })

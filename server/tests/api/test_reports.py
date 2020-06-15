@@ -27,7 +27,7 @@ def test_audit_admin_report(
             contest_ids[0],
             audit_board_id,
         )
-    rv = client.get(f"/election/{election_id}/report")
+    rv = client.get(f"/api/election/{election_id}/report")
     report = rv.data.decode("utf-8")
     report = re.sub(DATETIME_REGEX, "DATETIME", report)
     snapshot.assert_match(report)
@@ -53,7 +53,7 @@ def test_jurisdiction_admin_report(
         )
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
     )
     report = rv.data.decode("utf-8")
     report = re.sub(DATETIME_REGEX, "DATETIME", report)

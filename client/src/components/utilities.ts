@@ -14,7 +14,7 @@ export const api = async <T>(
   endpoint: string,
   options?: RequestInit
 ): Promise<T> => {
-  const response = await fetch(endpoint, options)
+  const response = await fetch(`/api${endpoint}`, options)
   if (!response.ok) {
     const responseText = await response.text()
     const { errors } = tryJson(responseText)
@@ -26,6 +26,8 @@ export const api = async <T>(
   }
   return response.json() as Promise<T>
 }
+
+export const apiDownload = (endpoint: string) => window.open(`/api${endpoint}`)
 
 export const poll = (
   condition: () => Promise<boolean>,

@@ -48,7 +48,7 @@ def test_superadmin_organizations(client: FlaskClient, organization_id):
     rv = client.post("/superadmin/auditadmin-login", data={"email": SA_TEST_AA_EMAIL})
     assert rv.status_code == 302
 
-    rv = client.get("/auth/me")
+    rv = client.get("/api/me")
     auth_data = json.loads(rv.data)
     assert auth_data["email"] == SA_TEST_AA_EMAIL
     assert auth_data["type"] == UserType.AUDIT_ADMIN
@@ -69,7 +69,7 @@ def test_superadmin_jurisdictions(client: FlaskClient, election_id):
     )
     assert rv.status_code == 302
 
-    rv = client.get("/auth/me")
+    rv = client.get("/api/me")
     auth_data = json.loads(rv.data)
     assert auth_data["email"] == SA_TEST_JA_EMAIL
     assert auth_data["type"] == UserType.JURISDICTION_ADMIN

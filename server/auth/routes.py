@@ -3,9 +3,9 @@ from flask import redirect, jsonify, request
 from werkzeug.exceptions import Unauthorized
 from authlib.integrations.flask_client import OAuth
 
-from ..app import app
+from . import auth
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import (
+from .lib import (
     get_loggedin_user,
     set_loggedin_user,
     clear_loggedin_user,
@@ -13,7 +13,7 @@ from ..auth import (
     clear_superadmin,
     UserType,
 )
-from .audit_boards import serialize_members
+from ..api.audit_boards import serialize_members
 from ..util.isoformat import isoformat
 from ..config import (
     SUPERADMIN_AUTH0_BASE_URL,
@@ -32,7 +32,7 @@ SUPERADMIN_OAUTH_CALLBACK_URL = "/auth/superadmin/callback"
 AUDITADMIN_OAUTH_CALLBACK_URL = "/auth/auditadmin/callback"
 JURISDICTIONADMIN_OAUTH_CALLBACK_URL = "/auth/jurisdictionadmin/callback"
 
-oauth = OAuth(app)
+oauth = OAuth()
 
 auth0_sa = oauth.register(
     "auth0_sa",
@@ -79,7 +79,7 @@ def serialize_election(election):
     }
 
 
-@app.route("/auth/me")
+@auth.route("/api/me")
 def auth_me():
     user_type, user_key = get_loggedin_user()
     if user_type in [UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN]:
@@ -115,7 +115,7 @@ def auth_me():
         return Unauthorized()
 
 
-@app.route("/auth/logout")
+@auth.route("/auth/logout")
 def logout():
     clear_superadmin()
 
@@ -130,13 +130,13 @@ def logout():
     return redirect("/")
 
 
-@app.route("/auth/superadmin/start")
+@auth.route("/auth/superadmin/start")
 def superadmin_login():
     redirect_uri = urljoin(request.host_url, SUPERADMIN_OAUTH_CALLBACK_URL)
     return auth0_sa.authorize_redirect(redirect_uri=redirect_uri)
 
 
-@app.route(SUPERADMIN_OAUTH_CALLBACK_URL)
+@auth.route(SUPERADMIN_OAUTH_CALLBACK_URL)
 def superadmin_login_callback():
     auth0_sa.authorize_access_token()
     resp = auth0_sa.get("userinfo")
@@ -154,13 +154,13 @@ def superadmin_login_callback():
         return redirect("/")
 
 
-@app.route("/auth/auditadmin/start")
+@auth.route("/auth/auditadmin/start")
 def auditadmin_login():
     redirect_uri = urljoin(request.host_url, AUDITADMIN_OAUTH_CALLBACK_URL)
     return auth0_aa.authorize_redirect(redirect_uri=redirect_uri)
 
 
-@app.route(AUDITADMIN_OAUTH_CALLBACK_URL)
+@auth.route(AUDITADMIN_OAUTH_CALLBACK_URL)
 def auditadmin_login_callback():
     auth0_aa.authorize_access_token()
     resp = auth0_aa.get("userinfo")
@@ -174,13 +174,13 @@ def auditadmin_login_callback():
     return redirect("/")
 
 
-@app.route("/auth/jurisdictionadmin/start")
+@auth.route("/auth/jurisdictionadmin/start")
 def jurisdictionadmin_login():
     redirect_uri = urljoin(request.host_url, JURISDICTIONADMIN_OAUTH_CALLBACK_URL)
     return auth0_ja.authorize_redirect(redirect_uri=redirect_uri)
 
 
-@app.route(JURISDICTIONADMIN_OAUTH_CALLBACK_URL)
+@auth.route(JURISDICTIONADMIN_OAUTH_CALLBACK_URL)
 def jurisdictionadmin_login_callback():
     auth0_ja.authorize_access_token()
     resp = auth0_ja.get("userinfo")
@@ -194,7 +194,7 @@ def jurisdictionadmin_login_callback():
     return redirect("/")
 
 
-@app.route("/auditboard/<passphrase>", methods=["GET"])
+@auth.route("/auditboard/<passphrase>", methods=["GET"])
 def auditboard_passphrase(passphrase):
     auditboard = AuditBoard.query.filter_by(passphrase=passphrase).one()
     set_loggedin_user(UserType.AUDIT_BOARD, auditboard.id)

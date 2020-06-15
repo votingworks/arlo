@@ -27,14 +27,14 @@ def test_ballot_list_jurisdiction_two_rounds(client, election_id):
     )
 
     # Get the sample size and round id
-    rv = client.get(f"/election/{election_id}/audit/status")
+    rv = client.get(f"/api/election/{election_id}/audit/status")
     status = json.loads(rv.data)
     sample_size = status["rounds"][0]["contests"][0]["sampleSize"]
     round_id = status["rounds"][0]["id"]
 
     # Retrieve the ballot list
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/ballot-list"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/ballot-list"
     )
     ballot_list = json.loads(rv.data)["ballots"]
     assert ballot_list
@@ -62,14 +62,14 @@ def test_ballot_list_jurisdiction_two_rounds(client, election_id):
     bgcompute.bgcompute()
 
     # Get the sample size and round id for the second round
-    rv = client.get(f"/election/{election_id}/audit/status")
+    rv = client.get(f"/api/election/{election_id}/audit/status")
     status = json.loads(rv.data)
     sample_size = status["rounds"][1]["contests"][0]["sampleSize"]
     round_id = status["rounds"][1]["id"]
 
     # Retrieve the ballot list
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/ballot-list"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/ballot-list"
     )
     ballot_list = json.loads(rv.data)["ballots"]
     assert ballot_list
@@ -91,7 +91,7 @@ def test_ballot_list_audit_board_two_rounds(client, election_id):
     )
 
     # Get the sample size and round id
-    rv = client.get(f"/election/{election_id}/audit/status")
+    rv = client.get(f"/api/election/{election_id}/audit/status")
     status = json.loads(rv.data)
     sample_size = status["rounds"][0]["contests"][0]["sampleSize"]
     round_id = status["rounds"][0]["id"]
@@ -100,7 +100,7 @@ def test_ballot_list_audit_board_two_rounds(client, election_id):
     ballot_list = []
     for audit_board_id in [audit_board_id_1, audit_board_id_2]:
         rv = client.get(
-            f"/election/{election_id}/jurisdiction/{jurisdiction_id}/audit-board/{audit_board_id}/round/{round_id}/ballot-list"
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/audit-board/{audit_board_id}/round/{round_id}/ballot-list"
         )
         board_ballot_list = json.loads(rv.data)["ballots"]
         assert board_ballot_list
@@ -130,7 +130,7 @@ def test_ballot_list_audit_board_two_rounds(client, election_id):
     bgcompute.bgcompute()
 
     # Get the sample size and round id for the second round
-    rv = client.get(f"/election/{election_id}/audit/status")
+    rv = client.get(f"/api/election/{election_id}/audit/status")
     status = json.loads(rv.data)
     sample_size = status["rounds"][1]["contests"][0]["sampleSize"]
     round_id = status["rounds"][1]["id"]
@@ -139,7 +139,7 @@ def test_ballot_list_audit_board_two_rounds(client, election_id):
     ballot_list = []
     for audit_board_id in [audit_board_id_1, audit_board_id_2]:
         rv = client.get(
-            f"/election/{election_id}/jurisdiction/{jurisdiction_id}/audit-board/{audit_board_id}/round/{round_id}/ballot-list"
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/audit-board/{audit_board_id}/round/{round_id}/ballot-list"
         )
         board_ballot_list = json.loads(rv.data)["ballots"]
         assert board_ballot_list
@@ -163,7 +163,7 @@ def test_ballot_list_jurisdiction_ordering(client, election_id):
     )
 
     # Get the round id
-    rv = client.get(f"/election/{election_id}/audit/status")
+    rv = client.get(f"/api/election/{election_id}/audit/status")
     status = json.loads(rv.data)
     round_id = status["rounds"][0]["id"]
 
@@ -201,7 +201,7 @@ def test_ballot_list_audit_board_ordering(client, election_id):
     )
 
     # Get the round id
-    rv = client.get(f"/election/{election_id}/audit/status")
+    rv = client.get(f"/api/election/{election_id}/audit/status")
     status = json.loads(rv.data)
     round_id = status["rounds"][0]["id"]
 

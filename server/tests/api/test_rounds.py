@@ -10,12 +10,14 @@ from ..helpers import *  # pylint: disable=wildcard-import
 def test_rounds_list_empty(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    rv = client.get(f"/election/{election_id}/round")
+    rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)
     assert rounds == {"rounds": []}
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round"
+    )
     rounds = json.loads(rv.data)
     assert rounds == {"rounds": []}
 
@@ -30,7 +32,7 @@ def test_rounds_create_one(
     sample_size = 119  # BRAVO sample size
     rv = post_json(
         client,
-        f"/election/{election_id}/round",
+        f"/api/election/{election_id}/round",
         {"roundNum": 1, "sampleSize": sample_size,},
     )
     assert_ok(rv)
@@ -47,12 +49,14 @@ def test_rounds_create_one(
         ]
     }
 
-    rv = client.get(f"/election/{election_id}/round")
+    rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round"
+    )
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)
 
@@ -84,7 +88,7 @@ def test_rounds_create_two(
 ):
     run_audit_round(round_1_id, contest_ids[0], 0.5)
 
-    rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
     assert_ok(rv)
 
     expected_rounds = {
@@ -105,12 +109,14 @@ def test_rounds_create_two(
             },
         ]
     }
-    rv = client.get(f"/election/{election_id}/round")
+    rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    rv = client.get(f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round"
+    )
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)
 
@@ -142,7 +148,7 @@ def test_rounds_complete_audit(
             }
         ]
     }
-    rv = client.get(f"/election/{election_id}/round")
+    rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)
     compare_json(rounds, expected_rounds)
 
@@ -155,11 +161,13 @@ def test_rounds_create_before_previous_round_complete(
     election_settings,  # pylint: disable=unused-argument
 ):
     rv = post_json(
-        client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 10,},
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSize": 10,},
     )
     assert_ok(rv)
 
-    rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 2},)
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
         "errors": [
@@ -170,7 +178,7 @@ def test_rounds_create_before_previous_round_complete(
 
 def test_rounds_wrong_number_too_big(client: FlaskClient, election_id: str):
     rv = post_json(
-        client, f"/election/{election_id}/round", {"roundNum": 2, "sampleSize": 10}
+        client, f"/api/election/{election_id}/round", {"roundNum": 2, "sampleSize": 10}
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -189,12 +197,16 @@ def test_rounds_wrong_number_too_small(
     contest_ids: str,  # pylint: disable=unused-argument
 ):
     rv = post_json(
-        client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 10,},
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSize": 10,},
     )
     assert_ok(rv)
 
     rv = post_json(
-        client, f"/election/{election_id}/round", {"roundNum": 1, "sampleSize": 10,},
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSize": 10,},
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
@@ -208,7 +220,7 @@ def test_rounds_wrong_number_too_small(
 
 
 def test_rounds_missing_sample_size(client: FlaskClient, election_id: str):
-    rv = post_json(client, f"/election/{election_id}/round", {"roundNum": 1})
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 1})
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
@@ -221,7 +233,7 @@ def test_rounds_missing_sample_size(client: FlaskClient, election_id: str):
 
 
 def test_rounds_missing_round_num(client: FlaskClient, election_id: str):
-    rv = post_json(client, f"/election/{election_id}/round", {"sampleSize": 10})
+    rv = post_json(client, f"/api/election/{election_id}/round", {"sampleSize": 10})
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [

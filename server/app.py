@@ -12,6 +12,10 @@ from .config import (
     HTTP_ORIGIN,
 )
 from .models import db
+from .api import api
+from .auth import auth
+from .auth.routes import oauth
+from .superadmin import superadmin
 
 if FLASK_ENV not in DEVELOPMENT_ENVS:
     # Restrict which hosts we trust when not in dev/test. This works by causing
@@ -41,29 +45,12 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.app = app
 db.init_app(app)
 
+oauth.init_app(app)
+
+app.register_blueprint(api, url_prefix="/api")
+app.register_blueprint(auth)
+app.register_blueprint(superadmin)
+
 # pylint: disable=wrong-import-position,cyclic-import,unused-import
-
-# Authentication
-from .api import auth_routes
-
-# Single-jurisdiction flow routes
-from .api import routes
-
-# Multi-jurisdiction flow routes
-from .api import election_settings
-from .api import contests
-from .api import jurisdictions
-from .api import sample_sizes
-from .api import rounds
-from .api import audit_boards
-from .api import ballots
-from .api import reports
-
-# VX superadmin view
-from . import superadmin
-
-# Static assets
 from . import static
-
-# Error handlers
 from . import errors

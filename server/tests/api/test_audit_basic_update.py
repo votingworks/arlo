@@ -10,7 +10,7 @@ def test_audit_basic_update_create_contest(client, election_id):
 
     rv = post_json(
         client,
-        f"/election/{election_id}/audit/basic",
+        f"/api/election/{election_id}/audit/basic",
         {
             "name": "Create Contest",
             "riskLimit": 10,
@@ -43,7 +43,7 @@ def test_audit_basic_update_sets_default_for_contest_is_targeted(client, electio
 
     rv = post_json(
         client,
-        f"/election/{election_id}/audit/basic",
+        f"/api/election/{election_id}/audit/basic",
         {
             "name": "Create Contest",
             "riskLimit": 10,
@@ -67,5 +67,5 @@ def test_audit_basic_update_sets_default_for_contest_is_targeted(client, electio
 
     assert_ok(rv)
 
-    rv = client.get(f"/election/{election_id}/audit/status")
+    rv = client.get(f"/api/election/{election_id}/audit/status")
     assert json.loads(rv.data)["contests"][0]["isTargeted"] is True

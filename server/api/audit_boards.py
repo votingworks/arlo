@@ -7,7 +7,7 @@ from werkzeug.exceptions import Conflict, BadRequest
 from sqlalchemy import func, and_
 from sqlalchemy.orm import contains_eager
 
-from ..app import app, db
+from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_jurisdiction_access, with_audit_board_access
 from .rounds import get_current_round
@@ -84,7 +84,7 @@ def assign_sampled_ballots(
             db.session.add(ballot)
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board",
     methods=["POST"],
 )
@@ -167,7 +167,7 @@ def serialize_members(audit_board):
     return members
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board",
     methods=["GET"],
 )
@@ -229,7 +229,7 @@ def validate_members(members: List[JSONDict]):
             raise BadRequest("'name' must not be empty.")
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/members",
     methods=["PUT"],
 )
@@ -361,7 +361,7 @@ def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):
         raise Conflict("Audit board is not finished auditing all assigned ballots")
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/sign-off",
     methods=["POST"],
 )

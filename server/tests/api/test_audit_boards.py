@@ -58,7 +58,7 @@ def test_audit_boards_list_empty(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)
     assert audit_boards == {"auditBoards": []}
@@ -70,7 +70,7 @@ def test_audit_boards_create_one(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert_ok(rv)
@@ -92,13 +92,13 @@ def test_audit_boards_list_one(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)
     compare_json(
@@ -126,7 +126,7 @@ def test_audit_boards_list_one(
     db.session.commit()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)
     compare_json(
@@ -155,7 +155,7 @@ def test_audit_boards_list_one(
     db.session.commit()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)
     compare_json(
@@ -183,7 +183,7 @@ def test_audit_boards_create_two(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
     )
     assert_ok(rv)
@@ -206,13 +206,13 @@ def test_audit_boards_list_two(
 
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
     compare_json(
@@ -251,7 +251,7 @@ def test_audit_boards_list_two(
     db.session.commit()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
 
@@ -272,7 +272,7 @@ def test_audit_boards_list_two(
     db.session.commit()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
 
@@ -294,7 +294,7 @@ def test_audit_boards_create_round_2(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
         [
             {"name": "Audit Board #1"},
             {"name": "Audit Board #2"},
@@ -322,7 +322,7 @@ def test_audit_boards_list_round_2(
 
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
         [
             {"name": "Audit Board #1"},
             {"name": "Audit Board #2"},
@@ -332,7 +332,7 @@ def test_audit_boards_list_round_2(
     assert_ok(rv)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)
     compare_json(
@@ -378,7 +378,7 @@ def test_audit_boards_list_round_2(
 
     # Can still access round 1 audit boards
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     assert rv.status_code == 200
 
@@ -389,7 +389,7 @@ def test_audit_boards_missing_field(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{}, {"name": "Audit Board #2"}],
     )
     assert rv.status_code == 400
@@ -406,7 +406,7 @@ def test_audit_boards_duplicate_name(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}, {"name": "Audit Board #1"}],
     )
     assert rv.status_code == 400
@@ -423,14 +423,14 @@ def test_audit_boards_already_created(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert_ok(rv)
 
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #2"}],
     )
     assert rv.status_code == 409
@@ -454,7 +454,7 @@ def test_audit_boards_wrong_round(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert rv.status_code == 409
@@ -474,7 +474,7 @@ def test_audit_boards_bad_round_id(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/not-a-valid-id/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/not-a-valid-id/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert rv.status_code == 404
@@ -498,12 +498,12 @@ def test_audit_boards_set_members_valid(
     for member_request in member_requests:
         rv = put_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/members",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/members",
             member_request,
         )
         assert_ok(rv)
 
-        rv = client.get("/auth/me")
+        rv = client.get("/api/me")
         audit_board = json.loads(rv.data)
         assert audit_board["members"] == member_request
 
@@ -542,7 +542,7 @@ def test_audit_boards_set_members_invalid(
         set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
         rv = put_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/members",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/members",
             invalid_member_request,
         )
         assert rv.status_code == 400
@@ -584,7 +584,7 @@ def set_up_audit_board(
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
     rv = put_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/members",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id}/audit-board/{audit_board_id}/members",
         member_names,
     )
     assert_ok(rv)
@@ -644,7 +644,7 @@ def test_audit_boards_sign_off_happy_path(
         set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
         rv = post_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
             {"memberName1": member_1, "memberName2": member_2},
         )
         assert_ok(rv)
@@ -668,13 +668,13 @@ def test_audit_boards_sign_off_happy_path(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, email)
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board"
     )
     audit_board = json.loads(rv.data)["auditBoards"][0]
 
@@ -840,7 +840,7 @@ def test_audit_boards_sign_off_missing_name(
 
         rv = post_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
             sign_off_request_body,
         )
 
@@ -881,7 +881,7 @@ def test_audit_boards_sign_off_wrong_name(
 
         rv = post_json(
             client,
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
             sign_off_request_body,
         )
 
@@ -923,7 +923,7 @@ def test_audit_boards_sign_off_before_finished(
 
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
         {"memberName1": member_1, "memberName2": member_2},
     )
     assert rv.status_code == 409
@@ -959,7 +959,7 @@ def test_audit_board_only_one_member_sign_off_happy_path(
 
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
         {"memberName1": member_1, "memberName2": ""},
     )
     assert_ok(rv)
@@ -987,7 +987,7 @@ def test_audit_board_only_one_member_sign_off_wrong_name(
 
     rv = post_json(
         client,
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_id}/sign-off",
         {"memberName1": "Wrong Name", "memberName2": ""},
     )
     assert rv.status_code == 400

@@ -1,6 +1,6 @@
 from flask import jsonify, request
 
-from ..app import app, db
+from . import api
 from ..auth import with_election_access
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import validate
@@ -33,7 +33,7 @@ GET_ELECTION_SETTINGS_RESPONSE_SCHEMA = {
 PUT_ELECTION_SETTINGS_REQUEST_SCHEMA = GET_ELECTION_SETTINGS_RESPONSE_SCHEMA
 
 
-@app.route("/election/<election_id>/settings", methods=["GET"])
+@api.route("/election/<election_id>/settings", methods=["GET"])
 @with_election_access
 def get_election_settings(election: Election):
     response_data = {
@@ -49,7 +49,7 @@ def get_election_settings(election: Election):
     return jsonify(response_data)
 
 
-@app.route("/election/<election_id>/settings", methods=["PUT"])
+@api.route("/election/<election_id>/settings", methods=["PUT"])
 @with_election_access
 def put_election_settings(election: Election):
     settings = request.get_json()

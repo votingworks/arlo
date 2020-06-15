@@ -27,7 +27,7 @@ AB1_SAMPLES = 23  # Arbitrary num of ballots to assign to audit board 1
 
 
 def test_jurisdictions_list_empty(client: FlaskClient, election_id: str):
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)
     assert jurisdictions == {"jurisdictions": []}
 
@@ -35,7 +35,7 @@ def test_jurisdictions_list_empty(client: FlaskClient, election_id: str):
 def test_jurisdictions_list_no_manifest(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)
     assert jurisdictions == {
         "jurisdictions": [
@@ -84,13 +84,13 @@ def test_jurisdictions_list_with_manifest(
         b"Batch Name,Number of Ballots\n" b"1,23\n" b"2,101\n" b"3,122\n" b"4,400"
     )
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={"manifest": (io.BytesIO(manifest), "manifest.csv",)},
     )
     assert_ok(rv)
     assert bgcompute_update_ballot_manifest_file() == 1
 
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)
     expected = {
         "jurisdictions": [
@@ -137,7 +137,7 @@ def test_jurisdictions_list_with_manifest(
     compare_json(jurisdictions, expected)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/csv"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/csv"
     )
     assert rv.headers["Content-Disposition"] == 'attachment; filename="manifest.csv"'
     assert rv.data == manifest
@@ -145,7 +145,7 @@ def test_jurisdictions_list_with_manifest(
 
 def test_download_ballot_manifest_not_found(client, election_id, jurisdiction_ids):
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/csv"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest/csv"
     )
     assert rv.status_code == 404
 
@@ -153,7 +153,7 @@ def test_download_ballot_manifest_not_found(client, election_id, jurisdiction_id
 def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"1,101\n"),
@@ -165,7 +165,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
 
     bgcompute_update_ballot_manifest_file()
 
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)
     expected = {
         "jurisdictions": [
@@ -217,7 +217,7 @@ def test_jurisdictions_status_round_1_no_audit_boards(
     election_id: str,
     round_1_id: str,  # pylint: disable=unused-argument
 ):
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
     assert jurisdictions[0]["currentRoundStatus"] == {
@@ -244,12 +244,9 @@ def test_jurisdictions_status_round_1_no_audit_boards(
 
 
 def test_jurisdictions_status_round_1_with_audit_boards(
-    client: FlaskClient,
-    election_id: str,
-    round_1_id: str,  # pylint: disable=unused-argument
-    audit_board_round_1_ids: List[str],
+    client: FlaskClient, election_id: str, audit_board_round_1_ids: List[str],
 ):
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
     assert jurisdictions[0]["currentRoundStatus"] == {
@@ -281,7 +278,7 @@ def test_jurisdictions_status_round_1_with_audit_boards(
     audit_board_1.signed_off_at = datetime.utcnow()
     db.session.commit()
 
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
     assert jurisdictions[0]["currentRoundStatus"] == {
@@ -299,7 +296,7 @@ def test_jurisdictions_status_round_1_with_audit_boards(
     audit_board_2.signed_off_at = datetime.utcnow()
     db.session.commit()
 
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
     assert jurisdictions[0]["currentRoundStatus"] == {
@@ -327,17 +324,17 @@ def test_jurisdictions_round_status_offline(
         "riskLimit": 10,
         "state": USState.California,
     }
-    rv = put_json(client, f"/election/{election_id}/settings", settings)
+    rv = put_json(client, f"/api/election/{election_id}/settings", settings)
     assert_ok(rv)
 
     rv = post_json(
         client,
-        f"/election/{election_id}/round",
+        f"/api/election/{election_id}/round",
         {"roundNum": 1, "sampleSize": SAMPLE_SIZE_ROUND_1},
     )
     assert_ok(rv)
 
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
     assert jurisdictions[0]["currentRoundStatus"] == {
@@ -349,7 +346,7 @@ def test_jurisdictions_round_status_offline(
     }
 
     # Simulate creating an audit board
-    rv = client.get(f"/election/{election_id}/round")
+    rv = client.get(f"/api/election/{election_id}/round")
     round = json.loads(rv.data)["rounds"][0]
 
     ballots = (
@@ -366,7 +363,7 @@ def test_jurisdictions_round_status_offline(
     db.session.add(audit_board_1)
     db.session.commit()
 
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
     assert jurisdictions[0]["currentRoundStatus"] == {
@@ -382,7 +379,7 @@ def test_jurisdictions_round_status_offline(
     audit_board_1.signed_off_at = datetime.utcnow()
     db.session.commit()
 
-    rv = client.get(f"/election/{election_id}/jurisdiction")
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
     assert jurisdictions[0]["currentRoundStatus"] == {

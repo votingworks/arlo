@@ -4,7 +4,7 @@ from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
 
-from ..app import app, db
+from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_election_access, with_jurisdiction_access
 from .sample_sizes import sample_size_options
@@ -126,7 +126,7 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
         db.session.add(sampled_ballot_draw)
 
 
-@app.route("/election/<election_id>/round", methods=["GET"])
+@api.route("/election/<election_id>/round", methods=["GET"])
 @with_election_access
 def list_rounds_audit_admin(election: Election):
     return jsonify({"rounds": [serialize_round(r) for r in election.rounds]})
@@ -136,7 +136,7 @@ def list_rounds_audit_admin(election: Election):
 # rounds. This makes our permission scheme simpler (every route only allows one
 # user type), even though the logic of this particular pair our routes is
 # identical.
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round", methods=["GET"]
 )
 @with_jurisdiction_access
@@ -146,7 +146,7 @@ def list_rounds_jurisdiction_admin(
     return jsonify({"rounds": [serialize_round(r) for r in election.rounds]})
 
 
-@app.route("/election/<election_id>/round", methods=["POST"])
+@api.route("/election/<election_id>/round", methods=["POST"])
 @with_election_access
 def create_round(election: Election):
     json_round = request.get_json()

@@ -3,7 +3,7 @@ from typing import Dict
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
-from ..app import app
+from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_election_access
 from ..audit_math import bravo, sampler_contest
@@ -44,7 +44,7 @@ def sample_size_options(election: Election, round_one=False) -> dict:
     return sample_sizes
 
 
-@app.route("/election/<election_id>/sample-sizes", methods=["GET"])
+@api.route("/election/<election_id>/sample-sizes", methods=["GET"])
 @with_election_access
 def get_sample_sizes(election: Election):
     sample_sizes = sample_size_options(election, round_one=True)

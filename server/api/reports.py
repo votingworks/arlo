@@ -1,7 +1,7 @@
 import io, csv
 from typing import Dict, List
 
-from ..app import app
+from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_election_access, with_jurisdiction_access
 from ..util.csv_download import csv_response, election_timestamp_name
@@ -239,7 +239,7 @@ def write_sampled_ballots(
         )
 
 
-@app.route("/election/<election_id>/report", methods=["GET"])
+@api.route("/election/<election_id>/report", methods=["GET"])
 @with_election_access
 def audit_admin_audit_report(election: Election):
     csv_io = io.StringIO()
@@ -263,7 +263,7 @@ def audit_admin_audit_report(election: Election):
     )
 
 
-@app.route(
+@api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/report", methods=["GET"]
 )
 @with_jurisdiction_access

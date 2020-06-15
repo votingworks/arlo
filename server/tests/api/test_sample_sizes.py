@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 
 
 def test_sample_sizes_without_contests(client: FlaskClient, election_id: str):
-    rv = client.get(f"/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
@@ -20,7 +20,7 @@ def test_sample_sizes_without_risk_limit(
     election_id: str,
     contest_ids: str,  # pylint: disable=unused-argument
 ):
-    rv = client.get(f"/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [
@@ -38,7 +38,7 @@ def test_sample_sizes_round_1(
     contest_ids: str,  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
 ):
-    rv = client.get(f"/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_sizes = json.loads(rv.data)
     assert sample_sizes == {
         "sampleSizes": [
@@ -55,7 +55,7 @@ def test_sample_sizes_round_2(
     election_id: str,
     round_2_id: str,  # pylint: disable=unused-argument
 ):
-    rv = client.get(f"/election/{election_id}/sample-sizes")
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_sizes = json.loads(rv.data)
     # Should still return round 1 sample sizes
     assert sample_sizes == {

@@ -20,7 +20,7 @@ def test_ballot_manifest_upload(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -36,7 +36,7 @@ def test_ballot_manifest_upload(
     assert_ok(rv)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
     )
     compare_json(
         json.loads(rv.data),
@@ -54,7 +54,7 @@ def test_ballot_manifest_upload(
     bgcompute_update_ballot_manifest_file()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
     )
     compare_json(
         json.loads(rv.data),
@@ -92,7 +92,7 @@ def test_ballot_manifest_replace(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -113,7 +113,7 @@ def test_ballot_manifest_replace(
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -151,7 +151,7 @@ def test_ballot_manifest_clear(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -169,12 +169,12 @@ def test_ballot_manifest_clear(
     bgcompute_update_ballot_manifest_file()
 
     rv = client.delete(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
     )
     assert json.loads(rv.data) == {"file": None, "processing": None}
 
@@ -190,7 +190,7 @@ def test_ballot_manifest_upload_missing_file(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={},
     )
     assert rv.status_code == 400
@@ -209,7 +209,7 @@ def test_ballot_manifest_upload_bad_csv(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={"manifest": (io.BytesIO(b"not a CSV file"), "random.txt")},
     )
     assert_ok(rv)
@@ -217,7 +217,7 @@ def test_ballot_manifest_upload_bad_csv(
     bgcompute_update_ballot_manifest_file()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
     )
     compare_json(
         json.loads(rv.data),
@@ -242,7 +242,7 @@ def test_ballot_manifest_upload_missing_field(
 
         set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
         rv = client.put(
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
             data={
                 "manifest": (
                     io.BytesIO(header_row.encode() + b"\n1,2,3"),
@@ -255,7 +255,7 @@ def test_ballot_manifest_upload_missing_field(
         bgcompute_update_ballot_manifest_file()
 
         rv = client.get(
-            f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
         )
         compare_json(
             json.loads(rv.data),
@@ -276,7 +276,7 @@ def test_ballot_manifest_upload_invalid_num_ballots(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -292,7 +292,7 @@ def test_ballot_manifest_upload_invalid_num_ballots(
     bgcompute_update_ballot_manifest_file()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
     )
     compare_json(
         json.loads(rv.data),
@@ -313,7 +313,7 @@ def test_ballot_manifest_upload_duplicate_batch_name(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
                 io.BytesIO(
@@ -331,7 +331,7 @@ def test_ballot_manifest_upload_duplicate_batch_name(
     bgcompute_update_ballot_manifest_file()
 
     rv = client.get(
-        f"/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest"
     )
     compare_json(
         json.loads(rv.data),

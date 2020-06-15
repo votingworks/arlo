@@ -3,7 +3,7 @@ from enum import Enum
 from flask import jsonify
 from sqlalchemy import func
 
-from ..app import app
+from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_election_access
 from .rounds import get_current_round
@@ -155,7 +155,7 @@ def round_status_by_jurisdiction(
     }
 
 
-@app.route("/election/<election_id>/jurisdiction", methods=["GET"])
+@api.route("/election/<election_id>/jurisdiction", methods=["GET"])
 @with_election_access
 def list_jurisdictions(election: Election):
     current_round = get_current_round(election)

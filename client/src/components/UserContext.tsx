@@ -18,7 +18,7 @@ const AuthDataProvider = (props: any) => {
   useEffect(() => {
     ;(async () => {
       try {
-        const meta: IUserMeta = await api('/auth/me')
+        const meta: IUserMeta = await api('/me')
         setAuthData({
           isAuthenticated: true,
           meta,

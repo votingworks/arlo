@@ -37,7 +37,7 @@ const JurisdictionDetail = ({
         <p>
           <strong>Current Ballot Manifest File: </strong>
           <a
-            href={`/election/${electionId}/jurisdiction/${jurisdiction.id}/ballot-manifest/csv`}
+            href={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/ballot-manifest/csv`}
             target="_blank"
             rel="noopener noreferrer"
           >
