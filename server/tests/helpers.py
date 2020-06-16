@@ -274,7 +274,7 @@ def compare_json(actual_json, expected_json):
     inner_compare_json(actual_json, expected_json, [])
 
 
-def test_compare_json():
+def _test_compare_json():
     def asserts_gt(num: int):
         def assert_gt(value: int):
             assert isinstance(value, int)

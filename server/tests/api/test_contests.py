@@ -110,7 +110,7 @@ def test_contests_create_get_update_multiple(
     assert contests == {"contests": expected_contests}
 
     json_contests[0]["name"] = "Changed name"
-    json_contests[1]["isTargeted"] = True
+    json_contests[1]["totalBallotsCast"] = 600
     json_contests[2]["jurisdictionIds"] = jurisdiction_ids[1:]
 
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)

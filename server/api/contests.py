@@ -116,6 +116,16 @@ def validate_contests(contests: List[JSONDict], election: Election):
                 f" ({total_votes} votes, {total_allowed_votes} allowed)"
             )
 
+    # Jointly targeted contests must all have the same contest universe
+    targeted_contest_jurisdictions = [
+        set(contest["jurisdictionIds"]) for contest in contests if contest["isTargeted"]
+    ]
+    if any(
+        jurisdictions != targeted_contest_jurisdictions[0]
+        for jurisdictions in targeted_contest_jurisdictions
+    ):
+        raise BadRequest("All targeted contests must have the same jurisdictions.")
+
 
 def round_status_by_contest(
     round: Optional[Round], contests: List[Contest]
