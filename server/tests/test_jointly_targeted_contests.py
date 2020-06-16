@@ -21,7 +21,7 @@ def contest_ids(
                 {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
                 {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
             ],
-            "totalBallotsCast": 1000,
+            "totalBallotsCast": 1600,
             "numWinners": 1,
             "votesAllowed": 1,
             "jurisdictionIds": jurisdiction_ids,
@@ -204,6 +204,52 @@ def test_jointly_targeted_contest_universes_must_match(
             {
                 "errorType": "Bad Request",
                 "message": "All targeted contests must have the same jurisdictions.",
+            }
+        ]
+    }
+
+
+def test_jointly_targeted_contest_total_ballots_must_match(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 1",
+                "isTargeted": True,
+                "choices": [
+                    {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
+                    {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
+                ],
+                "totalBallotsCast": 1000,
+                "numWinners": 1,
+                "votesAllowed": 1,
+                "jurisdictionIds": jurisdiction_ids,
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 2",
+                "isTargeted": True,
+                "choices": [
+                    {"id": str(uuid.uuid4()), "name": "Yes", "numVotes": 800,},
+                    {"id": str(uuid.uuid4()), "name": "No", "numVotes": 650,},
+                ],
+                "totalBallotsCast": 1600,
+                "numWinners": 1,
+                "votesAllowed": 1,
+                "jurisdictionIds": jurisdiction_ids,
+            },
+        ],
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "All targeted contests must have the same total ballots cast.",
             }
         ]
     }

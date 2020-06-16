@@ -116,15 +116,19 @@ def validate_contests(contests: List[JSONDict], election: Election):
                 f" ({total_votes} votes, {total_allowed_votes} allowed)"
             )
 
-    # Jointly targeted contests must all have the same contest universe
-    targeted_contest_jurisdictions = [
-        set(contest["jurisdictionIds"]) for contest in contests if contest["isTargeted"]
-    ]
+    # Jointly targeted contests must all have the same contest universe and total ballots
+    targeted_contests = [contest for contest in contests if contest["isTargeted"]]
     if any(
-        jurisdictions != targeted_contest_jurisdictions[0]
-        for jurisdictions in targeted_contest_jurisdictions
+        set(contest["jurisdictionIds"]) != set(contests[0]["jurisdictionIds"])
+        for contest in targeted_contests[1:]
     ):
         raise BadRequest("All targeted contests must have the same jurisdictions.")
+
+    if any(
+        contest["totalBallotsCast"] != contests[0]["totalBallotsCast"]
+        for contest in targeted_contests[1:]
+    ):
+        raise BadRequest("All targeted contests must have the same total ballots cast.")
 
 
 def round_status_by_contest(
