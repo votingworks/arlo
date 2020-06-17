@@ -146,8 +146,7 @@ describe('Audit Setup > Contests', () => {
     expect(container).toMatchSnapshot()
   })
 
-  it.skip('adds and removes contests', async () => {
-    // skip until feature is complete in backend
+  it('adds and removes contests', async () => {
     const { getByText, getAllByText, queryByText } = render(
       <Contests
         locked={false}

@@ -583,8 +583,7 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
         <label
           for="contests[0].name"
         >
-          Contest
-           
+          Contest 
           
            
           Name
@@ -833,6 +832,23 @@ exports[`Audit Setup > Contests renders empty opportunistic state correctly 1`] 
             </button>
           </span>
         </span>
+      </div>
+      <div
+        class="sc-gqjmRU bEkPjh"
+      >
+        <button
+          class="bp3-button sc-gZMcBi eZVGYn"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Add another 
+            opportunistic
+             
+            contest
+          </span>
+        </button>
       </div>
     </div>
     <div
@@ -892,8 +908,7 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
         <label
           for="contests[0].name"
         >
-          Contest
-           
+          Contest 
           
            
           Name
@@ -1143,6 +1158,23 @@ exports[`Audit Setup > Contests renders empty targeted state correctly 1`] = `
           </span>
         </span>
       </div>
+      <div
+        class="sc-gqjmRU bEkPjh"
+      >
+        <button
+          class="bp3-button sc-gZMcBi eZVGYn"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Add another 
+            targeted
+             
+            contest
+          </span>
+        </button>
+      </div>
     </div>
     <div
       class="sc-gqjmRU bEkPjh"
@@ -1201,8 +1233,7 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
         <label
           for="contests[0].name"
         >
-          Contest
-           
+          Contest 
           
            
           Name
@@ -1452,6 +1483,23 @@ exports[`Audit Setup > Contests renders filled opportunistic state correctly 1`]
           </span>
         </span>
       </div>
+      <div
+        class="sc-gqjmRU bEkPjh"
+      >
+        <button
+          class="bp3-button sc-gZMcBi eZVGYn"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Add another 
+            opportunistic
+             
+            contest
+          </span>
+        </button>
+      </div>
     </div>
     <div
       class="sc-gqjmRU bEkPjh"
@@ -1510,8 +1558,7 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
         <label
           for="contests[0].name"
         >
-          Contest
-           
+          Contest 
           
            
           Name
@@ -1760,6 +1807,23 @@ exports[`Audit Setup > Contests renders filled targeted state correctly 1`] = `
             </button>
           </span>
         </span>
+      </div>
+      <div
+        class="sc-gqjmRU bEkPjh"
+      >
+        <button
+          class="bp3-button sc-gZMcBi eZVGYn"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Add another 
+            targeted
+             
+            contest
+          </span>
+        </button>
       </div>
     </div>
     <div

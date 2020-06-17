@@ -764,8 +764,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
         <label
           for="contests[0].name"
         >
-          Contest
-           
+          Contest 
           
            
           Name
@@ -1015,6 +1014,23 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           </span>
         </span>
       </div>
+      <div
+        class="sc-htpNat gtULUV"
+      >
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Add another 
+            opportunistic
+             
+            contest
+          </span>
+        </button>
+      </div>
     </div>
     <div
       class="sc-htpNat gtULUV"
@@ -1073,8 +1089,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
         <label
           for="contests[0].name"
         >
-          Contest
-           
+          Contest 
           
            
           Name
@@ -1326,6 +1341,23 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
             </button>
           </span>
         </span>
+      </div>
+      <div
+        class="sc-htpNat gtULUV"
+      >
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Add another 
+            opportunistic
+             
+            contest
+          </span>
+        </button>
       </div>
     </div>
     <div
@@ -1387,8 +1419,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
         <label
           for="contests[0].name"
         >
-          Contest
-           
+          Contest 
           
            
           Name
@@ -1637,6 +1668,23 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
             </button>
           </span>
         </span>
+      </div>
+      <div
+        class="sc-htpNat gtULUV"
+      >
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Add another 
+            opportunistic
+             
+            contest
+          </span>
+        </button>
       </div>
     </div>
     <div
@@ -2193,8 +2241,7 @@ exports[`Setup renders Target Contests stage 1`] = `
         <label
           for="contests[0].name"
         >
-          Contest
-           
+          Contest 
           
            
           Name
@@ -2444,6 +2491,23 @@ exports[`Setup renders Target Contests stage 1`] = `
           </span>
         </span>
       </div>
+      <div
+        class="sc-htpNat gtULUV"
+      >
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Add another 
+            targeted
+             
+            contest
+          </span>
+        </button>
+      </div>
     </div>
     <div
       class="sc-htpNat gtULUV"
@@ -2502,8 +2566,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
         <label
           for="contests[0].name"
         >
-          Contest
-           
+          Contest 
           
            
           Name
@@ -2755,6 +2818,23 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
             </button>
           </span>
         </span>
+      </div>
+      <div
+        class="sc-htpNat gtULUV"
+      >
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Add another 
+            targeted
+             
+            contest
+          </span>
+        </button>
       </div>
     </div>
     <div
@@ -2816,8 +2896,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
         <label
           for="contests[0].name"
         >
-          Contest
-           
+          Contest 
           
            
           Name
@@ -3066,6 +3145,23 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
             </button>
           </span>
         </span>
+      </div>
+      <div
+        class="sc-htpNat gtULUV"
+      >
+        <button
+          class="bp3-button sc-ifAKCX zdCNs"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Add another 
+            targeted
+             
+            contest
+          </span>
+        </button>
       </div>
     </div>
     <div

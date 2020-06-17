@@ -96,7 +96,7 @@ const Contests: React.FC<IProps> = ({
           >
             <FieldArray
               name="contests"
-              render={() => (
+              render={contestsArrayHelpers => (
                 <>
                   {values.contests.map((contest: IContest, i: number) => {
                     const jurisdictionOptions = jurisdictions.map(j => ({
@@ -108,22 +108,18 @@ const Contests: React.FC<IProps> = ({
                       /* eslint-disable react/no-array-index-key */
                       <React.Fragment key={i}>
                         {i > 0 && (
-                          /* istanbul ignore next */
                           <FormSection>
                             <hr />
                           </FormSection>
                         )}
                         <FormSection
                           label={`Contest ${
-                            /* istanbul ignore next */
                             values.contests.length > 1 ? i + 1 : ''
                           } Info`}
                           description="Enter the name of the contest that will drive the audit."
                         >
                           <label htmlFor={`contests[${i}].name`}>
-                            Contest{' '}
-                            {/* istanbul ignore next */
-                            values.contests.length > 1 ? i + 1 : ''}{' '}
+                            Contest {values.contests.length > 1 ? i + 1 : ''}{' '}
                             Name
                             <Field
                               id={`contests[${i}].name`}
@@ -157,14 +153,6 @@ const Contests: React.FC<IProps> = ({
                               component={FormField}
                             />
                           </label>
-                          {/* values.contests.length > 1 &&
-                            !audit.contests.length && (
-                              <Action
-                                onClick={() => contestsArrayHelpers.remove(i)}
-                              >
-                                Remove Contest {i + 1}
-                              </Action>
-                            ) */}
                         </FormSection>
                         <FieldArray
                           name={`contests[${i}].choices`}
@@ -252,21 +240,28 @@ const Contests: React.FC<IProps> = ({
                             contestIndex={i}
                           />
                         </FormSection>
+                        {values.contests.length > 1 && (
+                          <FormButton
+                            intent="danger"
+                            onClick={() => contestsArrayHelpers.remove(i)}
+                          >
+                            Remove Contest {i + 1}
+                          </FormButton>
+                        )}
                       </React.Fragment>
                     )
                   })}
-                  {/* <FormButtonBar>
-                    {!audit.contests.length && (
-                      <FormButton
-                        type="button"
-                        onClick={() =>
-                          contestsArrayHelpers.push({ ...contestValues[0] })
-                        }
-                      >
-                        Add another isTargeted contest
-                      </FormButton>
-                    )}
-                  </FormButtonBar> */}
+                  <FormButtonBar>
+                    <FormButton
+                      type="button"
+                      onClick={() =>
+                        contestsArrayHelpers.push({ ...contestValues[0] })
+                      }
+                    >
+                      Add another {isTargeted ? 'targeted' : 'opportunistic'}{' '}
+                      contest
+                    </FormButton>
+                  </FormButtonBar>
                 </>
               )}
             />
