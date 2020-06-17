@@ -2,6 +2,7 @@
 # type: ignore
 import sys, uuid
 
+from server.app import app  # pylint: disable=unused-import
 from server.models import User, AuditAdministration, db
 
 if __name__ == "__main__":
