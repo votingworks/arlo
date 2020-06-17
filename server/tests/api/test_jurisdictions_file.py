@@ -275,3 +275,28 @@ def test_convert_emails_to_lowercase(client, election_id):
     for jurisdiction in election.jurisdictions:
         for admin in jurisdiction.jurisdiction_administrations:
             assert admin.user.email == admin.user.email.lower()
+
+
+def test_upload_jurisdictions_file_after_audit_starts(
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
+):
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/file",
+        data={
+            "jurisdictions": (
+                io.BytesIO(b"Jurisdiction,Admin Email\n" b"J1,j1@example.com\n"),
+                "jurisdictions.csv",
+            )
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot update jurisdictions after audit has started.",
+            }
+        ]
+    }

@@ -1,6 +1,6 @@
 from typing import List, Dict, Optional
 from flask import request, jsonify
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy import func
 
 from . import api
@@ -101,7 +101,10 @@ def deserialize_contest(contest: JSONDict, election_id: str) -> Contest:
 
 
 # Raises if invalid
-def validate_contests(contests: List[JSONDict]):
+def validate_contests(contests: List[JSONDict], election: Election):
+    if len(election.rounds) > 0:
+        raise Conflict("Cannot update contests after audit has started.")
+
     validate(contests, {"type": "array", "items": CONTEST_SCHEMA})
 
     for contest in contests:
@@ -152,7 +155,7 @@ def round_status_by_contest(
 @with_election_access
 def create_or_update_all_contests(election: Election):
     json_contests = request.get_json()
-    validate_contests(json_contests)
+    validate_contests(json_contests, election)
 
     Contest.query.filter_by(election_id=election.id).delete()
 

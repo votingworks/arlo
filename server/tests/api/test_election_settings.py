@@ -2,7 +2,7 @@ import json
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import assert_ok, put_json, compare_json, asserts_startswith
+from ..helpers import *  # pylint: disable=wildcard-import
 
 
 def test_get_empty(client: FlaskClient, election_id: str):
@@ -38,6 +38,33 @@ def test_update_election(client: FlaskClient, election_id: str):
     assert election_record.random_seed == "a new random seed"
     assert election_record.risk_limit == 15
     assert election_record.state == USState.Mississippi
+
+
+def test_update_election_settings_after_audit_starts(
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
+):
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/settings",
+        {
+            "electionName": "An Updated Name",
+            "online": True,
+            "randomSeed": "a new random seed",
+            "riskLimit": 15,
+            "state": USState.Mississippi,
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot update settings after audit has started.",
+            }
+        ]
+    }
 
 
 def test_invalid_state(client: FlaskClient, election_id: str):
