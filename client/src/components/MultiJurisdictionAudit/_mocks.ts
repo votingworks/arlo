@@ -1,4 +1,4 @@
-import { IAuditSettings } from '../../types'
+import { IAuditSettings, IContest } from '../../types'
 import {
   IJurisdiction,
   FileProcessingStatus,
@@ -266,6 +266,60 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
         numSamplesAudited: 31,
         numSamples: 31,
       },
+    },
+  ],
+}
+
+export const contestMocks: {
+  [key: string]: IContest[]
+} = {
+  empty: [],
+  oneTargeted: [
+    {
+      id: 'contest-id-1',
+      name: 'Contest 1',
+      isTargeted: true,
+      totalBallotsCast: '30',
+      numWinners: '1',
+      votesAllowed: '1',
+      jurisdictionIds: [
+        'jurisdiction-id-1',
+        'jurisdiction-id-2',
+        'jurisdiction-id-3',
+      ],
+      choices: [
+        {
+          id: 'choice-id-1',
+          name: 'Choice One',
+          numVotes: '10',
+        },
+        {
+          id: 'choice-id-2',
+          name: 'Choice Two',
+          numVotes: '20',
+        },
+      ],
+    },
+    {
+      id: 'contest-id-2',
+      name: 'Contest 2',
+      isTargeted: false,
+      totalBallotsCast: '400',
+      numWinners: '2',
+      votesAllowed: '2',
+      jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
+      choices: [
+        {
+          id: 'choice-id-3',
+          name: 'Choice Three',
+          numVotes: '300',
+        },
+        {
+          id: 'choice-id-4',
+          name: 'Choice Four',
+          numVotes: '100',
+        },
+      ],
     },
   ],
 }

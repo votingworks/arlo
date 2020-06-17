@@ -120,17 +120,14 @@ const BallotAuditContest = ({
           interpretation: checked ? value : null,
           choiceIds: [],
         })
-      } else if (checked) {
-        setInterpretation({
-          ...interpretation,
-          interpretation: Interpretation.VOTE,
-          choiceIds: [...interpretation.choiceIds, value],
-        })
       } else {
+        const choiceIds = checked
+          ? [...interpretation.choiceIds, value]
+          : interpretation.choiceIds.filter(v => v !== value)
         setInterpretation({
           ...interpretation,
-          interpretation: Interpretation.VOTE,
-          choiceIds: interpretation.choiceIds.filter(v => v !== value),
+          interpretation: choiceIds.length > 0 ? Interpretation.VOTE : null,
+          choiceIds,
         })
       }
     },

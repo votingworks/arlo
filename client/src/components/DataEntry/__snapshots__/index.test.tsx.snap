@@ -126,7 +126,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                 <h3
                   class="bp3-heading"
                 >
-                  Contest Name
+                  Contest 1
                 </h3>
                 <div
                   class="bp3-divider sc-htoDjs kvcmFh"
@@ -162,6 +162,115 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                       class="checkbox-text"
                     >
                       Choice Two
+                    </span>
+                  </span>
+                </label>
+                <label
+                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                >
+                  <input
+                    data-testid="CANT_AGREE"
+                    type="checkbox"
+                  />
+                  <span
+                    class="gray bp3-control-indicator"
+                  >
+                    <span
+                      class="checkbox-text"
+                    >
+                      Audit board can't agree
+                    </span>
+                  </span>
+                </label>
+                <label
+                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                >
+                  <input
+                    data-testid="BLANK"
+                    type="checkbox"
+                  />
+                  <span
+                    class="gray bp3-control-indicator"
+                  >
+                    <span
+                      class="checkbox-text"
+                    >
+                      Blank vote/Not on Ballot
+                    </span>
+                  </span>
+                </label>
+                <button
+                  class="bp3-button bp3-minimal"
+                  type="button"
+                >
+                  <span
+                    class="bp3-icon bp3-icon-edit"
+                    icon="edit"
+                  >
+                    <svg
+                      data-icon="edit"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      width="16"
+                    >
+                      <desc>
+                        edit
+                      </desc>
+                      <path
+                        d="M3.25 10.26l2.47 2.47 6.69-6.69-2.46-2.48-6.7 6.7zM.99 14.99l3.86-1.39-2.46-2.44-1.4 3.83zm12.25-14c-.48 0-.92.2-1.24.51l-1.44 1.44 2.47 2.47 1.44-1.44c.32-.32.51-.75.51-1.24.01-.95-.77-1.74-1.74-1.74z"
+                        fill-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="bp3-button-text"
+                  >
+                    Add comment
+                  </span>
+                </button>
+              </div>
+              <div
+                class="sc-iwsKbI zTyzr"
+              >
+                <h3
+                  class="bp3-heading"
+                >
+                  Contest 2
+                </h3>
+                <div
+                  class="bp3-divider sc-htoDjs kvcmFh"
+                />
+                <label
+                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                >
+                  <input
+                    data-testid="choice-id-3"
+                    type="checkbox"
+                  />
+                  <span
+                    class="undefined bp3-control-indicator"
+                  >
+                    <span
+                      class="checkbox-text"
+                    >
+                      Choice Three
+                    </span>
+                  </span>
+                </label>
+                <label
+                  class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
+                >
+                  <input
+                    data-testid="choice-id-4"
+                    type="checkbox"
+                  />
+                  <span
+                    class="undefined bp3-control-indicator"
+                  >
+                    <span
+                      class="checkbox-text"
+                    >
+                      Choice Four
                     </span>
                   </span>
                 </label>

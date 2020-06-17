@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { H1 } from '@blueprintjs/core'
-import { Route, Switch } from 'react-router-dom'
-import { History } from 'history'
+import { Route, Switch, useParams, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import {
-  IAuditFlowParams,
   IAuditBoard,
   IBallotInterpretation,
   IAuditBoardMember,
@@ -22,14 +20,6 @@ import { Wrapper, Inner } from '../Atoms/Wrapper'
 const PaddedInner = styled(Inner)`
   padding-top: 30px;
 `
-
-interface IProps {
-  match: {
-    params: IAuditFlowParams
-    url: string
-  }
-  history: History
-}
 
 const loadAuditBoard = async (): Promise<IAuditBoard> => {
   return api(`/me`)
@@ -133,13 +123,12 @@ const postSignoff = async (
   }
 }
 
-const DataEntry: React.FC<IProps> = ({
-  match: {
-    params: { electionId, auditBoardId },
-    url,
-  },
-  history,
-}: IProps) => {
+const DataEntry: React.FC = () => {
+  const history = useHistory()
+  const { electionId, auditBoardId } = useParams<{
+    electionId: string
+    auditBoardId: string
+  }>()
   const [auditBoard, setAuditBoard] = useState<IAuditBoard | null>(null)
   const [contests, setContests] = useState<IContest[] | null>(null)
   const [ballots, setBallots] = useState<IBallot[] | null>(null)
@@ -186,6 +175,8 @@ const DataEntry: React.FC<IProps> = ({
   }
 
   if (!auditBoard || !ballots || !contests) return null // Still loading
+
+  const url = `/election/${electionId}/audit-board/${auditBoardId}`
 
   const nextBallot = (batchId: string, ballot: number) => () => {
     const ballotIx = ballots.findIndex(
