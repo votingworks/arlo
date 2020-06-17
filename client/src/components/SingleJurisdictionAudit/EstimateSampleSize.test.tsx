@@ -3,7 +3,6 @@ import { render, fireEvent, waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import EstimateSampleSize, {
   TwoColumnSection,
-  InputLabelRow,
   InputFieldRow,
   // FieldLeft, TODO: need to mock Formik Field to test these like this
   // FieldRight,
@@ -199,7 +198,6 @@ function typeInto(input: Element, value: string): void {
 describe('EstimateSampleSize', () => {
   ;[
     TwoColumnSection,
-    InputLabelRow,
     InputFieldRow,
     // FieldLeft, TODO: need to mock Formik Field to test these like this
     // FieldRight,
@@ -431,7 +429,7 @@ describe('EstimateSampleSize', () => {
     })
   })
 
-  it.only('is able to submit the form successfully', async () => {
+  it('is able to submit the form successfully', async () => {
     apiMock.mockImplementation(async () => ({
       message: 'success',
       ok: true,

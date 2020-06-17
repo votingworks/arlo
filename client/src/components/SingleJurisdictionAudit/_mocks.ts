@@ -11,7 +11,8 @@ export const statusStates: {
     | 'completeInFirstRound'
     | 'firstRoundSampleSizeOptionsNull'
     | 'firstRoundSampleSizeOptions'
-    | 'multiAuditBoardsAndRounds']: IAudit
+    | 'multiAuditBoardsAndRounds'
+    | 'isMultiJurisdiction']: IAudit
 } = {
   empty: {
     name: '',
@@ -734,6 +735,17 @@ export const statusStates: {
     frozenAt: null,
     online: true,
     isMultiJurisdiction: false,
+  },
+  isMultiJurisdiction: {
+    name: '',
+    riskLimit: '',
+    frozenAt: null,
+    online: true,
+    randomSeed: '',
+    contests: [],
+    jurisdictions: [],
+    rounds: [],
+    isMultiJurisdiction: true,
   },
 }
 

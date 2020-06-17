@@ -1,10 +1,14 @@
 import React from 'react'
 import { waitFor } from '@testing-library/react'
-import { BrowserRouter as Router, useParams } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  useParams,
+  Router as RegularRouter,
+} from 'react-router-dom'
 import SingleJurisdictionAudit from './index'
 import { statusStates, dummyBallots } from './_mocks'
 import * as utilities from '../utilities'
-import { asyncActRender } from '../testUtilities'
+import { asyncActRender, routerTestProps } from '../testUtilities'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -159,6 +163,23 @@ describe('RiskLimitingAuditForm', () => {
       expect(apiMock.mock.results[0].value).resolves.toBe(
         statusStates.ballotManifestProcessed
       )
+    })
+  })
+
+  it('redirects to / if multijurisdiction', async () => {
+    apiMock.mockImplementationOnce(async () => statusStates.isMultiJurisdiction)
+    const routeProps = routerTestProps('/election/1', { electionId: '1' })
+    paramsMock.mockReturnValue({
+      electionId: '1',
+      view: 'setup',
+    })
+    await asyncActRender(
+      <RegularRouter {...routeProps}>
+        <SingleJurisdictionAudit />
+      </RegularRouter>
+    )
+    await waitFor(() => {
+      expect(routeProps.history.location.pathname).toEqual('/')
     })
   })
 })
