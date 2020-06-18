@@ -295,6 +295,9 @@ ADMIN_EMAIL = "Admin Email"
 @api.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
 @with_election_access
 def update_jurisdictions_file(election: Election):
+    if len(election.rounds) > 0:
+        raise Conflict("Cannot update jurisdictions after audit has started.")
+
     if "jurisdictions" not in request.files:
         return (
             jsonify(

@@ -186,6 +186,23 @@ def test_contests_round_status(
     }
 
 
+def test_update_contests_after_audit_starts(
+    client: FlaskClient,
+    election_id: str,
+    round_1_id: str,  # pylint: disable=unused-argument
+):
+    rv = put_json(client, f"/api/election/{election_id}/contest", [])
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot update contests after audit has started.",
+            }
+        ]
+    }
+
+
 def test_contests_missing_field(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
@@ -294,10 +311,12 @@ def test_audit_board_contests_list_empty(
     jurisdiction_ids: List[str],
     round_1_id: str,
     audit_board_round_1_ids: List[str],
-    json_contests: List[JSONDict],
 ):
-    rv = put_json(client, f"/api/election/{election_id}/contest", [json_contests[1]])
-    assert_ok(rv)
+    contests = Contest.query.all()
+    for contest in contests:
+        contest.jurisdictions = []
+    db.session.commit()
+
     set_logged_in_user(
         client, UserType.AUDIT_BOARD, user_key=audit_board_round_1_ids[0]
     )
@@ -313,10 +332,9 @@ def test_audit_board_contests_list(
     jurisdiction_ids: List[str],
     round_1_id: str,
     audit_board_round_1_ids: List[str],
-    json_contests: List[JSONDict],
 ):
-    rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
-    assert_ok(rv)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    expected_contests = json.loads(rv.data)["contests"]
 
     set_logged_in_user(
         client, UserType.AUDIT_BOARD, user_key=audit_board_round_1_ids[0]
@@ -326,7 +344,6 @@ def test_audit_board_contests_list(
     )
     contests = json.loads(rv.data)
     expected_contests = [
-        {**contest, "currentRoundStatus": None}
-        for contest in [json_contests[0], json_contests[2]]
+        {**contest, "currentRoundStatus": None} for contest in expected_contests
     ]
     assert contests == {"contests": expected_contests}

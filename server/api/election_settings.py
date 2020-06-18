@@ -1,12 +1,13 @@
 from flask import jsonify, request
+from werkzeug.exceptions import Conflict
 
 from . import api
 from ..auth import with_election_access
 from ..models import *  # pylint: disable=wildcard-import
-from ..util.jsonschema import validate
+from ..util.jsonschema import validate, JSONDict
 
 
-GET_ELECTION_SETTINGS_RESPONSE_SCHEMA = {
+ELECTION_SETTINGS_SCHEMA = {
     "type": "object",
     "properties": {
         "electionName": {"anyOf": [{"type": "string"}, {"type": "null"}]},
@@ -30,30 +31,32 @@ GET_ELECTION_SETTINGS_RESPONSE_SCHEMA = {
 }
 
 
-PUT_ELECTION_SETTINGS_REQUEST_SCHEMA = GET_ELECTION_SETTINGS_RESPONSE_SCHEMA
-
-
 @api.route("/election/<election_id>/settings", methods=["GET"])
 @with_election_access
 def get_election_settings(election: Election):
-    response_data = {
-        "electionName": election.election_name,
-        "online": election.online,
-        "randomSeed": election.random_seed,
-        "riskLimit": election.risk_limit,
-        "state": election.state,
-    }
+    return jsonify(
+        {
+            "electionName": election.election_name,
+            "online": election.online,
+            "randomSeed": election.random_seed,
+            "riskLimit": election.risk_limit,
+            "state": election.state,
+        }
+    )
 
-    validate(schema=GET_ELECTION_SETTINGS_RESPONSE_SCHEMA, instance=response_data)
 
-    return jsonify(response_data)
+def validate_election_settings(settings: JSONDict, election: Election):
+    if len(election.rounds) > 0:
+        raise Conflict("Cannot update settings after audit has started.")
+
+    validate(settings, ELECTION_SETTINGS_SCHEMA)
 
 
 @api.route("/election/<election_id>/settings", methods=["PUT"])
 @with_election_access
 def put_election_settings(election: Election):
     settings = request.get_json()
-    validate(schema=PUT_ELECTION_SETTINGS_REQUEST_SCHEMA, instance=settings)
+    validate_election_settings(settings, election)
 
     election.election_name = settings["electionName"]
     election.online = settings["online"]
