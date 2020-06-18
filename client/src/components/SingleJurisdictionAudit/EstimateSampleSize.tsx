@@ -40,12 +40,6 @@ export const TwoColumnSection = styled.div`
   width: 100%;
 `
 
-export const InputLabelRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 10px;
-  width: 100%;
-`
 export const InputFieldRow = styled.div`
   display: flex;
   flex-direction: row;
