@@ -29,7 +29,7 @@ def serialize_round(round: Round) -> dict:
         "roundNum": round.round_num,
         "startedAt": isoformat(round.created_at),
         "endedAt": isoformat(round.ended_at),
-        "isAuditComplete": is_audit_complete(round.id),
+        "isAuditComplete": is_audit_complete(round),
     }
 
 
@@ -38,14 +38,16 @@ def get_current_round(election: Election) -> Optional[Round]:
     return next(iter(rounds), None)
 
 
-def is_audit_complete(round_id: str):
-    targeted_round_contest = (
-        RoundContest.query.filter_by(round_id=round_id)
+def is_audit_complete(round: Round):
+    if not round.ended_at:
+        return None
+    targeted_round_contests = (
+        RoundContest.query.filter_by(round_id=round.id)
         .join(Contest)
         .filter_by(is_targeted=True)
-        .one()
+        .all()
     )
-    return targeted_round_contest.is_complete
+    return all(c.is_complete for c in targeted_round_contests)
 
 
 # Raises if invalid
@@ -65,7 +67,9 @@ def validate_round(round: dict, election: Election):
 
 
 def sample_ballots(election: Election, round: Round, sample_size: int):
-    # For now, we only support one targeted contest
+    # For now, we only support jointly targeted contests, which all must have
+    # the same contest universe. So we can just take any of them to build the
+    # pool of ballots to sample.
     targeted_contest = next(c for c in election.contests if c.is_targeted)
 
     # Compute the total number of ballot samples in all rounds leading up to

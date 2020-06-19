@@ -23,33 +23,45 @@ def sample_size_options(election: Election, round_one=False) -> dict:
     if not election.risk_limit:
         raise BadRequest("Cannot compute sample sizes until risk limit is set")
 
-    # For now, we only support one targeted contest
-    contest = next(c for c in election.contests if c.is_targeted)
+    def sample_sizes_for_contest(contest: Contest) -> dict:
+        # Because the /sample-sizes endpoint is only used for the audit setup flow,
+        # we always want it to return the sample size options for the first round.
+        # So we support a flag in this function to compute the sample sizes for
+        # round one specifically, even if the audit has progressed further.
+        cumulative_results = (
+            {choice.id: 0 for choice in contest.choices}
+            if round_one
+            else cumulative_contest_results(contest)
+        )
 
-    # Because the /sample-sizes endpoint is only used for the audit setup flow,
-    # we always want it to return the sample size options for the first round.
-    # So we support a flag in this function to compute the sample sizes for
-    # round one specifically, even if the audit has progressed further.
-    cumulative_results = (
-        {choice.id: 0 for choice in contest.choices}
+        return bravo.get_sample_size(
+            election.risk_limit / 100,
+            sampler_contest.from_db_contest(contest),
+            cumulative_results,
+        )
+
+    targeted_contests = Contest.query.filter_by(is_targeted=True)
+    targeted_contests_that_havent_met_risk_limit = (
+        targeted_contests.all()
         if round_one
-        else cumulative_contest_results(contest)
+        else targeted_contests.join(RoundContest).filter_by(is_complete=False).all()
     )
-
-    sample_sizes: dict = bravo.get_sample_size(
-        election.risk_limit / 100,
-        sampler_contest.from_db_contest(contest),
-        cumulative_results,
+    samples_sizes_for_targeted_contests = [
+        sample_sizes_for_contest(contest)
+        for contest in targeted_contests_that_havent_met_risk_limit
+    ]
+    # Choose the sample size options for the targted contest with the largest
+    # sample size, since that will cover the samples needed by the other
+    # targeted contests.
+    return max(
+        samples_sizes_for_targeted_contests,
+        key=lambda sample_sizes: sample_sizes["asn"]["size"],
     )
-    return sample_sizes
 
 
 @api.route("/election/<election_id>/sample-sizes", methods=["GET"])
 @with_election_access
 def get_sample_sizes(election: Election):
     sample_sizes = sample_size_options(election, round_one=True)
-
-    # Convert the results into a slightly more regular format
     json_sizes = list(sample_sizes.values())
-
     return jsonify({"sampleSizes": json_sizes})
