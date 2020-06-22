@@ -1,12 +1,12 @@
 import React from 'react'
-import { render, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
 import BoardTable from './BoardTable'
 import { doneDummyBallots } from './_mocks'
 
 describe('BoardTable', () => {
   it('enables the submit button when all ballots are done', async () => {
-    const { container, getByText } = render(
+    const { container } = render(
       <StaticRouter>
         <BoardTable
           boardName="Audit Board #1"
@@ -15,19 +15,11 @@ describe('BoardTable', () => {
         />
       </StaticRouter>
     )
-    await waitFor(() => {
-      expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
+    await screen.findByText('Audit Board #1: Ballot Cards to Audit')
 
-      const notFound = getByText('Not Found')
-      expect(notFound).toBeTruthy()
+    screen.getByText('Not Found')
+    expect(screen.getByText('Auditing Complete - Submit Results')).toBeEnabled()
 
-      const button = getByText('Auditing Complete - Submit Results').closest(
-        'a'
-      )
-      expect(button).toBeTruthy()
-      expect(button!.getAttribute('disabled')).toBeFalsy()
-
-      expect(container).toMatchSnapshot()
-    })
+    expect(container).toMatchSnapshot()
   })
 })

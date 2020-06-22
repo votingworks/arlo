@@ -21,30 +21,30 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
     <div
       class="sc-bdVaJa gKZTDn"
     >
-      <a
+      <button
         class="bp3-button bp3-disabled"
         disabled=""
-        role="button"
+        href="/"
         tabindex="-1"
+        type="button"
       >
         <span
           class="bp3-button-text"
         >
           Start Auditing
         </span>
-      </a>
-      <a
+      </button>
+      <button
         class="bp3-button"
         href="/home/signoff"
-        role="button"
-        tabindex="0"
+        type="button"
       >
         <span
           class="bp3-button-text"
         >
           Auditing Complete - Submit Results
         </span>
-      </a>
+      </button>
     </div>
     <div
       class="bp3-table-container bp3-table-selection-enabled sc-htpNat dCryYg"

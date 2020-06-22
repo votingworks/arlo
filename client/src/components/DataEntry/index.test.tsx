@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
 import { routerTestProps } from '../testUtilities'
 import DataEntry from './index'
@@ -134,20 +134,22 @@ describe('DataEntry', () => {
     })
 
     it('renders board table with ballots', async () => {
-      const { container, getByText } = render(
+      const { container } = render(
         <StaticRouter {...staticRouteProps}>
           <DataEntry {...routeProps} />
         </StaticRouter>
       )
-      await waitFor(() => {
-        expect(apiMock).toBeCalledTimes(3)
-        expect(getByText('Audit Board #1: Ballot Cards to Audit')).toBeTruthy()
-        expect(getByText('Start Auditing').closest('a')).toBeEnabled()
-        expect(
-          getByText('Auditing Complete - Submit Results').closest('a')
-        ).toHaveAttribute('disabled') // eslint-disable-line jest-dom/prefer-enabled-disabled
-        expect(container).toMatchSnapshot()
-      })
+      await screen.findByText('Audit Board #1: Ballot Cards to Audit')
+      expect(
+        screen.getByRole('button', { name: 'Start Auditing' })
+      ).toBeEnabled()
+      expect(
+        screen.getByRole('button', {
+          name: 'Auditing Complete - Submit Results',
+        })
+      ).toBeDisabled()
+      expect(container).toMatchSnapshot()
+      expect(apiMock).toBeCalledTimes(3)
     })
 
     it('renders board table with large container size', async () => {

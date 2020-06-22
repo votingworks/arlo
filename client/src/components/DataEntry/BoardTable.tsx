@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Table as BPTable, Column, Cell as BPCell } from '@blueprintjs/table'
-import { H1, AnchorButton } from '@blueprintjs/core'
+import { H1 } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
 import { IAuditBoard, BallotStatus } from '../../types'
 import { IBallot } from './Ballot'
+import LinkButton from '../Atoms/LinkButton'
 
 const RightWrapper = styled.div`
   display: flex;
@@ -143,8 +144,8 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
         </strong>
       </p>
       <RightWrapper>
-        <AnchorButton
-          href={
+        <LinkButton
+          to={
             unauditedBallot
               ? `${url}/batch/${unauditedBallot.batch.id}/ballot/${unauditedBallot.position}`
               : ''
@@ -152,10 +153,10 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
           disabled={roundComplete}
         >
           Start Auditing
-        </AnchorButton>
-        <AnchorButton href={`${url}/signoff`} disabled={!roundComplete}>
+        </LinkButton>
+        <LinkButton to={`${url}/signoff`} disabled={!roundComplete}>
           Auditing Complete - Submit Results
-        </AnchorButton>
+        </LinkButton>
       </RightWrapper>
       {/* <ActionWrapper> // commented out until feature is added
         {!roundComplete && (
