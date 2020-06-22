@@ -1,8 +1,8 @@
 import React from 'react'
 import { useParams, MemoryRouter } from 'react-router-dom'
+import { render, waitFor } from '@testing-library/react'
 import { auditSettings } from '../_mocks'
 import * as utilities from '../../utilities'
-import { asyncActRender } from '../../testUtilities'
 import Setup from './index'
 import relativeStages from './_mocks'
 import { contestMocks } from './Contests/_mocks'
@@ -54,7 +54,7 @@ afterEach(() => {
 
 describe('Setup', () => {
   it('renders Participants stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -64,10 +64,11 @@ describe('Setup', () => {
       </MemoryRouter>
     )
     expect(container).toMatchSnapshot()
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
   })
 
   it('renders Participants stage with locked next stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -76,11 +77,12 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
   it('renders Participants stage with processing next stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -89,11 +91,12 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
   it('renders Target Contests stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -102,11 +105,12 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
   it('renders Target Contests stage with locked next stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -115,11 +119,12 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
   it('renders Target Contests stage with processing next stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -128,6 +133,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
@@ -136,7 +142,7 @@ describe('Setup', () => {
       contestMocks.emptyOpportunistic.contests,
       jest.fn(),
     ])
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -145,6 +151,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
@@ -153,7 +160,7 @@ describe('Setup', () => {
       contestMocks.emptyOpportunistic.contests,
       jest.fn(),
     ])
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -164,6 +171,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
@@ -172,7 +180,7 @@ describe('Setup', () => {
       contestMocks.emptyOpportunistic.contests,
       jest.fn(),
     ])
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -183,11 +191,12 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
   it('renders Audit Settings stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -200,7 +209,7 @@ describe('Setup', () => {
   })
 
   it('renders Audit Settings stage with locked next stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -213,7 +222,7 @@ describe('Setup', () => {
   })
 
   it('renders Audit Settings stage with processing next stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -226,7 +235,7 @@ describe('Setup', () => {
   })
 
   it('renders Review & Launch stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -235,11 +244,12 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
   it('renders Review & Launch stage with locked next stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -248,11 +258,12 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
   it('renders Review & Launch stage with processing next stage', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <MemoryRouter>
         <Setup
           refresh={jest.fn()}
@@ -261,6 +272,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 })

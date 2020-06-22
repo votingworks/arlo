@@ -1,11 +1,10 @@
 import React from 'react'
-import { fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, waitFor, render } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
 import Review from './index'
 import * as utilities from '../../../utilities'
-import { asyncActRender } from '../../../testUtilities'
 import useAuditSettings from '../../useAuditSettings'
 import { settingsMock, sampleSizeMock } from './_mocks'
 import { IJurisdiction } from '../../useJurisdictions'
@@ -82,21 +81,23 @@ beforeEach(() => {
 
 describe('Audit Setup > Review & Launch', () => {
   it('renders empty state', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <Router>
         <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
       </Router>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
   it('renders full state', async () => {
     auditSettingsMock.mockReturnValue(settingsMock.full)
-    const { container } = await asyncActRender(
+    const { container } = render(
       <Router>
         <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
       </Router>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
@@ -109,11 +110,12 @@ describe('Audit Setup > Review & Launch', () => {
       )
     )
     auditSettingsMock.mockReturnValue(settingsMock.full)
-    const { container } = await asyncActRender(
+    const { container } = render(
       <Router>
         <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
       </Router>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
@@ -126,11 +128,12 @@ describe('Audit Setup > Review & Launch', () => {
       )
     )
     auditSettingsMock.mockReturnValue(settingsMock.full)
-    const { container } = await asyncActRender(
+    const { container } = render(
       <Router>
         <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
       </Router>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
@@ -145,11 +148,12 @@ describe('Audit Setup > Review & Launch', () => {
       )
     )
     auditSettingsMock.mockReturnValue(settingsMock.full)
-    const { container } = await asyncActRender(
+    const { container } = render(
       <Router>
         <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
       </Router>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
@@ -164,11 +168,12 @@ describe('Audit Setup > Review & Launch', () => {
       )
     )
     auditSettingsMock.mockReturnValue(settingsMock.full)
-    const { container } = await asyncActRender(
+    const { container } = render(
       <Router>
         <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
       </Router>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
@@ -180,7 +185,7 @@ describe('Audit Setup > Review & Launch', () => {
         { jurisdictions: jurisdictionMocks.allManifests }
       )
     )
-    const { findByText, getAllByText } = await asyncActRender(
+    const { findByText, getAllByText } = render(
       <Router>
         <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
       </Router>
@@ -213,12 +218,12 @@ describe('Audit Setup > Review & Launch', () => {
         { jurisdictions: jurisdictionMocks.allManifests }
       )
     )
-    const { getByText, findByText, getAllByText } = await asyncActRender(
+    const { getByText, findByText, getAllByText } = render(
       <Router>
         <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
       </Router>
     )
-    const newSampleSize = getByText(
+    const newSampleSize = await findByText(
       '67 samples (70% chance of reaching risk limit and completing the audit in one round)'
     )
     fireEvent.click(newSampleSize, { bubbles: true })

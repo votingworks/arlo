@@ -5,7 +5,6 @@ import jsPDF from 'jspdf'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
 import { statusStates, dummyBallots, incompleteDummyBallots } from './_mocks'
 import * as utilities from '../utilities'
-import { asyncActRender } from '../testUtilities'
 
 statusStates.jurisdictionsInitial.online = false
 statusStates.ballotManifestProcessed.online = false
@@ -473,7 +472,7 @@ describe('CalculateRiskMeasurement', () => {
   it('renders online mode progress bar', async () => {
     statusStates.ballotManifestProcessed.online = true
     apiMock.mockImplementationOnce(async () => incompleteDummyBallots)
-    const { container } = await asyncActRender(
+    const { container } = render(
       <CalculateRiskMeasurement
         audit={statusStates.ballotManifestProcessed}
         isLoading
@@ -483,13 +482,14 @@ describe('CalculateRiskMeasurement', () => {
         electionId="1"
       />
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 
   it('renders online mode progress bar in multiple rounds', async () => {
     statusStates.multiAuditBoardsAndRounds.online = true
     apiMock.mockImplementationOnce(async () => incompleteDummyBallots)
-    const { container } = await asyncActRender(
+    const { container } = render(
       <CalculateRiskMeasurement
         audit={statusStates.multiAuditBoardsAndRounds}
         isLoading
@@ -499,6 +499,7 @@ describe('CalculateRiskMeasurement', () => {
         electionId="1"
       />
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(container).toMatchSnapshot()
   })
 })

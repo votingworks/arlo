@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { waitFor, fireEvent } from '@testing-library/react'
+import { waitFor, fireEvent, render } from '@testing-library/react'
 import {
   BrowserRouter as Router,
   Router as RegularRouter,
@@ -8,7 +8,7 @@ import {
 import { AuditAdminView } from './index'
 import { auditSettings } from './_mocks'
 import * as utilities from '../utilities'
-import { asyncActRender, routerTestProps } from '../testUtilities'
+import { routerTestProps } from '../testUtilities'
 import AuthDataProvider, { AuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus, {
   FileProcessingStatus,
@@ -124,7 +124,7 @@ describe('AA setup flow', () => {
   )
 
   it('sidebar changes stages', async () => {
-    const { queryAllByText, getByText } = await asyncActRender(
+    const { queryAllByText, getByText } = render(
       <AuthDataProvider>
         <Router>
           <AuditAdminViewWithAuth />
@@ -144,7 +144,7 @@ describe('AA setup flow', () => {
   })
 
   it('next and back buttons change stages', async () => {
-    const { queryAllByText, getByText } = await asyncActRender(
+    const { queryAllByText, getByText } = render(
       <AuthDataProvider>
         <Router>
           <AuditAdminViewWithAuth />
@@ -173,7 +173,7 @@ describe('AA setup flow', () => {
   })
 
   it('renders sidebar when authenticated on /setup', async () => {
-    const { container, queryAllByText } = await asyncActRender(
+    const { container, queryAllByText } = render(
       <AuthDataProvider>
         <Router>
           <AuditAdminViewWithAuth />
@@ -192,7 +192,7 @@ describe('AA setup flow', () => {
       electionId: '1',
       view: 'progress',
     })
-    const { container, queryAllByText } = await asyncActRender(
+    const { container, queryAllByText } = render(
       <AuthDataProvider>
         <Router>
           <AuditAdminViewWithAuth />
@@ -212,7 +212,7 @@ describe('AA setup flow', () => {
       electionId: '1',
       view: '',
     })
-    await asyncActRender(
+    render(
       <AuthDataProvider>
         <RegularRouter {...routeProps}>
           <AuditAdminViewWithAuth />

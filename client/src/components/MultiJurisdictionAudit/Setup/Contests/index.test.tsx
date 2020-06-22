@@ -1,8 +1,8 @@
 import React from 'react'
-import { fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, waitFor, render } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
-import { regexpEscape, asyncActRender } from '../../../testUtilities'
+import { regexpEscape } from '../../../testUtilities'
 import * as utilities from '../../../utilities'
 import Contests from './index'
 import relativeStages from '../_mocks'
@@ -90,13 +90,14 @@ afterEach(() => {
 
 describe('Audit Setup > Contests', () => {
   it('renders empty targeted state correctly', async () => {
-    const { container } = await asyncActRender(
+    const { container, findByText } = render(
       <Contests
         locked={false}
         isTargeted
         {...relativeStages('Target Contests')}
       />
     )
+    await findByText('Target Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -104,13 +105,14 @@ describe('Audit Setup > Contests', () => {
     apiMock.mockImplementation(
       generateApiMock(contestMocks.emptyOpportunistic, { jurisdictions: [] })
     )
-    const { container } = await asyncActRender(
+    const { container, findByText } = render(
       <Contests
         locked={false}
         isTargeted={false}
         {...relativeStages('Opportunistic Contests')}
       />
     )
+    await findByText('Opportunistic Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -118,13 +120,14 @@ describe('Audit Setup > Contests', () => {
     apiMock.mockImplementation(
       generateApiMock(contestMocks.filledTargeted, { jurisdictions: [] })
     )
-    const { container } = await asyncActRender(
+    const { container, findByText } = render(
       <Contests
         locked={false}
         isTargeted
         {...relativeStages('Target Contests')}
       />
     )
+    await findByText('Target Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -132,19 +135,20 @@ describe('Audit Setup > Contests', () => {
     apiMock.mockImplementation(
       generateApiMock(contestMocks.filledOpportunistic, { jurisdictions: [] })
     )
-    const { container } = await asyncActRender(
+    const { container, findByText } = render(
       <Contests
         locked={false}
         isTargeted={false}
         {...relativeStages('Opportunistic Contests')}
       />
     )
+    await findByText('Opportunistic Contests')
     expect(container).toMatchSnapshot()
   })
 
   it.skip('adds and removes contests', async () => {
     // skip until feature is complete in backend
-    const { getByText, getAllByText, queryByText } = await asyncActRender(
+    const { getByText, getAllByText, queryByText } = render(
       <Contests
         locked={false}
         isTargeted
@@ -178,7 +182,7 @@ describe('Audit Setup > Contests', () => {
     apiMock.mockImplementation(
       generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
     )
-    const { getByText, getAllByText, queryAllByText } = await asyncActRender(
+    const { findByText, getByText, getAllByText, queryAllByText } = render(
       <Contests
         locked={false}
         isTargeted
@@ -186,7 +190,9 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
-    fireEvent.click(getByText('Add a new candidate/choice'), { bubbles: true })
+    fireEvent.click(await findByText('Add a new candidate/choice'), {
+      bubbles: true,
+    })
 
     expect(getAllByText(/Name of Candidate\/Choice \d/i).length).toBe(3)
     expect(getAllByText(/Votes for Candidate\/Choice \d/i).length).toBe(3)
@@ -205,7 +211,7 @@ describe('Audit Setup > Contests', () => {
     apiMock.mockImplementation(
       generateApiMock(contestMocks.emptyTargeted, { jurisdictions: [] })
     )
-    const { getByLabelText, getByText } = await asyncActRender(
+    const { findByText, getByLabelText, getByText } = render(
       <Contests
         locked={false}
         isTargeted
@@ -214,6 +220,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
+    await findByText('Target Contests')
     contestsInputMocks.inputs.forEach(inputData => {
       const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',
@@ -246,7 +253,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('displays errors', async () => {
-    const { getByLabelText, getByTestId, getByText } = await asyncActRender(
+    const { getByLabelText, getByTestId, getByText, findByText } = render(
       <Contests
         locked={false}
         isTargeted
@@ -255,6 +262,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
+    await findByText('Target Contests')
     await utilities.asyncForEach(
       contestsInputMocks.errorInputs,
       async (inputData: { key: string; value: string; error: string }) => {
@@ -283,7 +291,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('displays an error when the total votes are greater than the allowed votes and more than one vote is allowed per contest', async () => {
-    const { getByLabelText, getByTestId } = await asyncActRender(
+    const { getByLabelText, findByLabelText, getByTestId } = render(
       <Contests
         locked={false}
         isTargeted
@@ -292,7 +300,7 @@ describe('Audit Setup > Contests', () => {
     )
 
     typeInto(
-      getByLabelText('Votes Allowed', {
+      await findByLabelText('Votes Allowed', {
         selector: 'input',
       }),
       '2'
@@ -327,7 +335,7 @@ describe('Audit Setup > Contests', () => {
   })
 
   it('displays no error when the total votes are greater than the ballot count, but less than the total allowed votes for a contest', async () => {
-    const { getByLabelText, queryByTestId } = await asyncActRender(
+    const { findByLabelText, getByLabelText, queryByTestId } = render(
       <Contests
         locked={false}
         isTargeted
@@ -336,7 +344,7 @@ describe('Audit Setup > Contests', () => {
     )
 
     typeInto(
-      getByLabelText('Votes Allowed', {
+      await findByLabelText('Votes Allowed', {
         selector: 'input',
       }),
       '2'
@@ -373,7 +381,7 @@ describe('Audit Setup > Contests', () => {
     apiMock.mockImplementation(
       generateApiMock(new Error('Network error'), { jurisdictions: [] })
     )
-    const { container } = await asyncActRender(
+    const { container } = render(
       <Contests
         locked={false}
         isTargeted
@@ -400,7 +408,7 @@ describe('Audit Setup > Contests', () => {
       .mockImplementation(
         generateApiMock(new Error('Network error'), { jurisdictions: [] })
       )
-    const { getByLabelText, getByText, container } = await asyncActRender(
+    const { getByLabelText, getByText, container } = render(
       <Contests
         locked={false}
         isTargeted
@@ -441,7 +449,7 @@ describe('Audit Setup > Contests', () => {
       .mockImplementation(
         generateApiMock({ status: 'ok' }, { jurisdictions: [] })
       )
-    const { getAllByLabelText, getAllByText } = await asyncActRender(
+    const { getAllByLabelText, getAllByText, findByText } = render(
       <Contests
         locked={false}
         isTargeted
@@ -450,6 +458,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
+    await findByText('Target Contests')
     contestsInputMocks.inputs.forEach(inputData => {
       const input = getAllByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',
@@ -487,26 +496,20 @@ describe('Audit Setup > Contests', () => {
         jurisdictions: jurisdictionMocks.noManifests,
       })
     )
-    const { getByText, queryByLabelText } = await asyncActRender(
+    const { getByText, findByText, findByLabelText } = render(
       <Contests
         locked={false}
         isTargeted
         {...relativeStages('Target Contests')}
       />
     )
-    const dropDown = getByText('Select Jurisdictions')
+    const dropDown = await findByText('Select Jurisdictions')
     fireEvent.click(dropDown, { bubbles: true })
-    const jurisdictionOne = queryByLabelText('Jurisdiction 1')
-    const jurisdictionTwo = queryByLabelText('Jurisdiction 2')
-    await waitFor(() => {
-      expect(jurisdictionOne).toBeTruthy()
-      expect(jurisdictionTwo).toBeTruthy()
-    })
-    if (jurisdictionOne && jurisdictionTwo) {
-      fireEvent.click(jurisdictionOne, { bubbles: true })
-      fireEvent.click(jurisdictionTwo, { bubbles: true })
-      fireEvent.click(jurisdictionOne, { bubbles: true })
-    }
+    const jurisdictionOne = await findByLabelText('Jurisdiction 1')
+    const jurisdictionTwo = await findByLabelText('Jurisdiction 2')
+    fireEvent.click(jurisdictionOne, { bubbles: true })
+    fireEvent.click(jurisdictionTwo, { bubbles: true })
+    fireEvent.click(jurisdictionOne, { bubbles: true })
 
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await waitFor(() => {
@@ -518,13 +521,11 @@ describe('Audit Setup > Contests', () => {
           'Content-Type': 'application/json',
         },
       })
-      if (apiMock.mock.calls[2][1]!.body) {
-        const submittedBody: IContestNumbered[] = JSON.parse(apiMock.mock
-          .calls[2][1]!.body as string)
-        expect(submittedBody[0].jurisdictionIds).toMatchObject([
-          'jurisdiction-id-2',
-        ])
-      }
+      const submittedBody: IContestNumbered[] = JSON.parse(apiMock.mock
+        .calls[2][1]!.body as string)
+      expect(submittedBody[0].jurisdictionIds).toMatchObject([
+        'jurisdiction-id-2',
+      ])
     })
   })
 })

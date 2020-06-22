@@ -1,10 +1,12 @@
 import React from 'react'
 import { render, waitFor, fireEvent } from '@testing-library/react'
 import { StaticRouter } from 'react-router-dom'
-import { routerTestProps, asyncActRender } from '../testUtilities'
+import { routerTestProps } from '../testUtilities'
 import DataEntry from './index'
 import { dummyBoards, dummyBallots, contest } from './_mocks'
 import * as utilities from '../utilities'
+
+window.scrollTo = jest.fn()
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -64,13 +66,13 @@ describe('DataEntry', () => {
         }
       })
 
-      const { container, getByText } = await asyncActRender(
+      const { container, findByText } = render(
         <StaticRouter {...staticRouteProps}>
           <DataEntry {...routeProps} />
         </StaticRouter>
       )
+      await findByText('Audit Board #2: Member Sign-in')
       expect(apiMock).toBeCalledTimes(1)
-      expect(getByText('Audit Board #2: Member Sign-in')).toBeTruthy()
       expect(container).toMatchSnapshot()
     })
 
@@ -87,14 +89,14 @@ describe('DataEntry', () => {
             return ballotingMock(endpoint)
         }
       })
-      const { container, getByText, getAllByLabelText } = await asyncActRender(
+      const { container, getByText, findAllByLabelText } = render(
         <StaticRouter {...staticRouteProps}>
           <DataEntry {...routeProps} />
         </StaticRouter>
       )
 
+      const nameInputs = await findAllByLabelText('Full Name')
       expect(apiMock).toBeCalledTimes(1)
-      const nameInputs = getAllByLabelText('Full Name')
       expect(nameInputs).toHaveLength(2)
 
       nameInputs.forEach((nameInput, i) =>
@@ -120,7 +122,7 @@ describe('DataEntry', () => {
             return ballotingMock(endpoint)
         }
       })
-      const { container } = await asyncActRender(
+      const { container } = render(
         <StaticRouter {...staticRouteProps}>
           <DataEntry {...routeProps} />
         </StaticRouter>
@@ -203,14 +205,14 @@ describe('DataEntry', () => {
         .spyOn(ballotRouteProps.history, 'push')
         .mockImplementation()
       ballotRouteProps.match.url = '/election/1/audit-board/audit-board-1'
-      const { getByText } = await asyncActRender(
+      const { findByText, getByText } = render(
         <StaticRouter {...staticBallotRouteProps}>
           <DataEntry {...ballotRouteProps} />
         </StaticRouter>
       )
 
       fireEvent.click(
-        getByText('Ballot 2112 not found - move to next ballot'),
+        await findByText('Ballot 2112 not found - move to next ballot'),
         {
           bubbles: true,
         }
@@ -244,13 +246,13 @@ describe('DataEntry', () => {
       )
       const { history, ...staticBallotRouteProps } = ballotRouteProps // eslint-disable-line @typescript-eslint/no-unused-vars
       ballotRouteProps.match.url = '/election/1/audit-board/audit-board-1'
-      const { getByText, getByTestId } = await asyncActRender(
+      const { getByText, findByTestId, getByTestId } = render(
         <StaticRouter {...staticBallotRouteProps}>
           <DataEntry {...ballotRouteProps} />
         </StaticRouter>
       )
 
-      fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
+      fireEvent.click(await findByTestId('choice-id-1'), { bubbles: true })
       await waitFor(() =>
         fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
       )

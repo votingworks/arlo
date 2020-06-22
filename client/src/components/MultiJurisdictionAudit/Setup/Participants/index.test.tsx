@@ -1,12 +1,11 @@
 import React from 'react'
-import { fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, waitFor, render } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
 import Participants from './index'
 import jurisdictionFile from './_mocks'
 import * as utilities from '../../../utilities'
-import { asyncActRender } from '../../../testUtilities'
 import useAuditSettings from '../../useAuditSettings'
 
 const auditSettingsMock = useAuditSettings as jest.Mock
@@ -51,18 +50,18 @@ const { nextStage } = relativeStages('Participants')
 
 const fillAndSubmit = async () => {
   const {
+    findByTestId,
     getByText,
     getByLabelText,
     queryByLabelText,
     queryByText,
-    getByTestId,
-  } = await asyncActRender(
+  } = render(
     <Router>
       <Participants locked={false} nextStage={nextStage} />
     </Router>
   )
 
-  fireEvent.change(getByTestId('state-field'), {
+  fireEvent.change(await findByTestId('state-field'), {
     target: { value: 'WA' },
   })
 
@@ -104,14 +103,13 @@ describe('Audit Setup > Participants', () => {
   })
 
   it('renders empty state correctly', async () => {
-    const { container } = await asyncActRender(
+    const { container } = render(
       <Router>
         <Participants locked={false} nextStage={nextStage} />
       </Router>
     )
-    await waitFor(() => {
-      expect(container).toMatchSnapshot()
-    })
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    expect(container).toMatchSnapshot()
   })
 
   it('selects a state and submits it', async () => {
