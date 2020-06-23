@@ -3,7 +3,6 @@ import { createLocation, createMemoryHistory, MemoryHistory } from 'history'
 import { match as routerMatch, Router } from 'react-router-dom'
 import equal from 'fast-deep-equal'
 import { render } from '@testing-library/react'
-import * as utilities from './utilities'
 
 type MatchParameter<Params> = { [K in keyof Params]?: string }
 
@@ -65,44 +64,60 @@ export const renderWithRouter = (
   }
 }
 
-// mockApi is a helper to mock calls to the backend API.
-// - It takes an array of expected ApiCalls
-// - It mocks utilities.api to return the given response to those calls
-// - It returns a function checkMockApi that asserts that the actual calls
-//   exactly match the expected calls.
-//
-// This allows mock behavior to be defined as data and reused.
+// withMockFetch is a helper to mock calls to external APIs (e.g. the Arlo backend).
+// - It takes an array of expected FetchRequests and a test runner function
+// - It mocks window.fetch to return the given response for each request
+// - After running the test function, it checks that the actual received
+//   requests exactly match the expected requests.
 
-interface ApiCall {
-  endpoint: string
+interface FetchRequest {
+  url: string
   options?: RequestInit
   response: object
 }
 
-export const withMockApi = async (
-  apiCalls: ApiCall[],
+export const withMockFetch = async (
+  requests: FetchRequest[],
   testFn: () => Promise<void>
 ) => {
-  const mock = jest
-    .spyOn(utilities, 'api')
-    .mockImplementation(async (endpoint: string, options?: RequestInit) => {
-      const matchingCall = apiCalls.find(
-        call => call.endpoint === endpoint && equal(call.options, options)
+  const requestsLeft = [...requests]
+  const mockFetch = jest.fn(async (url: string, options?: RequestInit) => {
+    const [expectedRequest] = requestsLeft.splice(0, 1)
+    if (
+      expectedRequest &&
+      expectedRequest.url === url &&
+      equal(expectedRequest.options, options)
+    ) {
+      return new Response(JSON.stringify(expectedRequest.response))
+    }
+
+    if (expectedRequest) {
+      // eslint-disable-next-line no-console
+      console.error(
+        'Expected fetch request:\n',
+        expectedRequest,
+        '\nActual fetch request:\n',
+        { url, options }
       )
-      return matchingCall && matchingCall.response
-    })
+    } else {
+      // eslint-disable-next-line no-console
+      console.error('Unexpected extra fetch request:\n', { url, options })
+    }
+    return new Response(JSON.stringify({}))
+  })
+  window.fetch = mockFetch
 
   await testFn()
 
-  const actualCalls = mock.mock.calls.map(([endpoint, options]) => ({
-    endpoint,
+  const actualRequests = mockFetch.mock.calls.map(([url, options]) => ({
+    url,
     options,
   }))
-  const expectedCalls = apiCalls.map(({ endpoint, options }) => ({
-    endpoint,
+  const expectedRequests = requests.map(({ url, options }) => ({
+    url,
     options,
   }))
-  expect(actualCalls).toEqual(expectedCalls)
+  expect(actualRequests).toEqual(expectedRequests)
 }
 
 export const regexpEscape = (s: string) => {

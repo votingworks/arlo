@@ -1,41 +1,13 @@
 import React from 'react'
-import { waitFor, fireEvent, screen } from '@testing-library/react'
+import { waitFor, screen } from '@testing-library/react'
 import { Route } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
-import { renderWithRouter, withMockApi } from '../testUtilities'
+import { renderWithRouter, withMockFetch } from '../testUtilities'
 import DataEntry from './index'
 import { dummyBoards, dummyBallots, doneDummyBallots } from './_mocks'
-import * as utilities from '../utilities'
 import { contestMocks } from '../MultiJurisdictionAudit/_mocks'
 
 window.scrollTo = jest.fn()
-
-const apiMock: jest.SpyInstance<
-  ReturnType<typeof utilities.api>,
-  Parameters<typeof utilities.api>
-> = jest.spyOn(utilities, 'api').mockImplementation()
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
-
-const ballotingMock = async (endpoint: string) => {
-  switch (endpoint) {
-    case '/me':
-      return {
-        type: 'AUDIT_BOARD',
-        ...dummyBoards()[0],
-      }
-    case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/contest':
-      return { contests: contestMocks.oneTargeted }
-    case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots':
-      return dummyBallots
-    case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots/ballot-id-1':
-      return { status: 'ok' }
-    default:
-      return null
-  }
-}
 
 const renderDataEntry = () =>
   renderWithRouter(
@@ -62,21 +34,36 @@ const renderBallot = () =>
 
 const apiCalls = {
   getAuditBoard: {
-    endpoint: '/me',
+    url: '/api/me',
     response: { type: 'AUDIT_BOARD', ...dummyBoards()[0] },
   },
+  putAuditBoardMembers: {
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/members',
+    options: {
+      method: 'PUT',
+      body: JSON.stringify([
+        { name: 'Name 1', affiliation: null },
+        { name: 'Name 2', affiliation: null },
+      ]),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+    response: { status: 'ok' },
+  },
   getContests: {
-    endpoint:
-      '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/contest',
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/contest',
     response: { contests: contestMocks.oneTargeted },
   },
   getBallotsInitial: {
-    endpoint:
-      '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
     response: dummyBallots,
   },
   putAuditBallot: (ballotId: string, body: object) => ({
-    endpoint: `/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots/${ballotId}`,
+    url: `/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots/${ballotId}`,
     options: {
       method: 'PUT',
       body: JSON.stringify(body),
@@ -87,8 +74,8 @@ const apiCalls = {
     response: { status: 'ok' },
   }),
   getBallotsOneAudited: {
-    endpoint:
-      '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots',
     response: {
       ballots: [
         dummyBallots.ballots[0],
@@ -99,89 +86,71 @@ const apiCalls = {
   },
 }
 
-afterEach(() => {
-  apiMock.mockClear()
-  checkAndToastMock.mockClear()
-})
-
 describe('DataEntry', () => {
-  beforeEach(() => {
-    apiMock.mockImplementation(ballotingMock)
-  })
-
   describe('member form', () => {
-    it('renders if no audit board members set', async () => {
-      apiMock.mockImplementation(async endpoint => {
-        switch (endpoint) {
-          case '/me':
-            return dummyBoards()[1] // No members set
-          default:
-            return ballotingMock(endpoint)
-        }
-      })
-      const { container } = renderDataEntry()
-
-      await screen.findByText('Audit Board #2: Member Sign-in')
-      expect(apiMock).toBeCalledTimes(1)
-      expect(container).toMatchSnapshot()
-    })
-
     it('submits and goes to ballot table', async () => {
-      let posted = false
-      apiMock.mockImplementation(async endpoint => {
-        switch (endpoint) {
-          case '/me':
-            return posted ? dummyBoards()[0] : dummyBoards()[1]
-          case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/members':
-            posted = true
-            return { status: 'ok' }
-          default:
-            return ballotingMock(endpoint)
-        }
+      const expectedCalls = [
+        {
+          ...apiCalls.getAuditBoard,
+          response: { type: 'AUDIT_BOARD', ...dummyBoards()[1] }, // No members set
+        },
+        apiCalls.putAuditBoardMembers,
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsInitial,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { container } = renderDataEntry()
+
+        await screen.findByText('Audit Board #2: Member Sign-in')
+        const nameInputs = screen.getAllByLabelText('Full Name')
+        expect(nameInputs).toHaveLength(2)
+
+        await userEvent.type(nameInputs[0], `Name 1`)
+        await userEvent.type(nameInputs[1], `Name 2`)
+        userEvent.click(screen.getByRole('button', { name: 'Next' }))
+
+        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
+        expect(container).toMatchSnapshot()
       })
-      const { container } = renderDataEntry()
-
-      const nameInputs = await screen.findAllByLabelText('Full Name')
-      expect(nameInputs).toHaveLength(2)
-      expect(apiMock).toBeCalledTimes(1)
-
-      nameInputs.forEach((nameInput, i) =>
-        fireEvent.change(nameInput, { target: { value: `Name ${i}` } })
-      )
-      fireEvent.click(screen.getByText('Next'), { bubbles: true })
-
-      await screen.findByText('Audit Board #1: Ballot Cards to Audit')
-      expect(apiMock).toBeCalledTimes(1 + 4)
-      expect(container).toMatchSnapshot()
     })
   })
 
   describe('ballot interaction', () => {
     it('renders board table with no ballots', async () => {
-      apiMock.mockImplementation(async (endpoint: string) => {
-        switch (endpoint) {
-          case '/election/1/jurisdiction/jurisdiction-1/round/round-1/audit-board/audit-board-1/ballots':
-            return { ballots: [] }
-          default:
-            return ballotingMock(endpoint)
-        }
-      })
-      const { container } = renderDataEntry()
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        {
+          ...apiCalls.getBallotsInitial,
+          response: { ballots: [] },
+        },
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { container } = renderDataEntry()
 
-      await waitFor(() => {
-        expect(apiMock).toBeCalledTimes(3)
+        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
         expect(container).toMatchSnapshot()
       })
     })
 
     it('renders board table with ballots', async () => {
-      const { container } = renderDataEntry()
-      await waitFor(() => {
-        expect(apiMock).toBeCalledTimes(3)
-        screen.getByText('Audit Board #1: Ballot Cards to Audit')
-        expect(screen.getByText('Start Auditing')).toBeEnabled()
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsInitial,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { container } = renderDataEntry()
+
+        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
         expect(
-          screen.getByText('Auditing Complete - Submit Results')
+          screen.getByRole('button', { name: 'Start Auditing' })
+        ).toBeEnabled()
+        expect(
+          screen.getByRole('button', {
+            name: 'Auditing Complete - Submit Results',
+          })
         ).toBeDisabled()
         expect(container).toMatchSnapshot()
       })
@@ -192,69 +161,104 @@ describe('DataEntry', () => {
         .spyOn(window.document, 'getElementsByClassName')
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockReturnValue([{ clientWidth: 2000 }] as any)
-      const { container } = renderDataEntry()
-      await waitFor(() => {
-        expect(apiMock).toBeCalledTimes(3)
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsInitial,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { container } = renderDataEntry()
+        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
         expect(container).toMatchSnapshot()
       })
     })
 
     it('renders ballot route', async () => {
-      const { container } = renderBallot()
-      await waitFor(() => {
-        expect(apiMock).toBeCalledTimes(3)
-        screen.getByText('Enter Ballot Information')
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsInitial,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { container } = renderBallot()
+        await screen.findByText('Enter Ballot Information')
         expect(container).toMatchSnapshot()
       })
     })
 
     it('advances ballot forward and backward', async () => {
-      const { history } = renderBallot()
-      const pushSpy = jest.spyOn(history, 'push').mockImplementation()
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsInitial,
+        apiCalls.putAuditBallot('ballot-id-2', {
+          status: 'NOT_FOUND',
+          interpretations: [],
+        }),
+        apiCalls.getBallotsOneAudited,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderBallot()
 
-      fireEvent.click(
-        await screen.findByText('Ballot 2112 not found - move to next ballot'),
-        {
-          bubbles: true,
-        }
-      )
-      await waitFor(() => {
-        expect(pushSpy).toBeCalledTimes(1)
+        const pushSpy = jest.spyOn(history, 'push').mockImplementation()
+
+        userEvent.click(
+          await screen.findByRole('button', {
+            name: 'Ballot 2112 not found - move to next ballot',
+          })
+        )
+        await waitFor(() => {
+          expect(pushSpy).toBeCalledTimes(1)
+        })
+
+        userEvent.click(screen.getByText('Back'))
+        await waitFor(() => {
+          expect(pushSpy).toBeCalledTimes(2)
+        })
+
+        expect(pushSpy.mock.calls[0][0]).toBe(
+          '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
+        )
+        expect(pushSpy.mock.calls[1][0]).toBe(
+          '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313'
+        )
       })
-
-      fireEvent.click(screen.getByText('Back'), { bubbles: true })
-      await waitFor(() => {
-        expect(pushSpy).toBeCalledTimes(2)
-      })
-
-      expect(pushSpy.mock.calls[0][0]).toBe(
-        '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
-      )
-      expect(pushSpy.mock.calls[1][0]).toBe(
-        '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/313'
-      )
     })
 
     it('submits ballot', async () => {
-      const { history } = renderBallot()
+      const expectedCalls = [
+        apiCalls.getAuditBoard,
+        apiCalls.getContests,
+        apiCalls.getBallotsInitial,
+        apiCalls.putAuditBallot('ballot-id-2', {
+          status: 'AUDITED',
+          interpretations: [
+            {
+              contestId: 'contest-id-1',
+              interpretation: 'VOTE',
+              choiceIds: ['choice-id-1'],
+              comment: null,
+            },
+          ],
+        }),
+        apiCalls.getBallotsOneAudited,
+      ]
+      await withMockFetch(expectedCalls, async () => {
+        const { history } = renderBallot()
 
-      fireEvent.click(await screen.findByTestId('choice-id-1'), {
-        bubbles: true,
-      })
-      await waitFor(() =>
-        fireEvent.click(screen.getByTestId('enabled-review'), { bubbles: true })
-      )
-      await waitFor(() => {
-        fireEvent.click(screen.getByText('Submit & Next Ballot'), {
-          bubbles: true,
-        })
-      })
-
-      await waitFor(() => {
-        expect(apiMock).toBeCalledTimes(5)
-        expect(history.location.pathname).toBe(
-          '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
+        userEvent.click(
+          await screen.findByRole('checkbox', { name: 'Choice One' })
         )
+        userEvent.click(await screen.findByRole('button', { name: 'Review' }))
+        userEvent.click(
+          await screen.findByRole('button', { name: 'Submit & Next Ballot' })
+        )
+
+        await waitFor(() => {
+          expect(history.location.pathname).toBe(
+            '/election/1/audit-board/audit-board-1/batch/batch-id-1/ballot/1789'
+          )
+        })
       })
     })
 
@@ -282,7 +286,7 @@ describe('DataEntry', () => {
         }),
         apiCalls.getBallotsOneAudited,
       ]
-      await withMockApi(expectedCalls, async () => {
+      await withMockFetch(expectedCalls, async () => {
         renderDataEntry()
 
         await screen.findByRole('heading', {
@@ -346,7 +350,7 @@ describe('DataEntry', () => {
         }),
         apiCalls.getBallotsOneAudited,
       ]
-      await withMockApi(expectedCalls, async () => {
+      await withMockFetch(expectedCalls, async () => {
         renderDataEntry()
 
         userEvent.click(

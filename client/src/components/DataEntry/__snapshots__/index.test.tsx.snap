@@ -135,7 +135,6 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
                 >
                   <input
-                    data-testid="choice-id-1"
                     type="checkbox"
                   />
                   <span
@@ -152,7 +151,6 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
                 >
                   <input
-                    data-testid="choice-id-2"
                     type="checkbox"
                   />
                   <span
@@ -169,7 +167,6 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
                 >
                   <input
-                    data-testid="CANT_AGREE"
                     type="checkbox"
                   />
                   <span
@@ -186,7 +183,6 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
                 >
                   <input
-                    data-testid="BLANK"
                     type="checkbox"
                   />
                   <span
@@ -244,7 +240,6 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
                 >
                   <input
-                    data-testid="choice-id-3"
                     type="checkbox"
                   />
                   <span
@@ -261,7 +256,6 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
                 >
                   <input
-                    data-testid="choice-id-4"
                     type="checkbox"
                   />
                   <span
@@ -278,7 +272,6 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
                 >
                   <input
-                    data-testid="CANT_AGREE"
                     type="checkbox"
                   />
                   <span
@@ -295,7 +288,6 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                   class="bp3-control bp3-checkbox sc-kgoBCf fUVsXF"
                 >
                   <input
-                    data-testid="BLANK"
                     type="checkbox"
                   />
                   <span
@@ -343,7 +335,6 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
               >
                 <button
                   class="bp3-button bp3-intent-success sc-gzVnrw kdzzfK"
-                  data-testid="enabled-review"
                   type="submit"
                 >
                   <span
@@ -1981,270 +1972,6 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`DataEntry member form renders if no audit board members set 1`] = `
-<div>
-  <div
-    class="sc-eNQAEJ hubqqz"
-  >
-    <div
-      class="sc-hMqMXs sc-kEYyzF jYziDw"
-    >
-      <div>
-        <h1
-          class="bp3-heading"
-        >
-          Audit Board #2
-          : Member Sign-in
-        </h1>
-        <p>
-          Enter the information below for each member of 
-          Jurisdiction 1
-           
-          Audit Board #2
-           below, then click "Next" to proceed.
-        </p>
-        <form>
-          <div
-            class="sc-bxivhb bpsXkZ"
-          >
-            <h3
-              class="bp3-heading sc-EHOje kACsXT"
-            >
-              Audit Board Member
-            </h3>
-            <label
-              class="sc-VigVT dhMzYU"
-              for="[0]name"
-            >
-              Full Name
-            </label>
-            <input
-              class="sc-jTzLTM ihKPmv"
-              id="[0]name"
-              name="[0]name"
-              value=""
-            />
-            <label
-              class="sc-VigVT dhMzYU"
-              for="[0]affiliation"
-            >
-              Party Affiliation 
-              <i>
-                (optional)
-              </i>
-            </label>
-            <div>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="DEM"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Democrat
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="REP"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Republican
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="LIB"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Libertarian
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="IND"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Independent/Unaffiliated
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[0]affiliation"
-                  type="radio"
-                  value="OTH"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Other
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="[0]affiliation"
-                  type="radio"
-                  value=""
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                None
-              </label>
-            </div>
-          </div>
-          <div
-            class="sc-bxivhb bpsXkZ"
-          >
-            <h3
-              class="bp3-heading sc-EHOje kACsXT"
-            >
-              Audit Board Member
-            </h3>
-            <label
-              class="sc-VigVT dhMzYU"
-              for="[1]name"
-            >
-              Full Name
-            </label>
-            <input
-              class="sc-jTzLTM ihKPmv"
-              id="[1]name"
-              name="[1]name"
-              value=""
-            />
-            <label
-              class="sc-VigVT dhMzYU"
-              for="[1]affiliation"
-            >
-              Party Affiliation 
-              <i>
-                (optional)
-              </i>
-            </label>
-            <div>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="DEM"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Democrat
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="REP"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Republican
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="LIB"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Libertarian
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="IND"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Independent/Unaffiliated
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  name="[1]affiliation"
-                  type="radio"
-                  value="OTH"
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                Other
-              </label>
-              <label
-                class="bp3-control bp3-radio"
-              >
-                <input
-                  checked=""
-                  name="[1]affiliation"
-                  type="radio"
-                  value=""
-                />
-                <span
-                  class="bp3-control-indicator"
-                />
-                None
-              </label>
-            </div>
-          </div>
-          <button
-            class="bp3-button bp3-disabled bp3-intent-primary sc-gzVnrw kdzzfK"
-            disabled=""
-            tabindex="-1"
-            type="button"
-          >
-            <span
-              class="bp3-button-text"
-            >
-              Next
-            </span>
-          </button>
-        </form>
       </div>
     </div>
   </div>

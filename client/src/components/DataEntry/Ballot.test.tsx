@@ -50,7 +50,7 @@ describe('Ballot', () => {
   })
 
   it('switches audit and review views', async () => {
-    const { container, getByText, getByTestId } = render(
+    const { container, getByText } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/audit-board/1"
@@ -66,10 +66,8 @@ describe('Ballot', () => {
       </Router>
     )
 
-    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-    await waitFor(() =>
-      fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
-    )
+    fireEvent.click(getByText('Choice One'), { bubbles: true })
+    await waitFor(() => fireEvent.click(getByText('Review'), { bubbles: true }))
     await waitFor(() => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
     })
@@ -86,7 +84,7 @@ describe('Ballot', () => {
   const buttonLabels = ["Audit board can't agree", 'Blank vote/Not on Ballot']
   buttonLabels.forEach(buttonLabel => {
     it(`selects ${buttonLabel}`, async () => {
-      const { container, getByLabelText, getByText, getByTestId } = render(
+      const { container, getByLabelText, getByText } = render(
         <Router history={history}>
           <Ballot
             home="/election/1/audit-board/1"
@@ -106,7 +104,7 @@ describe('Ballot', () => {
         bubbles: true,
       })
       await waitFor(() =>
-        fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
+        fireEvent.click(getByText('Review'), { bubbles: true })
       )
       await waitFor(() =>
         expect(getByText('Submit & Next Ballot')).toBeTruthy()
@@ -119,7 +117,7 @@ describe('Ballot', () => {
   })
 
   it('toggles and submits comment', async () => {
-    const { container, getByText, getByTestId, queryByText } = render(
+    const { container, getByText, queryByText, getByRole } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/audit-board/1"
@@ -137,13 +135,11 @@ describe('Ballot', () => {
 
     fireEvent.click(getByText('Add comment'), { bubbles: true })
 
-    const commentInput = getByTestId('comment-textarea')
+    const commentInput = getByRole('textbox')
     fireEvent.change(commentInput, { target: { value: 'a test comment' } })
 
-    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-    await waitFor(() =>
-      fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
-    )
+    fireEvent.click(getByText('Choice One'), { bubbles: true })
+    await waitFor(() => fireEvent.click(getByText('Review'), { bubbles: true }))
     await waitFor(() => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
       expect(getByText('COMMENT: a test comment')).toBeTruthy()
@@ -155,17 +151,15 @@ describe('Ballot', () => {
 
     fireEvent.change(commentInput, { target: { value: '' } })
 
-    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-    await waitFor(() =>
-      fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
-    )
+    fireEvent.click(getByText('Choice One'), { bubbles: true })
+    await waitFor(() => fireEvent.click(getByText('Review'), { bubbles: true }))
     await waitFor(() => {
       expect(queryByText('COMMENT:')).toBeFalsy()
     })
   })
 
   it('toggles and deletes a comment', async () => {
-    const { container, getByText, queryByText, getByTestId } = render(
+    const { container, getByText, queryByText, getByRole } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/audit-board/1"
@@ -183,15 +177,13 @@ describe('Ballot', () => {
 
     fireEvent.click(getByText('Add comment'), { bubbles: true })
 
-    const commentInput = getByTestId('comment-textarea')
+    const commentInput = getByRole('textbox')
     fireEvent.change(commentInput, { target: { value: 'a test comment' } })
 
     fireEvent.click(getByText('Remove comment'), { bubbles: true })
 
-    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-    await waitFor(() =>
-      fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
-    )
+    fireEvent.click(getByText('Choice One'), { bubbles: true })
+    await waitFor(() => fireEvent.click(getByText('Review'), { bubbles: true }))
     await waitFor(() => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
       expect(queryByText('COMMENT: a test comment')).toBeFalsy()
@@ -202,7 +194,7 @@ describe('Ballot', () => {
   it('submits review and progresses to next ballot', async () => {
     const submitMock = jest.fn()
     const nextBallotMock = jest.fn()
-    const { findByText, findByTestId, getByTestId } = render(
+    const { getByText, findByText } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/audit-board/1"
@@ -218,9 +210,9 @@ describe('Ballot', () => {
       </Router>
     )
 
-    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
+    fireEvent.click(getByText('Choice One'), { bubbles: true })
 
-    const reviewButton = await findByTestId('enabled-review')
+    const reviewButton = getByText('Review')
     fireEvent.click(reviewButton, { bubbles: true })
     const nextButton = await findByText('Submit & Next Ballot')
     fireEvent.click(nextButton, { bubbles: true })
@@ -233,7 +225,7 @@ describe('Ballot', () => {
 
   it('navigates to previous ballot', async () => {
     const previousBallotMock = jest.fn()
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <Router history={history}>
         <Ballot
           home="/election/1/audit-board/1"
@@ -254,10 +246,8 @@ describe('Ballot', () => {
       expect(previousBallotMock).toBeCalledTimes(1)
     })
 
-    fireEvent.click(getByTestId('choice-id-1'), { bubbles: true })
-    await waitFor(() =>
-      fireEvent.click(getByTestId('enabled-review'), { bubbles: true })
-    )
+    fireEvent.click(getByText('Choice One'), { bubbles: true })
+    await waitFor(() => fireEvent.click(getByText('Review'), { bubbles: true }))
     await waitFor(() => {
       expect(getByText('Submit & Next Ballot')).toBeTruthy()
     })
