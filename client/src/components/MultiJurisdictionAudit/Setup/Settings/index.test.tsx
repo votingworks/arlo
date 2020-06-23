@@ -1,9 +1,8 @@
 import React from 'react'
-import { fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, waitFor, render } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import relativeStages from '../_mocks'
 import Settings from './index'
-import { asyncActRender } from '../../../testUtilities'
 import useAuditSettings from '../../useAuditSettings'
 
 jest.mock('react-router-dom', () => ({
@@ -32,7 +31,7 @@ auditSettingsMock.mockReturnValue([
 const { nextStage, prevStage } = relativeStages('Audit Settings')
 
 const fillAndSubmit = async () => {
-  const { getByText, getByLabelText, getByTestId } = await asyncActRender(
+  const { getByText, getByLabelText, getByTestId } = render(
     <Router>
       <Settings locked={false} nextStage={nextStage} prevStage={prevStage} />
     </Router>

@@ -3,7 +3,6 @@ import { render, waitFor } from '@testing-library/react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import Header from './Header'
 import * as utilities from './utilities'
-import { asyncActRender } from './testUtilities'
 import AuthDataProvider from './UserContext'
 
 const apiMock: jest.SpyInstance<
@@ -50,7 +49,7 @@ describe('Header', () => {
       jurisdictions: [],
       organizations: [],
     }))
-    const { queryByText } = await asyncActRender(
+    const { findByText } = render(
       <Router>
         <AuthDataProvider>
           <Header />
@@ -58,17 +57,14 @@ describe('Header', () => {
       </Router>
     )
 
-    const loginButton = queryByText('Log out')
-    await waitFor(() => {
-      expect(apiMock).toHaveBeenCalledTimes(1)
-      expect(apiMock).toHaveBeenCalledWith('/me')
-      expect(loginButton).toBeTruthy()
-    })
+    await findByText('Log out')
+    expect(apiMock).toHaveBeenCalledTimes(1)
+    expect(apiMock).toHaveBeenCalledWith('/me')
   })
 
   it('does not show logout button if not authenticated', async () => {
     apiMock.mockRejectedValue(async () => ({}))
-    const { queryByText } = await asyncActRender(
+    const { queryByText } = render(
       <Router>
         <AuthDataProvider>
           <Header />
@@ -87,7 +83,7 @@ describe('Header', () => {
   it('does not show logout button if the authentication verification has a server error', async () => {
     checkAndToastMock.mockReturnValue(true)
     apiMock.mockRejectedValue(async () => ({}))
-    const { queryByText } = await asyncActRender(
+    const { queryByText } = render(
       <Router>
         <AuthDataProvider>
           <Header />

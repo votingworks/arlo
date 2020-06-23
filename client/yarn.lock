@@ -1063,7 +1063,7 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.7.4", "@babel/runtime@^7.9.2", "@babel/runtime@^7.9.6":
+"@babel/runtime@^7.7.4", "@babel/runtime@^7.9.2":
   version "7.10.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.10.0.tgz#2cdcd6d7a391c24f7154235134c830cfb58ac0b1"
   integrity sha512-tgYb3zVApHbLHYOPWtVwg25sBqHhfBXRKeKoTIyoheIxln1nA7oBl7SfHfiTG2GhDPI8EUBkOD/0wJCP/3HN4Q==
@@ -1619,10 +1619,10 @@
   resolved "https://registry.yarnpkg.com/@testim/chrome-version/-/chrome-version-1.0.7.tgz#0cd915785ec4190f08a3a6acc9b61fc38fb5f1a9"
   integrity sha512-8UT/J+xqCYfn3fKtOznAibsHpiuDshCb0fwgWxRazTT19Igp9ovoXMPhXyLD6m3CKQGTMHgqoxaFfMWaL40Rnw==
 
-"@testing-library/dom@^7.2.2":
-  version "7.11.0"
-  resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-7.11.0.tgz#db8678bc55aef7cd6091d1510e8d0949d77d79fd"
-  integrity sha512-2j+zfA6dwnzozReA2XrbZs3e9DD9UdetONrWmumIY2QdGH0h08hRW+SaLE8kIytM6KPO5yzypHZhK5AZNFEtiw==
+"@testing-library/dom@^7.14.2":
+  version "7.16.2"
+  resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-7.16.2.tgz#f7a20b5548817e5c7ed26077913372d977be90af"
+  integrity sha512-4fT5l5L+5gfNhUZVCg0wnSszbRJ7A1ZHEz32v7OzH3mcY5lUsK++brI3IB2L9F5zO4kSDc2TRGEVa8v2hgl9vA==
   dependencies:
     "@babel/runtime" "^7.10.2"
     aria-query "^4.0.2"
@@ -1644,22 +1644,21 @@
     lodash "^4.17.15"
     redent "^3.0.0"
 
-"@testing-library/react-hooks@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@testing-library/react-hooks/-/react-hooks-3.2.1.tgz#19b6caa048ef15faa69d439c469033873ea01294"
-  integrity sha512-1OB6Ksvlk6BCJA1xpj8/WWz0XVd1qRcgqdaFAq+xeC6l61Ucj0P6QpA5u+Db/x9gU4DCX8ziR5b66Mlfg0M2RA==
+"@testing-library/react-hooks@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/react-hooks/-/react-hooks-3.3.0.tgz#dc217bfce8e7c34a99c811d73d23feef957b7c1d"
+  integrity sha512-rE9geI1+HJ6jqXkzzJ6abREbeud6bLF8OmF+Vyc7gBoPwZAEVBYjbC1up5nNoVfYBhO5HUwdD4u9mTehAUeiyw==
   dependencies:
     "@babel/runtime" "^7.5.4"
     "@types/testing-library__react-hooks" "^3.0.0"
 
-"@testing-library/react@^10.0.4":
-  version "10.0.4"
-  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-10.0.4.tgz#8e0e299cd91acc626d81ed8489fdc13df864c31d"
-  integrity sha512-2e1B5debfuiIGbvUuiSXybskuh7ZTVJDDvG/IxlzLOY9Co/mKFj9hIklAe2nGZYcOUxFaiqWrRZ9vCVGzJfRlQ==
+"@testing-library/react@^10.3.0":
+  version "10.3.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-10.3.0.tgz#d615385b8d86ef4d76142a423755d471b3673295"
+  integrity sha512-Rhn5uJK6lYHWzlGVbK6uAvheAW8AUoFYxTLGdDxgsJDaK/PYy5drWfW/6YpMMOKMw+u6jHHl4MNHlt5qLHnm0Q==
   dependencies:
-    "@babel/runtime" "^7.9.6"
-    "@testing-library/dom" "^7.2.2"
-    "@types/testing-library__react" "^10.0.1"
+    "@babel/runtime" "^7.10.2"
+    "@testing-library/dom" "^7.14.2"
 
 "@testing-library/user-event@^11.3.1":
   version "11.3.1"
@@ -1831,13 +1830,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@*":
-  version "16.9.4"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.4.tgz#0b58df09a60961dcb77f62d4f1832427513420df"
-  integrity sha512-fya9xteU/n90tda0s+FtN5Ym4tbgxpq/hb/Af24dvs6uYnYn+fspaxw5USlw0R8apDNwxsqumdRoCoKitckQqw==
-  dependencies:
-    "@types/react" "*"
-
 "@types/react-dom@16.8.4":
   version "16.8.4"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.8.4.tgz#7fb7ba368857c7aa0f4e4511c4710ca2c5a12a88"
@@ -1929,13 +1921,6 @@
     "@types/react-native" "*"
     csstype "^2.2.0"
 
-"@types/testing-library__dom@*":
-  version "6.10.0"
-  resolved "https://registry.yarnpkg.com/@types/testing-library__dom/-/testing-library__dom-6.10.0.tgz#590d76e3875a7c536dc744eb530cbf51b6483404"
-  integrity sha512-mL/GMlyQxiZplbUuFNwA0vAI3k3uJNSf6slr5AVve9TXmfLfyefNT0uHHnxwdYuPMxYD5gI/+dgAvc/5opW9JQ==
-  dependencies:
-    pretty-format "^24.3.0"
-
 "@types/testing-library__jest-dom@^5.0.2":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@types/testing-library__jest-dom/-/testing-library__jest-dom-5.7.0.tgz#078790bf4dc89152a74428591a228ec5f9433251"
@@ -1950,15 +1935,6 @@
   dependencies:
     "@types/react" "*"
     "@types/react-test-renderer" "*"
-
-"@types/testing-library__react@^10.0.1":
-  version "10.0.1"
-  resolved "https://registry.yarnpkg.com/@types/testing-library__react/-/testing-library__react-10.0.1.tgz#92bb4a02394bf44428e35f1da2970ed77f803593"
-  integrity sha512-RbDwmActAckbujLZeVO/daSfdL1pnjVqas25UueOkAY5r7vriavWf0Zqg7ghXMHa8ycD/kLkv8QOj31LmSYwww==
-  dependencies:
-    "@types/react-dom" "*"
-    "@types/testing-library__dom" "*"
-    pretty-format "^25.1.0"
 
 "@types/tough-cookie@*":
   version "2.3.5"
@@ -11291,7 +11267,7 @@ pretty-error@^2.1.1:
     renderkid "^2.0.1"
     utila "~0.4"
 
-pretty-format@^24.3.0, pretty-format@^24.9.0:
+pretty-format@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-24.9.0.tgz#12fac31b37019a4eea3c11aa9a959eb7628aa7c9"
   integrity sha512-00ZMZUiHaJrNfk33guavqgvfJS30sLYf0f8+Srklv0AMPodGGHcoHgksZ3OThYnIvOd+8yMCn0YiEOogjlgsnA==
@@ -11301,7 +11277,7 @@ pretty-format@^24.3.0, pretty-format@^24.9.0:
     ansi-styles "^3.2.0"
     react-is "^16.8.4"
 
-pretty-format@^25.1.0, pretty-format@^25.2.1, pretty-format@^25.5.0:
+pretty-format@^25.2.1, pretty-format@^25.5.0:
   version "25.5.0"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-25.5.0.tgz#7873c1d774f682c34b8d48b6743a2bf2ac55791a"
   integrity sha512-kbo/kq2LQ/A/is0PQwsEHM7Ca6//bGPPvU6UnsdDRSKTWxT/ru/xb88v4BJf6a69H+uTytOEsTusT9ksd/1iWQ==

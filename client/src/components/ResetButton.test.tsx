@@ -33,7 +33,7 @@ describe('ResetButton', () => {
     expect(container).toMatchSnapshot()
   })
 
-  it('does not render when authenticated', () => {
+  it('does not render when authenticated', async () => {
     apiMock.mockImplementation(async () => ({
       type: 'audit_admin',
       name: 'Joe',
@@ -53,6 +53,7 @@ describe('ResetButton', () => {
         <ResetButton electionId="1" updateAudit={updateAuditMock} />
       </AuthDataProvider>
     )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
     expect(queryAllByText('Clear & Restart').length).toBe(0)
     expect(container).toMatchSnapshot()
   })

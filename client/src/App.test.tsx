@@ -1,19 +1,15 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import App from './App'
+import * as utilities from './components/utilities'
 
 jest.unmock('react-toastify')
+jest.spyOn(utilities, 'api')
 
 describe('App', () => {
-  it('renders without crashing', () => {
-    const div = document.createElement('div')
-    ReactDOM.render(<App />, div)
-    ReactDOM.unmountComponentAtNode(div)
-  })
-
-  it('renders properly', () => {
+  it('renders properly', async () => {
     const { container } = render(<App />)
+    await screen.findByAltText('Arlo, by VotingWorks')
     expect(container).toMatchSnapshot()
   })
 })

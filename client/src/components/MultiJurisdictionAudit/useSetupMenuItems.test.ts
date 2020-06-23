@@ -1,5 +1,4 @@
 import { renderHook, act } from '@testing-library/react-hooks'
-import { waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import * as utilities from '../utilities'
 import useSetupMenuItems from './useSetupMenuItems/index'
@@ -50,7 +49,7 @@ afterEach(() => {
 })
 
 describe('useSetupMenuItems', () => {
-  it('returns initial state', () => {
+  it('returns initial state', async () => {
     const {
       result: {
         current: [menuItems],
@@ -59,15 +58,18 @@ describe('useSetupMenuItems', () => {
     expect(menuItems).toBeTruthy()
   })
 
-  it('calls the getters', () => {
+  it('calls the getters', async () => {
     const {
       result: {
         current: [, refresh],
       },
+      waitForNextUpdate,
     } = renderHook(() => useSetupMenuItems('Participants', jest.fn(), '1'))
     act(() => refresh())
+    await waitForNextUpdate()
     expect(apiMock).toHaveBeenCalledTimes(2)
     act(() => refresh())
+    await waitForNextUpdate()
     expect(apiMock).toHaveBeenCalledTimes(4)
   })
 
@@ -85,9 +87,7 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await waitFor(() =>
-      expect(result.current[0].every(i => i.state === 'locked')).toBeTruthy()
-    )
+    expect(result.current[0].every(i => i.state === 'locked')).toBeTruthy()
   })
 
   it('handles ERRORED response from /jurisdiction/file api', async () => {
@@ -110,10 +110,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await waitFor(() => {
-      expect(result.current[0][1].state === 'locked').toBeTruthy()
-      expect(result.current[0][2].state === 'locked').toBeTruthy()
-    })
+    expect(result.current[0][1].state === 'locked').toBeTruthy()
+    expect(result.current[0][2].state === 'locked').toBeTruthy()
   })
 
   it('handles NULL response from /jurisdiction/file api', async () => {
@@ -131,14 +129,13 @@ describe('useSetupMenuItems', () => {
         }
       )
     )
-    const { result } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHook(() =>
       useSetupMenuItems('Participants', jest.fn(), '1')
     )
     act(() => result.current[1]())
-    await waitFor(() => {
-      expect(result.current[0][1].state === 'locked').toBeTruthy()
-      expect(result.current[0][2].state === 'locked').toBeTruthy()
-    })
+    await waitForNextUpdate()
+    expect(result.current[0][1].state === 'locked').toBeTruthy()
+    expect(result.current[0][2].state === 'locked').toBeTruthy()
   })
 
   it('handles PROCESSING response from /jurisdiction/file api', async () => {
@@ -161,10 +158,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await waitFor(() => {
-      expect(result.current[0][1].state === 'processing').toBeTruthy()
-      expect(result.current[0][2].state === 'processing').toBeTruthy()
-    })
+    expect(result.current[0][1].state === 'processing').toBeTruthy()
+    expect(result.current[0][2].state === 'processing').toBeTruthy()
   })
 
   it('handles change of PROCESSING to PROCESSED response from /jurisdiction/file api', async () => {
@@ -202,10 +197,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await waitFor(() => {
-      expect(result.current[0][1].state).toBe('live')
-      expect(result.current[0][2].state).toBe('live')
-    })
+    expect(result.current[0][1].state).toBe('live')
+    expect(result.current[0][2].state).toBe('live')
   })
 
   it('handles PROCESSED response from /jurisdiction/file api', async () => {
@@ -223,14 +216,13 @@ describe('useSetupMenuItems', () => {
         }
       )
     )
-    const { result } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHook(() =>
       useSetupMenuItems('Participants', jest.fn(), '1')
     )
     act(() => result.current[1]())
-    await waitFor(() => {
-      expect(result.current[0][1].state === 'live').toBeTruthy()
-      expect(result.current[0][2].state === 'live').toBeTruthy()
-    })
+    await waitForNextUpdate()
+    expect(result.current[0][1].state === 'live').toBeTruthy()
+    expect(result.current[0][2].state === 'live').toBeTruthy()
   })
 
   it('handles READY_TO_PROCESS response from /jurisdiction/file api', async () => {
@@ -248,17 +240,16 @@ describe('useSetupMenuItems', () => {
         }
       )
     )
-    const { result } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHook(() =>
       useSetupMenuItems('Participants', jest.fn(), '1')
     )
     act(() => result.current[1]())
-    await waitFor(() => {
-      expect(result.current[0][1].state === 'processing').toBeTruthy()
-      expect(result.current[0][2].state === 'processing').toBeTruthy()
-    })
+    await waitForNextUpdate()
+    expect(result.current[0][1].state === 'processing').toBeTruthy()
+    expect(result.current[0][2].state === 'processing').toBeTruthy()
   })
 
-  it('handles background process timeout', async () => {
+  it.only('handles background process timeout', async () => {
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const dateIncrementor = (function* incr() {
       let i = 10
@@ -289,12 +280,10 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    await waitFor(() => {
-      expect(apiMock).toHaveBeenCalledTimes(3)
-      expect(dateSpy).toHaveBeenCalled()
-      expect(toastSpy).toHaveBeenCalledTimes(1)
-      expect(result.current[0][1].state === 'processing').toBeTruthy()
-      expect(result.current[0][2].state === 'processing').toBeTruthy()
-    })
+    expect(apiMock).toHaveBeenCalledTimes(3)
+    expect(dateSpy).toHaveBeenCalled()
+    expect(toastSpy).toHaveBeenCalledTimes(1)
+    expect(result.current[0][1].state === 'processing').toBeTruthy()
+    expect(result.current[0][2].state === 'processing').toBeTruthy()
   })
 })

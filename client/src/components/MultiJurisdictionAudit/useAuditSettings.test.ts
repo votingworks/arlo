@@ -27,8 +27,10 @@ describe('useAuditSettings', () => {
       result: {
         current: [settings],
       },
+      waitForNextUpdate,
     } = renderHook(() => useAuditSettings('1'))
 
+    await waitForNextUpdate()
     expect(settings).toStrictEqual(auditSettings.blank)
   })
 
@@ -75,7 +77,10 @@ describe('useAuditSettings', () => {
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true)
-    const { result } = renderHook(() => useAuditSettings('1'))
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useAuditSettings('1')
+    )
+    await waitForNextUpdate()
     const success = await result.current[1](auditSettings.all)
 
     expect(success).toBeFalsy()
