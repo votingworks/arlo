@@ -263,6 +263,7 @@ describe('DataEntry', () => {
     })
 
     it('audits ballots', async () => {
+      jest.setTimeout(15000)
       const expectedCalls = [
         apiCalls.getAuditBoard,
         apiCalls.getContests,
@@ -333,6 +334,7 @@ describe('DataEntry', () => {
     })
 
     it('deselects choices', async () => {
+      jest.setTimeout(15000)
       const expectedCalls = [
         apiCalls.getAuditBoard,
         apiCalls.getContests,
