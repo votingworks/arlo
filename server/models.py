@@ -64,7 +64,10 @@ class Election(BaseModel):
         order_by="Jurisdiction.name",
     )
     contests = relationship(
-        "Contest", backref="election", passive_deletes=True, order_by="Contest.name",
+        "Contest",
+        backref="election",
+        passive_deletes=True,
+        order_by="Contest.created_at",
     )
     rounds = relationship(
         "Round", backref="election", passive_deletes=True, order_by="Round.round_num"
@@ -101,7 +104,10 @@ class Jurisdiction(BaseModel):
         order_by="AuditBoard.name",
     )
     contests = relationship(
-        "Contest", secondary="contest_jurisdiction", passive_deletes=True,
+        "Contest",
+        secondary="contest_jurisdiction",
+        passive_deletes=True,
+        order_by="Contest.created_at",
     )
 
     __table_args__ = (db.UniqueConstraint("election_id", "name"),)
@@ -198,7 +204,7 @@ class Contest(BaseModel):
         "ContestChoice",
         backref="contest",
         passive_deletes=True,
-        order_by="ContestChoice.name",
+        order_by="ContestChoice.created_at",
     )
     results = relationship(
         "RoundContestResult", backref="contest", passive_deletes=True
