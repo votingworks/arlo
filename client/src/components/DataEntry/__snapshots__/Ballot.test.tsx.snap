@@ -130,7 +130,6 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
             >
               <input
-                data-testid="choice-id-1"
                 type="checkbox"
               />
               <span
@@ -147,7 +146,6 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
             >
               <input
-                data-testid="choice-id-2"
                 type="checkbox"
               />
               <span
@@ -164,7 +162,6 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
             >
               <input
-                data-testid="CANT_AGREE"
                 type="checkbox"
               />
               <span
@@ -181,7 +178,6 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
               class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
             >
               <input
-                data-testid="BLANK"
                 type="checkbox"
               />
               <span
@@ -228,7 +224,6 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
             >
               <textarea
                 class="bp3-input sc-gZMcBi fkRAtG"
-                data-testid="comment-textarea"
                 name="comment-Contest Name"
               >
                 Good ballot
@@ -240,7 +235,6 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
           >
             <button
               class="bp3-button bp3-intent-success sc-htoDjs dESvso"
-              data-testid="enabled-review"
               type="submit"
             >
               <span
@@ -396,7 +390,6 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
             >
               <input
-                data-testid="choice-id-1"
                 type="checkbox"
               />
               <span
@@ -413,7 +406,6 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
             >
               <input
-                data-testid="choice-id-2"
                 type="checkbox"
               />
               <span
@@ -430,7 +422,6 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
             >
               <input
-                data-testid="CANT_AGREE"
                 type="checkbox"
               />
               <span
@@ -447,7 +438,6 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
               class="bp3-control bp3-checkbox sc-jTzLTM iGNTEr"
             >
               <input
-                data-testid="BLANK"
                 type="checkbox"
               />
               <span
@@ -495,7 +485,6 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
           >
             <button
               class="bp3-button bp3-intent-success sc-htoDjs dESvso"
-              data-testid="enabled-review"
               type="submit"
             >
               <span

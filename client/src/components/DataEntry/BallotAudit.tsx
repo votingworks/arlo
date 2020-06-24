@@ -69,7 +69,6 @@ const BallotAudit: React.FC<IProps> = ({
                     type="submit"
                     onClick={handleSubmit}
                     intent="success"
-                    data-testid="enabled-review"
                   >
                     Review
                   </FormButton>
@@ -107,34 +106,27 @@ const BallotAuditContest = ({
     setInterpretation({ ...interpretation, comment: null })
   }
 
-  const checkboxProps = (value: string) => ({
-    value,
-    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { checked } = e.currentTarget
-      if (
-        value === Interpretation.BLANK ||
-        value === Interpretation.CANT_AGREE
-      ) {
-        setInterpretation({
-          ...interpretation,
-          interpretation: checked ? value : null,
-          choiceIds: [],
-        })
-      } else if (checked) {
-        setInterpretation({
-          ...interpretation,
-          interpretation: Interpretation.VOTE,
-          choiceIds: [...interpretation.choiceIds, value],
-        })
-      } else {
-        setInterpretation({
-          ...interpretation,
-          interpretation: Interpretation.VOTE,
-          choiceIds: interpretation.choiceIds.filter(v => v !== value),
-        })
-      }
-    },
-  })
+  const onCheckboxClick = (value: string) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { checked } = e.currentTarget
+    if (value === Interpretation.BLANK || value === Interpretation.CANT_AGREE) {
+      setInterpretation({
+        ...interpretation,
+        interpretation: checked ? value : null,
+        choiceIds: [],
+      })
+    } else {
+      const choiceIds = checked
+        ? [...interpretation.choiceIds, value]
+        : interpretation.choiceIds.filter(v => v !== value)
+      setInterpretation({
+        ...interpretation,
+        interpretation: choiceIds.length > 0 ? Interpretation.VOTE : null,
+        choiceIds,
+      })
+    }
+  }
 
   const isVote = interpretation.interpretation === Interpretation.VOTE
 
@@ -145,19 +137,19 @@ const BallotAuditContest = ({
       {contest.choices.map(c => (
         <BlockCheckbox
           key={c.id}
-          {...checkboxProps(c.id)}
+          handleChange={onCheckboxClick(c.id)}
           checked={isVote && interpretation.choiceIds.includes(c.id)}
           label={c.name}
         />
       ))}
       <BlockCheckbox
-        {...checkboxProps(Interpretation.CANT_AGREE)}
+        handleChange={onCheckboxClick(Interpretation.CANT_AGREE)}
         gray
         checked={interpretation.interpretation === Interpretation.CANT_AGREE}
         label="Audit board can't agree"
       />
       <BlockCheckbox
-        {...checkboxProps(Interpretation.BLANK)}
+        handleChange={onCheckboxClick(Interpretation.BLANK)}
         gray
         checked={interpretation.interpretation === Interpretation.BLANK}
         label="Blank vote/Not on Ballot"
@@ -169,7 +161,6 @@ const BallotAuditContest = ({
         <Field
           name={`comment-${contest.name}`}
           type="textarea"
-          data-testid="comment-textarea"
           component={FormField}
           value={interpretation.comment || ''}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
