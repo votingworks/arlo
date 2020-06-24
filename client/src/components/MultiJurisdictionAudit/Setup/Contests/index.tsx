@@ -23,6 +23,7 @@ import useContests from '../../useContests'
 import useJurisdictions from '../../useJurisdictions'
 import { IContest, ICandidate } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
+import Card from '../../../Atoms/SpacedCard'
 
 interface IProps {
   isTargeted: boolean
@@ -106,7 +107,7 @@ const Contests: React.FC<IProps> = ({
                     }))
                     return (
                       /* eslint-disable react/no-array-index-key */
-                      <React.Fragment key={i}>
+                      <Card key={i}>
                         {i > 0 && (
                           <FormSection>
                             <hr />
@@ -248,7 +249,7 @@ const Contests: React.FC<IProps> = ({
                             Remove Contest {i + 1}
                           </FormButton>
                         )}
-                      </React.Fragment>
+                      </Card>
                     )
                   })}
                   <FormButtonBar>

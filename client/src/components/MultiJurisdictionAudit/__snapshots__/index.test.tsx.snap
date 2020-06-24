@@ -6,7 +6,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
     class="sc-bdVaJa AANBu"
   >
     <div
-      class="bp3-callout sc-hMqMXs gvJKSa"
+      class="bp3-callout sc-kEYyzF ejxvfy"
     >
       <div
         class="sc-bwzfXH iqXUnX"
@@ -58,7 +58,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
         </ul>
       </div>
       <div
-        class="sc-kkGfuU kxYEyN"
+        class="sc-iAyFgw iuVrZJ"
       >
         <h2
           class="bp3-heading sc-htpNat fysvnw"
@@ -71,7 +71,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
            To view a single jurisdiction's data, click the name of the jurisdiction.
         </p>
         <div
-          class="sc-iAyFgw ciCQxA"
+          class="sc-hSdWYo iKUdPX"
         >
           <label
             class="bp3-control bp3-switch"
@@ -100,7 +100,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
           </div>
         </div>
         <table
-          class="sc-kEYyzF gTKhLx"
+          class="sc-kkGfuU eKXmGD"
           role="table"
         >
           <thead>
@@ -298,7 +298,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
     class="sc-bdVaJa AANBu"
   >
     <div
-      class="bp3-callout sc-hMqMXs gvJKSa"
+      class="bp3-callout sc-kEYyzF ejxvfy"
     >
       <div
         class="sc-bwzfXH iqXUnX"
@@ -906,7 +906,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 2`] = `
     class="sc-bdVaJa AANBu"
   >
     <div
-      class="bp3-callout sc-hMqMXs gvJKSa"
+      class="bp3-callout sc-kEYyzF ejxvfy"
     >
       <div
         class="sc-bwzfXH iqXUnX"

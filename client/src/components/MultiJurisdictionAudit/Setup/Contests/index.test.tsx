@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, waitFor, render } from '@testing-library/react'
+import { fireEvent, waitFor, render, screen } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { regexpEscape } from '../../../testUtilities'
@@ -154,6 +154,7 @@ describe('Audit Setup > Contests', () => {
         {...relativeStages('Target Contests')}
       />
     )
+    await screen.findByText('Add another targeted contest')
 
     fireEvent.click(getByText('Add another targeted contest'))
 

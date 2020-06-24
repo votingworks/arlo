@@ -749,270 +749,274 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
         Opportunistic Contests
       </h2>
       <div
-        class="sc-bZQynM ibvdum"
+        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
       >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest  Info
-        </h3>
         <div
-          class="sc-gzVnrw kvvweo"
+          class="sc-bZQynM ibvdum"
         >
-          Enter the name of the contest that will drive the audit.
-        </div>
-        <label
-          for="contests[0].name"
-        >
-          Contest 
-          
-           
-          Name
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Contest  Info
+          </h3>
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <label
+            for="contests[0].name"
+          >
+            Contest 
+            
+             
+            Name
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].name"
+                  name="contests[0].name"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the number of winners for the contest.
+          </div>
+          <label
+            for="contests[0].numWinners"
+          >
+            Winners
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].votesAllowed"
+          >
+            Votes Allowed
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <div
+          class="sc-bZQynM ibvdum"
+        >
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Candidates/Choices & Vote Totals
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-jzJRlG hqJpHa"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].name"
-                name="contests[0].name"
-                style="padding-right: 10px;"
-                value=""
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[0].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
-          </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the number of winners for the contest.
-        </div>
-        <label
-          for="contests[0].numWinners"
-        >
-          Winners
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].numWinners"
-                name="contests[0].numWinners"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[1].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[1].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
+            <p
+              class="sc-kgoBCf jCkIWs"
+            >
+              Add a new candidate/choice
+            </p>
           </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Number of selections the voter can make in the contest.
         </div>
-        <label
-          for="contests[0].votesAllowed"
+        <div
+          class="sc-bZQynM ibvdum"
         >
-          Votes Allowed
-          <div
-            class="sc-iwsKbI dvOqsv"
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
           >
+            Total Ballots Cast
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <label
+            for="contests[0].totalBallotsCast"
+          >
+            Total Ballots for Contest
+             
+            
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-iwsKbI dvOqsv"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].votesAllowed"
-                name="contests[0].votesAllowed"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
             </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Candidates/Choices & Vote Totals
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the name of each candidate choice that appears on the ballot for this contest.
+          </label>
         </div>
         <div
-          class="sc-jzJRlG hqJpHa"
+          class="sc-bZQynM ibvdum"
         >
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Contest Universe
+          </h3>
           <div
-            class="sc-cSHVUG jUKlPT"
+            class="sc-gzVnrw kvvweo"
           >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[0].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
+            Select the jurisdictions where this contest appeared on the ballot.
           </div>
-          <div
-            class="sc-cSHVUG jUKlPT"
-          >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[1].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-          </div>
-          <p
-            class="sc-kgoBCf jCkIWs"
-          >
-            Add a new candidate/choice
-          </p>
-        </div>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Total Ballots Cast
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the overall number of ballot cards cast in jurisdictions containing this contest.
-        </div>
-        <label
-          for="contests[0].totalBallotsCast"
-        >
-          Total Ballots for Contest
-           
-          
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
-            <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
-            >
-              <input
-                class="bp3-input"
-                id="contests[0].totalBallotsCast"
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                value=""
-              />
-            </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest Universe
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Select the jurisdictions where this contest appeared on the ballot.
-        </div>
-        <span
-          class="bp3-popover-wrapper"
-        >
           <span
-            class="bp3-popover-target"
+            class="bp3-popover-wrapper"
           >
-            <button
-              class="bp3-button sc-ifAKCX zdCNs"
-              type="button"
+            <span
+              class="bp3-popover-target"
             >
-              <span
-                class="bp3-button-text"
+              <button
+                class="bp3-button sc-ifAKCX zdCNs"
+                type="button"
               >
-                Select Jurisdictions
-              </span>
-            </button>
+                <span
+                  class="bp3-button-text"
+                >
+                  Select Jurisdictions
+                </span>
+              </button>
+            </span>
           </span>
-        </span>
+        </div>
       </div>
       <div
         class="sc-htpNat gtULUV"
@@ -1074,273 +1078,277 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
         Opportunistic Contests
       </h2>
       <div
-        class="sc-bZQynM ibvdum"
+        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
       >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest  Info
-        </h3>
         <div
-          class="sc-gzVnrw kvvweo"
+          class="sc-bZQynM ibvdum"
         >
-          Enter the name of the contest that will drive the audit.
-        </div>
-        <label
-          for="contests[0].name"
-        >
-          Contest 
-          
-           
-          Name
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Contest  Info
+          </h3>
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <label
+            for="contests[0].name"
+          >
+            Contest 
+            
+             
+            Name
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].name"
+                  name="contests[0].name"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the number of winners for the contest.
+          </div>
+          <label
+            for="contests[0].numWinners"
+          >
+            Winners
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].votesAllowed"
+          >
+            Votes Allowed
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <div
+          class="sc-bZQynM ibvdum"
+        >
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Candidates/Choices & Vote Totals
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-jzJRlG hqJpHa"
           >
             <div
-              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                disabled=""
-                id="contests[0].name"
-                name="contests[0].name"
-                style="padding-right: 10px;"
-                value=""
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      disabled=""
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      disabled=""
+                      name="contests[0].choices[0].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
-          </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the number of winners for the contest.
-        </div>
-        <label
-          for="contests[0].numWinners"
-        >
-          Winners
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
             <div
-              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                disabled=""
-                id="contests[0].numWinners"
-                name="contests[0].numWinners"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      disabled=""
+                      name="contests[0].choices[1].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      disabled=""
+                      name="contests[0].choices[1].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
           </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Number of selections the voter can make in the contest.
         </div>
-        <label
-          for="contests[0].votesAllowed"
+        <div
+          class="sc-bZQynM ibvdum"
         >
-          Votes Allowed
-          <div
-            class="sc-iwsKbI dvOqsv"
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
           >
+            Total Ballots Cast
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <label
+            for="contests[0].totalBallotsCast"
+          >
+            Total Ballots for Contest
+             
+            
             <div
-              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              class="sc-iwsKbI dvOqsv"
             >
-              <input
-                class="bp3-input"
-                disabled=""
-                id="contests[0].votesAllowed"
-                name="contests[0].votesAllowed"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <div
+                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
             </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Candidates/Choices & Vote Totals
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the name of each candidate choice that appears on the ballot for this contest.
+          </label>
         </div>
         <div
-          class="sc-jzJRlG hqJpHa"
+          class="sc-bZQynM ibvdum"
         >
-          <div
-            class="sc-cSHVUG jUKlPT"
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
           >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    disabled=""
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    disabled=""
-                    name="contests[0].choices[0].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-          </div>
+            Contest Universe
+          </h3>
           <div
-            class="sc-cSHVUG jUKlPT"
+            class="sc-gzVnrw kvvweo"
           >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    disabled=""
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    disabled=""
-                    name="contests[0].choices[1].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
+            Select the jurisdictions where this contest appeared on the ballot.
           </div>
-        </div>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Total Ballots Cast
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the overall number of ballot cards cast in jurisdictions containing this contest.
-        </div>
-        <label
-          for="contests[0].totalBallotsCast"
-        >
-          Total Ballots for Contest
-           
-          
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
-            <div
-              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
-            >
-              <input
-                class="bp3-input"
-                disabled=""
-                id="contests[0].totalBallotsCast"
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                value=""
-              />
-            </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest Universe
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Select the jurisdictions where this contest appeared on the ballot.
-        </div>
-        <span
-          class="bp3-popover-wrapper"
-        >
           <span
-            class="bp3-popover-target"
+            class="bp3-popover-wrapper"
           >
-            <button
-              class="bp3-button sc-ifAKCX zdCNs"
-              type="button"
+            <span
+              class="bp3-popover-target"
             >
-              <span
-                class="bp3-button-text"
+              <button
+                class="bp3-button sc-ifAKCX zdCNs"
+                type="button"
               >
-                Select Jurisdictions
-              </span>
-            </button>
+                <span
+                  class="bp3-button-text"
+                >
+                  Select Jurisdictions
+                </span>
+              </button>
+            </span>
           </span>
-        </span>
+        </div>
       </div>
       <div
         class="sc-htpNat gtULUV"
@@ -1404,270 +1412,274 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
         Opportunistic Contests
       </h2>
       <div
-        class="sc-bZQynM ibvdum"
+        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
       >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest  Info
-        </h3>
         <div
-          class="sc-gzVnrw kvvweo"
+          class="sc-bZQynM ibvdum"
         >
-          Enter the name of the contest that will drive the audit.
-        </div>
-        <label
-          for="contests[0].name"
-        >
-          Contest 
-          
-           
-          Name
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Contest  Info
+          </h3>
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <label
+            for="contests[0].name"
+          >
+            Contest 
+            
+             
+            Name
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].name"
+                  name="contests[0].name"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the number of winners for the contest.
+          </div>
+          <label
+            for="contests[0].numWinners"
+          >
+            Winners
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].votesAllowed"
+          >
+            Votes Allowed
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <div
+          class="sc-bZQynM ibvdum"
+        >
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Candidates/Choices & Vote Totals
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-jzJRlG hqJpHa"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].name"
-                name="contests[0].name"
-                style="padding-right: 10px;"
-                value=""
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[0].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
-          </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the number of winners for the contest.
-        </div>
-        <label
-          for="contests[0].numWinners"
-        >
-          Winners
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].numWinners"
-                name="contests[0].numWinners"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[1].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[1].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
+            <p
+              class="sc-kgoBCf jCkIWs"
+            >
+              Add a new candidate/choice
+            </p>
           </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Number of selections the voter can make in the contest.
         </div>
-        <label
-          for="contests[0].votesAllowed"
+        <div
+          class="sc-bZQynM ibvdum"
         >
-          Votes Allowed
-          <div
-            class="sc-iwsKbI dvOqsv"
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
           >
+            Total Ballots Cast
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <label
+            for="contests[0].totalBallotsCast"
+          >
+            Total Ballots for Contest
+             
+            
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-iwsKbI dvOqsv"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].votesAllowed"
-                name="contests[0].votesAllowed"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
             </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Candidates/Choices & Vote Totals
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the name of each candidate choice that appears on the ballot for this contest.
+          </label>
         </div>
         <div
-          class="sc-jzJRlG hqJpHa"
+          class="sc-bZQynM ibvdum"
         >
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Contest Universe
+          </h3>
           <div
-            class="sc-cSHVUG jUKlPT"
+            class="sc-gzVnrw kvvweo"
           >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[0].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
+            Select the jurisdictions where this contest appeared on the ballot.
           </div>
-          <div
-            class="sc-cSHVUG jUKlPT"
-          >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[1].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-          </div>
-          <p
-            class="sc-kgoBCf jCkIWs"
-          >
-            Add a new candidate/choice
-          </p>
-        </div>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Total Ballots Cast
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the overall number of ballot cards cast in jurisdictions containing this contest.
-        </div>
-        <label
-          for="contests[0].totalBallotsCast"
-        >
-          Total Ballots for Contest
-           
-          
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
-            <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
-            >
-              <input
-                class="bp3-input"
-                id="contests[0].totalBallotsCast"
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                value=""
-              />
-            </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest Universe
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Select the jurisdictions where this contest appeared on the ballot.
-        </div>
-        <span
-          class="bp3-popover-wrapper"
-        >
           <span
-            class="bp3-popover-target"
+            class="bp3-popover-wrapper"
           >
-            <button
-              class="bp3-button sc-ifAKCX zdCNs"
-              type="button"
+            <span
+              class="bp3-popover-target"
             >
-              <span
-                class="bp3-button-text"
+              <button
+                class="bp3-button sc-ifAKCX zdCNs"
+                type="button"
               >
-                Select Jurisdictions
-              </span>
-            </button>
+                <span
+                  class="bp3-button-text"
+                >
+                  Select Jurisdictions
+                </span>
+              </button>
+            </span>
           </span>
-        </span>
+        </div>
       </div>
       <div
         class="sc-htpNat gtULUV"
@@ -1762,7 +1774,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -1812,7 +1824,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -1827,7 +1839,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       <tbody />
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -1925,7 +1937,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -1975,7 +1987,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -1990,7 +2002,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       <tbody />
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -2088,7 +2100,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -2138,7 +2150,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -2153,7 +2165,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       <tbody />
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -2226,270 +2238,274 @@ exports[`Setup renders Target Contests stage 1`] = `
         Target Contests
       </h2>
       <div
-        class="sc-bZQynM ibvdum"
+        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
       >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest  Info
-        </h3>
         <div
-          class="sc-gzVnrw kvvweo"
+          class="sc-bZQynM ibvdum"
         >
-          Enter the name of the contest that will drive the audit.
-        </div>
-        <label
-          for="contests[0].name"
-        >
-          Contest 
-          
-           
-          Name
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Contest  Info
+          </h3>
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <label
+            for="contests[0].name"
+          >
+            Contest 
+            
+             
+            Name
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].name"
+                  name="contests[0].name"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the number of winners for the contest.
+          </div>
+          <label
+            for="contests[0].numWinners"
+          >
+            Winners
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].votesAllowed"
+          >
+            Votes Allowed
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <div
+          class="sc-bZQynM ibvdum"
+        >
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Candidates/Choices & Vote Totals
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-jzJRlG hqJpHa"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].name"
-                name="contests[0].name"
-                style="padding-right: 10px;"
-                value=""
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[0].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
-          </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the number of winners for the contest.
-        </div>
-        <label
-          for="contests[0].numWinners"
-        >
-          Winners
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].numWinners"
-                name="contests[0].numWinners"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[1].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[1].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
+            <p
+              class="sc-kgoBCf jCkIWs"
+            >
+              Add a new candidate/choice
+            </p>
           </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Number of selections the voter can make in the contest.
         </div>
-        <label
-          for="contests[0].votesAllowed"
+        <div
+          class="sc-bZQynM ibvdum"
         >
-          Votes Allowed
-          <div
-            class="sc-iwsKbI dvOqsv"
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
           >
+            Total Ballots Cast
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <label
+            for="contests[0].totalBallotsCast"
+          >
+            Total Ballots for Contest
+             
+            
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-iwsKbI dvOqsv"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].votesAllowed"
-                name="contests[0].votesAllowed"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
             </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Candidates/Choices & Vote Totals
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the name of each candidate choice that appears on the ballot for this contest.
+          </label>
         </div>
         <div
-          class="sc-jzJRlG hqJpHa"
+          class="sc-bZQynM ibvdum"
         >
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Contest Universe
+          </h3>
           <div
-            class="sc-cSHVUG jUKlPT"
+            class="sc-gzVnrw kvvweo"
           >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[0].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
+            Select the jurisdictions where this contest appeared on the ballot.
           </div>
-          <div
-            class="sc-cSHVUG jUKlPT"
-          >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[1].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-          </div>
-          <p
-            class="sc-kgoBCf jCkIWs"
-          >
-            Add a new candidate/choice
-          </p>
-        </div>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Total Ballots Cast
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the overall number of ballot cards cast in jurisdictions containing this contest.
-        </div>
-        <label
-          for="contests[0].totalBallotsCast"
-        >
-          Total Ballots for Contest
-           
-          
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
-            <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
-            >
-              <input
-                class="bp3-input"
-                id="contests[0].totalBallotsCast"
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                value=""
-              />
-            </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest Universe
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Select the jurisdictions where this contest appeared on the ballot.
-        </div>
-        <span
-          class="bp3-popover-wrapper"
-        >
           <span
-            class="bp3-popover-target"
+            class="bp3-popover-wrapper"
           >
-            <button
-              class="bp3-button sc-ifAKCX zdCNs"
-              type="button"
+            <span
+              class="bp3-popover-target"
             >
-              <span
-                class="bp3-button-text"
+              <button
+                class="bp3-button sc-ifAKCX zdCNs"
+                type="button"
               >
-                Select Jurisdictions
-              </span>
-            </button>
+                <span
+                  class="bp3-button-text"
+                >
+                  Select Jurisdictions
+                </span>
+              </button>
+            </span>
           </span>
-        </span>
+        </div>
       </div>
       <div
         class="sc-htpNat gtULUV"
@@ -2551,273 +2567,277 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
         Target Contests
       </h2>
       <div
-        class="sc-bZQynM ibvdum"
+        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
       >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest  Info
-        </h3>
         <div
-          class="sc-gzVnrw kvvweo"
+          class="sc-bZQynM ibvdum"
         >
-          Enter the name of the contest that will drive the audit.
-        </div>
-        <label
-          for="contests[0].name"
-        >
-          Contest 
-          
-           
-          Name
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Contest  Info
+          </h3>
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <label
+            for="contests[0].name"
+          >
+            Contest 
+            
+             
+            Name
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].name"
+                  name="contests[0].name"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the number of winners for the contest.
+          </div>
+          <label
+            for="contests[0].numWinners"
+          >
+            Winners
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].votesAllowed"
+          >
+            Votes Allowed
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <div
+          class="sc-bZQynM ibvdum"
+        >
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Candidates/Choices & Vote Totals
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-jzJRlG hqJpHa"
           >
             <div
-              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                disabled=""
-                id="contests[0].name"
-                name="contests[0].name"
-                style="padding-right: 10px;"
-                value=""
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      disabled=""
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      disabled=""
+                      name="contests[0].choices[0].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
-          </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the number of winners for the contest.
-        </div>
-        <label
-          for="contests[0].numWinners"
-        >
-          Winners
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
             <div
-              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                disabled=""
-                id="contests[0].numWinners"
-                name="contests[0].numWinners"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      disabled=""
+                      name="contests[0].choices[1].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      disabled=""
+                      name="contests[0].choices[1].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
           </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Number of selections the voter can make in the contest.
         </div>
-        <label
-          for="contests[0].votesAllowed"
+        <div
+          class="sc-bZQynM ibvdum"
         >
-          Votes Allowed
-          <div
-            class="sc-iwsKbI dvOqsv"
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
           >
+            Total Ballots Cast
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <label
+            for="contests[0].totalBallotsCast"
+          >
+            Total Ballots for Contest
+             
+            
             <div
-              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              class="sc-iwsKbI dvOqsv"
             >
-              <input
-                class="bp3-input"
-                disabled=""
-                id="contests[0].votesAllowed"
-                name="contests[0].votesAllowed"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <div
+                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  disabled=""
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
             </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Candidates/Choices & Vote Totals
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the name of each candidate choice that appears on the ballot for this contest.
+          </label>
         </div>
         <div
-          class="sc-jzJRlG hqJpHa"
+          class="sc-bZQynM ibvdum"
         >
-          <div
-            class="sc-cSHVUG jUKlPT"
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
           >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    disabled=""
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    disabled=""
-                    name="contests[0].choices[0].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-          </div>
+            Contest Universe
+          </h3>
           <div
-            class="sc-cSHVUG jUKlPT"
+            class="sc-gzVnrw kvvweo"
           >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    disabled=""
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    disabled=""
-                    name="contests[0].choices[1].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
+            Select the jurisdictions where this contest appeared on the ballot.
           </div>
-        </div>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Total Ballots Cast
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the overall number of ballot cards cast in jurisdictions containing this contest.
-        </div>
-        <label
-          for="contests[0].totalBallotsCast"
-        >
-          Total Ballots for Contest
-           
-          
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
-            <div
-              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
-            >
-              <input
-                class="bp3-input"
-                disabled=""
-                id="contests[0].totalBallotsCast"
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                value=""
-              />
-            </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest Universe
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Select the jurisdictions where this contest appeared on the ballot.
-        </div>
-        <span
-          class="bp3-popover-wrapper"
-        >
           <span
-            class="bp3-popover-target"
+            class="bp3-popover-wrapper"
           >
-            <button
-              class="bp3-button sc-ifAKCX zdCNs"
-              type="button"
+            <span
+              class="bp3-popover-target"
             >
-              <span
-                class="bp3-button-text"
+              <button
+                class="bp3-button sc-ifAKCX zdCNs"
+                type="button"
               >
-                Select Jurisdictions
-              </span>
-            </button>
+                <span
+                  class="bp3-button-text"
+                >
+                  Select Jurisdictions
+                </span>
+              </button>
+            </span>
           </span>
-        </span>
+        </div>
       </div>
       <div
         class="sc-htpNat gtULUV"
@@ -2881,270 +2901,274 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
         Target Contests
       </h2>
       <div
-        class="sc-bZQynM ibvdum"
+        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
       >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest  Info
-        </h3>
         <div
-          class="sc-gzVnrw kvvweo"
+          class="sc-bZQynM ibvdum"
         >
-          Enter the name of the contest that will drive the audit.
-        </div>
-        <label
-          for="contests[0].name"
-        >
-          Contest 
-          
-           
-          Name
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Contest  Info
+          </h3>
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of the contest that will drive the audit.
+          </div>
+          <label
+            for="contests[0].name"
+          >
+            Contest 
+            
+             
+            Name
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].name"
+                  name="contests[0].name"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the number of winners for the contest.
+          </div>
+          <label
+            for="contests[0].numWinners"
+          >
+            Winners
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].numWinners"
+                  name="contests[0].numWinners"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Number of selections the voter can make in the contest.
+          </div>
+          <label
+            for="contests[0].votesAllowed"
+          >
+            Votes Allowed
+            <div
+              class="sc-iwsKbI dvOqsv"
+            >
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].votesAllowed"
+                  name="contests[0].votesAllowed"
+                  style="padding-right: 10px;"
+                  value="1"
+                />
+              </div>
+            </div>
+          </label>
+        </div>
+        <div
+          class="sc-bZQynM ibvdum"
+        >
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Candidates/Choices & Vote Totals
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the name of each candidate choice that appears on the ballot for this contest.
+          </div>
+          <div
+            class="sc-jzJRlG hqJpHa"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].name"
-                name="contests[0].name"
-                style="padding-right: 10px;"
-                value=""
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[0].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                1
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[0].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
-          </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the number of winners for the contest.
-        </div>
-        <label
-          for="contests[0].numWinners"
-        >
-          Winners
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-cSHVUG jUKlPT"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].numWinners"
-                name="contests[0].numWinners"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Name of Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[1].name"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+              <label
+                class="bp3-label sc-chPdSV ewyFtw"
+              >
+                Votes for Candidate/Choice 
+                2
+                <div
+                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                >
+                  <div
+                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                  >
+                    <input
+                      class="bp3-input"
+                      name="contests[0].choices[1].numVotes"
+                      style="padding-right: 10px;"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
             </div>
+            <p
+              class="sc-kgoBCf jCkIWs"
+            >
+              Add a new candidate/choice
+            </p>
           </div>
-        </label>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Number of selections the voter can make in the contest.
         </div>
-        <label
-          for="contests[0].votesAllowed"
+        <div
+          class="sc-bZQynM ibvdum"
         >
-          Votes Allowed
-          <div
-            class="sc-iwsKbI dvOqsv"
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
           >
+            Total Ballots Cast
+          </h3>
+          <div
+            class="sc-gzVnrw kvvweo"
+          >
+            Enter the overall number of ballot cards cast in jurisdictions containing this contest.
+          </div>
+          <label
+            for="contests[0].totalBallotsCast"
+          >
+            Total Ballots for Contest
+             
+            
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="sc-iwsKbI dvOqsv"
             >
-              <input
-                class="bp3-input"
-                id="contests[0].votesAllowed"
-                name="contests[0].votesAllowed"
-                style="padding-right: 10px;"
-                value="1"
-              />
+              <div
+                class="bp3-input-group sc-gZMcBi fkRAtG"
+              >
+                <input
+                  class="bp3-input"
+                  id="contests[0].totalBallotsCast"
+                  name="contests[0].totalBallotsCast"
+                  style="padding-right: 10px;"
+                  value=""
+                />
+              </div>
             </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Candidates/Choices & Vote Totals
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the name of each candidate choice that appears on the ballot for this contest.
+          </label>
         </div>
         <div
-          class="sc-jzJRlG hqJpHa"
+          class="sc-bZQynM ibvdum"
         >
+          <h3
+            class="bp3-heading sc-htoDjs egbcjZ"
+          >
+            Contest Universe
+          </h3>
           <div
-            class="sc-cSHVUG jUKlPT"
+            class="sc-gzVnrw kvvweo"
           >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[0].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              1
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[0].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
+            Select the jurisdictions where this contest appeared on the ballot.
           </div>
-          <div
-            class="sc-cSHVUG jUKlPT"
-          >
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Name of Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[1].name"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-            <label
-              class="bp3-label sc-chPdSV ewyFtw"
-            >
-              Votes for Candidate/Choice 
-              2
-              <div
-                class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
-              >
-                <div
-                  class="bp3-input-group sc-gZMcBi fkRAtG"
-                >
-                  <input
-                    class="bp3-input"
-                    name="contests[0].choices[1].numVotes"
-                    style="padding-right: 10px;"
-                    value=""
-                  />
-                </div>
-              </div>
-            </label>
-          </div>
-          <p
-            class="sc-kgoBCf jCkIWs"
-          >
-            Add a new candidate/choice
-          </p>
-        </div>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Total Ballots Cast
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Enter the overall number of ballot cards cast in jurisdictions containing this contest.
-        </div>
-        <label
-          for="contests[0].totalBallotsCast"
-        >
-          Total Ballots for Contest
-           
-          
-          <div
-            class="sc-iwsKbI dvOqsv"
-          >
-            <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
-            >
-              <input
-                class="bp3-input"
-                id="contests[0].totalBallotsCast"
-                name="contests[0].totalBallotsCast"
-                style="padding-right: 10px;"
-                value=""
-              />
-            </div>
-          </div>
-        </label>
-      </div>
-      <div
-        class="sc-bZQynM ibvdum"
-      >
-        <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
-        >
-          Contest Universe
-        </h3>
-        <div
-          class="sc-gzVnrw kvvweo"
-        >
-          Select the jurisdictions where this contest appeared on the ballot.
-        </div>
-        <span
-          class="bp3-popover-wrapper"
-        >
           <span
-            class="bp3-popover-target"
+            class="bp3-popover-wrapper"
           >
-            <button
-              class="bp3-button sc-ifAKCX zdCNs"
-              type="button"
+            <span
+              class="bp3-popover-target"
             >
-              <span
-                class="bp3-button-text"
+              <button
+                class="bp3-button sc-ifAKCX zdCNs"
+                type="button"
               >
-                Select Jurisdictions
-              </span>
-            </button>
+                <span
+                  class="bp3-button-text"
+                >
+                  Select Jurisdictions
+                </span>
+              </button>
+            </span>
           </span>
-        </span>
+        </div>
       </div>
       <div
         class="sc-htpNat gtULUV"

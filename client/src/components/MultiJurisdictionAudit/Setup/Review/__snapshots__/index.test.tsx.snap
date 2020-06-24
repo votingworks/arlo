@@ -39,7 +39,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -89,7 +89,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -104,7 +104,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       <tbody />
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -286,7 +286,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -336,7 +336,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -360,7 +360,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -533,7 +533,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -583,7 +583,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -607,7 +607,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -778,7 +778,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -828,7 +828,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -852,7 +852,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -1023,7 +1023,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -1073,7 +1073,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -1088,7 +1088,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
       <tbody />
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -1270,7 +1270,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
       Audit Settings
     </h4>
     <table
-      class="sc-dxgOiQ hcdlHA"
+      class="sc-ckVGcZ fmGFyg"
     >
       <tbody>
         <tr>
@@ -1320,7 +1320,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
@@ -1344,7 +1344,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
       </tbody>
     </table>
     <table
-      class="sc-kpOJdX bxgNte"
+      class="sc-dxgOiQ boEBcS"
     >
       <thead>
         <tr>
