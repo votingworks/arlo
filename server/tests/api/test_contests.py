@@ -124,6 +124,26 @@ def test_contests_create_get_update_multiple(
     assert contests == {"contests": expected_contests}
 
 
+def test_contests_order(
+    client: FlaskClient, election_id: str, json_contests: List[JSONDict],
+):
+    json_contests[0]["name"] = "ZZZ Contest"
+    json_contests[1]["name"] = "AAA Contest"
+    json_contests[0]["choices"][0]["name"] = "ZZZ Choice"
+    json_contests[0]["choices"][1]["name"] = "AAA Choice"
+
+    rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+
+    assert contests[0]["name"] == json_contests[0]["name"]
+    assert contests[1]["name"] == json_contests[1]["name"]
+    assert contests[0]["choices"][0]["name"] == json_contests[0]["choices"][0]["name"]
+    assert contests[0]["choices"][1]["name"] == json_contests[0]["choices"][1]["name"]
+
+
 def test_contests_round_status(
     client: FlaskClient,
     election_id: str,
@@ -347,3 +367,35 @@ def test_audit_board_contests_list(
         {**contest, "currentRoundStatus": None} for contest in expected_contests
     ]
     assert contests == {"contests": expected_contests}
+
+
+def test_audit_board_contests_list_order(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
+):
+    db_contests = Contest.query.order_by(Contest.created_at).all()
+    db_contests[0].name = "ZZZ Contest"
+    db_contests[1].name = "AAA Contest"
+    db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)
+    db_choices[0].name = "ZZZ Choice"
+    db_choices[1].name = "AAA Choice"
+    db.session.commit()
+
+    set_logged_in_user(
+        client, UserType.AUDIT_BOARD, user_key=audit_board_round_1_ids[0]
+    )
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/contest"
+    )
+    contests = json.loads(rv.data)["contests"]
+
+    db_contests = Contest.query.order_by(Contest.created_at).all()
+    db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)
+
+    assert contests[0]["name"] == db_contests[0].name
+    assert contests[1]["name"] == db_contests[1].name
+    assert contests[0]["choices"][0]["name"] == db_choices[0].name
+    assert contests[0]["choices"][1]["name"] == db_choices[1].name
