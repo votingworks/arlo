@@ -5,7 +5,8 @@ from flask.testing import FlaskClient
 
 from .helpers import *  # pylint: disable=wildcard-import
 
-SAMPLE_SIZE = 485
+JOINT_SAMPLE_SIZE_ROUND_1 = 485
+JOINT_SAMPLE_SIZE_ROUND_2 = 1468
 
 
 @pytest.fixture
@@ -73,7 +74,7 @@ def test_sample_size_round_1(
     assert sample_sizes["sampleSizes"][0]["size"] > SAMPLE_SIZE_ROUND_1
     assert sample_sizes == {
         "sampleSizes": [
-            {"prob": 0.55, "size": SAMPLE_SIZE, "type": "ASN"},
+            {"prob": 0.55, "size": JOINT_SAMPLE_SIZE_ROUND_1, "type": "ASN"},
             {"prob": 0.7, "size": 770, "type": None},
             {"prob": 0.8, "size": 1018, "type": None},
             {"prob": 0.9, "size": 1468, "type": None},
@@ -81,18 +82,19 @@ def test_sample_size_round_1(
     }
 
 
-def test_sample_round_2(
+def test_two_rounds(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
+    snapshot,
 ):
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": SAMPLE_SIZE},
+        {"roundNum": 1, "sampleSize": JOINT_SAMPLE_SIZE_ROUND_1},
     )
     assert_ok(rv)
     round_1 = Round.query.first()
@@ -119,15 +121,47 @@ def test_sample_round_2(
     )
 
     # Check that the ballots got sampled
-    ballot_draws = SampledBallotDraw.query.filter_by(
-        round_id=rounds["rounds"][0]["id"]
-    ).all()
-    assert len(ballot_draws) == SAMPLE_SIZE
+    # We expect both contests to use the same sample size
+    ballot_draws = SampledBallotDraw.query.all()
+    assert len(ballot_draws) == JOINT_SAMPLE_SIZE_ROUND_1 * 2
+
+    # Check that the same ballots were sampled for both contests
+    contest_1_ballots = list(
+        SampledBallotDraw.query.filter_by(contest_id=contest_ids[0]).values(
+            SampledBallotDraw.ballot_id
+        )
+    )
+    contest_2_ballots = list(
+        SampledBallotDraw.query.filter_by(contest_id=contest_ids[1]).values(
+            SampledBallotDraw.ballot_id
+        )
+    )
+    assert contest_1_ballots == contest_2_ballots
+
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
     sampled_jurisdictions = {
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
     }
     assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
+
+    round_contests = {
+        round_contest.contest_id: round_contest
+        for round_contest in RoundContest.query.filter_by(
+            round_id=rounds["rounds"][0]["id"]
+        )
+        .order_by(RoundContest.created_at)
+        .all()
+    }
+    assert round_contests[contest_ids[0]].is_complete is True
+    assert round_contests[contest_ids[1]].is_complete is False
+    assert round_contests[contest_ids[2]].is_complete is False
+    snapshot.assert_match(
+        {
+            f"{result.contest.name} - {result.contest_choice.name}": result.result
+            for round_contest in round_contests.values()
+            for result in round_contest.results
+        }
+    )
 
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
     assert_ok(rv)
@@ -157,10 +191,59 @@ def test_sample_round_2(
     )
 
     # Check that we used the correct sample size (90% prob for Contest 2)
+    # Should only have samples for Contest 2
     ballot_draws = SampledBallotDraw.query.filter_by(
         round_id=rounds["rounds"][1]["id"]
     ).all()
-    assert len(ballot_draws) == 1468
+    assert len(ballot_draws) == JOINT_SAMPLE_SIZE_ROUND_2
+
+    # Run the second round, auditing all the ballots for the second contest to complete the audit
+    run_audit_round(rounds["rounds"][1]["id"], contest_ids[1], 0.7)
+
+    rv = client.get(f"/api/election/{election_id}/round")
+    rounds = json.loads(rv.data)
+    compare_json(
+        rounds,
+        {
+            "rounds": [
+                {
+                    "id": round_1.id,
+                    "roundNum": 1,
+                    "startedAt": assert_is_date,
+                    "endedAt": assert_is_date,
+                    "isAuditComplete": False,
+                },
+                {
+                    "id": assert_is_id,
+                    "roundNum": 2,
+                    "startedAt": assert_is_date,
+                    "endedAt": assert_is_date,
+                    "isAuditComplete": True,
+                },
+            ]
+        },
+    )
+
+    # Make sure the votes got counted correctly
+    round_contests = {
+        round_contest.contest_id: round_contest
+        for round_contest in RoundContest.query.filter_by(
+            round_id=rounds["rounds"][1]["id"]
+        )
+        .order_by(RoundContest.created_at)
+        .all()
+    }
+    # Since Contest 1 met its risk limit in round 1, it shouldn't be in round 2
+    assert contest_ids[0] not in round_contests
+    assert round_contests[contest_ids[1]].is_complete is True
+    assert round_contests[contest_ids[2]].is_complete is False
+    snapshot.assert_match(
+        {
+            f"{result.contest.name} - {result.contest_choice.name}": result.result
+            for round_contest in round_contests.values()
+            for result in round_contest.results
+        }
+    )
 
 
 def test_jointly_targeted_contest_universes_must_match(

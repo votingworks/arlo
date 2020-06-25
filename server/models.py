@@ -217,17 +217,17 @@ class Contest(BaseModel):
         passive_deletes=True,
         order_by="ContestChoice.created_at",
     )
-    results = relationship(
-        "RoundContestResult",
-        back_populates="contest",
-        uselist=True,
-        passive_deletes=True,
-    )
     jurisdictions = relationship(
         "Jurisdiction",
         secondary="contest_jurisdiction",
         uselist=True,
         order_by="Jurisdiction.name",
+        passive_deletes=True,
+    )
+    results = relationship(
+        "RoundContestResult",
+        back_populates="contest",
+        uselist=True,
         passive_deletes=True,
     )
 
@@ -388,9 +388,15 @@ class SampledBallotDraw(BaseModel):
     )
     round = relationship("Round", back_populates="sampled_ballot_draws")
 
+    contest_id = Column(
+        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False
+    )
+
     ticket_number = Column(String(200), nullable=False)
 
-    __table_args__ = (PrimaryKeyConstraint("ballot_id", "round_id", "ticket_number"),)
+    __table_args__ = (
+        PrimaryKeyConstraint("ballot_id", "round_id", "contest_id", "ticket_number"),
+    )
 
 
 class Interpretation(str, enum.Enum):

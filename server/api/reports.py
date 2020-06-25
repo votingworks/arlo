@@ -172,24 +172,30 @@ def write_rounds(report, election: Election):
             "Audited Votes",
         ]
     )
-    for round in election.rounds:
-        for contest in election.contests:
-            round_contest = next(
-                rc for rc in round.round_contests if rc.contest_id == contest.id
-            )
-            report.writerow(
-                [
-                    round.round_num,
-                    contest.name,
-                    pretty_targeted(contest.is_targeted),
-                    round_contest.sample_size,
-                    pretty_boolean(bool(round_contest.is_complete)),
-                    round_contest.end_p_value,
-                    isoformat(round.created_at),
-                    isoformat(round.ended_at),
-                    pretty_audited_votes(contest, round_contest),
-                ]
-            )
+
+    round_contests = (
+        RoundContest.query.join(Round)
+        .filter_by(election_id=election.id)
+        .join(Contest)
+        .order_by(Round.round_num, Contest.created_at)
+        .all()
+    )
+    for round_contest in round_contests:
+        round = round_contest.round
+        contest = round_contest.contest
+        report.writerow(
+            [
+                round.round_num,
+                contest.name,
+                pretty_targeted(contest.is_targeted),
+                round_contest.sample_size,
+                pretty_boolean(bool(round_contest.is_complete)),
+                round_contest.end_p_value,
+                isoformat(round.created_at),
+                isoformat(round.ended_at),
+                pretty_audited_votes(contest, round_contest),
+            ]
+        )
 
 
 def write_sampled_ballots(

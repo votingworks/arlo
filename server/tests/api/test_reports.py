@@ -1,11 +1,9 @@
-import re
 from typing import List
 from flask.testing import FlaskClient
 from .test_audit_boards import set_up_audit_board
-from ..helpers import set_logged_in_user, DEFAULT_JA_EMAIL
+from ..helpers import set_logged_in_user, DEFAULT_JA_EMAIL, assert_match_report
 from ...auth import UserType
 
-DATETIME_REGEX = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{6}")
 
 # TODO This is just a basic snapshot test. We still need to implement more
 # comprehensive testing.
@@ -28,9 +26,7 @@ def test_audit_admin_report(
             audit_board_id,
         )
     rv = client.get(f"/api/election/{election_id}/report")
-    report = rv.data.decode("utf-8")
-    report = re.sub(DATETIME_REGEX, "DATETIME", report)
-    snapshot.assert_match(report)
+    assert_match_report(rv.data, snapshot)
 
 
 def test_jurisdiction_admin_report(
@@ -55,6 +51,4 @@ def test_jurisdiction_admin_report(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
     )
-    report = rv.data.decode("utf-8")
-    report = re.sub(DATETIME_REGEX, "DATETIME", report)
-    snapshot.assert_match(report)
+    assert_match_report(rv.data, snapshot)

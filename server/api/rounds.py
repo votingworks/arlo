@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional
+from typing import Optional, NamedTuple, List, Tuple
 from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
@@ -10,6 +10,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_election_access, with_jurisdiction_access
 from .sample_sizes import sample_size_options
 from ..util.isoformat import isoformat
+from ..util.group_by import group_by
 from ..audit_math import sampler
 
 
@@ -67,41 +68,100 @@ def validate_round(round: dict, election: Election):
         raise BadRequest("Sample size is required for round 1")
 
 
+class SampleDraw(NamedTuple):
+    # ballot_key: ((jurisdiction name, batch name), ballot_position)
+    ballot_key: Tuple[Tuple[str, str], int]
+    contest_id: str
+    ticket_number: str
+
+
 def sample_ballots(election: Election, round: Round, sample_size: int):
-    # For now, we only support jointly targeted contests, which all must have
-    # the same contest universe. So we can just take any of them to build the
-    # pool of ballots to sample.
-    targeted_contest = next(c for c in election.contests if c.is_targeted)
-
-    # Compute the total number of ballot samples in all rounds leading up to
-    # this one. Note that this corresponds to the number of SampledBallotDraws,
-    # not SampledBallots.
-    num_previously_sampled = (
-        SampledBallotDraw.query.join(Round).filter_by(election_id=election.id).count()
+    # Figure out which contests still need auditing
+    last_round = get_current_round(election)
+    contests_that_havent_met_risk_limit = (
+        [
+            round_contest.contest
+            for round_contest in last_round.round_contests
+            if not round_contest.is_complete
+        ]
+        if last_round
+        else election.contests
     )
 
-    # Create the pool of ballots to sample (aka manifest) by combining the
-    # manifests from every jurisdiction in the contest's universe.
-    # Audits must be deterministic and repeatable for the same real world
-    # inputs. So the sampler expects the same input for the same real world
-    # data. Thus, we use the jurisdiction and batch names (deterministic real
-    # world ids) instead of the jurisdiction and batch ids (non-deterministic
-    # uuids that we generate for each audit).
-    manifest = {
-        (jurisdiction.name, batch.name): batch.num_ballots
-        for jurisdiction in targeted_contest.jurisdictions
-        for batch in jurisdiction.batches
-    }
+    # Create RoundContest objects to include the contests in this round
+    for contest in contests_that_havent_met_risk_limit:
+        round_contest = RoundContest(
+            round_id=round.id, contest_id=contest.id, sample_size=sample_size
+        )
+        db_session.add(round_contest)
+
+    def draw_sample_for_contest(contest: Contest, sample_size: int) -> List[SampleDraw]:
+        # Compute the total number of ballot samples in all rounds leading up to
+        # this one. Note that this corresponds to the number of SampledBallotDraws,
+        # not SampledBallots.
+        num_previously_sampled = SampledBallotDraw.query.filter_by(
+            contest_id=contest.id
+        ).count()
+
+        # Create the pool of ballots to sample (aka manifest) by combining the
+        # manifests from every jurisdiction in the contest's universe.
+        # Audits must be deterministic and repeatable for the same real world
+        # inputs. So the sampler expects the same input for the same real world
+        # data. Thus, we use the jurisdiction and batch names (deterministic real
+        # world ids) instead of the jurisdiction and batch ids (non-deterministic
+        # uuids that we generate for each audit).
+        manifest = {
+            (jurisdiction.name, batch.name): batch.num_ballots
+            for jurisdiction in contest.jurisdictions
+            for batch in jurisdiction.batches
+        }
+
+        # Do the math! i.e. compute the actual sample
+        sample = sampler.draw_sample(
+            str(election.random_seed), manifest, sample_size, num_previously_sampled
+        )
+        return [
+            SampleDraw(
+                ballot_key=ballot_key,
+                contest_id=contest.id,
+                ticket_number=ticket_number,
+            )
+            for (ticket_number, ballot_key, _) in sample
+        ]
+
+    # Draw a sample for each targeted contest
+    # - For jointly targeted contest, we can draw one a sample for each contest
+    # and reuse it, since the contests have the same universe and sample size.
+    # - TODO For independently targeted contests, each contest needs its own
+    # sample.
+    one_targeted_contest = next(
+        contest
+        for contest in contests_that_havent_met_risk_limit
+        if contest.is_targeted
+    )
+    one_sample = draw_sample_for_contest(one_targeted_contest, sample_size)
+    samples = [
+        [sample_draw._replace(contest_id=contest.id) for sample_draw in one_sample]
+        for contest in contests_that_havent_met_risk_limit
+        if contest.is_targeted
+    ]
+
+    # Group all sample draws by ballot
+    sample_draws_by_ballot = group_by(
+        [sample_draw for sample in samples for sample_draw in sample],
+        key=lambda sample_draw: sample_draw.ballot_key,
+    )
+
+    # Create a mapping from batch keys used in the sampling back to batch ids
+    batches = (
+        Batch.query.join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .values(Jurisdiction.name, Batch.name, Batch.id)
+    )
     batch_key_to_id = {
-        (jurisdiction.name, batch.name): batch.id
-        for jurisdiction in targeted_contest.jurisdictions
-        for batch in jurisdiction.batches
+        (jurisdiction_name, batch_name): batch_id
+        for jurisdiction_name, batch_name, batch_id in batches
     }
-
-    # Do the math! I.e. compute the actual sample
-    sample = sampler.draw_sample(
-        str(election.random_seed), manifest, sample_size, num_previously_sampled
-    )
 
     # Record which ballots are sampled in the db.
     # Note that a ballot may be sampled more than once (within a round or
@@ -110,9 +170,14 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
     # SampledBallotDraw. That way we can ensure that we don't need to actually
     # look at a real-world ballot that we've already audited, even if it gets
     # sampled again.
-    for (ticket_number, (batch_key, ballot_position), times_sampled) in sample:
+    for ballot_key, sample_draws in sample_draws_by_ballot.items():
+        batch_key, ballot_position = ballot_key
         batch_id = batch_key_to_id[batch_key]
-        if times_sampled == 1:
+
+        sampled_ballot = SampledBallot.query.filter_by(
+            batch_id=batch_id, ballot_position=ballot_position
+        ).first()
+        if not sampled_ballot:
             sampled_ballot = SampledBallot(
                 id=str(uuid.uuid4()),
                 batch_id=batch_id,
@@ -120,15 +185,15 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
                 status=BallotStatus.NOT_AUDITED,
             )
             db_session.add(sampled_ballot)
-        else:
-            sampled_ballot = SampledBallot.query.filter_by(
-                batch_id=batch_id, ballot_position=ballot_position
-            ).one()
 
-        sampled_ballot_draw = SampledBallotDraw(
-            ballot_id=sampled_ballot.id, round_id=round.id, ticket_number=ticket_number,
-        )
-        db_session.add(sampled_ballot_draw)
+        for sample_draw in sample_draws:
+            sampled_ballot_draw = SampledBallotDraw(
+                ballot_id=sampled_ballot.id,
+                round_id=round.id,
+                contest_id=sample_draw.contest_id,
+                ticket_number=sample_draw.ticket_number,
+            )
+            db_session.add(sampled_ballot_draw)
 
 
 @api.route("/election/<election_id>/round", methods=["GET"])
@@ -157,6 +222,8 @@ def create_round(election: Election):
     json_round = request.get_json()
     validate_round(json_round, election)
 
+    # TODO change this for independently targeted contests - maybe take in
+    # which sample size level to use rather than the size itself?
     # For round 1, use the given sample size. In later rounds, use the 90%
     # probability sample size.
     sample_size = (
@@ -169,12 +236,6 @@ def create_round(election: Election):
         id=str(uuid.uuid4()), election_id=election.id, round_num=json_round["roundNum"],
     )
     db_session.add(round)
-
-    for contest in election.contests:
-        round_contest = RoundContest(
-            round_id=round.id, contest_id=contest.id, sample_size=sample_size
-        )
-        db_session.add(round_contest)
 
     sample_ballots(election, round, sample_size)
 
