@@ -7,6 +7,7 @@ from werkzeug.exceptions import BadRequest, NotFound
 
 from . import api
 from ..auth import with_jurisdiction_access, with_audit_board_access
+from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_download import csv_response, election_timestamp_name
 from ..util.jsonschema import JSONDict, validate
@@ -288,6 +289,6 @@ def audit_ballot(
         for interpretation in ballot_audit["interpretations"]
     ]
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")

@@ -4,31 +4,20 @@ import pytest
 from sqlalchemy import insert
 from sqlalchemy.exc import SQLAlchemyError
 
-from ...app import app, db as app_db
+from ...database import db_session
 from ...models import File
 from ...util.process_file import process_file
 
 
-@pytest.fixture
-def db():
-    with app.app_context():
-        app_db.drop_all()
-        app_db.create_all()
-
-    yield app_db
-
-    app_db.session.rollback()
-
-
-def test_success(db):
+def test_success():
     file = File(
         id=str(uuid.uuid4()),
         name="Test File",
         contents="abcdefg",
         uploaded_at=datetime.datetime.utcnow(),
     )
-    db.session.add(file)
-    db.session.commit()
+    db_session.add(file)
+    db_session.commit()
 
     def process():
         pass
@@ -37,22 +26,22 @@ def test_success(db):
     assert file.processing_completed_at is None
     assert file.processing_error is None
 
-    process_file(db.session, file, process)
+    process_file(db_session, file, process)
 
     assert isinstance(file.processing_started_at, datetime.datetime)
     assert isinstance(file.processing_completed_at, datetime.datetime)
     assert file.processing_error is None
 
 
-def test_error(db):
+def test_error():
     file = File(
         id=str(uuid.uuid4()),
         name="Test File",
         contents="abcdefg",
         uploaded_at=datetime.datetime.utcnow(),
     )
-    db.session.add(file)
-    db.session.commit()
+    db_session.add(file)
+    db_session.commit()
 
     def process():
         raise Exception("NOPE")
@@ -62,7 +51,7 @@ def test_error(db):
     assert file.processing_error is None
 
     try:
-        process_file(db.session, file, process)
+        process_file(db_session, file, process)
     except Exception as error:
         assert str(error) == "NOPE"
 
@@ -71,22 +60,22 @@ def test_error(db):
     assert file.processing_error == "NOPE"
 
 
-def test_session_stuck(db):
+def test_session_stuck():
     file = File(
         id=str(uuid.uuid4()),
         name="Test File",
         contents="abcdefg",
         uploaded_at=datetime.datetime.utcnow(),
     )
-    db.session.add(file)
-    db.session.commit()
+    db_session.add(file)
+    db_session.commit()
 
     def process():
         # We do something here that renders a db session unable to commit,
         # specifically trying to violate a db constraint. Note that we're not
         # using the models here because doing so makes sqlalchemy notice the
         # conflict before it even gets to the db.
-        db.session.execute(
+        db_session.execute(
             insert(File.__table__).values(
                 id=file.id,
                 name="Test File2",
@@ -96,7 +85,7 @@ def test_session_stuck(db):
         )
 
     try:
-        process_file(db.session, file, process)
+        process_file(db_session, file, process)
     except SQLAlchemyError:
         pass
 

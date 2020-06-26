@@ -10,6 +10,7 @@ from ..auth.lib import (
     _SUPERADMIN,
 )
 from ..api.routes import create_organization
+from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..api.audit_boards import end_round
 
@@ -74,8 +75,8 @@ def clear_superadmin(client: FlaskClient):
 
 def create_user(email=DEFAULT_AA_EMAIL) -> User:
     user = User(id=str(uuid.uuid4()), email=email, external_id=email)
-    db.session.add(user)
-    db.session.commit()
+    db_session.add(user)
+    db_session.commit()
     return user
 
 
@@ -84,10 +85,10 @@ def create_org_and_admin(
 ) -> Tuple[str, str]:
     org = create_organization(org_name)
     audit_admin = create_user(user_email)
-    db.session.add(audit_admin)
+    db_session.add(audit_admin)
     admin = AuditAdministration(organization_id=org.id, user_id=audit_admin.id)
-    db.session.add(admin)
-    db.session.commit()
+    db_session.add(admin)
+    db_session.commit()
     return org.id, audit_admin.id
 
 
@@ -95,12 +96,12 @@ def create_jurisdiction_admin(
     jurisdiction_id: str, user_email: str = DEFAULT_JA_EMAIL
 ) -> str:
     jurisdiction_admin = create_user(user_email)
-    db.session.add(jurisdiction_admin)
+    db_session.add(jurisdiction_admin)
     admin = JurisdictionAdministration(
         user_id=jurisdiction_admin.id, jurisdiction_id=jurisdiction_id
     )
-    db.session.add(admin)
-    db.session.commit()
+    db_session.add(admin)
+    db_session.commit()
     return str(jurisdiction_admin.id)
 
 
@@ -112,8 +113,8 @@ def create_jurisdiction_and_admin(
     jurisdiction = Jurisdiction(
         id=str(uuid.uuid4()), election_id=election_id, name=jurisdiction_name
     )
-    db.session.add(jurisdiction)
-    db.session.commit()
+    db_session.add(jurisdiction)
+    db_session.commit()
     ja_id = create_jurisdiction_admin(jurisdiction.id, user_email)
     return jurisdiction.id, ja_id
 
@@ -147,7 +148,7 @@ def audit_ballot(
     is_overvote: bool = False,
 ):
     if ballot.status != BallotStatus.AUDITED:
-        db.session.add(
+        db_session.add(
             BallotInterpretation(
                 ballot_id=ballot.id,
                 contest_id=contest_id,
@@ -185,7 +186,7 @@ def run_audit_round(round_id: str, contest_id: str, vote_ratio: float):
             [contest.choices[1]],
         )
     end_round(round.election, round)
-    db.session.commit()
+    db_session.commit()
 
 
 def assert_is_id(value):

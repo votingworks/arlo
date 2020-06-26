@@ -10,10 +10,10 @@ from ..helpers import (
     SAMPLE_SIZE_ROUND_1,
     set_logged_in_user,
 )
+from ...database import db_session
 from ...models import *  # pylint: disable=wildcard-import
 from ...api.contests import JSONDict
 from ...auth import UserType
-from ...app import db
 
 
 @pytest.fixture
@@ -187,7 +187,7 @@ def test_contests_round_status(
         contest_id=contests[0]["id"]
     ).one()
     targeted_round_contest.is_complete = False
-    db.session.commit()
+    db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
@@ -335,7 +335,7 @@ def test_audit_board_contests_list_empty(
     contests = Contest.query.all()
     for contest in contests:
         contest.jurisdictions = []
-    db.session.commit()
+    db_session.commit()
 
     set_logged_in_user(
         client, UserType.AUDIT_BOARD, user_key=audit_board_round_1_ids[0]
@@ -382,7 +382,7 @@ def test_audit_board_contests_list_order(
     db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)
     db_choices[0].name = "ZZZ Choice"
     db_choices[1].name = "AAA Choice"
-    db.session.commit()
+    db_session.commit()
 
     set_logged_in_user(
         client, UserType.AUDIT_BOARD, user_key=audit_board_round_1_ids[0]

@@ -1,10 +1,7 @@
-from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
-from server.app import db
-from server.config import DATABASE_URL
+from server.database import engine, Base
 
 if __name__ == "__main__":
-    engine = create_engine(DATABASE_URL)
     print(f"database: {engine.url}")
 
     try:
@@ -16,4 +13,4 @@ if __name__ == "__main__":
         pass
 
     print("creating tables…")
-    db.create_all()
+    Base.metadata.create_all()

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict
+from typing import Dict, Optional
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
@@ -22,6 +22,7 @@ def sample_size_options(election: Election, round_one=False) -> dict:
         raise BadRequest("Cannot compute sample sizes until contests are set")
     if not election.risk_limit:
         raise BadRequest("Cannot compute sample sizes until risk limit is set")
+    risk_limit: int = election.risk_limit  # Need this to pass typechecking
 
     def sample_sizes_for_contest(contest: Contest) -> dict:
         # Because the /sample-sizes endpoint is only used for the audit setup flow,
@@ -35,7 +36,7 @@ def sample_size_options(election: Election, round_one=False) -> dict:
         )
 
         return bravo.get_sample_size(
-            election.risk_limit / 100,
+            float(risk_limit) / 100,
             sampler_contest.from_db_contest(contest),
             cumulative_results,
         )

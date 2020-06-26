@@ -9,7 +9,8 @@ import pytest
 os.environ["FLASK_ENV"] = "test"
 # pylint: disable=wrong-import-position
 
-from ..app import app, db
+from ..app import app
+from ..database import db_session, Base
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import (
     UserType,
@@ -34,12 +35,12 @@ def client() -> Generator[FlaskClient, None, None]:
     client = app.test_client()
 
     with app.app_context():
-        db.drop_all()
-        db.create_all()
+        Base.metadata.drop_all()
+        Base.metadata.create_all()
 
     yield client
 
-    db.session.commit()
+    db_session.commit()
 
 
 @pytest.fixture

@@ -42,8 +42,8 @@ def bulk_update_jurisdictions(
     """
     with session.begin_nested():
         # Clear existing admins.
-        session.query(JurisdictionAdministration).filter(
-            Jurisdiction.election == election
+        session.query(JurisdictionAdministration).filter_by(
+            election_id=election.id
         ).delete(synchronize_session="fetch")
         new_admins: List[JurisdictionAdministration] = []
 
@@ -57,17 +57,19 @@ def bulk_update_jurisdictions(
 
             # Find or create the jurisdiction by name.
             jurisdiction = Jurisdiction.query.filter_by(
-                election=election, name=name
+                election_id=election.id, name=name
             ).one_or_none()
 
             if not jurisdiction:
                 jurisdiction = Jurisdiction(
-                    id=str(uuid.uuid4()), election=election, name=name
+                    id=str(uuid.uuid4()), election_id=election.id, name=name
                 )
                 session.add(jurisdiction)
 
             # Link the user to the jurisdiction as an admin.
-            admin = JurisdictionAdministration(jurisdiction=jurisdiction, user=user)
+            admin = JurisdictionAdministration(
+                jurisdiction_id=jurisdiction.id, user=user
+            )
             session.add(admin)
             new_admins.append(admin)
 
@@ -76,7 +78,7 @@ def bulk_update_jurisdictions(
             session.query(Jurisdiction)
             .outerjoin(JurisdictionAdministration)
             .filter(
-                Jurisdiction.election == election,
+                Jurisdiction.election_id == election.id,
                 JurisdictionAdministration.jurisdiction_id.is_(None),
             )
             .with_entities(Jurisdiction.id)

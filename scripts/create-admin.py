@@ -2,8 +2,8 @@
 # type: ignore
 import sys, uuid
 
-from server.app import app  # pylint: disable=unused-import
-from server.models import User, AuditAdministration, db
+from server.models import User, AuditAdministration
+from server.database import db_session
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
@@ -13,9 +13,9 @@ if __name__ == "__main__":
     org_id, email = sys.argv[1:]  # pylint: disable=unbalanced-tuple-unpacking
     u = User(id=str(uuid.uuid4()), email=email, external_id=email)
     audit_admin = AuditAdministration(user_id=u.id, organization_id=org_id)
-    db.session.add(u)
-    db.session.add(audit_admin)
-    db.session.commit()
+    db_session.add(u)
+    db_session.add(audit_admin)
+    db_session.commit()
 
     print(u.id)
     print("Now add the user to auth0: https://manage.auth0.com/")

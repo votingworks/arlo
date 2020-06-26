@@ -5,6 +5,7 @@ from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, NotFound
 
 from . import api
+from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_jurisdiction_access, with_election_access
 from ..util.process_file import (
@@ -72,7 +73,7 @@ def process_ballot_manifest_file(
         # pylint: disable=import-outside-toplevel,cyclic-import
         from .routes import sample_ballots
 
-        sample_ballots(session, election, election.rounds[0])
+        sample_ballots(session, election, list(election.rounds)[0])
 
 
 # Raises if invalid
@@ -113,7 +114,7 @@ def upload_ballot_manifest(
     validate_ballot_manifest_upload(request)
     clear_ballot_manifest_file(jurisdiction)
     save_ballot_manifest_file(request.files["manifest"], jurisdiction)
-    db.session.commit()
+    db_session.commit()
     return jsonify(status="ok")
 
 
@@ -162,5 +163,5 @@ def clear_ballot_manifest(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     clear_ballot_manifest_file(jurisdiction)
-    db.session.commit()
+    db_session.commit()
     return jsonify(status="ok")

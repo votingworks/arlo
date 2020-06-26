@@ -8,6 +8,7 @@ from sqlalchemy import func, and_
 from sqlalchemy.orm import contains_eager
 
 from . import api
+from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_jurisdiction_access, with_audit_board_access
 from .rounds import get_current_round
@@ -81,7 +82,7 @@ def assign_sampled_ballots(
         ]
         for ballot in ballots_in_bucket:
             ballot.audit_board_id = bucket.name
-            db.session.add(ballot)
+            db_session.add(ballot)
 
 
 @api.route(
@@ -104,11 +105,11 @@ def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round_id
         )
         for json_audit_board in json_audit_boards
     ]
-    db.session.add_all(audit_boards)
+    db_session.add_all(audit_boards)
 
     assign_sampled_ballots(jurisdiction, round, audit_boards)
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -249,15 +250,19 @@ def set_audit_board_members(
         audit_board.member_2 = members[1]["name"]
         audit_board.member_2_affiliation = members[1]["affiliation"]
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
 
 def calculate_risk_measurements(election: Election, round: Round):
+    if not election.risk_limit:  # Shouldn't happen, we need this for typechecking
+        raise Exception("Risk limit not defined")
+    risk_limit: int = election.risk_limit
+
     for contest in election.contests:
         risk, is_complete = bravo.compute_risk(
-            election.risk_limit / 100,
+            float(risk_limit) / 100,
             sampler_contest.from_db_contest(contest),
             cumulative_contest_results(contest),
         )
@@ -288,7 +293,7 @@ def count_audited_votes(election: Election, round: Round):
                 contest_choice_id=contest_choice.id,
                 result=vote_counts.get(contest_choice.id, 0),
             )
-            db.session.add(result)
+            db_session.add(result)
 
 
 def end_round(election: Election, round: Round):
@@ -379,6 +384,6 @@ def sign_off_audit_board(
     if is_round_complete(election, round):
         end_round(election, round)
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")

@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional
-from enum import Enum
+import enum
 from flask import jsonify
 from sqlalchemy import func
 
@@ -31,7 +31,7 @@ def serialize_jurisdiction(
     }
 
 
-class JurisdictionStatus(str, Enum):
+class JurisdictionStatus(str, enum.Enum):
     NOT_STARTED = "NOT_STARTED"
     IN_PROGRESS = "IN_PROGRESS"
     COMPLETE = "COMPLETE"
@@ -160,7 +160,7 @@ def round_status_by_jurisdiction(
 def list_jurisdictions(election: Election):
     current_round = get_current_round(election)
     round_status = round_status_by_jurisdiction(
-        current_round, election.jurisdictions, election.online
+        current_round, list(election.jurisdictions), election.online
     )
 
     json_jurisdictions = [

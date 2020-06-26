@@ -135,9 +135,13 @@ def write_audit_boards(report, election: Election):
                         jurisdiction.name,
                         audit_board.name,
                         audit_board.member_1,
-                        pretty_affiliation(audit_board.member_1_affiliation),
+                        pretty_affiliation(
+                            Affiliation(audit_board.member_1_affiliation)
+                        ),
                         audit_board.member_2,
-                        pretty_affiliation(audit_board.member_2_affiliation),
+                        pretty_affiliation(
+                            Affiliation(audit_board.member_2_affiliation)
+                        ),
                     ]
                 )
 
@@ -183,7 +187,7 @@ def write_rounds(report, election: Election):
                     contest.name,
                     pretty_targeted(contest.is_targeted),
                     round_contest.sample_size,
-                    pretty_boolean(round_contest.is_complete),
+                    pretty_boolean(bool(round_contest.is_complete)),
                     round_contest.end_p_value,
                     isoformat(round.created_at),
                     isoformat(round.ended_at),
@@ -235,7 +239,9 @@ def write_sampled_ballots(
                 pretty_ticket_numbers(ballot, round_id_to_num),
                 ballot.status,
             ]
-            + pretty_interpretations(ballot.interpretations, election.contests)
+            + pretty_interpretations(
+                list(ballot.interpretations), list(election.contests)
+            )
         )
 
 

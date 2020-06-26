@@ -1,5 +1,5 @@
 import functools
-from enum import Enum
+import enum
 from typing import Callable, Optional, Tuple, Union
 from flask import session
 from werkzeug.exceptions import Forbidden, Unauthorized
@@ -7,7 +7,7 @@ from werkzeug.exceptions import Forbidden, Unauthorized
 from ..models import *  # pylint: disable=wildcard-import
 
 
-class UserType(str, Enum):
+class UserType(str, enum.Enum):
     # Audit admins are represented with a User record associated with one or
     # more Organizations and use User.email as their login key.
     AUDIT_ADMIN = "audit_admin"

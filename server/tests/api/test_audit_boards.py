@@ -123,7 +123,7 @@ def test_audit_boards_list_one(
     audit_board = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
     for ballot in audit_board.sampled_ballots[:10]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
-    db.session.commit()
+    db_session.commit()
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -152,7 +152,7 @@ def test_audit_boards_list_one(
     for ballot in audit_board.sampled_ballots[10:]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     audit_board.signed_off_at = datetime.utcnow()
-    db.session.commit()
+    db_session.commit()
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -248,7 +248,7 @@ def test_audit_boards_list_two(
     audit_board_2 = AuditBoard.query.get(audit_boards[1]["id"])
     for ballot in audit_board_2.sampled_ballots[:20]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
-    db.session.commit()
+    db_session.commit()
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -269,7 +269,7 @@ def test_audit_boards_list_two(
     for ballot in audit_board_1.sampled_ballots[10:]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     audit_board_1.signed_off_at = datetime.utcnow()
-    db.session.commit()
+    db_session.commit()
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
@@ -619,7 +619,7 @@ def set_up_audit_board(
         )
     for draw in ballot_draws:
         audit_ballot(draw.sampled_ballot, contest_id, Interpretation.BLANK)
-    db.session.commit()
+    db_session.commit()
 
     return member_1, member_2
 
@@ -687,8 +687,8 @@ def test_audit_boards_sign_off_happy_path(
         round_id=round_1_id,
         name="Audit Board Without Ballots",
     )
-    db.session.add(audit_board_without_ballots)
-    db.session.commit()
+    db_session.add(audit_board_without_ballots)
+    db_session.commit()
 
     run_audit_board_flow(jurisdiction_ids[1], audit_board["id"])
 
@@ -744,7 +744,7 @@ def test_count_audited_votes(
         for result in round_contest.results:
             assert result.result == 0
 
-    db.session.rollback()
+    db_session.rollback()
 
     contest_id = contest_ids[1]
     ballot_draws = (
@@ -919,7 +919,7 @@ def test_audit_boards_sign_off_before_finished(
     ballots = SampledBallot.query.filter_by(audit_board_id=audit_board_id).all()
     for ballot in ballots[:10]:
         ballot.status = BallotStatus.NOT_AUDITED
-    db.session.commit()
+    db_session.commit()
 
     rv = post_json(
         client,

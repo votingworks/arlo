@@ -37,8 +37,8 @@ def jurisdiction_id(election_id: str) -> str:
 
 def create_round(election_id: str, round_num=1) -> str:
     round = Round(id=str(uuid.uuid4()), election_id=election_id, round_num=round_num)
-    db.session.add(round)
-    db.session.commit()
+    db_session.add(round)
+    db_session.commit()
     return str(round.id)
 
 
@@ -55,8 +55,8 @@ def create_audit_board(jurisdiction_id: str, round_id: str) -> str:
         round_id=round_id,
         passphrase=f"passphrase-{audit_board_id}",
     )
-    db.session.add(audit_board)
-    db.session.commit()
+    db_session.add(audit_board)
+    db_session.commit()
     return str(audit_board.id)
 
 

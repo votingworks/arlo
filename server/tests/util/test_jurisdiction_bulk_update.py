@@ -1,5 +1,4 @@
 import uuid
-import pytest
 from ...util.jurisdiction_bulk_update import bulk_update_jurisdictions
 from ...models import (
     Organization,
@@ -8,21 +7,10 @@ from ...models import (
     Jurisdiction,
     JurisdictionAdministration,
 )
-from ...app import app, db as app_db
+from ...database import db_session
 
 
-@pytest.fixture
-def db():
-    with app.app_context():
-        app_db.drop_all()
-        app_db.create_all()
-
-    yield app_db
-
-    app_db.session.rollback()
-
-
-def test_first_update(db):
+def test_first_update():
     org = Organization(id=str(uuid.uuid4()), name="Test Org")
     election = Election(
         id=str(uuid.uuid4()),
@@ -31,9 +19,9 @@ def test_first_update(db):
         is_multi_jurisdiction=True,
     )
     new_admins = bulk_update_jurisdictions(
-        db.session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
+        db_session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
     )
-    db.session.commit()
+    db_session.commit()
 
     assert [(admin.jurisdiction.name, admin.user.email) for admin in new_admins] == [
         ("Jurisdiction #1", "bob.harris@ca.gov")
@@ -44,7 +32,7 @@ def test_first_update(db):
     assert JurisdictionAdministration.query.count() == 1
 
 
-def test_idempotent(db):
+def test_idempotent():
     org = Organization(id=str(uuid.uuid4()), name="Test Org")
     election = Election(
         id=str(uuid.uuid4()),
@@ -55,23 +43,23 @@ def test_idempotent(db):
 
     # Do it once.
     bulk_update_jurisdictions(
-        db.session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
+        db_session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
     )
-    db.session.commit()
+    db_session.commit()
 
     user = User.query.one()
     jurisdiction = Jurisdiction.query.one()
 
     # Do the same thing again.
     bulk_update_jurisdictions(
-        db.session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
+        db_session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
     )
 
     assert User.query.one() == user
     assert Jurisdiction.query.one() == jurisdiction
 
 
-def test_remove_outdated_jurisdictions(db):
+def test_remove_outdated_jurisdictions():
     org = Organization(id=str(uuid.uuid4()), name="Test Org")
     election = Election(
         id=str(uuid.uuid4()),
@@ -82,12 +70,12 @@ def test_remove_outdated_jurisdictions(db):
 
     # Add jurisdictions.
     bulk_update_jurisdictions(
-        db.session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
+        db_session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
     )
-    db.session.commit()
+    db_session.commit()
 
     # Delete jurisdictions.
-    new_admins = bulk_update_jurisdictions(db.session, election, [])
+    new_admins = bulk_update_jurisdictions(db_session, election, [])
 
     assert new_admins == []
     assert User.query.count() == 1  # keep the user

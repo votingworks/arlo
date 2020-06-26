@@ -5,6 +5,7 @@ from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
+from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_election_access, with_jurisdiction_access
 from .sample_sizes import sample_size_options
@@ -99,7 +100,7 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
 
     # Do the math! I.e. compute the actual sample
     sample = sampler.draw_sample(
-        election.random_seed, manifest, sample_size, num_previously_sampled
+        str(election.random_seed), manifest, sample_size, num_previously_sampled
     )
 
     # Record which ballots are sampled in the db.
@@ -118,7 +119,7 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
                 ballot_position=ballot_position,
                 status=BallotStatus.NOT_AUDITED,
             )
-            db.session.add(sampled_ballot)
+            db_session.add(sampled_ballot)
         else:
             sampled_ballot = SampledBallot.query.filter_by(
                 batch_id=batch_id, ballot_position=ballot_position
@@ -127,7 +128,7 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
         sampled_ballot_draw = SampledBallotDraw(
             ballot_id=sampled_ballot.id, round_id=round.id, ticket_number=ticket_number,
         )
-        db.session.add(sampled_ballot_draw)
+        db_session.add(sampled_ballot_draw)
 
 
 @api.route("/election/<election_id>/round", methods=["GET"])
@@ -167,16 +168,16 @@ def create_round(election: Election):
     round = Round(
         id=str(uuid.uuid4()), election_id=election.id, round_num=json_round["roundNum"],
     )
-    db.session.add(round)
+    db_session.add(round)
 
     for contest in election.contests:
         round_contest = RoundContest(
             round_id=round.id, contest_id=contest.id, sample_size=sample_size
         )
-        db.session.add(round_contest)
+        db_session.add(round_contest)
 
     sample_ballots(election, round, sample_size)
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify({"status": "ok"})
