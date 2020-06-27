@@ -260,14 +260,11 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                       <Field
                         component={FormField}
                         name="customSampleSize"
+                        type="text"
                         validate={testNumber(
-                          contests.reduce(
-                            (a, c) => a + Number(c.totalBallotsCast),
-                            0
-                          ),
-                          'Must be less than or equal to the total number of ballots in all contests' // all, or just targeted ones?
+                          Number(targetedContests[0].totalBallotsCast),
+                          'Must be less than or equal to the total number of ballots in targeted contests'
                         )}
-                        data-testid="customSampleSize"
                       />
                     )}
                   </RadioGroup>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, waitFor, render } from '@testing-library/react'
+import { fireEvent, waitFor, render, screen } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
@@ -237,6 +237,50 @@ describe('Audit Setup > Review & Launch', () => {
       expect(apiMock.mock.calls[4][1]).toMatchObject({
         body: JSON.stringify({
           sampleSize: 67,
+          roundNum: 1,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      })
+    })
+  })
+
+  it.only('accepts custom sample size', async () => {
+    apiMock.mockImplementation(
+      generateApiMock(
+        sampleSizeMock,
+        contestMocks.filledTargetedWithJurisdictionId,
+        { jurisdictions: jurisdictionMocks.allManifests }
+      )
+    )
+    const { getByText, findByText, getAllByText } = render(
+      <Router>
+        <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
+      </Router>
+    )
+    const newSampleSize = await findByText(
+      'Enter your own sample size (not recommended)'
+    )
+    fireEvent.click(newSampleSize, { bubbles: true })
+    const customSampleSizeInput = await screen.findByRole('textbox')
+    fireEvent.change(customSampleSizeInput, { target: { value: '40' } })
+    fireEvent.blur(customSampleSizeInput)
+    await screen.findByText(
+      'Must be less than or equal to the total number of ballots in targeted contests'
+    )
+    fireEvent.change(customSampleSizeInput, { target: { value: '5' } })
+    const launchButton = getByText('Launch Audit')
+    fireEvent.click(launchButton, { bubbles: true })
+    await findByText('Are you sure you want to launch the audit?')
+    const confirmLaunchButton = getAllByText('Launch Audit')[1]
+    fireEvent.click(confirmLaunchButton, { bubbles: true })
+    await waitFor(() => {
+      expect(apiMock).toHaveBeenCalledTimes(5)
+      expect(apiMock.mock.calls[4][1]).toMatchObject({
+        body: JSON.stringify({
+          sampleSize: 5,
           roundNum: 1,
         }),
         headers: {
