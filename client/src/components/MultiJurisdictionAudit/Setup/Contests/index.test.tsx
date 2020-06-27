@@ -154,9 +154,8 @@ describe('Audit Setup > Contests', () => {
         {...relativeStages('Target Contests')}
       />
     )
-    await screen.findByText('Add another targeted contest')
 
-    fireEvent.click(getByText('Add another targeted contest'))
+    fireEvent.click(await screen.findByText('Add another targeted contest'))
 
     expect(
       getAllByText('Enter the name of the contest that will drive the audit.')

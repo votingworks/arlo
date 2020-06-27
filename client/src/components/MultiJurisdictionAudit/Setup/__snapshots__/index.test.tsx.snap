@@ -6,7 +6,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH hfheQC"
+      class="sc-bwzfXH jFbAHP"
     >
       <h2
         class="bp3-heading sc-bdVaJa ibVpPq"
@@ -14,7 +14,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
         Audit Settings
       </h2>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <label
           for="election-name"
@@ -22,10 +22,10 @@ exports[`Setup renders Audit Settings stage 1`] = `
         >
           Election Name
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="election-name-label"
@@ -40,7 +40,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <label
           for="online"
@@ -78,10 +78,10 @@ exports[`Setup renders Audit Settings stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
+          class="bp3-heading sc-dnqmqq hlcOhg"
         >
           Desired Risk Limit
         </h3>
@@ -90,7 +90,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select sc-fjdhpX jqDqiz"
+            class="bp3-html-select sc-jzJRlG kYjAMg"
           >
             <select
               data-testid="risk-limit"
@@ -182,10 +182,10 @@ exports[`Setup renders Audit Settings stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
+          class="bp3-heading sc-dnqmqq hlcOhg"
         >
           Random Seed
         </h3>
@@ -195,10 +195,10 @@ exports[`Setup renders Audit Settings stage 1`] = `
         >
           Enter the random characters to seed the pseudo-random number generator.
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="random-seed-label"
@@ -218,7 +218,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
       class="sc-htpNat gtULUV"
     >
       <button
-        class="bp3-button sc-ifAKCX zdCNs"
+        class="bp3-button sc-EHOje gmpgQN"
         type="button"
       >
         <span
@@ -228,7 +228,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-intent-primary sc-ifAKCX zdCNs"
+        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
         type="submit"
       >
         <span
@@ -248,7 +248,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH hfheQC"
+      class="sc-bwzfXH jFbAHP"
     >
       <h2
         class="bp3-heading sc-bdVaJa ibVpPq"
@@ -256,7 +256,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         Audit Settings
       </h2>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <label
           for="election-name"
@@ -264,10 +264,10 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         >
           Election Name
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="election-name-label"
@@ -283,7 +283,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <label
           for="online"
@@ -323,10 +323,10 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
+          class="bp3-heading sc-dnqmqq hlcOhg"
         >
           Desired Risk Limit
         </h3>
@@ -335,7 +335,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select bp3-disabled sc-fjdhpX jqDqiz"
+            class="bp3-html-select bp3-disabled sc-jzJRlG kYjAMg"
           >
             <select
               data-testid="risk-limit"
@@ -428,10 +428,10 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
+          class="bp3-heading sc-dnqmqq hlcOhg"
         >
           Random Seed
         </h3>
@@ -441,10 +441,10 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         >
           Enter the random characters to seed the pseudo-random number generator.
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+              class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="random-seed-label"
@@ -465,7 +465,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
       class="sc-htpNat gtULUV"
     >
       <button
-        class="bp3-button sc-ifAKCX zdCNs"
+        class="bp3-button sc-EHOje gmpgQN"
         type="button"
       >
         <span
@@ -475,7 +475,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
+        class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
         disabled=""
         tabindex="-1"
         type="submit"
@@ -497,7 +497,7 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH hfheQC"
+      class="sc-bwzfXH jFbAHP"
     >
       <h2
         class="bp3-heading sc-bdVaJa ibVpPq"
@@ -505,7 +505,7 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         Audit Settings
       </h2>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <label
           for="election-name"
@@ -513,10 +513,10 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         >
           Election Name
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="election-name-label"
@@ -531,7 +531,7 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <label
           for="online"
@@ -569,10 +569,10 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
+          class="bp3-heading sc-dnqmqq hlcOhg"
         >
           Desired Risk Limit
         </h3>
@@ -581,7 +581,7 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select sc-fjdhpX jqDqiz"
+            class="bp3-html-select sc-jzJRlG kYjAMg"
           >
             <select
               data-testid="risk-limit"
@@ -673,10 +673,10 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         </label>
       </div>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <h3
-          class="bp3-heading sc-htoDjs egbcjZ"
+          class="bp3-heading sc-dnqmqq hlcOhg"
         >
           Random Seed
         </h3>
@@ -686,10 +686,10 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         >
           Enter the random characters to seed the pseudo-random number generator.
           <div
-            class="sc-iwsKbI dvOqsv"
+            class="sc-gZMcBi ggdJUe"
           >
             <div
-              class="bp3-input-group sc-gZMcBi fkRAtG"
+              class="bp3-input-group sc-gqjmRU kmAUGh"
             >
               <input
                 aria-labelledby="random-seed-label"
@@ -741,7 +741,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH hfheQC"
+      class="sc-bwzfXH jFbAHP"
     >
       <h2
         class="bp3-heading sc-bdVaJa ibVpPq"
@@ -749,21 +749,22 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
         Opportunistic Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest  Info
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of the contest that will drive the audit.
           </div>
+          <br />
           <label
             for="contests[0].name"
           >
@@ -772,10 +773,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
              
             Name
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -788,7 +789,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the number of winners for the contest.
           </div>
@@ -797,10 +798,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           >
             Winners
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -813,7 +814,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Number of selections the voter can make in the contest.
           </div>
@@ -822,10 +823,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -839,34 +840,34 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Candidates/Choices & Vote Totals
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jzJRlG hqJpHa"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -878,15 +879,15 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -899,18 +900,18 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
               </label>
             </div>
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -922,15 +923,15 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -943,22 +944,22 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
               </label>
             </div>
             <p
-              class="sc-kgoBCf jCkIWs"
+              class="sc-kGXeez hibFwE"
             >
               Add a new candidate/choice
             </p>
           </div>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Total Ballots Cast
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
@@ -969,10 +970,10 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
              
             
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -986,15 +987,15 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest Universe
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
@@ -1005,7 +1006,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-ifAKCX zdCNs"
+                class="bp3-button sc-EHOje gmpgQN"
                 type="button"
               >
                 <span
@@ -1022,7 +1023,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
         class="sc-htpNat gtULUV"
       >
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button sc-EHOje gmpgQN"
           type="button"
         >
           <span
@@ -1040,7 +1041,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
       class="sc-htpNat gtULUV"
     >
       <button
-        class="bp3-button sc-ifAKCX zdCNs"
+        class="bp3-button sc-EHOje gmpgQN"
         type="button"
       >
         <span
@@ -1050,7 +1051,7 @@ exports[`Setup renders Opportunistic Contests stage 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-intent-primary sc-ifAKCX zdCNs"
+        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
         type="submit"
       >
         <span
@@ -1070,7 +1071,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH hfheQC"
+      class="sc-bwzfXH jFbAHP"
     >
       <h2
         class="bp3-heading sc-bdVaJa ibVpPq"
@@ -1078,21 +1079,22 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
         Opportunistic Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest  Info
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of the contest that will drive the audit.
           </div>
+          <br />
           <label
             for="contests[0].name"
           >
@@ -1101,10 +1103,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
              
             Name
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1118,7 +1120,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the number of winners for the contest.
           </div>
@@ -1127,10 +1129,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           >
             Winners
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1144,7 +1146,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Number of selections the voter can make in the contest.
           </div>
@@ -1153,10 +1155,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           >
             Votes Allowed
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1171,34 +1173,34 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Candidates/Choices & Vote Totals
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jzJRlG hqJpHa"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1211,15 +1213,15 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1233,18 +1235,18 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
               </label>
             </div>
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1257,15 +1259,15 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1281,15 +1283,15 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           </div>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Total Ballots Cast
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
@@ -1300,10 +1302,10 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
              
             
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1318,15 +1320,15 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest Universe
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
@@ -1337,7 +1339,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-ifAKCX zdCNs"
+                class="bp3-button sc-EHOje gmpgQN"
                 type="button"
               >
                 <span
@@ -1354,7 +1356,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
         class="sc-htpNat gtULUV"
       >
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button sc-EHOje gmpgQN"
           type="button"
         >
           <span
@@ -1372,7 +1374,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
       class="sc-htpNat gtULUV"
     >
       <button
-        class="bp3-button sc-ifAKCX zdCNs"
+        class="bp3-button sc-EHOje gmpgQN"
         type="button"
       >
         <span
@@ -1382,7 +1384,7 @@ exports[`Setup renders Opportunistic Contests stage with locked next stage 1`] =
         </span>
       </button>
       <button
-        class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
+        class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
         disabled=""
         tabindex="-1"
         type="submit"
@@ -1404,7 +1406,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH hfheQC"
+      class="sc-bwzfXH jFbAHP"
     >
       <h2
         class="bp3-heading sc-bdVaJa ibVpPq"
@@ -1412,21 +1414,22 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
         Opportunistic Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest  Info
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of the contest that will drive the audit.
           </div>
+          <br />
           <label
             for="contests[0].name"
           >
@@ -1435,10 +1438,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
              
             Name
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1451,7 +1454,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the number of winners for the contest.
           </div>
@@ -1460,10 +1463,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           >
             Winners
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1476,7 +1479,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Number of selections the voter can make in the contest.
           </div>
@@ -1485,10 +1488,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           >
             Votes Allowed
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1502,34 +1505,34 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Candidates/Choices & Vote Totals
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jzJRlG hqJpHa"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1541,15 +1544,15 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1562,18 +1565,18 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
               </label>
             </div>
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1585,15 +1588,15 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -1606,22 +1609,22 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
               </label>
             </div>
             <p
-              class="sc-kgoBCf jCkIWs"
+              class="sc-kGXeez hibFwE"
             >
               Add a new candidate/choice
             </p>
           </div>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Total Ballots Cast
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
@@ -1632,10 +1635,10 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
              
             
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -1649,15 +1652,15 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest Universe
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
@@ -1668,7 +1671,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-ifAKCX zdCNs"
+                class="bp3-button sc-EHOje gmpgQN"
                 type="button"
               >
                 <span
@@ -1685,7 +1688,7 @@ exports[`Setup renders Opportunistic Contests stage with processing next stage 1
         class="sc-htpNat gtULUV"
       >
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button sc-EHOje gmpgQN"
           type="button"
         >
           <span
@@ -1774,7 +1777,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-ckVGcZ fmGFyg"
+      class="sc-jKJlTe bkTFhC"
     >
       <tbody>
         <tr>
@@ -1824,7 +1827,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-dxgOiQ boEBcS"
+      class="sc-ckVGcZ qPOwv"
     >
       <thead>
         <tr>
@@ -1839,7 +1842,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       <tbody />
     </table>
     <table
-      class="sc-dxgOiQ boEBcS"
+      class="sc-ckVGcZ qPOwv"
     >
       <thead>
         <tr>
@@ -1871,7 +1874,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
         class="sc-htpNat gtULUV"
       >
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button sc-EHOje gmpgQN"
           type="button"
         >
           <span
@@ -1881,7 +1884,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
           </span>
         </button>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
           disabled=""
           tabindex="-1"
           type="button"
@@ -1937,7 +1940,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-ckVGcZ fmGFyg"
+      class="sc-jKJlTe bkTFhC"
     >
       <tbody>
         <tr>
@@ -1987,7 +1990,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-dxgOiQ boEBcS"
+      class="sc-ckVGcZ qPOwv"
     >
       <thead>
         <tr>
@@ -2002,7 +2005,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       <tbody />
     </table>
     <table
-      class="sc-dxgOiQ boEBcS"
+      class="sc-ckVGcZ qPOwv"
     >
       <thead>
         <tr>
@@ -2034,7 +2037,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
         class="sc-htpNat gtULUV"
       >
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button sc-EHOje gmpgQN"
           type="button"
         >
           <span
@@ -2044,7 +2047,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
           </span>
         </button>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
           disabled=""
           tabindex="-1"
           type="button"
@@ -2100,7 +2103,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       Audit Settings
     </h4>
     <table
-      class="sc-ckVGcZ fmGFyg"
+      class="sc-jKJlTe bkTFhC"
     >
       <tbody>
         <tr>
@@ -2150,7 +2153,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       </tbody>
     </table>
     <table
-      class="sc-dxgOiQ boEBcS"
+      class="sc-ckVGcZ qPOwv"
     >
       <thead>
         <tr>
@@ -2165,7 +2168,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       <tbody />
     </table>
     <table
-      class="sc-dxgOiQ boEBcS"
+      class="sc-ckVGcZ qPOwv"
     >
       <thead>
         <tr>
@@ -2197,7 +2200,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
         class="sc-htpNat gtULUV"
       >
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button sc-EHOje gmpgQN"
           type="button"
         >
           <span
@@ -2207,7 +2210,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
           </span>
         </button>
         <button
-          class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
+          class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
           disabled=""
           tabindex="-1"
           type="button"
@@ -2230,7 +2233,7 @@ exports[`Setup renders Target Contests stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH hfheQC"
+      class="sc-bwzfXH jFbAHP"
     >
       <h2
         class="bp3-heading sc-bdVaJa ibVpPq"
@@ -2238,21 +2241,22 @@ exports[`Setup renders Target Contests stage 1`] = `
         Target Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest  Info
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of the contest that will drive the audit.
           </div>
+          <br />
           <label
             for="contests[0].name"
           >
@@ -2261,10 +2265,10 @@ exports[`Setup renders Target Contests stage 1`] = `
              
             Name
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2277,7 +2281,7 @@ exports[`Setup renders Target Contests stage 1`] = `
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the number of winners for the contest.
           </div>
@@ -2286,10 +2290,10 @@ exports[`Setup renders Target Contests stage 1`] = `
           >
             Winners
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2302,7 +2306,7 @@ exports[`Setup renders Target Contests stage 1`] = `
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Number of selections the voter can make in the contest.
           </div>
@@ -2311,10 +2315,10 @@ exports[`Setup renders Target Contests stage 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2328,34 +2332,34 @@ exports[`Setup renders Target Contests stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Candidates/Choices & Vote Totals
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jzJRlG hqJpHa"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -2367,15 +2371,15 @@ exports[`Setup renders Target Contests stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -2388,18 +2392,18 @@ exports[`Setup renders Target Contests stage 1`] = `
               </label>
             </div>
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -2411,15 +2415,15 @@ exports[`Setup renders Target Contests stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -2432,22 +2436,22 @@ exports[`Setup renders Target Contests stage 1`] = `
               </label>
             </div>
             <p
-              class="sc-kgoBCf jCkIWs"
+              class="sc-kGXeez hibFwE"
             >
               Add a new candidate/choice
             </p>
           </div>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Total Ballots Cast
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
@@ -2458,10 +2462,10 @@ exports[`Setup renders Target Contests stage 1`] = `
              
             
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2475,15 +2479,15 @@ exports[`Setup renders Target Contests stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest Universe
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
@@ -2494,7 +2498,7 @@ exports[`Setup renders Target Contests stage 1`] = `
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-ifAKCX zdCNs"
+                class="bp3-button sc-EHOje gmpgQN"
                 type="button"
               >
                 <span
@@ -2511,7 +2515,7 @@ exports[`Setup renders Target Contests stage 1`] = `
         class="sc-htpNat gtULUV"
       >
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button sc-EHOje gmpgQN"
           type="button"
         >
           <span
@@ -2529,7 +2533,7 @@ exports[`Setup renders Target Contests stage 1`] = `
       class="sc-htpNat gtULUV"
     >
       <button
-        class="bp3-button sc-ifAKCX zdCNs"
+        class="bp3-button sc-EHOje gmpgQN"
         type="button"
       >
         <span
@@ -2539,7 +2543,7 @@ exports[`Setup renders Target Contests stage 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-intent-primary sc-ifAKCX zdCNs"
+        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
         type="submit"
       >
         <span
@@ -2559,7 +2563,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH hfheQC"
+      class="sc-bwzfXH jFbAHP"
     >
       <h2
         class="bp3-heading sc-bdVaJa ibVpPq"
@@ -2567,21 +2571,22 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
         Target Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest  Info
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of the contest that will drive the audit.
           </div>
+          <br />
           <label
             for="contests[0].name"
           >
@@ -2590,10 +2595,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
              
             Name
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2607,7 +2612,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the number of winners for the contest.
           </div>
@@ -2616,10 +2621,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           >
             Winners
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2633,7 +2638,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Number of selections the voter can make in the contest.
           </div>
@@ -2642,10 +2647,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2660,34 +2665,34 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Candidates/Choices & Vote Totals
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jzJRlG hqJpHa"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -2700,15 +2705,15 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -2722,18 +2727,18 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
               </label>
             </div>
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -2746,15 +2751,15 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                    class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -2770,15 +2775,15 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           </div>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Total Ballots Cast
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
@@ -2789,10 +2794,10 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
              
             
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group bp3-disabled sc-gZMcBi fkRAtG"
+                class="bp3-input-group bp3-disabled sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2807,15 +2812,15 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest Universe
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
@@ -2826,7 +2831,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-ifAKCX zdCNs"
+                class="bp3-button sc-EHOje gmpgQN"
                 type="button"
               >
                 <span
@@ -2843,7 +2848,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
         class="sc-htpNat gtULUV"
       >
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button sc-EHOje gmpgQN"
           type="button"
         >
           <span
@@ -2861,7 +2866,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
       class="sc-htpNat gtULUV"
     >
       <button
-        class="bp3-button sc-ifAKCX zdCNs"
+        class="bp3-button sc-EHOje gmpgQN"
         type="button"
       >
         <span
@@ -2871,7 +2876,7 @@ exports[`Setup renders Target Contests stage with locked next stage 1`] = `
         </span>
       </button>
       <button
-        class="bp3-button bp3-disabled bp3-intent-primary sc-ifAKCX zdCNs"
+        class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
         disabled=""
         tabindex="-1"
         type="submit"
@@ -2893,7 +2898,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH hfheQC"
+      class="sc-bwzfXH jFbAHP"
     >
       <h2
         class="bp3-heading sc-bdVaJa ibVpPq"
@@ -2901,21 +2906,22 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
         Target Contests
       </h2>
       <div
-        class="bp3-card bp3-elevation-2 sc-kpOJdX cxMGpA"
+        class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
       >
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest  Info
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of the contest that will drive the audit.
           </div>
+          <br />
           <label
             for="contests[0].name"
           >
@@ -2924,10 +2930,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
              
             Name
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2940,7 +2946,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the number of winners for the contest.
           </div>
@@ -2949,10 +2955,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           >
             Winners
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2965,7 +2971,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
             </div>
           </label>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Number of selections the voter can make in the contest.
           </div>
@@ -2974,10 +2980,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           >
             Votes Allowed
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -2991,34 +2997,34 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Candidates/Choices & Vote Totals
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the name of each candidate choice that appears on the ballot for this contest.
           </div>
           <div
-            class="sc-jzJRlG hqJpHa"
+            class="sc-cSHVUG cNFbaH"
           >
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3030,15 +3036,15 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 1
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3051,18 +3057,18 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
               </label>
             </div>
             <div
-              class="sc-cSHVUG jUKlPT"
+              class="sc-kAzzGY gvpNKy"
             >
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Name of Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3074,15 +3080,15 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
                 </div>
               </label>
               <label
-                class="bp3-label sc-chPdSV ewyFtw"
+                class="bp3-label sc-kgoBCf eKfxQS"
               >
                 Votes for Candidate/Choice 
                 2
                 <div
-                  class="sc-kAzzGY ekBBqo sc-iwsKbI dvOqsv"
+                  class="sc-chPdSV knRDOr sc-gZMcBi ggdJUe"
                 >
                   <div
-                    class="bp3-input-group sc-gZMcBi fkRAtG"
+                    class="bp3-input-group sc-gqjmRU kmAUGh"
                   >
                     <input
                       class="bp3-input"
@@ -3095,22 +3101,22 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
               </label>
             </div>
             <p
-              class="sc-kgoBCf jCkIWs"
+              class="sc-kGXeez hibFwE"
             >
               Add a new candidate/choice
             </p>
           </div>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Total Ballots Cast
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Enter the overall number of ballot cards cast in jurisdictions containing this contest.
           </div>
@@ -3121,10 +3127,10 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
              
             
             <div
-              class="sc-iwsKbI dvOqsv"
+              class="sc-gZMcBi ggdJUe"
             >
               <div
-                class="bp3-input-group sc-gZMcBi fkRAtG"
+                class="bp3-input-group sc-gqjmRU kmAUGh"
               >
                 <input
                   class="bp3-input"
@@ -3138,15 +3144,15 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
           </label>
         </div>
         <div
-          class="sc-bZQynM ibvdum"
+          class="sc-gzVnrw coBAaV"
         >
           <h3
-            class="bp3-heading sc-htoDjs egbcjZ"
+            class="bp3-heading sc-dnqmqq hlcOhg"
           >
             Contest Universe
           </h3>
           <div
-            class="sc-gzVnrw kvvweo"
+            class="sc-htoDjs GlcDy"
           >
             Select the jurisdictions where this contest appeared on the ballot.
           </div>
@@ -3157,7 +3163,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
               class="bp3-popover-target"
             >
               <button
-                class="bp3-button sc-ifAKCX zdCNs"
+                class="bp3-button sc-EHOje gmpgQN"
                 type="button"
               >
                 <span
@@ -3174,7 +3180,7 @@ exports[`Setup renders Target Contests stage with processing next stage 1`] = `
         class="sc-htpNat gtULUV"
       >
         <button
-          class="bp3-button sc-ifAKCX zdCNs"
+          class="bp3-button sc-EHOje gmpgQN"
           type="button"
         >
           <span

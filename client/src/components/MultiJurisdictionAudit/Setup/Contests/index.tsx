@@ -108,17 +108,13 @@ const Contests: React.FC<IProps> = ({
                     return (
                       /* eslint-disable react/no-array-index-key */
                       <Card key={i}>
-                        {i > 0 && (
-                          <FormSection>
-                            <hr />
-                          </FormSection>
-                        )}
                         <FormSection
                           label={`Contest ${
                             values.contests.length > 1 ? i + 1 : ''
                           } Info`}
                           description="Enter the name of the contest that will drive the audit."
                         >
+                          <br />
                           <label htmlFor={`contests[${i}].name`}>
                             Contest {values.contests.length > 1 ? i + 1 : ''}{' '}
                             Name
@@ -242,12 +238,14 @@ const Contests: React.FC<IProps> = ({
                           />
                         </FormSection>
                         {values.contests.length > 1 && (
-                          <FormButton
-                            intent="danger"
-                            onClick={() => contestsArrayHelpers.remove(i)}
-                          >
-                            Remove Contest {i + 1}
-                          </FormButton>
+                          <FormButtonBar right>
+                            <FormButton
+                              intent="danger"
+                              onClick={() => contestsArrayHelpers.remove(i)}
+                            >
+                              Remove Contest {i + 1}
+                            </FormButton>
+                          </FormButtonBar>
                         )}
                       </Card>
                     )
