@@ -5,7 +5,7 @@ import H2Title from '../H2Title'
 const StyledFormWrapper = styled.div`
   display: block;
   position: relative;
-  max-width: 20rem;
+  max-width: 30rem;
   text-align: left;
 `
 

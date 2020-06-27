@@ -6,7 +6,7 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
     data-testid="form-one"
   >
     <div
-      class="sc-bwzfXH hfheQC"
+      class="sc-bwzfXH jFbAHP"
     >
       <h2
         class="bp3-heading sc-bdVaJa ibVpPq"
@@ -19,7 +19,7 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
         Choose your state from the options below
         <br />
         <div
-          class="bp3-html-select sc-dnqmqq kLRTmU"
+          class="bp3-html-select sc-iwsKbI iYAkEx"
         >
           <select
             data-testid="state-field"
@@ -359,10 +359,10 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
         </div>
       </label>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <div
-          class="sc-gzVnrw kvvweo"
+          class="sc-htoDjs GlcDy"
         >
           Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
           <br />
@@ -377,7 +377,7 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
         </div>
       </div>
       <div
-        class="sc-bZQynM ibvdum"
+        class="sc-gzVnrw coBAaV"
       >
         <label
           class="bp3-file-input"
@@ -399,7 +399,7 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
       class="sc-htpNat gtULUV"
     >
       <button
-        class="bp3-button bp3-intent-primary sc-ifAKCX zdCNs"
+        class="bp3-button bp3-intent-primary sc-EHOje gmpgQN"
         type="submit"
       >
         <span

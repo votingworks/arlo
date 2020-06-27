@@ -6,12 +6,22 @@ const ButtonBar = styled.div`
   text-align: center;
 `
 
+const RightButtonBar = styled.div`
+  margin: 0;
+  text-align: right;
+`
+
 interface IProps {
+  right?: boolean
   children: ReactNode
 }
 
-const FormButtonBar: React.FC<IProps> = ({ children }: IProps) => {
-  return <ButtonBar>{children}</ButtonBar>
+const FormButtonBar: React.FC<IProps> = ({ children, right }: IProps) => {
+  return right ? (
+    <RightButtonBar>{children}</RightButtonBar>
+  ) : (
+    <ButtonBar>{children}</ButtonBar>
+  )
 }
 
 export default FormButtonBar

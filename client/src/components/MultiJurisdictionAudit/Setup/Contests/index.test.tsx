@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, waitFor, render } from '@testing-library/react'
+import { fireEvent, waitFor, render, screen } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { regexpEscape } from '../../../testUtilities'
@@ -146,8 +146,7 @@ describe('Audit Setup > Contests', () => {
     expect(container).toMatchSnapshot()
   })
 
-  it.skip('adds and removes contests', async () => {
-    // skip until feature is complete in backend
+  it('adds and removes contests', async () => {
     const { getByText, getAllByText, queryByText } = render(
       <Contests
         locked={false}
@@ -156,7 +155,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
-    fireEvent.click(getByText('Add another targeted contest'))
+    fireEvent.click(await screen.findByText('Add another targeted contest'))
 
     expect(
       getAllByText('Enter the name of the contest that will drive the audit.')

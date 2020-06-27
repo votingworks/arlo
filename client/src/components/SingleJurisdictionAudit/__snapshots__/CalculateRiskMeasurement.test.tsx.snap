@@ -6,7 +6,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
     data-testid="form-three-1"
   >
     <div
-      class="sc-jzJRlG dbOHBu"
+      class="sc-cSHVUG jgYzBX"
       id="qr-root"
     >
       <span
@@ -21,7 +21,7 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
     </div>
     <hr />
     <div
-      class="sc-ifAKCX dUfgxM"
+      class="sc-ifAKCX dOqzfM"
     >
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -106,13 +106,13 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
           1
         </div>
         <div
-          class="sc-VigVT gsoadH"
+          class="sc-jTzLTM dvnzHJ"
         >
           <div
-            class="sc-fjdhpX hUEYKL"
+            class="sc-jzJRlG kETAp"
           >
             <label
-              class="sc-jTzLTM nTHaA"
+              class="sc-fjdhpX ctsPJP"
               for="round-0-contest-0-choice-choice-1"
             >
               choice one
@@ -134,10 +134,10 @@ exports[`CalculateRiskMeasurement handles inputs 1`] = `
             </div>
           </div>
           <div
-            class="sc-fjdhpX hUEYKL"
+            class="sc-jzJRlG kETAp"
           >
             <label
-              class="sc-jTzLTM nTHaA"
+              class="sc-fjdhpX ctsPJP"
               for="round-0-contest-0-choice-choice-2"
             >
               choice two
@@ -205,7 +205,7 @@ Object {
         data-testid="form-three-1"
       >
         <div
-          class="sc-jzJRlG dbOHBu"
+          class="sc-cSHVUG jgYzBX"
           id="qr-root"
         >
           <span
@@ -220,7 +220,7 @@ Object {
         </div>
         <hr />
         <div
-          class="sc-ifAKCX dUfgxM"
+          class="sc-ifAKCX dOqzfM"
         >
           <h2
             class="bp3-heading sc-bxivhb jFEWwS"
@@ -297,13 +297,13 @@ Object {
               COMPLETE
             </h3>
             <div
-              class="sc-VigVT gsoadH"
+              class="sc-jTzLTM dvnzHJ"
             >
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                 >
                   Risk Limit: 
                 </label>
@@ -311,10 +311,10 @@ Object {
                 %
               </div>
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                 >
                   P-value: 
                 </label>
@@ -323,13 +323,13 @@ Object {
               </div>
             </div>
             <div
-              class="sc-VigVT gsoadH"
+              class="sc-jTzLTM dvnzHJ"
             >
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -352,10 +352,10 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -417,7 +417,7 @@ Object {
       data-testid="form-three-1"
     >
       <div
-        class="sc-jzJRlG dbOHBu"
+        class="sc-cSHVUG jgYzBX"
         id="qr-root"
       >
         <span
@@ -432,7 +432,7 @@ Object {
       </div>
       <hr />
       <div
-        class="sc-ifAKCX dUfgxM"
+        class="sc-ifAKCX dOqzfM"
       >
         <h2
           class="bp3-heading sc-bxivhb jFEWwS"
@@ -509,13 +509,13 @@ Object {
             COMPLETE
           </h3>
           <div
-            class="sc-VigVT gsoadH"
+            class="sc-jTzLTM dvnzHJ"
           >
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
               >
                 Risk Limit: 
               </label>
@@ -523,10 +523,10 @@ Object {
               %
             </div>
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
               >
                 P-value: 
               </label>
@@ -535,13 +535,13 @@ Object {
             </div>
           </div>
           <div
-            class="sc-VigVT gsoadH"
+            class="sc-jTzLTM dvnzHJ"
           >
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -564,10 +564,10 @@ Object {
               </div>
             </div>
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -686,7 +686,7 @@ Object {
         data-testid="form-three-1"
       >
         <div
-          class="sc-jzJRlG dbOHBu"
+          class="sc-cSHVUG jgYzBX"
           id="qr-root"
         >
           <span
@@ -701,7 +701,7 @@ Object {
         </div>
         <hr />
         <div
-          class="sc-ifAKCX dUfgxM"
+          class="sc-ifAKCX dOqzfM"
         >
           <h2
             class="bp3-heading sc-bxivhb jFEWwS"
@@ -778,13 +778,13 @@ Object {
               COMPLETE
             </h3>
             <div
-              class="sc-VigVT gsoadH"
+              class="sc-jTzLTM dvnzHJ"
             >
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                 >
                   Risk Limit: 
                 </label>
@@ -792,10 +792,10 @@ Object {
                 %
               </div>
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                 >
                   P-value: 
                 </label>
@@ -804,13 +804,13 @@ Object {
               </div>
             </div>
             <div
-              class="sc-VigVT gsoadH"
+              class="sc-jTzLTM dvnzHJ"
             >
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -833,10 +833,10 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -924,7 +924,7 @@ Object {
       data-testid="form-three-1"
     >
       <div
-        class="sc-jzJRlG dbOHBu"
+        class="sc-cSHVUG jgYzBX"
         id="qr-root"
       >
         <span
@@ -939,7 +939,7 @@ Object {
       </div>
       <hr />
       <div
-        class="sc-ifAKCX dUfgxM"
+        class="sc-ifAKCX dOqzfM"
       >
         <h2
           class="bp3-heading sc-bxivhb jFEWwS"
@@ -1016,13 +1016,13 @@ Object {
             COMPLETE
           </h3>
           <div
-            class="sc-VigVT gsoadH"
+            class="sc-jTzLTM dvnzHJ"
           >
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
               >
                 Risk Limit: 
               </label>
@@ -1030,10 +1030,10 @@ Object {
               %
             </div>
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
               >
                 P-value: 
               </label>
@@ -1042,13 +1042,13 @@ Object {
             </div>
           </div>
           <div
-            class="sc-VigVT gsoadH"
+            class="sc-jTzLTM dvnzHJ"
           >
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -1071,10 +1071,10 @@ Object {
               </div>
             </div>
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -1219,7 +1219,7 @@ Object {
         data-testid="form-three-1"
       >
         <div
-          class="sc-jzJRlG dbOHBu"
+          class="sc-cSHVUG jgYzBX"
           id="qr-root"
         >
           <span
@@ -1234,7 +1234,7 @@ Object {
         </div>
         <hr />
         <div
-          class="sc-ifAKCX dUfgxM"
+          class="sc-ifAKCX dOqzfM"
         >
           <h2
             class="bp3-heading sc-bxivhb jFEWwS"
@@ -1319,13 +1319,13 @@ Object {
               1
             </div>
             <div
-              class="sc-VigVT gsoadH"
+              class="sc-jTzLTM dvnzHJ"
             >
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -1347,10 +1347,10 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -1413,7 +1413,7 @@ Object {
       data-testid="form-three-1"
     >
       <div
-        class="sc-jzJRlG dbOHBu"
+        class="sc-cSHVUG jgYzBX"
         id="qr-root"
       >
         <span
@@ -1428,7 +1428,7 @@ Object {
       </div>
       <hr />
       <div
-        class="sc-ifAKCX dUfgxM"
+        class="sc-ifAKCX dOqzfM"
       >
         <h2
           class="bp3-heading sc-bxivhb jFEWwS"
@@ -1513,13 +1513,13 @@ Object {
             1
           </div>
           <div
-            class="sc-VigVT gsoadH"
+            class="sc-jTzLTM dvnzHJ"
           >
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -1541,10 +1541,10 @@ Object {
               </div>
             </div>
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -1664,7 +1664,7 @@ Object {
         data-testid="form-three-1"
       >
         <div
-          class="sc-jzJRlG dbOHBu"
+          class="sc-cSHVUG jgYzBX"
           id="qr-root"
         >
           <span
@@ -1679,7 +1679,7 @@ Object {
         </div>
         <hr />
         <div
-          class="sc-ifAKCX dUfgxM"
+          class="sc-ifAKCX dOqzfM"
         >
           <h2
             class="bp3-heading sc-bxivhb jFEWwS"
@@ -1764,13 +1764,13 @@ Object {
               1
             </div>
             <div
-              class="sc-VigVT gsoadH"
+              class="sc-jTzLTM dvnzHJ"
             >
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                   for="round-0-contest-0-choice-choice-1"
                 >
                   choice one
@@ -1792,10 +1792,10 @@ Object {
                 </div>
               </div>
               <div
-                class="sc-fjdhpX hUEYKL"
+                class="sc-jzJRlG kETAp"
               >
                 <label
-                  class="sc-jTzLTM nTHaA"
+                  class="sc-fjdhpX ctsPJP"
                   for="round-0-contest-0-choice-choice-2"
                 >
                   choice two
@@ -1870,7 +1870,7 @@ Object {
       data-testid="form-three-1"
     >
       <div
-        class="sc-jzJRlG dbOHBu"
+        class="sc-cSHVUG jgYzBX"
         id="qr-root"
       >
         <span
@@ -1885,7 +1885,7 @@ Object {
       </div>
       <hr />
       <div
-        class="sc-ifAKCX dUfgxM"
+        class="sc-ifAKCX dOqzfM"
       >
         <h2
           class="bp3-heading sc-bxivhb jFEWwS"
@@ -1970,13 +1970,13 @@ Object {
             1
           </div>
           <div
-            class="sc-VigVT gsoadH"
+            class="sc-jTzLTM dvnzHJ"
           >
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
                 for="round-0-contest-0-choice-choice-1"
               >
                 choice one
@@ -1998,10 +1998,10 @@ Object {
               </div>
             </div>
             <div
-              class="sc-fjdhpX hUEYKL"
+              class="sc-jzJRlG kETAp"
             >
               <label
-                class="sc-jTzLTM nTHaA"
+                class="sc-fjdhpX ctsPJP"
                 for="round-0-contest-0-choice-choice-2"
               >
                 choice two
@@ -2130,7 +2130,7 @@ exports[`CalculateRiskMeasurement renders online mode progress bar 1`] = `
     data-testid="form-three-1"
   >
     <div
-      class="sc-jzJRlG dbOHBu"
+      class="sc-cSHVUG jgYzBX"
       id="qr-root"
     >
       <span
@@ -2145,7 +2145,7 @@ exports[`CalculateRiskMeasurement renders online mode progress bar 1`] = `
     </div>
     <hr />
     <div
-      class="sc-ifAKCX dUfgxM"
+      class="sc-ifAKCX dOqzfM"
     >
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -2294,7 +2294,7 @@ exports[`CalculateRiskMeasurement renders online mode progress bar in multiple r
     data-testid="form-three-1"
   >
     <div
-      class="sc-jzJRlG dbOHBu"
+      class="sc-cSHVUG jgYzBX"
       id="qr-root"
     >
       <span
@@ -2327,7 +2327,7 @@ exports[`CalculateRiskMeasurement renders online mode progress bar in multiple r
     </div>
     <hr />
     <div
-      class="sc-ifAKCX dUfgxM"
+      class="sc-ifAKCX dOqzfM"
     >
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -2445,7 +2445,7 @@ exports[`CalculateRiskMeasurement renders online mode progress bar in multiple r
   >
     <hr />
     <div
-      class="sc-ifAKCX dUfgxM"
+      class="sc-ifAKCX dOqzfM"
     >
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"

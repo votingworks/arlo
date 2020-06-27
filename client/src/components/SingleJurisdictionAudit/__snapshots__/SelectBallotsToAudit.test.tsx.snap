@@ -8,7 +8,7 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
   >
     <hr />
     <div
-      class="sc-ifAKCX dUfgxM"
+      class="sc-ifAKCX dOqzfM"
     >
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -31,7 +31,7 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-jTzLTM dgTHzL"
+            class="bp3-html-select sc-fjdhpX jqDqiz"
           >
             <select
               field="[object Object]"
@@ -111,16 +111,16 @@ exports[`SelectBallotsToAudit changes number of audits 1`] = `
           Audit boards will enter data about each ballot:
         </div>
         <div
-          class="sc-fjdhpX kFhZUw"
+          class="sc-jzJRlG Jpdxv"
         >
           <div
-            class="sc-jzJRlG jYRjzo"
+            class="sc-cSHVUG dyClCA"
           />
           <div
-            class="sc-jzJRlG jYRjzo"
+            class="sc-cSHVUG dyClCA"
           />
           <div
-            class="sc-jzJRlG jYRjzo"
+            class="sc-cSHVUG dyClCA"
           />
         </div>
       </div>
@@ -179,7 +179,7 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
   >
     <hr />
     <div
-      class="sc-ifAKCX dUfgxM"
+      class="sc-ifAKCX dOqzfM"
     >
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -202,7 +202,7 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-jTzLTM dgTHzL"
+            class="bp3-html-select sc-fjdhpX jqDqiz"
           >
             <select
               field="[object Object]"
@@ -282,13 +282,13 @@ exports[`SelectBallotsToAudit changes number of audits 2`] = `
           Audit boards will enter data about each ballot:
         </div>
         <div
-          class="sc-fjdhpX kFhZUw"
+          class="sc-jzJRlG Jpdxv"
         >
           <div
-            class="sc-jzJRlG jYRjzo"
+            class="sc-cSHVUG dyClCA"
           />
           <div
-            class="sc-jzJRlG jYRjzo"
+            class="sc-cSHVUG dyClCA"
           />
         </div>
       </div>
@@ -347,7 +347,7 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
   >
     <hr />
     <div
-      class="sc-ifAKCX dUfgxM"
+      class="sc-ifAKCX dOqzfM"
     >
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -370,7 +370,7 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-jTzLTM dgTHzL"
+            class="bp3-html-select sc-fjdhpX jqDqiz"
           >
             <select
               field="[object Object]"
@@ -450,10 +450,10 @@ exports[`SelectBallotsToAudit renders correctly 1`] = `
           Audit boards will enter data about each ballot:
         </div>
         <div
-          class="sc-fjdhpX kFhZUw"
+          class="sc-jzJRlG Jpdxv"
         >
           <div
-            class="sc-jzJRlG jYRjzo"
+            class="sc-cSHVUG dyClCA"
           />
         </div>
       </div>
@@ -512,7 +512,7 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
   >
     <hr />
     <div
-      class="sc-ifAKCX dUfgxM"
+      class="sc-ifAKCX dOqzfM"
     >
       <h2
         class="bp3-heading sc-bxivhb jFEWwS"
@@ -535,7 +535,7 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
         >
           Set the number of audit boards you wish to use.
           <div
-            class="bp3-html-select sc-jTzLTM dgTHzL"
+            class="bp3-html-select sc-fjdhpX jqDqiz"
           >
             <select
               field="[object Object]"
@@ -615,10 +615,10 @@ exports[`SelectBallotsToAudit renders correctly 2`] = `
           Audit boards will enter data about each ballot:
         </div>
         <div
-          class="sc-fjdhpX kFhZUw"
+          class="sc-jzJRlG Jpdxv"
         >
           <div
-            class="sc-jzJRlG jYRjzo"
+            class="sc-cSHVUG dyClCA"
           />
         </div>
       </div>

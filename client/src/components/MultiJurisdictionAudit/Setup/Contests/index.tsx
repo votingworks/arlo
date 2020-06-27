@@ -23,6 +23,7 @@ import useContests from '../../useContests'
 import useJurisdictions from '../../useJurisdictions'
 import { IContest, ICandidate } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
+import Card from '../../../Atoms/SpacedCard'
 
 interface IProps {
   isTargeted: boolean
@@ -96,7 +97,7 @@ const Contests: React.FC<IProps> = ({
           >
             <FieldArray
               name="contests"
-              render={() => (
+              render={contestsArrayHelpers => (
                 <>
                   {values.contests.map((contest: IContest, i: number) => {
                     const jurisdictionOptions = jurisdictions.map(j => ({
@@ -106,24 +107,16 @@ const Contests: React.FC<IProps> = ({
                     }))
                     return (
                       /* eslint-disable react/no-array-index-key */
-                      <React.Fragment key={i}>
-                        {i > 0 && (
-                          /* istanbul ignore next */
-                          <FormSection>
-                            <hr />
-                          </FormSection>
-                        )}
+                      <Card key={i}>
                         <FormSection
                           label={`Contest ${
-                            /* istanbul ignore next */
                             values.contests.length > 1 ? i + 1 : ''
                           } Info`}
                           description="Enter the name of the contest that will drive the audit."
                         >
+                          <br />
                           <label htmlFor={`contests[${i}].name`}>
-                            Contest{' '}
-                            {/* istanbul ignore next */
-                            values.contests.length > 1 ? i + 1 : ''}{' '}
+                            Contest {values.contests.length > 1 ? i + 1 : ''}{' '}
                             Name
                             <Field
                               id={`contests[${i}].name`}
@@ -157,14 +150,6 @@ const Contests: React.FC<IProps> = ({
                               component={FormField}
                             />
                           </label>
-                          {/* values.contests.length > 1 &&
-                            !audit.contests.length && (
-                              <Action
-                                onClick={() => contestsArrayHelpers.remove(i)}
-                              >
-                                Remove Contest {i + 1}
-                              </Action>
-                            ) */}
                         </FormSection>
                         <FieldArray
                           name={`contests[${i}].choices`}
@@ -252,21 +237,30 @@ const Contests: React.FC<IProps> = ({
                             contestIndex={i}
                           />
                         </FormSection>
-                      </React.Fragment>
+                        {values.contests.length > 1 && (
+                          <FormButtonBar right>
+                            <FormButton
+                              intent="danger"
+                              onClick={() => contestsArrayHelpers.remove(i)}
+                            >
+                              Remove Contest {i + 1}
+                            </FormButton>
+                          </FormButtonBar>
+                        )}
+                      </Card>
                     )
                   })}
-                  {/* <FormButtonBar>
-                    {!audit.contests.length && (
-                      <FormButton
-                        type="button"
-                        onClick={() =>
-                          contestsArrayHelpers.push({ ...contestValues[0] })
-                        }
-                      >
-                        Add another isTargeted contest
-                      </FormButton>
-                    )}
-                  </FormButtonBar> */}
+                  <FormButtonBar>
+                    <FormButton
+                      type="button"
+                      onClick={() =>
+                        contestsArrayHelpers.push({ ...contestValues[0] })
+                      }
+                    >
+                      Add another {isTargeted ? 'targeted' : 'opportunistic'}{' '}
+                      contest
+                    </FormButton>
+                  </FormButtonBar>
                 </>
               )}
             />
