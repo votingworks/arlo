@@ -1,6 +1,5 @@
 import datetime
 import uuid
-import pytest
 from sqlalchemy import insert
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -76,7 +75,7 @@ def test_session_stuck():
         # using the models here because doing so makes sqlalchemy notice the
         # conflict before it even gets to the db.
         db_session.execute(
-            insert(File.__table__).values(
+            insert(File.__table__).values(  # pylint: disable=no-member
                 id=file.id,
                 name="Test File2",
                 contents="abcdefg",

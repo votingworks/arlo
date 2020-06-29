@@ -19,7 +19,7 @@ def process_file(session: Session, file: File, callback: Callable[[], None]) -> 
     # a way that it must not have been set before.
     processing_started_at = datetime.datetime.utcnow()
     result = session.execute(
-        update(File.__table__)
+        update(File.__table__)  # pylint: disable=no-member
         .where(File.id == file.id)
         .where(File.processing_started_at.is_(None))
         .values(processing_started_at=processing_started_at)

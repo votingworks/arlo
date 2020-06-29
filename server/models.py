@@ -1,16 +1,14 @@
 import enum
+from typing import Type
 from datetime import datetime as dt
+from werkzeug.exceptions import NotFound
 from sqlalchemy import *  # pylint: disable=wildcard-import
 from sqlalchemy.orm import relationship, backref, validates
-from sqlalchemy.ext.declarative import declared_attr
-from .database import Base
+from .database import Base  # pylint: disable=cyclic-import
 
 
 class BaseModel(Base):
-    @declared_attr
-    def __tablename__(cls):
-        return cls.__name__.lower()
-
+    __abstract__ = True
     created_at = Column(DateTime, default=dt.utcnow, nullable=False)
     updated_at = Column(DateTime, default=dt.utcnow, onupdate=dt.utcnow, nullable=False)
 
@@ -53,6 +51,7 @@ class Election(BaseModel):
     organization_id = Column(
         String(200), ForeignKey("organization.id", ondelete="cascade"),
     )
+    organization = relationship("Organization", back_populates="elections")
 
     frozen_at = Column(DateTime)
 
@@ -183,6 +182,8 @@ class Batch(BaseModel):
     jurisdiction_id = Column(
         String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
     )
+    jurisdiction = relationship("Jurisdiction", back_populates="batches")
+
     name = Column(String(200), nullable=False)
     num_ballots = Column(Integer, nullable=False)
     storage_location = Column(String(200))
@@ -200,6 +201,8 @@ class Contest(BaseModel):
     election_id = Column(
         String(200), ForeignKey("election.id", ondelete="cascade"), nullable=False
     )
+    election = relationship("Election", back_populates="contests")
+
     name = Column(String(200), nullable=False)
     # is_targeted = True for targeted contests, False for opportunistic contests
     is_targeted = Column(Boolean, nullable=False)
@@ -276,11 +279,14 @@ class Affiliation(str, enum.Enum):
 
 class AuditBoard(BaseModel):
     id = Column(String(200), primary_key=True)
+
     jurisdiction_id = Column(
         String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
     )
-    jurisdiction = relationship("Jurisdiction", back_populates="audit_board")
+    jurisdiction = relationship("Jurisdiction", back_populates="audit_boards")
+
     round_id = Column(String(200), ForeignKey("round.id", ondelete="cascade"))
+    round = relationship("Round", back_populates="audit_boards")
 
     name = Column(String(200))
     member_1 = Column(String(200))
@@ -306,6 +312,8 @@ class Round(BaseModel):
     election_id = Column(
         String(200), ForeignKey("election.id", ondelete="cascade"), nullable=False
     )
+    election = relationship("Election", back_populates="rounds")
+
     round_num = Column(Integer, nullable=False)
     ended_at = Column(DateTime)
 
@@ -378,6 +386,8 @@ class SampledBallotDraw(BaseModel):
     round_id = Column(
         String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
+    round = relationship("Round", back_populates="sampled_ballot_draws")
+
     ticket_number = Column(String(200), nullable=False)
 
     __table_args__ = (PrimaryKeyConstraint("ballot_id", "round_id", "ticket_number"),)
@@ -437,6 +447,8 @@ class RoundContest(BaseModel):
     round_id = Column(
         String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
+    round = relationship("Round", back_populates="round_contests")
+
     contest_id = Column(
         String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False,
     )
@@ -474,6 +486,8 @@ class RoundContestResult(BaseModel):
         ForeignKey("contest_choice.id", ondelete="cascade"),
         nullable=False,
     )
+    contest_choice = relationship("ContestChoice", back_populates="results")
+
     result = Column(Integer, nullable=False)
 
 
@@ -555,3 +569,10 @@ class USState(str, enum.Enum):
     ArmedForcesEurope = "AE"
     ArmedForcesMiddleEast = "AE"
     ArmedForcesPacific = "AP"
+
+
+def get_or_404(model: Type[Base], primary_key: str):
+    instance = model.query.get(primary_key)
+    if instance:
+        return instance
+    raise NotFound(f"{model.__class__.__name__} {primary_key} not found")

@@ -1,5 +1,5 @@
 from sqlalchemy_utils import database_exists, create_database
-from server.database import engine, Base
+from server.database import engine, init_db
 
 if __name__ == "__main__":
     print(f"database: {engine.url}")
@@ -13,4 +13,4 @@ if __name__ == "__main__":
         pass
 
     print("creating tables…")
-    Base.metadata.create_all()
+    init_db()

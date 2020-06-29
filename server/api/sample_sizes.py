@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, Optional
+from typing import Dict
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 

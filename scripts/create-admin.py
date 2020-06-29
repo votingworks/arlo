@@ -1,5 +1,4 @@
 # pylint: disable=invalid-name
-# type: ignore
 import sys, uuid
 
 from server.models import User, AuditAdministration

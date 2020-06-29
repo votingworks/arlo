@@ -92,7 +92,7 @@ def assign_sampled_ballots(
 @with_jurisdiction_access
 def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round_id: str):
     json_audit_boards = request.get_json()
-    round = Round.query.get_or_404(round_id)
+    round = get_or_404(Round, round_id)
     validate_audit_boards(json_audit_boards, election, jurisdiction, round)
 
     audit_boards = [
@@ -178,7 +178,7 @@ def list_audit_boards(
     jurisdiction: Jurisdiction,
     round_id: str,
 ):
-    Round.query.get_or_404(round_id)
+    get_or_404(Round, round_id)
     audit_boards = (
         AuditBoard.query.filter_by(jurisdiction_id=jurisdiction.id, round_id=round_id)
         .order_by(AuditBoard.name)

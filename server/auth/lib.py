@@ -174,7 +174,7 @@ def with_election_access(route: Callable):
                 f"expected 'election_id' in kwargs but got: {kwargs}"
             )  # pragma: no cover
 
-        election = Election.query.get_or_404(kwargs.pop("election_id"))
+        election = get_or_404(Election, kwargs.pop("election_id"))
 
         require_audit_admin_for_organization(election.organization_id)
 
@@ -206,8 +206,8 @@ def with_jurisdiction_access(route: Callable):
                     f"expected '{key}' in kwargs but got: {kwargs}"
                 )  # pragma: no cover
 
-        election = Election.query.get_or_404(kwargs.pop("election_id"))
-        jurisdiction = Jurisdiction.query.get_or_404(kwargs.pop("jurisdiction_id"))
+        election = get_or_404(Election, kwargs.pop("election_id"))
+        jurisdiction = get_or_404(Jurisdiction, kwargs.pop("jurisdiction_id"))
 
         require_jurisdiction_admin_for_jurisdiction(jurisdiction.id, election.id)
 
@@ -245,10 +245,10 @@ def with_audit_board_access(route: Callable):
                     f"expected '{key}' in kwargs but got: {kwargs}"
                 )  # pragma: no cover
 
-        election = Election.query.get_or_404(kwargs.pop("election_id"))
-        jurisdiction = Jurisdiction.query.get_or_404(kwargs.pop("jurisdiction_id"))
-        round = Round.query.get_or_404(kwargs.pop("round_id"))
-        audit_board = AuditBoard.query.get_or_404(kwargs.pop("audit_board_id"))
+        election = get_or_404(Election, kwargs.pop("election_id"))
+        jurisdiction = get_or_404(Jurisdiction, kwargs.pop("jurisdiction_id"))
+        round = get_or_404(Round, kwargs.pop("round_id"))
+        audit_board = get_or_404(AuditBoard, kwargs.pop("audit_board_id"))
 
         require_audit_board_logged_in(audit_board, election.id, jurisdiction, round.id)
 

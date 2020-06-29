@@ -91,7 +91,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
 )
 @with_jurisdiction_access
 def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round_id: str):
-    round = Round.query.get_or_404(round_id)
+    round = get_or_404(Round, round_id)
     retrieval_list_csv = ballot_retrieval_list(jurisdiction, round)
     return csv_response(
         retrieval_list_csv,
@@ -150,7 +150,7 @@ def list_ballots_for_jurisdiction(
     jurisdiction: Jurisdiction,
     round_id: str,
 ):
-    Round.query.get_or_404(round_id)
+    get_or_404(Round, round_id)
     ballots = (
         SampledBallot.query.join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)

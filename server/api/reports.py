@@ -1,5 +1,5 @@
 import io, csv
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -9,15 +9,15 @@ from ..util.isoformat import isoformat
 from ..util.group_by import group_by
 
 
-def pretty_affiliation(affiliation: Affiliation) -> str:
-    mapping = {
+def pretty_affiliation(affiliation: Optional[str]) -> str:
+    mapping: Dict[str, str] = {
         Affiliation.DEMOCRAT: "Democrat",
         Affiliation.REPUBLICAN: "Republican",
         Affiliation.LIBERTARIAN: "Libertarian",
         Affiliation.INDEPENDENT: "Independent",
         Affiliation.OTHER: "Other",
     }
-    return mapping.get(affiliation, "")
+    return mapping.get(affiliation or "", "")
 
 
 def pretty_boolean(boolean: bool) -> str:
@@ -135,13 +135,9 @@ def write_audit_boards(report, election: Election):
                         jurisdiction.name,
                         audit_board.name,
                         audit_board.member_1,
-                        pretty_affiliation(
-                            Affiliation(audit_board.member_1_affiliation)
-                        ),
+                        pretty_affiliation(audit_board.member_1_affiliation),
                         audit_board.member_2,
-                        pretty_affiliation(
-                            Affiliation(audit_board.member_2_affiliation)
-                        ),
+                        pretty_affiliation(audit_board.member_2_affiliation),
                     ]
                 )
 

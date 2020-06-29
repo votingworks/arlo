@@ -1,6 +1,6 @@
 import sys
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from server.database import engine, Base
+from server.database import engine, init_db
 
 if __name__ == "__main__":
     # a simple flag to skip DB creation
@@ -19,4 +19,4 @@ if __name__ == "__main__":
         create_database(engine.url)
 
     print("creating tables…")
-    Base.metadata.create_all()
+    init_db()
