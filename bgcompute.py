@@ -1,7 +1,7 @@
 import time
 
 from arlo_server import db
-from arlo_server.models import Election, File, Jurisdiction, RoundContest
+from arlo_server.models import Election, File, Jurisdiction, RoundContest, Round
 from arlo_server.routes import compute_sample_sizes
 from arlo_server.ballot_manifest import process_ballot_manifest_file
 from util.jurisdiction_bulk_update import process_jurisdictions_file
@@ -15,7 +15,13 @@ def bgcompute():
 
 def bgcompute_compute_round_contests_sample_sizes():
     # round contests that don't have sample_size_options
-    round_contests = RoundContest.query.filter_by(sample_size_options=None)
+    round_contests = (
+        RoundContest.query.filter_by(sample_size_options=None)
+        .join(Round)
+        .join(Election)
+        .filter_by(is_multi_jurisdiction=False)
+        .all()
+    )
 
     for round_contest in round_contests:
         try:
