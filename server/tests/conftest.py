@@ -195,7 +195,7 @@ def round_2_id(
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ) -> str:
-    run_audit_round(round_1_id, contest_ids[0], 0.5)
+    run_audit_round(round_1_id, contest_ids[0], 0.55)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)

@@ -124,7 +124,7 @@ def test_rounds_create_two(
         round_id=rounds["rounds"][1]["id"]
     ).all()
     # Check that we automatically select the 90% prob sample size
-    assert len(ballot_draws) == 395
+    assert len(ballot_draws) == 539
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
     sampled_jurisdictions = {
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
