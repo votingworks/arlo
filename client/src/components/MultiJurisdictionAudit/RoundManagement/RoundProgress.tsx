@@ -23,7 +23,7 @@ const RoundProgress = ({
   auditBoards: IAuditBoard[]
   round: IRound
 }) => {
-  if (!auditBoards) return null
+  if (!auditBoards.length) return null
   const sum = (ns: number[]) => ns.reduce((a, b) => a + b)
   const auditedBallots = sum(
     auditBoards.map(ab => ab.currentRoundStatus.numAuditedBallots)
