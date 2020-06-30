@@ -352,7 +352,7 @@ export const auditBoardMocks: {
     {
       id: 'audit-board-1',
       name: 'Audit Board #01',
-      signedOffAt: '',
+      signedOffAt: null,
       passphrase: 'happy rebel base',
       currentRoundStatus: {
         numSampledBallots: 30,
@@ -364,7 +364,7 @@ export const auditBoardMocks: {
     {
       id: 'audit-board-1',
       name: 'Audit Board #01',
-      signedOffAt: '',
+      signedOffAt: null,
       passphrase: 'happy rebel base',
       currentRoundStatus: {
         numSampledBallots: 30,
@@ -376,7 +376,7 @@ export const auditBoardMocks: {
     {
       id: 'audit-board-1',
       name: 'Audit Board #01',
-      signedOffAt: '',
+      signedOffAt: null,
       passphrase: 'happy randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
@@ -388,7 +388,7 @@ export const auditBoardMocks: {
     {
       id: 'audit-board-1',
       name: 'Audit Board #01',
-      signedOffAt: '',
+      signedOffAt: null,
       passphrase: 'happy randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
@@ -398,7 +398,7 @@ export const auditBoardMocks: {
     {
       id: 'audit-board-2',
       name: 'Audit Board #02',
-      signedOffAt: '',
+      signedOffAt: null,
       passphrase: 'happy secondary randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
@@ -410,7 +410,7 @@ export const auditBoardMocks: {
     {
       id: 'audit-board-1',
       name: 'Audit Board #01',
-      signedOffAt: '',
+      signedOffAt: null,
       passphrase: 'happy randomness',
       currentRoundStatus: {
         numSampledBallots: 0,
@@ -420,7 +420,7 @@ export const auditBoardMocks: {
     {
       id: 'audit-board-2',
       name: 'Audit Board #02',
-      signedOffAt: '',
+      signedOffAt: null,
       passphrase: 'happy secondary randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
@@ -432,7 +432,7 @@ export const auditBoardMocks: {
     {
       id: 'audit-board-1',
       name: 'Audit Board #01',
-      signedOffAt: '',
+      signedOffAt: null,
       passphrase: 'happy randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
