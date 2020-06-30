@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
-import { Formik, FormikProps, Form, getIn } from 'formik'
+import { Formik, FormikProps, Form, getIn, Field } from 'formik'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
@@ -11,7 +11,7 @@ import useAuditSettings from '../../useAuditSettings'
 import useContests from '../../useContests'
 import { IContest, ISampleSizeOption } from '../../../../types'
 import useJurisdictions, { FileProcessingStatus } from '../../useJurisdictions'
-import { api, checkAndToast } from '../../../utilities'
+import { api, checkAndToast, testNumber } from '../../../utilities'
 import FormSection, {
   FormSectionDescription,
   FormSectionLabel,
@@ -21,6 +21,7 @@ import SettingsTable from './SettingsTable'
 import { isSetupComplete } from '../../StatusBox'
 import useJurisdictionFile from '../Participants/useJurisdictionFile'
 import ConfirmLaunch from './ConfirmLaunch'
+import FormField from '../../../Atoms/Form/FormField'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -205,10 +206,15 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       <Formik
         initialValues={{
           sampleSize: sampleSizeOptions.length ? sampleSizeOptions[0].size : '',
+          customSampleSize: '',
         }}
         enableReinitialize
         onSubmit={v => {
-          setSampleSize(v.sampleSize)
+          if (v.sampleSize === 'custom') {
+            setSampleSize(v.customSampleSize)
+          } else {
+            setSampleSize(v.sampleSize)
+          }
           setIsConfirmDialogOpen(true)
         }}
       >
@@ -247,6 +253,20 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                         </Radio>
                       )
                     })}
+                    <Radio value="custom">
+                      Enter your own sample size (not recommended)
+                    </Radio>
+                    {getIn(values, 'sampleSize') === 'custom' && (
+                      <Field
+                        component={FormField}
+                        name="customSampleSize"
+                        type="text"
+                        validate={testNumber(
+                          Number(targetedContests[0].totalBallotsCast),
+                          'Must be less than or equal to the total number of ballots in targeted contests'
+                        )}
+                      />
+                    )}
                   </RadioGroup>
                 </FormSectionDescription>
               </FormSection>

@@ -213,6 +213,19 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
               125 samples
                (90% chance of reaching risk limit and completing the audit in one round)
             </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize"
+                type="radio"
+                value="custom"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Enter your own sample size (not recommended)
+            </label>
           </div>
         </div>
       </div>
@@ -459,6 +472,19 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
               
               125 samples
                (90% chance of reaching risk limit and completing the audit in one round)
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize"
+                type="radio"
+                value="custom"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Enter your own sample size (not recommended)
             </label>
           </div>
         </div>
@@ -707,6 +733,19 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
               125 samples
                (90% chance of reaching risk limit and completing the audit in one round)
             </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize"
+                type="radio"
+                value="custom"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Enter your own sample size (not recommended)
+            </label>
           </div>
         </div>
       </div>
@@ -952,6 +991,19 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
               125 samples
                (90% chance of reaching risk limit and completing the audit in one round)
             </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize"
+                type="radio"
+                value="custom"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Enter your own sample size (not recommended)
+            </label>
           </div>
         </div>
       </div>
@@ -1196,6 +1248,19 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
               
               125 samples
                (90% chance of reaching risk limit and completing the audit in one round)
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize"
+                type="radio"
+                value="custom"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Enter your own sample size (not recommended)
             </label>
           </div>
         </div>
@@ -1443,6 +1508,19 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
               
               125 samples
                (90% chance of reaching risk limit and completing the audit in one round)
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="sampleSize"
+                type="radio"
+                value="custom"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Enter your own sample size (not recommended)
             </label>
           </div>
         </div>
