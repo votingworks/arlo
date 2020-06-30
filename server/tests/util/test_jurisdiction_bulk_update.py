@@ -37,7 +37,6 @@ def test_first_update(session):
     ]
 
     assert User.query.count() == 1
-    print(Jurisdiction.query.all())
     assert Jurisdiction.query.count() == 1
     assert JurisdictionAdministration.query.count() == 1
 
