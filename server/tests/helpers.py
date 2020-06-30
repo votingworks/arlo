@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Any, List, Union, Tuple
 from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
-from sqlalchemy.orm import joinedload
 
 from ..auth.lib import (
     UserType,
@@ -18,13 +17,13 @@ SAMPLE_SIZE_ROUND_1 = 119  # Bravo sample size
 BALLOTS_ROUND_1 = 110
 J1_SAMPLES_ROUND_1 = 81
 J1_BALLOTS_ROUND_1 = 75
-J1_SAMPLES_ROUND_2 = 281  # 90% probability sample size
-J1_BALLOTS_ROUND_2 = 234
+J1_SAMPLES_ROUND_2 = 257  # 90% probability sample size
+J1_BALLOTS_ROUND_2 = 216
 AB1_SAMPLES_ROUND_1 = 54
 AB1_BALLOTS_ROUND_1 = 50
 AB2_BALLOTS_ROUND_1 = 25
-AB1_BALLOTS_ROUND_2 = 151
-AB2_BALLOTS_ROUND_2 = 38
+AB1_BALLOTS_ROUND_2 = 137
+AB2_BALLOTS_ROUND_2 = 43
 
 DEFAULT_AA_EMAIL = "admin@example.com"
 DEFAULT_JA_EMAIL = "jurisdiction.admin@example.com"
@@ -161,21 +160,24 @@ def audit_ballot(
 
 
 def run_audit_round(round_id: str, contest_id: str, vote_ratio: float):
-    round = Round.query.options(
-        joinedload(Round.sampled_ballot_draws).joinedload(
-            SampledBallotDraw.sampled_ballot
-        )
-    ).get(round_id)
+    round = Round.query.get(round_id)
     contest = Contest.query.get(contest_id)
-    winner_votes = int(vote_ratio * len(round.sampled_ballot_draws))
-    for ballot_draw in round.sampled_ballot_draws[:winner_votes]:
+    ballot_draws = (
+        SampledBallotDraw.query.filter_by(round_id=round_id)
+        .join(SampledBallot)
+        .join(Batch)
+        .order_by(Batch.name, SampledBallot.ballot_position)
+        .all()
+    )
+    winner_votes = int(vote_ratio * len(ballot_draws))
+    for ballot_draw in ballot_draws[:winner_votes]:
         audit_ballot(
             ballot_draw.sampled_ballot,
             contest.id,
             Interpretation.VOTE,
             [contest.choices[0]],
         )
-    for ballot_draw in round.sampled_ballot_draws[winner_votes:]:
+    for ballot_draw in ballot_draws[winner_votes:]:
         audit_ballot(
             ballot_draw.sampled_ballot,
             contest.id,
