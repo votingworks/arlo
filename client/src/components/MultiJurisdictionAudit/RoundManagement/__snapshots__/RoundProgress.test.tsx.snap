@@ -1,0 +1,256 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RoundProgress renders complete round 1`] = `
+<div>
+  <h2
+    class="bp3-heading sc-bdVaJa ibVpPq"
+  >
+    Round 
+    1
+     Progress
+  </h2>
+  <div
+    class="sc-bwzfXH eeIcAa"
+  >
+    <span>
+      30
+       of 
+      30
+       ballots audited
+       
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary bp3-no-animation"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 100%;"
+      />
+    </div>
+  </div>
+  <div
+    class="sc-htpNat jxYgaV"
+  >
+    <span>
+      Audit Board #01: 30 of 30 ballots audited 
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary bp3-no-animation"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 100%;"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RoundProgress renders incomplete round with an audit board 1`] = `
+<div>
+  <h2
+    class="bp3-heading sc-bdVaJa ibVpPq"
+  >
+    Round 
+    1
+     Progress
+  </h2>
+  <div
+    class="sc-bwzfXH eeIcAa"
+  >
+    <span>
+      0
+       of 
+      30
+       ballots audited
+       
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 0%;"
+      />
+    </div>
+  </div>
+  <div
+    class="sc-htpNat jxYgaV"
+  >
+    <span>
+      Audit Board #01: 0 of 30 ballots audited 
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 0%;"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RoundProgress renders incomplete round with an audit board with no ballots sampled 1`] = `
+<div>
+  <h2
+    class="bp3-heading sc-bdVaJa ibVpPq"
+  >
+    Round 
+    1
+     Progress
+  </h2>
+  <div
+    class="sc-bwzfXH eeIcAa"
+  >
+    <span>
+      0
+       of 
+      30
+       ballots audited
+       
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 0%;"
+      />
+    </div>
+  </div>
+  <div
+    class="sc-htpNat jxYgaV"
+  >
+    <span>
+      Audit Board #01
+      : no ballots to audit
+    </span>
+  </div>
+  <div
+    class="sc-htpNat jxYgaV"
+  >
+    <span>
+      Audit Board #02: 0 of 30 ballots audited 
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 0%;"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RoundProgress renders incomplete round with auditing in progress 1`] = `
+<div>
+  <h2
+    class="bp3-heading sc-bdVaJa ibVpPq"
+  >
+    Round 
+    1
+     Progress
+  </h2>
+  <div
+    class="sc-bwzfXH eeIcAa"
+  >
+    <span>
+      15
+       of 
+      30
+       ballots audited
+       
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 50%;"
+      />
+    </div>
+  </div>
+  <div
+    class="sc-htpNat jxYgaV"
+  >
+    <span>
+      Audit Board #01: 15 of 30 ballots audited 
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 50%;"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`RoundProgress renders incomplete round with no audit boards 1`] = `<div />`;
+
+exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
+<div>
+  <h2
+    class="bp3-heading sc-bdVaJa ibVpPq"
+  >
+    Round 
+    1
+     Progress
+  </h2>
+  <div
+    class="sc-bwzfXH eeIcAa"
+  >
+    <span>
+      0
+       of 
+      60
+       ballots audited
+       
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 0%;"
+      />
+    </div>
+  </div>
+  <div
+    class="sc-htpNat jxYgaV"
+  >
+    <span>
+      Audit Board #01: 0 of 30 ballots audited 
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 0%;"
+      />
+    </div>
+  </div>
+  <div
+    class="sc-htpNat jxYgaV"
+  >
+    <span>
+      Audit Board #02: 0 of 30 ballots audited 
+    </span>
+    <div
+      class="bp3-progress-bar bp3-intent-primary"
+    >
+      <div
+        class="bp3-progress-meter"
+        style="width: 0%;"
+      />
+    </div>
+  </div>
+</div>
+`;

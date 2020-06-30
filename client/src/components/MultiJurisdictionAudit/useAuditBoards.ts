@@ -11,7 +11,7 @@ export interface IAuditBoardMember {
 export interface IAuditBoard {
   id: string
   name: string
-  signedOffAt: string
+  signedOffAt: string | null
   passphrase: string
   currentRoundStatus: {
     numSampledBallots: number
