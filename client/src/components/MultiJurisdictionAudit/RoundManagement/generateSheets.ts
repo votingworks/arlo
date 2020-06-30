@@ -71,7 +71,7 @@ export const downloadPlaceholders = async (
   }
 }
 
-export const downloadDataEntry = (auditBoards: IAuditBoard[]): void => {
+export const downloadDataEntry = (auditBoards: IAuditBoard[]): string => {
   const auditBoardsWithoutBallots: string[] = []
   const auditBoardCreds = new jsPDF({ format: 'letter' })
   auditBoards.forEach((board, i) => {
@@ -117,4 +117,5 @@ export const downloadDataEntry = (auditBoards: IAuditBoard[]): void => {
   }
   auditBoardCreds.autoPrint()
   auditBoardCreds.save(`Audit Boards Credentials for Data Entry.pdf`)
+  return auditBoardCreds.output('dataurlstring')
 }
