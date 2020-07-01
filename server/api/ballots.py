@@ -7,6 +7,7 @@ from werkzeug.exceptions import BadRequest, NotFound
 
 from . import api
 from ..auth import with_jurisdiction_access, with_audit_board_access
+from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_download import csv_response, election_timestamp_name
 from ..util.jsonschema import JSONDict, validate
@@ -90,7 +91,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
 )
 @with_jurisdiction_access
 def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round_id: str):
-    round = Round.query.get_or_404(round_id)
+    round = get_or_404(Round, round_id)
     retrieval_list_csv = ballot_retrieval_list(jurisdiction, round)
     return csv_response(
         retrieval_list_csv,
@@ -149,7 +150,7 @@ def list_ballots_for_jurisdiction(
     jurisdiction: Jurisdiction,
     round_id: str,
 ):
-    Round.query.get_or_404(round_id)
+    get_or_404(Round, round_id)
     ballots = (
         SampledBallot.query.join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
@@ -288,6 +289,6 @@ def audit_ballot(
         for interpretation in ballot_audit["interpretations"]
     ]
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")

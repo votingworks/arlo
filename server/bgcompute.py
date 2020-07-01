@@ -1,6 +1,6 @@
 import time
 
-from server.app import db
+from server.database import db_session
 from server.models import *  # pylint: disable=wildcard-import
 from server.api.routes import compute_sample_sizes
 from server.api.ballot_manifest import process_ballot_manifest_file
@@ -49,7 +49,7 @@ def bgcompute_update_election_jurisdictions_file() -> int:
         try:
             election = Election.query.filter_by(jurisdictions_file_id=file.id).one()
             print(f"updating jurisdictions file for election ID {election.id}")
-            process_jurisdictions_file(db.session, election, file)
+            process_jurisdictions_file(db_session, election, file)
             print(f"done updating jurisdictions file for election ID {election.id}")
         except Exception:
             print("ERROR while updating jurisdictions file")
@@ -67,7 +67,7 @@ def bgcompute_update_ballot_manifest_file() -> int:
     for file in files:
         try:
             jurisdiction = Jurisdiction.query.filter_by(manifest_file_id=file.id).one()
-            process_ballot_manifest_file(db.session, jurisdiction, file)
+            process_ballot_manifest_file(db_session, jurisdiction, file)
         except Exception:
             print("ERROR updating ballot manifest file")
 

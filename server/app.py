@@ -6,12 +6,11 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import (
     SESSION_SECRET,
-    DATABASE_URL,
     FLASK_ENV,
     DEVELOPMENT_ENVS,
     HTTP_ORIGIN,
 )
-from .models import db
+from .database import init_db, db_session
 from .api import api
 from .auth import auth
 from .auth.routes import oauth
@@ -40,10 +39,7 @@ T = Talisman(
 )
 app.secret_key = SESSION_SECRET
 
-app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db.app = app
-db.init_app(app)
+init_db()
 
 oauth.init_app(app)
 
@@ -54,3 +50,8 @@ app.register_blueprint(superadmin)
 # pylint: disable=wrong-import-position,cyclic-import,unused-import
 from . import static
 from . import errors
+
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):  # pylint: disable=unused-argument
+    db_session.remove()

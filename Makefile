@@ -35,7 +35,7 @@ format-server:
 	pipenv run black .
 
 lint-server:
-	pipenv run pylint --load-plugins pylint_flask_sqlalchemy server scripts
+	pipenv run pylint server scripts
 
 test-client:
 	yarn --cwd client lint

@@ -1,5 +1,5 @@
 import io, csv
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
@@ -9,15 +9,15 @@ from ..util.isoformat import isoformat
 from ..util.group_by import group_by
 
 
-def pretty_affiliation(affiliation: Affiliation) -> str:
-    mapping = {
+def pretty_affiliation(affiliation: Optional[str]) -> str:
+    mapping: Dict[str, str] = {
         Affiliation.DEMOCRAT: "Democrat",
         Affiliation.REPUBLICAN: "Republican",
         Affiliation.LIBERTARIAN: "Libertarian",
         Affiliation.INDEPENDENT: "Independent",
         Affiliation.OTHER: "Other",
     }
-    return mapping.get(affiliation, "")
+    return mapping.get(affiliation or "", "")
 
 
 def pretty_boolean(boolean: bool) -> str:
@@ -183,7 +183,7 @@ def write_rounds(report, election: Election):
                     contest.name,
                     pretty_targeted(contest.is_targeted),
                     round_contest.sample_size,
-                    pretty_boolean(round_contest.is_complete),
+                    pretty_boolean(bool(round_contest.is_complete)),
                     round_contest.end_p_value,
                     isoformat(round.created_at),
                     isoformat(round.ended_at),
@@ -235,7 +235,9 @@ def write_sampled_ballots(
                 pretty_ticket_numbers(ballot, round_id_to_num),
                 ballot.status,
             ]
-            + pretty_interpretations(ballot.interpretations, election.contests)
+            + pretty_interpretations(
+                list(ballot.interpretations), list(election.contests)
+            )
         )
 
 

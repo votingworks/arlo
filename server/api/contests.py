@@ -5,6 +5,7 @@ from sqlalchemy import func
 
 from . import api
 from ..auth import with_election_access, with_audit_board_access
+from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import get_current_round
 from ..util.jsonschema import validate, JSONDict
@@ -71,7 +72,9 @@ def serialize_contest(
     }
 
 
-def deserialize_contest_choice(contest_choice: JSONDict, contest_id: str) -> Contest:
+def deserialize_contest_choice(
+    contest_choice: JSONDict, contest_id: str
+) -> ContestChoice:
     return ContestChoice(
         id=contest_choice["id"],
         contest_id=contest_id,
@@ -102,7 +105,7 @@ def deserialize_contest(contest: JSONDict, election_id: str) -> Contest:
 
 # Raises if invalid
 def validate_contests(contests: List[JSONDict], election: Election):
-    if len(election.rounds) > 0:
+    if len(list(election.rounds)) > 0:
         raise Conflict("Cannot update contests after audit has started.")
 
     validate(contests, {"type": "array", "items": CONTEST_SCHEMA})
@@ -175,9 +178,9 @@ def create_or_update_all_contests(election: Election):
 
     for json_contest in json_contests:
         contest = deserialize_contest(json_contest, election.id)
-        db.session.add(contest)
+        db_session.add(contest)
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -186,7 +189,7 @@ def create_or_update_all_contests(election: Election):
 @with_election_access
 def list_contests(election: Election):
     current_round = get_current_round(election)
-    round_status = round_status_by_contest(current_round, election.contests)
+    round_status = round_status_by_contest(current_round, list(election.contests))
 
     json_contests = [
         serialize_contest(c, round_status[c.id]) for c in election.contests

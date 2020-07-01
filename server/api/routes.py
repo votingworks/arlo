@@ -11,6 +11,7 @@ from sqlalchemy.orm.session import Session
 
 from . import api
 from ..auth import with_election_access, require_audit_admin_for_organization
+from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .ballots import (
     ballot_retrieval_list,
@@ -37,8 +38,8 @@ WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 
 def create_organization(name=""):
     org = Organization(id=str(uuid.uuid4()), name=name)
-    db.session.add(org)
-    db.session.commit()
+    db_session.add(org)
+    db_session.commit()
     return org
 
 
@@ -74,9 +75,9 @@ def compute_sample_sizes(round_contest):
         # for later rounds, we always pick 90%
         if round_contest.round.round_num > 1:
             round_contest.sample_size = sample_size_90
-            sample_ballots(db.session, election, the_round)
+            sample_ballots(db_session, election, the_round)
 
-    db.session.commit()
+    db_session.commit()
 
 
 def setup_next_round(election):
@@ -90,13 +91,13 @@ def setup_next_round(election):
         id=str(uuid.uuid4()), election_id=election.id, round_num=len(rounds) + 1,
     )
 
-    db.session.add(round)
+    db_session.add(round)
 
     # assume just one contest for now
     contest = election.contests[0]
     round_contest = RoundContest(round_id=round.id, contest_id=contest.id)
 
-    db.session.add(round_contest)
+    db_session.add(round_contest)
 
 
 def check_round(election, jurisdiction_id, round_id):
@@ -118,15 +119,15 @@ def check_round(election, jurisdiction_id, round_id):
     round_contest.end_p_value = max(risk.values())
     round_contest.is_complete = is_complete
 
-    db.session.commit()
+    db_session.commit()
 
     return is_complete
 
 
 def sample_ballots(session: Session, election: Election, round: Round):
     # assume only one contest
-    round_contest = round.round_contests[0]
-    jurisdiction = election.jurisdictions[0]
+    round_contest = list(round.round_contests)[0]
+    jurisdiction = list(election.jurisdictions)[0]
 
     num_sampled = (
         session.query(SampledBallotDraw)
@@ -138,7 +139,9 @@ def sample_ballots(session: Session, election: Election, round: Round):
     if not num_sampled:
         num_sampled = 0
 
-    chosen_sample_size = round_contest.sample_size
+    if not round_contest.sample_size:  # Shouldn't happen, need this for typechecking
+        raise Exception("Sample size not set")
+    chosen_sample_size: int = round_contest.sample_size
 
     # the sampler needs to have the same inputs given the same manifest
     # so we use the batch name, rather than the batch id
@@ -151,10 +154,13 @@ def sample_ballots(session: Session, election: Election, round: Round):
         batch_id_from_name[batch.name] = batch.id
 
     sample = sampler.draw_sample(
-        election.random_seed, manifest, chosen_sample_size, num_sampled=num_sampled,
+        str(election.random_seed),
+        manifest,
+        chosen_sample_size,
+        num_sampled=num_sampled,
     )
 
-    audit_boards = jurisdiction.audit_boards
+    audit_boards = list(jurisdiction.audit_boards)
 
     batch_sizes: Dict[str, int] = {}
     batches_to_ballots: Dict[str, List[Tuple[int, str, int]]] = {}
@@ -175,9 +181,9 @@ def sample_ballots(session: Session, election: Election, round: Round):
             ]
 
     # Create the buckets and initially assign batches
-    buckets = [Bucket(audit_board.name) for audit_board in audit_boards]
-    for i, batch in enumerate(batch_sizes):
-        buckets[i % len(audit_boards)].add_batch(batch, batch_sizes[batch])
+    buckets = [Bucket(str(audit_board.name)) for audit_board in audit_boards]
+    for i, batch_name in enumerate(batch_sizes):
+        buckets[i % len(audit_boards)].add_batch(batch_name, batch_sizes[batch_name])
 
     # Now assign batchest fairly
     bucket_list = BalancedBucketList(buckets)
@@ -257,9 +263,9 @@ def election_new():
         organization_id=organization_id,
         is_multi_jurisdiction=election["isMultiJurisdiction"],
     )
-    db.session.add(election)
+    db_session.add(election)
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(electionId=election.id)
 
@@ -295,7 +301,7 @@ ADMIN_EMAIL = "Admin Email"
 @api.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
 @with_election_access
 def update_jurisdictions_file(election: Election):
-    if len(election.rounds) > 0:
+    if len(list(election.rounds)) > 0:
         raise Conflict("Cannot update jurisdictions after audit has started.")
 
     if "jurisdictions" not in request.files:
@@ -346,9 +352,9 @@ def update_jurisdictions_file(election: Election):
         )
 
     if old_jurisdictions_file:
-        db.session.delete(old_jurisdictions_file)
-    db.session.add(election)
-    db.session.commit()
+        db_session.delete(old_jurisdictions_file)
+    db_session.add(election)
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -478,7 +484,7 @@ def audit_basic_update(election):
             num_winners=contest["numWinners"],
             votes_allowed=contest["votesAllowed"],
         )
-        db.session.add(contest_obj)
+        db_session.add(contest_obj)
 
         total_votes_in_all_choices = 0
 
@@ -491,7 +497,7 @@ def audit_basic_update(election):
                 name=choice["name"],
                 num_votes=choice["numVotes"],
             )
-            db.session.add(choice_obj)
+            db_session.add(choice_obj)
 
         if total_votes_in_all_choices > total_allowed_votes_in_contest:
             errors.append(
@@ -502,10 +508,10 @@ def audit_basic_update(election):
             )
 
     if errors:
-        db.session.rollback()
+        db_session.rollback()
         return jsonify(errors=errors), 400
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -519,7 +525,7 @@ def samplesize_set(election):
         return jsonify(status="bad")  # pragma: no cover
 
     rounds[0].round_contests[0].sample_size = int(request.get_json()["size"])
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -543,7 +549,7 @@ def jurisdictions_set(election):
             name=jurisdiction["name"],
             contests=contests,
         )
-        db.session.add(jurisdiction_obj)
+        db_session.add(jurisdiction_obj)
 
         for audit_board in jurisdiction["auditBoards"]:
             audit_board_obj = AuditBoard(
@@ -552,9 +558,9 @@ def jurisdictions_set(election):
                 jurisdiction_id=jurisdiction_obj.id,
                 passphrase=xp.generate_xkcdpassword(WORDS, numwords=4, delimiter="-"),
             )
-            db.session.add(audit_board_obj)
+            db_session.add(audit_board_obj)
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -579,7 +585,7 @@ def jurisdiction_manifest(election, jurisdiction_id):
     else:
         save_ballot_manifest_file(request.files["manifest"], jurisdiction)
 
-    db.session.commit()
+    db_session.commit()
     return jsonify(status="ok")
 
 
@@ -591,12 +597,12 @@ def audit_launch(election):
         return jsonify(status="ok")
 
     election.frozen_at = datetime.datetime.utcnow()
-    db.session.add(election)
+    db_session.add(election)
 
     # prepare the first round, including sample sizes
     setup_next_round(election)
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -695,7 +701,7 @@ def set_audit_board(election, jurisdiction_id, audit_board_id):
     if name is not None:
         audit_board.name = name
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -823,7 +829,7 @@ def ballot_set_not_found(election, jurisdiction_id, batch_id, ballot_position):
     ballot.interpretations = []
     ballot.status = BallotStatus.NOT_FOUND
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -856,7 +862,7 @@ def ballot_set(election, jurisdiction_id, batch_id, ballot_position):
     ]
     ballot.status = BallotStatus.AUDITED
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -904,12 +910,12 @@ def jurisdiction_results(election, jurisdiction_id, round_num):
                 contest_choice_id=choice_id,
                 result=result,
             )
-            db.session.add(contest_result)
+            db_session.add(contest_result)
 
     if not check_round(election, jurisdiction_id, round.id):
         setup_next_round(election)
 
-    db.session.commit()
+    db_session.commit()
 
     return jsonify(status="ok")
 
@@ -918,8 +924,8 @@ def jurisdiction_results(election, jurisdiction_id, round_num):
 @with_election_access
 def audit_reset(election):
     # deleting the election cascades to all the data structures
-    db.session.delete(election)
-    db.session.commit()
+    db_session.delete(election)
+    db_session.commit()
 
     election = Election(
         id=election.id,
@@ -927,7 +933,7 @@ def audit_reset(election):
         organization_id=election.organization_id,
         is_multi_jurisdiction=election.is_multi_jurisdiction,
     )
-    db.session.add(election)
-    db.session.commit()
+    db_session.add(election)
+    db_session.commit()
 
     return jsonify(status="ok")

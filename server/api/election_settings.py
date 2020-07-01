@@ -3,6 +3,7 @@ from werkzeug.exceptions import Conflict
 
 from . import api
 from ..auth import with_election_access
+from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import validate, JSONDict
 
@@ -46,7 +47,7 @@ def get_election_settings(election: Election):
 
 
 def validate_election_settings(settings: JSONDict, election: Election):
-    if len(election.rounds) > 0:
+    if len(list(election.rounds)) > 0:
         raise Conflict("Cannot update settings after audit has started.")
 
     validate(settings, ELECTION_SETTINGS_SCHEMA)
@@ -64,7 +65,7 @@ def put_election_settings(election: Election):
     election.risk_limit = settings["riskLimit"]
     election.state = settings["state"]
 
-    db.session.add(election)
-    db.session.commit()
+    db_session.add(election)
+    db_session.commit()
 
     return jsonify(status="ok")

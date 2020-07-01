@@ -18,8 +18,8 @@ from ..helpers import (
     AB1_SAMPLES_ROUND_1,
     AB1_BALLOTS_ROUND_1,
 )
-from ...app import db
 from ...auth import UserType
+from ...database import db_session
 from ...models import *  # pylint: disable=wildcard-import
 from ...bgcompute import bgcompute_update_ballot_manifest_file
 
@@ -276,7 +276,7 @@ def test_jurisdictions_status_round_1_with_audit_boards(
     for ballot in audit_board_1.sampled_ballots:
         ballot.status = BallotStatus.AUDITED
     audit_board_1.signed_off_at = datetime.utcnow()
-    db.session.commit()
+    db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
@@ -294,7 +294,7 @@ def test_jurisdictions_status_round_1_with_audit_boards(
     for ballot in audit_board_2.sampled_ballots:
         ballot.status = BallotStatus.AUDITED
     audit_board_2.signed_off_at = datetime.utcnow()
-    db.session.commit()
+    db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
@@ -360,8 +360,8 @@ def test_jurisdictions_round_status_offline(
         round_id=round["id"],
         sampled_ballots=ballots[: AB1_SAMPLES + 1],
     )
-    db.session.add(audit_board_1)
-    db.session.commit()
+    db_session.add(audit_board_1)
+    db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
@@ -375,9 +375,9 @@ def test_jurisdictions_round_status_offline(
     }
 
     # Simulate the audit board signing off
-    audit_board_1 = db.session.merge(audit_board_1)  # Reload into the session
+    audit_board_1 = db_session.merge(audit_board_1)  # Reload into the session
     audit_board_1.signed_off_at = datetime.utcnow()
-    db.session.commit()
+    db_session.commit()
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]

@@ -1,7 +1,6 @@
 # pylint: disable=invalid-name
 import sys
 
-from server.app import app  # pylint: disable=unused-import
 from server.api.routes import create_organization
 
 if __name__ == "__main__":
