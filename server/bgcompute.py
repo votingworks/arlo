@@ -14,8 +14,15 @@ def bgcompute():
 
 
 def bgcompute_compute_round_contests_sample_sizes():
-    # round contests that don't have sample_size_options
-    round_contests = RoundContest.query.filter_by(sample_size_options=None)
+    # Round contests that don't have sample_size_options - only in single-jurisdiction audits
+    # Multi-jurisdiction audits compute estimated sample sizes on demand
+    round_contests = (
+        RoundContest.query.filter_by(sample_size_options=None)
+        .join(Round)
+        .join(Election)
+        .filter_by(is_multi_jurisdiction=False)
+        .all()
+    )
 
     for round_contest in round_contests:
         try:
