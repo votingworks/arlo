@@ -5,7 +5,7 @@ import { IAuditBoard } from '../useAuditBoards'
 export const downloadLabels = async (
   roundNum: number,
   ballots: IBallot[]
-): Promise<void> => {
+): Promise<string> => {
   /* istanbul ignore else */
   if (ballots.length) {
     const getX = (l: number): number => (l % 3) * 60 + 9 * ((l % 3) + 1)
@@ -39,13 +39,15 @@ export const downloadLabels = async (
     })
     labels.autoPrint()
     labels.save(`Round ${roundNum} Labels.pdf`)
+    return labels.output() // returned for test snapshots
   }
+  return ''
 }
 
 export const downloadPlaceholders = async (
   roundNum: number,
   ballots: IBallot[]
-): Promise<void> => {
+): Promise<string> => {
   /* istanbul ignore else */
   if (ballots.length) {
     const placeholders = new jsPDF({ format: 'letter' })
@@ -68,17 +70,21 @@ export const downloadPlaceholders = async (
     })
     placeholders.autoPrint()
     placeholders.save(`Round ${roundNum} Placeholders.pdf`)
+    return placeholders.output() // returned for test snapshots
   }
+  return ''
 }
 
-export const downloadDataEntry = (auditBoards: IAuditBoard[]): void => {
+export const downloadDataEntry = (auditBoards: IAuditBoard[]): string => {
   const auditBoardsWithoutBallots: string[] = []
   const auditBoardCreds = new jsPDF({ format: 'letter' })
   auditBoards.forEach((board, i) => {
     const qr: HTMLCanvasElement | null = document.querySelector(
       `#qr-${board.passphrase} > canvas`
     )
-    if (qr && board.currentRoundStatus.numSampledBallots > 0) {
+    /* istanbul ignore next */
+    if (!qr) return
+    if (board.currentRoundStatus.numSampledBallots > 0) {
       if (i > 0) auditBoardCreds.addPage('letter')
       const url = qr.toDataURL()
       auditBoardCreds.setFontSize(22)
@@ -105,7 +111,7 @@ export const downloadDataEntry = (auditBoards: IAuditBoard[]): void => {
         20,
         140
       )
-    } else if (board.currentRoundStatus.numSampledBallots === 0) {
+    } else {
       auditBoardsWithoutBallots.push(board.name)
     }
   })
@@ -117,4 +123,5 @@ export const downloadDataEntry = (auditBoards: IAuditBoard[]): void => {
   }
   auditBoardCreds.autoPrint()
   auditBoardCreds.save(`Audit Boards Credentials for Data Entry.pdf`)
+  return auditBoardCreds.output() // returned for test snapshots
 }
