@@ -353,7 +353,7 @@ export const auditBoardMocks: {
       id: 'audit-board-1',
       name: 'Audit Board #01',
       signedOffAt: null,
-      passphrase: 'happy rebel base',
+      passphrase: 'happy-rebel-base',
       currentRoundStatus: {
         numSampledBallots: 30,
         numAuditedBallots: 0,
@@ -365,7 +365,7 @@ export const auditBoardMocks: {
       id: 'audit-board-1',
       name: 'Audit Board #01',
       signedOffAt: null,
-      passphrase: 'happy rebel base',
+      passphrase: 'happy-rebel-base',
       currentRoundStatus: {
         numSampledBallots: 30,
         numAuditedBallots: 30,
@@ -377,7 +377,7 @@ export const auditBoardMocks: {
       id: 'audit-board-1',
       name: 'Audit Board #01',
       signedOffAt: null,
-      passphrase: 'happy randomness',
+      passphrase: 'happy-randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
         numAuditedBallots: 0,
@@ -389,7 +389,7 @@ export const auditBoardMocks: {
       id: 'audit-board-1',
       name: 'Audit Board #01',
       signedOffAt: null,
-      passphrase: 'happy randomness',
+      passphrase: 'happy-randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
         numAuditedBallots: 0,
@@ -399,7 +399,7 @@ export const auditBoardMocks: {
       id: 'audit-board-2',
       name: 'Audit Board #02',
       signedOffAt: null,
-      passphrase: 'happy secondary randomness',
+      passphrase: 'happy-secondary-randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
         numAuditedBallots: 0,
@@ -411,7 +411,7 @@ export const auditBoardMocks: {
       id: 'audit-board-1',
       name: 'Audit Board #01',
       signedOffAt: null,
-      passphrase: 'happy randomness',
+      passphrase: 'happy-randomness',
       currentRoundStatus: {
         numSampledBallots: 0,
         numAuditedBallots: 0,
@@ -421,7 +421,7 @@ export const auditBoardMocks: {
       id: 'audit-board-2',
       name: 'Audit Board #02',
       signedOffAt: null,
-      passphrase: 'happy secondary randomness',
+      passphrase: 'happy-secondary-randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
         numAuditedBallots: 0,
@@ -433,7 +433,7 @@ export const auditBoardMocks: {
       id: 'audit-board-1',
       name: 'Audit Board #01',
       signedOffAt: null,
-      passphrase: 'happy randomness',
+      passphrase: 'happy-randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
         numAuditedBallots: 15,
@@ -445,7 +445,7 @@ export const auditBoardMocks: {
       id: 'audit-board-1',
       name: 'Audit Board #01',
       signedOffAt: '2019-07-18T16:34:07.000Z',
-      passphrase: 'happy randomness',
+      passphrase: 'happy-randomness',
       currentRoundStatus: {
         numSampledBallots: 30,
         numAuditedBallots: 30,

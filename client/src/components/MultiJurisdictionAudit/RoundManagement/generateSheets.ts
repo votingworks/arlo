@@ -117,5 +117,5 @@ export const downloadDataEntry = (auditBoards: IAuditBoard[]): string => {
   }
   auditBoardCreds.autoPrint()
   auditBoardCreds.save(`Audit Boards Credentials for Data Entry.pdf`)
-  return auditBoardCreds.output('dataurlstring')
+  return auditBoardCreds.output()
 }
