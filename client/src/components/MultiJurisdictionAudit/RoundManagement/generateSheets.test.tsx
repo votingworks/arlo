@@ -18,6 +18,7 @@ jest.mock('jspdf', () => {
     return {
       ...mockjspdf,
       addImage: jest.fn(),
+      save: jest.fn(), // original function throws an error because it's trying to open a new location: https://github.com/jsdom/jsdom/issues/2112
     }
   }
 })
@@ -77,7 +78,6 @@ describe('generateSheets', () => {
     })
 
     it('generates data entry sheets with ballotless audit board', () => {
-      window.URL.createObjectURL = jest.fn()
       render(
         <QRs
           passphrases={auditBoardMocks.noBallots.map(

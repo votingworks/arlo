@@ -39,7 +39,7 @@ export const downloadLabels = async (
     })
     labels.autoPrint()
     labels.save(`Round ${roundNum} Labels.pdf`)
-    return labels.output()
+    return labels.output() // returned for test snapshots
   }
   return ''
 }
@@ -70,7 +70,7 @@ export const downloadPlaceholders = async (
     })
     placeholders.autoPrint()
     placeholders.save(`Round ${roundNum} Placeholders.pdf`)
-    return placeholders.output()
+    return placeholders.output() // returned for test snapshots
   }
   return ''
 }
@@ -123,5 +123,5 @@ export const downloadDataEntry = (auditBoards: IAuditBoard[]): string => {
   }
   auditBoardCreds.autoPrint()
   auditBoardCreds.save(`Audit Boards Credentials for Data Entry.pdf`)
-  return auditBoardCreds.output()
+  return auditBoardCreds.output() // returned for test snapshots
 }
