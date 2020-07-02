@@ -452,6 +452,7 @@ class RoundContest(BaseModel):
     contest_id = Column(
         String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False,
     )
+    contest = relationship("Contest")
 
     # Used in the single-jurisdiction flow to store pre-computed estimated sample sizes
     sample_size_options = Column(String(1000))
