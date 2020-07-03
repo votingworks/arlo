@@ -45,7 +45,8 @@ const CreateSingleJurisdictionAudit = ({ history }: RouteComponentProps) => {
       })
       const { electionId } = response
       history.push(`/audit/${electionId}/setup`)
-    } catch (err) {
+    } catch (err) /* istanbul ignore next */ {
+      // will be removed when we migrate toasting to the api function
       toast.error(err.message)
       setLoading(false)
     }
