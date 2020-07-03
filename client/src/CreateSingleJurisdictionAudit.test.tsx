@@ -1,5 +1,10 @@
 import React from 'react'
-import { fireEvent, screen } from '@testing-library/react'
+import {
+  fireEvent,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { RouteComponentProps } from 'react-router-dom'
 import CreateSingleJurisdictionAudit from './CreateSingleJurisdictionAudit'
 import {
@@ -39,17 +44,22 @@ describe('CreateSingleJurisdictionAudit', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
 
-      fireEvent.change(
-        await screen.findByLabelText('Give your new audit a unique name.'),
-        {
-          target: { value: 'Audit Name' },
-        }
+      const nameInput = await screen.findByLabelText(
+        'Give your new audit a unique name.'
       )
+      fireEvent.blur(nameInput)
+      await screen.findByText('Required')
+      fireEvent.change(nameInput, {
+        target: { value: 'Audit Name' },
+      })
+      await waitForElementToBeRemoved(() => screen.queryByText('Required'))
       expect(container).toMatchSnapshot()
 
       fireEvent.click(screen.getByText('Create a New Audit'), { bubbles: true })
 
-      await expect(routeProps.history.push).toHaveBeenCalledTimes(1)
+      await waitFor(() =>
+        expect(routeProps.history.push).toHaveBeenCalledTimes(1)
+      )
     })
   })
 })
