@@ -24,7 +24,7 @@ const apiCalls = {
         'Content-Type': 'application/json',
       },
     },
-    response: { status: 'ok' },
+    response: { electionId: '12345' },
   },
 }
 
@@ -34,7 +34,7 @@ const renderView = () =>
   })
 
 describe('CreateSingleJurisdictionAudit', () => {
-  it('calls the /election/new endpoint for nonauthenticated user', async () => {
+  it('calls the /api/election/new endpoint for nonauthenticated user', async () => {
     const expectedCalls = [apiCalls.putAudit]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -45,9 +45,11 @@ describe('CreateSingleJurisdictionAudit', () => {
           target: { value: 'Audit Name' },
         }
       )
+      expect(container).toMatchSnapshot()
+
       fireEvent.click(screen.getByText('Create a New Audit'), { bubbles: true })
 
-      expect(container).toMatchSnapshot()
+      await expect(routeProps.history.push).toHaveBeenCalledTimes(1)
     })
   })
 })

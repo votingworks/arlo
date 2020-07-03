@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CreateSingleJurisdictionAudit calls the /election/new endpoint for nonauthenticated user 1`] = `
+exports[`CreateSingleJurisdictionAudit calls the /api/election/new endpoint for nonauthenticated user 1`] = `
 <div>
   <div
     class="sc-gqjmRU goXkVq"
