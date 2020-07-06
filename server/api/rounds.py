@@ -36,8 +36,15 @@ def serialize_round(round: Round) -> dict:
 
 
 def get_current_round(election: Election) -> Optional[Round]:
-    rounds = sorted(election.rounds, key=lambda r: r.round_num, reverse=True)
-    return next(iter(rounds), None)
+    if len(list(election.rounds)) == 0:
+        return None
+    return max(election.rounds, key=lambda r: r.round_num)
+
+
+def get_previous_round(election: Election, round: Round) -> Optional[Round]:
+    if round.round_num == 1:
+        return None
+    return next(r for r in election.rounds if r.round_num == round.round_num - 1)
 
 
 def is_audit_complete(round: Round):
@@ -75,23 +82,23 @@ class SampleDraw(NamedTuple):
     ticket_number: str
 
 
-def sample_ballots(election: Election, round: Round, sample_size: int):
+def sample_ballots(election: Election, new_round: Round, sample_size: int):
     # Figure out which contests still need auditing
-    last_round = get_current_round(election)
+    previous_round = get_previous_round(election, new_round)
     contests_that_havent_met_risk_limit = (
         [
             round_contest.contest
-            for round_contest in last_round.round_contests
+            for round_contest in previous_round.round_contests
             if not round_contest.is_complete
         ]
-        if last_round
+        if previous_round
         else election.contests
     )
 
     # Create RoundContest objects to include the contests in this round
     for contest in contests_that_havent_met_risk_limit:
         round_contest = RoundContest(
-            round_id=round.id, contest_id=contest.id, sample_size=sample_size
+            round_id=new_round.id, contest_id=contest.id, sample_size=sample_size
         )
         db_session.add(round_contest)
 
@@ -189,7 +196,7 @@ def sample_ballots(election: Election, round: Round, sample_size: int):
         for sample_draw in sample_draws:
             sampled_ballot_draw = SampledBallotDraw(
                 ballot_id=sampled_ballot.id,
-                round_id=round.id,
+                round_id=new_round.id,
                 contest_id=sample_draw.contest_id,
                 ticket_number=sample_draw.ticket_number,
             )

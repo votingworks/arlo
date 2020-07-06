@@ -275,33 +275,31 @@ def calculate_risk_measurements(election: Election, round: Round):
 def count_audited_votes(round: Round):
     for round_contest in round.round_contests:
         contest = round_contest.contest
+        interpretations_query = (
+            BallotInterpretation.query.filter_by(
+                contest_id=contest.id, is_overvote=False
+            )
+            .join(SampledBallot)
+            .join(SampledBallotDraw)
+            .filter_by(round_id=round.id)
+            .join(BallotInterpretation.selected_choices)
+            .group_by(ContestChoice.id)
+        )
         # For a targeted contest, count the ballot draws sampled for the contest
         if contest.is_targeted:
             vote_counts = dict(
-                BallotInterpretation.query.filter_by(
-                    contest_id=contest.id, is_overvote=False
-                )
-                .join(SampledBallot)
-                .join(SampledBallotDraw)
-                .filter_by(round_id=round.id, contest_id=contest.id)
-                .join(BallotInterpretation.selected_choices)
-                .group_by(ContestChoice.id)
-                .values(ContestChoice.id, func.count(SampledBallot.id))
+                interpretations_query.filter(
+                    SampledBallotDraw.contest_id == contest.id
+                ).values(ContestChoice.id, func.count())
             )
         # For an opportunistic contest, count the unique ballots that were
         # audited for this contest, regardless of which contest they were
         # sampled for.
         else:
             vote_counts = dict(
-                BallotInterpretation.query.filter_by(
-                    contest_id=contest.id, is_overvote=False
+                interpretations_query.values(
+                    ContestChoice.id, func.count(SampledBallot.id.distinct())
                 )
-                .join(SampledBallot)
-                .join(SampledBallotDraw)
-                .filter_by(round_id=round.id)
-                .join(BallotInterpretation.selected_choices)
-                .group_by(ContestChoice.id)
-                .values(ContestChoice.id, func.count(SampledBallot.id.distinct()))
             )
 
         for contest_choice in contest.choices:
