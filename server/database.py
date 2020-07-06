@@ -11,11 +11,11 @@ db_session = scoped_session(sessionmaker(autocommit=False, autoflush=True, bind=
 
 meta = MetaData(
     naming_convention={
-        "ix": "ix_%(column_0_label)s",
-        "uq": "uq_%(table_name)s_%(column_0_N_name)s",
-        "ck": "ck_%(table_name)s_%(constraint_name)s",
-        "fk": "fk_%(table_name)s_%(column_0_N_name)s_%(referred_table_name)s",
-        "pk": "pk_%(table_name)s",
+        "ix": "%(column_0_N_label)s_idx",
+        "uq": "%(table_name)s_%(column_0_N_name)s_key",
+        "ck": "%(table_name)s_%(constraint_name)s_check",
+        "fk": "%(table_name)s_%(column_0_N_name)s_fkey",
+        "pk": "%(table_name)s_pkey",
     }
 )
 

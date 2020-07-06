@@ -32,6 +32,7 @@ requests = "*"
 sqlalchemy-utils = "*"
 uuid = "*"
 xkcdpass = "*"
+sqlalchemy = "*"
 
 [requires]
 python_version = "3.7"
