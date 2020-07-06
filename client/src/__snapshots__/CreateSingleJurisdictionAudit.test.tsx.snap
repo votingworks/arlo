@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CreateSingleJurisdictionAudit calls the /api/election/new endpoint for nonauthenticated user 1`] = `
+<div>
+  <div
+    class="sc-gqjmRU goXkVq"
+  >
+    <img
+      alt="Arlo, by VotingWorks"
+      height="50px"
+      src="/arlo.png"
+    />
+    <div
+      class="sc-bdVaJa fdbLH"
+    >
+      <label
+        for="audit-name"
+        id="audit-name-label"
+      >
+        Give your new audit a unique name.
+        <div
+          class="sc-gZMcBi bddzxw sc-bxivhb dIUGFb"
+        >
+          <div
+            class="bp3-input-group sc-ifAKCX juRnqx"
+          >
+            <input
+              aria-labelledby="audit-name-label"
+              class="bp3-input"
+              id="audit-name"
+              name="auditName"
+              style="padding-right: 10px;"
+              value="Audit Name"
+            />
+          </div>
+        </div>
+      </label>
+    </div>
+    <button
+      class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-iwsKbI kljBkO sc-dnqmqq iQfLYL"
+      type="button"
+    >
+      <span
+        class="bp3-button-text"
+      >
+        Create a New Audit
+      </span>
+    </button>
+  </div>
+</div>
+`;

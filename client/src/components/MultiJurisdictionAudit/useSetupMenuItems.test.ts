@@ -249,7 +249,7 @@ describe('useSetupMenuItems', () => {
     expect(result.current[0][2].state === 'processing').toBeTruthy()
   })
 
-  it.only('handles background process timeout', async () => {
+  it('handles background process timeout', async () => {
     const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
     const dateIncrementor = (function* incr() {
       let i = 10
