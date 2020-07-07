@@ -1,5 +1,5 @@
 import re
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker, Query
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from .config import DATABASE_URL
@@ -9,8 +9,18 @@ from .config import DATABASE_URL
 engine = create_engine(DATABASE_URL)
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=True, bind=engine))
 
+meta = MetaData(
+    naming_convention={
+        "ix": "%(column_0_N_label)s_idx",
+        "uq": "%(table_name)s_%(column_0_N_name)s_key",
+        "ck": "%(table_name)s_%(constraint_name)s_check",
+        "fk": "%(table_name)s_%(column_0_N_name)s_fkey",
+        "pk": "%(table_name)s_pkey",
+    }
+)
 
-@as_declarative()
+
+@as_declarative(metadata=meta)
 class Base:
     query: Query = db_session.query_property()
     # pylint: disable=no-self-argument,no-member
