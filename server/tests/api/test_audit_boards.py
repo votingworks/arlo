@@ -730,15 +730,14 @@ def test_audit_boards_sign_off_happy_path(
 
 
 def test_count_audited_votes(
-    election_id: str,
-    contest_ids: List[str],
-    round_1_id: str,
-    audit_board_round_1_ids: List[str],
+    contest_ids: List[str], round_1_id: str, audit_board_round_1_ids: List[str],
 ):
-    election = Election.query.get(election_id)
     round = Round.query.get(round_1_id)
+    targeted_contest_id = contest_ids[0]
+    opportunistic_contest_id = contest_ids[1]
 
-    count_audited_votes(election, round)
+    # Make sure counting before auditing ballots results in all 0s
+    count_audited_votes(round)
 
     for round_contest in round.round_contests:
         for result in round_contest.results:
@@ -746,7 +745,6 @@ def test_count_audited_votes(
 
     db_session.rollback()
 
-    contest_id = contest_ids[1]
     ballot_draws = (
         SampledBallotDraw.query.join(SampledBallot)
         .filter_by(audit_board_id=audit_board_round_1_ids[0])
@@ -754,65 +752,124 @@ def test_count_audited_votes(
         .order_by(Batch.name, SampledBallot.ballot_position)
         .all()
     )
-    choices = (
-        ContestChoice.query.filter_by(contest_id=contest_id)
+    targeted_choices = (
+        ContestChoice.query.filter_by(contest_id=targeted_contest_id)
         .order_by(ContestChoice.name)
         .all()
     )
-    choice_1_and_2_votes = 20
-    choice_2_and_3_votes = 20
+    opportunistic_choices = (
+        ContestChoice.query.filter_by(contest_id=opportunistic_contest_id)
+        .order_by(ContestChoice.name)
+        .all()
+    )
+
+    targeted_choice_1_votes = 20
+    targeted_choice_2_votes = 30
     overvotes = 10
 
     # Make sure audit at least one ballot that was sampled multiple times
     # to ensure our test is testing the difference between counting votes for
-    # ballots and ballot draws
+    # targeted contests (num ballot draws) and opportunistic ballots (num ballots)
     draws_to_audit = ballot_draws[
-        : choice_1_and_2_votes + choice_2_and_3_votes + overvotes
+        : targeted_choice_1_votes + targeted_choice_2_votes + overvotes
     ]
     assert len({draw.sampled_ballot.id for draw in draws_to_audit}) < len(
         draws_to_audit
     )
 
+    opportunistic_choice_1_and_2_ballots = set()
+    opportunistic_choice_2_and_3_ballots = set()
+
     ballot_draws = iter(ballot_draws)
-    for draw in itertools.islice(ballot_draws, choice_1_and_2_votes):
+
+    for draw in itertools.islice(ballot_draws, targeted_choice_1_votes):
         audit_ballot(
             draw.sampled_ballot,
-            contest_id,
+            targeted_contest_id,
             Interpretation.VOTE,
-            [choices[0], choices[1]],
+            [targeted_choices[0]],
         )
-    for draw in itertools.islice(ballot_draws, choice_2_and_3_votes):
         audit_ballot(
             draw.sampled_ballot,
-            contest_id,
+            opportunistic_contest_id,
             Interpretation.VOTE,
-            [choices[1], choices[2]],
+            [opportunistic_choices[0], opportunistic_choices[1]],
         )
+        opportunistic_choice_1_and_2_ballots.add(draw.sampled_ballot.id)
+
+    for draw in itertools.islice(ballot_draws, targeted_choice_2_votes):
+        audit_ballot(
+            draw.sampled_ballot,
+            targeted_contest_id,
+            Interpretation.VOTE,
+            [targeted_choices[1]],
+        )
+        audit_ballot(
+            draw.sampled_ballot,
+            opportunistic_contest_id,
+            Interpretation.VOTE,
+            [opportunistic_choices[1], opportunistic_choices[2]],
+        )
+        opportunistic_choice_2_and_3_ballots.add(draw.sampled_ballot.id)
+
     # Overvotes shouldn't be counted in the totals
     for draw in itertools.islice(ballot_draws, overvotes):
         audit_ballot(
             draw.sampled_ballot,
-            contest_id,
+            targeted_contest_id,
             Interpretation.VOTE,
-            [choices[0], choices[1], choices[2]],
+            targeted_choices,
+            is_overvote=True,
+        )
+        audit_ballot(
+            draw.sampled_ballot,
+            opportunistic_contest_id,
+            Interpretation.VOTE,
+            opportunistic_choices,
             is_overvote=True,
         )
 
-    count_audited_votes(election, round)
+    count_audited_votes(round)
 
-    choice_1_result = RoundContestResult.query.filter_by(
-        round_id=round_1_id, contest_id=contest_id, contest_choice_id=choices[0].id
+    targeted_choice_1_result = RoundContestResult.query.filter_by(
+        round_id=round_1_id,
+        contest_id=targeted_contest_id,
+        contest_choice_id=targeted_choices[0].id,
     ).first()
-    choice_2_result = RoundContestResult.query.filter_by(
-        round_id=round_1_id, contest_id=contest_id, contest_choice_id=choices[1].id
-    ).first()
-    choice_3_result = RoundContestResult.query.filter_by(
-        round_id=round_1_id, contest_id=contest_id, contest_choice_id=choices[2].id
+    targeted_choice_2_result = RoundContestResult.query.filter_by(
+        round_id=round_1_id,
+        contest_id=targeted_contest_id,
+        contest_choice_id=targeted_choices[1].id,
     ).first()
 
-    assert choice_1_result.result == choice_1_and_2_votes
-    assert choice_2_result.result == choice_1_and_2_votes + choice_2_and_3_votes
-    assert choice_3_result.result == choice_2_and_3_votes
+    assert targeted_choice_1_result.result == targeted_choice_1_votes
+    assert targeted_choice_2_result.result == targeted_choice_2_votes
+
+    opportunistic_choice_1_result = RoundContestResult.query.filter_by(
+        round_id=round_1_id,
+        contest_id=opportunistic_contest_id,
+        contest_choice_id=opportunistic_choices[0].id,
+    ).first()
+    opportunistic_choice_2_result = RoundContestResult.query.filter_by(
+        round_id=round_1_id,
+        contest_id=opportunistic_contest_id,
+        contest_choice_id=opportunistic_choices[1].id,
+    ).first()
+    opportunistic_choice_3_result = RoundContestResult.query.filter_by(
+        round_id=round_1_id,
+        contest_id=opportunistic_contest_id,
+        contest_choice_id=opportunistic_choices[2].id,
+    ).first()
+
+    assert opportunistic_choice_1_result.result == len(
+        opportunistic_choice_1_and_2_ballots
+    )
+    assert opportunistic_choice_2_result.result == len(
+        opportunistic_choice_1_and_2_ballots
+    ) + len(opportunistic_choice_2_and_3_ballots)
+    assert opportunistic_choice_3_result.result == len(
+        opportunistic_choice_2_and_3_ballots
+    )
 
 
 def test_audit_boards_sign_off_missing_name(

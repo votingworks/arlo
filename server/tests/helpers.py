@@ -147,8 +147,9 @@ def audit_ballot(
     choices: List[ContestChoice] = None,
     is_overvote: bool = False,
 ):
-    if ballot.status != BallotStatus.AUDITED:
-        db_session.add(
+    # Make sure we don't try to audit this ballot twice for this contest
+    if not any(i for i in ballot.interpretations if i.contest_id == contest_id):
+        ballot.interpretations = list(ballot.interpretations) + [
             BallotInterpretation(
                 ballot_id=ballot.id,
                 contest_id=contest_id,
@@ -156,7 +157,7 @@ def audit_ballot(
                 selected_choices=choices or [],
                 is_overvote=is_overvote,
             )
-        )
+        ]
         ballot.status = BallotStatus.AUDITED
 
 

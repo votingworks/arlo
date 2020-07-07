@@ -274,18 +274,28 @@ def calculate_risk_measurements(election: Election, round: Round):
         round_contest.is_complete = is_complete
 
 
-def count_audited_votes(election: Election, round: Round):
-    vote_counts = dict(
-        BallotInterpretation.query.filter_by(is_overvote=False)
-        .join(SampledBallot)
-        .join(SampledBallotDraw)
-        .filter_by(round_id=round.id)
-        .join(BallotInterpretation.selected_choices)
-        .group_by(ContestChoice.id)
-        .values(ContestChoice.id, func.count())
-    )
+def count_audited_votes(round: Round):
+    for round_contest in round.round_contests:
+        contest = round_contest.contest
+        vote_counts = dict(
+            BallotInterpretation.query.filter_by(
+                contest_id=contest.id, is_overvote=False
+            )
+            .join(SampledBallot)
+            .join(SampledBallotDraw)
+            .filter_by(round_id=round.id)
+            .join(BallotInterpretation.selected_choices)
+            .group_by(ContestChoice.id)
+            .values(
+                ContestChoice.id,
+                func.count(
+                    SampledBallot.id
+                    if contest.is_targeted
+                    else SampledBallot.id.distinct()
+                ),
+            )
+        )
 
-    for contest in election.contests:
         for contest_choice in contest.choices:
             result = RoundContestResult(
                 round_id=round.id,
@@ -297,7 +307,7 @@ def count_audited_votes(election: Election, round: Round):
 
 
 def end_round(election: Election, round: Round):
-    count_audited_votes(election, round)
+    count_audited_votes(round)
     calculate_risk_measurements(election, round)
     round.ended_at = datetime.utcnow()
 
