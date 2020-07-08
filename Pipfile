@@ -15,6 +15,7 @@ pylint = "*"
 black = "==19.10b0"
 snapshottest = "*"
 alembic = "*"
+pytest-alembic = "*"
 
 [packages]
 authlib = "*"
