@@ -33,12 +33,15 @@ def upgrade():
     op.execute(
         """
         UPDATE sampled_ballot_draw
-        SET contest_id = contest.id
-        FROM contest
-        JOIN election ON election.id = contest.election_id
+        SET contest_id = c.id
+        FROM (
+            SELECT distinct(election_id), id
+            FROM contest
+            WHERE contest.is_targeted
+        ) c
+        JOIN election ON election.id = c.election_id
         JOIN round ON election.id = round.election_id
         WHERE round.id = sampled_ballot_draw.round_id
-        AND contest.is_targeted
         """
     )
 
