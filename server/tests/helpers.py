@@ -190,6 +190,15 @@ def run_audit_round(round_id: str, contest_id: str, vote_ratio: float):
     db_session.commit()
 
 
+DATETIME_REGEX = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{6}")
+
+
+def assert_match_report(report_bytes: bytes, snapshot):
+    report = report_bytes.decode("utf-8")
+    report = re.sub(DATETIME_REGEX, "DATETIME", report)
+    snapshot.assert_match(report)
+
+
 def assert_is_id(value):
     __tracebackhide__ = True  # pylint: disable=unused-variable
     assert isinstance(value, str)

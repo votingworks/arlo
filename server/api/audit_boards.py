@@ -260,16 +260,14 @@ def calculate_risk_measurements(election: Election, round: Round):
         raise Exception("Risk limit not defined")
     risk_limit: int = election.risk_limit
 
-    for contest in election.contests:
+    for round_contest in round.round_contests:
+        contest = round_contest.contest
         risk, is_complete = bravo.compute_risk(
             float(risk_limit) / 100,
             sampler_contest.from_db_contest(contest),
             cumulative_contest_results(contest),
         )
 
-        round_contest = next(
-            rc for rc in round.round_contests if rc.contest_id == contest.id
-        )
         round_contest.end_p_value = max(risk.values())
         round_contest.is_complete = is_complete
 
@@ -277,7 +275,7 @@ def calculate_risk_measurements(election: Election, round: Round):
 def count_audited_votes(round: Round):
     for round_contest in round.round_contests:
         contest = round_contest.contest
-        vote_counts = dict(
+        interpretations_query = (
             BallotInterpretation.query.filter_by(
                 contest_id=contest.id, is_overvote=False
             )
@@ -286,15 +284,23 @@ def count_audited_votes(round: Round):
             .filter_by(round_id=round.id)
             .join(BallotInterpretation.selected_choices)
             .group_by(ContestChoice.id)
-            .values(
-                ContestChoice.id,
-                func.count(
-                    SampledBallot.id
-                    if contest.is_targeted
-                    else SampledBallot.id.distinct()
-                ),
-            )
         )
+        # For a targeted contest, count the ballot draws sampled for the contest
+        if contest.is_targeted:
+            vote_counts = dict(
+                interpretations_query.filter(
+                    SampledBallotDraw.contest_id == contest.id
+                ).values(ContestChoice.id, func.count())
+            )
+        # For an opportunistic contest, count the unique ballots that were
+        # audited for this contest, regardless of which contest they were
+        # sampled for.
+        else:
+            vote_counts = dict(
+                interpretations_query.values(
+                    ContestChoice.id, func.count(SampledBallot.id.distinct())
+                )
+            )
 
         for contest_choice in contest.choices:
             result = RoundContestResult(

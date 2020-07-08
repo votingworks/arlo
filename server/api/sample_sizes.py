@@ -41,7 +41,9 @@ def sample_size_options(election: Election, round_one=False) -> dict:
             cumulative_results,
         )
 
-    targeted_contests = Contest.query.filter_by(is_targeted=True)
+    targeted_contests = Contest.query.filter_by(
+        election_id=election.id, is_targeted=True
+    )
     targeted_contests_that_havent_met_risk_limit = (
         targeted_contests.all()
         if round_one
@@ -54,6 +56,7 @@ def sample_size_options(election: Election, round_one=False) -> dict:
     # Choose the sample size options for the targted contest with the largest
     # sample size, since that will cover the samples needed by the other
     # targeted contests.
+    # TODO update this for independently targeted contests
     return max(
         samples_sizes_for_targeted_contests,
         key=lambda sample_sizes: sample_sizes["asn"]["size"],

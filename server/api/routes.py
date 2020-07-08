@@ -215,6 +215,7 @@ def sample_ballots(session: Session, election: Election, round: Round):
                 sampled_ballot_draw = SampledBallotDraw(
                     ballot_id=sampled_ballot.id,
                     round_id=round.id,
+                    contest_id=round_contest.contest_id,
                     ticket_number=ticket_number,
                 )
 
