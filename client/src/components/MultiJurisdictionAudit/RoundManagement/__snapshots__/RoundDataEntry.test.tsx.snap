@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`offline round data entry renders 1`] = `
+<div>
+  <h2
+    class="bp3-heading sc-bdVaJa ibVpPq"
+  >
+    Round 1 Data Entry
+  </h2>
+</div>
+`;
