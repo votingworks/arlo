@@ -101,6 +101,17 @@ describe('Audit Setup > Review & Launch', () => {
     expect(container).toMatchSnapshot()
   })
 
+  it('renders full state with offline audit', async () => {
+    auditSettingsMock.mockReturnValue(settingsMock.offlineFull)
+    const { container } = render(
+      <Router>
+        <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
+      </Router>
+    )
+    await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    expect(container).toMatchSnapshot()
+  })
+
   it('renders full state with jurisdictions on targeted contest', async () => {
     apiMock.mockImplementation(
       generateApiMock(
@@ -208,6 +219,27 @@ describe('Audit Setup > Review & Launch', () => {
         method: 'POST',
       })
     })
+  })
+
+  it('cancels launch', async () => {
+    apiMock.mockImplementation(
+      generateApiMock(
+        sampleSizeMock,
+        contestMocks.filledTargetedWithJurisdictionId,
+        { jurisdictions: jurisdictionMocks.allManifests }
+      )
+    )
+    render(
+      <Router>
+        <Review locked={false} prevStage={prevStage} refresh={jest.fn()} />
+      </Router>
+    )
+    const launchButton = await screen.findByText('Launch Audit')
+    fireEvent.click(launchButton, { bubbles: true })
+    await screen.findByText('Are you sure you want to launch the audit?')
+    const cancelLaunchButton = screen.getByText('Close Without Launching')
+    fireEvent.click(cancelLaunchButton, { bubbles: true })
+    await waitFor(() => expect(apiMock).toHaveBeenCalledTimes(4))
   })
 
   it('launches the first round with a non-default sample size', async () => {

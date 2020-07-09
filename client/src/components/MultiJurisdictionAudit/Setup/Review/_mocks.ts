@@ -23,6 +23,18 @@ export const settingsMock = {
     /* istanbul ignore next */
     async () => true,
   ],
+  offlineFull: [
+    {
+      state: 'AL',
+      electionName: 'Election Name',
+      online: false,
+      randomSeed: '12345',
+      riskLimit: 10,
+    },
+    // here for type completion but not used in this context
+    /* istanbul ignore next */
+    async () => true,
+  ],
 }
 
 export const sampleSizeMock = {
