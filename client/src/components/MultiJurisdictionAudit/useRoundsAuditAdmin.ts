@@ -20,7 +20,8 @@ const useRoundsAuditAdmin = (electionId: string, refreshId?: string) => {
           `/election/${electionId}/round`
         )
         setRounds(response.rounds)
-      } catch (err) {
+      } catch (err) /* istanbul ignore next */ {
+        // TODO move toasting into api
         toast.error(err.message)
       }
     })()

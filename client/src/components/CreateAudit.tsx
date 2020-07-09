@@ -62,7 +62,8 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
       })
       const { electionId } = response
       history.push(`/election/${electionId}/setup`)
-    } catch (err) {
+    } catch (err) /* istanbul ignore next */ {
+      // TODO move toasting into api
       toast.error(err.message)
       setLoading(false)
     }
