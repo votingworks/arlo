@@ -101,6 +101,23 @@ describe('Progress screen', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('shows the detail modal for a jurisdiction without an upload', () => {
+    const { container } = render(
+      <Progress jurisdictions={jurisdictionMocks.oneManifest} />
+    )
+
+    // Click on a jurisdiction name to open the detail modal
+    userEvent.click(screen.getByRole('button', { name: 'Jurisdiction 2' }))
+    screen.getByText('Jurisdiction 2 Audit Information')
+    expect(container).toMatchSnapshot()
+
+    // Close the detail modal
+    userEvent.click(screen.getAllByRole('button', { name: 'Close' })[0])
+    expect(
+      screen.queryByText('Jurisdiction 2 Audit Information')
+    ).not.toBeInTheDocument()
+  })
+
   it('filters by jurisdiction name', async () => {
     render(<Progress jurisdictions={jurisdictionMocks.oneManifest} />)
 
