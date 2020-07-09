@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, waitFor, render } from '@testing-library/react'
+import { fireEvent, waitFor, render, screen } from '@testing-library/react'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
@@ -7,6 +7,7 @@ import Participants from './index'
 import jurisdictionFile from './_mocks'
 import * as utilities from '../../../utilities'
 import useAuditSettings from '../../useAuditSettings'
+import { fileProcessingMocks } from '../../_mocks'
 
 const auditSettingsMock = useAuditSettings as jest.Mock
 
@@ -49,36 +50,34 @@ formData.append('jurisdictions', jurisdictionFile, jurisdictionFile.name)
 const { nextStage } = relativeStages('Participants')
 
 const fillAndSubmit = async () => {
-  const {
-    findByTestId,
-    getByText,
-    getByLabelText,
-    queryByLabelText,
-    queryByText,
-  } = render(
+  render(
     <Router>
       <Participants locked={false} nextStage={nextStage} />
     </Router>
   )
 
-  fireEvent.change(await findByTestId('state-field'), {
+  fireEvent.change(await screen.findByTestId('state-field'), {
     target: { value: 'WA' },
   })
 
-  const csvInput = getByLabelText('Select a CSV...')
+  const csvInput = screen.getByLabelText('Select a CSV...')
   fireEvent.change(csvInput, { target: { files: [] } })
   fireEvent.blur(csvInput)
   await waitFor(() =>
-    expect(queryByText('You must upload a file')).toBeTruthy()
+    expect(screen.queryByText('You must upload a file')).toBeTruthy()
   )
   fireEvent.change(csvInput, { target: { files: [jurisdictionFile] } })
-  await waitFor(() => expect(queryByText('You must upload a file')).toBeFalsy())
-  await waitFor(() => expect(queryByLabelText('Select a CSV...')).toBeFalsy())
   await waitFor(() =>
-    expect(queryByLabelText('jurisdictions.csv')).toBeTruthy()
+    expect(screen.queryByText('You must upload a file')).toBeFalsy()
+  )
+  await waitFor(() =>
+    expect(screen.queryByLabelText('Select a CSV...')).toBeFalsy()
+  )
+  await waitFor(() =>
+    expect(screen.queryByLabelText('jurisdictions.csv')).toBeTruthy()
   )
 
-  fireEvent.click(getByText('Save & Next'), { bubbles: true })
+  fireEvent.click(screen.getByText('Save & Next'), { bubbles: true })
 }
 
 beforeEach(() => {
@@ -109,6 +108,33 @@ describe('Audit Setup > Participants', () => {
       </Router>
     )
     await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    expect(container).toMatchSnapshot()
+  })
+
+  it('renders filled state correctly & resets file', async () => {
+    apiMock.mockImplementation(async (endpoint: string) => {
+      switch (endpoint) {
+        case '/election/1/jurisdiction/file':
+          return {
+            file: {
+              name: 'filename.csv',
+              uploadedAt: '2019-07-18T16:34:07.000Z',
+            },
+            processing: fileProcessingMocks,
+          }
+        default:
+          return null
+      }
+    })
+    const { container } = render(
+      <Router>
+        <Participants locked={false} nextStage={nextStage} />
+      </Router>
+    )
+    const resetButton = await screen.findByText('Replace File')
+    expect(container).toMatchSnapshot()
+    fireEvent.click(resetButton, { bubbles: true })
+    await screen.findByLabelText('Select a CSV...')
     expect(container).toMatchSnapshot()
   })
 

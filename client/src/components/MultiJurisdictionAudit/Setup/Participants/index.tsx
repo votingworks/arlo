@@ -55,7 +55,8 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
             throw new Error('Wrong menuItems passed in: activate() is missing')
         }
       }
-    } catch (err) {
+    } catch (err) /* istanbul ignore next */ {
+      // TODO migrate toasting to api to consolidate testing
       toast.error(err.message)
     }
   }
