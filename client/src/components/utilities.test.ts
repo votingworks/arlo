@@ -1,6 +1,6 @@
 import { waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
-import { api, testNumber, poll, checkAndToast } from './utilities'
+import { api, testNumber, poll, checkAndToast, tryJson } from './utilities'
 
 const response = () =>
   new Response(new Blob([JSON.stringify({ success: true })]))
@@ -12,6 +12,11 @@ const badResponse = () =>
       statusText: 'A test error',
     }
   )
+const badResponseNoMessage = () =>
+  new Response(new Blob([JSON.stringify({})]), {
+    status: 404,
+    statusText: 'A test error',
+  })
 
 const fetchSpy = jest.spyOn(window, 'fetch').mockImplementation()
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
@@ -22,6 +27,11 @@ afterEach(() => {
 })
 
 describe('utilities.ts', () => {
+  describe('tryJson', () => {
+    it('returns empty object if parse fails', () => {
+      expect(tryJson('{')).toEqual({})
+    })
+  })
   describe('api', () => {
     it('calls fetch', async () => {
       fetchSpy.mockImplementationOnce(async () => response())
@@ -39,6 +49,19 @@ describe('utilities.ts', () => {
       const result = api('/test', { method: 'GET' })
 
       await expect(result).rejects.toHaveProperty('message', 'An error message')
+      await expect(result).rejects.toHaveProperty('response')
+      expect(window.fetch).toBeCalledTimes(1)
+
+      expect(window.fetch).toBeCalledWith('/api/test', {
+        method: 'GET',
+      })
+    })
+
+    it('handles an error without a message', async () => {
+      fetchSpy.mockImplementationOnce(async () => badResponseNoMessage())
+      const result = api('/test', { method: 'GET' })
+
+      await expect(result).rejects.toHaveProperty('message', 'A test error')
       await expect(result).rejects.toHaveProperty('response')
       expect(window.fetch).toBeCalledTimes(1)
 
@@ -110,6 +133,21 @@ describe('utilities.ts', () => {
         expect(dateSpy).toBeCalledTimes(2)
       })
       dateSpy.mockRestore()
+    })
+
+    it('handles errors in condition()', async () => {
+      let result: Error
+      const condition = async () => {
+        throw new Error('error')
+      }
+      const callback = () => {}
+      const error = (err: Error) => {
+        result = err
+      }
+      poll(condition, callback, error, 50, 10)
+      await waitFor(() => {
+        expect(result.message).toBe('error')
+      })
     })
   })
 

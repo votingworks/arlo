@@ -2,7 +2,7 @@ import { toast } from 'react-toastify'
 import number from '../utils/number-schema'
 import { IErrorResponse } from '../types'
 
-const tryJson = (responseText: string) => {
+export const tryJson = (responseText: string) => {
   try {
     return JSON.parse(responseText)
   } catch (err) {
