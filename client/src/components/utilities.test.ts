@@ -1,6 +1,6 @@
 import { waitFor } from '@testing-library/react'
 import { toast } from 'react-toastify'
-import { api, testNumber, poll, checkAndToast, tryJson } from './utilities'
+import { api, testNumber, poll, checkAndToast } from './utilities'
 
 const response = () =>
   new Response(new Blob([JSON.stringify({ success: true })]))
@@ -17,6 +17,11 @@ const badResponseNoMessage = () =>
     status: 404,
     statusText: 'A test error',
   })
+const badResponseBadParse = () =>
+  new Response(new Blob(['{']), {
+    status: 404,
+    statusText: 'A test error',
+  })
 
 const fetchSpy = jest.spyOn(window, 'fetch').mockImplementation()
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
@@ -27,11 +32,6 @@ afterEach(() => {
 })
 
 describe('utilities.ts', () => {
-  describe('tryJson', () => {
-    it('returns empty object if parse fails', () => {
-      expect(tryJson('{')).toEqual({})
-    })
-  })
   describe('api', () => {
     it('calls fetch', async () => {
       fetchSpy.mockImplementationOnce(async () => response())
@@ -59,6 +59,19 @@ describe('utilities.ts', () => {
 
     it('handles an error without a message', async () => {
       fetchSpy.mockImplementationOnce(async () => badResponseNoMessage())
+      const result = api('/test', { method: 'GET' })
+
+      await expect(result).rejects.toHaveProperty('message', 'A test error')
+      await expect(result).rejects.toHaveProperty('response')
+      expect(window.fetch).toBeCalledTimes(1)
+
+      expect(window.fetch).toBeCalledWith('/api/test', {
+        method: 'GET',
+      })
+    })
+
+    it('handles an error that fails parsing', async () => {
+      fetchSpy.mockImplementationOnce(async () => badResponseBadParse())
       const result = api('/test', { method: 'GET' })
 
       await expect(result).rejects.toHaveProperty('message', 'A test error')
