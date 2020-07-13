@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`RoundManagement renders completed state 1`] = `
+<div>
+  <div
+    class="single-page sc-bdVaJa AANBu"
+  >
+    <h2
+      class="bp3-heading sc-htpNat fysvnw"
+    >
+      Congratulations! Your Risk-Limiting Audit is now complete.
+    </h2>
+  </div>
+</div>
+`;
+
 exports[`RoundManagement renders initial state 1`] = `
 <div>
   <div
