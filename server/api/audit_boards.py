@@ -257,7 +257,7 @@ def set_audit_board_members(
 
 def calculate_risk_measurements(election: Election, round: Round):
     if not election.risk_limit:  # Shouldn't happen, we need this for typechecking
-        raise Exception("Risk limit not defined")
+        raise Exception("Risk limit not defined")  # pragma: no cover
     risk_limit: int = election.risk_limit
 
     for round_contest in round.round_contests:

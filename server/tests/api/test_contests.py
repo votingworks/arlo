@@ -154,10 +154,15 @@ def test_contests_round_status(
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
     assert_ok(rv)
 
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+    for contest in contests:
+        assert contest["currentRoundStatus"] is None
+
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": SAMPLE_SIZE_ROUND_1},
+        {"roundNum": 1, "sampleSizes": {contests[0]["id"]: SAMPLE_SIZE_ROUND_1}},
     )
     assert_ok(rv)
 

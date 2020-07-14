@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional, NamedTuple, List, Tuple
+from typing import Optional, NamedTuple, List, Tuple, Dict
 from flask import jsonify, request
 from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
@@ -18,7 +18,10 @@ CREATE_ROUND_REQUEST_SCHEMA = {
     "type": "object",
     "properties": {
         "roundNum": {"type": "integer", "minimum": 1,},
-        "sampleSize": {"type": "integer", "minimum": 1,},
+        "sampleSizes": {
+            "type": "object",
+            "patternProperties": {"^.*$": {"type": "integer"}},
+        },
     },
     "additionalProperties": False,
     "required": ["roundNum"],
@@ -71,8 +74,13 @@ def validate_round(round: dict, election: Election):
     if current_round and not current_round.ended_at:
         raise Conflict("The current round is not complete")
 
-    if round["roundNum"] == 1 and "sampleSize" not in round:
-        raise BadRequest("Sample size is required for round 1")
+    if round["roundNum"] == 1:
+        if "sampleSizes" not in round:
+            raise BadRequest("Sample sizes are required for round 1")
+
+        targeted_contest_ids = {c.id for c in election.contests if c.is_targeted}
+        if set(round["sampleSizes"].keys()) != targeted_contest_ids:
+            raise BadRequest("Sample sizes provided do not match targeted contest ids")
 
 
 class SampleDraw(NamedTuple):
@@ -82,7 +90,7 @@ class SampleDraw(NamedTuple):
     ticket_number: str
 
 
-def sample_ballots(election: Election, new_round: Round, sample_size: int):
+def sample_ballots(election: Election, new_round: Round, sample_sizes: Dict[str, int]):
     # Figure out which contests still need auditing
     previous_round = get_previous_round(election, new_round)
     contests_that_havent_met_risk_limit = (
@@ -98,7 +106,12 @@ def sample_ballots(election: Election, new_round: Round, sample_size: int):
     # Create RoundContest objects to include the contests in this round
     for contest in contests_that_havent_met_risk_limit:
         round_contest = RoundContest(
-            round_id=new_round.id, contest_id=contest.id, sample_size=sample_size
+            round_id=new_round.id,
+            contest_id=contest.id,
+            # Store the sample size we use for each contest so we can report on
+            # it later. Opportunistic contests don't have a sample size, so we
+            # store None.
+            sample_size=sample_sizes.get(contest.id, None),
         )
         db_session.add(round_contest)
 
@@ -137,18 +150,8 @@ def sample_ballots(election: Election, new_round: Round, sample_size: int):
         ]
 
     # Draw a sample for each targeted contest
-    # - For jointly targeted contest, we can draw one a sample for each contest
-    # and reuse it, since the contests have the same universe and sample size.
-    # - TODO For independently targeted contests, each contest needs its own
-    # sample.
-    one_targeted_contest = next(
-        contest
-        for contest in contests_that_havent_met_risk_limit
-        if contest.is_targeted
-    )
-    one_sample = draw_sample_for_contest(one_targeted_contest, sample_size)
     samples = [
-        [sample_draw._replace(contest_id=contest.id) for sample_draw in one_sample]
+        draw_sample_for_contest(contest, sample_sizes[contest.id])
         for contest in contests_that_havent_met_risk_limit
         if contest.is_targeted
     ]
@@ -229,22 +232,24 @@ def create_round(election: Election):
     json_round = request.get_json()
     validate_round(json_round, election)
 
-    # TODO change this for independently targeted contests - maybe take in
-    # which sample size level to use rather than the size itself?
-    # For round 1, use the given sample size. In later rounds, use the 90%
-    # probability sample size.
-    sample_size = (
-        json_round["sampleSize"]
-        if json_round["roundNum"] == 1
-        else sample_size_options(election)["0.9"]["size"]
-    )
-
     round = Round(
         id=str(uuid.uuid4()), election_id=election.id, round_num=json_round["roundNum"],
     )
     db_session.add(round)
 
-    sample_ballots(election, round, sample_size)
+    # For round 1, use the given sample size for each contest. In later rounds,
+    # use the 90% probability sample size.
+    sample_sizes = (
+        json_round["sampleSizes"]
+        if json_round["roundNum"] == 1
+        else {
+            contest_id: next(
+                option["size"] for option in options if option["prob"] == 0.9
+            )
+            for contest_id, options in sample_size_options(election).items()
+        }
+    )
+    sample_ballots(election, round, sample_sizes)
 
     db_session.commit()
 
