@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { useParams } from 'react-router-dom'
 import RoundManagement from './index'
 import { roundMocks, auditBoardMocks } from '../_mocks'
@@ -83,25 +84,19 @@ describe('RoundManagement', () => {
           createAuditBoards={jest.fn()}
         />
       )
-      fireEvent.click(
+      userEvent.click(
         await screen.findByText(
           'Download Aggregated Ballot Retrival List for Round 1'
-        ),
-        { bubbles: true }
+        )
       )
-      fireEvent.click(
-        await screen.findByText(
-          'Download Audit Board Credentials for Data Entry'
-        ),
-        { bubbles: true }
+      userEvent.click(
+        screen.getByText('Download Audit Board Credentials for Data Entry')
       )
-      fireEvent.click(
-        await screen.findByText('Download Placeholder Sheets for Round 1'),
-        { bubbles: true }
+      userEvent.click(
+        await screen.findByText('Download Placeholder Sheets for Round 1')
       )
-      fireEvent.click(
-        await screen.findByText('Download Ballot Labels for Round 1'),
-        { bubbles: true }
+      userEvent.click(
+        await screen.findByText('Download Ballot Labels for Round 1')
       )
       expect(window.open).toHaveBeenCalledWith(
         '/api/election/1/jurisdiction/1/round/round-1/retrieval-list'
