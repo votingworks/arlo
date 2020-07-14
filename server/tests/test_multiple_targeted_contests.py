@@ -5,9 +5,6 @@ from flask.testing import FlaskClient
 
 from .helpers import *  # pylint: disable=wildcard-import
 
-JOINT_SAMPLE_SIZE_ROUND_1 = 485
-JOINT_SAMPLE_SIZE_ROUND_2 = 1468
-
 
 @pytest.fixture
 def contest_ids(
@@ -65,21 +62,14 @@ def test_sample_size_round_1(
     election_id: str,
     contest_ids: List[str],  # pylint: disable=unused-argument
     election_settings,  # pylint: disable=unused-argument
+    snapshot,
 ):
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_sizes = json.loads(rv.data)
-    # Importantly, these are the sample sizes for Contest 2, not Contest 1
-    # (which we see in test_sample_sizes.py), since it has a smaller margin of
-    # victory and thus a bigger sample size.
-    assert sample_sizes["sampleSizes"][0]["size"] > SAMPLE_SIZE_ROUND_1
-    assert sample_sizes == {
-        "sampleSizes": [
-            {"prob": 0.55, "size": JOINT_SAMPLE_SIZE_ROUND_1, "type": "ASN"},
-            {"prob": 0.7, "size": 770, "type": None},
-            {"prob": 0.8, "size": 1018, "type": None},
-            {"prob": 0.9, "size": 1468, "type": None},
-        ]
-    }
+    sample_sizes = json.loads(rv.data)["sampleSizes"]
+    contest_id_to_name = dict(Contest.query.values(Contest.id, Contest.name))
+    snapshot.assert_match(
+        {contest_id_to_name[id]: sizes for id, sizes in sample_sizes.items()}
+    )
 
 
 def test_two_rounds(
@@ -91,10 +81,16 @@ def test_two_rounds(
     manifests,  # pylint: disable=unused-argument
     snapshot,
 ):
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_sizes = json.loads(rv.data)["sampleSizes"]
+    selected_sample_sizes = {
+        contest_id: sizes[0]["size"] for contest_id, sizes in sample_sizes.items()
+    }
+
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": JOINT_SAMPLE_SIZE_ROUND_1},
+        {"roundNum": 1, "sampleSizes": selected_sample_sizes},
     )
     assert_ok(rv)
     round_1 = Round.query.first()
@@ -120,29 +116,24 @@ def test_two_rounds(
         },
     )
 
-    # Check that the ballots got sampled
-    # We expect both contests to use the same sample size
-    ballot_draws = SampledBallotDraw.query.all()
-    assert len(ballot_draws) == JOINT_SAMPLE_SIZE_ROUND_1 * 2
-
-    # Check that the same ballots were sampled for both contests
-    contest_1_ballots = list(
-        SampledBallotDraw.query.filter_by(contest_id=contest_ids[0]).values(
-            SampledBallotDraw.ballot_id
-        )
-    )
-    contest_2_ballots = list(
-        SampledBallotDraw.query.filter_by(contest_id=contest_ids[1]).values(
-            SampledBallotDraw.ballot_id
-        )
-    )
-    assert contest_1_ballots == contest_2_ballots
+    # Check that the right number of ballots were sampled for each contest
+    contest_1_ballots = SampledBallotDraw.query.filter_by(
+        contest_id=contest_ids[0]
+    ).count()
+    contest_2_ballots = SampledBallotDraw.query.filter_by(
+        contest_id=contest_ids[1]
+    ).count()
+    assert contest_1_ballots == selected_sample_sizes[contest_ids[0]]
+    assert contest_2_ballots == selected_sample_sizes[contest_ids[1]]
 
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
-    sampled_jurisdictions = {
-        draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
-    }
-    assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
+    sampled_jurisdictions = (
+        SampledBallotDraw.query.join(SampledBallot)
+        .join(Batch)
+        .join(Jurisdiction)
+        .values(Jurisdiction.id.distinct())
+    )
+    assert set(j_id for j_id, in sampled_jurisdictions) == set(jurisdiction_ids[:2])
 
     round_contests = {
         round_contest.contest_id: round_contest
@@ -192,10 +183,10 @@ def test_two_rounds(
 
     # Check that we used the correct sample size (90% prob for Contest 2)
     # Should only have samples for Contest 2
-    ballot_draws = SampledBallotDraw.query.filter_by(
-        round_id=rounds["rounds"][1]["id"]
-    ).all()
-    assert len(ballot_draws) == JOINT_SAMPLE_SIZE_ROUND_2
+    contest_2_ballots = SampledBallotDraw.query.filter_by(
+        round_id=rounds["rounds"][1]["id"], contest_id=contest_ids[1]
+    ).count()
+    snapshot.assert_match(contest_2_ballots)
 
     # Run the second round, auditing all the ballots for the second contest to complete the audit
     run_audit_round(rounds["rounds"][1]["id"], contest_ids[1], 0.7)
@@ -244,95 +235,3 @@ def test_two_rounds(
             for result in round_contest.results
         }
     )
-
-
-def test_jointly_targeted_contest_universes_must_match(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-):
-    rv = put_json(
-        client,
-        f"/api/election/{election_id}/contest",
-        [
-            {
-                "id": str(uuid.uuid4()),
-                "name": "Contest 1",
-                "isTargeted": True,
-                "choices": [
-                    {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
-                    {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
-                ],
-                "totalBallotsCast": 1000,
-                "numWinners": 1,
-                "votesAllowed": 1,
-                "jurisdictionIds": jurisdiction_ids,
-            },
-            {
-                "id": str(uuid.uuid4()),
-                "name": "Contest 2",
-                "isTargeted": True,
-                "choices": [
-                    {"id": str(uuid.uuid4()), "name": "Yes", "numVotes": 800,},
-                    {"id": str(uuid.uuid4()), "name": "No", "numVotes": 650,},
-                ],
-                "totalBallotsCast": 1600,
-                "numWinners": 1,
-                "votesAllowed": 1,
-                "jurisdictionIds": jurisdiction_ids[1:],
-            },
-        ],
-    )
-    assert rv.status_code == 400
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Bad Request",
-                "message": "All targeted contests must have the same jurisdictions.",
-            }
-        ]
-    }
-
-
-def test_jointly_targeted_contest_total_ballots_must_match(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-):
-    rv = put_json(
-        client,
-        f"/api/election/{election_id}/contest",
-        [
-            {
-                "id": str(uuid.uuid4()),
-                "name": "Contest 1",
-                "isTargeted": True,
-                "choices": [
-                    {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
-                    {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
-                ],
-                "totalBallotsCast": 1000,
-                "numWinners": 1,
-                "votesAllowed": 1,
-                "jurisdictionIds": jurisdiction_ids,
-            },
-            {
-                "id": str(uuid.uuid4()),
-                "name": "Contest 2",
-                "isTargeted": True,
-                "choices": [
-                    {"id": str(uuid.uuid4()), "name": "Yes", "numVotes": 800,},
-                    {"id": str(uuid.uuid4()), "name": "No", "numVotes": 650,},
-                ],
-                "totalBallotsCast": 1600,
-                "numWinners": 1,
-                "votesAllowed": 1,
-                "jurisdictionIds": jurisdiction_ids,
-            },
-        ],
-    )
-    assert rv.status_code == 400
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Bad Request",
-                "message": "All targeted contests must have the same total ballots cast.",
-            }
-        ]
-    }
