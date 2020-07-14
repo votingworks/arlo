@@ -1,9 +1,10 @@
-import enum
+import enum, sys
 from typing import Type
 from datetime import datetime as dt
 from werkzeug.exceptions import NotFound
 from sqlalchemy import *  # pylint: disable=wildcard-import
-from sqlalchemy.orm import relationship, backref, validates
+from sqlalchemy import event, sql
+from sqlalchemy.orm import relationship, backref, validates, Query
 from .database import Base  # pylint: disable=cyclic-import
 
 
@@ -584,3 +585,93 @@ def get_or_404(model: Type[Base], primary_key: str):
     if instance:
         return instance
     raise NotFound(f"{model.__class__.__name__} {primary_key} not found")
+
+
+@event.listens_for(Query, "before_compile")
+def check_query_scope(query: Query):
+    def side_equals_column(side, column):
+        return side.key == column.key and side.table.name == column.class_.__tablename__
+
+    def criterion_contains_column(criterion, column):
+        return side_equals_column(criterion.left, column) or side_equals_column(
+            criterion.right, column
+        )
+
+    def criterion_contains_primary_key(criterion):
+        return criterion.left.primary_key or criterion.right.primary_key
+
+    def criterion_filters_on_column(criterion, column):
+        if criterion is None:
+            return False
+        if isinstance(criterion, sql.elements.BinaryExpression):
+            return criterion_contains_column(
+                criterion, column
+            ) or criterion_contains_primary_key(criterion)
+        return any(
+            criterion_filters_on_column(criterion, column) for criterion in criterion
+        )
+
+    def check_query_for_columns(query, columns):
+        if not any(
+            criterion_filters_on_column(query._criterion, column) for column in columns
+        ):
+            print(
+                f"Query must filter on one of the following columns: {', '.join(str(c) for c in columns)}"
+            )
+            sys.exit(1)
+
+    queried_models = [c["entity"] for c in query.column_descriptions]
+    for model in queried_models:
+        if model == Jurisdiction:
+            check_query_for_columns(
+                query, [Jurisdiction.election_id, Jurisdiction.manifest_file_id]
+            )
+        if model == Batch:
+            check_query_for_columns(query, [Batch.jurisdiction_id])
+        if model == Contest:
+            check_query_for_columns(query, [Contest.election_id])
+        if model == ContestChoice:
+            check_query_for_columns(query, [ContestChoice.contest_id])
+        if model == AuditBoard:
+            check_query_for_columns(
+                query,
+                [
+                    AuditBoard.jurisdiction_id,
+                    AuditBoard.round_id,
+                    AuditBoard.passphrase,
+                ],
+            )
+        if model == Round:
+            check_query_for_columns(query, [Round.election_id])
+        if model == SampledBallot:
+            check_query_for_columns(
+                query, [SampledBallot.batch_id, SampledBallot.audit_board_id]
+            )
+        if model == SampledBallotDraw:
+            check_query_for_columns(
+                query,
+                [
+                    SampledBallotDraw.ballot_id,
+                    SampledBallotDraw.round_id,
+                    SampledBallotDraw.contest_id,
+                ],
+            )
+        if model == BallotInterpretation:
+            check_query_for_columns(
+                query,
+                [BallotInterpretation.ballot_id, BallotInterpretation.contest_id],
+            )
+        if model == RoundContest:
+            check_query_for_columns(
+                query, [RoundContest.round_id, RoundContest.contest_id],
+            )
+        if model == RoundContestResult:
+            check_query_for_columns(
+                query,
+                [
+                    RoundContestResult.round_id,
+                    RoundContestResult.contest_id,
+                    RoundContestResult.contest_choice_id,
+                ],
+            )
+

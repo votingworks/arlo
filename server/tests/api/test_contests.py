@@ -332,7 +332,7 @@ def test_audit_board_contests_list_empty(
     round_1_id: str,
     audit_board_round_1_ids: List[str],
 ):
-    contests = Contest.query.all()
+    contests = Contest.query.filter_by(election_id=election_id).all()
     for contest in contests:
         contest.jurisdictions = []
     db_session.commit()
@@ -376,7 +376,11 @@ def test_audit_board_contests_list_order(
     round_1_id: str,
     audit_board_round_1_ids: List[str],
 ):
-    db_contests = Contest.query.order_by(Contest.created_at).all()
+    db_contests = (
+        Contest.query.filter_by(election_id=election_id)
+        .order_by(Contest.created_at)
+        .all()
+    )
     db_contests[0].name = "ZZZ Contest"
     db_contests[1].name = "AAA Contest"
     db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)
@@ -392,7 +396,11 @@ def test_audit_board_contests_list_order(
     )
     contests = json.loads(rv.data)["contests"]
 
-    db_contests = Contest.query.order_by(Contest.created_at).all()
+    db_contests = (
+        Contest.query.filter_by(election_id=election_id)
+        .order_by(Contest.created_at)
+        .all()
+    )
     db_choices = sorted(db_contests[0].choices, key=lambda c: c.created_at)
 
     assert contests[0]["name"] == db_contests[0].name

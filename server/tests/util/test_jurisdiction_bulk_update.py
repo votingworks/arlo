@@ -37,7 +37,7 @@ def test_first_update(session):
     ]
 
     assert User.query.count() == 1
-    assert Jurisdiction.query.count() == 1
+    assert Jurisdiction.query.filter_by(election_id=election.id).count() == 1
     assert JurisdictionAdministration.query.count() == 1
 
 
@@ -57,7 +57,7 @@ def test_idempotent(session):
     session.commit()
 
     user = User.query.one()
-    jurisdiction = Jurisdiction.query.one()
+    jurisdiction = Jurisdiction.query.filter_by(election_id=election.id).one()
 
     # Do the same thing again.
     bulk_update_jurisdictions(
@@ -65,7 +65,7 @@ def test_idempotent(session):
     )
 
     assert User.query.one() == user
-    assert Jurisdiction.query.one() == jurisdiction
+    assert Jurisdiction.query.filter_by(election_id=election.id).one() == jurisdiction
 
 
 def test_remove_outdated_jurisdictions(session):
@@ -88,5 +88,5 @@ def test_remove_outdated_jurisdictions(session):
 
     assert new_admins == []
     assert User.query.count() == 1  # keep the user
-    assert Jurisdiction.query.count() == 0
+    assert Jurisdiction.query.filter_by(election_id=election.id).count() == 0
     assert JurisdictionAdministration.query.count() == 0
