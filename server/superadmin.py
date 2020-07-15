@@ -15,7 +15,9 @@ superadmin = Blueprint("superadmin", __name__)
 )
 @with_superadmin_access
 def superadmin_organizations():
-    organizations = Organization.query.all()
+    organizations = Organization.query.execution_options(
+        query_across_elections=True
+    ).all()
     return render_template("superadmin/organizations.html", organizations=organizations)
 
 

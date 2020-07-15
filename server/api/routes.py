@@ -242,7 +242,9 @@ def validate_new_election(election: JSONDict, organization_id: str):
         organization_id
         and Election.query.filter_by(
             audit_name=election["auditName"], organization_id=organization_id
-        ).first()
+        )
+        .execution_options(query_across_elections=True)
+        .first()
     ):
         raise Conflict(
             f"An audit with name '{election['auditName']}' already exists within your organization"

@@ -107,7 +107,8 @@ def test_ballot_manifest_replace(
     )
     assert_ok(rv)
 
-    num_files = File.query.count()
+    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
+    assert file_id
 
     bgcompute_update_ballot_manifest_file()
 
@@ -128,7 +129,7 @@ def test_ballot_manifest_replace(
     assert_ok(rv)
 
     # The old file should have been deleted
-    assert File.query.count() == num_files
+    assert File.query.get(file_id) is None
 
     bgcompute_update_ballot_manifest_file()
 

@@ -51,6 +51,9 @@ app.register_blueprint(superadmin)
 from . import static
 from . import errors
 
+if FLASK_ENV in DEVELOPMENT_ENVS:
+    from . import check_query_scope
+
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):  # pylint: disable=unused-argument
