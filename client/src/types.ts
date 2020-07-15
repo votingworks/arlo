@@ -34,6 +34,10 @@ export interface ISampleSizeOption {
   type: string | null
 }
 
+export interface ISampleSizeOptions {
+  [key: string]: ISampleSizeOption[]
+}
+
 export interface IContest {
   id: string
   isTargeted: boolean

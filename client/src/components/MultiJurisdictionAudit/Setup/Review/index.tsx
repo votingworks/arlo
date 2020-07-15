@@ -9,12 +9,15 @@ import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../../useAuditSettings'
 import useContests from '../../useContests'
-import { IContest, ISampleSizeOption } from '../../../../types'
+import {
+  IContest,
+  ISampleSizeOptions,
+  ISampleSizeOption,
+} from '../../../../types'
 import useJurisdictions, { FileProcessingStatus } from '../../useJurisdictions'
 import { api, checkAndToast, testNumber } from '../../../utilities'
 import FormSection, {
   FormSectionDescription,
-  FormSectionLabel,
 } from '../../../Atoms/Form/FormSection'
 import ContestsTable from './ContestsTable'
 import SettingsTable from './SettingsTable'
@@ -22,15 +25,22 @@ import { isSetupComplete } from '../../StatusBox'
 import useJurisdictionFile from '../Participants/useJurisdictionFile'
 import ConfirmLaunch from './ConfirmLaunch'
 import FormField from '../../../Atoms/Form/FormField'
+import ElevatedCard from '../../../Atoms/SpacedCard'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
 })
 
-interface IStringSampleSize {
-  size: string
-  type: string | null
-  prob: number | null
+interface IStringSampleSizes {
+  [key: string]: {
+    size: string
+    type: string | null
+    prob: number | null
+  }[]
+}
+
+interface IFormOptions {
+  [key: string]: string
 }
 
 interface IProps {
@@ -47,23 +57,31 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const [jurisdictionFile] = useJurisdictionFile(electionId)
   const [contests] = useContests(electionId)
   const [sampleSizeOptions, setSampleSizeOptions] = useState<
-    IStringSampleSize[]
-  >([])
-  const [sampleSize, setSampleSize] = useState('')
+    IStringSampleSizes
+  >({})
+  const [sampleSizes, setSampleSizes] = useState<IFormOptions>({})
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
   useEffect(() => {
     ;(async () => {
       try {
-        const { sampleSizes }: { sampleSizes: ISampleSizeOption[] } = await api(
+        const {
+          sampleSizes: options,
+        }: { sampleSizes: ISampleSizeOptions } = await api(
           `/election/${electionId}/sample-sizes`
         )
         setSampleSizeOptions(
-          sampleSizes.map(v => ({
-            ...v,
-            size: `${v.size}`,
-          }))
+          Object.keys(options).reduce(
+            (a, v) => ({
+              ...a,
+              [v]: options[v].map(c => ({
+                ...options[v],
+                size: `${c.size}`,
+              })),
+            }),
+            {}
+          )
         )
       } catch (err) /* istanbul ignore next */ {
         // TEST TODO
@@ -77,7 +95,16 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       const result = await api(`/election/${electionId}/round`, {
         method: 'POST',
         body: JSON.stringify({
-          sampleSize: Number(sampleSize),
+          sampleSizes: {
+            // submits in the form: { [key: string]: number }
+            ...Object.keys(sampleSizes).reduce(
+              (a, v) => ({
+                ...a,
+                [v]: Number(sampleSizes[v]),
+              }),
+              {}
+            ),
+          },
           roundNum: 1,
         }),
         headers: {
@@ -126,6 +153,15 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       j.ballotManifest.processing.status === FileProcessingStatus.PROCESSED
   ).length
 
+  const initialValues = targetedContests.length
+    ? targetedContests.map(c => ({
+        [c.id]: sampleSizeOptions[c.id] ? sampleSizeOptions[c.id][0].size : '',
+      }))
+    : []
+  const initialCustomValues = targetedContests.length
+    ? targetedContests.map(c => ({ [c.id]: '' }))
+    : []
+
   return (
     <div>
       <H2Title>Review &amp; Launch</H2Title>
@@ -134,87 +170,96 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         editable. Please make sure this data is correct before launching the
         audit.
       </Callout>
+      <ElevatedCard>
+        <H4>Audit Settings</H4>
+        <SettingsTable>
+          <tbody>
+            <tr>
+              <td>Election Name:</td>
+              <td>{electionName}</td>
+            </tr>
+            <tr>
+              <td>Risk Limit:</td>
+              <td>{riskLimit}</td>
+            </tr>
+            <tr>
+              <td>Random Seed:</td>
+              <td>{randomSeed}</td>
+            </tr>
+            <tr>
+              <td>Participating Jurisdictions:</td>
+              <td>
+                <a
+                  href={`/api/election/${electionId}/jurisdiction/file/csv`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {jurisdictionFile && jurisdictionFile.file
+                    ? jurisdictionFile.file.name
+                    : ''}
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>Audit Board Data Entry:</td>
+              <td>{online ? 'Online' : 'Offline'}</td>
+            </tr>
+          </tbody>
+        </SettingsTable>
+        <ContestsTable>
+          <thead>
+            <tr>
+              <th>Target Contests</th>
+              <th>Jurisdictions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {targetedContests.map((c: IContest) => (
+              <tr key={c.id}>
+                <td>{c.name}</td>
+                <td>{c.jurisdictionIds.join(', ')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </ContestsTable>
+        <ContestsTable>
+          <thead>
+            <tr>
+              <th>Opportunistic Contests</th>
+              <th>Jurisdictions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {opportunisticContests.map((c: IContest) => (
+              <tr key={c.id}>
+                <td>{c.name}</td>
+                <td>{c.jurisdictionIds.join(', ')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </ContestsTable>
+      </ElevatedCard>
       <br />
-      <H4>Audit Settings</H4>
-      <SettingsTable>
-        <tbody>
-          <tr>
-            <td>Election Name:</td>
-            <td>{electionName}</td>
-          </tr>
-          <tr>
-            <td>Risk Limit:</td>
-            <td>{riskLimit}</td>
-          </tr>
-          <tr>
-            <td>Random Seed:</td>
-            <td>{randomSeed}</td>
-          </tr>
-          <tr>
-            <td>Participating Jurisdictions:</td>
-            <td>
-              <a
-                href={`/api/election/${electionId}/jurisdiction/file/csv`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {jurisdictionFile && jurisdictionFile.file
-                  ? jurisdictionFile.file.name
-                  : ''}
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td>Audit Board Data Entry:</td>
-            <td>{online ? 'Online' : 'Offline'}</td>
-          </tr>
-        </tbody>
-      </SettingsTable>
-      <ContestsTable>
-        <thead>
-          <tr>
-            <th>Target Contests</th>
-            <th>Jurisdictions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {targetedContests.map((c: IContest) => (
-            <tr key={c.id}>
-              <td>{c.name}</td>
-              <td>{c.jurisdictionIds.join(', ')}</td>
-            </tr>
-          ))}
-        </tbody>
-      </ContestsTable>
-      <ContestsTable>
-        <thead>
-          <tr>
-            <th>Opportunistic Contests</th>
-            <th>Jurisdictions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {opportunisticContests.map((c: IContest) => (
-            <tr key={c.id}>
-              <td>{c.name}</td>
-              <td>{c.jurisdictionIds.join(', ')}</td>
-            </tr>
-          ))}
-        </tbody>
-      </ContestsTable>
-      <H4>Sample Size Options</H4>
+      <H4>Estimated Sample Sizes</H4>
       <Formik
         initialValues={{
-          sampleSize: sampleSizeOptions.length ? sampleSizeOptions[0].size : '',
-          customSampleSize: '',
+          sampleSizes: initialValues,
+          customSampleSizes: initialCustomValues,
         }}
         enableReinitialize
-        onSubmit={v => {
-          if (v.sampleSize === 'custom') {
-            setSampleSize(v.customSampleSize)
-          } else {
-            setSampleSize(v.sampleSize)
-          }
+        onSubmit={values => {
+          setSampleSizes(
+            values.sampleSizes.reduce((a, s, i) => {
+              const contestId = Object.keys(s)[0]
+              if (s[contestId] === 'custom') {
+                return {
+                  ...a,
+                  [contestId]: values.customSampleSizes[i][contestId],
+                }
+              }
+              return { ...a, [contestId]: s[contestId] }
+            }, {})
+          )
           setIsConfirmDialogOpen(true)
         }}
       >
@@ -222,53 +267,68 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           values,
           handleSubmit,
           setFieldValue,
-        }: FormikProps<{ sampleSize: string }>) => (
+        }: FormikProps<{ sampleSizes: { [key: string]: string }[] }>) => (
           <Form data-testid="sample-size-form">
-            {sampleSizeOptions.length && (
+            {Object.keys(sampleSizeOptions).length && (
               <FormSection>
-                <FormSectionLabel>Estimated Sample Size</FormSectionLabel>
                 <FormSectionDescription>
                   Choose the initial sample size for each contest you would like
                   to use for Round 1 of the audit from the options below.
                 </FormSectionDescription>
-                <FormSectionDescription>
-                  <RadioGroup
-                    name="sampleSize"
-                    onChange={e =>
-                      setFieldValue('sampleSize', e.currentTarget.value)
-                    }
-                    selectedValue={getIn(values, 'sampleSize')}
-                    disabled={locked}
-                  >
-                    {sampleSizeOptions.map((option: ISampleSizeOption) => {
-                      return (
-                        <Radio value={option.size} key={option.size}>
-                          {option.type ? 'BRAVO Average Sample Number: ' : ''}
-                          {`${option.size} samples`}
-                          {option.prob
-                            ? ` (${percentFormatter.format(
-                                option.prob
-                              )} chance of reaching risk limit and completing the audit in one round)`
-                            : ''}
-                        </Radio>
-                      )
-                    })}
-                    <Radio value="custom">
-                      Enter your own sample size (not recommended)
-                    </Radio>
-                    {getIn(values, 'sampleSize') === 'custom' && (
-                      <Field
-                        component={FormField}
-                        name="customSampleSize"
-                        type="text"
-                        validate={testNumber(
-                          Number(targetedContests[0].totalBallotsCast),
-                          'Must be less than or equal to the total number of ballots in targeted contests'
+                {targetedContests.map((contest, i) => (
+                  <ElevatedCard key={contest.id}>
+                    <FormSectionDescription>
+                      <H4>{contest.name}</H4>
+                      <RadioGroup
+                        name={`sampleSizes[${i}][${contest.id}]`}
+                        onChange={e =>
+                          setFieldValue(
+                            `sampleSizes[${i}][${contest.id}]`,
+                            e.currentTarget.value
+                          )
+                        }
+                        selectedValue={getIn(
+                          values,
+                          `sampleSizes[${i}][${contest.id}]`
                         )}
-                      />
-                    )}
-                  </RadioGroup>
-                </FormSectionDescription>
+                        disabled={locked}
+                      >
+                        {sampleSizeOptions[contest.id].map(
+                          (option: ISampleSizeOption) => {
+                            return (
+                              <Radio value={option.size} key={option.size}>
+                                {option.type
+                                  ? 'BRAVO Average Sample Number: '
+                                  : ''}
+                                {`${option.size} samples`}
+                                {option.prob
+                                  ? ` (${percentFormatter.format(
+                                      option.prob
+                                    )} chance of reaching risk limit and completing the audit in one round)`
+                                  : ''}
+                              </Radio>
+                            )
+                          }
+                        )}
+                        <Radio value="custom">
+                          Enter your own sample size (not recommended)
+                        </Radio>
+                        {getIn(values, `sampleSizes[${i}][${contest.id}]`) ===
+                          'custom' && (
+                          <Field
+                            component={FormField}
+                            name={`customSampleSizes[${i}][${contest.id}]`}
+                            type="text"
+                            validate={testNumber(
+                              Number(contest.totalBallotsCast),
+                              `Must be less than or equal to: ${contest.totalBallotsCast} (the total number of ballots in this targeted contest)`
+                            )}
+                          />
+                        )}
+                      </RadioGroup>
+                    </FormSectionDescription>
+                  </ElevatedCard>
+                ))}
               </FormSection>
             )}
             <FormButtonBar>
