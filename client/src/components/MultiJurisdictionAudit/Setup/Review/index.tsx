@@ -28,14 +28,6 @@ const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
 })
 
-interface IStringSampleSizes {
-  [key: string]: {
-    size: string
-    type: string | null
-    prob: number | null
-  }[]
-}
-
 interface IFormOptions {
   [key: string]: string
 }
@@ -101,14 +93,21 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       j.ballotManifest.processing.status === FileProcessingStatus.PROCESSED
   ).length
 
-  const initialValues = targetedContests.length
-    ? targetedContests.map(c => ({
-        [c.id]: sampleSizeOptions ? sampleSizeOptions[c.id][0].size : '',
-      }))
-    : []
-  const initialCustomValues = targetedContests.length
-    ? targetedContests.map(c => ({ [c.id]: '' }))
-    : []
+  const initialValues: IFormOptions = sampleSizeOptions
+    ? Object.keys(sampleSizeOptions).reduce(
+        (a, contestId) => ({
+          ...a,
+          [contestId]: sampleSizeOptions[contestId][0].size,
+        }),
+        {}
+      )
+    : {}
+  const initialCustomValues: IFormOptions = sampleSizeOptions
+    ? Object.keys(sampleSizeOptions).reduce(
+        (a, contestId) => ({ ...a, [contestId]: '' }),
+        {}
+      )
+    : {}
 
   return (
     <div>
@@ -195,17 +194,16 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           customSampleSizes: initialCustomValues,
         }}
         enableReinitialize
-        onSubmit={values => {
+        onSubmit={({ sampleSizes: sizes, customSampleSizes }) => {
           setSampleSizes(
-            values.sampleSizes.reduce((a, s, i) => {
-              const contestId = Object.keys(s)[0]
-              if (s[contestId] === 'custom') {
+            Object.keys(sizes).reduce((a, contestId) => {
+              if (sizes[contestId] === 'custom') {
                 return {
                   ...a,
-                  [contestId]: values.customSampleSizes[i][contestId],
+                  [contestId]: customSampleSizes[contestId],
                 }
               }
-              return { ...a, [contestId]: s[contestId] }
+              return { ...a, [contestId]: sizes[contestId] }
             }, {})
           )
           setIsConfirmDialogOpen(true)
@@ -215,29 +213,32 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           values,
           handleSubmit,
           setFieldValue,
-        }: FormikProps<{ sampleSizes: { [key: string]: string }[] }>) => (
+        }: FormikProps<{
+          sampleSizes: { [key: string]: string }
+          customSampleSizes: { [key: string]: string }
+        }>) => (
           <Form data-testid="sample-size-form">
-            {sampleSizeOptions && Object.keys(sampleSizeOptions).length && (
+            {sampleSizeOptions && (
               <FormSection>
                 <FormSectionDescription>
                   Choose the initial sample size for each contest you would like
                   to use for Round 1 of the audit from the options below.
                 </FormSectionDescription>
-                {targetedContests.map((contest, i) => (
+                {targetedContests.map(contest => (
                   <ElevatedCard key={contest.id}>
                     <FormSectionDescription>
                       <H4>{contest.name}</H4>
                       <RadioGroup
-                        name={`sampleSizes[${i}][${contest.id}]`}
+                        name={`sampleSizes[${contest.id}]`}
                         onChange={e =>
                           setFieldValue(
-                            `sampleSizes[${i}][${contest.id}]`,
+                            `sampleSizes[${contest.id}]`,
                             e.currentTarget.value
                           )
                         }
                         selectedValue={getIn(
                           values,
-                          `sampleSizes[${i}][${contest.id}]`
+                          `sampleSizes[${contest.id}]`
                         )}
                         disabled={locked}
                       >
@@ -261,11 +262,11 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                         <Radio value="custom">
                           Enter your own sample size (not recommended)
                         </Radio>
-                        {getIn(values, `sampleSizes[${i}][${contest.id}]`) ===
+                        {getIn(values, `sampleSizes[${contest.id}]`) ===
                           'custom' && (
                           <Field
                             component={FormField}
-                            name={`customSampleSizes[${i}][${contest.id}]`}
+                            name={`customSampleSizes[${contest.id}]`}
                             type="text"
                             validate={testNumber(
                               Number(contest.totalBallotsCast),

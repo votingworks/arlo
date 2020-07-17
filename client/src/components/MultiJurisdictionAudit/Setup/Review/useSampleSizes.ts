@@ -23,15 +23,17 @@ const loadSampleSizes = async (
   electionId: string
 ): Promise<IStringSampleSizeOptions | null> => {
   try {
-    const options: ISampleSizeOptions = await api(
+    const {
+      sampleSizes: options,
+    }: { sampleSizes: ISampleSizeOptions } = await api(
       `/election/${electionId}/sample-sizes`
     )
     return Object.keys(options).reduce(
-      (a, v) => ({
+      (a, contestId) => ({
         ...a,
-        [v]: options[v].map(c => ({
-          ...options[v],
-          size: `${c.size}`,
+        [contestId]: options[contestId].map(option => ({
+          ...option,
+          size: `${option.size}`,
         })),
       }),
       {}
