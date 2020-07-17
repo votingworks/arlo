@@ -28,16 +28,6 @@ export interface ICandidate {
   numVotes: number | string
 }
 
-export interface ISampleSizeOption {
-  size: number | string
-  prob: number | null
-  type: string | null
-}
-
-export interface ISampleSizeOptions {
-  [key: string]: ISampleSizeOption[]
-}
-
 export interface IContest {
   id: string
   isTargeted: boolean
@@ -120,6 +110,12 @@ export interface IJurisdiction {
   auditBoards: Pick<IAuditBoard, 'id' | 'name' | 'members' | 'passphrase'>[]
   ballotManifest?: IBallotManifest
   batches?: IBatch[] // optional until I'm ready to update everything
+}
+
+export interface ISampleSizeOption {
+  size: number | string
+  prob: number | null
+  type: string | null
 }
 
 export interface IRoundContest {

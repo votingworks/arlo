@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
 import { toast } from 'react-toastify'
@@ -9,13 +9,9 @@ import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import H2Title from '../../../Atoms/H2Title'
 import useAuditSettings from '../../useAuditSettings'
 import useContests from '../../useContests'
-import {
-  IContest,
-  ISampleSizeOptions,
-  ISampleSizeOption,
-} from '../../../../types'
+import { IContest, ISampleSizeOption } from '../../../../types'
 import useJurisdictions, { FileProcessingStatus } from '../../useJurisdictions'
-import { api, checkAndToast, testNumber } from '../../../utilities'
+import { testNumber } from '../../../utilities'
 import FormSection, {
   FormSectionDescription,
 } from '../../../Atoms/Form/FormSection'
@@ -26,6 +22,7 @@ import useJurisdictionFile from '../Participants/useJurisdictionFile'
 import ConfirmLaunch from './ConfirmLaunch'
 import FormField from '../../../Atoms/Form/FormField'
 import ElevatedCard from '../../../Atoms/SpacedCard'
+import useSampleSizes from './useSampleSizes'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
@@ -56,68 +53,19 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const jurisdictions = useJurisdictions(electionId)
   const [jurisdictionFile] = useJurisdictionFile(electionId)
   const [contests] = useContests(electionId)
-  const [sampleSizeOptions, setSampleSizeOptions] = useState<
-    IStringSampleSizes
-  >({})
   const [sampleSizes, setSampleSizes] = useState<IFormOptions>({})
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
-
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const {
-          sampleSizes: options,
-        }: { sampleSizes: ISampleSizeOptions } = await api(
-          `/election/${electionId}/sample-sizes`
-        )
-        setSampleSizeOptions(
-          Object.keys(options).reduce(
-            (a, v) => ({
-              ...a,
-              [v]: options[v].map(c => ({
-                ...options[v],
-                size: `${c.size}`,
-              })),
-            }),
-            {}
-          )
-        )
-      } catch (err) /* istanbul ignore next */ {
-        // TEST TODO
-        toast.error(err.message)
-      }
-    })()
-  }, [electionId])
+  const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(electionId)
 
   const submit = async () => {
     try {
-      const result = await api(`/election/${electionId}/round`, {
-        method: 'POST',
-        body: JSON.stringify({
-          sampleSizes: {
-            // submits in the form: { [key: string]: number }
-            ...Object.keys(sampleSizes).reduce(
-              (a, v) => ({
-                ...a,
-                [v]: Number(sampleSizes[v]),
-              }),
-              {}
-            ),
-          },
-          roundNum: 1,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      // checkAndToast left here for consistency and reference but not tested since it's vestigial
-      /* istanbul ignore next */
-      if (checkAndToast(result)) {
+      if (uploadSampleSizes(sampleSizes)) {
+        refresh()
+        history.push(`/election/${electionId}/progress`)
+      } else {
         return
       }
-      refresh()
-      history.push(`/election/${electionId}/progress`)
     } catch (err) /* istanbul ignore next */ {
       // TEST TODO
       toast.error(err.message)
@@ -155,7 +103,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
 
   const initialValues = targetedContests.length
     ? targetedContests.map(c => ({
-        [c.id]: sampleSizeOptions[c.id] ? sampleSizeOptions[c.id][0].size : '',
+        [c.id]: sampleSizeOptions ? sampleSizeOptions[c.id][0].size : '',
       }))
     : []
   const initialCustomValues = targetedContests.length
@@ -269,7 +217,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           setFieldValue,
         }: FormikProps<{ sampleSizes: { [key: string]: string }[] }>) => (
           <Form data-testid="sample-size-form">
-            {Object.keys(sampleSizeOptions).length && (
+            {sampleSizeOptions && Object.keys(sampleSizeOptions).length && (
               <FormSection>
                 <FormSectionDescription>
                   Choose the initial sample size for each contest you would like
