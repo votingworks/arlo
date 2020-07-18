@@ -291,12 +291,24 @@ describe('Audit Setup > Review & Launch', () => {
       await screen.findByText(
         'Must be less than or equal to: 30 (the total number of ballots in this targeted contest)'
       )
+      userEvent.clear(customSampleSizeInput)
+      fireEvent.blur(customSampleSizeInput)
       userEvent.type(customSampleSizeInput, '5')
+      fireEvent.blur(customSampleSizeInput)
+      await waitFor(() =>
+        expect(
+          screen.queryByText(
+            'Must be less than or equal to: 30 (the total number of ballots in this targeted contest)'
+          )
+        ).toBeNull()
+      )
       const launchButton = await screen.findByText('Launch Audit')
       userEvent.click(launchButton, { bubbles: true })
       await screen.findByText('Are you sure you want to launch the audit?')
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton, { bubbles: true })
+      // evidently this is calling handleSubmit on line 293, but onSubmit on line 198 is not getting called.
+      // The error text is vanishing (I think), so it should be passing validation, but that's the only thing that I know of to block submission.
       await waitFor(() => expect(refreshMock).toHaveBeenCalled())
     })
   })

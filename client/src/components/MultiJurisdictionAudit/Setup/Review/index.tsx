@@ -289,7 +289,9 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                   locked ||
                   !isSetupComplete(jurisdictions, contests, auditSettings)
                 }
-                onClick={handleSubmit}
+                onClick={() => {
+                  handleSubmit()
+                }}
               >
                 Launch Audit
               </FormButton>
