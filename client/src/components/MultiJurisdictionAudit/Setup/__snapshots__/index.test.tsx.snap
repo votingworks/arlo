@@ -1776,100 +1776,104 @@ exports[`Setup renders Review & Launch stage 1`] = `
     >
       Audit Settings
     </h4>
-    <table
-      class="sc-jKJlTe bkTFhC"
+    <div
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
-      <tbody>
-        <tr>
-          <td>
-            Election Name:
-          </td>
-          <td>
-            Election Name
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Risk Limit:
-          </td>
-          <td>
-            10
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Random Seed:
-          </td>
-          <td>
-            12345
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Participating Jurisdictions:
-          </td>
-          <td>
-            <a
-              href="/api/election/1/jurisdiction/file/csv"
-              rel="noopener noreferrer"
-              target="_blank"
-            />
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Audit Board Data Entry:
-          </td>
-          <td>
-            Online
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <table
-      class="sc-ckVGcZ qPOwv"
-    >
-      <thead>
-        <tr>
-          <th>
-            Target Contests
-          </th>
-          <th>
-            Jurisdictions
-          </th>
-        </tr>
-      </thead>
-      <tbody />
-    </table>
-    <table
-      class="sc-ckVGcZ qPOwv"
-    >
-      <thead>
-        <tr>
-          <th>
-            Opportunistic Contests
-          </th>
-          <th>
-            Jurisdictions
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td />
-          <td />
-        </tr>
-      </tbody>
-    </table>
+      <table
+        class="sc-jKJlTe bkTFhC"
+      >
+        <tbody>
+          <tr>
+            <td>
+              Election Name:
+            </td>
+            <td>
+              Election Name
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Risk Limit:
+            </td>
+            <td>
+              10
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Random Seed:
+            </td>
+            <td>
+              12345
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Participating Jurisdictions:
+            </td>
+            <td>
+              <a
+                href="/api/election/1/jurisdiction/file/csv"
+                rel="noopener noreferrer"
+                target="_blank"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Board Data Entry:
+            </td>
+            <td>
+              Online
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table
+        class="sc-ckVGcZ qPOwv"
+      >
+        <thead>
+          <tr>
+            <th>
+              Target Contests
+            </th>
+            <th>
+              Jurisdictions
+            </th>
+          </tr>
+        </thead>
+        <tbody />
+      </table>
+      <table
+        class="sc-ckVGcZ qPOwv"
+      >
+        <thead>
+          <tr>
+            <th>
+              Opportunistic Contests
+            </th>
+            <th>
+              Jurisdictions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td />
+            <td />
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br />
     <h4
       class="bp3-heading"
     >
-      Sample Size Options
+      Estimated Sample Sizes
     </h4>
     <form
       data-testid="sample-size-form"
     >
-      0
       <div
         class="sc-htpNat gtULUV"
       >
@@ -1939,100 +1943,104 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
     >
       Audit Settings
     </h4>
-    <table
-      class="sc-jKJlTe bkTFhC"
+    <div
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
-      <tbody>
-        <tr>
-          <td>
-            Election Name:
-          </td>
-          <td>
-            Election Name
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Risk Limit:
-          </td>
-          <td>
-            10
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Random Seed:
-          </td>
-          <td>
-            12345
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Participating Jurisdictions:
-          </td>
-          <td>
-            <a
-              href="/api/election/1/jurisdiction/file/csv"
-              rel="noopener noreferrer"
-              target="_blank"
-            />
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Audit Board Data Entry:
-          </td>
-          <td>
-            Online
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <table
-      class="sc-ckVGcZ qPOwv"
-    >
-      <thead>
-        <tr>
-          <th>
-            Target Contests
-          </th>
-          <th>
-            Jurisdictions
-          </th>
-        </tr>
-      </thead>
-      <tbody />
-    </table>
-    <table
-      class="sc-ckVGcZ qPOwv"
-    >
-      <thead>
-        <tr>
-          <th>
-            Opportunistic Contests
-          </th>
-          <th>
-            Jurisdictions
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td />
-          <td />
-        </tr>
-      </tbody>
-    </table>
+      <table
+        class="sc-jKJlTe bkTFhC"
+      >
+        <tbody>
+          <tr>
+            <td>
+              Election Name:
+            </td>
+            <td>
+              Election Name
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Risk Limit:
+            </td>
+            <td>
+              10
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Random Seed:
+            </td>
+            <td>
+              12345
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Participating Jurisdictions:
+            </td>
+            <td>
+              <a
+                href="/api/election/1/jurisdiction/file/csv"
+                rel="noopener noreferrer"
+                target="_blank"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Board Data Entry:
+            </td>
+            <td>
+              Online
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table
+        class="sc-ckVGcZ qPOwv"
+      >
+        <thead>
+          <tr>
+            <th>
+              Target Contests
+            </th>
+            <th>
+              Jurisdictions
+            </th>
+          </tr>
+        </thead>
+        <tbody />
+      </table>
+      <table
+        class="sc-ckVGcZ qPOwv"
+      >
+        <thead>
+          <tr>
+            <th>
+              Opportunistic Contests
+            </th>
+            <th>
+              Jurisdictions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td />
+            <td />
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br />
     <h4
       class="bp3-heading"
     >
-      Sample Size Options
+      Estimated Sample Sizes
     </h4>
     <form
       data-testid="sample-size-form"
     >
-      0
       <div
         class="sc-htpNat gtULUV"
       >
@@ -2102,100 +2110,104 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
     >
       Audit Settings
     </h4>
-    <table
-      class="sc-jKJlTe bkTFhC"
+    <div
+      class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
-      <tbody>
-        <tr>
-          <td>
-            Election Name:
-          </td>
-          <td>
-            Election Name
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Risk Limit:
-          </td>
-          <td>
-            10
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Random Seed:
-          </td>
-          <td>
-            12345
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Participating Jurisdictions:
-          </td>
-          <td>
-            <a
-              href="/api/election/1/jurisdiction/file/csv"
-              rel="noopener noreferrer"
-              target="_blank"
-            />
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Audit Board Data Entry:
-          </td>
-          <td>
-            Online
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <table
-      class="sc-ckVGcZ qPOwv"
-    >
-      <thead>
-        <tr>
-          <th>
-            Target Contests
-          </th>
-          <th>
-            Jurisdictions
-          </th>
-        </tr>
-      </thead>
-      <tbody />
-    </table>
-    <table
-      class="sc-ckVGcZ qPOwv"
-    >
-      <thead>
-        <tr>
-          <th>
-            Opportunistic Contests
-          </th>
-          <th>
-            Jurisdictions
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td />
-          <td />
-        </tr>
-      </tbody>
-    </table>
+      <table
+        class="sc-jKJlTe bkTFhC"
+      >
+        <tbody>
+          <tr>
+            <td>
+              Election Name:
+            </td>
+            <td>
+              Election Name
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Risk Limit:
+            </td>
+            <td>
+              10
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Random Seed:
+            </td>
+            <td>
+              12345
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Participating Jurisdictions:
+            </td>
+            <td>
+              <a
+                href="/api/election/1/jurisdiction/file/csv"
+                rel="noopener noreferrer"
+                target="_blank"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Board Data Entry:
+            </td>
+            <td>
+              Online
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table
+        class="sc-ckVGcZ qPOwv"
+      >
+        <thead>
+          <tr>
+            <th>
+              Target Contests
+            </th>
+            <th>
+              Jurisdictions
+            </th>
+          </tr>
+        </thead>
+        <tbody />
+      </table>
+      <table
+        class="sc-ckVGcZ qPOwv"
+      >
+        <thead>
+          <tr>
+            <th>
+              Opportunistic Contests
+            </th>
+            <th>
+              Jurisdictions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td />
+            <td />
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br />
     <h4
       class="bp3-heading"
     >
-      Sample Size Options
+      Estimated Sample Sizes
     </h4>
     <form
       data-testid="sample-size-form"
     >
-      0
       <div
         class="sc-htpNat gtULUV"
       >

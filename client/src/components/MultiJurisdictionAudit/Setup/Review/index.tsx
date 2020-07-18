@@ -117,8 +117,9 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         editable. Please make sure this data is correct before launching the
         audit.
       </Callout>
+      <br />
+      <H4>Audit Settings</H4>
       <ElevatedCard>
-        <H4>Audit Settings</H4>
         <SettingsTable>
           <tbody>
             <tr>
