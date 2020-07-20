@@ -30,10 +30,13 @@ jsonschema = "*"
 numpy = "*"
 psycopg2-binary = "*"
 requests = "*"
-sqlalchemy-utils = "*"
+# sqlalchemy-utils 0.36.8 introduced a bug
+# Can probably reset this to * once the next patch comes out
+sqlalchemy-utils = "==0.36.7"
 uuid = "*"
 xkcdpass = "*"
 sqlalchemy = "*"
+typing-extensions = "*"
 
 [requires]
 python_version = "3.7"
