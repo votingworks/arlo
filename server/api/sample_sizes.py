@@ -17,12 +17,12 @@ def cumulative_contest_results(contest: Contest) -> Dict[str, int]:
     return results_by_choice
 
 
-def sample_size_options(election: Election, round_one=False) -> dict:
-    if not election.contests:
+def sample_size_options(view: ElectionView, round_one=False) -> dict:
+    if not view.election.contests:
         raise BadRequest("Cannot compute sample sizes until contests are set")
-    if not election.risk_limit:
+    if not view.election.risk_limit:
         raise BadRequest("Cannot compute sample sizes until risk limit is set")
-    risk_limit: int = election.risk_limit  # Need this to pass typechecking
+    risk_limit: int = view.election.risk_limit  # Need this to pass typechecking
 
     def sample_sizes_for_contest(contest: Contest) -> dict:
         # Because the /sample-sizes endpoint is only used for the audit setup flow,
@@ -41,9 +41,7 @@ def sample_size_options(election: Election, round_one=False) -> dict:
             cumulative_results,
         )
 
-    targeted_contests = Contest.query.filter_by(
-        election_id=election.id, is_targeted=True
-    )
+    targeted_contests = view.Contest_query.filter_by(is_targeted=True)
     targeted_contests_that_havent_met_risk_limit = (
         targeted_contests.all()
         if round_one
@@ -66,6 +64,7 @@ def sample_size_options(election: Election, round_one=False) -> dict:
 @api.route("/election/<election_id>/sample-sizes", methods=["GET"])
 @with_election_access
 def get_sample_sizes(election: Election):
-    sample_sizes = sample_size_options(election, round_one=True)
+    view = ElectionView(election.id)
+    sample_sizes = sample_size_options(view, round_one=True)
     json_sizes = list(sample_sizes.values())
     return jsonify({"sampleSizes": json_sizes})

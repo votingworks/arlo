@@ -82,9 +82,9 @@ class SampleDraw(NamedTuple):
     ticket_number: str
 
 
-def sample_ballots(election: Election, new_round: Round, sample_size: int):
+def sample_ballots(view: ElectionView, new_round: Round, sample_size: int):
     # Figure out which contests still need auditing
-    previous_round = get_previous_round(election, new_round)
+    previous_round = get_previous_round(view.election, new_round)
     contests_that_havent_met_risk_limit = (
         [
             round_contest.contest
@@ -92,7 +92,7 @@ def sample_ballots(election: Election, new_round: Round, sample_size: int):
             if not round_contest.is_complete
         ]
         if previous_round
-        else election.contests
+        else view.election.contests
     )
 
     # Create RoundContest objects to include the contests in this round
@@ -106,7 +106,7 @@ def sample_ballots(election: Election, new_round: Round, sample_size: int):
         # Compute the total number of ballot samples in all rounds leading up to
         # this one. Note that this corresponds to the number of SampledBallotDraws,
         # not SampledBallots.
-        num_previously_sampled = SampledBallotDraw.query.filter_by(
+        num_previously_sampled = view.SampledBallotDraw_query.filter_by(
             contest_id=contest.id
         ).count()
 
@@ -125,7 +125,10 @@ def sample_ballots(election: Election, new_round: Round, sample_size: int):
 
         # Do the math! i.e. compute the actual sample
         sample = sampler.draw_sample(
-            str(election.random_seed), manifest, sample_size, num_previously_sampled
+            str(view.election.random_seed),
+            manifest,
+            sample_size,
+            num_previously_sampled,
         )
         return [
             SampleDraw(
@@ -160,10 +163,8 @@ def sample_ballots(election: Election, new_round: Round, sample_size: int):
     )
 
     # Create a mapping from batch keys used in the sampling back to batch ids
-    batches = (
-        Batch.query.join(Jurisdiction)
-        .filter_by(election_id=election.id)
-        .values(Jurisdiction.name, Batch.name, Batch.id)
+    batches = view.Batch_query.join(Jurisdiction).values(
+        Jurisdiction.name, Batch.name, Batch.id
     )
     batch_key_to_id = {
         (jurisdiction_name, batch_name): batch_id
@@ -181,7 +182,7 @@ def sample_ballots(election: Election, new_round: Round, sample_size: int):
         batch_key, ballot_position = ballot_key
         batch_id = batch_key_to_id[batch_key]
 
-        sampled_ballot = SampledBallot.query.filter_by(
+        sampled_ballot = view.SampledBallot_query.filter_by(
             batch_id=batch_id, ballot_position=ballot_position
         ).first()
         if not sampled_ballot:
@@ -226,6 +227,7 @@ def list_rounds_jurisdiction_admin(
 @api.route("/election/<election_id>/round", methods=["POST"])
 @with_election_access
 def create_round(election: Election):
+    view = ElectionView(election.id)
     json_round = request.get_json()
     validate_round(json_round, election)
 
@@ -236,7 +238,7 @@ def create_round(election: Election):
     sample_size = (
         json_round["sampleSize"]
         if json_round["roundNum"] == 1
-        else sample_size_options(election)["0.9"]["size"]
+        else sample_size_options(view)["0.9"]["size"]
     )
 
     round = Round(
@@ -244,7 +246,7 @@ def create_round(election: Election):
     )
     db_session.add(round)
 
-    sample_ballots(election, round, sample_size)
+    sample_ballots(view, round, sample_size)
 
     db_session.commit()
 
