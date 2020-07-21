@@ -243,9 +243,7 @@ def create_round(election: Election):
         json_round["sampleSizes"]
         if json_round["roundNum"] == 1
         else {
-            contest_id: next(
-                option["size"] for option in options if option["prob"] == 0.9
-            )
+            contest_id: options["0.9"]["size"]
             for contest_id, options in sample_size_options(election).items()
         }
     )

@@ -9,16 +9,16 @@ snapshots = Snapshot()
 
 snapshots["test_sample_size_round_1 1"] = {
     "Contest 1": [
-        {"prob": 0.71, "size": 191, "type": "ASN"},
-        {"prob": 0.7, "size": 295, "type": None},
-        {"prob": 0.8, "size": 391, "type": None},
-        {"prob": 0.9, "size": 562, "type": None},
+        {"key": "asn", "prob": 0.71, "size": 191},
+        {"key": "0.7", "prob": 0.7, "size": 295},
+        {"key": "0.8", "prob": 0.8, "size": 391},
+        {"key": "0.9", "prob": 0.9, "size": 562},
     ],
     "Contest 2": [
-        {"prob": 0.55, "size": 485, "type": "ASN"},
-        {"prob": 0.7, "size": 770, "type": None},
-        {"prob": 0.8, "size": 1018, "type": None},
-        {"prob": 0.9, "size": 1468, "type": None},
+        {"key": "asn", "prob": 0.55, "size": 485},
+        {"key": "0.7", "prob": 0.7, "size": 770},
+        {"key": "0.8", "prob": 0.8, "size": 1018},
+        {"key": "0.9", "prob": 0.9, "size": 1468},
     ],
 }
 
