@@ -39,5 +39,8 @@ def init_db():
 
 
 def reset_db():
+    # pylint: disable=wildcard-import,import-outside-toplevel,unused-import
+    import server.models
+
     Base.metadata.drop_all(bind=engine)
     init_db()

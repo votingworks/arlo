@@ -1,4 +1,6 @@
-version: 2
+version: 2.1
+orbs:
+  cypress: cypress-io/cypress@1
 jobs:
   build-and-test:
     docker:
@@ -41,13 +43,21 @@ jobs:
             make format-server
             git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
       - run:
-          name: backend tests
+          name: server tests
           command: |
             make test-server-coverage
       - run:
-          name: frontend tests
+          name: client tests
           command: |
             make test-client
+      - run:
+          name: wdio end-to-end tests
+          command: |
+            yarn --cwd client test:wdio
+      - run:
+          name: cypress end-to-end tests
+          command: |
+            ./client/run-cypress-tests.sh
 
 workflows:
   version: 2
