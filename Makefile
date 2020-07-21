@@ -47,5 +47,8 @@ test-server:
 test-server-coverage:
 	pipenv run pytest --cov=.
 
+test-end-to-end:
+	yarn --cwd client cy:run
+
 run-dev:
 	./run-dev.sh

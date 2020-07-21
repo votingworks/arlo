@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "build": "react-scripts build",
+    "cy:open": "./cypress/run-server.sh && cypress open",
+    "cy:run": "./cypress/run-server.sh && cypress run",
     "lint": "eslint --ext ts --ext tsx src",
     "lint:fix": "yarn lint --fix",
     "start": "react-scripts start",
@@ -107,6 +109,7 @@
   },
   "devDependencies": {
     "@babel/register": "^7.6.2",
+    "@testing-library/cypress": "^6.0.0",
     "@testing-library/react": "^10.3.0",
     "@testing-library/react-hooks": "^3.3.0",
     "@testing-library/user-event": "^11.3.1",
@@ -120,6 +123,7 @@
     "@wdio/spec-reporter": "^5.16.11",
     "babel-jest": "^24.9.0",
     "chromedriver": "83.0.0",
+    "cypress": "^4.11.0",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^4.2.0",
