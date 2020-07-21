@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
@@ -19,7 +19,7 @@ def cumulative_contest_results(contest: Contest) -> Dict[str, int]:
 
 def sample_size_options(
     election: Election, round_one=False
-) -> Dict[str, List[bravo.SampleSizeOption]]:
+) -> Dict[str, Dict[str, bravo.SampleSizeOption]]:
     if not election.contests:
         raise BadRequest("Cannot compute sample sizes until contests are set")
     if not election.risk_limit:
@@ -37,13 +37,16 @@ def sample_size_options(
             else cumulative_contest_results(contest)
         )
 
-        return list(
-            bravo.get_sample_size(
-                float(risk_limit) / 100,
-                sampler_contest.from_db_contest(contest),
-                cumulative_results,
-            ).values()
+        sample_size_options = bravo.get_sample_size(
+            float(risk_limit) / 100,
+            sampler_contest.from_db_contest(contest),
+            cumulative_results,
         )
+        # Remove unnecessary "type" field from options, add "key" field
+        return {
+            key: {"key": key, "size": option["size"], "prob": option["prob"]}
+            for key, option in sample_size_options.items()
+        }
 
     targeted_contests = Contest.query.filter_by(
         election_id=election.id, is_targeted=True
@@ -62,4 +65,8 @@ def sample_size_options(
 @api.route("/election/<election_id>/sample-sizes", methods=["GET"])
 @with_election_access
 def get_sample_sizes(election: Election):
-    return jsonify({"sampleSizes": sample_size_options(election, round_one=True)})
+    sample_sizes = {
+        contest_id: list(options.values())
+        for contest_id, options in sample_size_options(election, round_one=True).items()
+    }
+    return jsonify({"sampleSizes": sample_sizes})

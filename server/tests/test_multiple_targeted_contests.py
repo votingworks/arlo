@@ -4,6 +4,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from .helpers import *  # pylint: disable=wildcard-import
+from ..models import *  # pylint: disable=wildcard-import
 
 
 @pytest.fixture
