@@ -126,6 +126,21 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
+  it('renders full state with offline setting', async () => {
+    auditSettingsMock.mockReturnValue(settingsMock.offline)
+    const expectedCalls = [
+      apiCalls.getJurisdictions,
+      apiCalls.getJurisdictionFile,
+      apiCalls.getTargetedContests,
+      apiCalls.getSampleSizeOptions,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderView()
+      await screen.findByText('Review & Launch')
+      expect(container).toMatchSnapshot()
+    })
+  })
+
   it('renders full state with jurisdictions on opportunistic contest', async () => {
     auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [
@@ -193,7 +208,27 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
-  it.skip('launches the first round with a non-default sample size', async () => {
+  it('cancels audit launch', async () => {
+    auditSettingsMock.mockReturnValue(settingsMock.full)
+    const expectedCalls = [
+      apiCalls.getJurisdictions,
+      apiCalls.getJurisdictionFile,
+      apiCalls.getTargetedContests,
+      apiCalls.getSampleSizeOptions,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      renderView()
+      await screen.findByText('Review & Launch')
+      const launchButton = screen.getByText('Launch Audit')
+      userEvent.click(launchButton)
+      await screen.findByText('Are you sure you want to launch the audit?')
+      const cancelLaunchButton = screen.getByText('Close Without Launching')
+      userEvent.click(cancelLaunchButton)
+      await waitFor(() => expect(refreshMock).not.toHaveBeenCalled())
+    })
+  })
+
+  it('launches the first round with a non-default sample size', async () => {
     auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [
       apiCalls.getJurisdictions,
@@ -235,15 +270,13 @@ describe('Audit Setup > Review & Launch', () => {
       )
       userEvent.click(newSampleSize)
       const customSampleSizeInput = await screen.findByRole('textbox')
-      userEvent.type(customSampleSizeInput, '40')
+      fireEvent.change(customSampleSizeInput, { target: { value: '40' } }) // userEvent has a problem with this field due to the lack of an explicit value field: https://github.com/testing-library/user-event/issues/356
       fireEvent.blur(customSampleSizeInput)
       await screen.findByText(
         'Must be less than or equal to: 30 (the total number of ballots in this targeted contest)'
       )
       userEvent.clear(customSampleSizeInput)
-      fireEvent.blur(customSampleSizeInput)
-      userEvent.type(customSampleSizeInput, '5')
-      fireEvent.blur(customSampleSizeInput)
+      fireEvent.change(customSampleSizeInput, { target: { value: '5' } })
       await waitFor(() =>
         expect(
           screen.queryByText(
@@ -256,8 +289,6 @@ describe('Audit Setup > Review & Launch', () => {
       await screen.findByText('Are you sure you want to launch the audit?')
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
-      // evidently this is calling handleSubmit on line 293, but onSubmit on line 198 is not getting called.
-      // The error text is vanishing (I think), so it should be passing validation, but that's the only thing that I know of to block submission.
       await waitFor(() => expect(refreshMock).toHaveBeenCalled())
     })
   })

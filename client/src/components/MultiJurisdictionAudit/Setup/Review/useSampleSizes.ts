@@ -79,7 +79,8 @@ const putSampleSizes = async (
       },
     })
     return true
-  } catch (err) {
+  } catch (err) /* istanbul ignore next */ {
+    // TEST TODO move toast handling to api
     toast.error(err.message)
     return false
   }
@@ -100,10 +101,13 @@ const useSampleSizes = (
     sizes: IStringSampleSizes
   ): Promise<boolean> => {
     // TODO poll for result of upload
+    /* istanbul ignore else */
     if (await putSampleSizes(electionId, sizes)) {
       setSampleSizeOptions(await loadSampleSizes(electionId))
       return true
     }
+    /* istanbul ignore next */
+    // TEST TODO included with above
     return false
   }
 

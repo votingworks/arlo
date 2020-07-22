@@ -52,6 +52,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
 
   const submit = async () => {
     try {
+      /* istanbul ignore else */
       if (
         await uploadSampleSizes(
           Object.keys(sampleSizes).reduce((a, contestId) => {
@@ -62,6 +63,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         refresh()
         history.push(`/election/${electionId}/progress`)
       } else {
+        // TEST TODO when withMockFetch works with error handling
         return
       }
     } catch (err) /* istanbul ignore next */ {
@@ -241,7 +243,6 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                         >
                           {sampleSizeOptions[contest.id].map(
                             (option: ISampleSizeOption) => {
-                              if (!option) return null
                               return option.key === 'custom' ? (
                                 <Radio value="custom" key={option.key}>
                                   Enter your own sample size (not recommended)
