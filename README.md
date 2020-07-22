@@ -144,7 +144,7 @@ We recommend Ubuntu 18.0.4.
 
 - Install Node10. See https://joshtronic.com/2018/05/08/how-to-install-nodejs-10-on-ubuntu-1804-lts/
 - `make dev-environment` or, if you prefer, look at individual make tasks like `deps`, `initdevdb`, `install-development`, and `resetdb`
-- `cp config/database.cfg.dev config/database.cfg`
+- `cp server/config/database.cfg.dev server/config/database.cfg`
 - `bash ./run-dev.sh`
 
 For testing:
