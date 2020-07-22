@@ -147,25 +147,6 @@ We recommend Ubuntu 18.0.4.
 - `cp config/database.cfg.dev config/database.cfg`
 - `bash ./run-dev.sh`
 
-For testing:
-
-- `make resettestdb`
-- `make test-server`
-- `make test-client`
-
-####
-
-1. Download [`python-dev`](https://www.python.org/) >3.7
-2. Download [`pip`](https://pypi.org/project/pip/)
-3. Install `pipenv` (note: run `python3.7 -m pip install pipenv` to get a version that's compatible with your local python install if your system defaults to a python other than >3.7).
-4. Install [`yarn`](https://yarnpkg.com/en/docs/install) and [nodejs](https://github.com/nodesource/distributions/blob/master/README.md).
-5. Install `postgres-client` and `postgresql-dev`, see https://www.postgresql.org/download.
-6. Install dependencies with `make install` or `make install-development` depending on your use-case
-7. Create a database config by copying `config/database.cfg.example` to `config/database.cfg`
-8. Initialize the databases with `make resetdb`
-9. Run tests via `make test-sever`
-10. Run via `./run-dev.sh`
-
 #### Troubleshooting
 
 - Postgres is best installed by grabbing `postgresql-server-dev-10` and `postgresql-client-10`.
@@ -179,3 +160,18 @@ For testing:
   require a password by editing `/etc/postgresql/10/main/pg_hba.conf` and
   changing `md5` to `trust` for both the IPv4 and IPv6 local connections
   settings, and then restart postgres via `sudo systemctl restart postgresql`.
+
+### Testing
+
+To run the tests all the way through, use these commands:
+
+- `make resettestdb` (to reset the testdb)
+- `make test-server` or `make test-server-coverage`
+- `make test-client`
+- `make test-end-to-end`
+
+To run tests while developing, you can use these commands to make things more interactive:
+
+- Server tests: `pipenv run pytest` (you can add flags - e.g. `-k <pattern>` only runs tests that match the pattern)
+- Client tests: `yarn --cwd client test` (runs interactive test CLI)
+- End-to-end tests: first run `FLASK_ENV=test ./run-dev.sh` to run the server, then, in a separate shell, run `yarn --cwd client cy:open` (opens the Cypress test app for interactive test running/debugging)
