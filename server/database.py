@@ -42,6 +42,5 @@ def reset_db():
     # pylint: disable=wildcard-import,import-outside-toplevel,unused-import
     import server.models
 
-    db_session.remove()
     Base.metadata.drop_all(bind=engine)
     init_db()
