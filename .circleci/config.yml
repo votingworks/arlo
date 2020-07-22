@@ -43,11 +43,11 @@ jobs:
             make format-server
             git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
       - run:
-          name: backend tests
+          name: server tests
           command: |
             make test-server-coverage
       - run:
-          name: frontend tests
+          name: client tests
           command: |
             make test-client
       - run:
