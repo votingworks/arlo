@@ -7,4 +7,4 @@ pushd ..
 pipenv run python -m server.main &
 pipenv run python -m server.bgcompute &
 popd
-yarn --cwd client start &
+yarn start &
