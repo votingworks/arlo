@@ -22,14 +22,14 @@ import useJurisdictionFile from '../Participants/useJurisdictionFile'
 import ConfirmLaunch from './ConfirmLaunch'
 import FormField from '../../../Atoms/Form/FormField'
 import ElevatedCard from '../../../Atoms/SpacedCard'
-import useSampleSizes from './useSampleSizes'
+import useSampleSizes, { IStringSampleSizeOption } from './useSampleSizes'
 
 const percentFormatter = new Intl.NumberFormat(undefined, {
   style: 'percent',
 })
 
 interface IFormOptions {
-  [key: string]: string
+  [key: string]: IStringSampleSizeOption
 }
 
 interface IProps {
@@ -52,7 +52,17 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
 
   const submit = async () => {
     try {
-      if (uploadSampleSizes(sampleSizes)) {
+      if (
+        await uploadSampleSizes(
+          Object.keys(sampleSizes).reduce(
+            (a, contestId) => ({
+              ...a,
+              [contestId]: sampleSizes[contestId].size,
+            }),
+            {}
+          )
+        )
+      ) {
         refresh()
         history.push(`/election/${electionId}/progress`)
       } else {
@@ -97,17 +107,17 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
     ? Object.keys(sampleSizeOptions).reduce(
         (a, contestId) => ({
           ...a,
-          [contestId]: sampleSizeOptions[contestId][0].size,
+          [contestId]: sampleSizeOptions[contestId][0],
         }),
         {}
       )
     : {}
-  const initialCustomValues: IFormOptions = sampleSizeOptions
-    ? Object.keys(sampleSizeOptions).reduce(
-        (a, contestId) => ({ ...a, [contestId]: '' }),
-        {}
-      )
-    : {}
+  // const initialCustomValues: IFormOptions = sampleSizeOptions
+  //   ? Object.keys(sampleSizeOptions).reduce(
+  //       (a, contestId) => ({ ...a, [contestId]: '' }),
+  //       {}
+  //     )
+  //   : {}
 
   return (
     <div>
@@ -192,19 +202,19 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       <Formik
         initialValues={{
           sampleSizes: initialValues,
-          customSampleSizes: initialCustomValues,
+          // customSampleSizes: initialCustomValues,
         }}
         enableReinitialize
-        onSubmit={({ sampleSizes: sizes, customSampleSizes }) => {
+        onSubmit={({ sampleSizes: sizes }) => {
           setSampleSizes(
             Object.keys(sizes).reduce((a, contestId) => {
-              if (sizes[contestId] === 'custom') {
-                return {
-                  ...a,
-                  [contestId]: customSampleSizes[contestId],
-                }
-              }
-              return { ...a, [contestId]: sizes[contestId] }
+              // if (sizes[contestId] === 'custom') {
+              //   return {
+              //     ...a,
+              //     [contestId]: customSampleSizes[contestId],
+              //   }
+              // }
+              return { ...a, [contestId]: sizes[contestId].size }
             }, {})
           )
           setIsConfirmDialogOpen(true)
@@ -215,8 +225,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           handleSubmit,
           setFieldValue,
         }: FormikProps<{
-          sampleSizes: { [key: string]: string }
-          customSampleSizes: { [key: string]: string }
+          sampleSizes: { [key: string]: IStringSampleSizeOption }
+          // customSampleSizes: { [key: string]: string }
         }>) => (
           <Form data-testid="sample-size-form">
             {sampleSizeOptions && (
@@ -231,49 +241,59 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                       <H4>{contest.name}</H4>
                       <RadioGroup
                         name={`sampleSizes[${contest.id}]`}
-                        onChange={e =>
+                        onChange={e => {
+                          const selectedOption = sampleSizeOptions[
+                            contest.id
+                          ].find(c => c.key === e.currentTarget.value)
                           setFieldValue(
                             `sampleSizes[${contest.id}]`,
-                            e.currentTarget.value
+                            selectedOption
                           )
-                        }
+                        }}
                         selectedValue={getIn(
                           values,
-                          `sampleSizes[${contest.id}]`
+                          `sampleSizes[${contest.id}][key]`
                         )}
                         disabled={locked}
                       >
                         {sampleSizeOptions[contest.id].map(
                           (option: ISampleSizeOption) => {
-                            return (
-                              <Radio value={option.size} key={option.size}>
-                                {option.type
-                                  ? 'BRAVO Average Sample Number: '
-                                  : ''}
-                                {`${option.size} samples`}
-                                {option.prob
-                                  ? ` (${percentFormatter.format(
-                                      option.prob
-                                    )} chance of reaching risk limit and completing the audit in one round)`
-                                  : ''}
-                              </Radio>
+                            console.log(option)
+                            if (!option) return null
+                            return option.key === 'custom' ? (
+                              <React.Fragment key={option.key}>
+                                <Radio value="custom">
+                                  Enter your own sample size (not recommended)
+                                </Radio>
+                                {getIn(values, `sampleSizes[${contest.id}]`)
+                                  .key === 'custom' && (
+                                  <Field
+                                    component={FormField}
+                                    name={`customSampleSizes[${contest.id}][size]`}
+                                    type="text"
+                                    validate={testNumber(
+                                      Number(contest.totalBallotsCast),
+                                      `Must be less than or equal to: ${contest.totalBallotsCast} (the total number of ballots in this targeted contest)`
+                                    )}
+                                  />
+                                )}
+                              </React.Fragment>
+                            ) : (
+                              <React.Fragment key={option.key}>
+                                <Radio value={option.key}>
+                                  {option.key === 'asn'
+                                    ? 'BRAVO Average Sample Number: '
+                                    : ''}
+                                  {`${option.size} samples`}
+                                  {option.prob
+                                    ? ` (${percentFormatter.format(
+                                        option.prob
+                                      )} chance of reaching risk limit and completing the audit in one round)`
+                                    : ''}
+                                </Radio>
+                              </React.Fragment>
                             )
                           }
-                        )}
-                        <Radio value="custom">
-                          Enter your own sample size (not recommended)
-                        </Radio>
-                        {getIn(values, `sampleSizes[${contest.id}]`) ===
-                          'custom' && (
-                          <Field
-                            component={FormField}
-                            name={`customSampleSizes[${contest.id}]`}
-                            type="text"
-                            validate={testNumber(
-                              Number(contest.totalBallotsCast),
-                              `Must be less than or equal to: ${contest.totalBallotsCast} (the total number of ballots in this targeted contest)`
-                            )}
-                          />
                         )}
                       </RadioGroup>
                     </FormSectionDescription>

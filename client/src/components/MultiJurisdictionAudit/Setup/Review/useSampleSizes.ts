@@ -3,12 +3,14 @@ import { toast } from 'react-toastify'
 import { api } from '../../../utilities'
 import { ISampleSizeOption } from '../../../../types'
 
+export interface IStringSampleSizeOption {
+  size: string
+  key: string
+  prob: number | null
+}
+
 export interface IStringSampleSizeOptions {
-  [key: string]: {
-    size: string
-    type: string | null
-    prob: number | null
-  }[]
+  [key: string]: IStringSampleSizeOption[]
 }
 
 export interface ISampleSizeOptions {
@@ -30,11 +32,14 @@ const loadSampleSizes = async (
     )
     return Object.keys(options).reduce(
       (a, contestId) => ({
+        [contestId]: [
+          ...options[contestId].map(option => ({
+            ...option,
+            size: `${option.size}`,
+          })),
+          { key: 'custom', size: '', prob: null },
+        ],
         ...a,
-        [contestId]: options[contestId].map(option => ({
-          ...option,
-          size: `${option.size}`,
-        })),
       }),
       {}
     )

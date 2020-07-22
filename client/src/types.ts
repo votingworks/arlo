@@ -115,7 +115,13 @@ export interface IJurisdiction {
 export interface ISampleSizeOption {
   size: number | string
   prob: number | null
+  key: string
+}
+
+export interface IUnkeyedSampleSizeOption {
   type: string | null
+  size: number | string
+  prob: number | null
 }
 
 export interface IRoundContest {
@@ -123,7 +129,7 @@ export interface IRoundContest {
   results: {
     [key: string]: number
   }
-  sampleSizeOptions: ISampleSizeOption[] | null
+  sampleSizeOptions: IUnkeyedSampleSizeOption[] | null
   sampleSize: number | null
   endMeasurements: {
     isComplete: null | boolean

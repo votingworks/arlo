@@ -29,7 +29,7 @@ import FormButtonBar from '../Atoms/Form/FormButtonBar'
 import {
   IJurisdiction,
   IAudit,
-  ISampleSizeOption,
+  IUnkeyedSampleSizeOption,
   IErrorResponse,
 } from '../../types'
 import { api, testNumber, checkAndToast, poll } from '../utilities'
@@ -56,7 +56,7 @@ export const AuditBoard = styled.div`
 `
 
 interface ISampleSizeOptionsByContest {
-  [key: string]: ISampleSizeOption[]
+  [key: string]: IUnkeyedSampleSizeOption[]
 }
 
 interface IProps {
@@ -238,7 +238,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
       ...sampleSizeOptionsByContest,
       [contest.id]:
         contest.sampleSizeOptions && contest.sampleSizeOptions.length
-          ? contest.sampleSizeOptions.reduce<ISampleSizeOption[]>(
+          ? contest.sampleSizeOptions.reduce<IUnkeyedSampleSizeOption[]>(
               (consolidatedSampleSizeOptions, option) => {
                 const duplicateOptionIndex: number = consolidatedSampleSizeOptions.findIndex(
                   v => Number(v.size) === option.size
