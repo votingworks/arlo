@@ -1,7 +1,7 @@
 import React from 'react'
 import userEvent from '@testing-library/user-event'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { BrowserRouter as Router, useParams } from 'react-router-dom'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
+import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
 import Review from './index'
@@ -10,7 +10,8 @@ import useAuditSettings from '../../useAuditSettings'
 import { settingsMock, sampleSizeMock } from './_mocks'
 import { contestMocks } from '../Contests/_mocks'
 import { jurisdictionMocks } from '../../_mocks'
-import { withMockFetch } from '../../../testUtilities'
+import { withMockFetch, renderWithRouter } from '../../../testUtilities'
+import { ISampleSizes } from './useSampleSizes'
 
 const auditSettingsMock = useAuditSettings as jest.Mock
 
@@ -19,12 +20,12 @@ const apiCalls = {
     url: '/api/election/1/sample-sizes',
     response: sampleSizeMock,
   },
-  putDefaultSampleSize: {
+  postRound: (sampleSizes: ISampleSizes) => ({
     url: '/api/election/1/round',
     response: { status: 'ok' },
     options: {
       body: JSON.stringify({
-        sampleSizes: { 'contest-id': 46 },
+        sampleSizes,
         roundNum: 1,
       }),
       headers: {
@@ -32,35 +33,7 @@ const apiCalls = {
       },
       method: 'POST',
     },
-  },
-  putNondefaultSampleSize: {
-    url: '/api/election/1/round',
-    response: { status: 'ok' },
-    options: {
-      body: JSON.stringify({
-        sampleSizes: { 'contest-id': 67 },
-        roundNum: 1,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    },
-  },
-  putCustomSampleSize: {
-    url: '/api/election/1/round',
-    response: { status: 'ok' },
-    options: {
-      body: JSON.stringify({
-        sampleSizes: { 'contest-id': 5 },
-        roundNum: 1,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    },
-  },
+  }),
   getEmptyJurisdictions: {
     url: '/api/election/1/jurisdiction',
     response: { jurisdictions: [] },
@@ -106,6 +79,14 @@ const { prevStage } = relativeStages('Review & Launch')
 
 const refreshMock = jest.fn()
 
+const renderView = () =>
+  renderWithRouter(
+    <Review locked={false} prevStage={prevStage} refresh={refreshMock} />,
+    {
+      route: '/election/1/setup',
+    }
+  )
+
 beforeEach(() => {
   refreshMock.mockClear()
   toastSpy.mockClear()
@@ -124,11 +105,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render(
-        <Router>
-          <Review locked={false} prevStage={prevStage} refresh={refreshMock} />
-        </Router>
-      )
+      const { container } = renderView()
       await screen.findByText('Review & Launch')
       expect(container).toMatchSnapshot()
     })
@@ -143,11 +120,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render(
-        <Router>
-          <Review locked={false} prevStage={prevStage} refresh={refreshMock} />
-        </Router>
-      )
+      const { container } = renderView()
       await screen.findByText('Review & Launch')
       expect(container).toMatchSnapshot()
     })
@@ -162,11 +135,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render(
-        <Router>
-          <Review locked={false} prevStage={prevStage} refresh={refreshMock} />
-        </Router>
-      )
+      const { container } = renderView()
       await screen.findByText('Review & Launch')
       expect(container).toMatchSnapshot()
     })
@@ -181,11 +150,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render(
-        <Router>
-          <Review locked={false} prevStage={prevStage} refresh={refreshMock} />
-        </Router>
-      )
+      const { container } = renderView()
       await screen.findByText('Review & Launch')
       expect(container).toMatchSnapshot()
     })
@@ -200,11 +165,7 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
-      const { container } = render(
-        <Router>
-          <Review locked={false} prevStage={prevStage} refresh={refreshMock} />
-        </Router>
-      )
+      const { container } = renderView()
       await screen.findByText('Review & Launch')
       expect(container).toMatchSnapshot()
     })
@@ -217,21 +178,17 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getTargetedContests,
       apiCalls.getSampleSizeOptions,
-      apiCalls.putDefaultSampleSize,
+      apiCalls.postRound({ 'contest-id': 46 }),
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
-      render(
-        <Router>
-          <Review locked={false} prevStage={prevStage} refresh={refreshMock} />
-        </Router>
-      )
+      renderView()
       await screen.findByText('Review & Launch')
       const launchButton = screen.getByText('Launch Audit')
-      userEvent.click(launchButton, { bubbles: true })
+      userEvent.click(launchButton)
       await screen.findByText('Are you sure you want to launch the audit?')
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
-      userEvent.click(confirmLaunchButton, { bubbles: true })
+      userEvent.click(confirmLaunchButton)
       await waitFor(() => expect(refreshMock).toHaveBeenCalled())
     })
   })
@@ -243,24 +200,20 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getTargetedContests,
       apiCalls.getSampleSizeOptions,
-      apiCalls.putNondefaultSampleSize,
+      apiCalls.postRound({ 'contest-id': 67 }),
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
-      render(
-        <Router>
-          <Review locked={false} prevStage={prevStage} refresh={refreshMock} />
-        </Router>
-      )
+      renderView()
       const newSampleSize = await screen.findByText(
         '67 samples (70% chance of reaching risk limit and completing the audit in one round)'
       )
-      userEvent.click(newSampleSize, { bubbles: true })
+      userEvent.click(newSampleSize)
       const launchButton = await screen.findByText('Launch Audit')
-      userEvent.click(launchButton, { bubbles: true })
+      userEvent.click(launchButton)
       await screen.findByText('Are you sure you want to launch the audit?')
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
-      userEvent.click(confirmLaunchButton, { bubbles: true })
+      userEvent.click(confirmLaunchButton)
       await waitFor(() => expect(refreshMock).toHaveBeenCalled())
     })
   })
@@ -272,19 +225,15 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictionFile,
       apiCalls.getTargetedContests,
       apiCalls.getSampleSizeOptions,
-      apiCalls.putCustomSampleSize,
+      apiCalls.postRound({ 'contest-id': 5 }),
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
-      render(
-        <Router>
-          <Review locked={false} prevStage={prevStage} refresh={refreshMock} />
-        </Router>
-      )
+      renderView()
       const newSampleSize = await screen.findByText(
         'Enter your own sample size (not recommended)'
       )
-      userEvent.click(newSampleSize, { bubbles: true })
+      userEvent.click(newSampleSize)
       const customSampleSizeInput = await screen.findByRole('textbox')
       userEvent.type(customSampleSizeInput, '40')
       fireEvent.blur(customSampleSizeInput)
@@ -303,10 +252,10 @@ describe('Audit Setup > Review & Launch', () => {
         ).toBeNull()
       )
       const launchButton = await screen.findByText('Launch Audit')
-      userEvent.click(launchButton, { bubbles: true })
+      userEvent.click(launchButton)
       await screen.findByText('Are you sure you want to launch the audit?')
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
-      userEvent.click(confirmLaunchButton, { bubbles: true })
+      userEvent.click(confirmLaunchButton)
       // evidently this is calling handleSubmit on line 293, but onSubmit on line 198 is not getting called.
       // The error text is vanishing (I think), so it should be passing validation, but that's the only thing that I know of to block submission.
       await waitFor(() => expect(refreshMock).toHaveBeenCalled())

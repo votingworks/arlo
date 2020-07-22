@@ -17,8 +17,12 @@ export interface ISampleSizeOptions {
   [key: string]: ISampleSizeOption[]
 }
 
-export interface ISampleSizes {
+export interface IStringSampleSizes {
   [key: string]: string
+}
+
+export interface ISampleSizes {
+  [key: string]: number
 }
 
 const loadSampleSizes = async (
@@ -51,22 +55,23 @@ const loadSampleSizes = async (
 
 const putSampleSizes = async (
   electionId: string,
-  sampleSizes: ISampleSizes
+  stringSampleSizes: IStringSampleSizes
 ): Promise<boolean> => {
   try {
+    const sampleSizes: ISampleSizes = {
+      // converts to number so it submits in the form: { [key: string]: number }
+      ...Object.keys(stringSampleSizes).reduce(
+        (a, v) => ({
+          ...a,
+          [v]: Number(stringSampleSizes[v]),
+        }),
+        {}
+      ),
+    }
     await api(`/election/${electionId}/round`, {
       method: 'POST',
       body: JSON.stringify({
-        sampleSizes: {
-          // converts to number so it submits in the form: { [key: string]: number }
-          ...Object.keys(sampleSizes).reduce(
-            (a, v) => ({
-              ...a,
-              [v]: Number(sampleSizes[v]),
-            }),
-            {}
-          ),
-        },
+        sampleSizes,
         roundNum: 1,
       }),
       headers: {
@@ -84,14 +89,16 @@ const useSampleSizes = (
   electionId: string
 ): [
   IStringSampleSizeOptions | null,
-  (sampleSizes: ISampleSizes) => Promise<boolean>
+  (sampleSizes: IStringSampleSizes) => Promise<boolean>
 ] => {
   const [
     sampleSizeOptions,
     setSampleSizeOptions,
   ] = useState<IStringSampleSizeOptions | null>(null)
 
-  const uploadSampleSizes = async (sizes: ISampleSizes): Promise<boolean> => {
+  const uploadSampleSizes = async (
+    sizes: IStringSampleSizes
+  ): Promise<boolean> => {
     // TODO poll for result of upload
     if (await putSampleSizes(electionId, sizes)) {
       setSampleSizeOptions(await loadSampleSizes(electionId))
