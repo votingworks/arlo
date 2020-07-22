@@ -6,5 +6,4 @@ trap 'kill 0' SIGINT SIGHUP
 pushd ..
 pipenv run python -m server.main &
 pipenv run python -m server.bgcompute &
-popd
-yarn start &
+yarn --cwd client start
