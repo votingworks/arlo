@@ -3,8 +3,8 @@ from typing import Type
 from datetime import datetime as dt
 from werkzeug.exceptions import NotFound
 from sqlalchemy import *  # pylint: disable=wildcard-import
-from sqlalchemy.orm import relationship, backref, validates, aliased
-from .database import Base  # pylint: disable=cyclic-import
+from sqlalchemy.orm import relationship, backref, validates
+from .setup import Base  # pylint: disable=cyclic-import
 
 
 class BaseModel(Base):
@@ -584,54 +584,3 @@ def get_or_404(model: Type[Base], primary_key: str):
     if instance:
         return instance
     raise NotFound(f"{model.__class__.__name__} {primary_key} not found")
-
-
-class ElectionView:
-    """
-    ElectionView is an interface to query models scoped to the given
-    election_id.
-    """
-
-    def __init__(self, election_id: str):
-        self.election = Election.query.get(election_id)
-
-        self.Contest_query = Contest.query.filter_by(election_id=election_id)
-
-        self.Jurisdiction_query = Jurisdiction.query.filter_by(election_id=election_id)
-
-        # For queries where we need to join, we used aliased() around the
-        # joined model so that users of the view can join in that model again
-        # without having a conflict from trying to join the same table twice.
-        # We call reset_joinpoint() at the end so that filters/joins appended
-        # to the query reference the original model, not the most recently
-        # joined model.
-        self.Batch_query = (
-            Batch.query.join(aliased(Jurisdiction))
-            .filter_by(election_id=election_id)
-            .reset_joinpoint()
-        )
-
-        self.SampledBallot_query = (
-            SampledBallot.query.join(aliased(Batch))
-            .join(aliased(Jurisdiction))
-            .filter_by(election_id=election_id)
-            .reset_joinpoint()
-        )
-
-        self.SampledBallotDraw_query = (
-            SampledBallotDraw.query.join(aliased(Round))
-            .filter_by(election_id=election_id)
-            .reset_joinpoint()
-        )
-
-        self.BallotInterpretation_query = (
-            BallotInterpretation.query.join(aliased(Contest))
-            .filter_by(election_id=election_id)
-            .reset_joinpoint()
-        )
-
-
-class JurisdictionView:
-    def __init__(self, jurisdiction_id: str):
-        self.jurisdiction = Jurisdiction.query.get(jurisdiction_id)
-        # TODO add queries

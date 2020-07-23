@@ -4,7 +4,8 @@ from typing import Callable, Optional, Tuple, Union
 from flask import session
 from werkzeug.exceptions import Forbidden, Unauthorized
 
-from ..models import *  # pylint: disable=wildcard-import
+from ..db.views import *  # pylint: disable=wildcard-import
+from ..db import unpermissioned_models as m
 
 
 class UserType(str, enum.Enum):
@@ -86,7 +87,7 @@ def require_audit_admin_for_organization(organization_id: Optional[str]):
             description=f"User is not logged in as an audit admin and so does not have access to organization {organization_id}"
         )
 
-    user = User.query.filter_by(email=user_key).one()
+    user = m.User.query.filter_by(email=user_key).one()
     for org in user.organizations:
         if org.id == organization_id:
             return
@@ -108,7 +109,7 @@ def require_jurisdiction_admin_for_jurisdiction(jurisdiction_id: str, election_i
             description=f"User is not logged in as a jurisdiction admin and so does not have access to jurisdiction {jurisdiction_id}"
         )
 
-    user = User.query.filter_by(email=user_key).one()
+    user = m.User.query.filter_by(email=user_key).one()
     jurisdiction = next(
         (j for j in user.jurisdictions if j.id == jurisdiction_id), None
     )
@@ -123,7 +124,10 @@ def require_jurisdiction_admin_for_jurisdiction(jurisdiction_id: str, election_i
 
 
 def require_audit_board_logged_in(
-    audit_board: AuditBoard, election_id: str, jurisdiction: Jurisdiction, round_id: str
+    audit_board: t.AuditBoard,
+    election_id: str,
+    jurisdiction: t.Jurisdiction,
+    round_id: str,
 ):
     user_type, user_key = get_loggedin_user()
 
@@ -159,12 +163,12 @@ def require_audit_board_logged_in(
 def with_election_access(route: Callable):
     """
     Flask route decorator that restricts access to a route to Audit Admins
-    that have access to the election at the route's path. It also loads the
-    election object.
+    that have access to the election at the route's path. It loads a scoped
+    ElectionView to query data within this election.
 
     To use this, you must have:
     - a path component named `election_id`
-    - a route parameter named `election`
+    - a route parameter named `view`
     """
 
     @functools.wraps(route)
@@ -174,11 +178,11 @@ def with_election_access(route: Callable):
                 f"expected 'election_id' in kwargs but got: {kwargs}"
             )  # pragma: no cover
 
-        election = get_or_404(Election, kwargs.pop("election_id"))
+        election = m.get_or_404(m.Election, kwargs.pop("election_id"))
 
         require_audit_admin_for_organization(election.organization_id)
 
-        kwargs["election"] = election
+        kwargs["view"] = ElectionView(election)
 
         return route(*args, **kwargs)
 
@@ -189,13 +193,13 @@ def with_jurisdiction_access(route: Callable):
     """
     Flask route decorator that restricts access to a route to Jurisdiction
     Admins that have access to the election and jurisdiction at the route's
-    path. It also loads the election and jurisdiction objects.
+    path. It loads a scoped JurisdictionView to query data within this
+    jurisdiction.
 
     To use this, you must have:
     - a path component named `election_id`
-    - a route parameter named `election`
     - a path component named `jurisdiction_id`
-    - a route parameter named `jurisdiction`
+    - a route parameter named `view`
     """
 
     @functools.wraps(route)
@@ -206,13 +210,12 @@ def with_jurisdiction_access(route: Callable):
                     f"expected '{key}' in kwargs but got: {kwargs}"
                 )  # pragma: no cover
 
-        election = get_or_404(Election, kwargs.pop("election_id"))
-        jurisdiction = get_or_404(Jurisdiction, kwargs.pop("jurisdiction_id"))
+        election = m.get_or_404(m.Election, kwargs.pop("election_id"))
+        jurisdiction = m.get_or_404(m.Jurisdiction, kwargs.pop("jurisdiction_id"))
 
         require_jurisdiction_admin_for_jurisdiction(jurisdiction.id, election.id)
 
-        kwargs["election"] = election
-        kwargs["jurisdiction"] = jurisdiction
+        kwargs["view"] = JurisdictionView(jurisdiction)
 
         return route(*args, **kwargs)
 
@@ -223,18 +226,15 @@ def with_audit_board_access(route: Callable):
     """
     Flask route decorator that restricts access to a route to Audit Board
     members that are part of the audit board for the election, jurisdiction,
-    round, and audit board ids in the route's path. It also loads the
-    election, jurisdiction, round, and audit board objects.
+    round, and audit board ids in the route's path. It loads a scoped
+    AuditBoardView to query data according to this audit board's permissions.
 
     To use this, you must have:
     - a path component named `election_id`
-    - a route parameter named `election`
     - a path component named `jurisdiction_id`
-    - a route parameter named `jurisdiction`
     - a path component named `round_id`
-    - a route parameter named `round`
     - a path component named `audit_board_id`
-    - a route parameter named `audit_board`
+    - a route parameter named `view`
     """
 
     @functools.wraps(route)
@@ -245,17 +245,14 @@ def with_audit_board_access(route: Callable):
                     f"expected '{key}' in kwargs but got: {kwargs}"
                 )  # pragma: no cover
 
-        election = get_or_404(Election, kwargs.pop("election_id"))
-        jurisdiction = get_or_404(Jurisdiction, kwargs.pop("jurisdiction_id"))
-        round = get_or_404(Round, kwargs.pop("round_id"))
-        audit_board = get_or_404(AuditBoard, kwargs.pop("audit_board_id"))
+        election = m.get_or_404(m.Election, kwargs.pop("election_id"))
+        jurisdiction = m.get_or_404(m.Jurisdiction, kwargs.pop("jurisdiction_id"))
+        round = m.get_or_404(m.Round, kwargs.pop("round_id"))
+        audit_board = m.get_or_404(m.AuditBoard, kwargs.pop("audit_board_id"))
 
         require_audit_board_logged_in(audit_board, election.id, jurisdiction, round.id)
 
-        kwargs["election"] = election
-        kwargs["jurisdiction"] = jurisdiction
-        kwargs["round"] = round
-        kwargs["audit_board"] = audit_board
+        kwargs["view"] = AuditBoardView(audit_board)
 
         return route(*args, **kwargs)
 

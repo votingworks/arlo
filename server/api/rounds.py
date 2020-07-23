@@ -5,8 +5,8 @@ from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
-from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..db.setup import db_session
+from ..db.views import ElectionView, JurisdictionView, m
 from ..auth import with_election_access, with_jurisdiction_access
 from .sample_sizes import sample_size_options
 from ..util.isoformat import isoformat
@@ -25,7 +25,7 @@ CREATE_ROUND_REQUEST_SCHEMA = {
 }
 
 
-def serialize_round(round: Round) -> dict:
+def serialize_round(round: t.Round) -> dict:
     return {
         "id": round.id,
         "roundNum": round.round_num,
@@ -35,19 +35,19 @@ def serialize_round(round: Round) -> dict:
     }
 
 
-def get_current_round(election: Election) -> Optional[Round]:
+def get_current_round(election: t.Election) -> Optional[t.Round]:
     if len(list(election.rounds)) == 0:
         return None
     return max(election.rounds, key=lambda r: r.round_num)
 
 
-def get_previous_round(election: Election, round: Round) -> Optional[Round]:
+def get_previous_round(election: t.Election, round: t.Round) -> Optional[t.Round]:
     if round.round_num == 1:
         return None
     return next(r for r in election.rounds if r.round_num == round.round_num - 1)
 
 
-def is_audit_complete(round: Round):
+def is_audit_complete(round: t.Round):
     if not round.ended_at:
         return None
     targeted_round_contests = (
@@ -60,7 +60,7 @@ def is_audit_complete(round: Round):
 
 
 # Raises if invalid
-def validate_round(round: dict, election: Election):
+def validate_round(round: dict, election: t.Election):
     validate(round, CREATE_ROUND_REQUEST_SCHEMA)
 
     current_round = get_current_round(election)
@@ -82,7 +82,7 @@ class SampleDraw(NamedTuple):
     ticket_number: str
 
 
-def sample_ballots(view: ElectionView, new_round: Round, sample_size: int):
+def sample_ballots(view: ElectionView, new_round: t.Round, sample_size: int):
     # Figure out which contests still need auditing
     previous_round = get_previous_round(view.election, new_round)
     contests_that_havent_met_risk_limit = (
@@ -226,10 +226,9 @@ def list_rounds_jurisdiction_admin(
 
 @api.route("/election/<election_id>/round", methods=["POST"])
 @with_election_access
-def create_round(election: Election):
-    view = ElectionView(election.id)
+def create_round(view: ElectionView):
     json_round = request.get_json()
-    validate_round(json_round, election)
+    validate_round(json_round, view.election)
 
     # TODO change this for independently targeted contests - maybe take in
     # which sample size level to use rather than the size itself?
