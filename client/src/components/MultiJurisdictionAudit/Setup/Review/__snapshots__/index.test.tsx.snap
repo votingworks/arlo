@@ -135,7 +135,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
     <h4
       class="bp3-heading"
     >
-      Estimated Sample Sizes
+      Sample Size
     </h4>
     <form
       data-testid="sample-size-form"
@@ -315,7 +315,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
     <h4
       class="bp3-heading"
     >
-      Estimated Sample Sizes
+      Sample Size
     </h4>
     <form
       data-testid="sample-size-form"
@@ -361,7 +361,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-1"
+                  value="0.7"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -376,14 +376,14 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-2"
+                  value="0.5"
                 />
                 <span
                   class="bp3-control-indicator"
                 />
                 
                 88 samples
-                
+                 (50% chance of reaching risk limit and completing the audit in one round)
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -391,7 +391,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-3"
+                  value="0.9"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -583,7 +583,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
     <h4
       class="bp3-heading"
     >
-      Estimated Sample Sizes
+      Sample Size
     </h4>
     <form
       data-testid="sample-size-form"
@@ -629,7 +629,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-1"
+                  value="0.7"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -644,14 +644,14 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-2"
+                  value="0.5"
                 />
                 <span
                   class="bp3-control-indicator"
                 />
                 
                 88 samples
-                
+                 (50% chance of reaching risk limit and completing the audit in one round)
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -659,7 +659,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-3"
+                  value="0.9"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -849,7 +849,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
     <h4
       class="bp3-heading"
     >
-      Estimated Sample Sizes
+      Sample Size
     </h4>
     <form
       data-testid="sample-size-form"
@@ -895,7 +895,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-1"
+                  value="0.7"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -910,14 +910,14 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-2"
+                  value="0.5"
                 />
                 <span
                   class="bp3-control-indicator"
                 />
                 
                 88 samples
-                
+                 (50% chance of reaching risk limit and completing the audit in one round)
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -925,7 +925,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-3"
+                  value="0.9"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -1115,7 +1115,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
     <h4
       class="bp3-heading"
     >
-      Estimated Sample Sizes
+      Sample Size
     </h4>
     <form
       data-testid="sample-size-form"
@@ -1295,7 +1295,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
     <h4
       class="bp3-heading"
     >
-      Estimated Sample Sizes
+      Sample Size
     </h4>
     <form
       data-testid="sample-size-form"
@@ -1341,7 +1341,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-1"
+                  value="0.7"
                 />
                 <span
                   class="bp3-control-indicator"
@@ -1356,14 +1356,14 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-2"
+                  value="0.5"
                 />
                 <span
                   class="bp3-control-indicator"
                 />
                 
                 88 samples
-                
+                 (50% chance of reaching risk limit and completing the audit in one round)
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -1371,7 +1371,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
                 <input
                   name="sampleSizes[contest-id]"
                   type="radio"
-                  value="id-3"
+                  value="0.9"
                 />
                 <span
                   class="bp3-control-indicator"

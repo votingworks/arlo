@@ -190,7 +190,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         </ContestsTable>
       </ElevatedCard>
       <br />
-      <H4>Estimated Sample Sizes</H4>
+      <H4>Sample Size</H4>
       <Formik
         initialValues={{
           sampleSizes: initialValues,
@@ -288,9 +288,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                   locked ||
                   !isSetupComplete(jurisdictions, contests, auditSettings)
                 }
-                onClick={() => {
-                  handleSubmit()
-                }}
+                onClick={handleSubmit}
               >
                 Launch Audit
               </FormButton>

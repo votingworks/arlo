@@ -10,19 +10,19 @@ export interface IStringSampleSizeOption {
 }
 
 export interface IStringSampleSizeOptions {
-  [key: string]: IStringSampleSizeOption[]
+  [contestId: string]: IStringSampleSizeOption[]
 }
 
 export interface ISampleSizeOptions {
-  [key: string]: ISampleSizeOption[]
+  [contestId: string]: ISampleSizeOption[]
 }
 
 export interface IStringSampleSizes {
-  [key: string]: string
+  [contestId: string]: string
 }
 
 export interface ISampleSizes {
-  [key: string]: number
+  [contestId: string]: number
 }
 
 const loadSampleSizes = async (
@@ -59,7 +59,7 @@ const putSampleSizes = async (
 ): Promise<boolean> => {
   try {
     const sampleSizes: ISampleSizes = {
-      // converts to number so it submits in the form: { [key: string]: number }
+      // converts to number so it submits in the form: { [contestId: string]: number }
       ...Object.keys(stringSampleSizes).reduce(
         (a, v) => ({
           ...a,
@@ -103,7 +103,6 @@ const useSampleSizes = (
     // TODO poll for result of upload
     /* istanbul ignore else */
     if (await putSampleSizes(electionId, sizes)) {
-      setSampleSizeOptions(await loadSampleSizes(electionId))
       return true
     }
     /* istanbul ignore next */

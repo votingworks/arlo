@@ -41,9 +41,9 @@ export const sampleSizeMock = {
   sampleSizes: {
     'contest-id': [
       { prob: 0.54, size: 46, key: 'asn' },
-      { prob: 0.7, size: 67, key: 'id-1' },
-      { prob: null, size: 88, key: 'id-2' },
-      { prob: 0.9, size: 125, key: 'id-3' },
+      { prob: 0.7, size: 67, key: '0.7' },
+      { prob: 0.5, size: 88, key: '0.5' },
+      { prob: 0.9, size: 125, key: '0.9' },
     ],
   },
 }

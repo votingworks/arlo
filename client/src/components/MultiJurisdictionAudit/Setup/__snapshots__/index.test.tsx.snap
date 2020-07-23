@@ -1869,7 +1869,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
     <h4
       class="bp3-heading"
     >
-      Estimated Sample Sizes
+      Sample Size
     </h4>
     <form
       data-testid="sample-size-form"
@@ -2036,7 +2036,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
     <h4
       class="bp3-heading"
     >
-      Estimated Sample Sizes
+      Sample Size
     </h4>
     <form
       data-testid="sample-size-form"
@@ -2203,7 +2203,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
     <h4
       class="bp3-heading"
     >
-      Estimated Sample Sizes
+      Sample Size
     </h4>
     <form
       data-testid="sample-size-form"

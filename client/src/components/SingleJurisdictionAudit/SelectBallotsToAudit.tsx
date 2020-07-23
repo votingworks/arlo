@@ -56,7 +56,7 @@ export const AuditBoard = styled.div`
 `
 
 interface ISampleSizeOptionsByContest {
-  [key: string]: IUnkeyedSampleSizeOption[]
+  [contestId: string]: IUnkeyedSampleSizeOption[]
 }
 
 interface IProps {
@@ -73,10 +73,10 @@ interface ISelectBallotsToAuditValues {
   auditNames: string[]
   manifest: File | null
   sampleSize: {
-    [key: string]: string
+    [contestId: string]: string
   }
   customSampleSize: {
-    [key: string]: string
+    [contestId: string]: string
   }
 }
 
