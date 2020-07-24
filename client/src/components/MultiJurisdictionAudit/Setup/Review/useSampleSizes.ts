@@ -53,7 +53,7 @@ const loadSampleSizes = async (
   }
 }
 
-const putSampleSizes = async (
+const postRound = async (
   electionId: string,
   stringSampleSizes: IStringSampleSizes
 ): Promise<boolean> => {
@@ -102,7 +102,7 @@ const useSampleSizes = (
   ): Promise<boolean> => {
     // TODO poll for result of upload
     /* istanbul ignore else */
-    if (await putSampleSizes(electionId, sizes)) {
+    if (await postRound(electionId, sizes)) {
       return true
     }
     /* istanbul ignore next */
