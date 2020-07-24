@@ -23,15 +23,29 @@ export const settingsMock = {
     /* istanbul ignore next */
     async () => true,
   ],
+  offline: [
+    {
+      state: 'AL',
+      electionName: 'Election Name',
+      online: false,
+      randomSeed: '12345',
+      riskLimit: 10,
+    },
+    // here for type completion but not used in this context
+    /* istanbul ignore next */
+    async () => true,
+  ],
 }
 
 export const sampleSizeMock = {
-  sampleSizes: [
-    { prob: 0.54, size: 46, type: 'ASN' },
-    { prob: 0.7, size: 67, type: null },
-    { prob: null, size: 88, type: null },
-    { prob: 0.9, size: 125, type: null },
-  ],
+  sampleSizes: {
+    'contest-id': [
+      { prob: 0.54, size: 46, key: 'asn' },
+      { prob: 0.7, size: 67, key: '0.7' },
+      { prob: 0.5, size: 88, key: '0.5' },
+      { prob: 0.9, size: 125, key: '0.9' },
+    ],
+  },
 }
 
 export default settingsMock
