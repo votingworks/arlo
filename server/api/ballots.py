@@ -3,12 +3,13 @@ from sqlalchemy import func, literal_column
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from flask import jsonify, request
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, Conflict
 
 from . import api
 from ..auth import with_jurisdiction_access, with_audit_board_access
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
+from .rounds import is_round_complete, end_round
 from ..util.csv_download import csv_response, election_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 
@@ -244,7 +245,10 @@ def validate_interpretation(interpretation: JSONDict):
             )
 
 
-def validate_audit_ballot(ballot_audit: JSONDict):
+def validate_audit_ballot(election: Election, ballot_audit: JSONDict):
+    if not election.online:
+        raise Conflict("Cannot audit ballot for offline audit.")
+
     validate(ballot_audit, AUDIT_BALLOT_SCHEMA)
 
     if ballot_audit["status"] == BallotStatus.AUDITED:
@@ -281,13 +285,88 @@ def audit_ballot(
         raise NotFound()
 
     ballot_audit = request.get_json()
-    validate_audit_ballot(ballot_audit)
+    validate_audit_ballot(election, ballot_audit)
 
     ballot.status = ballot_audit["status"]
     ballot.interpretations = [
         deserialize_interpretation(ballot.id, interpretation)
         for interpretation in ballot_audit["interpretations"]
     ]
+
+    db_session.commit()
+
+    return jsonify(status="ok")
+
+
+OFFLINE_RESULTS_SCHEMA = {
+    "type": "object",
+    "patternProperties": {
+        "^.*$": {
+            "type": "object",
+            "patternProperties": {"^.*$": {"type": "integer", "min": 0}},
+        }
+    },
+}
+
+
+def validate_offline_results(election: Election, results: JSONDict):
+    if election.online:
+        raise Conflict("Cannot record offline results for online audit.")
+
+    validate(results, OFFLINE_RESULTS_SCHEMA)
+
+    for contest_id, results_by_choice in results.items():
+        contest = Contest.query.get(contest_id)
+        if not contest:
+            raise BadRequest(f"Contest not found: {contest_id}")
+
+        choices = ContestChoice.query.filter(
+            ContestChoice.id.in_(results_by_choice.keys())
+        ).all()
+        missing_choices = set(results_by_choice.keys()) - set(c.id for c in choices)
+        if len(missing_choices) > 0:
+            raise BadRequest(f"Contest choices not found: {', '.join(missing_choices)}")
+        for choice in choices:
+            if choice.contest_id != contest_id:
+                raise BadRequest(
+                    f"Contest choice {choice.id} is not associated with contest {contest_id}"
+                )
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results",
+    methods=["PUT"],
+)
+@with_jurisdiction_access
+def record_offline_results(
+    election: Election,
+    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+    round_id: str,
+):
+    round = get_or_404(Round, round_id)
+    results = request.get_json()
+    validate_offline_results(election, results)
+
+    for round_contest in round.round_contests:
+        JurisdictionResult.query.filter_by(
+            round_id=round.id,
+            contest_id=round_contest.contest_id,
+            jurisdiction_id=jurisdiction.id,
+        ).delete()
+        jurisdiction_results = [
+            JurisdictionResult(
+                round_id=round.id,
+                contest_id=round_contest.contest_id,
+                jurisdiction_id=jurisdiction.id,
+                contest_choice_id=choice_id,
+                result=result,
+            )
+            for choice_id, result in results[round_contest.contest_id].items()
+        ]
+        db_session.add_all(jurisdiction_results)
+
+    if is_round_complete(election, round):
+        end_round(election, round)
 
     db_session.commit()
 

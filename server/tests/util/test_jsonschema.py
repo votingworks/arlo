@@ -13,6 +13,7 @@ VALID_SCHEMAS = [
         "additionalProperties": False,
         "required": ["prop1"],
     },
+    {"type": "object", "patternProperties": {"^.*$": {"type": "string"}},},
 ]
 
 INVALID_SCHEMAS = [
@@ -38,6 +39,15 @@ INVALID_SCHEMAS = [
         },
         'required property "prop2" must be present in \'properties\', but it was not (at schema["required"][0])',
     ),
+    (
+        {
+            "type": "object",
+            "properties": {"prop1": {"type": "object", "properties": {}}},
+            "additionalProperties": False,
+            "required": ["prop1"],
+        },
+        '\'additionalProperties\' must be present on objects, and should probably be False (at schema["properties"]["prop1"])',
+    ),
 ]
 
 
@@ -47,5 +57,6 @@ def test_validate_schema():
 
     for (schema, expected_error) in INVALID_SCHEMAS:
         with pytest.raises(ValidationError) as error:
+            print(schema)
             validate_schema(schema)
         assert str(error.value) == expected_error
