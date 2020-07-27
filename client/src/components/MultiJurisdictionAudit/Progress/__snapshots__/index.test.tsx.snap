@@ -803,3 +803,267 @@ exports[`Progress screen shows the detail modal 1`] = `
   </div>
 </div>
 `;
+
+exports[`Progress screen shows the detail modal for a jurisdiction without an upload 1`] = `
+<div>
+  <div
+    class="sc-ifAKCX iABumv"
+  >
+    <h2
+      class="bp3-heading sc-bdVaJa ibVpPq"
+    >
+      Audit Progress by Jurisdiction
+    </h2>
+    <p>
+      Click on a column name to sort by that column's data. To reverse sort, click on the column name again.
+      <br />
+       To view a single jurisdiction's data, click the name of the jurisdiction.
+    </p>
+    <div
+      class="sc-EHOje enakgn"
+    >
+      <label
+        class="bp3-control bp3-switch"
+      >
+        <input
+          checked=""
+          type="checkbox"
+        />
+        <span
+          class="bp3-control-indicator"
+        />
+        Count unique sampled ballots
+      </label>
+      <div
+        class="bp3-input-group .modifier"
+      >
+        <span
+          class="bp3-icon bp3-icon-filter"
+        />
+        <input
+          class="bp3-input"
+          placeholder="Filter by jurisdiction name..."
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <table
+      class="sc-bxivhb eaTstv"
+      role="table"
+    >
+      <thead>
+        <tr>
+          <th
+            colspan="1"
+            role="columnheader"
+            style="cursor: pointer;"
+            title="Jurisdiction Name"
+          >
+            Jurisdiction Name
+            <span>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </span>
+          </th>
+          <th
+            colspan="1"
+            role="columnheader"
+            style="cursor: pointer;"
+            title="Status"
+          >
+            Status
+            <span>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </span>
+          </th>
+          <th
+            colspan="1"
+            role="columnheader"
+            style="cursor: pointer;"
+            title="Total Audited"
+          >
+            Total Audited
+            <span>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </span>
+          </th>
+          <th
+            colspan="1"
+            role="columnheader"
+            style="cursor: pointer;"
+            title="Remaining in Round"
+          >
+            Remaining in Round
+            <span>
+              <span
+                class="bp3-icon bp3-icon-double-caret-vertical"
+                icon="double-caret-vertical"
+              >
+                <svg
+                  data-icon="double-caret-vertical"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  width="16"
+                >
+                  <desc>
+                    double-caret-vertical
+                  </desc>
+                  <path
+                    d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
+                    fill-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody
+        role="rowgroup"
+      >
+        <tr
+          role="row"
+        >
+          <td
+            role="cell"
+          >
+            <button
+              class="bp3-button bp3-minimal bp3-small bp3-intent-primary"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Jurisdiction 1
+              </span>
+            </button>
+          </td>
+          <td
+            role="cell"
+          >
+            Manifest upload failed: Invalid CSV
+          </td>
+          <td
+            role="cell"
+          />
+          <td
+            role="cell"
+          />
+        </tr>
+        <tr
+          role="row"
+        >
+          <td
+            role="cell"
+          >
+            <button
+              class="bp3-button bp3-minimal bp3-small bp3-intent-primary"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Jurisdiction 2
+              </span>
+            </button>
+          </td>
+          <td
+            role="cell"
+          >
+            No manifest uploaded
+          </td>
+          <td
+            role="cell"
+          />
+          <td
+            role="cell"
+          />
+        </tr>
+        <tr
+          role="row"
+        >
+          <td
+            role="cell"
+          >
+            <button
+              class="bp3-button bp3-minimal bp3-small bp3-intent-primary"
+              type="button"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Jurisdiction 3
+              </span>
+            </button>
+          </td>
+          <td
+            role="cell"
+          >
+            Manifest received
+          </td>
+          <td
+            role="cell"
+          />
+          <td
+            role="cell"
+          />
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+`;

@@ -8,7 +8,8 @@ const loadJurisdictionFile = async (
 ): Promise<IFileInfo | null> => {
   try {
     return await api(`/election/${electionId}/jurisdiction/file`)
-  } catch (err) {
+  } catch (err) /* istanbul ignore next */ {
+    // TODO migrate toasting to api to consolidate testing
     toast.error(err.message)
     return null
   }

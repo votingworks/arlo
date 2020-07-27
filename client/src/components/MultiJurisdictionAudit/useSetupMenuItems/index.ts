@@ -59,7 +59,7 @@ function useSetupMenuItems(
         const { status, error } = fileProcessing
         if (status === FileProcessingStatus.Processed) return true
         if (status === FileProcessingStatus.Errored)
-          throw new Error(error || 'File processing error')
+          throw new Error(error || 'File processing error') // TODO test coverage isn't reaching this line
         return false
       }
       const complete = () => {
