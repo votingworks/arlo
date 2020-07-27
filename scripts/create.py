@@ -1,5 +1,5 @@
 from sqlalchemy_utils import database_exists, create_database
-from server.database import engine, init_db
+from server.db.setup import engine, init_db
 
 if __name__ == "__main__":
     print(f"database: {engine.url}")

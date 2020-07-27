@@ -8,8 +8,8 @@ from sqlalchemy import func, and_
 from sqlalchemy.orm import contains_eager
 
 from . import api
-from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..db.setup import db_session
+from ..db.models import *
 from ..auth import with_jurisdiction_access, with_audit_board_access
 from .rounds import get_current_round
 from .sample_sizes import cumulative_contest_results

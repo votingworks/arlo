@@ -3,8 +3,8 @@ import uuid
 from sqlalchemy import insert
 from sqlalchemy.exc import SQLAlchemyError
 
-from ...database import db_session
-from ...models import File
+from ...db.setup import db_session
+from ...db.models import File
 from ...util.process_file import process_file
 
 

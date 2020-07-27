@@ -1,14 +1,15 @@
 import uuid
 from typing import Optional, NamedTuple, List, Tuple
 from flask import jsonify, request
-from jsonschema import validate
 from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
 from ..db.setup import db_session
-from ..db.views import ElectionView, JurisdictionView, m
+from ..db.models import *
+from ..db.views import ElectionView, JurisdictionView
 from ..auth import with_election_access, with_jurisdiction_access
 from .sample_sizes import sample_size_options
+from ..util.jsonschema import validate, JSONDict
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
 from ..audit_math import sampler
@@ -25,7 +26,7 @@ CREATE_ROUND_REQUEST_SCHEMA = {
 }
 
 
-def serialize_round(round: t.Round) -> dict:
+def serialize_round(round: Round) -> dict:
     return {
         "id": round.id,
         "roundNum": round.round_num,
@@ -35,32 +36,26 @@ def serialize_round(round: t.Round) -> dict:
     }
 
 
-def get_current_round(election: t.Election) -> Optional[t.Round]:
+def get_current_round(election: Election) -> Optional[Round]:
     if len(list(election.rounds)) == 0:
         return None
     return max(election.rounds, key=lambda r: r.round_num)
 
 
-def get_previous_round(election: t.Election, round: t.Round) -> Optional[t.Round]:
+def get_previous_round(election: Election, round: Round) -> Optional[Round]:
     if round.round_num == 1:
         return None
     return next(r for r in election.rounds if r.round_num == round.round_num - 1)
 
 
-def is_audit_complete(round: t.Round):
+def is_audit_complete(round: Round):
     if not round.ended_at:
         return None
-    targeted_round_contests = (
-        RoundContest.query.filter_by(round_id=round.id)
-        .join(Contest)
-        .filter_by(is_targeted=True)
-        .all()
-    )
-    return all(c.is_complete for c in targeted_round_contests)
+    return all(rc.is_complete for rc in round.round_contests if rc.contest.is_targeted)
 
 
 # Raises if invalid
-def validate_round(round: dict, election: t.Election):
+def validate_round(round: JSONDict, election: Election):
     validate(round, CREATE_ROUND_REQUEST_SCHEMA)
 
     current_round = get_current_round(election)
@@ -82,7 +77,7 @@ class SampleDraw(NamedTuple):
     ticket_number: str
 
 
-def sample_ballots(view: ElectionView, new_round: t.Round, sample_size: int):
+def sample_ballots(view: ElectionView, new_round: Round, sample_size: int):
     # Figure out which contests still need auditing
     previous_round = get_previous_round(view.election, new_round)
     contests_that_havent_met_risk_limit = (
@@ -206,8 +201,8 @@ def sample_ballots(view: ElectionView, new_round: t.Round, sample_size: int):
 
 @api.route("/election/<election_id>/round", methods=["GET"])
 @with_election_access
-def list_rounds_audit_admin(election: Election):
-    return jsonify({"rounds": [serialize_round(r) for r in election.rounds]})
+def list_rounds_audit_admin(view: ElectionView):
+    return jsonify({"rounds": [serialize_round(r) for r in view.election.rounds]})
 
 
 # Make a separate endpoint for jurisdiction admins to access the list of
@@ -218,10 +213,10 @@ def list_rounds_audit_admin(election: Election):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round", methods=["GET"]
 )
 @with_jurisdiction_access
-def list_rounds_jurisdiction_admin(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
-):
-    return jsonify({"rounds": [serialize_round(r) for r in election.rounds]})
+def list_rounds_jurisdiction_admin(view: JurisdictionView):
+    return jsonify(
+        {"rounds": [serialize_round(r) for r in view.jurisdiction.election.rounds]}
+    )
 
 
 @api.route("/election/<election_id>/round", methods=["POST"])
@@ -241,7 +236,9 @@ def create_round(view: ElectionView):
     )
 
     round = Round(
-        id=str(uuid.uuid4()), election_id=election.id, round_num=json_round["roundNum"],
+        id=str(uuid.uuid4()),
+        election_id=view.election.id,
+        round_num=json_round["roundNum"],
     )
     db_session.add(round)
 

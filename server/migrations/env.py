@@ -28,8 +28,8 @@ fileConfig(config.config_file_name, disable_existing_loggers=False)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from server.database import Base
-import server.models  # pylint: disable=unused-import
+from server.db.setup import Base
+import server.db.models  # pylint: disable=unused-import
 
 target_metadata = Base.metadata
 

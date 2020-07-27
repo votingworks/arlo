@@ -10,8 +10,8 @@ os.environ["FLASK_ENV"] = "test"
 # pylint: disable=wrong-import-position
 
 from ..app import app
-from ..database import db_session, reset_db
-from ..models import *  # pylint: disable=wildcard-import
+from ..db.setup import db_session, reset_db
+from ..db.models import *
 from ..auth import (
     UserType,
     with_election_access,

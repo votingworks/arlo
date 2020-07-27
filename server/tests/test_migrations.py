@@ -1,7 +1,7 @@
 import pytest
 from alembic.config import Config
 from alembic import command
-from ..database import Base, engine
+from ..db.setup import Base, engine
 
 # Use the pytest-alembic plugin to test our migrations.
 # More details on what is tested here:

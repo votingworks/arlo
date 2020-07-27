@@ -4,7 +4,7 @@ from werkzeug.exceptions import Unauthorized
 from authlib.integrations.flask_client import OAuth
 
 from . import auth
-from ..models import *  # pylint: disable=wildcard-import
+from ..db.models import *
 from .lib import (
     get_loggedin_user,
     set_loggedin_user,

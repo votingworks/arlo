@@ -584,3 +584,30 @@ def get_or_404(model: Type[Base], primary_key: str):
     if instance:
         return instance
     raise NotFound(f"{model.__class__.__name__} {primary_key} not found")
+
+
+__all__ = [
+    "Organization",
+    "Election",
+    "Jurisdiction",
+    "User",
+    "AuditAdministration",
+    "JurisdictionAdministration",
+    "Batch",
+    "Contest",
+    "ContestChoice",
+    "Affiliation",
+    "AuditBoard",
+    "Round",
+    "BallotStatus",
+    "SampledBallot",
+    "SampledBallotDraw",
+    "Interpretation",
+    "BallotInterpretation",
+    "RoundContest",
+    "RoundContestResult",
+    "File",
+    "ProcessingStatus",
+    "USState",
+    "get_or_404",
+]

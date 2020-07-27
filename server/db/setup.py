@@ -2,7 +2,7 @@ import re
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker, Query
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
-from .config import DATABASE_URL
+from ..config import DATABASE_URL
 
 # Based on https://flask.palletsprojects.com/en/1.1.x/patterns/sqlalchemy/#declarative
 
@@ -22,7 +22,7 @@ meta = MetaData(
 
 @as_declarative(metadata=meta)
 class Base:
-    query: Query = db_session.query_property()
+    unpermissioned_query: Query = db_session.query_property()
     # pylint: disable=no-self-argument,no-member
     @declared_attr
     def __tablename__(cls):
@@ -33,7 +33,7 @@ class Base:
 
 def init_db():
     # pylint: disable=wildcard-import,import-outside-toplevel,unused-import
-    import server.models
+    from . import unpermissioned_models
 
     Base.metadata.create_all(bind=engine)
 

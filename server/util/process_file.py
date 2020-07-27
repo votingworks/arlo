@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict
 from sqlalchemy import update
 from sqlalchemy.orm.session import Session
 
-from ..models import *  # pylint: disable=wildcard-import
+from ..db.models import File, ProcessingStatus
 from ..util.isoformat import isoformat
 
 

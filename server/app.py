@@ -10,7 +10,7 @@ from .config import (
     DEVELOPMENT_ENVS,
     HTTP_ORIGIN,
 )
-from .database import init_db, db_session
+from .db.setup import init_db, db_session
 from .api import api
 from .auth import auth
 from .auth.routes import oauth

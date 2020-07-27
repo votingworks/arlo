@@ -5,8 +5,9 @@ from flask import request, jsonify, Request
 from werkzeug.exceptions import BadRequest, NotFound
 
 from . import api
-from ..database import db_session
-from ..models import *  # pylint: disable=wildcard-import
+from ..db.setup import db_session
+from ..db.models import *  # pylint: disable=wildcard-import
+from ..db.views import ElectionView, JurisdictionView
 from ..auth import with_jurisdiction_access, with_election_access
 from ..util.process_file import (
     process_file,
@@ -94,13 +95,13 @@ def save_ballot_manifest_file(manifest, jurisdiction: Jurisdiction):
     )
 
 
-def clear_ballot_manifest_file(jurisdiction: Jurisdiction):
-    jurisdiction.manifest_num_ballots = None
-    jurisdiction.manifest_num_batches = None
+def clear_ballot_manifest_file(view: JurisdictionView):
+    view.jurisdiction.manifest_num_ballots = None
+    view.jurisdiction.manifest_num_batches = None
 
-    if jurisdiction.manifest_file_id:
-        File.query.filter_by(id=jurisdiction.manifest_file_id).delete()
-    Batch.query.filter_by(jurisdiction=jurisdiction).delete()
+    if view.jurisdiction.manifest_file_id:
+        view.File_query.filter_by(id=view.jurisdiction.manifest_file_id).delete()
+    view.Batch_query.filter_by(jurisdiction=view.jurisdiction).delete()
 
 
 @api.route(
@@ -108,12 +109,10 @@ def clear_ballot_manifest_file(jurisdiction: Jurisdiction):
     methods=["PUT"],
 )
 @with_jurisdiction_access
-def upload_ballot_manifest(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-):
+def upload_ballot_manifest(view: JurisdictionView):
     validate_ballot_manifest_upload(request)
-    clear_ballot_manifest_file(jurisdiction)
-    save_ballot_manifest_file(request.files["manifest"], jurisdiction)
+    clear_ballot_manifest_file(view)
+    save_ballot_manifest_file(request.files["manifest"], view.jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
 
@@ -123,13 +122,11 @@ def upload_ballot_manifest(
     methods=["GET"],
 )
 @with_jurisdiction_access
-def get_ballot_manifest(
-    election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
-):
-    if jurisdiction.manifest_file:
+def get_ballot_manifest(view: JurisdictionView):
+    if view.jurisdiction.manifest_file:
         return jsonify(
-            file=serialize_file(jurisdiction.manifest_file),
-            processing=serialize_file_processing(jurisdiction.manifest_file),
+            file=serialize_file(view.jurisdiction.manifest_file),
+            processing=serialize_file_processing(view.jurisdiction.manifest_file),
         )
     else:
         return jsonify(file=None, processing=None)
@@ -141,10 +138,10 @@ def get_ballot_manifest(
 )
 @with_election_access
 def download_ballot_manifest_file(
-    election: Election, jurisdiction_id: str,  # pylint: disable=unused-argument
+    view: ElectionView, jurisdiction_id: str,  # pylint: disable=unused-argument
 ):
-    jurisdiction = Jurisdiction.query.filter_by(
-        election_id=election.id, id=jurisdiction_id
+    jurisdiction = view.Jurisdiction_query.filter_by(
+        election_id=view.election.id, id=jurisdiction_id
     ).first()
     if not jurisdiction or not jurisdiction.manifest_file:
         return NotFound()
@@ -159,9 +156,7 @@ def download_ballot_manifest_file(
     methods=["DELETE"],
 )
 @with_jurisdiction_access
-def clear_ballot_manifest(
-    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-):
-    clear_ballot_manifest_file(jurisdiction)
+def clear_ballot_manifest(view: JurisdictionView):
+    clear_ballot_manifest_file(view)
     db_session.commit()
     return jsonify(status="ok")

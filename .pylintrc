@@ -584,7 +584,7 @@ valid-metaclass-classmethod-first-arg=cls
 allow-any-import-level=
 
 # Allow wildcard imports from modules that define __all__.
-allow-wildcard-with-all=no
+allow-wildcard-with-all=yes
 
 # Analyse import fallback blocks. This can be used to support both Python 2 and
 # 3 compatible code, which means that the block might have code that exists

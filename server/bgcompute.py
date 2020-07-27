@@ -1,7 +1,8 @@
 import time
 
-from server.database import db_session
-from server.models import *  # pylint: disable=wildcard-import
+from server.db.setup import db_session
+from server.db.models import *
+from server.db.views import ElectionView
 from server.api.routes import compute_sample_sizes
 from server.api.ballot_manifest import process_ballot_manifest_file
 from server.util.jurisdiction_bulk_update import process_jurisdictions_file
@@ -17,7 +18,7 @@ def bgcompute_compute_round_contests_sample_sizes():
     # Round contests that don't have sample_size_options - only in single-jurisdiction audits
     # Multi-jurisdiction audits compute estimated sample sizes on demand
     round_contests = (
-        RoundContest.query.filter_by(sample_size_options=None)
+        RoundContest.unpermissioned_query.filter_by(sample_size_options=None)
         .join(Round)
         .join(Election)
         .filter_by(is_multi_jurisdiction=False)
@@ -47,16 +48,20 @@ def bgcompute_compute_round_contests_sample_sizes():
 
 def bgcompute_update_election_jurisdictions_file() -> int:
     files = (
-        File.query.join(Election, File.id == Election.jurisdictions_file_id)
+        File.unpermissioned_query.join(
+            Election, File.id == Election.jurisdictions_file_id
+        )
         .filter(File.processing_started_at.is_(None))
         .all()
     )
 
     for file in files:
         try:
-            election = Election.query.filter_by(jurisdictions_file_id=file.id).one()
+            election = Election.unpermissioned_query.filter_by(
+                jurisdictions_file_id=file.id
+            ).one()
             print(f"updating jurisdictions file for election ID {election.id}")
-            process_jurisdictions_file(db_session, election, file)
+            process_jurisdictions_file(db_session, ElectionView(election), file)
             print(f"done updating jurisdictions file for election ID {election.id}")
         except Exception:
             print("ERROR while updating jurisdictions file")
@@ -66,14 +71,18 @@ def bgcompute_update_election_jurisdictions_file() -> int:
 
 def bgcompute_update_ballot_manifest_file() -> int:
     files = (
-        File.query.join(Jurisdiction, File.id == Jurisdiction.manifest_file_id)
+        File.unpermissioned_query.join(
+            Jurisdiction, File.id == Jurisdiction.manifest_file_id
+        )
         .filter(File.processing_started_at.is_(None))
         .all()
     )
 
     for file in files:
         try:
-            jurisdiction = Jurisdiction.query.filter_by(manifest_file_id=file.id).one()
+            jurisdiction = Jurisdiction.unpermissioned_query.filter_by(
+                manifest_file_id=file.id
+            ).one()
             process_ballot_manifest_file(db_session, jurisdiction, file)
         except Exception:
             print("ERROR updating ballot manifest file")

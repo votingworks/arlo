@@ -1,8 +1,8 @@
 # pylint: disable=invalid-name
 import sys, uuid
 
-from server.models import User, AuditAdministration
-from server.database import db_session
+from server.db.unpermissioned_models import User, AuditAdministration
+from server.db.setup import db_session
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:

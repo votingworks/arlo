@@ -4,8 +4,8 @@ from typing import Callable, Optional, Tuple, Union
 from flask import session
 from werkzeug.exceptions import Forbidden, Unauthorized
 
-from ..db.views import *  # pylint: disable=wildcard-import
-from ..db import unpermissioned_models as m
+from ..db.views import ElectionView, JurisdictionView, AuditBoardView
+from ..db.models import *
 
 
 class UserType(str, enum.Enum):
@@ -87,7 +87,7 @@ def require_audit_admin_for_organization(organization_id: Optional[str]):
             description=f"User is not logged in as an audit admin and so does not have access to organization {organization_id}"
         )
 
-    user = m.User.query.filter_by(email=user_key).one()
+    user = User.unpermissioned_query.filter_by(email=user_key).one()
     for org in user.organizations:
         if org.id == organization_id:
             return
@@ -109,7 +109,7 @@ def require_jurisdiction_admin_for_jurisdiction(jurisdiction_id: str, election_i
             description=f"User is not logged in as a jurisdiction admin and so does not have access to jurisdiction {jurisdiction_id}"
         )
 
-    user = m.User.query.filter_by(email=user_key).one()
+    user = User.unpermissioned_query.filter_by(email=user_key).one()
     jurisdiction = next(
         (j for j in user.jurisdictions if j.id == jurisdiction_id), None
     )
@@ -124,9 +124,9 @@ def require_jurisdiction_admin_for_jurisdiction(jurisdiction_id: str, election_i
 
 
 def require_audit_board_logged_in(
-    audit_board: t.AuditBoard,
+    audit_board: AuditBoard,
     election_id: str,
-    jurisdiction: t.Jurisdiction,
+    jurisdiction: Jurisdiction,
     round_id: str,
 ):
     user_type, user_key = get_loggedin_user()
@@ -178,7 +178,7 @@ def with_election_access(route: Callable):
                 f"expected 'election_id' in kwargs but got: {kwargs}"
             )  # pragma: no cover
 
-        election = m.get_or_404(m.Election, kwargs.pop("election_id"))
+        election = get_or_404(Election, kwargs.pop("election_id"))
 
         require_audit_admin_for_organization(election.organization_id)
 
@@ -210,8 +210,8 @@ def with_jurisdiction_access(route: Callable):
                     f"expected '{key}' in kwargs but got: {kwargs}"
                 )  # pragma: no cover
 
-        election = m.get_or_404(m.Election, kwargs.pop("election_id"))
-        jurisdiction = m.get_or_404(m.Jurisdiction, kwargs.pop("jurisdiction_id"))
+        election = get_or_404(Election, kwargs.pop("election_id"))
+        jurisdiction = get_or_404(Jurisdiction, kwargs.pop("jurisdiction_id"))
 
         require_jurisdiction_admin_for_jurisdiction(jurisdiction.id, election.id)
 
@@ -245,10 +245,10 @@ def with_audit_board_access(route: Callable):
                     f"expected '{key}' in kwargs but got: {kwargs}"
                 )  # pragma: no cover
 
-        election = m.get_or_404(m.Election, kwargs.pop("election_id"))
-        jurisdiction = m.get_or_404(m.Jurisdiction, kwargs.pop("jurisdiction_id"))
-        round = m.get_or_404(m.Round, kwargs.pop("round_id"))
-        audit_board = m.get_or_404(m.AuditBoard, kwargs.pop("audit_board_id"))
+        election = get_or_404(Election, kwargs.pop("election_id"))
+        jurisdiction = get_or_404(Jurisdiction, kwargs.pop("jurisdiction_id"))
+        round = get_or_404(Round, kwargs.pop("round_id"))
+        audit_board = get_or_404(AuditBoard, kwargs.pop("audit_board_id"))
 
         require_audit_board_logged_in(audit_board, election.id, jurisdiction, round.id)
 

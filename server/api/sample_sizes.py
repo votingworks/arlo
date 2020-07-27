@@ -4,7 +4,8 @@ from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
 from . import api
-from ..models import *  # pylint: disable=wildcard-import
+from ..db.models import *
+from ..db.views import ElectionView
 from ..auth import with_election_access
 from ..audit_math import bravo, sampler_contest
 
