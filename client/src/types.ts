@@ -28,12 +28,6 @@ export interface ICandidate {
   numVotes: number | string
 }
 
-export interface ISampleSizeOption {
-  size: number | string
-  prob: number | null
-  type: string | null
-}
-
 export interface IContest {
   id: string
   isTargeted: boolean
@@ -118,12 +112,24 @@ export interface IJurisdiction {
   batches?: IBatch[] // optional until I'm ready to update everything
 }
 
+export interface ISampleSizeOption {
+  size: number | string
+  prob: number | null
+  key: string
+}
+
+export interface IUnkeyedSampleSizeOption {
+  type: string | null
+  size: number | string
+  prob: number | null
+}
+
 export interface IRoundContest {
   id: string
   results: {
     [key: string]: number
   }
-  sampleSizeOptions: ISampleSizeOption[] | null
+  sampleSizeOptions: IUnkeyedSampleSizeOption[] | null
   sampleSize: number | null
   endMeasurements: {
     isComplete: null | boolean

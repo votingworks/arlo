@@ -30,7 +30,7 @@ J1,Audit Board #2,Bubbikin Republican,Democrat,Joe Schmo,\r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
 1,Contest 1,Targeted,119,No,,DATETIME,,candidate 1: 0; candidate 2: 0\r
-1,Contest 2,Opportunistic,119,No,,DATETIME,,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
+1,Contest 2,Opportunistic,,No,,DATETIME,,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Batch Name,Ballot Position,Ticket Numbers,Audited?,Audit Result: Contest 1,Audit Result: Contest 2\r

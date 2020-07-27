@@ -312,7 +312,7 @@ def test_jurisdictions_round_status_offline(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
+    contest_ids: List[str],
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
@@ -330,7 +330,7 @@ def test_jurisdictions_round_status_offline(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": SAMPLE_SIZE_ROUND_1},
+        {"roundNum": 1, "sampleSizes": {contest_ids[0]: SAMPLE_SIZE_ROUND_1}},
     )
     assert_ok(rv)
 

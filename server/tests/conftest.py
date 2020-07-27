@@ -178,7 +178,7 @@ def round_1_id(
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSize": SAMPLE_SIZE_ROUND_1},
+        {"roundNum": 1, "sampleSizes": {contest_ids[0]: SAMPLE_SIZE_ROUND_1}},
     )
     assert_ok(rv)
     rv = client.get(f"/api/election/{election_id}/round",)
