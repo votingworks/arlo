@@ -57,7 +57,7 @@ jobs:
       - run:
           name: cypress end-to-end tests
           command: |
-            make test-end-to-end
+            ./client/run-cypress-tests.sh
 
 workflows:
   version: 2

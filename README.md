@@ -168,7 +168,7 @@ To run the tests all the way through, use these commands:
 - `make resettestdb` (to reset the testdb)
 - `make test-server` or `make test-server-coverage`
 - `make test-client`
-- `make test-end-to-end`
+- `./client/run-cypress-tests.sh`
 
 To run tests while developing, you can use these commands to make things more interactive:
 
