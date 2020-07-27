@@ -236,3 +236,6 @@ def test_two_rounds(
             for result in round_contest.results
         }
     )
+
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)

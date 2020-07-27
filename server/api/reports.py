@@ -29,15 +29,21 @@ def pretty_targeted(is_targeted: bool) -> str:
 
 
 def pretty_ticket_numbers(
-    ballot: SampledBallot, round_id_to_num: Dict[str, int]
-) -> str:
-    ticket_numbers = []
-    for round_num, draws in group_by(
-        ballot.draws, key=lambda d: round_id_to_num[d.round_id]
-    ).items():
-        ticket_numbers_str = ", ".join(sorted(d.ticket_number for d in draws))
-        ticket_numbers.append(f"Round {round_num}: {ticket_numbers_str}")
-    return ", ".join(ticket_numbers)
+    ballot: SampledBallot,
+    round_id_to_num: Dict[str, int],
+    targeted_contests: List[Contest],
+) -> List[str]:
+    columns = []
+    for contest in targeted_contests:
+        contest_draws = [draw for draw in ballot.draws if draw.contest_id == contest.id]
+        ticket_numbers = []
+        for round_num, draws in group_by(
+            contest_draws, key=lambda d: round_id_to_num[d.round_id]
+        ).items():
+            ticket_numbers_str = ", ".join(sorted(d.ticket_number for d in draws))
+            ticket_numbers.append(f"Round {round_num}: {ticket_numbers_str}")
+        columns.append(", ".join(ticket_numbers))
+    return columns
 
 
 def pretty_interpretations(
@@ -222,14 +228,12 @@ def write_sampled_ballots(
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
 
+    targeted_contests = [
+        contest for contest in election.contests if contest.is_targeted
+    ]
     report.writerow(
-        [
-            "Jurisdiction Name",
-            "Batch Name",
-            "Ballot Position",
-            "Ticket Numbers",
-            "Audited?",
-        ]
+        ["Jurisdiction Name", "Batch Name", "Ballot Position", "Audited?",]
+        + [f"Ticket Numbers: {contest.name}" for contest in targeted_contests]
         + [f"Audit Result: {contest.name}" for contest in election.contests]
     )
     for ballot in ballots:
@@ -238,12 +242,12 @@ def write_sampled_ballots(
                 ballot.batch.jurisdiction.name,
                 ballot.batch.name,
                 ballot.ballot_position,
-                pretty_ticket_numbers(ballot, round_id_to_num),
                 ballot.status,
             ]
+            + pretty_ticket_numbers(ballot, round_id_to_num, targeted_contests)
             + pretty_interpretations(
                 list(ballot.interpretations), list(election.contests)
-            )
+            ),
         )
 
 
