@@ -1,6 +1,7 @@
 from flask import render_template, redirect, request, Blueprint
 
 from .models import *  # pylint: disable=wildcard-import
+from .database import db_session
 from .auth import (
     UserType,
     with_superadmin_access,
@@ -47,3 +48,12 @@ def superadmin_jurisdictionadmin_login():
     user_email = request.form["email"]
     set_loggedin_user(UserType.JURISDICTION_ADMIN, user_email)
     return redirect("/")
+
+
+@superadmin.route("/superadmin/delete-election/<election_id>", methods=["POST"])
+@with_superadmin_access
+def superadmin_delete_election(election_id: str):
+    election = get_or_404(Election, election_id)
+    db_session.delete(election)
+    db_session.commit()
+    return redirect("/superadmin/")
