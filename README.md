@@ -96,9 +96,12 @@ Before submitting a pull request, please review our [Contribution Guidelines](./
 
 Arlo is configured mostly through environment variables:
 
+- `FLASK_ENV`: [environment](https://flask.palletsprojects.com/en/1.1.x/config/#environment-and-debug-features) for the Flask server
+- `DATABASE_URL`: PostgreSQL database url, e.g. postgresql://localhost:5342/arlo.
 - `ARLO_SESSION_SECRET`: the secret key used to encrypt/auth client-side cookie sessions
 - `ARLO_HTTP_ORIGIN`: the proper HTTP/HTTPS origin where this Arlo server is running, e.g. https://arlo.example.com:8443 (as any web origin, no trailing slash)
 - `ARLO_AUDITADMIN_AUTH0_BASE_URL`, `ARLO_AUDITADMIN_AUTH0_CLIENT_ID`, `ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the auth0 app used for audit admins.
+- `ARLO_JURISDICTIONADMIN_AUTH0_BASE_URL`, `ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_ID`, `ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_SECRET`: base url, client id, and client secret for the auth0 app used for jurisdiction admins.
 
 ### Creating Organizations and Administrators
 
