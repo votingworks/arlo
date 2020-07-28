@@ -94,6 +94,8 @@ Before submitting a pull request, please review our [Contribution Guidelines](./
 
 ### Configuration
 
+[Auth0](https://auth0.com/) is used for authentication, as documented at [Auth0](docs/auth0.md).
+
 Arlo is configured mostly through environment variables:
 
 - `FLASK_ENV`: [environment](https://flask.palletsprojects.com/en/1.1.x/config/#environment-and-debug-features) for the Flask server
