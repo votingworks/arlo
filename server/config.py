@@ -31,8 +31,8 @@ def setup_flask_config() -> Tuple[str, bool]:
 FLASK_ENV, FLASK_DEBUG = setup_flask_config()
 
 
-DEVELOPMENT_DATABASE_URL = "postgresql://postgres@localhost:5432/arlo"
-TEST_DATABASE_URL = "postgresql://postgres@localhost:5432/arlotest"
+DEVELOPMENT_DATABASE_URL = "postgresql://arlo:arlo@localhost:5432/arlo"
+TEST_DATABASE_URL = "postgresql://arlo:arlo@localhost:5432/arlotest"
 
 
 def read_database_url_config() -> str:
