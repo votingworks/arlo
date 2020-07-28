@@ -2,7 +2,7 @@
 omit = 
     server/main.py
     server/tests/*
-    server/config/*
+    server/config.py
     scripts/*
 
 [report]

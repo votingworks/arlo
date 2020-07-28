@@ -1,8 +1,5 @@
-import configparser
 import os
-import sys
-
-from typing import Dict, Tuple
+from typing import Tuple
 
 ###
 ###
@@ -34,48 +31,28 @@ def setup_flask_config() -> Tuple[str, bool]:
 FLASK_ENV, FLASK_DEBUG = setup_flask_config()
 
 
-DEFAULT_DATABASE_URL = "postgresql://postgres@localhost:5432/arlo"
+DEVELOPMENT_DATABASE_URL = "postgresql://postgres@localhost:5432/arlo"
+TEST_DATABASE_URL = "postgresql://postgres@localhost:5432/arlotest"
 
 
 def read_database_url_config() -> str:
     environment_database_url = os.environ.get("DATABASE_URL", None)
-
     if environment_database_url:
         return environment_database_url
 
-    database_cfg_path = os.path.normpath(os.path.join(__file__, "..", "database.cfg"))
-    database_config = configparser.ConfigParser()
-    database_config.read(database_cfg_path)
-
-    result = database_config.get(FLASK_ENV, "database_url", fallback=None)
-
-    if not result:
-        print(
-            f"WARNING: no database url was configured, falling back to default: {DEFAULT_DATABASE_URL}",
-            file=sys.stderr,
-        )
-        print(
-            "To configure your own database url, either run with a DATABASE_URL environment variable",
-            file=sys.stderr,
-        )
-        print(
-            "or copy `config/database.cfg.example` to `config/database.cfg` and edit it as needed.",
-            file=sys.stderr,
-        )
-
-    return result or DEFAULT_DATABASE_URL
+    if FLASK_ENV == "development":
+        return DEVELOPMENT_DATABASE_URL
+    elif FLASK_ENV == "test":
+        return TEST_DATABASE_URL
+    else:
+        raise Exception("Missing DATABASE_URL env var")
 
 
 DATABASE_URL = read_database_url_config()
 
 STATIC_FOLDER = os.path.normpath(
     os.path.join(
-        __file__,
-        "..",
-        "..",
-        "..",
-        "client",
-        "public" if FLASK_ENV == "test" else "build",
+        __file__, "..", "..", "client", "public" if FLASK_ENV == "test" else "build",
     )
 )
 
