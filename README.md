@@ -144,7 +144,6 @@ We recommend Ubuntu 18.0.4.
 
 - Install Node10. See https://joshtronic.com/2018/05/08/how-to-install-nodejs-10-on-ubuntu-1804-lts/
 - `make dev-environment` or, if you prefer, look at individual make tasks like `deps`, `initdevdb`, `install-development`, and `resetdb`
-- `cp server/config/database.cfg.dev server/config/database.cfg`
 - `bash ./run-dev.sh`
 
 #### Troubleshooting
@@ -152,7 +151,7 @@ We recommend Ubuntu 18.0.4.
 - Postgres is best installed by grabbing `postgresql-server-dev-10` and `postgresql-client-10`.
 - `psychopg2` has known issues depending on your install (see, e.g., [here](https://github.com/psycopg/psycopg2/issues/674)). If you run into issues, switch `psychopg2` to `psychopg2-binary` in the Pipfile
 - `pipenv install` can hang attempting to get [a lock on the packages it's installing](https://github.com/pypa/pipenv/issues/3827). To get around this, add the `--skip-lock` flag in the Makefile (the first line should be `pipenv install --skip-lock`).
-- A password may have to be set in `config/database.cfg` depending on your install of postgres. To do this, change `postgresql://postgres@localhost:5432/arlo` to `postgresql://postgres:{PASSWORD}@localhost:5432/arlo`, replacing `{PASSWORD}` with the password.
+- A password may have to be set in the `DATABASE_URL` env var depending on your install of postgres. To do this, change `postgresql://postgres@localhost:5432/arlo` to `postgresql://postgres:{PASSWORD}@localhost:5432/arlo`, replacing `{PASSWORD}` with the password.
 - You may need to create `arlo` and `arlo-test` databases manually [via postgres](https://www.postgresql.org/docs/9.0/sql-createdatabase.html).
 - If you run into the error `fe_sendauth: no password supplied` when running
   `make dev-environment`, it means there's no password set for the default

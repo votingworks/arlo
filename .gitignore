@@ -3,7 +3,6 @@
 node_modules
 .mypy_cache
 .pytest_cache
-server/config/database.cfg
 .coverage
 
 # vim temp files
