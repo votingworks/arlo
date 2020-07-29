@@ -33,7 +33,6 @@ requests = "*"
 # sqlalchemy-utils 0.36.8 introduced a bug
 # Can probably reset this to * once the next patch comes out
 sqlalchemy-utils = "==0.36.7"
-uuid = "*"
 xkcdpass = "*"
 sqlalchemy = "*"
 typing-extensions = "*"
