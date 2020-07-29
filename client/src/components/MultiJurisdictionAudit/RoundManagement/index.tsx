@@ -18,6 +18,8 @@ import {
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
 import QRs from './QRs'
+import useAuditSettings from '../useAuditSettings'
+import RoundDataEntry from './RoundDataEntry'
 
 interface IProps {
   round: IRound
@@ -56,7 +58,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
     auditBoards,
   ])
 
-  // const [{ online }] = useAuditSettings(electionId!)
+  const [{ online }] = useAuditSettings(electionId)
 
   if (!ballots) return null // Still loading
 
@@ -95,16 +97,22 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
             >
               Download Ballot Labels for Round {roundNum}
             </FormButton>
-            {/* make conditional on online */}
-            <FormButton
-              verticalSpaced
-              onClick={() => downloadDataEntry(auditBoards)}
-            >
-              Download Audit Board Credentials for Data Entry
-            </FormButton>
-            <QRs passphrases={auditBoards.map(b => b.passphrase)} />
-            <RoundProgress auditBoards={auditBoards} round={round} />
-            {/* {online ? <RoundProgress /> : <RoundDataEntry />} */}
+            {online && (
+              <>
+                <FormButton
+                  verticalSpaced
+                  onClick={() => downloadDataEntry(auditBoards)}
+                >
+                  Download Audit Board Credentials for Data Entry
+                </FormButton>
+                <QRs passphrases={auditBoards.map(b => b.passphrase)} />
+              </>
+            )}
+            {online ? (
+              <RoundProgress auditBoards={auditBoards} round={round} />
+            ) : (
+              <RoundDataEntry round={round} />
+            )}
           </>
         )}
       </Wrapper>
