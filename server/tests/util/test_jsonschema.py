@@ -57,6 +57,5 @@ def test_validate_schema():
 
     for (schema, expected_error) in INVALID_SCHEMAS:
         with pytest.raises(ValidationError) as error:
-            print(schema)
             validate_schema(schema)
         assert str(error.value) == expected_error
