@@ -98,3 +98,151 @@ def test_run_offline_audit(
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+
+def test_offline_results_invalid(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    contest_ids: List[str],
+    round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    contests = Contest.query.filter(Contest.id.in_(contest_ids)).all()
+
+    invalid_results = [
+        ({}, "Invalid contest ids"),
+        ({"not-a-real-id": {}}, "Invalid contest ids"),
+        (
+            {contest.id: {} for contest in contests},
+            f"Invalid choice ids for contest {contests[0].id}",
+        ),
+        (
+            {
+                contest.id: {choice.id: 0 for choice in contest.choices[:1]}
+                for contest in contests
+            },
+            f"Invalid choice ids for contest {contests[0].id}",
+        ),
+        (
+            {
+                contest.id: {choice.id: 0 for choice in contest.choices}
+                for contest in contests[:1]
+            },
+            "Invalid contest ids",
+        ),
+        (
+            {
+                contest.id: {choice.id: "not a number" for choice in contest.choices}
+                for contest in contests
+            },
+            "'not a number' is not of type 'integer'",
+        ),
+        (
+            {
+                contest.id: {choice.id: -1 for choice in contest.choices}
+                for contest in contests
+            },
+            "-1 is less than the minimum of 0",
+        ),
+        (
+            {
+                contest.id: {choice.id: 100 for choice in contest.choices}
+                for contest in contests
+            },
+            "Total results for contest Contest 1 should not exceed 81 - the number of sampled ballots (81) times the number of votes allowed (1).",
+        ),
+    ]
+
+    for invalid_result, expected_error in invalid_results:
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
+            invalid_result,
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [{"errorType": "Bad Request", "message": expected_error}]
+        }
+
+
+def test_offline_results_bad_round(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/results",
+            {
+                contest["id"]: {choice["id"]: 0 for choice in contest["choices"]}
+                for contest in contests
+            },
+        )
+        assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
+        {},
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Round 1 is not the current round"}
+        ]
+    }
+
+
+def test_offline_results_in_online_election(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    election = Election.query.get(election_id)
+    election.online = True
+    db_session.commit()
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
+        {},
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot record offline results for online audit.",
+            }
+        ]
+    }
+
+
+def test_offline_results_jurisdiction_with_no_ballots(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "j3@example.com")
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[2]}/round/{round_1_id}/results",
+        {
+            contest["id"]: {choice["id"]: 0 for choice in contest["choices"]}
+            for contest in contests
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [{"errorType": "Bad Request", "message": "Invalid contest ids",}]
+    }

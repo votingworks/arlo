@@ -9,7 +9,7 @@ from . import api
 from ..auth import with_jurisdiction_access, with_audit_board_access
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from .rounds import is_round_complete, end_round
+from .rounds import is_round_complete, end_round, get_current_round
 from ..util.csv_download import csv_response, election_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 
@@ -245,10 +245,7 @@ def validate_interpretation(interpretation: JSONDict):
             )
 
 
-def validate_audit_ballot(election: Election, ballot_audit: JSONDict):
-    if not election.online:
-        raise Conflict("Cannot audit ballot for offline audit.")
-
+def validate_audit_ballot(ballot_audit: JSONDict):
     validate(ballot_audit, AUDIT_BALLOT_SCHEMA)
 
     if ballot_audit["status"] == BallotStatus.AUDITED:
@@ -285,7 +282,7 @@ def audit_ballot(
         raise NotFound()
 
     ballot_audit = request.get_json()
-    validate_audit_ballot(election, ballot_audit)
+    validate_audit_ballot(ballot_audit)
 
     ballot.status = ballot_audit["status"]
     ballot.interpretations = [
@@ -303,34 +300,64 @@ OFFLINE_RESULTS_SCHEMA = {
     "patternProperties": {
         "^.*$": {
             "type": "object",
-            "patternProperties": {"^.*$": {"type": "integer", "min": 0}},
+            "patternProperties": {"^.*$": {"type": "integer", "minimum": 0}},
         }
     },
 }
 
 
-def validate_offline_results(election: Election, results: JSONDict):
+def validate_offline_results(
+    election: Election, jurisdiction: Jurisdiction, round: Round, results: JSONDict
+):
     if election.online:
         raise Conflict("Cannot record offline results for online audit.")
 
+    current_round = get_current_round(election)
+    if not current_round or round.id != current_round.id:
+        raise Conflict(f"Round {round.round_num} is not the current round")
+
     validate(results, OFFLINE_RESULTS_SCHEMA)
 
-    for contest_id, results_by_choice in results.items():
-        contest = Contest.query.get(contest_id)
-        if not contest:
-            raise BadRequest(f"Contest not found: {contest_id}")
+    contest_ids = {c.id for c in jurisdiction.contests}
+    if set(results.keys()) != contest_ids:
+        raise BadRequest("Invalid contest ids")
 
-        choices = ContestChoice.query.filter(
-            ContestChoice.id.in_(results_by_choice.keys())
-        ).all()
-        missing_choices = set(results_by_choice.keys()) - set(c.id for c in choices)
-        if len(missing_choices) > 0:
-            raise BadRequest(f"Contest choices not found: {', '.join(missing_choices)}")
-        for choice in choices:
-            if choice.contest_id != contest_id:
-                raise BadRequest(
-                    f"Contest choice {choice.id} is not associated with contest {contest_id}"
-                )
+    choices_by_contest = dict(
+        ContestChoice.query.filter(ContestChoice.contest_id.in_(contest_ids))
+        .group_by(ContestChoice.contest_id)
+        .values(ContestChoice.contest_id, func.array_agg(ContestChoice.id))
+    )
+    for contest_id, results_by_choice in results.items():
+        if set(results_by_choice.keys()) != set(choices_by_contest[contest_id]):
+            raise BadRequest(f"Invalid choice ids for contest {contest_id}")
+
+    ballot_draws_by_contest = dict(
+        SampledBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction.id)
+        .join(SampledBallotDraw)
+        .filter_by(round_id=current_round.id)
+        .group_by(SampledBallotDraw.contest_id)
+        .values(SampledBallotDraw.contest_id, func.count())
+    )
+    ballots_sampled = (
+        SampledBallot.query.join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction.id)
+        .count()
+    )
+    for contest in jurisdiction.contests:
+        num_ballots = (
+            ballot_draws_by_contest.get(contest.id, 0)
+            if contest.is_targeted
+            else ballots_sampled
+        )
+        total_results = sum(results[contest.id].values())
+        allowed_results = num_ballots * contest.votes_allowed
+        if total_results > allowed_results:
+            raise BadRequest(
+                f"Total results for contest {contest.name} should not exceed"
+                f" {allowed_results} - the number of sampled ballots ({num_ballots})"
+                f" times the number of votes allowed ({contest.votes_allowed}).",
+            )
 
 
 @api.route(
@@ -345,7 +372,7 @@ def record_offline_results(
 ):
     round = get_or_404(Round, round_id)
     results = request.get_json()
-    validate_offline_results(election, results)
+    validate_offline_results(election, jurisdiction, round, results)
 
     for round_contest in round.round_contests:
         JurisdictionResult.query.filter_by(
