@@ -237,22 +237,27 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         contest for contest in election.contests if contest.is_targeted
     ]
     rows.append(
-        ["Jurisdiction Name", "Batch Name", "Ballot Position", "Audited?",]
+        ["Jurisdiction Name", "Batch Name", "Ballot Position"]
         + [f"Ticket Numbers: {contest.name}" for contest in targeted_contests]
-        + [f"Audit Result: {contest.name}" for contest in election.contests]
+        + (
+            ["Audited?"]
+            + [f"Audit Result: {contest.name}" for contest in election.contests]
+            if election.online
+            else []
+        )
     )
     for ballot in ballots:
         rows.append(
-            [
-                ballot.batch.jurisdiction.name,
-                ballot.batch.name,
-                ballot.ballot_position,
-                ballot.status,
-            ]
+            [ballot.batch.jurisdiction.name, ballot.batch.name, ballot.ballot_position,]
             + pretty_ticket_numbers(ballot, round_id_to_num, targeted_contests)
-            + pretty_interpretations(
-                list(ballot.interpretations), list(election.contests)
-            ),
+            + (
+                [ballot.status]
+                + pretty_interpretations(
+                    list(ballot.interpretations), list(election.contests)
+                )
+                if election.online
+                else []
+            )
         )
     return rows
 
