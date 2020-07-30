@@ -70,19 +70,21 @@ def pretty_interpretations(
     return columns
 
 
-def write_heading(report, heading: str):
-    report.writerow([f"######## {heading} ########"])
+def heading(heading: str):
+    return [f"######## {heading} ########"]
 
 
-def write_election_info(report, election: Election):
-    write_heading(report, "ELECTION INFO")
-    report.writerow(["Election Name", "State"])
-    report.writerow([election.election_name, election.state])
+def election_info_rows(election: Election):
+    return [
+        heading("ELECTION INFO"),
+        ["Election Name", "State"],
+        [election.election_name, election.state],
+    ]
 
 
-def write_contests(report, election: Election):
-    write_heading(report, "CONTESTS")
-    report.writerow(
+def contest_rows(election: Election):
+    rows = [
+        heading("CONTESTS"),
         [
             "Contest Name",
             "Targeted?",
@@ -90,13 +92,14 @@ def write_contests(report, election: Election):
             "Votes Allowed",
             "Total Ballots Cast",
             "Tabulated Votes",
-        ]
-    )
+        ],
+    ]
+
     for contest in election.contests:
         choices = "; ".join(
             [f"{choice.name}: {choice.num_votes}" for choice in contest.choices]
         )
-        report.writerow(
+        rows.append(
             [
                 contest.name,
                 pretty_targeted(contest.is_targeted),
@@ -106,46 +109,49 @@ def write_contests(report, election: Election):
                 choices,
             ]
         )
+    return rows
 
 
-def write_audit_settings(report, election: Election):
-    write_heading(report, "AUDIT SETTINGS")
-    report.writerow(["Audit Name", "Risk Limit", "Random Seed", "Online Data Entry?"])
-    report.writerow(
+def audit_settings_rows(election: Election):
+    return [
+        heading("AUDIT SETTINGS"),
+        ["Audit Name", "Risk Limit", "Random Seed", "Online Data Entry?"],
         [
             election.audit_name,
             f"{election.risk_limit}%",
             election.random_seed,
             pretty_boolean(election.online),
-        ]
-    )
+        ],
+    ]
 
 
-def write_audit_boards(report, election: Election):
-    if election.online:
-        write_heading(report, "AUDIT BOARDS")
-        report.writerow(
-            [
-                "Jurisdiction Name",
-                "Audit Board Name",
-                "Member 1 Name",
-                "Member 1 Affiliation",
-                "Member 2 Name",
-                "Member 2 Affiliation",
-            ]
-        )
-        for jurisdiction in election.jurisdictions:
-            for audit_board in jurisdiction.audit_boards:
-                report.writerow(
-                    [
-                        jurisdiction.name,
-                        audit_board.name,
-                        audit_board.member_1,
-                        pretty_affiliation(audit_board.member_1_affiliation),
-                        audit_board.member_2,
-                        pretty_affiliation(audit_board.member_2_affiliation),
-                    ]
-                )
+def audit_board_rows(election: Election):
+    if not election.online:
+        return None
+    rows = [
+        heading("AUDIT BOARDS"),
+        [
+            "Jurisdiction Name",
+            "Audit Board Name",
+            "Member 1 Name",
+            "Member 1 Affiliation",
+            "Member 2 Name",
+            "Member 2 Affiliation",
+        ],
+    ]
+    for jurisdiction in election.jurisdictions:
+        for audit_board in jurisdiction.audit_boards:
+            rows.append(
+                [
+                    jurisdiction.name,
+                    audit_board.name,
+                    audit_board.member_1,
+                    pretty_affiliation(audit_board.member_1_affiliation),
+                    audit_board.member_2,
+                    pretty_affiliation(audit_board.member_2_affiliation),
+                ]
+            )
+    return rows
 
 
 def pretty_audited_votes(contest: Contest, round_contest: RoundContest):
@@ -163,9 +169,9 @@ def pretty_audited_votes(contest: Contest, round_contest: RoundContest):
     return "; ".join(choice_votes)
 
 
-def write_rounds(report, election: Election):
-    write_heading(report, "ROUNDS")
-    report.writerow(
+def round_rows(election: Election):
+    rows = [
+        heading("ROUNDS"),
         [
             "Round Number",
             "Contest Name",
@@ -176,8 +182,8 @@ def write_rounds(report, election: Election):
             "Start Time",
             "End Time",
             "Audited Votes",
-        ]
-    )
+        ],
+    ]
 
     round_contests = (
         RoundContest.query.join(Round)
@@ -189,7 +195,7 @@ def write_rounds(report, election: Election):
     for round_contest in round_contests:
         round = round_contest.round
         contest = round_contest.contest
-        report.writerow(
+        rows.append(
             [
                 round.round_num,
                 contest.name,
@@ -202,12 +208,11 @@ def write_rounds(report, election: Election):
                 pretty_audited_votes(contest, round_contest),
             ]
         )
+    return rows
 
 
-def write_sampled_ballots(
-    report, election: Election, jurisdiction: Jurisdiction = None
-):
-    write_heading(report, "SAMPLED BALLOTS")
+def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
+    rows = [heading("SAMPLED BALLOTS")]
 
     ballots_query = (
         SampledBallot.query.join(SampledBallotDraw)
@@ -231,13 +236,13 @@ def write_sampled_ballots(
     targeted_contests = [
         contest for contest in election.contests if contest.is_targeted
     ]
-    report.writerow(
+    rows.append(
         ["Jurisdiction Name", "Batch Name", "Ballot Position", "Audited?",]
         + [f"Ticket Numbers: {contest.name}" for contest in targeted_contests]
         + [f"Audit Result: {contest.name}" for contest in election.contests]
     )
     for ballot in ballots:
-        report.writerow(
+        rows.append(
             [
                 ballot.batch.jurisdiction.name,
                 ballot.batch.name,
@@ -249,25 +254,29 @@ def write_sampled_ballots(
                 list(ballot.interpretations), list(election.contests)
             ),
         )
+    return rows
 
 
 @api.route("/election/<election_id>/report", methods=["GET"])
 @with_election_access
 def audit_admin_audit_report(election: Election):
+    row_sets = [
+        election_info_rows(election),
+        contest_rows(election),
+        audit_settings_rows(election),
+        audit_board_rows(election),
+        round_rows(election),
+        sampled_ballot_rows(election),
+    ]
+    row_sets = [row_set for row_set in row_sets if row_set]
+
     csv_io = io.StringIO()
     report = csv.writer(csv_io)
 
-    write_election_info(report, election)
-    report.writerow([])
-    write_contests(report, election)
-    report.writerow([])
-    write_audit_settings(report, election)
-    report.writerow([])
-    write_audit_boards(report, election)
-    report.writerow([])
-    write_rounds(report, election)
-    report.writerow([])
-    write_sampled_ballots(report, election)
+    for row_set in row_sets[:-1]:
+        report.writerows(row_set)
+        report.writerow([])
+    report.writerows(row_sets[-1])
 
     return csv_response(
         csv_io.getvalue(),
@@ -283,7 +292,7 @@ def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdictio
     csv_io = io.StringIO()
     report = csv.writer(csv_io)
 
-    write_sampled_ballots(report, election, jurisdiction)
+    report.writerows(sampled_ballot_rows(election, jurisdiction))
 
     return csv_response(
         csv_io.getvalue(),
