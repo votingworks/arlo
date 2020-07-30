@@ -269,3 +269,24 @@ def test_offline_results_jurisdiction_with_no_ballots(
     assert json.loads(rv.data) == {
         "errors": [{"errorType": "Bad Request", "message": "Invalid contest ids"}]
     }
+
+
+def test_offline_cant_create_audit_boards(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Cannot create audit boards for offline audit.",
+            }
+        ]
+    }
