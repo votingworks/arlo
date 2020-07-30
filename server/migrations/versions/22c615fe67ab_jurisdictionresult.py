@@ -57,6 +57,12 @@ def upgrade():
             "contest_choice_id",
             name=op.f("jurisdiction_result_pkey"),
         ),
+        sa.ForeignKeyConstraint(
+            ["contest_id", "jurisdiction_id"],
+            ["contest_jurisdiction.contest_id", "contest_jurisdiction.jurisdiction_id"],
+            name=op.f("jurisdiction_result_contest_id_jurisdiction_id_fkey"),
+            ondelete="cascade",
+        ),
     )
     op.create_primary_key(
         "contest_jurisdiction_pkey",

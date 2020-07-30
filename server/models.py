@@ -521,8 +521,8 @@ class JurisdictionResult(BaseModel):
     __table_args__ = (
         PrimaryKeyConstraint("round_id", "jurisdiction_id", "contest_choice_id"),
         ForeignKeyConstraint(
-            ["jurisdiction_id", "contest_id"],
-            ["contest_jurisdiction.jurisdiction_id", "contest_jurisdiction.contest_id"],
+            ["contest_id", "jurisdiction_id"],
+            ["contest_jurisdiction.contest_id", "contest_jurisdiction.jurisdiction_id"],
             ondelete="cascade",
         ),
     )
