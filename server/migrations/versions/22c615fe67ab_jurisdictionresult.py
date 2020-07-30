@@ -58,6 +58,11 @@ def upgrade():
             name=op.f("jurisdiction_result_pkey"),
         ),
     )
+    op.create_primary_key(
+        "contest_jurisdiction_pkey",
+        "contest_jurisdiction",
+        ["contest_id", "jurisdiction_id"],
+    )
 
 
 def downgrade():

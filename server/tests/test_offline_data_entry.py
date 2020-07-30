@@ -170,6 +170,7 @@ def test_offline_results_bad_round(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
 
@@ -200,6 +201,28 @@ def test_offline_results_bad_round(
             {"errorType": "Conflict", "message": "Round 1 is not the current round"}
         ]
     }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/not-a-round-id/results",
+        {},
+    )
+    assert rv.status_code == 404
+
+    # Hackily set the round's election id to be a different election to test
+    # that we correctly check the round and election match
+    round = Round.query.get(round_1_id)
+    election_id_2 = create_election(client, "Other Election")
+    round.election_id = election_id_2
+    db_session.add(round)
+    db_session.commit()
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
+        {},
+    )
+    assert rv.status_code == 404
 
 
 def test_offline_results_in_online_election(
@@ -244,5 +267,5 @@ def test_offline_results_jurisdiction_with_no_ballots(
     )
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
-        "errors": [{"errorType": "Bad Request", "message": "Invalid contest ids",}]
+        "errors": [{"errorType": "Bad Request", "message": "Invalid contest ids"}]
     }

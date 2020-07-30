@@ -370,7 +370,10 @@ def record_offline_results(
     jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
     round_id: str,
 ):
-    round = get_or_404(Round, round_id)
+    round = Round.query.filter_by(id=round_id, election_id=election.id).first()
+    if round is None:
+        raise NotFound()
+
     results = request.get_json()
     validate_offline_results(election, jurisdiction, round, results)
 

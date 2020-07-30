@@ -266,6 +266,7 @@ contest_jurisdiction = Table(
         ForeignKey("jurisdiction.id", ondelete="cascade"),
         nullable=False,
     ),
+    PrimaryKeyConstraint("contest_id", "jurisdiction_id"),
 )
 
 
@@ -519,6 +520,11 @@ class JurisdictionResult(BaseModel):
 
     __table_args__ = (
         PrimaryKeyConstraint("round_id", "jurisdiction_id", "contest_choice_id"),
+        ForeignKeyConstraint(
+            ["jurisdiction_id", "contest_id"],
+            ["contest_jurisdiction.jurisdiction_id", "contest_jurisdiction.contest_id"],
+            ondelete="cascade",
+        ),
     )
 
 
