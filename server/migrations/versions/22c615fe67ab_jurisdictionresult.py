@@ -18,6 +18,11 @@ depends_on = None
 
 
 def upgrade():
+    op.create_primary_key(
+        "contest_jurisdiction_pkey",
+        "contest_jurisdiction",
+        ["contest_id", "jurisdiction_id"],
+    )
     op.create_table(
         "jurisdiction_result",
         sa.Column("created_at", sa.DateTime(), nullable=False),
@@ -63,11 +68,6 @@ def upgrade():
             name=op.f("jurisdiction_result_contest_id_jurisdiction_id_fkey"),
             ondelete="cascade",
         ),
-    )
-    op.create_primary_key(
-        "contest_jurisdiction_pkey",
-        "contest_jurisdiction",
-        ["contest_id", "jurisdiction_id"],
     )
 
 
