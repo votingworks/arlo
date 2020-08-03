@@ -88,7 +88,7 @@ def test_jurisdictions_list_with_manifest(
         data={"manifest": (io.BytesIO(manifest), "manifest.csv",)},
     )
     assert_ok(rv)
-    assert bgcompute_update_ballot_manifest_file() == 1
+    bgcompute_update_ballot_manifest_file()
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)

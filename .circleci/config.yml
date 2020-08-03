@@ -45,7 +45,7 @@ jobs:
       - run:
           name: server tests
           command: |
-            make test-server-coverage
+            pipenv run pytest -n 2 --cov=.
       - run:
           name: client tests
           command: |

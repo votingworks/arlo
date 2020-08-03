@@ -176,6 +176,6 @@ To run the tests all the way through, use these commands:
 
 To run tests while developing, you can use these commands to make things more interactive:
 
-- Server tests: `pipenv run pytest` (you can add flags - e.g. `-k <pattern>` only runs tests that match the pattern)
+- Server tests: `pipenv run pytest` (you can add flags - e.g. `-k <pattern>` only runs tests that match the pattern, `-n auto` to run the tests in parallel)
 - Client tests: `yarn --cwd client test` (runs interactive test CLI)
 - End-to-end tests: first run `FLASK_ENV=test ./run-dev.sh` to run the server, then, in a separate shell, run `yarn --cwd client cy:open` (opens the Cypress test app for interactive test running/debugging)

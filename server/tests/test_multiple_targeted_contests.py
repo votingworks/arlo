@@ -94,7 +94,7 @@ def test_two_rounds(
         {"roundNum": 1, "sampleSizes": selected_sample_sizes},
     )
     assert_ok(rv)
-    round_1 = Round.query.first()
+    round_1 = Round.query.filter_by(election_id=election_id).first()
 
     # Audit all the ballots for Contest 1 and meet the risk limit, but don't
     # audit any for Contest 2, which should still trigger a second round.
@@ -132,6 +132,7 @@ def test_two_rounds(
         SampledBallotDraw.query.join(SampledBallot)
         .join(Batch)
         .join(Jurisdiction)
+        .filter_by(election_id=election_id)
         .values(Jurisdiction.id.distinct())
     )
     assert set(j_id for j_id, in sampled_jurisdictions) == set(jurisdiction_ids[:2])

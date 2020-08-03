@@ -20,7 +20,7 @@ Contest 2,Opportunistic,2,2,600,candidate 1: 200; candidate 2: 300; candidate 3:
 \r
 ######## AUDIT SETTINGS ########\r
 Audit Name,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit,10%,1234567890,Yes\r
+Test Audit test_audit_admin_report,10%,1234567890,Yes\r
 \r
 ######## AUDIT BOARDS ########\r
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r

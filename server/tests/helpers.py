@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any, List, Union, Tuple
 from flask.testing import FlaskClient
 from werkzeug.wrappers import Response
+from sqlalchemy.exc import IntegrityError
 
 from ..auth.lib import (
     UserType,
@@ -74,10 +75,14 @@ def clear_superadmin(client: FlaskClient):
 
 
 def create_user(email=DEFAULT_AA_EMAIL) -> User:
-    user = User(id=str(uuid.uuid4()), email=email, external_id=email)
-    db_session.add(user)
-    db_session.commit()
-    return user
+    try:
+        with db_session.begin_nested():  # pylint: disable=no-member
+            user = User(id=str(uuid.uuid4()), email=email, external_id=email)
+            db_session.add(user)
+        return user
+    except IntegrityError:
+        user = User.query.filter_by(email=email).first()
+        return user
 
 
 def create_org_and_admin(
@@ -105,23 +110,30 @@ def create_jurisdiction_admin(
     return str(jurisdiction_admin.id)
 
 
-def create_jurisdiction_and_admin(
-    election_id: str,
-    jurisdiction_name: str = "Test Jurisdiction",
-    user_email: str = DEFAULT_JA_EMAIL,
-) -> Tuple[str, str]:
+def create_jurisdiction(
+    election_id: str, jurisdiction_name: str = "Test Jurisdiction",
+):
     jurisdiction = Jurisdiction(
         id=str(uuid.uuid4()), election_id=election_id, name=jurisdiction_name
     )
     db_session.add(jurisdiction)
     db_session.commit()
+    return jurisdiction
+
+
+def create_jurisdiction_and_admin(
+    election_id: str,
+    jurisdiction_name: str = "Test Jurisdiction",
+    user_email: str = DEFAULT_JA_EMAIL,
+) -> Tuple[str, str]:
+    jurisdiction = create_jurisdiction(election_id, jurisdiction_name)
     ja_id = create_jurisdiction_admin(jurisdiction.id, user_email)
     return jurisdiction.id, ja_id
 
 
 def create_election(
     client: FlaskClient,
-    audit_name: str = "Test Audit",
+    audit_name: str = None,
     organization_id: str = None,
     is_multi_jurisdiction: bool = True,
 ) -> str:
@@ -129,7 +141,7 @@ def create_election(
         client,
         "/api/election/new",
         {
-            "auditName": audit_name,
+            "auditName": audit_name or f"Test Audit {datetime.utcnow()}",
             "organizationId": organization_id,
             "isMultiJurisdiction": is_multi_jurisdiction,
         },

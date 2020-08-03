@@ -16,6 +16,8 @@ black = "==19.10b0"
 snapshottest = "*"
 alembic = "*"
 pytest-alembic = "*"
+pytest-xdist = "*"
+filelock = "*"
 
 [packages]
 authlib = "*"
