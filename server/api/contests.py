@@ -4,7 +4,11 @@ from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy import func
 
 from . import api
-from ..auth import with_election_access, with_audit_board_access
+from ..auth import (
+    with_election_access,
+    with_audit_board_access,
+    with_jurisdiction_access,
+)
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import get_current_round
@@ -180,6 +184,17 @@ def list_contests(election: Election):
     json_contests = [
         serialize_contest(c, round_status[c.id]) for c in election.contests
     ]
+    return jsonify({"contests": json_contests})
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/contest", methods=["GET"]
+)
+@with_jurisdiction_access
+def list_jurisdictions_contests(
+    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
+):
+    json_contests = [serialize_contest(c) for c in jurisdiction.contests]
     return jsonify({"contests": json_contests})
 
 
