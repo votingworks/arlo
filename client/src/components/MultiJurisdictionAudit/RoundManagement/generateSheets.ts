@@ -107,7 +107,10 @@ export const downloadDataEntry = (auditBoards: IAuditBoard[]): string => {
         120
       )
       auditBoardCreds.text(
-        `${window.location.origin}/auditboard/${board.passphrase}`,
+        auditBoardCreds.splitTextToSize(
+          `${window.location.origin}/auditboard/${board.passphrase}`,
+          180
+        ),
         20,
         140
       )
