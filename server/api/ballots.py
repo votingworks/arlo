@@ -316,6 +316,12 @@ def validate_offline_results(
     if not current_round or round.id != current_round.id:
         raise Conflict(f"Round {round.round_num} is not the current round")
 
+    num_audit_boards = AuditBoard.query.filter_by(
+        jurisdiction_id=jurisdiction.id, round_id=round.id
+    ).count()
+    if num_audit_boards == 0:
+        raise Conflict("Must set up audit boards before recording results")
+
     validate(results, OFFLINE_RESULTS_SCHEMA)
 
     contest_ids = {c.id for c in jurisdiction.contests}

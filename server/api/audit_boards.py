@@ -33,9 +33,6 @@ def validate_audit_boards(
     jurisdiction: Jurisdiction,
     round: Round,
 ):
-    if not election.online:
-        raise Conflict("Cannot create audit boards for offline audit.")
-
     current_round = get_current_round(election)
     if not current_round or round.id != current_round.id:
         raise Conflict(f"Round {round.round_num} is not the current round")

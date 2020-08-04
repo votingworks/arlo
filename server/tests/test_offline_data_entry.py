@@ -38,6 +38,15 @@ def test_run_offline_audit(
 
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
+    round_id = rounds[0]["id"]
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
+    )
 
     jurisdiction_1_results = {
         contests[0]["id"]: {
@@ -51,10 +60,9 @@ def test_run_offline_audit(
         },
     }
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[0]['id']}/results",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results",
         jurisdiction_1_results,
     )
     assert_ok(rv)
@@ -63,6 +71,12 @@ def test_run_offline_audit(
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)["rounds"]
     assert rounds[0]["endedAt"] is None
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
 
     jurisdiction_2_results = {
         contests[0]["id"]: {
@@ -78,7 +92,7 @@ def test_run_offline_audit(
 
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{rounds[0]['id']}/results",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results",
         jurisdiction_2_results,
     )
     assert_ok(rv)
@@ -100,12 +114,33 @@ def test_run_offline_audit(
     assert_match_report(rv.data, snapshot)
 
 
+def test_offline_results_without_audit_boards(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/results",
+        {},
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Must set up audit boards before recording results",
+            }
+        ]
+    }
+
+
 def test_offline_results_invalid(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
     round_1_id: str,
+    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     contests = Contest.query.filter(Contest.id.in_(contest_ids)).all()
@@ -175,6 +210,13 @@ def test_offline_results_bad_round(
     contests = json.loads(rv.data)["contests"]
 
     for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
         rv = put_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/results",
@@ -257,6 +299,14 @@ def test_offline_results_jurisdiction_with_no_ballots(
     contests = json.loads(rv.data)["contests"]
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "j3@example.com")
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[2]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+    assert_ok(rv)
+
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[2]}/round/{round_1_id}/results",
@@ -268,25 +318,4 @@ def test_offline_results_jurisdiction_with_no_ballots(
     assert rv.status_code == 400
     assert json.loads(rv.data) == {
         "errors": [{"errorType": "Bad Request", "message": "Invalid contest ids"}]
-    }
-
-
-def test_offline_cant_create_audit_boards(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
-):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
-        [{"name": "Audit Board #1"}],
-    )
-    assert rv.status_code == 409
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Conflict",
-                "message": "Cannot create audit boards for offline audit.",
-            }
-        ]
     }
