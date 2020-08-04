@@ -6,7 +6,14 @@ The Alembic docs have great info on the ins and outs of creating and running mig
 
 ## Create a migration script
 
-First, make sure the database is in the existing, unmigrated state (e.g. by checking out the last commit and running `make resetdb`, or restoring from a database backup).
+First, make sure the database is in the existing, unmigrated state. Two options:
+
+- Check out the last commit, then run:
+
+      make resetdb
+      pipenv run alembic stamp head
+
+- Restore from a database backup
 
 Then, use Alembic to autogenerate a migration script:
 

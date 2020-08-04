@@ -7,7 +7,7 @@ from flask.testing import FlaskClient
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...models import *  # pylint: disable=wildcard-import
 from ...auth import UserType
-from ...api.audit_boards import count_audited_votes
+from ...api.rounds import count_audited_votes
 from ...util.jsonschema import JSONDict
 
 
@@ -730,14 +730,18 @@ def test_audit_boards_sign_off_happy_path(
 
 
 def test_count_audited_votes(
-    contest_ids: List[str], round_1_id: str, audit_board_round_1_ids: List[str],
+    election_id: str,
+    contest_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],
 ):
+    election = Election.query.get(election_id)
     round = Round.query.get(round_1_id)
     targeted_contest_id = contest_ids[0]
     opportunistic_contest_id = contest_ids[1]
 
     # Make sure counting before auditing ballots results in all 0s
-    count_audited_votes(round)
+    count_audited_votes(election, round)
 
     for round_contest in round.round_contests:
         for result in round_contest.results:
@@ -829,7 +833,7 @@ def test_count_audited_votes(
             is_overvote=True,
         )
 
-    count_audited_votes(round)
+    count_audited_votes(election, round)
 
     targeted_choice_1_result = RoundContestResult.query.filter_by(
         round_id=round_1_id,

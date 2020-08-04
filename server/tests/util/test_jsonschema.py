@@ -13,6 +13,7 @@ VALID_SCHEMAS = [
         "additionalProperties": False,
         "required": ["prop1"],
     },
+    {"type": "object", "patternProperties": {"^.*$": {"type": "string"}},},
 ]
 
 INVALID_SCHEMAS = [
@@ -37,6 +38,15 @@ INVALID_SCHEMAS = [
             "required": ["prop2"],
         },
         'required property "prop2" must be present in \'properties\', but it was not (at schema["required"][0])',
+    ),
+    (
+        {
+            "type": "object",
+            "properties": {"prop1": {"type": "object", "properties": {}}},
+            "additionalProperties": False,
+            "required": ["prop1"],
+        },
+        '\'additionalProperties\' must be present on objects, and should probably be False (at schema["properties"]["prop1"])',
     ),
 ]
 

@@ -4,20 +4,18 @@ from typing import List, Dict
 from flask import jsonify, request
 from xkcdpass import xkcd_password as xp
 from werkzeug.exceptions import Conflict, BadRequest
-from sqlalchemy import func, and_
+from sqlalchemy import func
 from sqlalchemy.orm import contains_eager
 
 from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_jurisdiction_access, with_audit_board_access
-from .rounds import get_current_round
-from .sample_sizes import cumulative_contest_results
+from .rounds import get_current_round, is_round_complete, end_round
 from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
 from ..util.group_by import group_by
 from ..util.isoformat import isoformat
-from ..audit_math import bravo, sampler_contest
 
 WORDS = xp.generate_wordlist(wordfile=xp.locate_wordfile())
 
@@ -253,105 +251,6 @@ def set_audit_board_members(
     db_session.commit()
 
     return jsonify(status="ok")
-
-
-def calculate_risk_measurements(election: Election, round: Round):
-    if not election.risk_limit:  # Shouldn't happen, we need this for typechecking
-        raise Exception("Risk limit not defined")  # pragma: no cover
-    risk_limit: int = election.risk_limit
-
-    for round_contest in round.round_contests:
-        contest = round_contest.contest
-        risk, is_complete = bravo.compute_risk(
-            float(risk_limit) / 100,
-            sampler_contest.from_db_contest(contest),
-            cumulative_contest_results(contest),
-        )
-
-        round_contest.end_p_value = max(risk.values())
-        round_contest.is_complete = is_complete
-
-
-def count_audited_votes(round: Round):
-    for round_contest in round.round_contests:
-        contest = round_contest.contest
-        interpretations_query = (
-            BallotInterpretation.query.filter_by(
-                contest_id=contest.id, is_overvote=False
-            )
-            .join(SampledBallot)
-            .join(SampledBallotDraw)
-            .filter_by(round_id=round.id)
-            .join(BallotInterpretation.selected_choices)
-            .group_by(ContestChoice.id)
-        )
-        # For a targeted contest, count the ballot draws sampled for the contest
-        if contest.is_targeted:
-            vote_counts = dict(
-                interpretations_query.filter(
-                    SampledBallotDraw.contest_id == contest.id
-                ).values(ContestChoice.id, func.count())
-            )
-        # For an opportunistic contest, count the unique ballots that were
-        # audited for this contest, regardless of which contest they were
-        # sampled for.
-        else:
-            vote_counts = dict(
-                interpretations_query.values(
-                    ContestChoice.id, func.count(SampledBallot.id.distinct())
-                )
-            )
-
-        for contest_choice in contest.choices:
-            result = RoundContestResult(
-                round_id=round.id,
-                contest_id=contest.id,
-                contest_choice_id=contest_choice.id,
-                result=vote_counts.get(contest_choice.id, 0),
-            )
-            db_session.add(result)
-
-
-def end_round(election: Election, round: Round):
-    count_audited_votes(round)
-    calculate_risk_measurements(election, round)
-    round.ended_at = datetime.utcnow()
-
-
-def is_round_complete(election: Election, round: Round) -> bool:
-    num_jurisdictions_without_audit_boards_set_up: int = (
-        # For each jurisdiction...
-        Jurisdiction.query.filter_by(election_id=election.id)
-        # Where there are ballots that haven't been audited...
-        .join(Jurisdiction.batches)
-        .join(Batch.ballots)
-        .filter(SampledBallot.status == BallotStatus.NOT_AUDITED)
-        # And those ballots got sampled this round...
-        .join(SampledBallot.draws)
-        .filter_by(round_id=round.id)
-        # Count the number of audit boards set up.
-        .outerjoin(
-            AuditBoard,
-            and_(
-                AuditBoard.jurisdiction_id == Jurisdiction.id,
-                AuditBoard.round_id == round.id,
-            ),
-        )
-        .group_by(Jurisdiction.id)
-        # Finally, count how many jurisdictions have no audit boards set up.
-        .having(func.count(AuditBoard.id) == 0)
-        .count()
-    )
-    num_audit_boards_with_ballots_not_signed_off: int = (
-        AuditBoard.query.filter_by(round_id=round.id, signed_off_at=None)
-        .join(SampledBallot)
-        .group_by(AuditBoard.id)
-        .count()
-    )
-    return (
-        num_jurisdictions_without_audit_boards_set_up == 0
-        and num_audit_boards_with_ballots_not_signed_off == 0
-    )
 
 
 SIGN_OFF_AUDIT_BOARD_REQUEST_SCHEMA = {

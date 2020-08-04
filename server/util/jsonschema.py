@@ -18,28 +18,40 @@ def validate_schema(schema: JSONSchema):
     def validate_schema_node(node: JSONSchema, current_keypath: List[Union[str, int]]):
         assert isinstance(node, dict)
         if node.get("type", None) == "object":
-            properties = node["properties"]
-            assert isinstance(properties, dict)
+            properties = node.get("properties", None)
+            pattern_properties = node.get("patternProperties", None)
 
-            if "additionalProperties" not in node:
-                raise jsonschema.exceptions.ValidationError(
-                    f"'additionalProperties' must be present on objects, and should probably be False (at {_serialize_keypath(current_keypath)})"
-                )
+            if properties is not None:
+                assert isinstance(properties, dict)
 
-            if "required" not in node:
-                hint = '"required": [%s]' % "".join(f'"{key}"' for key in properties)
-                raise jsonschema.exceptions.ValidationError(
-                    f"'required' must be present on objects, maybe you want: {hint} (at {_serialize_keypath(current_keypath)})"
-                )
-
-            for index, key in enumerate(node["required"]):
-                if key not in properties:
+                if "additionalProperties" not in node:
                     raise jsonschema.exceptions.ValidationError(
-                        f"required property \"{key}\" must be present in 'properties', but it was not (at {_serialize_keypath(current_keypath + ['required', index])})"
+                        f"'additionalProperties' must be present on objects, and should probably be False (at {_serialize_keypath(current_keypath)})"
                     )
 
-            for key, prop in properties.items():
-                validate_schema_node(prop, current_keypath + ["properties", key])
+                if "required" not in node:
+                    hint = '"required": [%s]' % "".join(
+                        f'"{key}"' for key in properties
+                    )
+                    raise jsonschema.exceptions.ValidationError(
+                        f"'required' must be present on objects, maybe you want: {hint} (at {_serialize_keypath(current_keypath)})"
+                    )
+
+                for index, key in enumerate(node["required"]):
+                    if key not in properties:
+                        raise jsonschema.exceptions.ValidationError(
+                            f"required property \"{key}\" must be present in 'properties', but it was not (at {_serialize_keypath(current_keypath + ['required', index])})"
+                        )
+
+                for key, prop in properties.items():
+                    validate_schema_node(prop, current_keypath + ["properties", key])
+
+            if pattern_properties is not None:
+                assert isinstance(pattern_properties, dict)
+                for key, prop in pattern_properties.items():
+                    validate_schema_node(
+                        prop, current_keypath + ["patternProperties", key]
+                    )
         elif node.get("type", None) == "array":
             validate_schema_node(node["items"], current_keypath + ["items"])
         elif "anyOf" in node:

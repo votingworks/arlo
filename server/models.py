@@ -266,6 +266,7 @@ contest_jurisdiction = Table(
         ForeignKey("jurisdiction.id", ondelete="cascade"),
         nullable=False,
     ),
+    PrimaryKeyConstraint("contest_id", "jurisdiction_id"),
 )
 
 
@@ -391,6 +392,7 @@ class SampledBallotDraw(BaseModel):
     contest_id = Column(
         String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False
     )
+    contest = relationship("Contest")
 
     ticket_number = Column(String(200), nullable=False)
 
@@ -463,7 +465,7 @@ class RoundContest(BaseModel):
     # Used in the single-jurisdiction flow to store pre-computed estimated sample sizes
     sample_size_options = Column(String(1000))
 
-    results = relationship("RoundContestResult", uselist=True, passive_deletes=True)
+    results = relationship("RoundContestResult", uselist=True, passive_deletes=True,)
 
     __table_args__ = (PrimaryKeyConstraint("round_id", "contest_id"),)
 
@@ -497,6 +499,33 @@ class RoundContestResult(BaseModel):
     contest_choice = relationship("ContestChoice", back_populates="results")
 
     result = Column(Integer, nullable=False)
+
+
+class JurisdictionResult(BaseModel):
+    round_id = Column(
+        String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
+    )
+    contest_id = Column(
+        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False,
+    )
+    jurisdiction_id = Column(
+        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+    )
+    contest_choice_id = Column(
+        String(200),
+        ForeignKey("contest_choice.id", ondelete="cascade"),
+        nullable=False,
+    )
+    result = Column(Integer, nullable=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint("round_id", "jurisdiction_id", "contest_choice_id"),
+        ForeignKeyConstraint(
+            ["contest_id", "jurisdiction_id"],
+            ["contest_jurisdiction.contest_id", "contest_jurisdiction.jurisdiction_id"],
+            ondelete="cascade",
+        ),
+    )
 
 
 class File(BaseModel):
