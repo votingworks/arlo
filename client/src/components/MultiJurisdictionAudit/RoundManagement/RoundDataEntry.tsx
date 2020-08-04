@@ -1,14 +1,20 @@
 import React from 'react'
+import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { H5 } from '@blueprintjs/core'
 import { Field, Formik, Form, FormikProps } from 'formik'
+import styled from 'styled-components'
 import H2Title from '../../Atoms/H2Title'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
 import { IRound } from '../useRoundsJurisdictionAdmin'
 import Card from '../../Atoms/SpacedCard'
 import FormField from '../../Atoms/Form/FormField'
 import FormButton from '../../Atoms/Form/FormButton'
-import { testNumber } from '../../utilities'
+import { testNumber, api } from '../../utilities'
+
+const BottomButton = styled(FormButton)`
+  margin: 30px 0;
+`
 
 interface IValues {
   results: {
@@ -41,8 +47,38 @@ const RoundDataEntry = ({ round }: IProps) => {
       )
     : null
 
-  const submit = (values: IValues) => {
-    console.log(values)
+  const submit = async ({ results: r }: IValues) => {
+    const body = JSON.stringify(
+      Object.keys(r).reduce(
+        (a, contestId) => ({
+          ...a,
+          [contestId]: Object.keys(r[contestId]).reduce(
+            (b, choiceId) => ({
+              ...b,
+              [choiceId]: Number(r[contestId][choiceId]),
+            }),
+            {}
+          ),
+        }),
+        {}
+      )
+    )
+    try {
+      await api(
+        `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/results`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body,
+        }
+      )
+      return true
+    } catch (err) {
+      toast.error(err.message)
+      return false
+    }
   }
 
   if (!results) return null
@@ -77,10 +113,9 @@ const RoundDataEntry = ({ round }: IProps) => {
                 ))}
               </Card>
             ))}
-          <br />
-          <FormButton type="submit" intent="primary" onClick={handleSubmit}>
+          <BottomButton type="submit" intent="primary" onClick={handleSubmit}>
             Submit Data for Round {round.roundNum}
-          </FormButton>
+          </BottomButton>
         </Form>
       )}
     </Formik>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
+import styled from 'styled-components'
 import { Wrapper } from '../../Atoms/Wrapper'
 import H2Title from '../../Atoms/H2Title'
 import { IRound } from '../useRoundsJurisdictionAdmin'
@@ -18,6 +19,10 @@ import { IAuditBoard } from '../useAuditBoards'
 import QRs from './QRs'
 import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
+
+const PaddedWrapper = styled(Wrapper)`
+  padding: 30px 0;
+`
 
 interface IProps {
   round: IRound
@@ -65,8 +70,8 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
   if (!round.isAuditComplete) {
     const { roundNum } = round
     return (
-      <Wrapper className="single-page left">
-        {online && (
+      <PaddedWrapper className="single-page left">
+        {auditBoards.length === 0 ? (
           <>
             <H2Title>Round {roundNum} Audit Board Setup</H2Title>
             <CreateAuditBoards
@@ -76,8 +81,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
               roundNum={roundNum}
             />
           </>
-        )}
-        {auditBoards.length > 0 && (
+        ) : (
           <>
             <FormButton
               verticalSpaced
@@ -116,15 +120,15 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
           </>
         )}
         {!online && <RoundDataEntry round={round} />}
-      </Wrapper>
+      </PaddedWrapper>
     )
   }
   return (
-    <Wrapper className="single-page">
+    <PaddedWrapper className="single-page">
       <H2Title>
         Congratulations! Your Risk-Limiting Audit is now complete.
       </H2Title>
-    </Wrapper>
+    </PaddedWrapper>
   )
 }
 

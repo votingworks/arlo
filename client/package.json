@@ -83,7 +83,7 @@
     "@types/react-router-dom": "^5.1.3",
     "@types/react-table": "^7.0.18",
     "@types/react-toastify": "^4.0.2",
-    "@types/styled-components": "^4.1.15",
+    "@types/styled-components": "^5.1.2",
     "@types/uuidv4": "^2.0.0",
     "@types/yup": "^0.26.22",
     "@wdio/jasmine-framework": "^5.14.4",
