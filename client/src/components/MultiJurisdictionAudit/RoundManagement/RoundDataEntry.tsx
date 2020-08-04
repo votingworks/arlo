@@ -3,16 +3,12 @@ import { useParams } from 'react-router-dom'
 import { H5 } from '@blueprintjs/core'
 import { Field, Formik, Form, FormikProps } from 'formik'
 import H2Title from '../../Atoms/H2Title'
-import useContests from '../useContests'
+import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
 import { IRound } from '../useRoundsJurisdictionAdmin'
 import Card from '../../Atoms/SpacedCard'
 import FormField from '../../Atoms/Form/FormField'
 import FormButton from '../../Atoms/Form/FormButton'
 import { testNumber } from '../../utilities'
-
-interface IParams {
-  electionId: string
-}
 
 interface IValues {
   results: {
@@ -27,8 +23,11 @@ interface IProps {
 }
 
 const RoundDataEntry = ({ round }: IProps) => {
-  const { electionId } = useParams<IParams>()
-  const [contests] = useContests(electionId)
+  const { electionId, jurisdictionId } = useParams<{
+    electionId: string
+    jurisdictionId: string
+  }>()
+  const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
 
   const results = contests
     ? contests.reduce(
