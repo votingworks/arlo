@@ -18,7 +18,7 @@ const getContests = async (
   }
 }
 
-const useContests = (
+const useContestsJurisdictionAdmin = (
   electionId: string,
   jurisdictionId: string
 ): IContest[] | null => {
@@ -29,8 +29,8 @@ const useContests = (
       const newContests = await getContests(electionId, jurisdictionId)
       setContests(newContests)
     })()
-  }, [electionId])
+  }, [electionId, jurisdictionId])
   return contests
 }
 
-export default useContests
+export default useContestsJurisdictionAdmin

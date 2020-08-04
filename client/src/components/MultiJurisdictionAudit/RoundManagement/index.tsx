@@ -6,10 +6,8 @@ import H2Title from '../../Atoms/H2Title'
 import { IRound } from '../useRoundsJurisdictionAdmin'
 import { IBallot } from '../../../types'
 import { api, checkAndToast, apiDownload } from '../../utilities'
-// import useAuditSettings from '../Setup/useAuditSettings'
 import CreateAuditBoards from './CreateAuditBoards'
 import RoundProgress from './RoundProgress'
-// import RoundDataEntry from './RoundDataEntry'
 import FormButton from '../../Atoms/Form/FormButton'
 import {
   downloadPlaceholders,
@@ -18,8 +16,8 @@ import {
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
 import QRs from './QRs'
-import useAuditSettings from '../useAuditSettings'
 import RoundDataEntry from './RoundDataEntry'
+import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
 
 interface IProps {
   round: IRound
@@ -58,7 +56,9 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
     auditBoards,
   ])
 
-  const [{ online }] = useAuditSettings(electionId)
+  const settings = useAuditSettingsJurisdictionAdmin(electionId, jurisdictionId)
+
+  const online = settings ? settings.online : false
 
   if (!ballots) return null // Still loading
 
@@ -66,13 +66,17 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
     const { roundNum } = round
     return (
       <Wrapper className="single-page left">
-        <H2Title>Round {roundNum} Audit Board Setup</H2Title>
-        <CreateAuditBoards
-          auditBoards={auditBoards}
-          createAuditBoards={createAuditBoards}
-          numBallots={ballots.length}
-          roundNum={roundNum}
-        />
+        {online && (
+          <>
+            <H2Title>Round {roundNum} Audit Board Setup</H2Title>
+            <CreateAuditBoards
+              auditBoards={auditBoards}
+              createAuditBoards={createAuditBoards}
+              numBallots={ballots.length}
+              roundNum={roundNum}
+            />
+          </>
+        )}
         {auditBoards.length > 0 && (
           <>
             <FormButton
@@ -106,15 +110,12 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
                   Download Audit Board Credentials for Data Entry
                 </FormButton>
                 <QRs passphrases={auditBoards.map(b => b.passphrase)} />
+                <RoundProgress auditBoards={auditBoards} round={round} />
               </>
-            )}
-            {online ? (
-              <RoundProgress auditBoards={auditBoards} round={round} />
-            ) : (
-              <RoundDataEntry round={round} />
             )}
           </>
         )}
+        {!online && <RoundDataEntry round={round} />}
       </Wrapper>
     )
   }

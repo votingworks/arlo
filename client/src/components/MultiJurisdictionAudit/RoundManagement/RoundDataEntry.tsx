@@ -77,6 +77,7 @@ const RoundDataEntry = ({ round }: IProps) => {
                 ))}
               </Card>
             ))}
+          <br />
           <FormButton type="submit" intent="primary" onClick={handleSubmit}>
             Submit Data for Round {round.roundNum}
           </FormButton>
