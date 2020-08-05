@@ -134,6 +134,7 @@ def create_jurisdiction_and_admin(
 def create_election(
     client: FlaskClient,
     audit_name: str = None,
+    audit_type: str = AuditType.BALLOT_POLLING,
     organization_id: str = None,
     is_multi_jurisdiction: bool = True,
 ) -> str:
@@ -142,6 +143,7 @@ def create_election(
         "/api/election/new",
         {
             "auditName": audit_name or f"Test Audit {datetime.utcnow()}",
+            "auditType": audit_type,
             "organizationId": organization_id,
             "isMultiJurisdiction": is_multi_jurisdiction,
         },

@@ -228,6 +228,10 @@ ELECTION_NEW_SCHEMA = {
     "type": "object",
     "properties": {
         "auditName": {"type": "string"},
+        "auditType": {
+            "type": "string",
+            "enum": [audit_type.value for audit_type in AuditType],
+        },
         "organizationId": {"anyOf": [{"type": "string"}, {"type": "null"}]},
         "isMultiJurisdiction": {"type": "boolean"},
     },
@@ -261,6 +265,7 @@ def election_new():
     election = Election(
         id=str(uuid.uuid4()),
         audit_name=election["auditName"],
+        audit_type=election["auditType"],
         organization_id=organization_id,
         is_multi_jurisdiction=election["isMultiJurisdiction"],
     )
@@ -931,6 +936,7 @@ def audit_reset(election):
     election = Election(
         id=election.id,
         audit_name=election.audit_name,
+        audit_type=election.audit_type,
         organization_id=election.organization_id,
         is_multi_jurisdiction=election.is_multi_jurisdiction,
     )

@@ -4,13 +4,18 @@ from flask.testing import FlaskClient
 from ...auth import UserType
 from ...api.routes import create_organization
 from ..helpers import assert_ok, create_org_and_admin, set_logged_in_user, post_json
+from ...models import *  # pylint: disable=wildcard-import
 
 
 def test_without_org_with_anonymous_user(client: FlaskClient):
     rv = post_json(
         client,
         "/api/election/new",
-        {"auditName": "Test Audit Without Org", "isMultiJurisdiction": False},
+        {
+            "auditName": "Test Audit Without Org",
+            "isMultiJurisdiction": False,
+            "auditType": AuditType.BALLOT_POLLING,
+        },
     )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
@@ -25,6 +30,7 @@ def test_in_org_with_anonymous_user(client: FlaskClient):
             "auditName": "Test Audit In Org Anonymous",
             "organizationId": org.id,
             "isMultiJurisdiction": True,
+            "auditType": AuditType.BALLOT_POLLING,
         },
     )
     assert json.loads(rv.data) == {
@@ -49,6 +55,7 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
             "auditName": "Test Audit In Org Logged In AA",
             "organizationId": org_id,
             "isMultiJurisdiction": True,
+            "auditType": AuditType.BALLOT_POLLING,
         },
     )
     response = json.loads(rv.data)
@@ -72,6 +79,7 @@ def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
             "auditName": "Test Audit Logged In Without Access",
             "organizationId": org2_id,
             "isMultiJurisdiction": True,
+            "auditType": AuditType.BALLOT_POLLING,
         },
     )
     assert json.loads(rv.data) == {
@@ -96,6 +104,7 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
             "auditName": "Test Audit In Org Logged In JA",
             "organizationId": org_id,
             "isMultiJurisdiction": True,
+            "auditType": AuditType.BALLOT_POLLING,
         },
     )
     assert json.loads(rv.data) == {
@@ -107,6 +116,27 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
         ]
     }
     assert rv.status_code == 403
+
+
+def test_bad_audit_type(client: FlaskClient):
+    rv = post_json(
+        client,
+        "/api/election/new",
+        {
+            "auditName": "Test Audit",
+            "isMultiJurisdiction": False,
+            "auditType": "NOT A REAL TYPE",
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "'NOT A REAL TYPE' is not one of ['BALLOT_POLLING', 'BATCH_COMPARISON']",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
 
 
 def test_missing_audit_name(client: FlaskClient):
@@ -126,7 +156,11 @@ def test_without_org_duplicate_audit_name(client: FlaskClient):
     rv = post_json(
         client,
         "/api/election/new",
-        {"auditName": "Test Audit Duplicate", "isMultiJurisdiction": False},
+        {
+            "auditName": "Test Audit Duplicate",
+            "isMultiJurisdiction": False,
+            "auditType": AuditType.BALLOT_POLLING,
+        },
     )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
@@ -134,7 +168,11 @@ def test_without_org_duplicate_audit_name(client: FlaskClient):
     rv = post_json(
         client,
         "/api/election/new",
-        {"auditName": "Test Audit Duplicate", "isMultiJurisdiction": False},
+        {
+            "auditName": "Test Audit Duplicate",
+            "isMultiJurisdiction": False,
+            "auditType": AuditType.BALLOT_POLLING,
+        },
     )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
@@ -151,6 +189,7 @@ def test_in_org_duplicate_audit_name(client: FlaskClient):
             "auditName": "Test Audit In Org Duplicate",
             "organizationId": org_id,
             "isMultiJurisdiction": True,
+            "auditType": AuditType.BALLOT_POLLING,
         },
     )
     assert rv.status_code == 200
@@ -163,6 +202,7 @@ def test_in_org_duplicate_audit_name(client: FlaskClient):
             "auditName": "Test Audit In Org Duplicate",
             "organizationId": org_id,
             "isMultiJurisdiction": True,
+            "auditType": AuditType.BALLOT_POLLING,
         },
     )
     assert rv.status_code == 409
@@ -188,6 +228,7 @@ def test_two_orgs_same_name(client: FlaskClient):
             "auditName": "Test Audit Two Orgs Duplicate",
             "organizationId": org_id_1,
             "isMultiJurisdiction": True,
+            "auditType": AuditType.BALLOT_POLLING,
         },
     )
     assert rv.status_code == 200
@@ -202,6 +243,7 @@ def test_two_orgs_same_name(client: FlaskClient):
             "auditName": "Test Audit Two Orgs Duplicate",
             "organizationId": org_id_2,
             "isMultiJurisdiction": True,
+            "auditType": AuditType.BALLOT_POLLING,
         },
     )
     assert rv.status_code == 200
