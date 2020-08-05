@@ -74,7 +74,6 @@ def serialize_election(election):
         "auditName": election.audit_name,
         "electionName": election.election_name,
         "state": election.state,
-        "electionDate": isoformat(election.election_date),
         "isMultiJurisdiction": election.is_multi_jurisdiction,
     }
 

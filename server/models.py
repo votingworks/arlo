@@ -26,17 +26,20 @@ class Organization(BaseModel):
     )
 
 
+class AuditType(str, enum.Enum):
+    BALLOT_POLLING = "BALLOT_POLLING"
+    BATCH_COMPARISON = "BATCH_COMPARISON"
+
+
 # Election is a slight misnomer - this model represents an audit.
 class Election(BaseModel):
     id = Column(String(200), primary_key=True)
     # audit_name must be unique within each Organization
     audit_name = Column(String(200), nullable=False)
+    audit_type = Column(Enum(AuditType), nullable=False)
     # election_name can be the same across audits
     election_name = Column(String(200))
     state = Column(String(100))
-    election_date = Column(Date)
-    election_type = Column(String(200))
-    meeting_date = Column(Date)
     risk_limit = Column(Integer)
     random_seed = Column(String(100))
 
