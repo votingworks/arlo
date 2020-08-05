@@ -14,12 +14,12 @@ pylint = "*"
 # for now (or enable pre-releases for all packages, which we don't want)
 black = "==19.10b0"
 snapshottest = "*"
-alembic = "*"
 pytest-alembic = "*"
 pytest-xdist = "*"
 filelock = "*"
 
 [packages]
+alembic = "*"
 authlib = "*"
 chardet = "*"
 consistent_sampler = "*"
