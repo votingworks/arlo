@@ -14,6 +14,7 @@ def test_settings_get_empty(client: FlaskClient, election_id: str):
         "randomSeed": None,
         "riskLimit": None,
         "state": None,
+        "auditType": "BALLOT_POLLING",
     }
 
 
@@ -31,6 +32,7 @@ def test_jurisdiction_settings_get_empty(
         "randomSeed": None,
         "riskLimit": None,
         "state": None,
+        "auditType": "BALLOT_POLLING",
     }
 
 
@@ -45,6 +47,7 @@ def test_update_election(
     election["randomSeed"] = "a new random seed"
     election["riskLimit"] = 15
     election["state"] = USState.Mississippi
+    del election["auditType"]
 
     rv = put_json(client, f"/api/election/{election_id}/settings", election)
     assert_ok(rv)
@@ -55,6 +58,7 @@ def test_update_election(
         "randomSeed": "a new random seed",
         "riskLimit": 15,
         "state": "MS",
+        "auditType": "BALLOT_POLLING",
     }
 
     rv = client.get(f"/api/election/{election_id}/settings")
@@ -103,6 +107,7 @@ def test_invalid_state(client: FlaskClient, election_id: str):
     # Set an invalid state.
     election = json.loads(rv.data)
     election["state"] = "XX"
+    del election["auditType"]
 
     # Attempt to write invalid data.
     rv = put_json(client, f"/api/election/{election_id}/settings", election)
@@ -128,6 +133,7 @@ def test_invalid_risk_limit(client: FlaskClient, election_id: str):
     # Set an invalid state.
     election = json.loads(rv.data)
     election["riskLimit"] = -1
+    del election["auditType"]
 
     # Attempt to write invalid data.
     rv = put_json(client, f"/api/election/{election_id}/settings", election)
