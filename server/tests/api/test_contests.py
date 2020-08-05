@@ -3,13 +3,7 @@ from typing import List
 import pytest
 from flask.testing import FlaskClient
 
-from ..helpers import (
-    assert_ok,
-    post_json,
-    put_json,
-    SAMPLE_SIZE_ROUND_1,
-    set_logged_in_user,
-)
+from ..helpers import *  # pylint: disable=wildcard-import
 from ...database import db_session
 from ...models import *  # pylint: disable=wildcard-import
 from ...api.contests import JSONDict
@@ -328,6 +322,33 @@ def test_contest_too_many_votes(client: FlaskClient, election_id: str):
             }
         ]
     }
+
+
+def test_jurisdictions_contests_list_empty(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, user_key=DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
+    )
+    assert json.loads(rv.data) == {"contests": []}
+
+
+def test_jurisdictions_contests_list(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], json_contests,
+):
+    rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, user_key=DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/contest"
+    )
+    contests = json.loads(rv.data)
+    expected_contests = [
+        {**contest, "currentRoundStatus": None} for contest in json_contests[:1]
+    ]
+    assert contests == {"contests": expected_contests}
 
 
 def test_audit_board_contests_list_empty(

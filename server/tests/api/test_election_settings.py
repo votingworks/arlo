@@ -5,9 +5,9 @@ from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 
 
-def test_get_empty(client: FlaskClient, election_id: str):
+def test_settings_get_empty(client: FlaskClient, election_id: str):
     rv = client.get(f"/api/election/{election_id}/settings")
-    assert rv.status_code == 200, f"unexpected response: {rv.data}"
+    assert rv.status_code == 200
     assert json.loads(rv.data) == {
         "electionName": None,
         "online": False,
@@ -17,11 +17,28 @@ def test_get_empty(client: FlaskClient, election_id: str):
     }
 
 
-def test_update_election(client: FlaskClient, election_id: str):
-    # Get the existing data.
+def test_jurisdiction_settings_get_empty(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/settings"
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == {
+        "electionName": None,
+        "online": False,
+        "randomSeed": None,
+        "riskLimit": None,
+        "state": None,
+    }
+
+
+def test_update_election(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
     rv = client.get(f"/api/election/{election_id}/settings")
 
-    # Update the values.
     election = json.loads(rv.data)
     election["electionName"] = "An Updated Name"
     election["online"] = True
@@ -32,12 +49,24 @@ def test_update_election(client: FlaskClient, election_id: str):
     rv = put_json(client, f"/api/election/{election_id}/settings", election)
     assert_ok(rv)
 
-    election_record = Election.query.filter_by(id=election_id).one()
-    assert election_record.election_name == "An Updated Name"
-    assert election_record.online is True
-    assert election_record.random_seed == "a new random seed"
-    assert election_record.risk_limit == 15
-    assert election_record.state == USState.Mississippi
+    expected_settings = {
+        "electionName": "An Updated Name",
+        "online": True,
+        "randomSeed": "a new random seed",
+        "riskLimit": 15,
+        "state": "MS",
+    }
+
+    rv = client.get(f"/api/election/{election_id}/settings")
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == expected_settings
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/settings"
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == expected_settings
 
 
 def test_update_election_settings_after_audit_starts(
