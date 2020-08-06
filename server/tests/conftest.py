@@ -1,5 +1,5 @@
 import io, uuid, json, os
-from typing import List, Generator
+from typing import List
 from flask.testing import FlaskClient
 from flask import jsonify, abort
 import pytest
@@ -11,7 +11,7 @@ os.environ["FLASK_ENV"] = "test"
 # pylint: disable=wrong-import-position
 
 from ..app import app
-from ..database import db_session, reset_db
+from ..database import reset_db
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import (
     UserType,
@@ -52,16 +52,9 @@ def reset_test_db(tmp_path_factory, worker_id):
 
 
 @pytest.fixture
-def client() -> Generator[FlaskClient, None, None]:
+def client() -> FlaskClient:
     app.config["TESTING"] = True
-    client = app.test_client()
-
-    # TODO run this once at the beginning of all tests?
-    # reset_db()
-
-    yield client
-
-    db_session.rollback()
+    return app.test_client()
 
 
 @pytest.fixture
