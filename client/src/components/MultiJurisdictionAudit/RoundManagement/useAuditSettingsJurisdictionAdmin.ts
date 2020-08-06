@@ -29,13 +29,13 @@ const getSettings = async (
 const useAuditSettingsJurisdictionAdmin = (
   electionId: string,
   jurisdictionId: string
-): IAuditSettings | null => {
-  const [settings, setSettings] = useState<IAuditSettings | null>(defaultValues)
+): IAuditSettings => {
+  const [settings, setSettings] = useState<IAuditSettings>(defaultValues)
 
   useEffect(() => {
     ;(async () => {
       const newSettings = await getSettings(electionId, jurisdictionId)
-      setSettings(newSettings)
+      setSettings(newSettings || defaultValues)
     })()
   }, [electionId, jurisdictionId])
 

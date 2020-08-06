@@ -61,11 +61,12 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
     auditBoards,
   ])
 
-  const settings = useAuditSettingsJurisdictionAdmin(electionId, jurisdictionId)
+  const { online } = useAuditSettingsJurisdictionAdmin(
+    electionId,
+    jurisdictionId
+  )
 
-  const online = settings ? settings.online : false
-
-  if (!ballots) return null // Still loading
+  if (!ballots || online === null) return null // Still loading
 
   if (!round.isAuditComplete) {
     const { roundNum } = round
