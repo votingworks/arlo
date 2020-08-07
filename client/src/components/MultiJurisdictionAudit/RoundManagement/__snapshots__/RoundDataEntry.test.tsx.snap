@@ -22,6 +22,7 @@ exports[`offline round data entry renders 1`] = `
         Contest 1
       </h5>
       <label
+        class="sc-iwsKbI gesrUq"
         for="results[contest-id-1][choice-id-1]"
       >
         Votes for 
@@ -44,6 +45,7 @@ exports[`offline round data entry renders 1`] = `
         </div>
       </label>
       <label
+        class="sc-iwsKbI gesrUq"
         for="results[contest-id-1][choice-id-2]"
       >
         Votes for 
@@ -75,6 +77,7 @@ exports[`offline round data entry renders 1`] = `
         Contest 2
       </h5>
       <label
+        class="sc-iwsKbI gesrUq"
         for="results[contest-id-2][choice-id-3]"
       >
         Votes for 
@@ -97,6 +100,7 @@ exports[`offline round data entry renders 1`] = `
         </div>
       </label>
       <label
+        class="sc-iwsKbI gesrUq"
         for="results[contest-id-2][choice-id-4]"
       >
         Votes for 
@@ -126,8 +130,7 @@ exports[`offline round data entry renders 1`] = `
       <span
         class="bp3-button-text"
       >
-        Submit Data for Round 
-        1
+        Submit Data for Round 1
       </span>
     </button>
   </form>
