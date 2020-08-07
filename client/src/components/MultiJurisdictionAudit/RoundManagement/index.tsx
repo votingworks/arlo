@@ -106,7 +106,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
             >
               Download Ballot Labels for Round {roundNum}
             </FormButton>
-            {online && (
+            {online ? (
               <>
                 <FormButton
                   verticalSpaced
@@ -117,10 +117,11 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
                 <QRs passphrases={auditBoards.map(b => b.passphrase)} />
                 <RoundProgress auditBoards={auditBoards} round={round} />
               </>
+            ) : (
+              <RoundDataEntry round={round} />
             )}
           </>
         )}
-        {!online && <RoundDataEntry round={round} />}
       </PaddedWrapper>
     )
   }

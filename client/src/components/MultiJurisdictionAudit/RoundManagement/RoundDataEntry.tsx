@@ -1,5 +1,4 @@
 import React from 'react'
-import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import { H5 } from '@blueprintjs/core'
 import { Field, Formik, Form, FormikProps } from 'formik'
@@ -10,19 +9,17 @@ import { IRound } from '../useRoundsJurisdictionAdmin'
 import Card from '../../Atoms/SpacedCard'
 import FormField from '../../Atoms/Form/FormField'
 import FormButton from '../../Atoms/Form/FormButton'
-import { testNumber, api } from '../../utilities'
+import { testNumber } from '../../utilities'
+import useResults, { IResults } from './useResults'
 
 const BottomButton = styled(FormButton)`
   margin: 30px 0;
 `
 
-interface IValues {
-  results: {
-    [contestId: string]: {
-      [choiceId: string]: string | number
-    }
-  }
-}
+const BlockLabel = styled.label`
+  display: block;
+  margin: 20px 0;
+`
 
 interface IProps {
   round: IRound
@@ -34,57 +31,27 @@ const RoundDataEntry = ({ round }: IProps) => {
     jurisdictionId: string
   }>()
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
+  const [results, updateResults] = useResults(
+    electionId,
+    jurisdictionId,
+    round.id
+  )
+  const alreadySubmittedResults =
+    !!results &&
+    Object.values(results.results).some(a => Object.values(a).some(b => b))
 
-  const results = contests
-    ? contests.reduce(
-        (a, contest) => ({
-          [contest.id]: contest.choices.reduce(
-            (b, choice) => ({ [choice.id]: '' }),
-            {}
-          ),
-        }),
-        {}
-      )
-    : null
-
-  const submit = async ({ results: r }: IValues) => {
-    const body = JSON.stringify(
-      Object.keys(r).reduce(
-        (a, contestId) => ({
-          ...a,
-          [contestId]: Object.keys(r[contestId]).reduce(
-            (b, choiceId) => ({
-              ...b,
-              [choiceId]: Number(r[contestId][choiceId]),
-            }),
-            {}
-          ),
-        }),
-        {}
-      )
-    )
-    try {
-      await api(
-        `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/results`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body,
-        }
-      )
-      return true
-    } catch (err) {
-      toast.error(err.message)
-      return false
-    }
+  const submit = async (values: IResults) => {
+    updateResults(values)
   }
 
   if (!results) return null
   return (
-    <Formik initialValues={{ results }} enableReinitialize onSubmit={submit}>
-      {({ handleSubmit }: FormikProps<IValues>) => (
+    <Formik
+      initialValues={{ results: results.results }}
+      enableReinitialize
+      onSubmit={submit}
+    >
+      {({ handleSubmit }: FormikProps<IResults>) => (
         <Form>
           <H2Title>Round {round.roundNum} Data Entry</H2Title>
           <p>
@@ -97,24 +64,35 @@ const RoundDataEntry = ({ round }: IProps) => {
               <Card key={contest.id}>
                 <H5>{contest.name}</H5>
                 {contest.choices.map(choice => (
-                  <label
+                  <BlockLabel
                     key={choice.id}
                     htmlFor={`results[${contest.id}][${choice.id}]`}
                   >
                     Votes for {choice.name}:
-                    <Field
-                      id={`results[${contest.id}][${choice.id}]`}
-                      name={`results[${contest.id}][${choice.id}]`}
-                      disabled={round.endedAt}
-                      validate={testNumber()}
-                      component={FormField}
-                    />
-                  </label>
+                    {alreadySubmittedResults ? (
+                      results.results[contest.id][choice.id]
+                    ) : (
+                      <Field
+                        id={`results[${contest.id}][${choice.id}]`}
+                        name={`results[${contest.id}][${choice.id}]`}
+                        disabled={round.endedAt || alreadySubmittedResults}
+                        validate={testNumber()}
+                        component={FormField}
+                      />
+                    )}
+                  </BlockLabel>
                 ))}
               </Card>
             ))}
-          <BottomButton type="submit" intent="primary" onClick={handleSubmit}>
-            Submit Data for Round {round.roundNum}
+          <BottomButton
+            type="submit"
+            intent="primary"
+            disabled={alreadySubmittedResults}
+            onClick={handleSubmit}
+          >
+            {alreadySubmittedResults
+              ? `Already Submitted Data for Round ${round.roundNum}`
+              : `Submit Data for Round ${round.roundNum}`}
           </BottomButton>
         </Form>
       )}
