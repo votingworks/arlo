@@ -110,7 +110,7 @@ organization administrators, jurisdiction adminstrators,
 and audit boards.
 
 Organizations identify administrators and jurisdictions for whom they
-administrate audits. Jurisdictions identify their own administrators,
+administer audits. Jurisdictions identify their own administrators,
 as well as audit boards. Audit boards enter ballot-by-ballot auditing data.
 
 Thus, organizations are, for example, the State of
@@ -142,8 +142,8 @@ they download the `Audit Board Credentials for Data Entry.pdf` files.
 Each one contains a URL for an audit board, with an embedded
 authentication token.
 
-All authentication is done using OAuth 2.0
-(e.g. via [Auth0](https://auth0.com/), with
+Administrator authentication is done using OAuth 2.0
+(e.g. via [Auth0](https://auth0.com/)), with
 email addresses, so users in the Arlo database also should typically be
 configured in the appropriate auth0 tenant user database.
 
