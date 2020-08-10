@@ -12,7 +12,8 @@ const getContests = async (
       `/election/${electionId}/jurisdiction/${jurisdictionId}/contest`
     )
     return response.contests
-  } catch (err) {
+  } catch (err) /* istanbul ignore next */ {
+    // TODO move toasting into api
     toast.error(err.message)
     return null
   }

@@ -45,7 +45,8 @@ const getResults = async (
       `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results`
     )
     return { results: reformatResults(response, false) }
-  } catch (err) {
+  } catch (err) /* istanbul ignore next */ {
+    // TODO move toasting into api
     toast.error(err.message)
     return null
   }
@@ -72,7 +73,8 @@ const useResults = (
           },
         }
       )
-    } catch (err) {
+    } catch (err) /* istanbul ignore next */ {
+      // TODO move toasting into api
       toast.error(err.message)
       return false
     }

@@ -20,7 +20,8 @@ const getSettings = async (
       `/election/${electionId}/jurisdiction/${jurisdictionId}/settings`
     )
     return response
-  } catch (err) {
+  } catch (err) /* istanbul ignore next */ {
+    // TODO move toasting into api
     toast.error(err.message)
     return null
   }
