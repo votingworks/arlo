@@ -1,23 +1,9 @@
-import json, io, uuid
+import json, io
 from datetime import datetime
 from typing import List
 from flask.testing import FlaskClient
 
-from ..helpers import (
-    assert_ok,
-    put_json,
-    post_json,
-    compare_json,
-    assert_is_date,
-    set_logged_in_user,
-    DEFAULT_JA_EMAIL,
-    SAMPLE_SIZE_ROUND_1,
-    J1_SAMPLES_ROUND_1,
-    J1_BALLOTS_ROUND_1,
-    BALLOTS_ROUND_1,
-    AB1_SAMPLES_ROUND_1,
-    AB1_BALLOTS_ROUND_1,
-)
+from ..helpers import *  # pylint: disable=wildcard-import
 from ...auth import UserType
 from ...database import db_session
 from ...models import *  # pylint: disable=wildcard-import
@@ -334,6 +320,9 @@ def test_jurisdictions_round_status_offline(
     )
     assert_ok(rv)
 
+    rv = client.get(f"/api/election/{election_id}/round")
+    round_id = json.loads(rv.data)["rounds"][0]["id"]
+
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
@@ -345,23 +334,15 @@ def test_jurisdictions_round_status_offline(
         "numBallotsAudited": 0,
     }
 
-    # Simulate creating an audit board
-    rv = client.get(f"/api/election/{election_id}/round")
-    round = json.loads(rv.data)["rounds"][0]
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
-    ballots = (
-        SampledBallot.query.join(SampledBallotDraw)
-        .filter_by(round_id=round["id"])
-        .all()
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
+        [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
     )
-    audit_board_1 = AuditBoard(
-        id=str(uuid.uuid4()),
-        jurisdiction_id=jurisdiction_ids[0],
-        round_id=round["id"],
-        sampled_ballots=ballots[: AB1_SAMPLES + 1],
-    )
-    db_session.add(audit_board_1)
-    db_session.commit()
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
@@ -374,10 +355,27 @@ def test_jurisdictions_round_status_offline(
         "numBallotsAudited": 0,
     }
 
-    # Simulate the audit board signing off
-    audit_board_1 = db_session.merge(audit_board_1)  # Reload into the session
-    audit_board_1.signed_off_at = datetime.utcnow()
-    db_session.commit()
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results",
+    )
+    assert rv.status_code == 200
+    empty_results = json.loads(rv.data)
+
+    full_results = {
+        contest_id: {choice_id: 1 for choice_id in contest_results}
+        for contest_id, contest_results in empty_results.items()
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results",
+        full_results,
+    )
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]

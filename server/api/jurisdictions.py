@@ -48,11 +48,15 @@ def round_status_by_jurisdiction(
         .group_by(AuditBoard.jurisdiction_id)
         .values(AuditBoard.jurisdiction_id, func.count())
     )
-    audit_boards_signed_off = dict(
-        AuditBoard.query.filter_by(round_id=round.id)
-        .filter(AuditBoard.signed_off_at.isnot(None))
-        .group_by(AuditBoard.jurisdiction_id)
-        .values(AuditBoard.jurisdiction_id, func.count())
+    audit_boards_signed_off = (
+        dict(
+            AuditBoard.query.filter_by(round_id=round.id)
+            .filter(AuditBoard.signed_off_at.isnot(None))
+            .group_by(AuditBoard.jurisdiction_id)
+            .values(AuditBoard.jurisdiction_id, func.count())
+        )
+        if online
+        else {}
     )
 
     ballots_in_round = (
@@ -95,6 +99,22 @@ def round_status_by_jurisdiction(
         .values(Batch.jurisdiction_id, func.count())
     )
 
+    # Since we require that JAs record results for all contests at once, we
+    # only need to check if any JurisdictionResult exists to know if all
+    # results have been recorded.
+    jurisdictions_with_offline_results_recorded = (
+        {
+            jurisdiction_id
+            for jurisdiction_id, in (
+                JurisdictionResult.query.filter_by(round_id=round.id)
+                .group_by(JurisdictionResult.jurisdiction_id)
+                .values(JurisdictionResult.jurisdiction_id)
+            )
+        }
+        if not online
+        else {}
+    )
+
     def num_samples(jurisdiction_id: str) -> int:
         return sample_count_by_jurisdiction.get(jurisdiction_id, 0)
 
@@ -103,34 +123,38 @@ def round_status_by_jurisdiction(
 
     # NOT_STARTED = the jurisdiction hasn’t set up any audit boards
     # IN_PROGRESS = the audit boards are set up
-    # COMPLETE = all of the audit boards have signed off on their ballots
+    # COMPLETE =
+    # - if online, all of the audit boards have signed off on their ballots
+    # - if offline, the offline results have been recorded for all contests
     def status(jurisdiction_id: str) -> JurisdictionStatus:
         num_set_up = audit_boards_set_up.get(jurisdiction_id, 0)
-        num_signed_off = audit_boards_signed_off.get(jurisdiction_id, 0)
         num_sampled = num_samples(jurisdiction_id)
 
         # Special case: jurisdictions that don't get any ballots assigned are
         # COMPLETE from the get-go
         if num_sampled == 0:
             return JurisdictionStatus.COMPLETE
-        elif num_set_up == 0:
+        if num_set_up == 0:
             return JurisdictionStatus.NOT_STARTED
-        elif num_signed_off != num_set_up:
-            return JurisdictionStatus.IN_PROGRESS
+
+        if online:
+            num_signed_off = audit_boards_signed_off.get(jurisdiction_id, 0)
+            if num_signed_off != num_set_up:
+                return JurisdictionStatus.IN_PROGRESS
         else:
-            return JurisdictionStatus.COMPLETE
+            if jurisdiction_id not in jurisdictions_with_offline_results_recorded:
+                return JurisdictionStatus.IN_PROGRESS
+
+        return JurisdictionStatus.COMPLETE
 
     def num_samples_audited(jurisdiction_id: str) -> int:
         if online:
             return audited_sample_count_by_jurisdiction.get(jurisdiction_id, 0)
         else:
-            # For offline audits, we can't track incremental progress on
-            # auditing ballots, so we just report 0 ballots until the round is
-            # complete, then report all the samples.
             return (
-                0
-                if status(jurisdiction_id) != JurisdictionStatus.COMPLETE
-                else num_samples(jurisdiction_id)
+                num_samples(jurisdiction_id)
+                if jurisdiction_id in jurisdictions_with_offline_results_recorded
+                else 0
             )
 
     def num_ballots_audited(jurisdiction_id: str) -> int:
@@ -138,9 +162,9 @@ def round_status_by_jurisdiction(
             return audited_ballot_count_by_jurisdiction.get(jurisdiction_id, 0)
         else:
             return (
-                0
-                if status(jurisdiction_id) != JurisdictionStatus.COMPLETE
-                else num_ballots(jurisdiction_id)
+                num_ballots(jurisdiction_id)
+                if jurisdiction_id in jurisdictions_with_offline_results_recorded
+                else 0
             )
 
     return {
