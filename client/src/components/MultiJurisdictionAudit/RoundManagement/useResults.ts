@@ -8,10 +8,6 @@ export interface IResultValues {
   }
 }
 
-export interface IResults {
-  results: IResultValues
-}
-
 const stringifyPossibleNull = (v: string | number | null) => (v ? `${v}` : '')
 
 const reformatResults = (r: IResultValues, numberify = true): IResultValues => {
@@ -32,19 +28,18 @@ const reformatResults = (r: IResultValues, numberify = true): IResultValues => {
   )
 }
 
-const numberifyResults = (r: IResults): IResultValues =>
-  reformatResults(r.results)
+const numberifyResults = (r: IResultValues): IResultValues => reformatResults(r)
 
 const getResults = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-): Promise<IResults | null> => {
+): Promise<IResultValues | null> => {
   try {
     const response: IResultValues = await api(
       `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results`
     )
-    return { results: reformatResults(response, false) }
+    return reformatResults(response, false)
   } catch (err) /* istanbul ignore next */ {
     // TODO move toasting into api
     toast.error(err.message)
@@ -56,10 +51,10 @@ const useResults = (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-): [IResults | null, (arg0: IResults) => Promise<boolean>] => {
-  const [results, setResults] = useState<IResults | null>(null)
+): [IResultValues | null, (arg0: IResultValues) => Promise<boolean>] => {
+  const [results, setResults] = useState<IResultValues | null>(null)
 
-  const updateResults = async (newResults: IResults): Promise<boolean> => {
+  const updateResults = async (newResults: IResultValues): Promise<boolean> => {
     if (!results) return false
     try {
       await api(

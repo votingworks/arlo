@@ -10,7 +10,7 @@ import Card from '../../Atoms/SpacedCard'
 import FormField from '../../Atoms/Form/FormField'
 import FormButton from '../../Atoms/Form/FormButton'
 import { testNumber } from '../../utilities'
-import useResults, { IResults } from './useResults'
+import useResults, { IResultValues } from './useResults'
 
 const BottomButton = styled(FormButton)`
   margin: 30px 0;
@@ -25,6 +25,10 @@ interface IProps {
   round: IRound
 }
 
+interface IValues {
+  results: IResultValues
+}
+
 const RoundDataEntry = ({ round }: IProps) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
@@ -36,22 +40,19 @@ const RoundDataEntry = ({ round }: IProps) => {
     jurisdictionId,
     round.id
   )
-  const alreadySubmittedResults =
-    !!results &&
-    Object.values(results.results).some(a => Object.values(a).some(b => b))
-
-  const submit = async (values: IResults) => {
-    updateResults(values)
-  }
 
   if (!results) return null
+  const alreadySubmittedResults = Object.values(results.results).some(a =>
+    Object.values(a).some(b => b)
+  )
+
+  const submit = async (values: IValues) => {
+    updateResults(values.results)
+  }
+
   return (
-    <Formik
-      initialValues={{ results: results.results }}
-      enableReinitialize
-      onSubmit={submit}
-    >
-      {({ handleSubmit }: FormikProps<IResults>) => (
+    <Formik initialValues={{ results }} enableReinitialize onSubmit={submit}>
+      {({ handleSubmit }: FormikProps<IValues>) => (
         <Form>
           <H2Title>Round {round.roundNum} Data Entry</H2Title>
           <p>
@@ -70,12 +71,12 @@ const RoundDataEntry = ({ round }: IProps) => {
                   >
                     Votes for {choice.name}:
                     {alreadySubmittedResults ? (
-                      results.results[contest.id][choice.id]
+                      results[contest.id][choice.id]
                     ) : (
                       <Field
                         id={`results[${contest.id}][${choice.id}]`}
                         name={`results[${contest.id}][${choice.id}]`}
-                        disabled={round.endedAt || alreadySubmittedResults}
+                        disabled={alreadySubmittedResults}
                         validate={testNumber()}
                         component={FormField}
                       />
