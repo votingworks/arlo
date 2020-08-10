@@ -42,7 +42,8 @@ const RoundDataEntry = ({ round }: IProps) => {
   )
 
   if (!results) return null
-  const alreadySubmittedResults = Object.values(results.results).some(a =>
+
+  const alreadySubmittedResults = Object.values(results).some(a =>
     Object.values(a).some(b => b)
   )
 
