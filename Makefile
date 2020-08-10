@@ -31,8 +31,9 @@ dev-environment: deps initdevdb install-development resetdb
 typecheck-server:
 	pipenv run mypy server scripts
 
+# Note that this reformats ALL the Python files in the given directories, in-place
 format-server:
-	pipenv run black .
+	pipenv run black server scripts
 
 lint-server:
 	pipenv run pylint server scripts

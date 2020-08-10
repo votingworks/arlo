@@ -177,7 +177,6 @@ We recommend Ubuntu 18.0.4.
 
 #### Troubleshooting
 
-- Beware: if you run make format-server, it will run black in a way which changes all files under the current directory without providing a backup
 - Postgres is best installed by grabbing `postgresql-server-dev-10` and `postgresql-client-10`.
 - `psychopg2` has known issues depending on your install (see, e.g., [here](https://github.com/psycopg/psycopg2/issues/674)). If you run into issues, switch `psychopg2` to `psychopg2-binary` in the Pipfile
 - `pipenv install` can hang attempting to get [a lock on the packages it's installing](https://github.com/pypa/pipenv/issues/3827). To get around this, add the `--skip-lock` flag in the Makefile (the first line should be `pipenv install --skip-lock`).
