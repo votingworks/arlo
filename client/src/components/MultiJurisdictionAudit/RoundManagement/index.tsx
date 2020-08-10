@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
+import styled from 'styled-components'
 import { Wrapper } from '../../Atoms/Wrapper'
 import H2Title from '../../Atoms/H2Title'
 import { IRound } from '../useRoundsJurisdictionAdmin'
 import { IBallot } from '../../../types'
 import { api, checkAndToast, apiDownload } from '../../utilities'
-// import useAuditSettings from '../Setup/useAuditSettings'
 import CreateAuditBoards from './CreateAuditBoards'
 import RoundProgress from './RoundProgress'
-// import RoundDataEntry from './RoundDataEntry'
 import FormButton from '../../Atoms/Form/FormButton'
 import {
   downloadPlaceholders,
@@ -18,6 +17,12 @@ import {
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
 import QRs from './QRs'
+import RoundDataEntry from './RoundDataEntry'
+import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
+
+const PaddedWrapper = styled(Wrapper)`
+  padding: 30px 0;
+`
 
 interface IProps {
   round: IRound
@@ -56,22 +61,28 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
     auditBoards,
   ])
 
-  // const [{ online }] = useAuditSettings(electionId!)
+  const { online } = useAuditSettingsJurisdictionAdmin(
+    electionId,
+    jurisdictionId
+  )
 
-  if (!ballots) return null // Still loading
+  if (!ballots || online === null) return null // Still loading
 
   if (!round.isAuditComplete) {
     const { roundNum } = round
     return (
-      <Wrapper className="single-page left">
-        <H2Title>Round {roundNum} Audit Board Setup</H2Title>
-        <CreateAuditBoards
-          auditBoards={auditBoards}
-          createAuditBoards={createAuditBoards}
-          numBallots={ballots.length}
-          roundNum={roundNum}
-        />
-        {auditBoards.length > 0 && (
+      <PaddedWrapper className="single-page left">
+        {auditBoards.length === 0 ? (
+          <>
+            <H2Title>Round {roundNum} Audit Board Setup</H2Title>
+            <CreateAuditBoards
+              auditBoards={auditBoards}
+              createAuditBoards={createAuditBoards}
+              numBallots={ballots.length}
+              roundNum={roundNum}
+            />
+          </>
+        ) : (
           <>
             <FormButton
               verticalSpaced
@@ -95,27 +106,31 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
             >
               Download Ballot Labels for Round {roundNum}
             </FormButton>
-            {/* make conditional on online */}
-            <FormButton
-              verticalSpaced
-              onClick={() => downloadDataEntry(auditBoards)}
-            >
-              Download Audit Board Credentials for Data Entry
-            </FormButton>
-            <QRs passphrases={auditBoards.map(b => b.passphrase)} />
-            <RoundProgress auditBoards={auditBoards} round={round} />
-            {/* {online ? <RoundProgress /> : <RoundDataEntry />} */}
+            {online ? (
+              <>
+                <FormButton
+                  verticalSpaced
+                  onClick={() => downloadDataEntry(auditBoards)}
+                >
+                  Download Audit Board Credentials for Data Entry
+                </FormButton>
+                <QRs passphrases={auditBoards.map(b => b.passphrase)} />
+                <RoundProgress auditBoards={auditBoards} round={round} />
+              </>
+            ) : (
+              <RoundDataEntry round={round} />
+            )}
           </>
         )}
-      </Wrapper>
+      </PaddedWrapper>
     )
   }
   return (
-    <Wrapper className="single-page">
+    <PaddedWrapper className="single-page">
       <H2Title>
         Congratulations! Your Risk-Limiting Audit is now complete.
       </H2Title>
-    </Wrapper>
+    </PaddedWrapper>
   )
 }
 

@@ -24,6 +24,7 @@ import useJurisdictions from '../../useJurisdictions'
 import { IContest, ICandidate } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
 import Card from '../../../Atoms/SpacedCard'
+import { testNumber } from '../../../utilities'
 
 interface IProps {
   isTargeted: boolean
@@ -135,6 +136,7 @@ const Contests: React.FC<IProps> = ({
                               name={`contests[${i}].numWinners`}
                               disabled={locked}
                               component={FormField}
+                              validate={testNumber()}
                             />
                           </label>
                           <FormSectionDescription>
@@ -148,6 +150,7 @@ const Contests: React.FC<IProps> = ({
                               name={`contests[${i}].votesAllowed`}
                               disabled={locked}
                               component={FormField}
+                              validate={testNumber()}
                             />
                           </label>
                         </FormSection>
@@ -178,6 +181,7 @@ const Contests: React.FC<IProps> = ({
                                             name={`contests[${i}].choices[${j}].numVotes`}
                                             disabled={locked}
                                             component={FlexField}
+                                            validate={testNumber()}
                                           />
                                         </InputLabel>
                                         {contest.choices.length > 2 &&
@@ -221,6 +225,7 @@ const Contests: React.FC<IProps> = ({
                             <Field
                               id={`contests[${i}].totalBallotsCast`}
                               name={`contests[${i}].totalBallotsCast`}
+                              validate={testNumber()}
                               disabled={locked}
                               component={FormField}
                             />
