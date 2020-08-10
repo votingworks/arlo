@@ -1,7 +1,9 @@
+from datetime import datetime
 import pytest
-from alembic.config import Config
-from alembic import command
-from ..database import Base, engine
+from sqlalchemy import create_engine
+from sqlalchemy_utils import create_database, drop_database
+from ..database import Base
+from ..config import DATABASE_URL
 
 # Use the pytest-alembic plugin to test our migrations.
 # More details on what is tested here:
@@ -18,14 +20,15 @@ def alembic_config():
 
 @pytest.fixture
 def alembic_engine():
-    # Drop all the tables from our schema.
+    url = f"{DATABASE_URL}-migrations-{datetime.utcnow()}"
+    create_database(url)
+
+    engine = create_engine(url)
     Base.metadata.drop_all(bind=engine)
-    # Alembic stores which version of the db inside an alembic_version table in
-    # the db. So after running each test (which each run migrations) we need to
-    # tell Alembic that we reset, which will cause it to reset that marker.
-    alembic_cfg = Config("alembic.ini")
-    command.stamp(alembic_cfg, "base")
-    return engine
+
+    yield engine
+
+    drop_database(url)
 
 
 # Note: The plugin docs say you should run it via `pytest --test-alembic`, in

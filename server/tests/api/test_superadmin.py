@@ -89,17 +89,20 @@ def test_superadmin_delete_election(
     assert Election.query.get(election_id) is None
     assert Election.query.get(election_id_2) is not None
 
-    for model in [
-        AuditBoard,
-        BallotInterpretation,
-        Batch,
-        Contest,
-        ContestChoice,
-        Jurisdiction,
-        Round,
-        RoundContest,
-        RoundContestResult,
-        SampledBallot,
-        SampledBallotDraw,
-    ]:
-        assert model.query.count() == 0
+    # TODO this doesn't work anymore because we no longer provide an empty
+    # database to each test. Once we have permission-scoped database queries
+    # implemented, we can use them here to check this assertion.
+    # for model in [
+    #     AuditBoard,
+    #     BallotInterpretation,
+    #     Batch,
+    #     Contest,
+    #     ContestChoice,
+    #     Jurisdiction,
+    #     Round,
+    #     RoundContest,
+    #     RoundContestResult,
+    #     SampledBallot,
+    #     SampledBallotDraw,
+    # ]:
+    #     assert model.query.count() == 0

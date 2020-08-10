@@ -60,20 +60,20 @@ def process_ballot_manifest_file(
         jurisdiction.manifest_num_ballots = num_ballots
         jurisdiction.manifest_num_batches = num_batches
 
+        election = jurisdiction.election
+
+        # If we're in the single-jurisdiction flow, posting the ballot manifest
+        # starts the first round, so we need to sample the ballots.
+        # In the multi-jurisdiction flow, this happens after all jurisdictions
+        # upload manifests, and is triggered by a different endpoint.
+        if not election.is_multi_jurisdiction:
+            # Import this here to avoid circular dependencies
+            # pylint: disable=import-outside-toplevel,cyclic-import
+            from .routes import sample_ballots
+
+            sample_ballots(session, election, list(election.rounds)[0])
+
     process_file(session, file, process)
-
-    election = jurisdiction.election
-
-    # If we're in the single-jurisdiction flow, posting the ballot manifest
-    # starts the first round, so we need to sample the ballots.
-    # In the multi-jurisdiction flow, this happens after all jurisdictions
-    # upload manifests, and is triggered by a different endpoint.
-    if not election.is_multi_jurisdiction:
-        # Import this here to avoid circular dependencies
-        # pylint: disable=import-outside-toplevel,cyclic-import
-        from .routes import sample_ballots
-
-        sample_ballots(session, election, list(election.rounds)[0])
 
 
 # Raises if invalid

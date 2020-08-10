@@ -1,8 +1,9 @@
 import io, uuid, json, os
-from typing import List, Generator
+from typing import List
 from flask.testing import FlaskClient
 from flask import jsonify, abort
 import pytest
+from filelock import FileLock
 
 # Before we set up the Flask app, set the env. That way it will use the test
 # config and we can still run tests without setting the env var manually.
@@ -10,7 +11,7 @@ os.environ["FLASK_ENV"] = "test"
 # pylint: disable=wrong-import-position
 
 from ..app import app
-from ..database import db_session, reset_db
+from ..database import reset_db
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import (
     UserType,
@@ -29,21 +30,36 @@ from ..bgcompute import (
 # injection.
 
 
+# Reset the db once per test session. This means that every test will operate
+# with a shared db, which better simulates the real world.
+# Based on https://github.com/pytest-dev/pytest-xdist#making-session-scoped-fixtures-execute-only-once
+@pytest.fixture(scope="session", autouse=True)
+def reset_test_db(tmp_path_factory, worker_id):
+    # If we're not executing with multiple workers (from pytest-xdist), simply
+    # reset the db.
+    if not worker_id:
+        reset_db()
+
+    # Otherwise, use a file lock in a temp directory shared by all workers to
+    # ensure only one worker can reset the db.
+    root_tmp_dir = tmp_path_factory.getbasetemp().parent
+
+    temp_file = root_tmp_dir / "reset_db"
+    with FileLock(str(temp_file) + ".lock"):
+        if not temp_file.is_file():
+            reset_db()
+            temp_file.write_text("reset_db complete")
+
+
 @pytest.fixture
-def client() -> Generator[FlaskClient, None, None]:
+def client() -> FlaskClient:
     app.config["TESTING"] = True
-    client = app.test_client()
-
-    reset_db()
-
-    yield client
-
-    db_session.commit()
+    return app.test_client()
 
 
 @pytest.fixture
-def election_id(client: FlaskClient) -> str:
-    return create_election(client)
+def election_id(client: FlaskClient, request) -> str:
+    return create_election(client, audit_name=f"Test Audit {request.node.name}")
 
 
 @pytest.fixture

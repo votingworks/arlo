@@ -99,7 +99,7 @@ def test_metadata(client, election_id):
     assert processing["error"] is None
 
     # Actually process the file.
-    assert bgcompute_update_election_jurisdictions_file() == 1
+    bgcompute_update_election_jurisdictions_file()
 
     # Now there should be data.
     rv = client.get(f"/api/election/{election_id}/jurisdiction/file")
@@ -132,7 +132,9 @@ def test_replace_jurisdictions_file(client, election_id):
         },
     )
     assert_ok(rv)
-    assert File.query.count() == 1, "the file should exist before a response is sent"
+
+    election = Election.query.get(election_id)
+    file_id = election.jurisdictions_file_id
 
     # Replace it with another file.
     rv = client.put(
@@ -145,7 +147,13 @@ def test_replace_jurisdictions_file(client, election_id):
         },
     )
     assert_ok(rv)
-    assert File.query.count() == 1, "the old file should have been deleted"
+
+    rv = client.get(f"/api/election/{election_id}/jurisdiction/file",)
+    assert rv.status_code == 200
+    response = json.loads(rv.data)
+    assert response["file"]["name"] == "jurisdictions2.csv"
+
+    assert File.query.get(file_id) is None, "the old file should have been deleted"
 
 
 def test_no_jurisdiction(client, election_id):
@@ -161,12 +169,10 @@ def test_no_jurisdiction(client, election_id):
     assert_ok(rv)
 
     # Process the file in the background.
-    assert bgcompute_update_election_jurisdictions_file() == 1
+    bgcompute_update_election_jurisdictions_file()
 
     election = Election.query.filter_by(id=election_id).one()
     assert election.jurisdictions == []
-    assert JurisdictionAdministration.query.count() == 0
-    assert User.query.count() == 0
 
 
 def test_single_jurisdiction_single_admin(client, election_id):
@@ -182,7 +188,7 @@ def test_single_jurisdiction_single_admin(client, election_id):
     assert_ok(rv)
 
     # Process the file in the background.
-    assert bgcompute_update_election_jurisdictions_file() == 1
+    bgcompute_update_election_jurisdictions_file()
 
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1"]
@@ -208,7 +214,7 @@ def test_single_jurisdiction_multiple_admins(client, election_id):
     assert_ok(rv)
 
     # Process the file in the background.
-    assert bgcompute_update_election_jurisdictions_file() == 1
+    bgcompute_update_election_jurisdictions_file()
 
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1"]
@@ -235,7 +241,7 @@ def test_multiple_jurisdictions_single_admin(client, election_id):
     assert_ok(rv)
 
     # Process the file in the background.
-    assert bgcompute_update_election_jurisdictions_file() == 1
+    bgcompute_update_election_jurisdictions_file()
 
     election = Election.query.filter_by(id=election_id).one()
     assert [j.name for j in election.jurisdictions] == ["J1", "J2"]
@@ -269,7 +275,7 @@ def test_convert_emails_to_lowercase(client, election_id):
     assert_ok(rv)
 
     # Process the file in the background.
-    assert bgcompute_update_election_jurisdictions_file() == 1
+    bgcompute_update_election_jurisdictions_file()
 
     election = Election.query.filter_by(id=election_id).one()
     for jurisdiction in election.jurisdictions:

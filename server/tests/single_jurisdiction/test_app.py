@@ -205,7 +205,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
     )
 
     assert_ok(rv)
-    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
+    bgcompute.bgcompute_update_ballot_manifest_file()
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
@@ -238,7 +238,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
     )
 
     assert_ok(rv)
-    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
+    bgcompute.bgcompute_update_ballot_manifest_file()
 
     setup_audit_board(client, election_id, jurisdiction_id, audit_board_id_1)
 
@@ -396,7 +396,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     )
 
     assert_ok(rv)
-    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
+    bgcompute.bgcompute_update_ballot_manifest_file()
 
     rv = client.get("{}/audit/status".format(url_prefix))
     status = json.loads(rv.data)
@@ -429,7 +429,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     )
 
     assert_ok(rv)
-    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
+    bgcompute.bgcompute_update_ballot_manifest_file()
 
     # get the retrieval list for round 1
     rv = client.get(
@@ -651,7 +651,7 @@ def test_small_election(client, election_id):
     )
 
     assert_ok(rv)
-    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
+    bgcompute.bgcompute_update_ballot_manifest_file()
 
     rv = client.get(f"/api/election/{election_id}/audit/status")
     status = json.loads(rv.data)
@@ -966,7 +966,7 @@ def test_multi_winner_election(client, election_id):
     )
 
     assert_ok(rv)
-    assert bgcompute.bgcompute_update_ballot_manifest_file() == 1
+    bgcompute.bgcompute_update_ballot_manifest_file()
 
     rv = client.get(f"/api/election/{election_id}/audit/status")
     status = json.loads(rv.data)

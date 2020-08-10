@@ -1,6 +1,7 @@
 from typing import List
 from flask.testing import FlaskClient
 from .test_audit_boards import set_up_audit_board
+from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import set_logged_in_user, DEFAULT_JA_EMAIL, assert_match_report
 from ...auth import UserType
 

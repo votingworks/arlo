@@ -107,7 +107,7 @@ def test_ballot_manifest_replace(
     )
     assert_ok(rv)
 
-    num_files = File.query.count()
+    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
 
     bgcompute_update_ballot_manifest_file()
 
@@ -128,7 +128,9 @@ def test_ballot_manifest_replace(
     assert_ok(rv)
 
     # The old file should have been deleted
-    assert File.query.count() == num_files
+    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    assert File.query.get(file_id) is None
+    assert jurisdiction.manifest_file_id != file_id
 
     bgcompute_update_ballot_manifest_file()
 
@@ -164,7 +166,7 @@ def test_ballot_manifest_clear(
     )
     assert_ok(rv)
 
-    num_files = File.query.count()
+    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).manifest_file_id
 
     bgcompute_update_ballot_manifest_file()
 
@@ -182,7 +184,8 @@ def test_ballot_manifest_clear(
     assert jurisdiction.manifest_num_batches is None
     assert jurisdiction.manifest_num_ballots is None
     assert jurisdiction.batches == []
-    assert File.query.count() == num_files - 1
+    assert jurisdiction.manifest_file_id is None
+    assert File.query.get(file_id) is None
 
 
 def test_ballot_manifest_upload_missing_file(

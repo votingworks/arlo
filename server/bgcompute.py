@@ -1,4 +1,5 @@
 import time
+from sqlalchemy import update
 
 from server.database import db_session
 from server.models import *  # pylint: disable=wildcard-import
@@ -31,6 +32,21 @@ def bgcompute_compute_round_contests_sample_sizes():
                     round_contest.round.round_num, round_contest.round.election_id
                 )
             )
+
+            # Claim this RoundContest by updating the sample_size_options field
+            # to an "in progress" value This acts like a lock on the
+            # RoundContest so it can only get processed once (since this
+            # process has a side effect of sampling ballots in some cases,
+            # which we only want to happen once).
+            result = db_session.execute(
+                update(RoundContest.__table__)  # pylint: disable=no-member
+                .where(RoundContest.contest_id == round_contest.contest_id)
+                .where(RoundContest.round_id == round_contest.round_id)
+                .where(RoundContest.sample_size_options.is_(None))
+                .values(sample_size_options="CALCULATION_IN_PROGRESS")
+            )
+            if result.rowcount == 0:
+                continue
 
             compute_sample_sizes(round_contest)
 

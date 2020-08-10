@@ -1,92 +1,56 @@
-import uuid
-import pytest
 from ...util.jurisdiction_bulk_update import bulk_update_jurisdictions
-from ...models import (
-    Organization,
-    Election,
-    User,
-    Jurisdiction,
-    JurisdictionAdministration,
-)
-from ...database import db_session, reset_db, init_db
+from ...models import *  # pylint: disable=wildcard-import
+from ...database import db_session
+from ..helpers import *  # pylint: disable=wildcard-import
 
 
-@pytest.fixture
-def session():
-    reset_db()
-    init_db()
-    yield db_session
-    db_session.commit()
-
-
-def test_first_update(session):
-    org = Organization(id=str(uuid.uuid4()), name="Test Org")
-    election = Election(
-        id=str(uuid.uuid4()),
-        audit_name="Test Audit",
-        organization=org,
-        is_multi_jurisdiction=True,
-    )
+def test_first_update(election_id: str):
+    election = Election.query.get(election_id)
     new_admins = bulk_update_jurisdictions(
-        session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
+        db_session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
     )
-    session.commit()
+    db_session.commit()
 
     assert [(admin.jurisdiction.name, admin.user.email) for admin in new_admins] == [
         ("Jurisdiction #1", "bob.harris@ca.gov")
     ]
 
-    assert User.query.count() == 1
-    assert Jurisdiction.query.count() == 1
-    assert JurisdictionAdministration.query.count() == 1
-
-
-def test_idempotent(session):
-    org = Organization(id=str(uuid.uuid4()), name="Test Org")
-    election = Election(
-        id=str(uuid.uuid4()),
-        audit_name="Test Audit",
-        organization=org,
-        is_multi_jurisdiction=True,
+    assert User.query.filter_by(email="bob.harris@ca.gov").first()
+    jurisdictions = Jurisdiction.query.filter_by(election_id=election_id).all()
+    assert len(jurisdictions) == 1
+    assert (
+        JurisdictionAdministration.query.filter_by(
+            jurisdiction_id=jurisdictions[0].id
+        ).count()
+        == 1
     )
 
+
+def test_idempotent(election_id: str):
+    election = Election.query.get(election_id)
     # Do it once.
-    bulk_update_jurisdictions(
-        session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
-    )
-    session.commit()
+    bulk_update_jurisdictions(db_session, election, [("Jurisdiction #1", "ja1@ca.gov")])
+    db_session.commit()
 
-    user = User.query.one()
-    jurisdiction = Jurisdiction.query.one()
+    user = User.query.filter_by(email="ja1@ca.gov").one()
+    jurisdiction = Jurisdiction.query.filter_by(election_id=election_id).first()
 
     # Do the same thing again.
-    bulk_update_jurisdictions(
-        session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
-    )
+    bulk_update_jurisdictions(db_session, election, [("Jurisdiction #1", "ja1@ca.gov")])
 
-    assert User.query.one() == user
-    assert Jurisdiction.query.one() == jurisdiction
+    assert User.query.filter_by(email="ja1@ca.gov").one() == user
+    assert Jurisdiction.query.filter_by(election_id=election_id).first() == jurisdiction
 
 
-def test_remove_outdated_jurisdictions(session):
-    org = Organization(id=str(uuid.uuid4()), name="Test Org")
-    election = Election(
-        id=str(uuid.uuid4()),
-        audit_name="Test Audit",
-        organization=org,
-        is_multi_jurisdiction=True,
-    )
-
+def test_remove_outdated_jurisdictions(election_id):
+    election = Election.query.get(election_id)
     # Add jurisdictions.
-    bulk_update_jurisdictions(
-        session, election, [("Jurisdiction #1", "bob.harris@ca.gov")]
-    )
-    session.commit()
+    bulk_update_jurisdictions(db_session, election, [("Jurisdiction #1", "ja2@ca.gov")])
+    db_session.commit()
 
     # Delete jurisdictions.
-    new_admins = bulk_update_jurisdictions(session, election, [])
+    new_admins = bulk_update_jurisdictions(db_session, election, [])
 
     assert new_admins == []
-    assert User.query.count() == 1  # keep the user
-    assert Jurisdiction.query.count() == 0
-    assert JurisdictionAdministration.query.count() == 0
+    assert User.query.filter_by(email="ja2@ca.gov").first()  # keep the user
+    assert Jurisdiction.query.filter_by(election_id=election_id).count() == 0
