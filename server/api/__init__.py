@@ -15,4 +15,5 @@ from . import rounds
 from . import sample_sizes
 from . import audit_boards
 from . import ballots
+from . import offline_results
 from . import reports
