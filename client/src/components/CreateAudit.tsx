@@ -107,14 +107,13 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
                   Audit type:
                   <LeftRadioGroup
                     name="auditType"
-                    data-testid="auditType"
                     onChange={e =>
                       setFieldValue('auditType', e.currentTarget.value)
                     }
                     selectedValue={values.auditType}
                   >
-                    <Radio value="BALLOT_POLLING">Ballot polling</Radio>
-                    <Radio value="BATCH_COMPARISON">Batch comparison</Radio>
+                    <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
+                    <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
                   </LeftRadioGroup>
                 </label>
               </FormSection>
