@@ -41,7 +41,7 @@ const useAuditSettings = (
   const updateSettings = async (
     newSettings: TNewSettings
   ): Promise<boolean> => {
-    const { auditType, ...oldSettings } = await getSettings()
+    const { auditType, ...oldSettings } = await getSettings() // removing auditType so that the endpoint is happy
     const mergedSettings = {
       ...oldSettings,
       ...newSettings,
@@ -59,7 +59,7 @@ const useAuditSettings = (
     if (checkAndToast(response)) {
       return false
     }
-    setSettings({ ...mergedSettings, auditType })
+    setSettings({ ...mergedSettings, auditType }) // adding auditType back in again so the hook is happy
     return true
   }
 
