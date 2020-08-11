@@ -8,6 +8,7 @@ const defaultValues: IAuditSettings = {
   online: null,
   randomSeed: null,
   riskLimit: null,
+  auditType: 'BALLOT_POLLING',
 }
 
 type TNewSettings =
@@ -40,7 +41,7 @@ const useAuditSettings = (
   const updateSettings = async (
     newSettings: TNewSettings
   ): Promise<boolean> => {
-    const oldSettings = await getSettings()
+    const { auditType, ...oldSettings } = await getSettings()
     const mergedSettings = {
       ...oldSettings,
       ...newSettings,
@@ -58,7 +59,7 @@ const useAuditSettings = (
     if (checkAndToast(response)) {
       return false
     }
-    setSettings(mergedSettings)
+    setSettings({ ...mergedSettings, auditType })
     return true
   }
 

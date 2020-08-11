@@ -41,7 +41,13 @@ interface IProps {
 const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings] = useAuditSettings(electionId)
-  const { electionName, randomSeed, riskLimit, online } = auditSettings
+  const {
+    electionName,
+    randomSeed,
+    riskLimit,
+    online,
+    auditType,
+  } = auditSettings
   const jurisdictions = useJurisdictions(electionId)
   const [jurisdictionFile] = useJurisdictionFile(electionId)
   const [contests] = useContests(electionId)
@@ -127,6 +133,14 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
             <tr>
               <td>Election Name:</td>
               <td>{electionName}</td>
+            </tr>
+            <tr>
+              <td>Audit Type:</td>
+              <td>
+                {auditType === 'BALLOT_POLLING'
+                  ? 'Ballot Polling'
+                  : 'Batch Comparison'}
+              </td>
             </tr>
             <tr>
               <td>Risk Limit:</td>

@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { RouteComponentProps, Link } from 'react-router-dom'
+import { RadioGroup, Radio } from '@blueprintjs/core'
 import { Formik, FormikProps, Field } from 'formik'
 import FormButton from './Atoms/Form/FormButton'
 import { api } from './utilities'
-import { ICreateAuditParams } from '../types'
+import { ICreateAuditParams, IAuditSettings } from '../types'
 import { useAuthDataContext } from './UserContext'
 import FormSection from './Atoms/Form/FormSection'
 import FormField from './Atoms/Form/FormField'
@@ -38,15 +39,21 @@ const CenterField = styled(FormField)`
   width: 100%;
 `
 
+const LeftRadioGroup = styled(RadioGroup)`
+  padding: 20px;
+  text-align: left;
+`
+
 interface IValues {
   auditName: string
+  auditType: IAuditSettings['auditType']
 }
 
 const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
   const { isAuthenticated, meta } = useAuthDataContext()
 
   const [loading, setLoading] = useState(false)
-  const onSubmit = async ({ auditName }: IValues) => {
+  const onSubmit = async ({ auditName, auditType }: IValues) => {
     try {
       setLoading(true)
       const response: { electionId: string } = await api('/election/new', {
@@ -54,6 +61,7 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
         body: JSON.stringify({
           organizationId: meta!.organizations[0].id,
           auditName,
+          auditType,
           isMultiJurisdiction: true,
         }),
         headers: {
@@ -74,8 +82,11 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
     <Wrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
       {isAuthenticated && meta!.type === 'audit_admin' && (
-        <Formik onSubmit={onSubmit} initialValues={{ auditName: '' }}>
-          {({ handleSubmit }: FormikProps<IValues>) => (
+        <Formik
+          onSubmit={onSubmit}
+          initialValues={{ auditName: '', auditType: 'BALLOT_POLLING' }}
+        >
+          {({ handleSubmit, setFieldValue, values }: FormikProps<IValues>) => (
             <>
               <FormSection>
                 {/* eslint-disable jsx-a11y/label-has-associated-control */}
@@ -89,6 +100,22 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
                     validate={(v: string) => (v ? undefined : 'Required')}
                     component={CenterField}
                   />
+                </label>
+              </FormSection>
+              <FormSection>
+                <label htmlFor="auditType">
+                  Audit type:
+                  <LeftRadioGroup
+                    name="auditType"
+                    data-testid="auditType"
+                    onChange={e =>
+                      setFieldValue('auditType', e.currentTarget.value)
+                    }
+                    selectedValue={values.auditType}
+                  >
+                    <Radio value="BALLOT_POLLING">Ballot polling</Radio>
+                    <Radio value="BATCH_COMPARISON">Batch comparison</Radio>
+                  </LeftRadioGroup>
                 </label>
               </FormSection>
               <Button
