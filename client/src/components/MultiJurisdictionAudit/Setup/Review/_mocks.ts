@@ -6,6 +6,7 @@ export const settingsMock = {
       online: null,
       randomSeed: null,
       riskLimit: null,
+      auditType: 'BALLOT_POLLING',
     },
     // here for type completion but not used in this context
     /* istanbul ignore next */
@@ -18,6 +19,7 @@ export const settingsMock = {
       online: true,
       randomSeed: '12345',
       riskLimit: 10,
+      auditType: 'BALLOT_POLLING',
     },
     // here for type completion but not used in this context
     /* istanbul ignore next */
@@ -30,6 +32,7 @@ export const settingsMock = {
       online: false,
       randomSeed: '12345',
       riskLimit: 10,
+      auditType: 'BALLOT_POLLING',
     },
     // here for type completion but not used in this context
     /* istanbul ignore next */

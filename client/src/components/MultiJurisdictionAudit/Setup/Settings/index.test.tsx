@@ -24,6 +24,7 @@ auditSettingsMock.mockReturnValue([
     online: null,
     randomSeed: null,
     riskLimit: null,
+    auditType: 'BALLOT_POLLING',
   },
   async () => true,
 ])
@@ -72,6 +73,7 @@ describe('Setup > Settings', () => {
         online: null,
         randomSeed: null,
         riskLimit: null,
+        auditType: 'BALLOT_POLLING',
       },
       async () => false,
     ])

@@ -1793,6 +1793,14 @@ exports[`Setup renders Review & Launch stage 1`] = `
           </tr>
           <tr>
             <td>
+              Audit Type:
+            </td>
+            <td>
+              Ballot Polling
+            </td>
+          </tr>
+          <tr>
+            <td>
               Risk Limit:
             </td>
             <td>
@@ -1960,6 +1968,14 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
           </tr>
           <tr>
             <td>
+              Audit Type:
+            </td>
+            <td>
+              Ballot Polling
+            </td>
+          </tr>
+          <tr>
+            <td>
               Risk Limit:
             </td>
             <td>
@@ -2123,6 +2139,14 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
             </td>
             <td>
               Election Name
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Type:
+            </td>
+            <td>
+              Ballot Polling
             </td>
           </tr>
           <tr>

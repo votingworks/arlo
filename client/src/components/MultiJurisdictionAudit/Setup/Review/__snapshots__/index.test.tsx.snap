@@ -55,6 +55,14 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
           </tr>
           <tr>
             <td>
+              Audit Type:
+            </td>
+            <td>
+              Ballot Polling
+            </td>
+          </tr>
+          <tr>
+            <td>
               Risk Limit:
             </td>
             <td>
@@ -231,6 +239,14 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
             </td>
             <td>
               Election Name
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Type:
+            </td>
+            <td>
+              Ballot Polling
             </td>
           </tr>
           <tr>
@@ -503,6 +519,14 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
           </tr>
           <tr>
             <td>
+              Audit Type:
+            </td>
+            <td>
+              Ballot Polling
+            </td>
+          </tr>
+          <tr>
+            <td>
               Risk Limit:
             </td>
             <td>
@@ -765,6 +789,14 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
             </td>
             <td>
               Election Name
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Type:
+            </td>
+            <td>
+              Ballot Polling
             </td>
           </tr>
           <tr>
@@ -1035,6 +1067,14 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
           </tr>
           <tr>
             <td>
+              Audit Type:
+            </td>
+            <td>
+              Ballot Polling
+            </td>
+          </tr>
+          <tr>
+            <td>
               Risk Limit:
             </td>
             <td>
@@ -1211,6 +1251,14 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
             </td>
             <td>
               Election Name
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Audit Type:
+            </td>
+            <td>
+              Ballot Polling
             </td>
           </tr>
           <tr>
