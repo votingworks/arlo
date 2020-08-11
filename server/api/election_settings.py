@@ -26,6 +26,10 @@ ELECTION_SETTINGS_SCHEMA = {
                 {"type": "null"},
             ]
         },
+        # We accept auditType on PUT only because we return it on GET, so this
+        # makes it simpler for the frontend. We don't actually update the
+        # auditType in this endpoint - it gets set on audit creation only.
+        "auditType": {"type": "string"},
     },
     "additionalProperties": False,
     "required": ["electionName", "online", "randomSeed", "riskLimit", "state"],
