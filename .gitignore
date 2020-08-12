@@ -3,7 +3,7 @@
 node_modules
 .mypy_cache
 .pytest_cache
-.coverage
+.coverage*
 
 # vim temp files
 *~

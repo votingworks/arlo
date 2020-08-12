@@ -101,7 +101,13 @@ class Jurisdiction(BaseModel):
     manifest_num_batches = Column(Integer)
 
     manifest_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
-    manifest_file = relationship("File")
+    manifest_file = relationship("File", foreign_keys=[manifest_file_id])
+
+    batch_tallies_file_id = Column(
+        String(200), ForeignKey("file.id", ondelete="set null")
+    )
+    batch_tallies_file = relationship("File", foreign_keys=[batch_tallies_file_id])
+    batch_tallies = Column(JSON)
 
     batches = relationship(
         "Batch", back_populates="jurisdiction", uselist=True, passive_deletes=True
