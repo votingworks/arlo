@@ -8,6 +8,7 @@ const defaultValues: IAuditSettings = {
   online: null,
   randomSeed: null,
   riskLimit: null,
+  auditType: 'BALLOT_POLLING',
 }
 
 type TNewSettings =

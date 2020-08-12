@@ -14,6 +14,7 @@ def test_settings_get_empty(client: FlaskClient, election_id: str):
         "randomSeed": None,
         "riskLimit": None,
         "state": None,
+        "auditType": "BALLOT_POLLING",
     }
 
 
@@ -31,6 +32,7 @@ def test_jurisdiction_settings_get_empty(
         "randomSeed": None,
         "riskLimit": None,
         "state": None,
+        "auditType": "BALLOT_POLLING",
     }
 
 
@@ -55,6 +57,7 @@ def test_update_election(
         "randomSeed": "a new random seed",
         "riskLimit": 15,
         "state": "MS",
+        "auditType": "BALLOT_POLLING",
     }
 
     rv = client.get(f"/api/election/{election_id}/settings")

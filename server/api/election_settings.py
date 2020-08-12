@@ -26,24 +26,31 @@ ELECTION_SETTINGS_SCHEMA = {
                 {"type": "null"},
             ]
         },
+        # We accept auditType on PUT only because we return it on GET, so this
+        # makes it simpler for the frontend. We don't actually update the
+        # auditType in this endpoint - it gets set on audit creation only.
+        "auditType": {"type": "string"},
     },
     "additionalProperties": False,
     "required": ["electionName", "online", "randomSeed", "riskLimit", "state"],
 }
 
 
+def serialize_election_settings(election: Election) -> JSONDict:
+    return {
+        "electionName": election.election_name,
+        "online": election.online,
+        "randomSeed": election.random_seed,
+        "riskLimit": election.risk_limit,
+        "state": election.state,
+        "auditType": election.audit_type,
+    }
+
+
 @api.route("/election/<election_id>/settings", methods=["GET"])
 @with_election_access
 def get_election_settings(election: Election):
-    return jsonify(
-        {
-            "electionName": election.election_name,
-            "online": election.online,
-            "randomSeed": election.random_seed,
-            "riskLimit": election.risk_limit,
-            "state": election.state,
-        }
-    )
+    return jsonify(serialize_election_settings(election))
 
 
 @api.route(
@@ -53,15 +60,7 @@ def get_election_settings(election: Election):
 def get_jurisdiction_election_settings(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
-    return jsonify(
-        {
-            "electionName": election.election_name,
-            "online": election.online,
-            "randomSeed": election.random_seed,
-            "riskLimit": election.risk_limit,
-            "state": election.state,
-        }
-    )
+    return jsonify(serialize_election_settings(election))
 
 
 def validate_election_settings(settings: JSONDict, election: Election):

@@ -171,7 +171,6 @@ export interface IElectionMeta {
   electionName: string
   state: string
   isMultiJurisdiction: boolean
-  electionDate: string
 }
 
 export interface IOrganizationMeta {
@@ -205,4 +204,5 @@ export interface IAuditSettings {
   online: boolean | null
   randomSeed: string | null
   riskLimit: number | null
+  auditType: 'BALLOT_POLLING' | 'BATCH_COMPARISON'
 }

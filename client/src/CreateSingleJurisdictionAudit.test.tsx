@@ -23,6 +23,7 @@ const apiCalls = {
       method: 'POST',
       body: JSON.stringify({
         auditName: 'Audit Name',
+        auditType: 'BALLOT_POLLING',
         isMultiJurisdiction: false,
       }),
       headers: {
