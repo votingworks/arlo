@@ -38,7 +38,11 @@ const CreateSingleJurisdictionAudit = ({ history }: RouteComponentProps) => {
       setLoading(true)
       const response: { electionId: string } = await api('/election/new', {
         method: 'POST',
-        body: JSON.stringify({ auditName, isMultiJurisdiction: false }),
+        body: JSON.stringify({
+          auditName,
+          auditType: 'BALLOT_POLLING',
+          isMultiJurisdiction: false,
+        }),
         headers: {
           'Content-Type': 'application/json',
         },

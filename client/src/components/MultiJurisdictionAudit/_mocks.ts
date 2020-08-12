@@ -18,6 +18,7 @@ export const auditSettings: {
     online: null,
     randomSeed: null,
     riskLimit: null,
+    auditType: 'BALLOT_POLLING',
   },
   onlyState: {
     state: 'AL',
@@ -25,6 +26,7 @@ export const auditSettings: {
     online: null,
     randomSeed: null,
     riskLimit: null,
+    auditType: 'BALLOT_POLLING',
   },
   otherSettings: {
     state: null,
@@ -32,6 +34,7 @@ export const auditSettings: {
     online: true,
     randomSeed: '12345',
     riskLimit: 10,
+    auditType: 'BALLOT_POLLING',
   },
   all: {
     state: 'AL',
@@ -39,6 +42,7 @@ export const auditSettings: {
     online: true,
     randomSeed: '12345',
     riskLimit: 10,
+    auditType: 'BALLOT_POLLING',
   },
 }
 

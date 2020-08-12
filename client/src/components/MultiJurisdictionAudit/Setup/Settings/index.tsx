@@ -28,7 +28,7 @@ const Settings: React.FC<IProps> = ({
 }: IProps) => {
   const { electionId } = useParams()
   const [
-    { electionName, randomSeed, riskLimit, online },
+    { electionName, randomSeed, riskLimit, online, auditType },
     updateState,
   ] = useAuditSettings(electionId!)
   const submit = async (values: IValues) => {
@@ -45,7 +45,12 @@ const Settings: React.FC<IProps> = ({
     electionName: electionName === null ? '' : electionName,
     randomSeed: randomSeed === null ? '' : randomSeed,
     riskLimit: riskLimit === null ? 10 : riskLimit,
-    online: online === null ? true : online,
+    online:
+      auditType === 'BATCH_COMPARISON'
+        ? false
+        : online === null
+        ? true
+        : online,
   }
   return (
     <Formik
@@ -70,23 +75,28 @@ const Settings: React.FC<IProps> = ({
                 />
               </label>
             </FormSection>
-            <FormSection>
-              <label htmlFor="online">
-                Audit boards will enter data about each audited ballot:
-                <RadioGroup
-                  name="online"
-                  data-testid="online-toggle"
-                  onChange={e =>
-                    setFieldValue('online', e.currentTarget.value === 'online')
-                  }
-                  selectedValue={values.online ? 'online' : 'offline'}
-                  disabled={locked}
-                >
-                  <Radio value="online">Online</Radio>
-                  <Radio value="offline">Offline</Radio>
-                </RadioGroup>
-              </label>
-            </FormSection>
+            {auditType === 'BALLOT_POLLING' && (
+              <FormSection>
+                <label htmlFor="online">
+                  Audit boards will enter data about each audited ballot:
+                  <RadioGroup
+                    name="online"
+                    data-testid="online-toggle"
+                    onChange={e =>
+                      setFieldValue(
+                        'online',
+                        e.currentTarget.value === 'online'
+                      )
+                    }
+                    selectedValue={values.online ? 'online' : 'offline'}
+                    disabled={locked}
+                  >
+                    <Radio value="online">Online</Radio>
+                    <Radio value="offline">Offline</Radio>
+                  </RadioGroup>
+                </label>
+              </FormSection>
+            )}
             <FormSection label="Desired Risk Limit">
               <label htmlFor="risk-limit">
                 {`Set the risk for the audit as a percentage (e.g. "5" = 5%)`}

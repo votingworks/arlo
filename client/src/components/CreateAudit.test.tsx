@@ -74,6 +74,7 @@ describe('CreateAudit', () => {
         method: 'POST',
         body: JSON.stringify({
           auditName: 'Audit Name',
+          auditType: 'BALLOT_POLLING',
           isMultiJurisdiction: false,
         }),
         headers: {
@@ -185,6 +186,7 @@ describe('CreateAudit', () => {
         body: JSON.stringify({
           organizationId: 'org-id',
           auditName: 'Audit Name',
+          auditType: 'BALLOT_POLLING',
           isMultiJurisdiction: true,
         }),
         headers: {
