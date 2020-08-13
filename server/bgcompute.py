@@ -13,6 +13,7 @@ def bgcompute():
     bgcompute_compute_round_contests_sample_sizes()
     bgcompute_update_election_jurisdictions_file()
     bgcompute_update_ballot_manifest_file()
+    bgcompute_update_batch_tallies_file()
 
 
 def bgcompute_compute_round_contests_sample_sizes():
