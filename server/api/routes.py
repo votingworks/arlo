@@ -279,14 +279,10 @@ def election_new():
 @api.route("/election/<election_id>/jurisdiction/file", methods=["GET"])
 @with_election_access
 def get_jurisdictions_file(election: Election):
-    jurisdictions_file = election.jurisdictions_file
-
-    if jurisdictions_file:
-        return jsonify(
-            file=serialize_file(jurisdictions_file),
-            processing=serialize_file_processing(jurisdictions_file),
-        )
-    return jsonify(file=None, processing=None)
+    return jsonify(
+        file=serialize_file(election.jurisdictions_file),
+        processing=serialize_file_processing(election.jurisdictions_file),
+    )
 
 
 @api.route("/election/<election_id>/jurisdiction/file/csv", methods=["GET"])
@@ -406,12 +402,8 @@ def audit_status(election):
                     for audit_board in j.audit_boards
                 ],
                 "ballotManifest": {
-                    "file": serialize_file(j.manifest_file)
-                    if j.manifest_file
-                    else None,
-                    "processing": serialize_file_processing(j.manifest_file)
-                    if j.manifest_file
-                    else None,
+                    "file": serialize_file(j.manifest_file),
+                    "processing": serialize_file_processing(j.manifest_file),
                     "numBallots": j.manifest_num_ballots,
                     "numBatches": j.manifest_num_batches,
                     # Deprecated fields.

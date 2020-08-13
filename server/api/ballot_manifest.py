@@ -126,13 +126,10 @@ def upload_ballot_manifest(
 def get_ballot_manifest(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
-    if jurisdiction.manifest_file:
-        return jsonify(
-            file=serialize_file(jurisdiction.manifest_file),
-            processing=serialize_file_processing(jurisdiction.manifest_file),
-        )
-    else:
-        return jsonify(file=None, processing=None)
+    return jsonify(
+        file=serialize_file(jurisdiction.manifest_file),
+        processing=serialize_file_processing(jurisdiction.manifest_file),
+    )
 
 
 @api.route(
