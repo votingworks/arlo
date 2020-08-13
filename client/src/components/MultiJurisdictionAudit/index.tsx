@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
+import styled from 'styled-components'
 import { ElementType } from '../../types'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import Sidebar from '../Atoms/Sidebar'
@@ -21,6 +22,11 @@ import useJurisdictions, { FileProcessingStatus } from './useJurisdictions'
 import useContests from './useContests'
 import useRoundsAuditAdmin from './useRoundsAuditAdmin'
 import BatchTallies from './Setup/BatchTallies'
+import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
+
+const VerticalInner = styled(Inner)`
+  flex-direction: column;
+`
 
 interface IParams {
   electionId: string
@@ -109,6 +115,10 @@ export const JurisdictionAdminView: React.FC = () => {
     jurisdictionId: string
   }>()
 
+  const { auditType } = useAuditSettingsJurisdictionAdmin(
+    electionId,
+    jurisdictionId
+  )
   const rounds = useRoundsJurisdictionAdmin(electionId, jurisdictionId)
   const [
     ballotManifest,
@@ -135,22 +145,25 @@ export const JurisdictionAdminView: React.FC = () => {
           ballotManifest={ballotManifest}
           auditBoards={auditBoards}
         />
-        <Inner>
+        <VerticalInner>
           <BallotManifest
             ballotManifest={ballotManifest}
             uploadBallotManifest={uploadBallotManifest}
             deleteBallotManifest={deleteBallotManifest}
           />
-          {ballotManifest.processing &&
-            ballotManifest.processing.status ===
-              FileProcessingStatus.PROCESSED && (
-              <BatchTallies
-                batchTallies={batchTallies}
-                uploadBatchTallies={uploadBatchTallies}
-                deleteBatchTallies={deleteBatchTallies}
-              />
-            )}
-        </Inner>
+          {auditType === 'BATCH_COMPARISON' && (
+            <BatchTallies
+              batchTallies={batchTallies}
+              enabled={
+                !!ballotManifest.processing &&
+                ballotManifest.processing.status ===
+                  FileProcessingStatus.PROCESSED
+              }
+              uploadBatchTallies={uploadBatchTallies}
+              deleteBatchTallies={deleteBatchTallies}
+            />
+          )}
+        </VerticalInner>
       </Wrapper>
     )
   }

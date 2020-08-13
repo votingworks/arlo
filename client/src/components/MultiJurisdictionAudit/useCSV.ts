@@ -25,7 +25,11 @@ const putCSVFile = async (
   filePurpose: 'ballot-manifest' | 'batch-tallies'
 ): Promise<boolean> => {
   const formData: FormData = new FormData()
-  formData.append('manifest', csv, csv.name)
+  formData.append(
+    filePurpose === 'ballot-manifest' ? 'manifest' : 'batchTallies',
+    csv,
+    csv.name
+  )
   try {
     await api(
       `/election/${electionId}/jurisdiction/${jurisdictionId}/${filePurpose}`,
@@ -72,7 +76,7 @@ const useCSV = (
     ;(async () => {
       setCSV(await loadCSV(electionId, jurisdictionId, filePurpose))
     })()
-  }, [electionId, jurisdictionId])
+  }, [electionId, jurisdictionId, filePurpose])
 
   const uploadCSV = async (csvFile: File): Promise<boolean> => {
     if (await putCSVFile(electionId, jurisdictionId, csvFile, filePurpose)) {
@@ -104,7 +108,7 @@ const useCSV = (
       setCSV(await loadCSV(electionId, jurisdictionId, filePurpose))
     }
     poll(isComplete, onComplete, err => toast.error(err.message))
-  }, [electionId, jurisdictionId, csv])
+  }, [electionId, jurisdictionId, csv, filePurpose])
 
   return [csv, uploadCSV, deleteCSV]
 }

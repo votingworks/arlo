@@ -22,6 +22,7 @@ interface IValues {
 
 interface IProps {
   batchTallies: IFileInfo
+  enabled: boolean
   uploadBatchTallies: (csv: File) => Promise<boolean>
   deleteBatchTallies: () => Promise<boolean>
 }
@@ -35,6 +36,7 @@ const BatchTallies: React.FC<IProps> = (props: IProps) => {
 
 const BatchTalliesForm = ({
   batchTallies,
+  enabled,
   uploadBatchTallies,
   deleteBatchTallies,
 }: IProps) => {
@@ -100,7 +102,7 @@ const BatchTalliesForm = ({
                     hasSelection={!!values.csv}
                     text={values.csv ? values.csv.name : 'Select a CSV...'}
                     onBlur={handleBlur}
-                    disabled={isProcessing}
+                    disabled={isProcessing || !enabled}
                   />
                   {errors.csv && touched.csv && (
                     <ErrorLabel>{errors.csv}</ErrorLabel>
@@ -124,6 +126,7 @@ const BatchTalliesForm = ({
                   intent="primary"
                   onClick={handleSubmit}
                   loading={isProcessing}
+                  disabled={!enabled}
                 >
                   Upload File
                 </FormButton>
@@ -131,10 +134,18 @@ const BatchTalliesForm = ({
                 // We give these buttons a key to make sure React doesn't reuse
                 // the submit button for one of them.
                 <>
-                  <FormButton key="replace" onClick={() => setIsEditing(true)}>
+                  <FormButton
+                    key="replace"
+                    onClick={() => setIsEditing(true)}
+                    disabled={!enabled}
+                  >
                     Replace File
                   </FormButton>
-                  <FormButton key="delete" onClick={deleteBatchTallies}>
+                  <FormButton
+                    key="delete"
+                    onClick={deleteBatchTallies}
+                    disabled={!enabled}
+                  >
                     Delete File
                   </FormButton>
                 </>
