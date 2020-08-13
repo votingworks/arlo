@@ -1,7 +1,7 @@
-﻿Batch Name,Choice 1 Name,Choice 1 Votes,Choice 2 Name,Choice 2 Votes,Choice 3 Name,Choice 3 Votes
-Precinct 1,Trump,45,Biden,125,Write-in,0
-Precinct 2,Trump,3,Biden,3,Write-in,0
-Precinct 3,Trump,778,Biden,1944,Write-in,0
-Precinct 4,Trump,395,Biden,435,Write-in,0
-Precinct 5,Trump,321,Biden,889,Write-in,1
-Precinct 6,Trump,45,Biden,133,Write-in,4
+﻿Batch Name,Candidate 1,Candidate 2,Candidate 3
+Precinct 1,45,125,0
+Precinct 2,3,3,0
+Precinct 3,778,1944,0
+Precinct 4,395,435,0
+Precinct 5,321,889,1
+Precinct 6,45,133,4
