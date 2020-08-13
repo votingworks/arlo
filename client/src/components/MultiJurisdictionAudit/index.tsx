@@ -14,7 +14,7 @@ import {
   JurisdictionAdminStatusBox,
   isSetupComplete,
 } from './StatusBox'
-import useBallotManifest from './useBallotManifest'
+import { useBallotManifest } from './useCSV'
 import useAuditBoards from './useAuditBoards'
 import useAuditSettings from './useAuditSettings'
 import useJurisdictions from './useJurisdictions'
