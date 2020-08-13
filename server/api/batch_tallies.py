@@ -146,13 +146,10 @@ def upload_batch_tallies(
 def get_batch_tallies(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
-    if jurisdiction.batch_tallies_file:
-        return jsonify(
-            file=serialize_file(jurisdiction.batch_tallies_file),
-            processing=serialize_file_processing(jurisdiction.batch_tallies_file),
-        )
-    else:
-        return jsonify(file=None, processing=None)
+    return jsonify(
+        file=serialize_file(jurisdiction.batch_tallies_file),
+        processing=serialize_file_processing(jurisdiction.batch_tallies_file),
+    )
 
 
 @api.route(

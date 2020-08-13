@@ -12,23 +12,25 @@ from ..util.jsonschema import JSONDict
 
 
 def serialize_jurisdiction(
-    jurisdiction: Jurisdiction, round_status: Optional[JSONDict]
+    election: Election, jurisdiction: Jurisdiction, round_status: Optional[JSONDict]
 ) -> JSONDict:
-    return {
+    json_jurisdiction = {
         "id": jurisdiction.id,
         "name": jurisdiction.name,
         "ballotManifest": {
-            "file": serialize_file(jurisdiction.manifest_file)
-            if jurisdiction.manifest_file
-            else None,
-            "processing": serialize_file_processing(jurisdiction.manifest_file)
-            if jurisdiction.manifest_file
-            else None,
+            "file": serialize_file(jurisdiction.manifest_file),
+            "processing": serialize_file_processing(jurisdiction.manifest_file),
             "numBallots": jurisdiction.manifest_num_ballots,
             "numBatches": jurisdiction.manifest_num_batches,
         },
         "currentRoundStatus": round_status,
     }
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        json_jurisdiction["batchTallies"] = {
+            "file": serialize_file(jurisdiction.batch_tallies_file),
+            "processing": serialize_file_processing(jurisdiction.batch_tallies_file),
+        }
+    return json_jurisdiction
 
 
 class JurisdictionStatus(str, enum.Enum):
@@ -188,6 +190,7 @@ def list_jurisdictions(election: Election):
     )
 
     json_jurisdictions = [
-        serialize_jurisdiction(j, round_status[j.id]) for j in election.jurisdictions
+        serialize_jurisdiction(election, jurisdiction, round_status[jurisdiction.id])
+        for jurisdiction in election.jurisdictions
     ]
     return jsonify({"jurisdictions": json_jurisdictions})

@@ -73,19 +73,15 @@ def test_batch_tallies_upload(
     manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    batch_tallies_file = (
+        b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+        b"Batch 1,1,10,100\n"
+        b"Batch 2,2,20,200\n"
+        b"Batch 3,3,30,300\n"
+    )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
-        data={
-            "batchTallies": (
-                io.BytesIO(
-                    b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-                    b"Batch 1,1,10,100\n"
-                    b"Batch 2,2,20,200\n"
-                    b"Batch 3,3,30,300\n"
-                ),
-                "batchTallies.csv",
-            )
-        },
+        data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
     )
     assert_ok(rv)
 
@@ -135,6 +131,34 @@ def test_batch_tallies_upload(
             "Contest 1": {"candidate 1": 3, "candidate 2": 30, "candidate 3": 300,}
         },
     }
+
+    # Test that the AA jurisdictions list includes batch tallies
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    compare_json(
+        jurisdictions[0]["batchTallies"],
+        {
+            "file": {"name": "batchTallies.csv", "uploadedAt": assert_is_date,},
+            "processing": {
+                "status": "PROCESSED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    # Test that the AA can download the batch tallies file
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/csv"
+    )
+    assert rv.status_code == 200
+    assert (
+        rv.headers["Content-Disposition"] == 'attachment; filename="batchTallies.csv"'
+    )
+    assert rv.data == batch_tallies_file
 
 
 def test_batch_tallies_replace(
@@ -244,6 +268,12 @@ def test_batch_tallies_clear(
     assert jurisdiction.batch_tallies_file_id is None
     assert File.query.get(file_id) is None
     assert jurisdiction.batch_tallies is None
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies/csv"
+    )
+    assert rv.status_code == 404
 
 
 def test_batch_tallies_upload_missing_file(
