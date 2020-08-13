@@ -14,12 +14,13 @@ import {
   JurisdictionAdminStatusBox,
   isSetupComplete,
 } from './StatusBox'
-import { useBallotManifest } from './useCSV'
+import { useBallotManifest, useBatchTallies } from './useCSV'
 import useAuditBoards from './useAuditBoards'
 import useAuditSettings from './useAuditSettings'
-import useJurisdictions from './useJurisdictions'
+import useJurisdictions, { FileProcessingStatus } from './useJurisdictions'
 import useContests from './useContests'
 import useRoundsAuditAdmin from './useRoundsAuditAdmin'
+import BatchTallies from './Setup/BatchTallies'
 
 interface IParams {
   electionId: string
@@ -114,13 +115,18 @@ export const JurisdictionAdminView: React.FC = () => {
     uploadBallotManifest,
     deleteBallotManifest,
   ] = useBallotManifest(electionId, jurisdictionId)
+  const [
+    batchTallies,
+    uploadBatchTallies,
+    deleteBatchTallies,
+  ] = useBatchTallies(electionId, jurisdictionId)
   const [auditBoards, createAuditBoards] = useAuditBoards(
     electionId,
     jurisdictionId,
     rounds
   )
 
-  if (!rounds || !ballotManifest || !auditBoards) return null // Still loading
+  if (!rounds || !ballotManifest || !batchTallies || !auditBoards) return null // Still loading
   if (!rounds.length) {
     return (
       <Wrapper>
@@ -135,6 +141,15 @@ export const JurisdictionAdminView: React.FC = () => {
             uploadBallotManifest={uploadBallotManifest}
             deleteBallotManifest={deleteBallotManifest}
           />
+          {ballotManifest.processing &&
+            ballotManifest.processing.status ===
+              FileProcessingStatus.PROCESSED && (
+              <BatchTallies
+                batchTallies={batchTallies}
+                uploadBatchTallies={uploadBatchTallies}
+                deleteBatchTallies={deleteBatchTallies}
+              />
+            )}
         </Inner>
       </Wrapper>
     )
