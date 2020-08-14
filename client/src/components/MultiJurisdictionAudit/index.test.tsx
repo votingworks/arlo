@@ -8,7 +8,7 @@ import {
 import { AuditAdminView } from './index'
 import { auditSettings } from './_mocks'
 import * as utilities from '../utilities'
-import { routerTestProps } from '../testUtilities'
+import { routerTestProps, withMockFetch } from '../testUtilities'
 import AuthDataProvider, { AuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus, {
   FileProcessingStatus,
@@ -19,10 +19,6 @@ import { contestMocks } from './AASetup/Contests/_mocks'
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
 
-const apiMock: jest.SpyInstance<
-  ReturnType<typeof utilities.api>,
-  Parameters<typeof utilities.api>
-> = jest.spyOn(utilities, 'api').mockImplementation()
 const checkAndToastMock: jest.SpyInstance<
   ReturnType<typeof utilities.checkAndToast>,
   Parameters<typeof utilities.checkAndToast>
@@ -47,7 +43,6 @@ getJurisdictionFileStatusMock.mockReturnValue('PROCESSED')
 getRoundStatusMock.mockReturnValue(false)
 
 afterEach(() => {
-  apiMock.mockClear()
   checkAndToastMock.mockClear()
   paramsMock.mockReturnValue({
     electionId: '1',
@@ -56,6 +51,85 @@ afterEach(() => {
 })
 
 describe('AA setup flow', () => {
+  const apiCalls = {
+    getUser: {
+      url: '/api/me',
+      response: {
+        type: 'audit_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [],
+        organizations: [
+          {
+            id: 'org-id',
+            name: 'State',
+            elections: [],
+          },
+        ],
+      },
+    },
+    getRounds: {
+      url: '/api/election/1/round',
+      response: { rounds: [] },
+    },
+    getJurisdictions: {
+      url: '/api/election/1/jurisdiction',
+      response: {
+        jurisdictions: [
+          {
+            id: 'jurisdiction-id-1',
+            name: 'Jurisdiction One',
+            ballotManifest: { file: null, processing: null },
+            currentRoundStatus: null,
+          },
+          {
+            id: 'jurisdiction-id-2',
+            name: 'Jurisdiction Two',
+            ballotManifest: { file: null, processing: null },
+            currentRoundStatus: null,
+          },
+        ],
+      },
+    },
+    getJurisdictionFile: {
+      url: '/api/election/1/jurisdiction/file',
+      response: {
+        file: {
+          contents: null,
+          name: 'file name',
+          uploadedAt: 'a long time ago in a galaxy far far away',
+        },
+        processing: {
+          status: FileProcessingStatus.Processed,
+          error: null,
+          startedAt: 'once upon a time',
+          endedAt: 'and they lived happily ever after',
+        },
+      },
+    },
+    getContests: {
+      url: '/api/election/1/contest',
+      response: contestMocks.filledTargeted,
+    },
+    getSettings: {
+      url: '/api/election/1/settings',
+      response: auditSettings.all,
+    },
+    putSettings: {
+      url: '/api/election/1/settings',
+      options: {
+        method: 'PUT',
+        body: JSON.stringify(auditSettings.all),
+        headers: { 'Content-Type': 'application/json' },
+      },
+      response: { status: 'ok' },
+    },
+    getSampleSizes: {
+      url: '/api/election/1/sample-sizes',
+      response: { sampleSizes: null },
+    },
+  }
+
   // AuditAdminView will only be rendered once the user is logged in, so
   // we simulate that.
   const AuditAdminViewWithAuth: React.FC = () => {
@@ -63,127 +137,115 @@ describe('AA setup flow', () => {
     return isAuthenticated ? <AuditAdminView /> : null
   }
 
-  beforeEach(() =>
-    apiMock.mockImplementation(async (endpoint: string) => {
-      switch (endpoint) {
-        case '/api/me':
-          return {
-            type: 'audit_admin',
-            name: 'Joe',
-            email: 'test@email.org',
-            jurisdictions: [],
-            organizations: [
-              {
-                id: 'org-id',
-                name: 'State',
-                elections: [],
-              },
-            ],
-          }
-        case '/election/1/round':
-          return { rounds: [] }
-        case '/election/1/jurisdiction':
-          return {
-            jurisdictions: [
-              {
-                id: 'jurisdiction-id-1',
-                name: 'Jurisdiction One',
-                ballotManifest: { file: null, processing: null },
-                currentRoundStatus: null,
-              },
-              {
-                id: 'jurisdiction-id-2',
-                name: 'Jurisdiction Two',
-                ballotManifest: { file: null, processing: null },
-                currentRoundStatus: null,
-              },
-            ],
-          }
-        case '/election/1/jurisdiction/file':
-          return {
-            file: {
-              contents: null,
-              name: 'file name',
-              uploadedAt: 'a long time ago in a galaxy far far away',
-            },
-            processing: {
-              status: FileProcessingStatus.Processed,
-              error: null,
-              startedAt: 'once upon a time',
-              endedAt: 'and they lived happily ever after',
-            },
-          }
-        case '/election/1/contest':
-          return contestMocks.filledTargeted
-        case '/election/1/settings':
-          return auditSettings.all
-        default:
-          return null
-      }
-    })
-  )
+  const loadEach = [
+    apiCalls.getRounds,
+    apiCalls.getJurisdictions,
+    apiCalls.getContests,
+    apiCalls.getSettings,
+  ]
 
   it('sidebar changes stages', async () => {
-    const { queryAllByText, getByText } = render(
-      <AuthDataProvider>
-        <Router>
-          <AuditAdminViewWithAuth />
-        </Router>
-      </AuthDataProvider>
-    )
+    const expectedCalls = [
+      apiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      apiCalls.getSettings,
+      apiCalls.getJurisdictionFile,
+      apiCalls.getSettings,
+      ...loadEach,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { queryAllByText, getByText } = render(
+        <AuthDataProvider>
+          <Router>
+            <AuditAdminViewWithAuth />
+          </Router>
+        </AuthDataProvider>
+      )
 
-    await waitFor(() => {
-      expect(queryAllByText('Participants').length).toBe(2)
-    })
+      await waitFor(() => {
+        expect(queryAllByText('Participants').length).toBe(2)
+      })
 
-    fireEvent.click(getByText('Audit Settings'), { bubbles: true })
+      fireEvent.click(getByText('Audit Settings'), { bubbles: true })
 
-    await waitFor(() => {
-      expect(queryAllByText('Audit Settings').length).toBe(2)
+      await waitFor(() => {
+        expect(queryAllByText('Audit Settings').length).toBe(2)
+      })
     })
   })
 
   it('next and back buttons change stages', async () => {
-    const { queryAllByText, getByText } = render(
-      <AuthDataProvider>
-        <Router>
-          <AuditAdminViewWithAuth />
-        </Router>
-      </AuthDataProvider>
-    )
+    const expectedCalls = [
+      apiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      apiCalls.getSettings,
+      apiCalls.getJurisdictionFile,
+      apiCalls.getSettings,
+      ...loadEach,
+      apiCalls.getSettings,
+      apiCalls.putSettings,
+      ...loadEach,
+      apiCalls.getSettings,
+      apiCalls.getJurisdictions,
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests,
+      apiCalls.getSampleSizes,
+      apiCalls.getSettings,
+      ...loadEach,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { queryAllByText, getByText } = render(
+        <AuthDataProvider>
+          <Router>
+            <AuditAdminViewWithAuth />
+          </Router>
+        </AuthDataProvider>
+      )
 
-    await waitFor(() => {
-      expect(queryAllByText('Participants').length).toBe(2)
-    })
+      await waitFor(() => {
+        expect(queryAllByText('Participants').length).toBe(2)
+      })
 
-    fireEvent.click(getByText('Audit Settings'), { bubbles: true })
+      fireEvent.click(getByText('Audit Settings'), { bubbles: true })
 
-    await waitFor(() => {
-      expect(queryAllByText('Audit Settings').length).toBe(2)
-    })
+      await waitFor(() => {
+        expect(queryAllByText('Audit Settings').length).toBe(2)
+      })
 
-    fireEvent.click(getByText('Save & Next'))
-    await waitFor(() => {
-      expect(queryAllByText('Review & Launch').length).toBe(2)
-    })
-    fireEvent.click(getByText('Back'))
-    await waitFor(() => {
-      expect(queryAllByText('Audit Settings').length).toBe(2)
+      fireEvent.click(getByText('Save & Next'))
+      await waitFor(() => {
+        expect(queryAllByText('Review & Launch').length).toBe(2)
+      })
+      fireEvent.click(getByText('Back'))
+      await waitFor(() => {
+        expect(queryAllByText('Audit Settings').length).toBe(2)
+      })
     })
   })
 
   it('renders sidebar when authenticated on /setup', async () => {
-    const { container, queryAllByText } = render(
-      <AuthDataProvider>
-        <Router>
-          <AuditAdminViewWithAuth />
-        </Router>
-      </AuthDataProvider>
-    )
+    const expectedCalls = [
+      apiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      apiCalls.getSettings,
+      apiCalls.getJurisdictionFile,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container, queryAllByText } = render(
+        <AuthDataProvider>
+          <Router>
+            <AuditAdminViewWithAuth />
+          </Router>
+        </AuthDataProvider>
+      )
 
-    await waitFor(() => {
-      expect(queryAllByText('Participants').length).toBe(2)
-      expect(container).toMatchSnapshot()
+      await waitFor(() => {
+        expect(queryAllByText('Participants').length).toBe(2)
+        expect(container).toMatchSnapshot()
+      })
     })
   })
 
@@ -192,37 +254,43 @@ describe('AA setup flow', () => {
       electionId: '1',
       view: 'progress',
     })
-    const { container, queryAllByText } = render(
-      <AuthDataProvider>
-        <Router>
-          <AuditAdminViewWithAuth />
-        </Router>
-      </AuthDataProvider>
-    )
+    const expectedCalls = [apiCalls.getUser, ...loadEach, ...loadEach]
+    await withMockFetch(expectedCalls, async () => {
+      const { container, queryAllByText } = render(
+        <AuthDataProvider>
+          <Router>
+            <AuditAdminViewWithAuth />
+          </Router>
+        </AuthDataProvider>
+      )
 
-    await waitFor(() => {
-      expect(queryAllByText('Jurisdictions').length).toBe(1)
-      expect(container).toMatchSnapshot()
+      await waitFor(() => {
+        expect(queryAllByText('Jurisdictions').length).toBe(1)
+        expect(container).toMatchSnapshot()
+      })
     })
   })
 
   it('redirects to /progress by default', async () => {
+    const expectedCalls = [apiCalls.getUser, ...loadEach, ...loadEach]
     const routeProps = routerTestProps('/election/1', { electionId: '1' })
-    paramsMock.mockReturnValue({
-      electionId: '1',
-      view: '',
-    })
-    render(
-      <AuthDataProvider>
-        <RegularRouter {...routeProps}>
-          <AuditAdminViewWithAuth />
-        </RegularRouter>
-      </AuthDataProvider>
-    )
-    await waitFor(() => {
-      expect(routeProps.history.location.pathname).toEqual(
-        '/election/1/progress'
+    await withMockFetch(expectedCalls, async () => {
+      paramsMock.mockReturnValue({
+        electionId: '1',
+        view: '',
+      })
+      render(
+        <AuthDataProvider>
+          <RegularRouter {...routeProps}>
+            <AuditAdminViewWithAuth />
+          </RegularRouter>
+        </AuthDataProvider>
       )
+      await waitFor(() => {
+        expect(routeProps.history.location.pathname).toEqual(
+          '/election/1/progress'
+        )
+      })
     })
   })
 })
