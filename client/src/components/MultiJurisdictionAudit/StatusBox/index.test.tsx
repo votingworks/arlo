@@ -9,7 +9,7 @@ import {
   fileProcessingMocks,
   roundMocks,
   auditBoardMocks,
-} from '../_mocks'
+} from '../useSetupMenuItems/_mocks'
 import { contestMocks } from '../AASetup/Contests/_mocks'
 import * as utilities from '../../utilities'
 

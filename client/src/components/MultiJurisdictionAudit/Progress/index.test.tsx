@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Progress from '.'
-import { jurisdictionMocks } from '../_mocks'
+import { jurisdictionMocks } from '../useSetupMenuItems/_mocks'
 
 jest.mock('react-router', () => ({
   useParams: jest.fn().mockReturnValue({ electionId: '1' }),

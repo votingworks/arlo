@@ -74,6 +74,7 @@ interface FetchRequest {
   url: string
   options?: RequestInit
   response: object
+  skipBody?: boolean
 }
 
 export const withMockFetch = async (
@@ -86,7 +87,7 @@ export const withMockFetch = async (
     if (
       expectedRequest &&
       expectedRequest.url === url &&
-      equal(expectedRequest.options, options)
+      (expectedRequest.skipBody || equal(expectedRequest.options, options))
     ) {
       return new Response(JSON.stringify(expectedRequest.response))
     }
@@ -105,7 +106,7 @@ export const withMockFetch = async (
     }
     return new Response(JSON.stringify({}))
   })
-  window.fetch = mockFetch
+  window.fetch = mockFetch as typeof window.fetch
 
   await testFn()
 

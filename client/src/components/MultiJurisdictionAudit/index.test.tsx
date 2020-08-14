@@ -1,12 +1,19 @@
 import React, { useContext } from 'react'
 import { waitFor, fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import {
   BrowserRouter as Router,
   Router as RegularRouter,
   useParams,
 } from 'react-router-dom'
 import { AuditAdminView, JurisdictionAdminView } from './index'
-import { auditSettings, manifestMocks, talliesMocks } from './_mocks'
+import {
+  auditSettings,
+  manifestMocks,
+  talliesMocks,
+  manifestFile,
+  talliesFile,
+} from './useSetupMenuItems/_mocks'
 import * as utilities from '../utilities'
 import {
   routerTestProps,
@@ -301,6 +308,11 @@ describe.skip('AA setup flow', () => {
 })
 
 describe('JA setup', () => {
+  const manifestFormData: FormData = new FormData()
+  manifestFormData.append('manifest', manifestFile, manifestFile.name)
+  const talliesFormData: FormData = new FormData()
+  talliesFormData.append('batchTallies', talliesFile, talliesFile.name)
+
   const apiCalls = {
     getUser: {
       url: '/api/me',
@@ -349,7 +361,25 @@ describe('JA setup', () => {
     }),
     getSettings: {
       url: '/api/election/1/jurisdiction/jurisdiction-id-1/settings',
-      response: auditSettings.all,
+      response: auditSettings.batchComparisonAll,
+    },
+    putManifest: {
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
+      options: {
+        method: 'PUT',
+        body: manifestFormData,
+      },
+      response: { status: 'ok' },
+      skipBody: true, // cannot deep equal mocked form data object
+    },
+    putTallies: {
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
+      options: {
+        method: 'PUT',
+        body: talliesFormData,
+      },
+      response: { status: 'ok' },
+      skipBody: true, // cannot deep equal mocked form data object
     },
   }
 
@@ -389,6 +419,41 @@ describe('JA setup', () => {
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
       await screen.findByText('Audit Source Data')
+      expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('submits ballot manifest', async () => {
+    const expectedCalls = [
+      apiCalls.getUser,
+      apiCalls.getSettings,
+      apiCalls.getRounds,
+      apiCalls.getBallotManifestFile(manifestMocks.empty),
+      apiCalls.getBatchTalliesFile(talliesMocks.empty),
+      apiCalls.putManifest,
+      apiCalls.getBallotManifestFile(manifestMocks.processed),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderView()
+      await screen.findByText('Audit Source Data')
+      const csvInput = screen.getAllByLabelText('Select a CSV...')[0]
+      fireEvent.change(csvInput, { target: { files: [] } })
+      fireEvent.blur(csvInput)
+      await waitFor(() =>
+        expect(screen.queryByText('You must upload a file')).toBeTruthy()
+      )
+      fireEvent.change(csvInput, { target: { files: [manifestFile] } })
+      await waitFor(() =>
+        expect(screen.queryByText('You must upload a file')).toBeFalsy()
+      )
+      await waitFor(() =>
+        expect(screen.queryAllByLabelText('Select a CSV...').length).toBe(1)
+      )
+      await waitFor(() =>
+        expect(screen.queryByLabelText('manifest.csv')).toBeTruthy()
+      )
+      userEvent.click(screen.getAllByText('Upload File')[0])
+      await screen.findByText('Candidate Totals by Batch')
       expect(container).toMatchSnapshot()
     })
   })

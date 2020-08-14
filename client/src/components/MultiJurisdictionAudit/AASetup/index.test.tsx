@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams, MemoryRouter } from 'react-router-dom'
 import { render, waitFor } from '@testing-library/react'
-import { auditSettings } from '../_mocks'
+import { auditSettings } from '../useSetupMenuItems/_mocks'
 import * as utilities from '../../utilities'
 import Setup from './index'
 import relativeStages from './_mocks'

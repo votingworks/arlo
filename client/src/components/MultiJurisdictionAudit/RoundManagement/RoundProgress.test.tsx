@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import RoundProgress from './RoundProgress'
-import { roundMocks, auditBoardMocks } from '../_mocks'
+import { roundMocks, auditBoardMocks } from '../useSetupMenuItems/_mocks'
 
 describe('RoundProgress', () => {
   it('renders incomplete round with no audit boards', () => {

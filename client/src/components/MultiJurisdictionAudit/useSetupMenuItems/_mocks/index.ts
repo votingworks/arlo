@@ -1,16 +1,34 @@
-import { IAuditSettings, IContest } from '../../types'
+import { readFileSync } from 'fs'
+import { join } from 'path'
+import { IAuditSettings, IContest } from '../../../../types'
 import {
   IJurisdiction,
   FileProcessingStatus,
   IFileInfo,
   JurisdictionRoundStatus,
   IBallotManifestInfo,
-} from './useJurisdictions' // uses IFileInfo instead of IBallotManifest and allows `file: null`
-import { IRound } from './useRoundsJurisdictionAdmin' // has roundNum
-import { IAuditBoard } from './useAuditBoards'
+} from '../../useJurisdictions' // uses IFileInfo instead of IBallotManifest and allows `file: null`
+import { IRound } from '../../useRoundsJurisdictionAdmin' // has roundNum
+import { IAuditBoard } from '../../useAuditBoards'
+
+export const manifestFile = new File(
+  [readFileSync(join(__dirname, './test_manifest.csv'), 'utf8')],
+  'manifest.csv',
+  { type: 'text/csv' }
+)
+export const talliesFile = new File(
+  [readFileSync(join(__dirname, './test_batch_tallies.csv'), 'utf8')],
+  'tallies.csv',
+  { type: 'text/csv' }
+)
 
 export const auditSettings: {
-  [key in 'blank' | 'onlyState' | 'otherSettings' | 'all']: IAuditSettings
+  [key in
+    | 'blank'
+    | 'onlyState'
+    | 'otherSettings'
+    | 'all'
+    | 'batchComparisonAll']: IAuditSettings
 } = {
   blank: {
     state: null,
@@ -43,6 +61,14 @@ export const auditSettings: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
+  },
+  batchComparisonAll: {
+    state: 'AL',
+    electionName: 'Election Name',
+    online: true,
+    randomSeed: '12345',
+    riskLimit: 10,
+    auditType: 'BATCH_COMPARISON',
   },
 }
 
