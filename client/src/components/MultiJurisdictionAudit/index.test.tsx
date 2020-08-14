@@ -62,7 +62,7 @@ afterEach(() => {
   })
 })
 
-describe.skip('AA setup flow', () => {
+describe('AA setup flow', () => {
   const apiCalls = {
     getUser: {
       url: '/api/me',
@@ -454,6 +454,43 @@ describe('JA setup', () => {
       )
       userEvent.click(screen.getAllByText('Upload File')[0])
       await screen.findByText('Candidate Totals by Batch')
+      expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('submits batch tallies', async () => {
+    const expectedCalls = [
+      apiCalls.getUser,
+      apiCalls.getSettings,
+      apiCalls.getRounds,
+      apiCalls.getBallotManifestFile(manifestMocks.processed),
+      apiCalls.getBatchTalliesFile(talliesMocks.empty),
+      apiCalls.putTallies,
+      apiCalls.getBatchTalliesFile(talliesMocks.processed),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderView()
+      await screen.findByText('Audit Source Data')
+      const csvInput = screen.getByLabelText('Select a CSV...')
+      fireEvent.change(csvInput, { target: { files: [] } })
+      fireEvent.blur(csvInput)
+      await waitFor(() =>
+        expect(screen.queryByText('You must upload a file')).toBeTruthy()
+      )
+      fireEvent.change(csvInput, { target: { files: [talliesFile] } })
+      await waitFor(() =>
+        expect(screen.queryByText('You must upload a file')).toBeFalsy()
+      )
+      await waitFor(() =>
+        expect(screen.queryByLabelText('Select a CSV...')).toBeFalsy()
+      )
+      await waitFor(() =>
+        expect(screen.queryByLabelText('tallies.csv')).toBeTruthy()
+      )
+      userEvent.click(screen.getByText('Upload File'))
+      await waitFor(() =>
+        expect(screen.getAllByText('Replace File').length).toBe(2)
+      )
       expect(container).toMatchSnapshot()
     })
   })
