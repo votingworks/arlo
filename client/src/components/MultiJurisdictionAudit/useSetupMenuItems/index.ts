@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { toast } from 'react-toastify'
 import uuidv4 from 'uuidv4'
-import { setupStages } from '../Setup'
+import { setupStages } from '../AASetup'
 import { ElementType } from '../../../types'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 import getJurisdictionFileStatus, {

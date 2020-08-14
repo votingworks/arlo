@@ -14,7 +14,7 @@ import getJurisdictionFileStatus, {
   FileProcessingStatus,
 } from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
-import { contestMocks } from './Setup/Contests/_mocks'
+import { contestMocks } from './AASetup/Contests/_mocks'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
