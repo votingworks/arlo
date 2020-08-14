@@ -1,20 +1,25 @@
 import React, { useContext } from 'react'
-import { waitFor, fireEvent, render } from '@testing-library/react'
+import { waitFor, fireEvent, render, screen } from '@testing-library/react'
 import {
   BrowserRouter as Router,
   Router as RegularRouter,
   useParams,
 } from 'react-router-dom'
-import { AuditAdminView } from './index'
-import { auditSettings } from './_mocks'
+import { AuditAdminView, JurisdictionAdminView } from './index'
+import { auditSettings, manifestMocks, talliesMocks } from './_mocks'
 import * as utilities from '../utilities'
-import { routerTestProps, withMockFetch } from '../testUtilities'
+import {
+  routerTestProps,
+  withMockFetch,
+  renderWithRouter,
+} from '../testUtilities'
 import AuthDataProvider, { AuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus, {
   FileProcessingStatus,
 } from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { contestMocks } from './AASetup/Contests/_mocks'
+import { IFileInfo } from './useJurisdictions'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -50,7 +55,7 @@ afterEach(() => {
   })
 })
 
-describe('AA setup flow', () => {
+describe.skip('AA setup flow', () => {
   const apiCalls = {
     getUser: {
       url: '/api/me',
@@ -291,6 +296,100 @@ describe('AA setup flow', () => {
           '/election/1/progress'
         )
       })
+    })
+  })
+})
+
+describe('JA setup', () => {
+  const apiCalls = {
+    getUser: {
+      url: '/api/me',
+      response: {
+        type: 'jurisdiction_admin',
+        name: 'Joe',
+        email: 'test@email.org',
+        jurisdictions: [
+          {
+            id: 'jurisdiction-id-1',
+            name: 'Jurisdiction One',
+            election: {
+              id: '1',
+              auditName: 'audit one',
+              electionName: 'election one',
+              state: 'AL',
+              isMultiJurisdiction: true,
+            },
+          },
+          {
+            id: 'jurisdiction-id-2',
+            name: 'Jurisdiction Two',
+            election: {
+              id: '1',
+              auditName: 'audit one',
+              electionName: 'election one',
+              state: 'AL',
+              isMultiJurisdiction: true,
+            },
+          },
+        ],
+        organizations: [],
+      },
+    },
+    getRounds: {
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/round',
+      response: { rounds: [] },
+    },
+    getBallotManifestFile: (response: IFileInfo) => ({
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
+      response,
+    }),
+    getBatchTalliesFile: (response: IFileInfo) => ({
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
+      response,
+    }),
+    getSettings: {
+      url: '/api/election/1/jurisdiction/jurisdiction-id-1/settings',
+      response: auditSettings.all,
+    },
+  }
+
+  // JurisdictionAdminView will only be rendered once the user is logged in, so
+  // we simulate that.
+  const JurisdictionAdminViewWithAuth: React.FC = () => {
+    const { isAuthenticated } = useContext(AuthDataContext)
+    return isAuthenticated ? <JurisdictionAdminView /> : null
+  }
+
+  const renderView = () =>
+    renderWithRouter(
+      <AuthDataProvider>
+        <JurisdictionAdminViewWithAuth />
+      </AuthDataProvider>,
+      {
+        route: '/election/1/jurisdiction/jurisdiction-id-1/setup',
+      }
+    )
+
+  beforeEach(() => {
+    paramsMock.mockReturnValue({
+      electionId: '1',
+      jurisdictionId: 'jurisdiction-id-1',
+      view: 'setup',
+    })
+  })
+
+  it('renders initial state', async () => {
+    const expectedCalls = [
+      apiCalls.getUser,
+      apiCalls.getSettings,
+      apiCalls.getRounds,
+      apiCalls.getBallotManifestFile(manifestMocks.empty),
+      apiCalls.getBatchTalliesFile(talliesMocks.empty),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderView()
+      await screen.findByText('Audit Source Data')
+      expect(container).toMatchSnapshot()
     })
   })
 })

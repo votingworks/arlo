@@ -100,7 +100,7 @@ export const roundMocks: {
   ],
 }
 
-const manifestMocks: { [key: string]: IBallotManifestInfo } = {
+export const manifestMocks: { [key: string]: IBallotManifestInfo } = {
   empty: {
     file: null,
     processing: null,
@@ -131,6 +131,34 @@ const manifestMocks: { [key: string]: IBallotManifestInfo } = {
     },
     numBallots: null,
     numBatches: null,
+  },
+}
+
+export const talliesMocks: { [key: string]: IFileInfo } = {
+  empty: {
+    file: null,
+    processing: null,
+  },
+  processed: {
+    file: { name: 'tallies.csv', uploadedAt: '2020-06-08T21:39:05.765Z' },
+    processing: {
+      status: FileProcessingStatus.PROCESSED,
+      startedAt: '2020-06-08T21:39:05.765Z',
+      completedAt: '2020-06-08T21:39:14.574Z',
+      error: null,
+    },
+  },
+  errored: {
+    file: {
+      name: 'tallies.csv',
+      uploadedAt: '2020-05-05T17:25:25.663592',
+    },
+    processing: {
+      completedAt: '2020-05-05T17:25:26.099157',
+      error: 'Invalid CSV',
+      startedAt: '2020-05-05T17:25:26.097433',
+      status: FileProcessingStatus.ERRORED,
+    },
   },
 }
 

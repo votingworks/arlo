@@ -1507,3 +1507,103 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 2`] = `
   </div>
 </div>
 `;
+
+exports[`JA setup renders initial state 1`] = `
+<div>
+  <div
+    class="sc-bdVaJa AANBu"
+  >
+    <div
+      class="bp3-callout sc-kkGfuU jfrnYf"
+    >
+      <div
+        class="sc-bwzfXH iqXUnX"
+      >
+        <div
+          class="text"
+        >
+          <h4
+            class="bp3-heading"
+          >
+            The audit has not started.
+          </h4>
+          <p>
+            Ballot manifest not uploaded.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-bwzfXH sc-Rmtcm itcnIC"
+    >
+      <h2
+        class="bp3-heading sc-htpNat fysvnw"
+      >
+        Audit Source Data
+      </h2>
+      <form>
+        <div
+          class="sc-ifAKCX dOqzfM"
+        >
+          <h2
+            class="bp3-heading sc-htpNat fysvnw"
+          />
+          <div
+            class="sc-iwsKbI iGsFgr"
+          >
+            <h4
+              class="bp3-heading"
+            >
+              Ballot Manifest
+            </h4>
+            <div
+              class="sc-gZMcBi bmHNeb"
+            >
+              Click "Browse" to choose the appropriate Ballot Manifest file from your computer. This file should be a comma-separated list of all the ballot boxes/containers used to store ballots for this particular election, plus a count of how many ballot cards (individual pieces of paper) are stored in each container.
+              <br />
+              <br />
+              <a
+                href="http://localhost/sample_ballot_manifest.csv"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                (Click here to view a sample file in the correct format.)
+              </a>
+            </div>
+          </div>
+          <div
+            class="sc-iwsKbI iGsFgr"
+          >
+            <label
+              class="bp3-file-input"
+            >
+              <input
+                accept=".csv"
+                name="csv"
+                type="file"
+              />
+              <span
+                class="bp3-file-upload-input"
+              >
+                Select a CSV...
+              </span>
+            </label>
+          </div>
+          <div>
+            <button
+              class="bp3-button bp3-intent-primary sc-htoDjs dESvso"
+              type="submit"
+            >
+              <span
+                class="bp3-button-text"
+              >
+                Upload File
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+`;
