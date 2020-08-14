@@ -7,7 +7,6 @@ import Sidebar from '../Atoms/Sidebar'
 import Setup, { setupStages } from './Setup'
 import Progress from './Progress'
 import useSetupMenuItems from './useSetupMenuItems'
-import BallotManifest from './Setup/BallotManifest'
 import RoundManagement from './RoundManagement'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
 import {
@@ -21,8 +20,9 @@ import useAuditSettings from './useAuditSettings'
 import useJurisdictions, { FileProcessingStatus } from './useJurisdictions'
 import useContests from './useContests'
 import useRoundsAuditAdmin from './useRoundsAuditAdmin'
-import BatchTallies from './Setup/BatchTallies'
 import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
+import H2Title from '../Atoms/H2Title'
+import CSVFile from './CSVForm'
 
 const VerticalInner = styled(Inner)`
   flex-direction: column;
@@ -146,21 +146,25 @@ export const JurisdictionAdminView: React.FC = () => {
           auditBoards={auditBoards}
         />
         <VerticalInner>
-          <BallotManifest
-            ballotManifest={ballotManifest}
-            uploadBallotManifest={uploadBallotManifest}
-            deleteBallotManifest={deleteBallotManifest}
+          <H2Title>Audit Source Data</H2Title>
+          <CSVFile
+            csvFile={ballotManifest}
+            uploadCSVFile={uploadBallotManifest}
+            deleteCSVFile={deleteBallotManifest}
+            filePurpose="ballot-manifest"
+            enabled
           />
           {auditType === 'BATCH_COMPARISON' && (
-            <BatchTallies
-              batchTallies={batchTallies}
+            <CSVFile
+              csvFile={batchTallies}
               enabled={
                 !!ballotManifest.processing &&
                 ballotManifest.processing.status ===
                   FileProcessingStatus.PROCESSED
               }
-              uploadBatchTallies={uploadBatchTallies}
-              deleteBatchTallies={deleteBatchTallies}
+              uploadCSVFile={uploadBatchTallies}
+              deleteCSVFile={deleteBatchTallies}
+              filePurpose="batch-tallies"
             />
           )}
         </VerticalInner>
