@@ -841,7 +841,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
               <br />
               <br />
               <a
-                href="http://localhost/sample_jurisdiction_filesheet.csv"
+                href="/sample_jurisdiction_filesheet.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -1449,7 +1449,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 2`] = `
               <br />
               <br />
               <a
-                href="http://localhost/sample_jurisdiction_filesheet.csv"
+                href="/sample_jurisdiction_filesheet.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -1563,7 +1563,7 @@ exports[`JA setup renders initial state 1`] = `
               <br />
               <br />
               <a
-                href="http://localhost/sample_ballot_manifest.csv"
+                href="/sample_ballot_manifest.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -1625,7 +1625,7 @@ exports[`JA setup renders initial state 1`] = `
               <br />
               <br />
               <a
-                href="http://localhost/sample_batch_tallies.csv"
+                href="/sample_batch_tallies.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -1731,7 +1731,7 @@ exports[`JA setup submits ballot manifest 1`] = `
               <br />
               <br />
               <a
-                href="http://localhost/sample_ballot_manifest.csv"
+                href="/sample_ballot_manifest.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -1796,7 +1796,7 @@ exports[`JA setup submits ballot manifest 1`] = `
               <br />
               <br />
               <a
-                href="http://localhost/sample_batch_tallies.csv"
+                href="/sample_batch_tallies.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -1899,7 +1899,7 @@ exports[`JA setup submits batch tallies 1`] = `
               <br />
               <br />
               <a
-                href="http://localhost/sample_ballot_manifest.csv"
+                href="/sample_ballot_manifest.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -1964,7 +1964,7 @@ exports[`JA setup submits batch tallies 1`] = `
               <br />
               <br />
               <a
-                href="http://localhost/sample_batch_tallies.csv"
+                href="/sample_batch_tallies.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >

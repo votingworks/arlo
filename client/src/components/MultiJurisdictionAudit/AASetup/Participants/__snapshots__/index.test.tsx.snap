@@ -368,7 +368,7 @@ exports[`Audit Setup > Participants renders empty state correctly 1`] = `
           <br />
           <br />
           <a
-            href="http://localhost/sample_jurisdiction_filesheet.csv"
+            href="/sample_jurisdiction_filesheet.csv"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -781,7 +781,7 @@ exports[`Audit Setup > Participants renders filled state correctly & resets file
           <br />
           <br />
           <a
-            href="http://localhost/sample_jurisdiction_filesheet.csv"
+            href="/sample_jurisdiction_filesheet.csv"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -1194,7 +1194,7 @@ exports[`Audit Setup > Participants renders filled state correctly & resets file
           <br />
           <br />
           <a
-            href="http://localhost/sample_jurisdiction_filesheet.csv"
+            href="/sample_jurisdiction_filesheet.csv"
             rel="noopener noreferrer"
             target="_blank"
           >
