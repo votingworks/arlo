@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
+import styled from 'styled-components'
 import { ElementType } from '../../types'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import Sidebar from '../Atoms/Sidebar'
-import Setup, { setupStages } from './Setup'
+import Setup, { setupStages } from './AASetup'
 import Progress from './Progress'
 import useSetupMenuItems from './useSetupMenuItems'
-import BallotManifest from './Setup/BallotManifest'
 import RoundManagement from './RoundManagement'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
 import {
@@ -14,12 +14,19 @@ import {
   JurisdictionAdminStatusBox,
   isSetupComplete,
 } from './StatusBox'
-import useBallotManifest from './useBallotManifest'
+import { useBallotManifest, useBatchTallies } from './useCSV'
 import useAuditBoards from './useAuditBoards'
 import useAuditSettings from './useAuditSettings'
-import useJurisdictions from './useJurisdictions'
+import useJurisdictions, { FileProcessingStatus } from './useJurisdictions'
 import useContests from './useContests'
 import useRoundsAuditAdmin from './useRoundsAuditAdmin'
+import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
+import H2Title from '../Atoms/H2Title'
+import CSVFile from './CSVForm'
+
+const VerticalInner = styled(Inner)`
+  flex-direction: column;
+`
 
 interface IParams {
   electionId: string
@@ -108,19 +115,28 @@ export const JurisdictionAdminView: React.FC = () => {
     jurisdictionId: string
   }>()
 
+  const { auditType } = useAuditSettingsJurisdictionAdmin(
+    electionId,
+    jurisdictionId
+  )
   const rounds = useRoundsJurisdictionAdmin(electionId, jurisdictionId)
   const [
     ballotManifest,
     uploadBallotManifest,
     deleteBallotManifest,
   ] = useBallotManifest(electionId, jurisdictionId)
+  const [
+    batchTallies,
+    uploadBatchTallies,
+    deleteBatchTallies,
+  ] = useBatchTallies(electionId, jurisdictionId)
   const [auditBoards, createAuditBoards] = useAuditBoards(
     electionId,
     jurisdictionId,
     rounds
   )
 
-  if (!rounds || !ballotManifest || !auditBoards) return null // Still loading
+  if (!rounds || !ballotManifest || !batchTallies || !auditBoards) return null // Still loading
   if (!rounds.length) {
     return (
       <Wrapper>
@@ -129,13 +145,29 @@ export const JurisdictionAdminView: React.FC = () => {
           ballotManifest={ballotManifest}
           auditBoards={auditBoards}
         />
-        <Inner>
-          <BallotManifest
-            ballotManifest={ballotManifest}
-            uploadBallotManifest={uploadBallotManifest}
-            deleteBallotManifest={deleteBallotManifest}
+        <VerticalInner>
+          <H2Title>Audit Source Data</H2Title>
+          <CSVFile
+            csvFile={ballotManifest}
+            uploadCSVFile={uploadBallotManifest}
+            deleteCSVFile={deleteBallotManifest}
+            filePurpose="ballot-manifest"
+            enabled
           />
-        </Inner>
+          {auditType === 'BATCH_COMPARISON' && (
+            <CSVFile
+              csvFile={batchTallies}
+              enabled={
+                !!ballotManifest.processing &&
+                ballotManifest.processing.status ===
+                  FileProcessingStatus.PROCESSED
+              }
+              uploadCSVFile={uploadBatchTallies}
+              deleteCSVFile={deleteBatchTallies}
+              filePurpose="batch-tallies"
+            />
+          )}
+        </VerticalInner>
       </Wrapper>
     )
   }

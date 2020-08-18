@@ -21,7 +21,7 @@ interface IProps {
   refresh: () => void
 }
 
-const Setup: React.FC<IProps> = ({ stage, menuItems, refresh }) => {
+const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh }) => {
   const activeStage = menuItems.find(m => m.title === stage)
   const nextStage: ISidebarMenuItem | undefined =
     menuItems[menuItems.indexOf(activeStage!) + 1]
@@ -79,4 +79,4 @@ const Setup: React.FC<IProps> = ({ stage, menuItems, refresh }) => {
   }
 }
 
-export default Setup
+export default AASetup
