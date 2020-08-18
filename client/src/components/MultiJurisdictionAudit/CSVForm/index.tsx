@@ -79,7 +79,7 @@ const CSVFileForm = ({
                   <br />
                   <br />
                   <a
-                    href={`${window.location.origin}/sample_ballot_manifest.csv`}
+                    href="/sample_ballot_manifest.csv"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -100,7 +100,7 @@ const CSVFileForm = ({
                   <br />
                   <br />
                   <a
-                    href={`${window.location.origin}/sample_batch_tallies.csv`}
+                    href="/sample_batch_tallies.csv"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

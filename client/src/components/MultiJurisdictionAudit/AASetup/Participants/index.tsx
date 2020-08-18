@@ -105,7 +105,7 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
                 <br />
                 <br />
                 <a
-                  href={`${window.location.origin}/sample_jurisdiction_filesheet.csv`}
+                  href="/sample_jurisdiction_filesheet.csv"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
