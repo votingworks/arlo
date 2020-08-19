@@ -25,6 +25,19 @@ export const settingsMock = {
     /* istanbul ignore next */
     async () => true,
   ],
+  fullBatchComparison: [
+    {
+      state: 'AL',
+      electionName: 'Election Name',
+      online: false,
+      randomSeed: '12345',
+      riskLimit: 10,
+      auditType: 'BATCH_COMPARISON',
+    },
+    // here for type completion but not used in this context
+    /* istanbul ignore next */
+    async () => true,
+  ],
   offline: [
     {
       state: 'AL',
