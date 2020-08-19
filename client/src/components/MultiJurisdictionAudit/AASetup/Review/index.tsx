@@ -266,12 +266,11 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                                   {option.key === 'asn'
                                     ? 'BRAVO Average Sample Number: '
                                     : ''}
-                                  {`${option.size} samples`}
-                                  {option.prob
-                                    ? ` (${percentFormatter.format(
-                                        option.prob
-                                      )} chance of reaching risk limit and completing the audit in one round)`
-                                    : ''}
+                                  {`${
+                                    option.size
+                                  } samples (${percentFormatter.format(
+                                    option.prob as number // never returns null on this endpoint source
+                                  )} chance of reaching risk limit and completing the audit in one round)`}
                                 </Radio>
                               )
                             }
