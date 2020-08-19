@@ -201,6 +201,45 @@ describe('useSetupMenuItems', () => {
     expect(result.current[0][2].state).toBe('live')
   })
 
+  it('handles change of PROCESSING to ERRORED response from /jurisdiction/file api', async () => {
+    apiMock
+      .mockImplementationOnce(
+        generateApiMock(
+          { rounds: roundMocks.empty },
+          {
+            file: null,
+            processing: {
+              status: FileProcessingStatus.Processing,
+              startedAt: '',
+              error: null,
+              completedAt: null,
+            },
+          }
+        )
+      )
+      .mockImplementation(
+        generateApiMock(
+          { rounds: roundMocks.empty },
+          {
+            file: null,
+            processing: {
+              status: FileProcessingStatus.Errored,
+              startedAt: '',
+              error: null,
+              completedAt: null,
+            },
+          }
+        )
+      )
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useSetupMenuItems('Participants', jest.fn(), '1')
+    )
+    act(() => result.current[1]())
+    await waitForNextUpdate()
+    expect(result.current[0][1].state).toBe('processing')
+    expect(result.current[0][2].state).toBe('processing')
+  })
+
   it('handles PROCESSED response from /jurisdiction/file api', async () => {
     apiMock.mockImplementation(
       generateApiMock(
