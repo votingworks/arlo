@@ -43,7 +43,8 @@ const getContests = async (electionId: string): Promise<IContest[] | null> => {
       `/election/${electionId}/contest`
     )
     return response.contests
-  } catch (err) {
+  } catch (err) /* istanbul ignore next */ {
+    // TODO move error testing into api.
     toast.error(err.message)
     return null
   }
@@ -82,7 +83,8 @@ const useContests = (
           'Content-Type': 'application/json',
         },
       })
-    } catch (err) {
+    } catch (err) /* istanbul ignore next */ {
+      // TODO move error testing into api.
       toast.error(err.message)
       return false
     }
