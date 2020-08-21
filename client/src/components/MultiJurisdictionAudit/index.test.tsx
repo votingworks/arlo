@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom'
 import { AuditAdminView, JurisdictionAdminView } from './index'
 import {
-  auditSettings,
   manifestMocks,
   talliesMocks,
   manifestFile,
@@ -21,12 +20,9 @@ import {
   renderWithRouter,
 } from '../testUtilities'
 import AuthDataProvider, { AuthDataContext } from '../UserContext'
-import getJurisdictionFileStatus, {
-  FileProcessingStatus,
-} from './useSetupMenuItems/getJurisdictionFileStatus'
+import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
-import { contestMocks } from './AASetup/Contests/_mocks'
-import { IFileInfo } from './useJurisdictions'
+import { jaApiCalls, aaApiCalls } from './_mocks'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -63,85 +59,6 @@ afterEach(() => {
 })
 
 describe('AA setup flow', () => {
-  const apiCalls = {
-    getUser: {
-      url: '/api/me',
-      response: {
-        type: 'audit_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [],
-        organizations: [
-          {
-            id: 'org-id',
-            name: 'State',
-            elections: [],
-          },
-        ],
-      },
-    },
-    getRounds: {
-      url: '/api/election/1/round',
-      response: { rounds: [] },
-    },
-    getJurisdictions: {
-      url: '/api/election/1/jurisdiction',
-      response: {
-        jurisdictions: [
-          {
-            id: 'jurisdiction-id-1',
-            name: 'Jurisdiction One',
-            ballotManifest: { file: null, processing: null },
-            currentRoundStatus: null,
-          },
-          {
-            id: 'jurisdiction-id-2',
-            name: 'Jurisdiction Two',
-            ballotManifest: { file: null, processing: null },
-            currentRoundStatus: null,
-          },
-        ],
-      },
-    },
-    getJurisdictionFile: {
-      url: '/api/election/1/jurisdiction/file',
-      response: {
-        file: {
-          contents: null,
-          name: 'file name',
-          uploadedAt: 'a long time ago in a galaxy far far away',
-        },
-        processing: {
-          status: FileProcessingStatus.Processed,
-          error: null,
-          startedAt: 'once upon a time',
-          endedAt: 'and they lived happily ever after',
-        },
-      },
-    },
-    getContests: {
-      url: '/api/election/1/contest',
-      response: contestMocks.filledTargeted,
-    },
-    getSettings: {
-      url: '/api/election/1/settings',
-      response: auditSettings.all,
-    },
-    putSettings: {
-      url: '/api/election/1/settings',
-      options: {
-        method: 'PUT',
-        body: JSON.stringify(auditSettings.all),
-        headers: { 'Content-Type': 'application/json' },
-      },
-      response: { status: 'ok' },
-    },
-    getSampleSizes: {
-      url: '/api/election/1/sample-sizes',
-      response: { sampleSizes: null },
-    },
-  }
-
   // AuditAdminView will only be rendered once the user is logged in, so
   // we simulate that.
   const AuditAdminViewWithAuth: React.FC = () => {
@@ -150,20 +67,20 @@ describe('AA setup flow', () => {
   }
 
   const loadEach = [
-    apiCalls.getRounds,
-    apiCalls.getJurisdictions,
-    apiCalls.getContests,
-    apiCalls.getSettings,
+    aaApiCalls.getRounds,
+    aaApiCalls.getJurisdictions,
+    aaApiCalls.getContests,
+    aaApiCalls.getSettings,
   ]
 
   it('sidebar changes stages', async () => {
     const expectedCalls = [
-      apiCalls.getUser,
+      aaApiCalls.getUser,
       ...loadEach,
       ...loadEach,
-      apiCalls.getSettings,
-      apiCalls.getJurisdictionFile,
-      apiCalls.getSettings,
+      aaApiCalls.getSettings,
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getSettings,
       ...loadEach,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -189,22 +106,22 @@ describe('AA setup flow', () => {
 
   it('next and back buttons change stages', async () => {
     const expectedCalls = [
-      apiCalls.getUser,
+      aaApiCalls.getUser,
       ...loadEach,
       ...loadEach,
-      apiCalls.getSettings,
-      apiCalls.getJurisdictionFile,
-      apiCalls.getSettings,
+      aaApiCalls.getSettings,
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getSettings,
       ...loadEach,
-      apiCalls.getSettings,
-      apiCalls.putSettings,
+      aaApiCalls.getSettings,
+      aaApiCalls.putSettings,
       ...loadEach,
-      apiCalls.getSettings,
-      apiCalls.getJurisdictions,
-      apiCalls.getJurisdictionFile,
-      apiCalls.getContests,
-      apiCalls.getSampleSizes,
-      apiCalls.getSettings,
+      aaApiCalls.getSettings,
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getContests,
+      aaApiCalls.getSampleSizes,
+      aaApiCalls.getSettings,
       ...loadEach,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -239,11 +156,11 @@ describe('AA setup flow', () => {
 
   it('renders sidebar when authenticated on /setup', async () => {
     const expectedCalls = [
-      apiCalls.getUser,
+      aaApiCalls.getUser,
       ...loadEach,
       ...loadEach,
-      apiCalls.getSettings,
-      apiCalls.getJurisdictionFile,
+      aaApiCalls.getSettings,
+      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render(
@@ -266,7 +183,7 @@ describe('AA setup flow', () => {
       electionId: '1',
       view: 'progress',
     })
-    const expectedCalls = [apiCalls.getUser, ...loadEach, ...loadEach]
+    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render(
         <AuthDataProvider>
@@ -284,7 +201,7 @@ describe('AA setup flow', () => {
   })
 
   it('redirects to /progress by default', async () => {
-    const expectedCalls = [apiCalls.getUser, ...loadEach, ...loadEach]
+    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
     const routeProps = routerTestProps('/election/1', { electionId: '1' })
     await withMockFetch(expectedCalls, async () => {
       paramsMock.mockReturnValue({
@@ -308,81 +225,6 @@ describe('AA setup flow', () => {
 })
 
 describe('JA setup', () => {
-  const manifestFormData: FormData = new FormData()
-  manifestFormData.append('manifest', manifestFile, manifestFile.name)
-  const talliesFormData: FormData = new FormData()
-  talliesFormData.append('batchTallies', talliesFile, talliesFile.name)
-
-  const apiCalls = {
-    getUser: {
-      url: '/api/me',
-      response: {
-        type: 'jurisdiction_admin',
-        name: 'Joe',
-        email: 'test@email.org',
-        jurisdictions: [
-          {
-            id: 'jurisdiction-id-1',
-            name: 'Jurisdiction One',
-            election: {
-              id: '1',
-              auditName: 'audit one',
-              electionName: 'election one',
-              state: 'AL',
-              isMultiJurisdiction: true,
-            },
-          },
-          {
-            id: 'jurisdiction-id-2',
-            name: 'Jurisdiction Two',
-            election: {
-              id: '1',
-              auditName: 'audit one',
-              electionName: 'election one',
-              state: 'AL',
-              isMultiJurisdiction: true,
-            },
-          },
-        ],
-        organizations: [],
-      },
-    },
-    getRounds: {
-      url: '/api/election/1/jurisdiction/jurisdiction-id-1/round',
-      response: { rounds: [] },
-    },
-    getBallotManifestFile: (response: IFileInfo) => ({
-      url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
-      response,
-    }),
-    getBatchTalliesFile: (response: IFileInfo) => ({
-      url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
-      response,
-    }),
-    getSettings: {
-      url: '/api/election/1/jurisdiction/jurisdiction-id-1/settings',
-      response: auditSettings.batchComparisonAll,
-    },
-    putManifest: {
-      url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
-      options: {
-        method: 'PUT',
-        body: manifestFormData,
-      },
-      response: { status: 'ok' },
-      skipBody: true, // cannot deep equal mocked form data object
-    },
-    putTallies: {
-      url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
-      options: {
-        method: 'PUT',
-        body: talliesFormData,
-      },
-      response: { status: 'ok' },
-      skipBody: true, // cannot deep equal mocked form data object
-    },
-  }
-
   // JurisdictionAdminView will only be rendered once the user is logged in, so
   // we simulate that.
   const JurisdictionAdminViewWithAuth: React.FC = () => {
@@ -410,11 +252,11 @@ describe('JA setup', () => {
 
   it('renders initial state', async () => {
     const expectedCalls = [
-      apiCalls.getUser,
-      apiCalls.getSettings,
-      apiCalls.getRounds,
-      apiCalls.getBallotManifestFile(manifestMocks.empty),
-      apiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings,
+      jaApiCalls.getRounds,
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -425,13 +267,13 @@ describe('JA setup', () => {
 
   it('submits ballot manifest', async () => {
     const expectedCalls = [
-      apiCalls.getUser,
-      apiCalls.getSettings,
-      apiCalls.getRounds,
-      apiCalls.getBallotManifestFile(manifestMocks.empty),
-      apiCalls.getBatchTalliesFile(talliesMocks.empty),
-      apiCalls.putManifest,
-      apiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings,
+      jaApiCalls.getRounds,
+      jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.putManifest,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -460,13 +302,13 @@ describe('JA setup', () => {
 
   it('submits batch tallies', async () => {
     const expectedCalls = [
-      apiCalls.getUser,
-      apiCalls.getSettings,
-      apiCalls.getRounds,
-      apiCalls.getBallotManifestFile(manifestMocks.processed),
-      apiCalls.getBatchTalliesFile(talliesMocks.empty),
-      apiCalls.putTallies,
-      apiCalls.getBatchTalliesFile(talliesMocks.processed),
+      jaApiCalls.getUser,
+      jaApiCalls.getSettings,
+      jaApiCalls.getRounds,
+      jaApiCalls.getBallotManifestFile(manifestMocks.processed),
+      jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      jaApiCalls.putTallies,
+      jaApiCalls.getBatchTalliesFile(talliesMocks.processed),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()

@@ -1,0 +1,162 @@
+import { contestMocks } from './AASetup/Contests/_mocks'
+import { IFileInfo } from './useJurisdictions'
+import {
+  auditSettings,
+  manifestFile,
+  talliesFile,
+} from './useSetupMenuItems/_mocks'
+import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileStatus'
+
+const manifestFormData: FormData = new FormData()
+manifestFormData.append('manifest', manifestFile, manifestFile.name)
+const talliesFormData: FormData = new FormData()
+talliesFormData.append('batchTallies', talliesFile, talliesFile.name)
+
+export const jaApiCalls = {
+  getUser: {
+    url: '/api/me',
+    response: {
+      type: 'jurisdiction_admin',
+      name: 'Joe',
+      email: 'test@email.org',
+      jurisdictions: [
+        {
+          id: 'jurisdiction-id-1',
+          name: 'Jurisdiction One',
+          election: {
+            id: '1',
+            auditName: 'audit one',
+            electionName: 'election one',
+            state: 'AL',
+            isMultiJurisdiction: true,
+          },
+        },
+        {
+          id: 'jurisdiction-id-2',
+          name: 'Jurisdiction Two',
+          election: {
+            id: '1',
+            auditName: 'audit one',
+            electionName: 'election one',
+            state: 'AL',
+            isMultiJurisdiction: true,
+          },
+        },
+      ],
+      organizations: [],
+    },
+  },
+  getRounds: {
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round',
+    response: { rounds: [] },
+  },
+  getBallotManifestFile: (response: IFileInfo) => ({
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
+    response,
+  }),
+  getBatchTalliesFile: (response: IFileInfo) => ({
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
+    response,
+  }),
+  getSettings: {
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/settings',
+    response: auditSettings.batchComparisonAll,
+  },
+  putManifest: {
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/ballot-manifest',
+    options: {
+      method: 'PUT',
+      body: manifestFormData,
+    },
+    response: { status: 'ok' },
+    skipBody: true, // cannot deep equal mocked form data object
+  },
+  putTallies: {
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
+    options: {
+      method: 'PUT',
+      body: talliesFormData,
+    },
+    response: { status: 'ok' },
+    skipBody: true, // cannot deep equal mocked form data object
+  },
+}
+
+export const aaApiCalls = {
+  getUser: {
+    url: '/api/me',
+    response: {
+      type: 'audit_admin',
+      name: 'Joe',
+      email: 'test@email.org',
+      jurisdictions: [],
+      organizations: [
+        {
+          id: 'org-id',
+          name: 'State',
+          elections: [],
+        },
+      ],
+    },
+  },
+  getRounds: {
+    url: '/api/election/1/round',
+    response: { rounds: [] },
+  },
+  getJurisdictions: {
+    url: '/api/election/1/jurisdiction',
+    response: {
+      jurisdictions: [
+        {
+          id: 'jurisdiction-id-1',
+          name: 'Jurisdiction One',
+          ballotManifest: { file: null, processing: null },
+          currentRoundStatus: null,
+        },
+        {
+          id: 'jurisdiction-id-2',
+          name: 'Jurisdiction Two',
+          ballotManifest: { file: null, processing: null },
+          currentRoundStatus: null,
+        },
+      ],
+    },
+  },
+  getJurisdictionFile: {
+    url: '/api/election/1/jurisdiction/file',
+    response: {
+      file: {
+        contents: null,
+        name: 'file name',
+        uploadedAt: 'a long time ago in a galaxy far far away',
+      },
+      processing: {
+        status: FileProcessingStatus.Processed,
+        error: null,
+        startedAt: 'once upon a time',
+        endedAt: 'and they lived happily ever after',
+      },
+    },
+  },
+  getContests: {
+    url: '/api/election/1/contest',
+    response: contestMocks.filledTargeted,
+  },
+  getSettings: {
+    url: '/api/election/1/settings',
+    response: auditSettings.all,
+  },
+  putSettings: {
+    url: '/api/election/1/settings',
+    options: {
+      method: 'PUT',
+      body: JSON.stringify(auditSettings.all),
+      headers: { 'Content-Type': 'application/json' },
+    },
+    response: { status: 'ok' },
+  },
+  getSampleSizes: {
+    url: '/api/election/1/sample-sizes',
+    response: { sampleSizes: null },
+  },
+}
