@@ -75,6 +75,10 @@ interface FetchRequest {
   options?: RequestInit
   response: object
   skipBody?: boolean
+  error?: {
+    status: number
+    statusText: string
+  }
 }
 
 export const withMockFetch = async (
@@ -89,7 +93,12 @@ export const withMockFetch = async (
       expectedRequest.url === url &&
       (expectedRequest.skipBody || equal(expectedRequest.options, options))
     ) {
-      return new Response(JSON.stringify(expectedRequest.response))
+      return expectedRequest.error
+        ? new Response(
+            JSON.stringify(expectedRequest.response),
+            expectedRequest.error
+          )
+        : new Response(JSON.stringify(expectedRequest.response))
     }
 
     if (expectedRequest) {
