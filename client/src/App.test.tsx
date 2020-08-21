@@ -5,6 +5,11 @@ import App from './App'
 import { withMockFetch, renderWithRouter } from './components/testUtilities'
 import { IUserMeta } from './types'
 import { dummyBoards } from './components/DataEntry/_mocks'
+import {
+  // jaApiCalls,
+  aaApiCalls,
+} from './components/MultiJurisdictionAudit/_mocks'
+// import { manifestMocks } from './components/MultiJurisdictionAudit/useSetupMenuItems/_mocks'
 
 jest.unmock('react-toastify')
 
@@ -131,25 +136,39 @@ describe('App', () => {
     it('renders unauthenticated properly', async () => {
       const expectedCalls = [apiMocks.failedAuth]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView('/election/1/jurisdiction/1')
+        const { container } = renderView('/election/1/jurisdiction-id-1/1')
         await screen.findByAltText('Arlo, by VotingWorks')
         expect(container).toMatchSnapshot()
       })
     })
 
-    it.skip('renders ja logged in properly', async () => {
+    it('renders ja logged in properly', async () => {
       const expectedCalls = [apiMocks.successAuth(userMocks.ja)]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView('/election/1/jurisdiction/1')
+        const { container } = renderView('/election/1/jurisdiction-id-1/1')
         await screen.findByAltText('Arlo, by VotingWorks')
         expect(container).toMatchSnapshot()
       })
     })
 
     it('renders aa logged in properly', async () => {
-      const expectedCalls = [apiMocks.successAuth(userMocks.aa)]
+      const expectedCalls = [
+        apiMocks.successAuth(userMocks.aa),
+        aaApiCalls.getRounds,
+        aaApiCalls.getJurisdictions,
+        aaApiCalls.getContests,
+        aaApiCalls.getSettings,
+        aaApiCalls.getJurisdictionFile,
+        aaApiCalls.getRounds,
+        aaApiCalls.getRounds,
+        aaApiCalls.getJurisdictions,
+        aaApiCalls.getContests,
+        aaApiCalls.getSettings,
+        aaApiCalls.getSettings,
+        aaApiCalls.getJurisdictionFile,
+      ]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView('/election/1/jurisdiction/1')
+        const { container } = renderView('/election/1/jurisdiction-id-1/1')
         await screen.findByAltText('Arlo, by VotingWorks')
         expect(container).toMatchSnapshot()
       })
