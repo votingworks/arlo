@@ -1,11 +1,5 @@
 import React, { useContext } from 'react'
-import {
-  BrowserRouter as Router,
-  Route,
-  RouteProps,
-  Switch,
-  Redirect,
-} from 'react-router-dom'
+import { Route, RouteProps, Switch, Redirect } from 'react-router-dom'
 import './App.css'
 import styled from 'styled-components'
 import { ToastContainer } from 'react-toastify'
@@ -62,7 +56,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <>
       <ToastContainer />
       <AuthDataProvider>
         <Main>
@@ -99,7 +93,7 @@ const App: React.FC = () => {
           </Switch>
         </Main>
       </AuthDataProvider>
-    </Router>
+    </>
   )
 }
 
