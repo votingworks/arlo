@@ -27,8 +27,15 @@ def upgrade():
     )
     audit_type_enum.create(op.get_bind())
     op.add_column(
-        "election", sa.Column("audit_type", audit_type_enum, nullable=False,),
+        "election", sa.Column("audit_type", audit_type_enum),
     )
+    op.execute(
+        """
+        UPDATE election
+        SET audit_type = 'BALLOT_POLLING'
+        """
+    )
+    op.alter_column("election", "audit_type", nullable=False)
 
 
 def downgrade():  # pragma: no cover
