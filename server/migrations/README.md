@@ -11,7 +11,6 @@ First, make sure the database is in the existing, unmigrated state. Two options:
 - Check out the last commit, then run:
 
       make resetdb
-      pipenv run alembic stamp head
 
 - Restore from a database backup
 
