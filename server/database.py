@@ -44,3 +44,11 @@ def reset_db():
 
     Base.metadata.drop_all(bind=engine)
     init_db()
+
+
+def clear_db():
+    # pylint: disable=wildcard-import,import-outside-toplevel,unused-import
+    import server.models
+
+    for table in reversed(Base.metadata.sorted_tables):
+        engine.execute(table.delete())
