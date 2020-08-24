@@ -1,3 +1,5 @@
+before(() => cy.exec('./cypress/seed-test-db.sh'))
+
 describe('Basic ballot polling audit', () => {
   it('runs', () => {
     cy.visit('/')

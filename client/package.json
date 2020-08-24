@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "build": "react-scripts build",
-    "cy:open": "./cypress/seed-test-db.sh && cypress open",
     "lint": "eslint --ext ts --ext tsx src",
     "lint:fix": "yarn lint --fix",
     "start": "react-scripts start",
