@@ -6,7 +6,7 @@ from werkzeug.exceptions import BadRequest
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_election_access
-from ..audit_math import bravo, sampler_contest
+from ..audit_math import bravo, macro, sampler_contest
 
 
 # Sum the audit results for each contest choice from all rounds so far
@@ -17,6 +17,10 @@ def cumulative_contest_results(contest: Contest) -> Dict[str, int]:
     return results_by_choice
 
 
+# Because the /sample-sizes endpoint is only used for the audit setup flow,
+# we always want it to return the sample size options for the first round.
+# So we support a flag in this function to compute the sample sizes for
+# round one specifically, even if the audit has progressed further.
 def sample_size_options(
     election: Election, round_one=False
 ) -> Dict[str, Dict[str, bravo.SampleSizeOption]]:
@@ -27,26 +31,41 @@ def sample_size_options(
     risk_limit: int = election.risk_limit  # Need this to pass typechecking
 
     def sample_sizes_for_contest(contest: Contest):
-        # Because the /sample-sizes endpoint is only used for the audit setup flow,
-        # we always want it to return the sample size options for the first round.
-        # So we support a flag in this function to compute the sample sizes for
-        # round one specifically, even if the audit has progressed further.
-        cumulative_results = (
-            {choice.id: 0 for choice in contest.choices}
-            if round_one
-            else cumulative_contest_results(contest)
-        )
+        if election.audit_type == AuditType.BALLOT_POLLING:
+            cumulative_results = (
+                {choice.id: 0 for choice in contest.choices}
+                if round_one
+                else cumulative_contest_results(contest)
+            )
 
-        sample_size_options = bravo.get_sample_size(
-            float(risk_limit) / 100,
-            sampler_contest.from_db_contest(contest),
-            cumulative_results,
-        )
-        # Remove unnecessary "type" field from options, add "key" field
-        return {
-            key: {"key": key, "size": option["size"], "prob": option["prob"]}
-            for key, option in sample_size_options.items()
-        }
+            sample_size_options = bravo.get_sample_size(
+                float(risk_limit) / 100,
+                sampler_contest.from_db_contest(contest),
+                cumulative_results,
+            )
+            # Remove unnecessary "type" field from options, add "key" field
+            return {
+                key: {"key": key, "size": option["size"], "prob": option["prob"]}
+                for key, option in sample_size_options.items()
+            }
+
+        else:
+            batch_tallies = {
+                # Key each batch by jurisdiction name and batch name since batch names
+                # are only guaranteed unique within a jurisdiction
+                (jurisdiction.name, batch): tally
+                for jurisdiction in election.jurisdictions
+                if jurisdiction.batch_tallies
+                for batch, tally in jurisdiction.batch_tallies.items()  # type: ignore
+            }
+            sample_size = macro.get_sample_sizes(
+                float(risk_limit) / 100,
+                sampler_contest.from_db_contest(contest),
+                batch_tallies,
+                {},  # The cumulative results so far isn't used currently
+            )
+            # TODO macro should return a probability
+            return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 
     targeted_contests = Contest.query.filter_by(
         election_id=election.id, is_targeted=True

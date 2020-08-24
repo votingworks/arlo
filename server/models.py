@@ -543,6 +543,28 @@ class JurisdictionResult(BaseModel):
     )
 
 
+# In batch comparison audits, a SampledBatchDraw represents the sampling of a
+# batch to be audited. Batches can get sampled multiple times per round, so
+# they are given a ticket number to uniquely identify each draw.
+class SampledBatchDraw(BaseModel):
+    batch_id = Column(
+        String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
+    )
+    batch = relationship("Batch")
+    round_id = Column(
+        String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
+    )
+    contest_id = Column(
+        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False
+    )
+
+    ticket_number = Column(String(200), nullable=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint("batch_id", "round_id", "contest_id", "ticket_number"),
+    )
+
+
 class File(BaseModel):
     id = Column(String(200), primary_key=True)
     name = Column(String(250), nullable=False)

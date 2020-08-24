@@ -187,16 +187,16 @@ def is_round_complete(election: Election, round: Round) -> bool:
         return bool(num_jurisdictions_without_results == 0)
 
 
-class SampleDraw(NamedTuple):
+class BallotDraw(NamedTuple):
     # ballot_key: ((jurisdiction name, batch name), ballot_position)
     ballot_key: Tuple[Tuple[str, str], int]
     contest_id: str
     ticket_number: str
 
 
-def sample_ballots(election: Election, new_round: Round, sample_sizes: Dict[str, int]):
+def draw_sample(election: Election, round: Round, sample_sizes: Dict[str, int]):
     # Figure out which contests still need auditing
-    previous_round = get_previous_round(election, new_round)
+    previous_round = get_previous_round(election, round)
     contests_that_havent_met_risk_limit = (
         [
             round_contest.contest
@@ -210,7 +210,7 @@ def sample_ballots(election: Election, new_round: Round, sample_sizes: Dict[str,
     # Create RoundContest objects to include the contests in this round
     for contest in contests_that_havent_met_risk_limit:
         round_contest = RoundContest(
-            round_id=new_round.id,
+            round_id=round.id,
             contest_id=contest.id,
             # Store the sample size we use for each contest so we can report on
             # it later. Opportunistic contests don't have a sample size, so we
@@ -219,7 +219,25 @@ def sample_ballots(election: Election, new_round: Round, sample_sizes: Dict[str,
         )
         db_session.add(round_contest)
 
-    def draw_sample_for_contest(contest: Contest, sample_size: int) -> List[SampleDraw]:
+    contests_to_sample = [
+        contest
+        for contest in contests_that_havent_met_risk_limit
+        if contest.is_targeted
+    ]
+
+    if election.audit_type == AuditType.BALLOT_POLLING:
+        return sample_ballots(election, round, contests_to_sample, sample_sizes)
+    else:
+        return sample_batches(election, round, contests_to_sample, sample_sizes)
+
+
+def sample_ballots(
+    election: Election,
+    round: Round,
+    contests: List[Contest],
+    sample_sizes: Dict[str, int],
+):
+    def draw_sample_for_contest(contest: Contest, sample_size: int) -> List[BallotDraw]:
         # Compute the total number of ballot samples in all rounds leading up to
         # this one. Note that this corresponds to the number of SampledBallotDraws,
         # not SampledBallots.
@@ -245,7 +263,7 @@ def sample_ballots(election: Election, new_round: Round, sample_sizes: Dict[str,
             str(election.random_seed), manifest, sample_size, num_previously_sampled
         )
         return [
-            SampleDraw(
+            BallotDraw(
                 ballot_key=ballot_key,
                 contest_id=contest.id,
                 ticket_number=ticket_number,
@@ -256,8 +274,7 @@ def sample_ballots(election: Election, new_round: Round, sample_sizes: Dict[str,
     # Draw a sample for each targeted contest
     samples = [
         draw_sample_for_contest(contest, sample_sizes[contest.id])
-        for contest in contests_that_havent_met_risk_limit
-        if contest.is_targeted
+        for contest in contests
     ]
 
     # Group all sample draws by ballot
@@ -303,11 +320,62 @@ def sample_ballots(election: Election, new_round: Round, sample_sizes: Dict[str,
         for sample_draw in sample_draws:
             sampled_ballot_draw = SampledBallotDraw(
                 ballot_id=sampled_ballot.id,
-                round_id=new_round.id,
+                round_id=round.id,
                 contest_id=sample_draw.contest_id,
                 ticket_number=sample_draw.ticket_number,
             )
             db_session.add(sampled_ballot_draw)
+
+
+def sample_batches(
+    election: Election,
+    round: Round,
+    contests: List[Contest],
+    sample_sizes: Dict[str, int],
+):
+    # We currently only support one contest for batch audits
+    contest = contests[0]
+
+    num_previously_sampled = SampledBatchDraw.query.filter_by(
+        contest_id=contest.id
+    ).count()
+
+    batch_tallies = {
+        # Key each batch by jurisdiction name and batch name since batch names
+        # are only guaranteed unique within a jurisdiction
+        (jurisdiction.name, batch): tally
+        for jurisdiction in election.jurisdictions
+        if jurisdiction.batch_tallies
+        for batch, tally in jurisdiction.batch_tallies.items()  # type: ignore
+    }
+
+    # Create a mapping from batch keys used in the sampling back to batch ids
+    batches = (
+        Batch.query.join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .values(Jurisdiction.name, Batch.name, Batch.id)
+    )
+    batch_key_to_id = {
+        (jurisdiction_name, batch_name): batch_id
+        for jurisdiction_name, batch_name, batch_id in batches
+    }
+
+    sample = sampler.draw_ppeb_sample(
+        str(election.random_seed),
+        sampler_contest.from_db_contest(contest),
+        sample_sizes[contest.id],
+        num_previously_sampled,
+        batch_tallies,
+    )
+
+    for (ticket_number, batch_key, _) in sample:
+        sampled_batch_draw = SampledBatchDraw(
+            batch_id=batch_key_to_id[batch_key],
+            round_id=round.id,
+            contest_id=contest.id,
+            ticket_number=ticket_number,
+        )
+        db_session.add(sampled_batch_draw)
 
 
 CREATE_ROUND_REQUEST_SCHEMA = {
@@ -365,7 +433,7 @@ def create_round(election: Election):
             for contest_id, options in sample_size_options(election).items()
         }
     )
-    sample_ballots(election, round, sample_sizes)
+    draw_sample(election, round, sample_sizes)
 
     db_session.commit()
 
