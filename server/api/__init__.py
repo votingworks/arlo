@@ -13,6 +13,8 @@ from . import contests
 from . import jurisdictions
 from . import rounds
 from . import sample_sizes
+from . import ballot_manifest
+from . import batch_tallies
 from . import audit_boards
 from . import ballots
 from . import offline_results

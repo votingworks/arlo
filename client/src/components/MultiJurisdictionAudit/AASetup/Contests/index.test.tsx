@@ -10,7 +10,7 @@ import { contestsInputMocks, contestMocks } from './_mocks'
 import { numberifyContest, IContestNumbered } from '../../useContests'
 import { IJurisdiction } from '../../useJurisdictions'
 import { IContest } from '../../../../types'
-import { jurisdictionMocks } from '../../_mocks'
+import { jurisdictionMocks } from '../../useSetupMenuItems/_mocks'
 
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 const apiMock: jest.SpyInstance<

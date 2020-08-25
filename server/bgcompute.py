@@ -5,6 +5,7 @@ from server.database import db_session
 from server.models import *  # pylint: disable=wildcard-import
 from server.api.routes import compute_sample_sizes
 from server.api.ballot_manifest import process_ballot_manifest_file
+from server.api.batch_tallies import process_batch_tallies_file
 from server.util.jurisdiction_bulk_update import process_jurisdictions_file
 
 
@@ -12,6 +13,7 @@ def bgcompute():
     bgcompute_compute_round_contests_sample_sizes()
     bgcompute_update_election_jurisdictions_file()
     bgcompute_update_ballot_manifest_file()
+    bgcompute_update_batch_tallies_file()
 
 
 def bgcompute_compute_round_contests_sample_sizes():
@@ -93,6 +95,25 @@ def bgcompute_update_ballot_manifest_file() -> int:
             process_ballot_manifest_file(db_session, jurisdiction, file)
         except Exception:
             print("ERROR updating ballot manifest file")
+
+    return len(files)
+
+
+def bgcompute_update_batch_tallies_file() -> int:
+    files = (
+        File.query.join(Jurisdiction, File.id == Jurisdiction.batch_tallies_file_id)
+        .filter(File.processing_started_at.is_(None))
+        .all()
+    )
+
+    for file in files:
+        try:
+            jurisdiction = Jurisdiction.query.filter_by(
+                batch_tallies_file_id=file.id
+            ).one()
+            process_batch_tallies_file(db_session, jurisdiction, file)
+        except Exception:
+            print("ERROR updating batch tallies file")
 
     return len(files)
 

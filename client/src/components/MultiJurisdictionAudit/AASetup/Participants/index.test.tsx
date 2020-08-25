@@ -7,7 +7,7 @@ import Participants from './index'
 import jurisdictionFile from './_mocks'
 import * as utilities from '../../../utilities'
 import useAuditSettings from '../../useAuditSettings'
-import { fileProcessingMocks } from '../../_mocks'
+import { fileProcessingMocks } from '../../useSetupMenuItems/_mocks'
 
 const auditSettingsMock = useAuditSettings as jest.Mock
 

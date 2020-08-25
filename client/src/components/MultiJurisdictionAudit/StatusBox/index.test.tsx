@@ -9,8 +9,8 @@ import {
   fileProcessingMocks,
   roundMocks,
   auditBoardMocks,
-} from '../_mocks'
-import { contestMocks } from '../Setup/Contests/_mocks'
+} from '../useSetupMenuItems/_mocks'
+import { contestMocks } from '../AASetup/Contests/_mocks'
 import * as utilities from '../../utilities'
 
 jest.mock('react-router-dom', () => ({

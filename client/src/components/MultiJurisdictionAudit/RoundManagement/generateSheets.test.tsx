@@ -1,6 +1,6 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import { auditBoardMocks } from '../_mocks'
+import { auditBoardMocks } from '../useSetupMenuItems/_mocks'
 import QRs from './QRs'
 import {
   downloadDataEntry,

@@ -7,7 +7,7 @@ import {
   FileProcessingStatus,
 } from './useSetupMenuItems/getJurisdictionFileStatus'
 import { IRound } from './useRoundsJurisdictionAdmin'
-import { roundMocks } from './_mocks'
+import { roundMocks } from './useSetupMenuItems/_mocks'
 
 jest.unmock('./useSetupMenuItems/index')
 

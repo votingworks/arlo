@@ -97,11 +97,23 @@ class Jurisdiction(BaseModel):
     election = relationship("Election", back_populates="jurisdictions")
 
     name = Column(String(200), nullable=False)
+
+    # The ballot manifest file is uploaded by each jurisdiction to tell us
+    # which ballots are available to audit.
+    manifest_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
+    manifest_file = relationship("File", foreign_keys=[manifest_file_id])
     manifest_num_ballots = Column(Integer)
     manifest_num_batches = Column(Integer)
 
-    manifest_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
-    manifest_file = relationship("File")
+    # The batch tallies file (only used in batch comparison audits), tells us
+    # how many votes each contest choice got in a batch. We process it and
+    # store it as a JSON blob in batch_tallies to be able to easily pass it
+    # into the audit math for batch audits.
+    batch_tallies_file_id = Column(
+        String(200), ForeignKey("file.id", ondelete="set null")
+    )
+    batch_tallies_file = relationship("File", foreign_keys=[batch_tallies_file_id])
+    batch_tallies = Column(JSON)
 
     batches = relationship(
         "Batch", back_populates="jurisdiction", uselist=True, passive_deletes=True

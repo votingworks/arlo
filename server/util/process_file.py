@@ -1,10 +1,11 @@
 import datetime
-from typing import Any, Callable, Dict
+from typing import Callable, Optional
 from sqlalchemy import update
 from sqlalchemy.orm.session import Session
 
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.isoformat import isoformat
+from ..util.jsonschema import JSONDict
 
 
 class UserError(Exception):
@@ -47,14 +48,20 @@ def process_file(session: Session, file: File, callback: Callable[[], None]) -> 
         return True
 
 
-def serialize_file(file: File) -> Dict[str, Any]:
+def serialize_file(file: Optional[File]) -> Optional[JSONDict]:
+    if file is None:
+        return None
+
     return {
         "name": file.name,
         "uploadedAt": isoformat(file.uploaded_at),
     }
 
 
-def serialize_file_processing(file: File) -> Dict[str, Any]:
+def serialize_file_processing(file: Optional[File]) -> Optional[JSONDict]:
+    if file is None:
+        return None
+
     if file.processing_error:
         status = ProcessingStatus.ERRORED
     elif file.processing_completed_at:

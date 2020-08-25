@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { renderWithRouter, withMockFetch } from '../testUtilities'
 import DataEntry from './index'
 import { dummyBoards, dummyBallots, doneDummyBallots } from './_mocks'
-import { contestMocks } from '../MultiJurisdictionAudit/_mocks'
+import { contestMocks } from '../MultiJurisdictionAudit/useSetupMenuItems/_mocks'
 
 window.scrollTo = jest.fn()
 
