@@ -28,7 +28,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
         .join(SampledBallot)
         .join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
-        .join(AuditBoard)
+        .join(SampledBallot.audit_board)
         .group_by(AuditBoard.id, SampledBallot.id, Batch.id)
         .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position)
         .values(
@@ -156,8 +156,8 @@ def list_ballots_for_jurisdiction(
         .filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBallotDraw)
         .filter_by(round_id=round_id)
-        .outerjoin(AuditBoard)
-        .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position,)
+        .outerjoin(SampledBallot.audit_board)
+        .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position)
         .options(
             contains_eager(SampledBallot.batch),
             contains_eager(SampledBallot.audit_board),

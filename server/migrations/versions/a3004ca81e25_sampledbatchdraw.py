@@ -53,6 +53,18 @@ def upgrade():
             name=op.f("sampled_batch_draw_pkey"),
         ),
     )
+
+    op.add_column(
+        "batch", sa.Column("audit_board_id", sa.String(length=200), nullable=True)
+    )
+    op.create_foreign_key(
+        op.f("batch_audit_board_id_fkey"),
+        "batch",
+        "audit_board",
+        ["audit_board_id"],
+        ["id"],
+        ondelete="cascade",
+    )
     # ### end Alembic commands ###
 
 
