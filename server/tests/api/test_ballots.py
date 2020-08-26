@@ -744,7 +744,7 @@ def test_ja_ballot_retrieval_list_bad_round_id(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/invalid-round-id/retrieval-list"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/invalid-round-id/ballots/retrieval-list"
     )
     assert rv.status_code == 404
 
@@ -754,7 +754,7 @@ def test_ja_ballot_retrieval_list_before_audit_boards_set_up(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/retrieval-list"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots/retrieval-list"
     )
     assert rv.status_code == 200
     assert "attachment; filename=" in rv.headers["Content-Disposition"]
@@ -776,7 +776,7 @@ def test_ja_ballot_retrieval_list_round_1(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/retrieval-list"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots/retrieval-list"
     )
     assert rv.status_code == 200
     assert "attachment; filename=" in rv.headers["Content-Disposition"]
@@ -797,7 +797,7 @@ def test_ja_ballot_retrieval_list_round_2(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/retrieval-list"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/ballots/retrieval-list"
     )
     assert rv.status_code == 200
     assert "attachment; filename=" in rv.headers["Content-Disposition"]

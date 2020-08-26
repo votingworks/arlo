@@ -88,7 +88,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
               verticalSpaced
               onClick={() =>
                 apiDownload(
-                  `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/retrieval-list`
+                  `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/ballots/retrieval-list`
                 )
               }
             >

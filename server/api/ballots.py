@@ -86,7 +86,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/retrieval-list",
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballots/retrieval-list",
     methods=["GET"],
 )
 @with_jurisdiction_access
