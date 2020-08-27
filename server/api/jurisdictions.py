@@ -50,12 +50,12 @@ def round_status_by_jurisdiction(
         .group_by(AuditBoard.jurisdiction_id)
         .values(AuditBoard.jurisdiction_id, func.count())
     )
-    audit_boards_signed_off = (
+    audit_boards_with_ballots_not_signed_off = (
         dict(
-            AuditBoard.query.filter_by(round_id=round.id)
-            .filter(AuditBoard.signed_off_at.isnot(None))
+            AuditBoard.query.filter_by(round_id=round.id, signed_off_at=None)
+            .join(SampledBallot)
             .group_by(AuditBoard.jurisdiction_id)
-            .values(AuditBoard.jurisdiction_id, func.count())
+            .values(AuditBoard.jurisdiction_id, func.count(AuditBoard.id.distinct()))
         )
         if online
         else {}
@@ -140,8 +140,10 @@ def round_status_by_jurisdiction(
             return JurisdictionStatus.NOT_STARTED
 
         if online:
-            num_signed_off = audit_boards_signed_off.get(jurisdiction_id, 0)
-            if num_signed_off != num_set_up:
+            num_not_signed_off = audit_boards_with_ballots_not_signed_off.get(
+                jurisdiction_id, 0
+            )
+            if num_not_signed_off > 0:
                 return JurisdictionStatus.IN_PROGRESS
         else:
             if jurisdiction_id not in jurisdictions_with_offline_results_recorded:

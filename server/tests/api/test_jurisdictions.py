@@ -294,6 +294,30 @@ def test_jurisdictions_status_round_1_with_audit_boards(
     }
 
 
+def test_jurisdictions_status_round_1_with_audit_boards_without_ballots(
+    client: FlaskClient, election_id: str, audit_board_round_1_ids: List[str],
+):
+    # Unassign all ballots for one audit board. This audit board shouldn't
+    # factor into the jurisdiction's status
+    SampledBallot.query.filter_by(audit_board_id=audit_board_round_1_ids[0]).delete()
+    db_session.commit()
+
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"]["status"] == "IN_PROGRESS"
+
+    # Simulate the other audit board auditing all its ballots and signing off
+    audit_board_2 = AuditBoard.query.get(audit_board_round_1_ids[1])
+    for ballot in audit_board_2.sampled_ballots:
+        ballot.status = BallotStatus.AUDITED
+    audit_board_2.signed_off_at = datetime.utcnow()
+    db_session.commit()
+
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"]["status"] == "COMPLETE"
+
+
 def test_jurisdictions_round_status_offline(
     client: FlaskClient,
     election_id: str,
