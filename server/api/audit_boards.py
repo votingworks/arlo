@@ -91,6 +91,7 @@ def assign_sampled_batches(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round.id)
+        .order_by(Batch.created_at)
         .all()
     )
     audit_board_generator = itertools.cycle(audit_boards)

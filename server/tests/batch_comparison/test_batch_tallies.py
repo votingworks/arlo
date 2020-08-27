@@ -509,9 +509,9 @@ def test_batch_tallies_bad_jurisdiction(
     contest_ids: List[str],  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "j3@example.com")
     rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[2]}/batch-tallies",
         data={
             "batchTallies": (
                 io.BytesIO(

@@ -19,7 +19,7 @@ def test_list_batches_bad_round_id(
     assert rv.status_code == 404
 
 
-def test_list_batches_round_1(
+def test_list_batches(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
@@ -34,7 +34,13 @@ def test_list_batches_round_1(
     assert len(batches) == J1_BATCHES_ROUND_1
     compare_json(
         batches[0],
-        {"id": assert_is_id, "name": "Batch 1", "numBallots": 200, "auditBoard": None},
+        {
+            "id": assert_is_id,
+            "name": "Batch 1",
+            "numBallots": 200,
+            "auditBoard": None,
+            "results": None,
+        },
     )
 
     rv = post_json(
@@ -56,6 +62,7 @@ def test_list_batches_round_1(
             "name": "Batch 1",
             "numBallots": 200,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
+            "results": None,
         },
     )
 
@@ -72,6 +79,7 @@ def test_batch_retrieval_list_bad_round_id(
     assert rv.status_code == 404
 
 
+# Note: round 2 retrieval list tested in test_batch_comparison.py
 def test_batch_retrieval_list_round_1(
     client: FlaskClient,
     election_id: str,
@@ -106,3 +114,269 @@ def test_batch_retrieval_list_round_1(
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     assert len(retrieval_list.splitlines()) == J1_BATCHES_ROUND_1 + 1
     snapshot.assert_match(retrieval_list)
+
+
+def test_record_batch_results(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    assert rv.status_code == 200
+    contests = json.loads(rv.data)["contests"]
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+    assert len(batches) == 3
+
+    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+    batch_results = {
+        batches[0]["id"]: {choice_ids[0]: 30, choice_ids[1]: 20, choice_ids[2]: 25,},
+        batches[1]["id"]: {choice_ids[0]: 10, choice_ids[1]: 5, choice_ids[2]: 7,},
+        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 75,},
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
+        batch_results,
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches",
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+    assert batches[0]["results"] == batch_results[batches[0]["id"]]
+    assert batches[1]["results"] == batch_results[batches[1]["id"]]
+    assert batches[2]["results"] == batch_results[batches[2]["id"]]
+
+    # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled batches
+    rv = client.get(f"/api/election/{election_id}/round")
+    rounds = json.loads(rv.data)["rounds"]
+    assert rounds[0]["endedAt"] is None
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+    assert len(batches) == 2
+
+    batch_results = {
+        batches[0]["id"]: {choice_ids[0]: 1, choice_ids[1]: 2, choice_ids[2]: 3,},
+        batches[1]["id"]: {choice_ids[0]: 1, choice_ids[1]: 2, choice_ids[2]: 3,},
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/results",
+        batch_results,
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+    assert batches[0]["results"] == batch_results[batches[0]["id"]]
+    assert batches[1]["results"] == batch_results[batches[1]["id"]]
+
+    # Round should be over
+    rv = client.get(f"/api/election/{election_id}/round")
+    rounds = json.loads(rv.data)["rounds"]
+    assert rounds[0]["endedAt"] is not None
+
+    snapshot.assert_match(
+        {
+            f"{result.contest.name} - {result.contest_choice.name}": result.result
+            for result in RoundContestResult.query.filter_by(round_id=round_1_id).all()
+        }
+    )
+
+
+def test_record_batch_results_without_audit_boards(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
+        {},
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Must set up audit boards before recording results",
+            }
+        ]
+    }
+
+
+def test_record_batch_results_invalid(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,  # pylint: disable=unused-argument
+    audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/contest")
+    assert rv.status_code == 200
+    contests = json.loads(rv.data)["contests"]
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+
+    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+    batch_ids = [batch["id"] for batch in batches]
+
+    invalid_results = [
+        ({}, "Invalid batch ids"),
+        ({"not-a-real-id": {}}, "Invalid batch ids"),
+        (
+            {batch_id: {} for batch_id in batch_ids},
+            f"Invalid choice ids for batch {batches[0]['name']}",
+        ),
+        (
+            {
+                batch_id: {choice_id: 0 for choice_id in choice_ids[:1]}
+                for batch_id in batch_ids
+            },
+            f"Invalid choice ids for batch {batches[0]['name']}",
+        ),
+        (
+            {
+                batch_id: {choice_id: 0 for choice_id in choice_ids}
+                for batch_id in batch_ids[:1]
+            },
+            "Invalid batch ids",
+        ),
+        (
+            {
+                batch_id: {choice_id: "not a number" for choice_id in choice_ids}
+                for batch_id in batch_ids[:1]
+            },
+            "'not a number' is not of type 'integer'",
+        ),
+        (
+            {
+                batch_id: {choice_id: -1 for choice_id in choice_ids}
+                for batch_id in batch_ids[:1]
+            },
+            "-1 is less than the minimum of 0",
+        ),
+        (
+            {
+                batch_id: {choice_id: 200 for choice_id in choice_ids}
+                for batch_id in batch_ids
+            },
+            "Total votes for batch Batch 1 should not exceed 400 - the number of ballots in the batch (200) times the number of votes allowed (2).",
+        ),
+    ]
+
+    for invalid_result, expected_error in invalid_results:
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
+            invalid_result,
+        )
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [{"errorType": "Bad Request", "message": expected_error}]
+        }
+
+
+def test_record_batch_results_bad_round(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+
+    rv = client.get(f"/api/election/{election_id}/contest")
+    assert rv.status_code == 200
+    contests = json.loads(rv.data)["contests"]
+
+    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+
+    for jurisdiction_id in jurisdiction_ids[:2]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
+        rv = client.get(
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches"
+        )
+        assert rv.status_code == 200
+        batches = json.loads(rv.data)["batches"]
+        batch_results = {
+            batch["id"]: {choice_id: 0 for choice_id in choice_ids} for batch in batches
+        }
+        rv = put_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/batches/results",
+            batch_results,
+        )
+        assert_ok(rv)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    assert_ok(rv)
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
+        {},
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"errorType": "Conflict", "message": "Round 1 is not the current round"}
+        ]
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/not-a-round-id/batches/results",
+        {},
+    )
+    assert rv.status_code == 404
+
+    # Hackily set the round's election id to be a different election to test
+    # that we correctly check the round and election match
+    round = Round.query.get(round_1_id)
+    election_id_2 = create_election(client, "Other Election")
+    round.election_id = election_id_2
+    db_session.add(round)
+    db_session.commit()
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
+        {},
+    )
+    assert rv.status_code == 409
