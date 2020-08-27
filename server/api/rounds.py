@@ -336,9 +336,12 @@ def sample_batches(
     # We currently only support one contest for batch audits
     contest = contests[0]
 
-    num_previously_sampled = SampledBatchDraw.query.filter_by(
-        contest_id=contest.id
-    ).count()
+    num_previously_sampled = (
+        SampledBatchDraw.query.join(Batch)
+        .join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .count()
+    )
 
     batch_tallies = {
         # Key each batch by jurisdiction name and batch name since batch names
@@ -372,7 +375,6 @@ def sample_batches(
         sampled_batch_draw = SampledBatchDraw(
             batch_id=batch_key_to_id[batch_key],
             round_id=round.id,
-            contest_id=contest.id,
             ticket_number=ticket_number,
         )
         db_session.add(sampled_batch_draw)

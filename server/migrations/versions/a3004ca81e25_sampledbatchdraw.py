@@ -25,18 +25,11 @@ def upgrade():
         sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("batch_id", sa.String(length=200), nullable=False),
         sa.Column("round_id", sa.String(length=200), nullable=False),
-        sa.Column("contest_id", sa.String(length=200), nullable=False),
         sa.Column("ticket_number", sa.String(length=200), nullable=False),
         sa.ForeignKeyConstraint(
             ["batch_id"],
             ["batch.id"],
             name=op.f("sampled_batch_draw_batch_id_fkey"),
-            ondelete="cascade",
-        ),
-        sa.ForeignKeyConstraint(
-            ["contest_id"],
-            ["contest.id"],
-            name=op.f("sampled_batch_draw_contest_id_fkey"),
             ondelete="cascade",
         ),
         sa.ForeignKeyConstraint(
@@ -48,7 +41,6 @@ def upgrade():
         sa.PrimaryKeyConstraint(
             "batch_id",
             "round_id",
-            "contest_id",
             "ticket_number",
             name=op.f("sampled_batch_draw_pkey"),
         ),

@@ -565,15 +565,10 @@ class SampledBatchDraw(BaseModel):
     round_id = Column(
         String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
     )
-    contest_id = Column(
-        String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False
-    )
 
     ticket_number = Column(String(200), nullable=False)
 
-    __table_args__ = (
-        PrimaryKeyConstraint("batch_id", "round_id", "contest_id", "ticket_number"),
-    )
+    __table_args__ = (PrimaryKeyConstraint("batch_id", "round_id", "ticket_number"),)
 
 
 class File(BaseModel):
