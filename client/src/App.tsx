@@ -11,7 +11,7 @@ import {
 } from './components/MultiJurisdictionAudit'
 import SingleJurisdictionAudit from './components/SingleJurisdictionAudit'
 import DataEntry from './components/DataEntry'
-import CreateAudit from './components/CreateAudit'
+import HomeScreen from './components/HomeScreen'
 import 'react-toastify/dist/ReactToastify.css'
 import AuthDataProvider, { AuthDataContext } from './components/UserContext'
 import { IUserMeta } from './types'
@@ -62,7 +62,7 @@ const App: React.FC = () => {
         <Main>
           <Route path="/" component={Header} />
           <Switch>
-            <Route exact path="/" component={CreateAudit} />
+            <Route exact path="/" component={HomeScreen} />
             <Route
               exact
               path="/audit"
