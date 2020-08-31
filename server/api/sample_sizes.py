@@ -53,10 +53,10 @@ def sample_size_options(
             batch_tallies = {
                 # Key each batch by jurisdiction name and batch name since batch names
                 # are only guaranteed unique within a jurisdiction
-                (jurisdiction.name, batch): tally
+                (jurisdiction.name, batch_name): tally
                 for jurisdiction in election.jurisdictions
                 if jurisdiction.batch_tallies
-                for batch, tally in jurisdiction.batch_tallies.items()  # type: ignore
+                for batch_name, tally in jurisdiction.batch_tallies.items()  # type: ignore
             }
             sample_size = macro.get_sample_sizes(
                 float(risk_limit) / 100,
