@@ -78,8 +78,9 @@ def process_batch_tallies_file(
         # audit_math.macro module, so we can easily load it up and pass it in
         jurisdiction.batch_tallies = {
             row[BATCH_NAME]: {
-                contest.name: {
-                    choice.name: int(row[choice.name]) for choice in contest.choices
+                contest.id: {
+                    "ballots": num_ballots_by_batch[row[BATCH_NAME]],
+                    **{choice.id: int(row[choice.name]) for choice in contest.choices},
                 }
             }
             for row in batch_tallies_csv

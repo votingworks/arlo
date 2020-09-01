@@ -1,75 +1,18 @@
 import io, json
 from typing import List
-import pytest
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...bgcompute import (
-    bgcompute_update_batch_tallies_file,
-    bgcompute_update_ballot_manifest_file,
-)
+from ...bgcompute import bgcompute_update_batch_tallies_file
 from ...util.process_file import ProcessingStatus
-
-
-@pytest.fixture
-def election_id(client: FlaskClient, request):
-    return create_election(
-        client,
-        audit_name=f"Test Audit {request.node.name}",
-        audit_type=AuditType.BATCH_COMPARISON,
-    )
-
-
-@pytest.fixture
-def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
-    contests = [
-        {
-            "id": str(uuid.uuid4()),
-            "name": "Contest 1",
-            "isTargeted": True,
-            "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 500},
-            ],
-            "totalBallotsCast": 1500,
-            "numWinners": 1,
-            "votesAllowed": 2,
-            "jurisdictionIds": jurisdiction_ids[:1],
-        },
-    ]
-    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
-    assert_ok(rv)
-    return [str(c["id"]) for c in contests]
-
-
-@pytest.fixture
-def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"Batch 1,200\n"
-                    b"Batch 2,300\n"
-                    b"Batch 3,400\n"
-                ),
-                "manifest.csv",
-            )
-        },
-    )
-    assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
 
 
 def test_batch_tallies_upload(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
+    contest_id: str,
     manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
@@ -120,15 +63,31 @@ def test_batch_tallies_upload(
     )
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    contest = Contest.query.get(contest_id)
     assert jurisdiction.batch_tallies == {
         "Batch 1": {
-            "Contest 1": {"candidate 1": 1, "candidate 2": 10, "candidate 3": 100,}
+            contest_id: {
+                contest.choices[0].id: 1,
+                contest.choices[1].id: 10,
+                contest.choices[2].id: 100,
+                "ballots": 200,  # based on ballot manifest
+            }
         },
         "Batch 2": {
-            "Contest 1": {"candidate 1": 2, "candidate 2": 20, "candidate 3": 200,}
+            contest_id: {
+                contest.choices[0].id: 2,
+                contest.choices[1].id: 20,
+                contest.choices[2].id: 200,
+                "ballots": 300,
+            }
         },
         "Batch 3": {
-            "Contest 1": {"candidate 1": 3, "candidate 2": 30, "candidate 3": 300,}
+            contest_id: {
+                contest.choices[0].id: 3,
+                contest.choices[1].id: 30,
+                contest.choices[2].id: 300,
+                "ballots": 400,
+            }
         },
     }
 
@@ -165,7 +124,7 @@ def test_batch_tallies_replace(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: List[str],  # pylint: disable=unused-argument
+    contest_id: str,
     manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
@@ -213,15 +172,31 @@ def test_batch_tallies_replace(
     bgcompute_update_batch_tallies_file()
 
     jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    contest = Contest.query.get(contest_id)
     assert jurisdiction.batch_tallies == {
         "Batch 1": {
-            "Contest 1": {"candidate 1": 11, "candidate 2": 10, "candidate 3": 100,}
+            contest_id: {
+                contest.choices[0].id: 11,
+                contest.choices[1].id: 10,
+                contest.choices[2].id: 100,
+                "ballots": 200,
+            }
         },
         "Batch 2": {
-            "Contest 1": {"candidate 1": 2, "candidate 2": 22, "candidate 3": 200,}
+            contest_id: {
+                contest.choices[0].id: 2,
+                contest.choices[1].id: 22,
+                contest.choices[2].id: 200,
+                "ballots": 300,
+            }
         },
         "Batch 3": {
-            "Contest 1": {"candidate 1": 3, "candidate 2": 30, "candidate 3": 333,}
+            contest_id: {
+                contest.choices[0].id: 3,
+                contest.choices[1].id: 30,
+                contest.choices[2].id: 333,
+                "ballots": 400,
+            }
         },
     }
 

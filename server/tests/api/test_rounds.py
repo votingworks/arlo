@@ -26,7 +26,7 @@ def test_rounds_create_one(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
-    contest_ids: str,
+    contest_ids: List[str],
     manifests,  # pylint: disable=unused-argument
 ):
     rv = post_json(
