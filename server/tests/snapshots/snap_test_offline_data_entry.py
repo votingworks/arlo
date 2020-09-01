@@ -7,17 +7,15 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots["test_run_offline_audit 1"] = {
-    "Contest 1 - candidate 1": 50,
-    "Contest 1 - candidate 2": 30,
-    "Contest 2 - candidate 1": 30,
-    "Contest 2 - candidate 2": 45,
-    "Contest 2 - candidate 3": 20,
+snapshots['test_run_offline_audit 1'] = {
+    'Contest 1 - candidate 1': 50,
+    'Contest 1 - candidate 2': 30,
+    'Contest 2 - candidate 1': 30,
+    'Contest 2 - candidate 2': 45,
+    'Contest 2 - candidate 3': 20
 }
 
-snapshots[
-    "test_run_offline_audit 2"
-] = """######## ELECTION INFO ########\r
+snapshots['test_run_offline_audit 2'] = '''######## ELECTION INFO ########\r
 Election Name,State\r
 Test Election,CA\r
 \r
@@ -131,4 +129,4 @@ J2,4,18,Round 1: 0.038013103949978453\r
 J2,4,25,Round 1: 0.077777948601238256\r
 J2,4,26,Round 1: 0.000710191532006945\r
 J2,4,30,Round 1: 0.035663218359419393\r
-"""
+'''
