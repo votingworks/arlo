@@ -112,7 +112,7 @@ def test_audit_status(client, election_id):
                             "results": {},
                             "sampleSize": 1035,
                             "sampleSizeOptions": [
-                                {"prob": 0.27, "size": 343, "type": "ASN"},
+                                {"prob": 0.51, "size": 343, "type": "ASN"},
                                 {"prob": 0.7, "size": 542, "type": None},
                                 {"prob": 0.8, "size": 718, "type": None},
                                 {"prob": 0.9, "size": 1035, "type": None},
