@@ -35,7 +35,10 @@ def pretty_pvalue(value: float) -> str:
     elif value < 10 ** -10:
         return "<0.0000000001"
     else:
-        return "{:1.10f}".format(round(value, 10))
+        ret = "{:1.10f}".format(round(value, 10)).rstrip("0")
+        if ret[-1] == ".":
+            ret += "0"  # If we've stripped off the zero right after the decimal, put it back
+        return ret
 
 
 def pretty_ticket_numbers(
