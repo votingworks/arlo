@@ -32,7 +32,7 @@ Test Audit test_run_offline_audit,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,100,Yes,0.0887642500,DATETIME,DATETIME,candidate 1: 50; candidate 2: 30\r
+1,Contest 1,Targeted,100,Yes,0.08876425,DATETIME,DATETIME,candidate 1: 50; candidate 2: 30\r
 1,Contest 2,Opportunistic,,No,0.5938312972,DATETIME,DATETIME,candidate 1: 30; candidate 2: 45; candidate 3: 20\r
 \r
 ######## SAMPLED BALLOTS ########\r

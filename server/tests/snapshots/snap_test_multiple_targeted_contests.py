@@ -64,10 +64,10 @@ Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 N
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
 1,Contest 1,Targeted,191,Yes,0.0000184402,DATETIME,DATETIME,candidate 1: 132; candidate 2: 59\r
-1,Contest 2,Targeted,485,No,1.0000000000,DATETIME,DATETIME,Yes: 0; No: 0\r
-1,Contest 3,Opportunistic,,No,1.0000000000,DATETIME,DATETIME,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
+1,Contest 2,Targeted,485,No,1.0,DATETIME,DATETIME,Yes: 0; No: 0\r
+1,Contest 3,Opportunistic,,No,1.0,DATETIME,DATETIME,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
 2,Contest 2,Targeted,1468,Yes,<0.0000000001,DATETIME,DATETIME,Yes: 1028; No: 440\r
-2,Contest 3,Opportunistic,,No,1.0000000000,DATETIME,DATETIME,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
+2,Contest 3,Opportunistic,,No,1.0,DATETIME,DATETIME,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Batch Name,Ballot Position,Ticket Numbers: Contest 1,Ticket Numbers: Contest 2,Audited?,Audit Result: Contest 1,Audit Result: Contest 2,Audit Result: Contest 3\r
