@@ -192,6 +192,8 @@ class JurisdictionAdministration(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("user_id", "jurisdiction_id"),)
 
 
+# A batch represents a group of ballots in a jurisdiction (usually one physical
+# box or bin).
 class Batch(BaseModel):
     id = Column(String(200), primary_key=True)
     jurisdiction_id = Column(
@@ -204,9 +206,18 @@ class Batch(BaseModel):
     storage_location = Column(String(200))
     tabulator = Column(String(200))
 
+    # For ballot polling audits, a batch is associated with a group of ballots
+    # sampled from this batch
     ballots = relationship(
         "SampledBallot", back_populates="batch", uselist=True, passive_deletes=True
     )
+
+    # For batch comparison audits, we sample the batch itself, and assign it to
+    # an audit board to be audited.
+    audit_board_id = Column(
+        String(200), ForeignKey("audit_board.id", ondelete="cascade"),
+    )
+    audit_board = relationship("AuditBoard")
 
     __table_args__ = (UniqueConstraint("jurisdiction_id", "name"),)
 
@@ -541,6 +552,23 @@ class JurisdictionResult(BaseModel):
             ondelete="cascade",
         ),
     )
+
+
+# In batch comparison audits, a SampledBatchDraw represents the sampling of a
+# batch to be audited. Batches can get sampled multiple times per round, so
+# they are given a ticket number to uniquely identify each draw.
+class SampledBatchDraw(BaseModel):
+    batch_id = Column(
+        String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
+    )
+    batch = relationship("Batch")
+    round_id = Column(
+        String(200), ForeignKey("round.id", ondelete="cascade"), nullable=False
+    )
+
+    ticket_number = Column(String(200), nullable=False)
+
+    __table_args__ = (PrimaryKeyConstraint("batch_id", "round_id", "ticket_number"),)
 
 
 class File(BaseModel):

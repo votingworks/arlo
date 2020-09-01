@@ -66,7 +66,7 @@ def draw_ppeb_sample(
     contest: Contest,
     sample_size: int,
     num_sampled: int,
-    batch_results: Dict[str, Dict[str, Dict[str, int]]],
+    batch_results: Dict[Any, Dict[str, Dict[str, int]]],
 ) -> List[Tuple[str, Tuple[str, int], int]]:
     """
     Draws sample with replacement of size <sample_size> from the
@@ -128,8 +128,8 @@ def draw_ppeb_sample(
 
         for i in range(times):
             # We have to create "unique" records for the sampler, so we add
-            # a '.n' to the batch name so we know which duplicate it is.
-            sample_from.append("{}.{}".format(batch, i))
+            # a 'n' to the batch name so we know which duplicate it is.
+            sample_from.append((batch, i))
 
     # Now draw the sample
     faux_sample = list(
@@ -145,6 +145,6 @@ def draw_ppeb_sample(
     # here we take off the decimals.
     sample = []
     for item in faux_sample:
-        sample.append((item[0], item[1].split(".")[0], item[2]))
+        sample.append((item[0], item[1][0], item[2]))
 
     return sample

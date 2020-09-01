@@ -11,7 +11,7 @@ https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the
 publication).
 """
 import math
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Any
 from .sampler_contest import Contest
 
 
@@ -144,9 +144,9 @@ def compute_U(
 def get_sample_sizes(
     risk_limit: float,
     contest: Contest,
-    reported_results: Dict[str, Dict[str, Dict[str, int]]],
+    reported_results: Dict[Any, Dict[str, Dict[str, int]]],
     sample_results: Dict[
-        str, Dict[str, Dict[str, int]]
+        Any, Dict[str, Dict[str, int]]
     ],  # pylint: disable=unused-argument
 ) -> float:
     """
