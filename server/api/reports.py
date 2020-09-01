@@ -28,6 +28,14 @@ def pretty_targeted(is_targeted: bool) -> str:
     return "Targeted" if is_targeted else "Opportunistic"
 
 
+def pretty_pvalue(value: float) -> str:
+
+    if value < 10 ** -10:
+        return "<0.0000000001"
+    else:
+        return "{:1.10f}".format(round(value, 10))
+
+
 def pretty_ticket_numbers(
     ballot: SampledBallot,
     round_id_to_num: Dict[str, int],
@@ -202,7 +210,7 @@ def round_rows(election: Election):
                 pretty_targeted(contest.is_targeted),
                 round_contest.sample_size,
                 pretty_boolean(bool(round_contest.is_complete)),
-                round_contest.end_p_value,
+                pretty_pvalue(round_contest.end_p_value),
                 isoformat(round.created_at),
                 isoformat(round.ended_at),
                 pretty_audited_votes(contest, round_contest),
