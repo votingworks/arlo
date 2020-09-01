@@ -30,7 +30,9 @@ def pretty_targeted(is_targeted: bool) -> str:
 
 def pretty_pvalue(value: float) -> str:
 
-    if value < 10 ** -10:
+    if value is None:
+        return ""
+    elif value < 10 ** -10:
         return "<0.0000000001"
     else:
         return "{:1.10f}".format(round(value, 10))
