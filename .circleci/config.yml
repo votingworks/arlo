@@ -14,6 +14,10 @@ jobs:
           POSTGRES_DB: arlo-test
     steps:
       - checkout
+      - restore_cache:
+        keys:
+          - v1-deps-{{ checksum "package-lock.json" }}
+          - v1-deps-{{ checksum "yarn.lock" }}
       - run:
           name: install
           command: |
