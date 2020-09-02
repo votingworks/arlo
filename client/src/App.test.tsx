@@ -5,6 +5,10 @@ import App from './App'
 import { withMockFetch, renderWithRouter } from './components/testUtilities'
 import { dummyBoards } from './components/DataEntry/_mocks'
 import {
+  manifestMocks,
+  talliesMocks,
+} from './components/MultiJurisdictionAudit/useSetupMenuItems/_mocks'
+import {
   jaApiCalls,
   aaApiCalls,
 } from './components/MultiJurisdictionAudit/_mocks'
@@ -113,40 +117,38 @@ describe('App', () => {
     it('renders unauthenticated properly', async () => {
       const expectedCalls = [apiMocks.failedAuth]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView('/election/1/jurisdiction-id-1/1')
+        const { container } = renderView(
+          '/election/1/jurisdiction/jurisdiction-id-1'
+        )
         await screen.findByAltText('Arlo, by VotingWorks')
         expect(container).toMatchSnapshot()
       })
     })
 
     it('renders ja logged in properly', async () => {
-      const expectedCalls = [jaApiCalls.getUser]
+      const expectedCalls = [
+        jaApiCalls.getUser,
+        jaApiCalls.getSettings,
+        jaApiCalls.getRounds,
+        jaApiCalls.getBallotManifestFile(manifestMocks.empty),
+        jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
+      ]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView('/election/1/jurisdiction-id-1/1')
+        const { container } = renderView(
+          '/election/1/jurisdiction/jurisdiction-id-1'
+        )
         await screen.findByAltText('Arlo, by VotingWorks')
         expect(container).toMatchSnapshot()
       })
     })
 
     it('renders aa logged in properly', async () => {
-      const expectedCalls = [
-        aaApiCalls.getUser,
-        aaApiCalls.getRounds,
-        aaApiCalls.getJurisdictions,
-        aaApiCalls.getContests,
-        aaApiCalls.getSettings,
-        aaApiCalls.getJurisdictionFile,
-        aaApiCalls.getRounds,
-        aaApiCalls.getRounds,
-        aaApiCalls.getJurisdictions,
-        aaApiCalls.getContests,
-        aaApiCalls.getSettings,
-        aaApiCalls.getSettings,
-        aaApiCalls.getJurisdictionFile,
-      ]
+      const expectedCalls = [aaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
-        const { container } = renderView('/election/1/jurisdiction-id-1/1')
-        await screen.findByAltText('Arlo, by VotingWorks')
+        const { container } = renderView(
+          '/election/1/jurisdiction/jurisdiction-id-1'
+        )
+        await screen.findByText('Give your new audit a unique name.')
         expect(container).toMatchSnapshot()
       })
     })
