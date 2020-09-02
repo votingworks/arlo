@@ -15,12 +15,21 @@ jobs:
     parallelism: 4
     steps:
       - checkout
+      - save_cache:
+          key: arlo-v1-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/arlo
+
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
           keys:
             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          keys:
             - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      - restore_cache:
+          keys:
             - npm-packages-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: install
@@ -38,6 +47,7 @@ jobs:
             - ".venv"
             - "/usr/local/bin"
             - "/usr/local/lib/python3.6/site-packages"
+            - "~/.local/share/virtualenvs"
       - save_cache:
           paths:
             - /usr/local/lib/node_modules # location depends on npm version
@@ -65,7 +75,9 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - arlo-v1-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: lint server (pylint)
           command: |
@@ -85,7 +97,9 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - arlo-v1-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: type check
           command: |
@@ -102,7 +116,9 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - arlo-v1-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: check formatting
           command: |
@@ -120,7 +136,9 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - arlo-v1-{{ .environment.circle_sha1 }}
       - run:
           name: server tests
           command: |
@@ -138,11 +156,13 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - arlo-v1-{{ .environment.circle_sha1 }}
       - run:
           name: client tests
           command: |
-            make test-client
+            yarn --cwd client test
   wdio:
     parallelism: 4
     docker:
@@ -155,7 +175,9 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - arlo-v1-{{ .environment.circle_sha1 }}
       - run:
           name: wdio end-to-end tests
           command: |
@@ -172,7 +194,9 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
+      - restore_cache:
+          keys:
+            - arlo-v1-{{ .environment.circle_sha1 }}
       - run:
           name: cypress end-to-end tests
           command: |
@@ -194,10 +218,14 @@ workflows:
             - build
       - server-tests:
           requires:
-            - build
+            - lint
+            - typecheck
+            - check-format
       - client-tests:
           requires:
-            - build
+            - lint
+            - typecheck
+            - check-format
       - wdio:
           requires:
             - server-tests
