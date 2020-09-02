@@ -78,6 +78,9 @@ jobs:
       - restore_cache:
           keys:
             - arlo-v1-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
           name: lint server (pylint)
           command: |
@@ -100,6 +103,9 @@ jobs:
       - restore_cache:
           keys:
             - arlo-v1-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
           name: type check
           command: |
@@ -119,6 +125,9 @@ jobs:
       - restore_cache:
           keys:
             - arlo-v1-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
           name: check formatting
           command: |
@@ -232,4 +241,5 @@ workflows:
             - client-tests
       - cypress:
           requires:
-            - wdio
+            - server-tests
+            - client-tests
