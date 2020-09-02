@@ -65,7 +65,7 @@ jobs:
 
       - save_cache:
           key: pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-          aths:
+          paths:
             - "~/.local"
             - "~/.cache"
       - save_cache:
