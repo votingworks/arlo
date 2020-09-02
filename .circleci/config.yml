@@ -26,7 +26,7 @@ jobs:
       - save_cache:
         key: v1-deps-{{ checksum "Pipfile.lock" }}
         paths:
-          - ./
+          - ~/.local/share/virtualenvs/arlo-JkTArwOE
 
       - run:
           name: Install Chrome
