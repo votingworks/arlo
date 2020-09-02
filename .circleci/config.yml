@@ -207,7 +207,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - arlo-v3-{{ .environment.circle_sha1 }}
+            - arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: server tests
           command: |
