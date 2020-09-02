@@ -45,6 +45,8 @@ jobs:
       - restore_cache:
           keys:
             - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v1-{{ .Branch }}-
+            - pip-packages-v1-
       - restore_cache:
           keys:
             - npm-packages-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
@@ -65,6 +67,8 @@ jobs:
             - "/usr/local/bin"
             - "/usr/local/lib/python3.6/site-packages"
             - "~/.local/share/virtualenvs"
+            - "~/.cache/pipenv"
+            - "~/.cache/pip"
       - save_cache:
           paths:
             - "/usr/local/lib/node_modules" # location depends on npm version
@@ -100,6 +104,8 @@ jobs:
       - restore_cache:
           keys:
             - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v1-{{ .Branch }}-
+            - pip-packages-v1-
       - run:
           name: lint server (pylint)
           command: |
@@ -126,6 +132,8 @@ jobs:
       - restore_cache:
           keys:
             - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v1-{{ .Branch }}-
+            - pip-packages-v1-
       - run:
           name: type check
           command: |
@@ -149,8 +157,8 @@ jobs:
       - restore_cache:
           keys:
             - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-      - run:
-          command: ls .
+            - pip-packages-v1-{{ .Branch }}-
+            - pip-packages-v1-
       - run:
           name: check formatting
           command: |
