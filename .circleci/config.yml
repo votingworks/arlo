@@ -26,7 +26,7 @@ jobs:
       - save_cache:
         key: v1-deps-{{ checksum "Pipfile.lock" }}
         paths:
-          - Pipfile.lock
+          - ./
 
       - run:
           name: Install Chrome
