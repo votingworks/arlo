@@ -16,12 +16,19 @@ jobs:
       - checkout
       - restore_cache:
         keys:
-          - v1-deps-{{ checksum "package-lock.json" }}
-          - v1-deps-{{ checksum "yarn.lock" }}
+          - v1-deps-{{ checksum "Pipfile.lock" }}
+
       - run:
           name: install
           command: |
             make install install-development
+
+      - save_cache:
+        keys:
+          - v1-deps-{{ checksum "Pipfile.lock" }}
+        paths:
+          - Pipfile.lock
+
       - run:
           name: Install Chrome
           command: |
