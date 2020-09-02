@@ -251,7 +251,7 @@ def expected_prob(
     if threshold <= 0:
         return 0
 
-    n = asn
+    n = asn * p_wr
     # The basic equation is E_x = R_x where
     # E_x: expected # of successes at the 1-p_completion quantile
     # R_x: smallest x (given n) that attains the risk limit
