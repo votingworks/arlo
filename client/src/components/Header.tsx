@@ -23,7 +23,7 @@ const Nav = styled(Navbar)`
 
   .bp3-navbar-heading img {
     height: 35px;
-    padding-top: 8px;
+    padding-top: 5px;
   }
 
   .bp3-navbar-divider {
@@ -55,6 +55,11 @@ const Header: React.FC<{}> = () => {
               <img src="/arlo.png" alt="Arlo, by VotingWorks" />
             </Link>
           </NavbarHeading>
+          {isAuthenticated && meta!.type === 'jurisdiction_admin' && (
+            <NavbarHeading>
+              Jurisdictions: {meta!.jurisdictions.map(j => j.name).join(', ')}
+            </NavbarHeading>
+          )}
         </NavbarGroup>
         <NavbarGroup align={Alignment.RIGHT}>
           {isAuthenticated && electionId && meta!.type === 'audit_admin' && (
