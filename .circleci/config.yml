@@ -29,10 +29,11 @@ jobs:
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
-              #- save_cache:
-              #    key: pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-              #    paths:
-              #        - ~/.local/share/virtualenvs
+
+      - save_cache:
+          key: pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ~/.local/share/virtualenvs
 
       - run:
           name: Install Chrome
