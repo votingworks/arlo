@@ -92,6 +92,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+    working_directory: ~/arlo
     steps:
       - restore_cache:
           keys:
@@ -117,6 +118,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+    working_directory: ~/arlo
     steps:
       - restore_cache:
           keys:
@@ -139,6 +141,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+    working_directory: ~/arlo
     steps:
       - restore_cache:
           keys:
@@ -163,6 +166,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+    working_directory: ~/arlo
     steps:
       - restore_cache:
           keys:
@@ -183,6 +187,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+    working_directory: ~/arlo
     steps:
       - restore_cache:
           keys:
@@ -202,6 +207,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+    working_directory: ~/arlo
     steps:
       - restore_cache:
           keys:
@@ -221,6 +227,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+    working_directory: ~/arlo
     steps:
       - restore_cache:
           keys:
