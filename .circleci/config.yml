@@ -15,10 +15,13 @@ jobs:
     parallelism: 4
     steps:
       - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
           keys:
             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - npm-packages-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: install
           command: |
@@ -32,7 +35,13 @@ jobs:
       - save_cache:
           key: pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
-            - ~/.local/share/virtualenvs
+            - ".venv"
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.6/site-packages"
+      - save_cache:
+          paths:
+            - ~/usr/local/lib/node_modules # location depends on npm version
+          key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
 
       - run:
           name: Install Chrome
@@ -48,7 +57,15 @@ jobs:
   lint:
     docker:
       - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
     steps:
+      - checkout
       - run:
           name: lint server (pylint)
           command: |
@@ -56,7 +73,15 @@ jobs:
   typecheck:
     docker:
       - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
     steps:
+      - checkout
       - run:
           name: type check
           command: |
@@ -65,7 +90,15 @@ jobs:
   check-format:
     docker:
       - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
     steps:
+      - checkout
       - run:
           name: check formatting
           command: |
@@ -83,6 +116,7 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
+      - checkout
       - run:
           name: server tests
           command: |
@@ -100,6 +134,7 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
+      - checkout
       - run:
           name: client tests
           command: |
@@ -116,6 +151,7 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
+      - checkout
       - run:
           name: wdio end-to-end tests
           command: |
@@ -132,6 +168,7 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
+      - checkout
       - run:
           name: cypress end-to-end tests
           command: |
