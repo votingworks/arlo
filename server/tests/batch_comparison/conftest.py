@@ -90,3 +90,30 @@ def batch_tallies(
     )
     assert_ok(rv)
     bgcompute_update_batch_tallies_file()
+
+
+@pytest.fixture
+def round_1_id(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_id: str,
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+):
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert rv.status_code == 200
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    sample_size = sample_size_options[contest_id][0]["size"]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: sample_size}},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round")
+    rounds = json.loads(rv.data)["rounds"]
+    return rounds[0]["id"]
