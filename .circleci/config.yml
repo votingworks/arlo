@@ -29,7 +29,6 @@ jobs:
           keys:
             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-
           paths:
             - ~/.cache/yarn
             - ~/.local/share/virtualenvs
