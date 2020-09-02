@@ -26,11 +26,14 @@ jobs:
             make install install-development
 
       - save_cache:
-          keys:
+          key:
             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
             - ~/.cache/yarn
+
+      - save_cache:
+          key: pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
             - ~/.local/share/virtualenvs
 
       - run:
