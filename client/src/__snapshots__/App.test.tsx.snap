@@ -197,6 +197,20 @@ exports[`App / renders ja logged in properly 1`] = `
         height="50px"
         src="/arlo.png"
       />
+      <a
+        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
+        href="/election/1/jurisdiction/jurisdiction-id-1"
+      >
+        audit one
+         (AL)
+      </a>
+      <a
+        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
+        href="/election/2/jurisdiction/jurisdiction-id-2"
+      >
+        audit two
+         (AL)
+      </a>
     </div>
   </div>
 </div>
@@ -474,6 +488,20 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
         height="50px"
         src="/arlo.png"
       />
+      <a
+        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
+        href="/election/1/jurisdiction/jurisdiction-id-1"
+      >
+        audit one
+         (AL)
+      </a>
+      <a
+        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
+        href="/election/2/jurisdiction/jurisdiction-id-2"
+      >
+        audit two
+         (AL)
+      </a>
     </div>
   </div>
 </div>
@@ -1238,6 +1266,20 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
         height="50px"
         src="/arlo.png"
       />
+      <a
+        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
+        href="/election/1/jurisdiction/jurisdiction-id-1"
+      >
+        audit one
+         (AL)
+      </a>
+      <a
+        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
+        href="/election/2/jurisdiction/jurisdiction-id-2"
+      >
+        audit two
+         (AL)
+      </a>
     </div>
   </div>
 </div>
