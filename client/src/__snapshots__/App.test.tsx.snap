@@ -614,51 +614,6 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="bp3-navbar-heading"
-          >
-            <a
-              href="/election/1/setup"
-            >
-              Audit Setup
-            </a>
-          </div>
-          <div
-            class="bp3-navbar-divider"
-          />
-          <div
-            class="bp3-navbar-heading"
-          >
-            <a
-              href="/election/1/progress"
-            >
-              Audit Progress
-            </a>
-          </div>
-          <div
-            class="bp3-navbar-divider"
-          />
-          <div
-            class="bp3-navbar-heading"
-          >
-            <a
-              href="/"
-            >
-              View Audits
-            </a>
-          </div>
-          <div
-            class="bp3-navbar-divider"
-          />
-          <div
-            class="bp3-navbar-heading"
-          >
-            <a
-              href="/"
-            >
-              New Audit
-            </a>
-          </div>
-          <div
             class="sc-ifAKCX jNLPyG"
             id="reset-button-wrapper"
           />
@@ -676,533 +631,89 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
       </div>
     </div>
     <div
-      class="sc-htpNat GipZb"
+      class="sc-tilXH dTGWnV"
     >
+      <img
+        alt="Arlo, by VotingWorks"
+        height="50px"
+        src="/arlo.png"
+      />
       <div
-        class="bp3-callout sc-eHgmQL gudjM"
+        class="sc-VigVT jXYKmK"
       >
-        <div
-          class="sc-bxivhb ddQihQ"
+        <label
+          for="audit-name"
+          id="audit-name-label"
         >
+          Give your new audit a unique name.
           <div
-            class="text"
+            class="sc-ktHwxA cVevTH sc-cSHVUG gyNSie"
           >
-            <h4
-              class="bp3-heading"
+            <div
+              class="bp3-input-group sc-kAzzGY fpNxNJ"
             >
-              The audit has not started.
-            </h4>
-            <p>
-              Audit setup is complete.
-            </p>
-            <p>
-              0 of 2 jurisdictions have completed file uploads.
-            </p>
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                id="audit-name"
+                name="auditName"
+                style="padding-right: 10px;"
+                value=""
+              />
+            </div>
           </div>
-        </div>
+        </label>
       </div>
       <div
-        class="sc-bxivhb ddQihQ"
+        class="sc-VigVT jXYKmK"
       >
-        <div
-          class="sc-htoDjs hTGiHa"
+        <label
+          for="auditType"
         >
-          <h2
-            class="bp3-heading sc-gzVnrw hQaoin"
-          >
-            Audit Setup
-          </h2>
-          <ul
-            class="bp3-menu"
-          >
-            <li
-              class=""
-            >
-              <a
-                class="bp3-menu-item bp3-active bp3-intent-primary bp3-popover-dismiss"
-              >
-                <div
-                  class="bp3-text-overflow-ellipsis bp3-fill"
-                >
-                  Participants
-                </div>
-              </a>
-            </li>
-            <li
-              class="bp3-menu-divider"
-            />
-            <li
-              class=""
-            >
-              <a
-                class="bp3-menu-item bp3-popover-dismiss"
-              >
-                <div
-                  class="bp3-text-overflow-ellipsis bp3-fill"
-                >
-                  Target Contests
-                </div>
-              </a>
-            </li>
-            <li
-              class="bp3-menu-divider"
-            />
-            <li
-              class=""
-            >
-              <a
-                class="bp3-menu-item bp3-popover-dismiss"
-              >
-                <div
-                  class="bp3-text-overflow-ellipsis bp3-fill"
-                >
-                  Opportunistic Contests
-                </div>
-              </a>
-            </li>
-            <li
-              class="bp3-menu-divider"
-            />
-            <li
-              class=""
-            >
-              <a
-                class="bp3-menu-item bp3-popover-dismiss"
-              >
-                <div
-                  class="bp3-text-overflow-ellipsis bp3-fill"
-                >
-                  Audit Settings
-                </div>
-              </a>
-            </li>
-            <li
-              class="bp3-menu-divider"
-            />
-            <li
-              class=""
-            >
-              <a
-                class="bp3-menu-item bp3-popover-dismiss"
-              >
-                <div
-                  class="bp3-text-overflow-ellipsis bp3-fill"
-                >
-                  Review & Launch
-                </div>
-              </a>
-            </li>
-          </ul>
-        </div>
-        <form
-          data-testid="form-one"
-        >
+          Audit type:
           <div
-            class="sc-dnqmqq kymPuI"
+            class="sc-cIShpX bCVOLk"
           >
-            <h2
-              class="bp3-heading sc-gzVnrw hQaoin"
-            >
-              Participants
-            </h2>
             <label
-              for="state"
+              class="bp3-control bp3-radio"
             >
-              Choose your state from the options below
-              <br />
-              <div
-                class="bp3-html-select sc-jzJRlG bMfUWQ"
-              >
-                <select
-                  data-testid="state-field"
-                  field="[object Object]"
-                  form="[object Object]"
-                  id="state"
-                >
-                  <option
-                    value=""
-                  />
-                  <option
-                    label="Alabama"
-                    value="AL"
-                  >
-                    Alabama
-                  </option>
-                  <option
-                    label="Alaska"
-                    value="AK"
-                  >
-                    Alaska
-                  </option>
-                  <option
-                    label="Arizona"
-                    value="AZ"
-                  >
-                    Arizona
-                  </option>
-                  <option
-                    label="Arkansas"
-                    value="AR"
-                  >
-                    Arkansas
-                  </option>
-                  <option
-                    label="California"
-                    value="CA"
-                  >
-                    California
-                  </option>
-                  <option
-                    label="Colorado"
-                    value="CO"
-                  >
-                    Colorado
-                  </option>
-                  <option
-                    label="Connecticut"
-                    value="CT"
-                  >
-                    Connecticut
-                  </option>
-                  <option
-                    label="Delaware"
-                    value="DE"
-                  >
-                    Delaware
-                  </option>
-                  <option
-                    label="District Of Columbia"
-                    value="DC"
-                  >
-                    District Of Columbia
-                  </option>
-                  <option
-                    label="Florida"
-                    value="FL"
-                  >
-                    Florida
-                  </option>
-                  <option
-                    label="Georgia"
-                    value="GA"
-                  >
-                    Georgia
-                  </option>
-                  <option
-                    label="Hawaii"
-                    value="HI"
-                  >
-                    Hawaii
-                  </option>
-                  <option
-                    label="Idaho"
-                    value="ID"
-                  >
-                    Idaho
-                  </option>
-                  <option
-                    label="Illinois"
-                    value="IL"
-                  >
-                    Illinois
-                  </option>
-                  <option
-                    label="Indiana"
-                    value="IN"
-                  >
-                    Indiana
-                  </option>
-                  <option
-                    label="Iowa"
-                    value="IA"
-                  >
-                    Iowa
-                  </option>
-                  <option
-                    label="Kansas"
-                    value="KS"
-                  >
-                    Kansas
-                  </option>
-                  <option
-                    label="Kentucky"
-                    value="KY"
-                  >
-                    Kentucky
-                  </option>
-                  <option
-                    label="Louisiana"
-                    value="LA"
-                  >
-                    Louisiana
-                  </option>
-                  <option
-                    label="Maine"
-                    value="ME"
-                  >
-                    Maine
-                  </option>
-                  <option
-                    label="Maryland"
-                    value="MD"
-                  >
-                    Maryland
-                  </option>
-                  <option
-                    label="Massachusetts"
-                    value="MA"
-                  >
-                    Massachusetts
-                  </option>
-                  <option
-                    label="Michigan"
-                    value="MI"
-                  >
-                    Michigan
-                  </option>
-                  <option
-                    label="Minnesota"
-                    value="MN"
-                  >
-                    Minnesota
-                  </option>
-                  <option
-                    label="Mississippi"
-                    value="MS"
-                  >
-                    Mississippi
-                  </option>
-                  <option
-                    label="Missouri"
-                    value="MO"
-                  >
-                    Missouri
-                  </option>
-                  <option
-                    label="Montana"
-                    value="MT"
-                  >
-                    Montana
-                  </option>
-                  <option
-                    label="Nebraska"
-                    value="NE"
-                  >
-                    Nebraska
-                  </option>
-                  <option
-                    label="Nevada"
-                    value="NV"
-                  >
-                    Nevada
-                  </option>
-                  <option
-                    label="New Hampshire"
-                    value="NH"
-                  >
-                    New Hampshire
-                  </option>
-                  <option
-                    label="New Jersey"
-                    value="NJ"
-                  >
-                    New Jersey
-                  </option>
-                  <option
-                    label="New Mexico"
-                    value="NM"
-                  >
-                    New Mexico
-                  </option>
-                  <option
-                    label="New York"
-                    value="NY"
-                  >
-                    New York
-                  </option>
-                  <option
-                    label="North Carolina"
-                    value="NC"
-                  >
-                    North Carolina
-                  </option>
-                  <option
-                    label="North Dakota"
-                    value="ND"
-                  >
-                    North Dakota
-                  </option>
-                  <option
-                    label="Ohio"
-                    value="OH"
-                  >
-                    Ohio
-                  </option>
-                  <option
-                    label="Oklahoma"
-                    value="OK"
-                  >
-                    Oklahoma
-                  </option>
-                  <option
-                    label="Oregon"
-                    value="OR"
-                  >
-                    Oregon
-                  </option>
-                  <option
-                    label="Pennsylvania"
-                    value="PA"
-                  >
-                    Pennsylvania
-                  </option>
-                  <option
-                    label="Rhode Island"
-                    value="RI"
-                  >
-                    Rhode Island
-                  </option>
-                  <option
-                    label="South Carolina"
-                    value="SC"
-                  >
-                    South Carolina
-                  </option>
-                  <option
-                    label="South Dakota"
-                    value="SD"
-                  >
-                    South Dakota
-                  </option>
-                  <option
-                    label="Tennessee"
-                    value="TN"
-                  >
-                    Tennessee
-                  </option>
-                  <option
-                    label="Texas"
-                    value="TX"
-                  >
-                    Texas
-                  </option>
-                  <option
-                    label="Utah"
-                    value="UT"
-                  >
-                    Utah
-                  </option>
-                  <option
-                    label="Vermont"
-                    value="VT"
-                  >
-                    Vermont
-                  </option>
-                  <option
-                    label="Virginia"
-                    value="VA"
-                  >
-                    Virginia
-                  </option>
-                  <option
-                    label="Washington"
-                    value="WA"
-                  >
-                    Washington
-                  </option>
-                  <option
-                    label="West Virginia"
-                    value="WV"
-                  >
-                    West Virginia
-                  </option>
-                  <option
-                    label="Wisconsin"
-                    value="WI"
-                  >
-                    Wisconsin
-                  </option>
-                  <option
-                    label="Wyoming"
-                    value="WY"
-                  >
-                    Wyoming
-                  </option>
-                </select>
-                <span
-                  class="bp3-icon bp3-icon-double-caret-vertical"
-                  icon="double-caret-vertical"
-                >
-                  <svg
-                    data-icon="double-caret-vertical"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    width="16"
-                  >
-                    <desc>
-                      double-caret-vertical
-                    </desc>
-                    <path
-                      d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                      fill-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-              </div>
-            </label>
-            <div
-              class="sc-VigVT jXYKmK"
-            >
-              <div
-                class="sc-jTzLTM jNuIPn"
-              >
-                Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.
-                <br />
-                <br />
-                <a
-                  href="/sample_jurisdiction_filesheet.csv"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  (Click here to view a sample file in the correct format.)
-                </a>
-              </div>
-            </div>
-            <div
-              class="sc-VigVT jXYKmK"
-            >
-              <span>
-                file name
-                 
-              </span>
-              <button
-                class="bp3-button sc-bwzfXH eBfcXh"
-                type="button"
-              >
-                <span
-                  class="bp3-button-text"
-                >
-                  Replace File
-                </span>
-              </button>
-            </div>
-          </div>
-          <div
-            class="sc-iwsKbI iqpfIi"
-          >
-            <button
-              class="bp3-button bp3-intent-primary sc-bwzfXH eBfcXh"
-              type="submit"
-            >
+              <input
+                checked=""
+                name="auditType"
+                type="radio"
+                value="BALLOT_POLLING"
+              />
               <span
-                class="bp3-button-text"
-              >
-                Save & Next
-              </span>
-            </button>
+                class="bp3-control-indicator"
+              />
+              Ballot Polling
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="auditType"
+                type="radio"
+                value="BATCH_COMPARISON"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Batch Comparison
+            </label>
           </div>
-        </form>
+        </label>
       </div>
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fYxtnH hDfnYs sc-bwzfXH eBfcXh"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Create a New Audit
+        </span>
+      </button>
     </div>
   </div>
 </div>
@@ -1259,27 +770,164 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
       </div>
     </div>
     <div
-      class="sc-tilXH dTGWnV"
+      class="sc-htpNat GipZb"
     >
-      <img
-        alt="Arlo, by VotingWorks"
-        height="50px"
-        src="/arlo.png"
-      />
-      <a
-        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
-        href="/election/1/jurisdiction/jurisdiction-id-1"
+      <div
+        class="bp3-callout sc-eHgmQL gudjM"
       >
-        audit one
-         (AL)
-      </a>
-      <a
-        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
-        href="/election/2/jurisdiction/jurisdiction-id-2"
+        <div
+          class="sc-bxivhb ddQihQ"
+        >
+          <div
+            class="text"
+          >
+            <h4
+              class="bp3-heading"
+            >
+              The audit has not started.
+            </h4>
+            <p>
+              Ballot manifest not uploaded.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bxivhb sc-jhAzac dWgAMN"
       >
-        audit two
-         (AL)
-      </a>
+        <h2
+          class="bp3-heading sc-gzVnrw hQaoin"
+        >
+          Audit Source Data
+        </h2>
+        <form>
+          <div
+            class="sc-dnqmqq kymPuI"
+          >
+            <h2
+              class="bp3-heading sc-gzVnrw hQaoin"
+            />
+            <div
+              class="sc-VigVT jXYKmK"
+            >
+              <h4
+                class="bp3-heading"
+              >
+                Ballot Manifest
+              </h4>
+              <div
+                class="sc-jTzLTM jNuIPn"
+              >
+                Click "Browse" to choose the appropriate Ballot Manifest file from your computer. This file should be a comma-separated list of all the ballot boxes/containers used to store ballots for this particular election, plus a count of how many ballot cards (individual pieces of paper) are stored in each container.
+                <br />
+                <br />
+                <a
+                  href="/sample_ballot_manifest.csv"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  (Click here to view a sample file in the correct format.)
+                </a>
+              </div>
+            </div>
+            <div
+              class="sc-VigVT jXYKmK"
+            >
+              <label
+                class="bp3-file-input"
+              >
+                <input
+                  accept=".csv"
+                  name="csv"
+                  type="file"
+                />
+                <span
+                  class="bp3-file-upload-input"
+                >
+                  Select a CSV...
+                </span>
+              </label>
+            </div>
+            <div>
+              <button
+                class="bp3-button bp3-intent-primary sc-bwzfXH eBfcXh"
+                type="submit"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Upload File
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
+        <form>
+          <div
+            class="sc-dnqmqq kymPuI"
+          >
+            <h2
+              class="bp3-heading sc-gzVnrw hQaoin"
+            />
+            <div
+              class="sc-VigVT jXYKmK"
+            >
+              <h4
+                class="bp3-heading"
+              >
+                Candidate Totals by Batch
+              </h4>
+              <div
+                class="sc-jTzLTM jNuIPn"
+              >
+                Click "Browse" to choose the appropriate Candidate Totals by Batch file from your computer. This file should be a comma-separated list of all the ballot boxes/containers used to store ballots for this particular election, plus a count of how many votes were counted for each candidate in each of those containers.
+                <br />
+                <br />
+                <a
+                  href="/sample_batch_tallies.csv"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  (Click here to view a sample file in the correct format.)
+                </a>
+              </div>
+            </div>
+            <div
+              class="sc-VigVT jXYKmK"
+            >
+              <label
+                class="bp3-file-input bp3-disabled"
+              >
+                <input
+                  accept=".csv"
+                  disabled=""
+                  name="csv"
+                  type="file"
+                />
+                <span
+                  class="bp3-file-upload-input"
+                >
+                  Select a CSV...
+                </span>
+              </label>
+            </div>
+            <div>
+              <button
+                class="bp3-button bp3-disabled bp3-intent-primary sc-bwzfXH eBfcXh"
+                disabled=""
+                tabindex="-1"
+                type="submit"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Upload File
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
