@@ -38,13 +38,16 @@ const InnerBar = styled(Inner)`
 
 interface TParams {
   electionId: string
+  jurisdiction?: string
+  jurisdictionId?: string
 }
 
 const Header: React.FC<{}> = () => {
   const match: RouteComponentProps<TParams>['match'] | null = useRouteMatch(
-    '/election/:electionId'
+    '/election/:electionId/:jurisdiction?/:jurisdictionId?'
   )
   const electionId = match ? match.params.electionId : undefined
+  const jurisdictionId = match ? match.params.jurisdictionId : undefined
   const { isAuthenticated, meta } = useAuthDataContext()
   return (
     <Nav>
@@ -57,7 +60,14 @@ const Header: React.FC<{}> = () => {
           </NavbarHeading>
           {isAuthenticated && meta!.type === 'jurisdiction_admin' && (
             <NavbarHeading>
-              Jurisdictions: {meta!.jurisdictions.map(j => j.name).join(', ')}
+              {jurisdictionId
+                ? `Jurisdiction: ${
+                    meta!.jurisdictions.filter(j => j.id === jurisdictionId)[0]
+                      .name
+                  }`
+                : `Jurisdictions: ${meta!.jurisdictions
+                    .map(j => j.name)
+                    .join(', ')}`}
             </NavbarHeading>
           )}
         </NavbarGroup>
