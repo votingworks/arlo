@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   cypress: cypress-io/cypress@1
 jobs:
-  build:
+  checkout-code:
     docker:
       - image: circleci/python:3.7.3-node-browsers
         environment:
@@ -20,6 +20,21 @@ jobs:
           paths:
             - ~/arlo
 
+  dependencies:
+    docker:
+      - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
+    parallelism: 1
+    steps:
+      - restore_cache:
+          keys:
+            - arlo-v1-{{ .Environment.CIRCLE_SHA1 }}
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
@@ -50,7 +65,8 @@ jobs:
             - "~/.local/share/virtualenvs"
       - save_cache:
           paths:
-            - /usr/local/lib/node_modules # location depends on npm version
+            - "/usr/local/lib/node_modules" # location depends on npm version
+            - "client/node_modules"
           key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
 
       - run:
@@ -121,7 +137,6 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    working_directory: ~/arlo
     steps:
       - restore_cache:
           keys:
@@ -217,16 +232,19 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - build
+      - checkout-code
+      - dependencies:
+          requires:
+            - checkout-code
       - lint:
           requires:
-            - build
+            - dependencies
       - typecheck:
           requires:
-            - build
+            - dependencies
       - check-format:
           requires:
-            - build
+            - dependencies
       - server-tests:
           requires:
             - lint
