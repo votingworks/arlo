@@ -17,8 +17,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-deps-{{ checksum "yarn.lock" }}
-            - v1-deps-{{ checksum "Pipfile.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
 
       - run:
           name: install
@@ -27,12 +27,12 @@ jobs:
 
       - save_cache:
           keys:
-            - v1-deps-{{ checksum "yarn.lock" }}
-            - v1-deps-{{ checksum "Pipfile.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
 
           paths:
             - ~/.cache/yarn
-            - ~/.local/share/virtualenvs/arlo-JkTArwOE
+            - ~/.local/share/virtualenvs
 
       - run:
           name: Install Chrome
