@@ -62,7 +62,7 @@ jobs:
       - run:
           name: server tests
           command: |
-            pipenv run pytest -n 2 --cov=.
+            circleci tests glob server/tests/**.py | circleci tests split --split-by=timings | xargs pipenv run pytest -n auto --cov=.
       - run:
           name: client tests
           command: |
