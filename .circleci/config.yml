@@ -17,7 +17,7 @@ jobs:
     steps:
       - checkout
       - save_cache:
-          key: arlo-v2-{{ .Environment.CIRCLE_SHA1 }}
+          key: arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/arlo
 
@@ -36,32 +36,32 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - arlo-v2-{{ .Environment.CIRCLE_SHA1 }}
+            - arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
           keys:
-            - yarn-packages-v2-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           keys:
-            - pip-packages-v2-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v2-{{ .Branch }}-
-            - pip-packages-v2-
+            - pip-packages-v3-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v3-{{ .Branch }}-
+            - pip-packages-v3-
       - restore_cache:
           keys:
-            - npm-packages-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: install
           command: |
             make install install-development
 
       - save_cache:
-          key: yarn-packages-v2-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
 
       - save_cache:
-          key: pip-packages-v2-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: pip-packages-v3-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
             - ".venv"
             - "/usr/local/lib/python3.7/site-packages"
@@ -72,7 +72,7 @@ jobs:
           paths:
             - "/usr/local/lib/node_modules" # location depends on npm version
             - "client/node_modules"
-          key: node-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: node-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
 
       - run:
           name: Install Chrome
@@ -99,12 +99,12 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - arlo-v2-{{ .Environment.CIRCLE_SHA1 }}
+            - arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
-            - pip-packages-v2-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v2-{{ .Branch }}-
-            - pip-packages-v2-
+            - pip-packages-v3-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v3-{{ .Branch }}-
+            - pip-packages-v3-
       - run:
           name: lint server (pylint)
           command: |
@@ -127,12 +127,12 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - arlo-v2-{{ .Environment.CIRCLE_SHA1 }}
+            - arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
-            - pip-packages-v2-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v2-{{ .Branch }}-
-            - pip-packages-v2-
+            - pip-packages-v3-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v3-{{ .Branch }}-
+            - pip-packages-v3-
       - run:
           name: type check
           command: |
@@ -152,12 +152,12 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - arlo-v2-{{ .Environment.CIRCLE_SHA1 }}
+            - arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
-            - pip-packages-v2-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v2-{{ .Branch }}-
-            - pip-packages-v2-
+            - pip-packages-v3-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v3-{{ .Branch }}-
+            - pip-packages-v3-
       - run:
           name: check formatting
           command: |
@@ -177,7 +177,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - arlo-v2-{{ .environment.circle_sha1 }}
+            - arlo-v3-{{ .environment.circle_sha1 }}
       - run:
           name: server tests
           command: |
@@ -198,7 +198,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - arlo-v2-{{ .environment.circle_sha1 }}
+            - arlo-v3-{{ .environment.circle_sha1 }}
       - run:
           name: client tests
           command: |
@@ -218,7 +218,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - arlo-v2-{{ .environment.circle_sha1 }}
+            - arlo-v3-{{ .environment.circle_sha1 }}
       - run:
           name: wdio end-to-end tests
           command: |
@@ -238,7 +238,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - arlo-v2-{{ .environment.circle_sha1 }}
+            - arlo-v3-{{ .environment.circle_sha1 }}
       - run:
           name: cypress end-to-end tests
           command: |
