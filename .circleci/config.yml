@@ -12,6 +12,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+    working_directory: ~/arlo
     parallelism: 1
     steps:
       - checkout
@@ -30,6 +31,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+    working_directory: ~/arlo
     parallelism: 1
     steps:
       - restore_cache:
