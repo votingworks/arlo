@@ -3,32 +3,13 @@ import { screen, render } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import App from './App'
 import { withMockFetch, renderWithRouter } from './components/testUtilities'
-import { IUserMeta } from './types'
 import { dummyBoards } from './components/DataEntry/_mocks'
 import {
-  // jaApiCalls,
+  jaApiCalls,
   aaApiCalls,
 } from './components/MultiJurisdictionAudit/_mocks'
-// import { manifestMocks } from './components/MultiJurisdictionAudit/useSetupMenuItems/_mocks'
 
 jest.unmock('react-toastify')
-
-const userMocks: { [key in 'ja' | 'aa']: IUserMeta } = {
-  ja: {
-    name: 'Han Solo',
-    email: 'falcon@gmail.com',
-    type: 'jurisdiction_admin',
-    organizations: [],
-    jurisdictions: [],
-  },
-  aa: {
-    name: 'Leia Organa',
-    email: 'princess@rebelalliance.com',
-    type: 'audit_admin',
-    organizations: [],
-    jurisdictions: [],
-  },
-}
 
 const apiMocks = {
   failedAuth: {
@@ -39,10 +20,6 @@ const apiMocks = {
       statusText: 'UNAUTHORIZED',
     },
   },
-  successAuth: (response: IUserMeta) => ({
-    url: '/api/me',
-    response,
-  }),
   abAuth: {
     url: '/api/me',
     response: { type: 'AUDIT_BOARD', ...dummyBoards()[1] },
@@ -63,7 +40,7 @@ describe('App', () => {
     })
 
     it('renders ja logged in properly', async () => {
-      const expectedCalls = [apiMocks.successAuth(userMocks.ja)]
+      const expectedCalls = [jaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView('/')
         await screen.findByAltText('Arlo, by VotingWorks')
@@ -72,7 +49,7 @@ describe('App', () => {
     })
 
     it('renders aa logged in properly', async () => {
-      const expectedCalls = [apiMocks.successAuth(userMocks.aa)]
+      const expectedCalls = [aaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView('/')
         await screen.findByAltText('Arlo, by VotingWorks')
@@ -94,7 +71,7 @@ describe('App', () => {
     })
 
     it('renders ja logged in properly', async () => {
-      const expectedCalls = [apiMocks.successAuth(userMocks.ja)]
+      const expectedCalls = [jaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView(
           '/election/1/audit-board/audit-board-1'
@@ -105,7 +82,7 @@ describe('App', () => {
     })
 
     it('renders aa logged in properly', async () => {
-      const expectedCalls = [apiMocks.successAuth(userMocks.aa)]
+      const expectedCalls = [aaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView(
           '/election/1/audit-board/audit-board-1'
@@ -143,7 +120,7 @@ describe('App', () => {
     })
 
     it('renders ja logged in properly', async () => {
-      const expectedCalls = [apiMocks.successAuth(userMocks.ja)]
+      const expectedCalls = [jaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView('/election/1/jurisdiction-id-1/1')
         await screen.findByAltText('Arlo, by VotingWorks')
@@ -153,7 +130,7 @@ describe('App', () => {
 
     it('renders aa logged in properly', async () => {
       const expectedCalls = [
-        apiMocks.successAuth(userMocks.aa),
+        aaApiCalls.getUser,
         aaApiCalls.getRounds,
         aaApiCalls.getJurisdictions,
         aaApiCalls.getContests,

@@ -35,9 +35,9 @@ export const jaApiCalls = {
           id: 'jurisdiction-id-2',
           name: 'Jurisdiction Two',
           election: {
-            id: '1',
-            auditName: 'audit one',
-            electionName: 'election one',
+            id: '2',
+            auditName: 'audit two',
+            electionName: 'election two',
             state: 'AL',
             isMultiJurisdiction: true,
           },
