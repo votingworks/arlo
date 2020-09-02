@@ -84,7 +84,7 @@ jobs:
       - run:
           name: lint server (pylint)
           command: |
-            pylint server scripts
+            make line-server
       - run:
           name: line client (yarn)
           command: |
@@ -109,7 +109,7 @@ jobs:
       - run:
           name: type check
           command: |
-            mypy server scripts
+            make typecheck-server
 
   check-format:
     docker:
@@ -130,10 +130,11 @@ jobs:
           keys:
             - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
+          command: ls .
+      - run:
           name: check formatting
           command: |
-            black .
-            git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
+            make format-server
   server-tests:
     parallelism: 4
     docker:
