@@ -40,7 +40,7 @@ jobs:
             - "/usr/local/lib/python3.6/site-packages"
       - save_cache:
           paths:
-            - ~/usr/local/lib/node_modules # location depends on npm version
+            - /usr/local/lib/node_modules # location depends on npm version
           key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
 
       - run:
@@ -69,7 +69,11 @@ jobs:
       - run:
           name: lint server (pylint)
           command: |
-            make lint-server
+            pylint server scripts
+      - run:
+          name: line client (yarn)
+          command: |
+            yarn --cwd client lint
   typecheck:
     docker:
       - image: circleci/python:3.7.3-node-browsers
@@ -85,7 +89,7 @@ jobs:
       - run:
           name: type check
           command: |
-            make typecheck-server
+            mypy server scripts
 
   check-format:
     docker:
@@ -102,7 +106,7 @@ jobs:
       - run:
           name: check formatting
           command: |
-            make format-server
+            black .
             git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
   server-tests:
     parallelism: 4
