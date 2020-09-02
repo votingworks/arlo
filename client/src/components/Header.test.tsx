@@ -96,30 +96,6 @@ describe('Header', () => {
     })
   })
 
-  it('shows the jurisdictions when authenticated as ja on the home page', async () => {
-    apiMock.mockImplementation(async () => ({
-      type: 'jurisdiction_admin',
-      name: 'Joe',
-      email: 'test@email.org',
-      jurisdictions: [
-        {
-          id: 'jurisdiction-id-1',
-          name: 'Jurisdiction One',
-        },
-        {
-          id: 'jurisdiction-id-2',
-          name: 'Jurisdiction Two',
-        },
-      ],
-      organizations: [],
-    }))
-    renderHeader('/')
-
-    await screen.findByText('Jurisdictions: Jurisdiction One, Jurisdiction Two')
-    expect(apiMock).toHaveBeenCalledTimes(1)
-    expect(apiMock).toHaveBeenCalledWith('/me')
-  })
-
   it('shows the active jurisdiction name when authenticated as ja', async () => {
     apiMock.mockImplementation(async () => ({
       type: 'jurisdiction_admin',

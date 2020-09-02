@@ -60,14 +60,11 @@ const Header: React.FC<{}> = () => {
           </NavbarHeading>
           {isAuthenticated && meta!.type === 'jurisdiction_admin' && (
             <NavbarHeading>
-              {jurisdictionId
-                ? `Jurisdiction: ${
-                    meta!.jurisdictions.filter(j => j.id === jurisdictionId)[0]
-                      .name
-                  }`
-                : `Jurisdictions: ${meta!.jurisdictions
-                    .map(j => j.name)
-                    .join(', ')}`}
+              {jurisdictionId &&
+                `Jurisdiction: ${
+                  meta!.jurisdictions.filter(j => j.id === jurisdictionId)[0]
+                    .name
+                }`}
             </NavbarHeading>
           )}
         </NavbarGroup>
