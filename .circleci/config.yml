@@ -64,8 +64,7 @@ jobs:
           key: pip-packages-v2-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
             - ".venv"
-            - "/usr/local/bin"
-            - "/usr/local/lib/python3.6/site-packages"
+            - "/usr/local/lib/python3.7/site-packages"
             - "~/.local/share/virtualenvs"
             - "~/.cache/pipenv"
             - "~/.cache/pip"
