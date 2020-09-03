@@ -69,13 +69,13 @@ jobs:
             - "~/.local"
             - "~/.cache"
       - save_cache:
-          key: node-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: npm-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - "/usr/local/lib/node_modules" # location depends on npm version
             - "node_modules"
 
       - save_cache:
-          key: node-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
+          key: npm-client-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
           paths:
             - "/usr/local/lib/node_modules" # location depends on npm version
             - "client/node_modules"
