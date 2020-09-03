@@ -15,45 +15,11 @@ jobs:
     working_directory: ~/arlo
     steps:
       - checkout
-      - save_cache:
-          key: arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/arlo
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
-      - restore_cache:
-          keys:
-            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          keys:
-            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v4-{{ .Branch }}-
-            - pip-packages-v4-
-      - restore_cache:
-          keys:
-            - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           parallelism: 4
           name: install
           command: |
             make -j`nproc` install install-development
-
-      - save_cache:
-          key: yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-
-      - save_cache:
-          key: pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-          paths:
-            - "~/.local"
-            - "~/.cache"
-      - save_cache:
-          key: npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
-          paths:
-            #- "/usr/local/lib/node_modules" # location depends on npm version
-            - "node_modules"
-            - "client/node_modules"
       - run:
           name: Install Chrome
           command: |
