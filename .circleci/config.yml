@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   cypress: cypress-io/cypress@1
+  eslint: arrai/eslint@2.0.0
 jobs:
   checkout-code:
     docker:
