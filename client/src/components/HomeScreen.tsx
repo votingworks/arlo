@@ -18,6 +18,7 @@ import FormSection from './Atoms/Form/FormSection'
 import FormButton from './Atoms/Form/FormButton'
 import { Wrapper, Inner } from './Atoms/Wrapper'
 import FormField from './Atoms/Form/FormField'
+import { groupBy, sortBy } from '../utils/array'
 
 const HomeScreen: React.FC = () => {
   const { isAuthenticated, meta } = useAuthDataContext()
@@ -32,7 +33,7 @@ const HomeScreen: React.FC = () => {
         <Wrapper>
           <Inner>
             <div style={{ width: '50%' }}>
-              <ListAudits />
+              <ListAuditsAuditAdmin />
             </div>
             <div style={{ width: '50%' }}>
               <CreateAudit />
@@ -43,7 +44,11 @@ const HomeScreen: React.FC = () => {
     case 'jurisdiction_admin':
       return (
         <Wrapper>
-          <ListAudits />
+          <Inner>
+            <div style={{ width: '50%' }}>
+              <ListAuditsJurisdictionAdmin />
+            </div>
+          </Inner>
         </Wrapper>
       )
     case 'audit_board':
@@ -91,7 +96,7 @@ const LoginScreen: React.FC = () => {
 }
 
 const ListAuditsWrapper = styled.div`
-  padding: 30px;
+  padding: 30px 30px 30px 0;
 `
 
 const AuditLink = styled(LinkButton)`
@@ -100,41 +105,61 @@ const AuditLink = styled(LinkButton)`
   margin-bottom: 15px;
 `
 
-const ListAudits: React.FC = () => {
+const ListAuditsAuditAdmin: React.FC = () => {
   const { meta } = useAuthDataContext()
-  if (!meta) return null
 
   return (
     <ListAuditsWrapper>
-      {meta.type === 'audit_admin' &&
-        meta.organizations.map(organization => (
-          <div key={organization.id}>
-            <h2>Audits - {organization.name}</h2>
-            {organization.elections.length === 0 ? (
-              <p>
-                You haven&apos;t created any audits yet for {organization.name}
-              </p>
-            ) : (
-              organization.elections.map(election => (
-                <AuditLink
-                  key={election.id}
-                  to={`/election/${election.id}`}
-                  intent="primary"
-                  large
-                  fill
-                >
-                  {election.auditName}
-                </AuditLink>
-              ))
-            )}
-          </div>
-        ))}
-      {meta.type === 'jurisdiction_admin' &&
-        meta.jurisdictions.map(({ id, name, election }) => (
-          <AuditLink key={id} to={`/election/${election.id}`} intent="primary">
-            {name} - {election.auditName}
-          </AuditLink>
-        ))}
+      {meta!.organizations.map(organization => (
+        <div key={organization.id}>
+          <h2>Audits - {organization.name}</h2>
+          {organization.elections.length === 0 ? (
+            <p>
+              You haven&apos;t created any audits yet for {organization.name}
+            </p>
+          ) : (
+            organization.elections.map(election => (
+              <AuditLink
+                key={election.id}
+                to={`/election/${election.id}`}
+                intent="primary"
+                large
+                fill
+              >
+                {election.auditName}
+              </AuditLink>
+            ))
+          )}
+        </div>
+      ))}
+    </ListAuditsWrapper>
+  )
+}
+
+const ListAuditsJurisdictionAdmin: React.FC = () => {
+  const { meta } = useAuthDataContext()
+  const jurisdictionsByAudit = groupBy(meta!.jurisdictions, j => j.election.id)
+  return (
+    <ListAuditsWrapper>
+      {sortBy(
+        Object.entries(jurisdictionsByAudit),
+        ([_, jurisdictions]) => jurisdictions[0].election.auditName
+      ).map(([electionId, jurisdictions]) => (
+        <div key={electionId}>
+          <h2>Jurisdictions - {jurisdictions[0].election.auditName}</h2>
+          {sortBy(jurisdictions, j => j.name).map(({ id, name, election }) => (
+            <AuditLink
+              key={id}
+              to={`/election/${election.id}/jurisdiction/${id}`}
+              intent="primary"
+              large
+              fill
+            >
+              {name}
+            </AuditLink>
+          ))}
+        </div>
+      ))}
     </ListAuditsWrapper>
   )
 }
