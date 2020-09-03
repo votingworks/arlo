@@ -19,7 +19,7 @@ jobs:
           parallelism: 4
           name: install
           command: |
-            make -j`nproc` install install-development
+            make install install-development
       - run:
           name: Install Chrome
           command: |
