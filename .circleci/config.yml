@@ -83,55 +83,64 @@ jobs:
           name: create data model
           command: |
             make resetdb
-  lint-server:
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
-    working_directory: ~/arlo
-    steps:
-      - restore_cache:
-          keys:
-            - arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          keys:
-            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v4-{{ .Branch }}-
-            - pip-packages-v4-
+
       - run:
           name: lint server (pylint)
           command: |
             make lint-server
-  lint-client:
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
-    working_directory: ~/arlo
-    steps:
-      - restore_cache:
-          keys:
-            - arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          keys:
-            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          keys:
-            - npm-packages-v4-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: line client (yarn)
           command: |
             yarn --cwd client lint
+            #lint-server:
+            #  docker:
+            #    - image: circleci/python:3.7.3-node-browsers
+            #      environment:
+            #        DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+            #        FLASK_ENV: test
+            #    - image: circleci/postgres:9.6.2-alpine
+            #      environment:
+            #        POSTGRES_USER: root
+            #        POSTGRES_DB: arlo-test
+            #  working_directory: ~/arlo
+            #  steps:
+            #    - restore_cache:
+            #        keys:
+            #          - arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
+            #    - restore_cache:
+            #        keys:
+            #          - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            #          - pip-packages-v4-{{ .Branch }}-
+            #          - pip-packages-v4-
+            #    - run:
+            #        name: lint server (pylint)
+            #        command: |
+            #          make lint-server
+            #lint-client:
+            #  docker:
+            #    - image: circleci/python:3.7.3-node-browsers
+            #      environment:
+            #        DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+            #        FLASK_ENV: test
+            #    - image: circleci/postgres:9.6.2-alpine
+            #      environment:
+            #        POSTGRES_USER: root
+            #        POSTGRES_DB: arlo-test
+            #  working_directory: ~/arlo
+            #  steps:
+            #    - restore_cache:
+            #        keys:
+            #          - arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
+            #    - restore_cache:
+            #        keys:
+            #          - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            #    - restore_cache:
+            #        keys:
+            #          - npm-packages-v4-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            #    - run:
+            #        name: line client (yarn)
+            #        command: |
+            #          yarn --cwd client lint
   typecheck:
     docker:
       - image: circleci/python:3.7.3-node-browsers
@@ -197,6 +206,11 @@ jobs:
       - restore_cache:
           keys:
             - arlo-v3-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v4-{{ .Branch }}-
+            - pip-packages-v4-
       - run:
           name: server tests
           command: |
@@ -244,6 +258,17 @@ jobs:
       - restore_cache:
           keys:
             - arlo-v3-{{ .environment.circle_sha1 }}
+      - restore_cache:
+          keys:
+            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          keys:
+            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v4-{{ .Branch }}-
+            - pip-packages-v4-
+      - restore_cache:
+          keys:
+            - npm-packages-v4-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: wdio end-to-end tests
           command: |
@@ -264,6 +289,17 @@ jobs:
       - restore_cache:
           keys:
             - arlo-v3-{{ .environment.circle_sha1 }}
+      - restore_cache:
+          keys:
+            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          keys:
+            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v4-{{ .Branch }}-
+            - pip-packages-v4-
+      - restore_cache:
+          keys:
+            - npm-packages-v4-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: cypress end-to-end tests
           command: |
@@ -277,12 +313,12 @@ workflows:
       - dependencies:
           requires:
             - checkout-code
-      - lint-client:
-          requires:
-            - dependencies
-      - lint-server:
-          requires:
-            - dependencies
+              #- lint-client:
+              #    requires:
+              #      - dependencies
+              #- lint-server:
+              #    requires:
+              #      - dependencies
       - typecheck:
           requires:
             - dependencies
@@ -291,12 +327,12 @@ workflows:
             - dependencies
       - server-tests:
           requires:
-            - lint-server
+            #- lint-server
             - typecheck
             - check-format
       - client-tests:
           requires:
-            - lint-client
+            #- lint-client
             - typecheck
             - check-format
       - wdio:
