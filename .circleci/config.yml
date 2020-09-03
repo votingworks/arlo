@@ -4,7 +4,7 @@ orbs:
 jobs:
   dependencies:
     docker:
-      - image: circleci/python:3.7.3-node
+      - image: circleci/python:3.7.3-node-browsers
         environment:
           DATABASE_URL: postgresql://root@localhost:5432/arlo-test
           FLASK_ENV: test
@@ -54,7 +54,6 @@ jobs:
             #- "/usr/local/lib/node_modules" # location depends on npm version
             - "node_modules"
             - "client/node_modules"
-
       - run:
           name: Install Chrome
           command: |
