@@ -95,7 +95,7 @@ jobs:
       - run:
           name: wdio end-to-end tests
           command: |
-          circleci tests glob client/src/**/*.test.* | circleci tests split --split-by=filesize | yarn --cwd client test:wdio
+            yarn --cwd client test:wdio
       - run:
           parallelism: 4
           name: cypress end-to-end tests
