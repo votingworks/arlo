@@ -31,8 +31,8 @@ jobs:
           name: create data model
           command: |
             make resetdb
-
       - run:
+          parallelism: 4
           name: lint server (pylint)
           command: |
             make lint-server
@@ -57,7 +57,7 @@ jobs:
           parallelism: 4
           name: client tests
           command: |
-            circleci tests glob client/src/**/*.test.* | circleci tests split --split-by=filesize | yarn --cwd client test
+            circleci tests glob client/src/**/*.test.* | circleci tests split --split-by=timings | yarn --cwd client test
       - run:
           name: wdio end-to-end tests
           command: |
