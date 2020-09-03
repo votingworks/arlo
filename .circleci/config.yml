@@ -50,9 +50,6 @@ jobs:
       - restore_cache:
           keys:
             - npm-packages-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - restore_cache:
-          keys:
-            - npm-client-packages-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
       - run:
           name: install
           command: |
@@ -73,11 +70,6 @@ jobs:
           paths:
             - "/usr/local/lib/node_modules" # location depends on npm version
             - "node_modules"
-
-      - save_cache:
-          key: npm-client-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
-          paths:
-            - "/usr/local/lib/node_modules" # location depends on npm version
             - "client/node_modules"
 
       - run:
@@ -136,9 +128,6 @@ jobs:
       - restore_cache:
           keys:
             - npm-packages-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - restore_cache:
-          keys:
-            - npm-client-packages-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
       - run:
           name: line client (yarn)
           command: |
@@ -235,9 +224,6 @@ jobs:
       - restore_cache:
           keys:
             - npm-packages-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - restore_cache:
-          keys:
-            - npm-client-packages-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
       - run:
           name: client tests
           command: |
