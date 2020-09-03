@@ -52,7 +52,7 @@ jobs:
             - npm-packages-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - restore_cache:
           keys:
-            - npm-packages-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
+            - npm-client-packages-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
       - run:
           name: install
           command: |
@@ -138,7 +138,7 @@ jobs:
             - npm-packages-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - restore_cache:
           keys:
-            - npm-packages-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
+            - npm-client-packages-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
       - run:
           name: line client (yarn)
           command: |
@@ -237,7 +237,7 @@ jobs:
             - npm-packages-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - restore_cache:
           keys:
-            - npm-packages-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
+            - npm-client-packages-v3-{{ .Branch }}-{{ checksum "client/package-lock.json" }}
       - run:
           name: client tests
           command: |
