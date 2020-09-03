@@ -13,7 +13,6 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     working_directory: ~/arlo
-    parallelism: 4
     steps:
       - checkout
       - save_cache:
@@ -32,7 +31,7 @@ jobs:
             - pip-packages-v4-
       - restore_cache:
           keys:
-            - npm-packages-v4-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v5-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: install
           command: |
@@ -49,7 +48,7 @@ jobs:
             - "~/.local"
             - "~/.cache"
       - save_cache:
-          key: npm-packages-v4-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: npm-packages-v5-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - "/usr/local/lib/node_modules" # location depends on npm version
             - "node_modules"
@@ -84,18 +83,21 @@ jobs:
           command: |
             make format-server
       - run:
+          parallelism: 4
           name: server tests
           command: |
             circleci tests glob server/tests/**.py | circleci tests split --split-by=timings | xargs pipenv run pytest -n auto
       - run:
+          parallelism: 4
           name: client tests
           command: |
             circleci tests glob client/src/**/*.test.* | circleci tests split --split-by=filesize | yarn --cwd client test
       - run:
           name: wdio end-to-end tests
           command: |
-            yarn --cwd client test:wdio
+          circleci tests glob client/src/**/*.test.* | circleci tests split --split-by=filesize | yarn --cwd client test:wdio
       - run:
+          parallelism: 4
           name: cypress end-to-end tests
           command: |
             ./client/run-cypress-tests.sh
