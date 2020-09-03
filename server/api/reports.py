@@ -29,7 +29,6 @@ def pretty_targeted(is_targeted: bool) -> str:
 
 
 def pretty_pvalue(value: float) -> str:
-
     if value is None:
         return ""
     elif value < 10 ** -10:

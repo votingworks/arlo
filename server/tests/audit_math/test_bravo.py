@@ -499,7 +499,7 @@ true_sample_sizes = {
         "0.9": {"type": None, "size": 351, "prob": 0.9},
     },
     "test2": {
-        "asn": {"type": "ASN", "size": 22, "prob": 0.6},
+        "asn": {"type": "ASN", "size": 22, "prob": 0.55},
         "0.7": {"type": None, "size": 32, "prob": 0.7},
         "0.8": {"type": None, "size": 41, "prob": 0.8},
         "0.9": {"type": None, "size": 57, "prob": 0.9},
@@ -523,7 +523,7 @@ true_sample_sizes = {
         "0.9": {"type": None, "size": 1000, "prob": 0.9},
     },
     "test6": {
-        "asn": {"type": "ASN", "size": 238, "prob": 0.79},
+        "asn": {"type": "ASN", "size": 238, "prob": 0.52},
         "0.7": {"type": None, "size": 368, "prob": 0.7},
         "0.8": {"type": None, "size": 488, "prob": 0.8},
         "0.9": {"type": None, "size": 702, "prob": 0.9},

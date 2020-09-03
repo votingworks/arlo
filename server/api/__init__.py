@@ -17,5 +17,6 @@ from . import ballot_manifest
 from . import batch_tallies
 from . import audit_boards
 from . import ballots
+from . import batches
 from . import offline_results
 from . import reports
