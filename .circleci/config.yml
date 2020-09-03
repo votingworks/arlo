@@ -4,7 +4,7 @@ orbs:
 jobs:
   dependencies:
     docker:
-      - image: circleci/python:3.7.3-node-browsers
+      - image: circleci/python:3.7.3-node
         environment:
           DATABASE_URL: postgresql://root@localhost:5432/arlo-test
           FLASK_ENV: test
@@ -33,6 +33,7 @@ jobs:
           keys:
             - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
+          parallelism: 4
           name: install
           command: |
             make -j`nproc` install install-development
@@ -53,13 +54,14 @@ jobs:
             #- "/usr/local/lib/node_modules" # location depends on npm version
             - "node_modules"
             - "client/node_modules"
-              #- run:
-              #    name: Install Chrome
-              #    command: |
-              #      curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-              #      sudo dpkg -i google-chrome.deb
-              #      sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
-              #      rm google-chrome.deb
+
+      - run:
+          name: Install Chrome
+          command: |
+            curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            sudo dpkg -i google-chrome.deb
+            sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
+            rm google-chrome.deb
       - run:
           name: create data model
           command: |
