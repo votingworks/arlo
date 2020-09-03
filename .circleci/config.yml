@@ -1,7 +1,6 @@
 version: 2.1
 orbs:
   cypress: cypress-io/cypress@1
-  eslint: arrai/eslint@2.0.0
 jobs:
   checkout-code:
     docker:
@@ -50,7 +49,7 @@ jobs:
             - pip-packages-v4-
       - restore_cache:
           keys:
-            - npm-packages-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v4-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: install
           command: |
@@ -128,7 +127,7 @@ jobs:
             - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           keys:
-            - npm-packages-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v4-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: line client (yarn)
           command: |
@@ -224,7 +223,7 @@ jobs:
             - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           keys:
-            - npm-packages-v3-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v4-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: client tests
           command: |
