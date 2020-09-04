@@ -1534,7 +1534,7 @@ exports[`JA setup renders initial state 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-Rmtcm itcnIC"
+      class="sc-bwzfXH sc-hzDkRC kJxuMx"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1702,7 +1702,7 @@ exports[`JA setup submits ballot manifest 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-Rmtcm itcnIC"
+      class="sc-bwzfXH sc-hzDkRC kJxuMx"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1870,7 +1870,7 @@ exports[`JA setup submits batch tallies 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-Rmtcm itcnIC"
+      class="sc-bwzfXH sc-hzDkRC kJxuMx"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
