@@ -90,15 +90,41 @@ export const withMockFetch = async (
     const [expectedRequest] = requestsLeft.splice(0, 1)
     if (
       expectedRequest &&
-      expectedRequest.url === url &&
-      (expectedRequest.skipBody || equal(expectedRequest.options, options))
+      expectedRequest.url === url
+      // equal(expectedRequest.options, options)
+      // (expectedRequest.skipBody || equal(expectedRequest.options, options))
     ) {
-      return expectedRequest.error
-        ? new Response(
-            JSON.stringify(expectedRequest.response),
-            expectedRequest.error
-          )
-        : new Response(JSON.stringify(expectedRequest.response))
+      if (
+        expectedRequest.options &&
+        expectedRequest.options.body instanceof FormData &&
+        options &&
+        options.body &&
+        options.body instanceof FormData
+      ) {
+        const expectedData = expectedRequest.options.body
+        const receivedData = options.body
+        // defined expectedData and receivedData here because TS won't recognize the typechecks above
+        // when expectedRequest.options.body and options.body are used in the loop
+        const fileNamesMatch: boolean = Array.from(expectedData.keys())
+          .map(key => {
+            const expectedFile = expectedData.get(key) as File // the only time we ever send a FormData is when submitting a File
+            const receivedFile = receivedData.get(key) as File
+            if (expectedFile.name === receivedFile.name) {
+              return true
+            }
+            return false
+          })
+          .every(v => v) // treating it as a list even though we only send one at a time because we don't know the key that will be used
+        if (fileNamesMatch)
+          return new Response(JSON.stringify(expectedRequest.response))
+      } else if (equal(expectedRequest.options, options)) {
+        return expectedRequest.error
+          ? new Response(
+              JSON.stringify(expectedRequest.response),
+              expectedRequest.error
+            )
+          : new Response(JSON.stringify(expectedRequest.response))
+      }
     }
 
     if (expectedRequest) {
