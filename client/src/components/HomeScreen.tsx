@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Card,
   AnchorButton,
@@ -12,7 +12,7 @@ import { Formik, FormikProps, Field } from 'formik'
 import { toast } from 'react-toastify'
 import { useAuthDataContext } from './UserContext'
 import { api } from './utilities'
-import { IAuditSettings } from '../types'
+import { IAuditSettings, IUserMeta } from '../types'
 import LinkButton from './Atoms/LinkButton'
 import FormSection from './Atoms/Form/FormSection'
 import FormButton from './Atoms/Form/FormButton'
@@ -82,7 +82,7 @@ const LoginScreen: React.FC = () => {
           intent="primary"
           large
         >
-          Log in to your jurisdiction
+          Log in to your audit
         </AnchorButton>
       </Card>
       <div>
@@ -106,11 +106,31 @@ const AuditLink = styled(LinkButton)`
 `
 
 const ListAuditsAuditAdmin: React.FC = () => {
-  const { meta } = useAuthDataContext()
+  // Normally, we would use useAuthDataContext to get the audit admin's metadata
+  // (including the list of audits). However, since this screen also is
+  // responsible for creating audits, we need to make sure the list of audits
+  // reloads when we create a new audit. So we load the user's data fresh every
+  // time this component renders. It's a bit hacky and inefficient, but this is
+  // the only screen that should have this issue. A better solution might be to
+  // decouple loading the list of audits from loading the user data.
+  const [meta, setMeta] = useState<IUserMeta | null>(null)
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const userMeta: IUserMeta = await api('/me')
+        setMeta(userMeta)
+      } catch (err) {
+        setMeta(null)
+      }
+    })()
+  }, [])
+
+  if (!meta) return null // Still loading
 
   return (
     <ListAuditsWrapper>
-      {meta!.organizations.map(organization => (
+      {meta.organizations.map(organization => (
         <div key={organization.id}>
           <h2>Audits - {organization.name}</h2>
           {organization.elections.length === 0 ? (
@@ -246,12 +266,12 @@ const CreateAudit: React.FC = () => {
             )}
           </FormSection>
           <FormSection>
-            <label htmlFor="audit-name" id="audit-name-label">
+            <label htmlFor="auditName">
               <p>Audit name</p>
               <Field
-                id="audit-name"
-                aria-labelledby="audit-name-label"
+                id="auditName"
                 name="auditName"
+                type="text"
                 disabled={submitting}
                 validate={(v: string) => (v ? undefined : 'Required')}
                 component={WideField}

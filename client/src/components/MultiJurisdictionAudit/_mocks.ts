@@ -91,7 +91,7 @@ export const aaApiCalls = {
       organizations: [
         {
           id: 'org-id',
-          name: 'State',
+          name: 'State of California',
           elections: [],
         },
       ],
