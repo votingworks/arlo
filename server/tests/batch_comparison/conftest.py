@@ -34,7 +34,7 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
             "totalBallotsCast": 1500,
             "numWinners": 1,
             "votesAllowed": 2,
-            "jurisdictionIds": jurisdiction_ids[:1],
+            "jurisdictionIds": jurisdiction_ids[:2],
         },
     ]
     rv = put_json(client, f"/api/election/{election_id}/contest", contests)
@@ -66,6 +66,18 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Batch Name,Number of Ballots\n" b"Batch 1,300\n" b"Batch 2,400\n"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
     bgcompute_update_ballot_manifest_file()
 
 
@@ -86,6 +98,15 @@ def batch_tallies(
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
+        data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
+    )
+    batch_tallies_file = (
+        b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+        b"Batch 1,1,10,100\n"
+        b"Batch 2,2,20,200\n"
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies",
         data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
     )
     assert_ok(rv)

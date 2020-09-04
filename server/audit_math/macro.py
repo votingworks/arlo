@@ -197,8 +197,8 @@ def get_sample_sizes(
 def compute_risk(
     risk_limit: float,
     contest: Contest,
-    reported_results: Dict[str, Dict[str, Dict[str, int]]],
-    sample_results: Dict[str, Dict[str, Dict[str, int]]],
+    reported_results: Dict[Any, Dict[str, Dict[str, int]]],
+    sample_results: Dict[Any, Dict[str, Dict[str, int]]],
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
