@@ -10,7 +10,7 @@ import Card from '../../Atoms/SpacedCard'
 import FormField from '../../Atoms/Form/FormField'
 import FormButton from '../../Atoms/Form/FormButton'
 import { testNumber } from '../../utilities'
-import useResults, { IResultValues } from './useResults'
+import useBatchResults, { IResultValues } from './useBatchResults'
 
 const BottomButton = styled(FormButton)`
   margin: 30px 0;
@@ -29,19 +29,22 @@ interface IValues {
   results: IResultValues
 }
 
-const RoundDataEntry = ({ round }: IProps) => {
+const BatchRoundDataEntry = ({ round }: IProps) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string
   }>()
-  const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
-  const [results, updateResults] = useResults(
+  const allContests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
+  const [results, batches, updateResults] = useBatchResults(
     electionId,
     jurisdictionId,
     round.id
   )
 
-  if (!results || !contests) return null
+  if (!results || !allContests || !batches) return null
+
+  // batch comparison audits only support a single contest for now
+  const contest = allContests.filter(c => c.isTargeted)[0]
 
   const alreadySubmittedResults = Object.values(results).some(a =>
     Object.values(a).some(b => b)
@@ -61,21 +64,21 @@ const RoundDataEntry = ({ round }: IProps) => {
             number of votes recorded for each candidate/choice from the audited
             ballots.
           </p>
-          {contests.map(contest => (
-            <Card key={contest.id}>
-              <H5>{contest.name}</H5>
+          {batches.map(batch => (
+            <Card key={batch.id}>
+              <H5>{`Batch: ${batch.name}, Contest: ${contest.name}`}</H5>
               {contest.choices.map(choice => (
                 <BlockLabel
                   key={choice.id}
-                  htmlFor={`results[${contest.id}][${choice.id}]`}
+                  htmlFor={`results[${batch.id}][${choice.id}]`}
                 >
                   Votes for {choice.name}:
                   {alreadySubmittedResults ? (
-                    results[contest.id][choice.id]
+                    results[batch.id][choice.id]
                   ) : (
                     <Field
-                      id={`results[${contest.id}][${choice.id}]`}
-                      name={`results[${contest.id}][${choice.id}]`}
+                      id={`results[${batch.id}][${choice.id}]`}
+                      name={`results[${batch.id}][${choice.id}]`}
                       disabled={alreadySubmittedResults}
                       validate={testNumber()}
                       component={FormField}
@@ -101,4 +104,4 @@ const RoundDataEntry = ({ round }: IProps) => {
   )
 }
 
-export default RoundDataEntry
+export default BatchRoundDataEntry

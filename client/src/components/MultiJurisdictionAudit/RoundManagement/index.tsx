@@ -19,6 +19,7 @@ import { IAuditBoard } from '../useAuditBoards'
 import QRs from './QRs'
 import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
+import BatchRoundDataEntry from './BatchRoundDataEntry'
 
 const PaddedWrapper = styled(Wrapper)`
   padding: 30px 0;
@@ -61,7 +62,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
     auditBoards,
   ])
 
-  const { online } = useAuditSettingsJurisdictionAdmin(
+  const { online, auditType } = useAuditSettingsJurisdictionAdmin(
     electionId,
     jurisdictionId
   )
@@ -88,11 +89,15 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
               verticalSpaced
               onClick={() =>
                 apiDownload(
-                  `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/ballots/retrieval-list`
+                  `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${
+                    round.id
+                  }/${
+                    auditType === 'BALLOT_POLLING' ? 'ballots' : 'batches'
+                  }/retrieval-list`
                 )
               }
             >
-              Download Aggregated Ballot Retrival List for Round {roundNum}
+              Download Aggregated Ballot Retrieval List for Round {roundNum}
             </FormButton>
             <FormButton
               verticalSpaced
@@ -117,6 +122,8 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
                 <QRs passphrases={auditBoards.map(b => b.passphrase)} />
                 <RoundProgress auditBoards={auditBoards} round={round} />
               </>
+            ) : auditType === 'BATCH_COMPARISON' ? (
+              <BatchRoundDataEntry round={round} />
             ) : (
               <RoundDataEntry round={round} />
             )}
