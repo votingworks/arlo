@@ -69,7 +69,6 @@ export const jaApiCalls = {
       body: manifestFormData,
     },
     response: { status: 'ok' },
-    skipBody: true, // cannot deep equal mocked form data object
   },
   putTallies: {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
@@ -78,7 +77,6 @@ export const jaApiCalls = {
       body: talliesFormData,
     },
     response: { status: 'ok' },
-    skipBody: true, // cannot deep equal mocked form data object
   },
 }
 
