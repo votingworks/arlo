@@ -23,7 +23,7 @@ const Nav = styled(Navbar)`
 
   .bp3-navbar-heading img {
     height: 35px;
-    padding-top: 8px;
+    padding-top: 5px;
   }
 
   .bp3-navbar-divider {
@@ -38,14 +38,26 @@ const InnerBar = styled(Inner)`
 
 interface TParams {
   electionId: string
+  jurisdictionId?: string
 }
 
 const Header: React.FC<{}> = () => {
-  const match: RouteComponentProps<TParams>['match'] | null = useRouteMatch(
-    '/election/:electionId'
+  const electionMatch:
+    | RouteComponentProps<TParams>['match']
+    | null = useRouteMatch('/election/:electionId')
+  const jurisdictionMatch:
+    | RouteComponentProps<TParams>['match']
+    | null = useRouteMatch(
+    '/election/:electionId/jurisdiction/:jurisdictionId?'
   )
-  const electionId = match ? match.params.electionId : undefined
   const { isAuthenticated, meta } = useAuthDataContext()
+  const electionId = electionMatch ? electionMatch.params.electionId : undefined
+  const jurisdiction =
+    jurisdictionMatch && meta
+      ? meta.jurisdictions.find(
+          j => j.id === jurisdictionMatch.params.jurisdictionId
+        )
+      : undefined
   return (
     <Nav>
       <InnerBar>
@@ -55,6 +67,11 @@ const Header: React.FC<{}> = () => {
               <img src="/arlo.png" alt="Arlo, by VotingWorks" />
             </Link>
           </NavbarHeading>
+          {isAuthenticated && meta!.type === 'jurisdiction_admin' && (
+            <NavbarHeading>
+              {jurisdiction && `Jurisdiction: ${jurisdiction.name}`}
+            </NavbarHeading>
+          )}
         </NavbarGroup>
         <NavbarGroup align={Alignment.RIGHT}>
           {isAuthenticated && electionId && meta!.type === 'audit_admin' && (
