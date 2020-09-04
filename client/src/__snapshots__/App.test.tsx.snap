@@ -148,7 +148,7 @@ exports[`App / renders ja logged in properly 1`] = `
     class="sc-cmTdod ftrAGQ"
   >
     <div
-      class="bp3-navbar sc-EHOje kGnsSl"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
         class="sc-bxivhb sc-bZQynM ftKVqf"
@@ -168,6 +168,9 @@ exports[`App / renders ja logged in properly 1`] = `
               />
             </a>
           </div>
+          <div
+            class="bp3-navbar-heading"
+          />
         </div>
         <div
           class="bp3-navbar-group bp3-align-right"
@@ -225,7 +228,7 @@ exports[`App / renders unauthenticated properly 1`] = `
     class="sc-cmTdod ftrAGQ"
   >
     <div
-      class="bp3-navbar sc-EHOje kGnsSl"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
         class="sc-bxivhb sc-bZQynM ftKVqf"
@@ -298,7 +301,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
     class="sc-cmTdod ftrAGQ"
   >
     <div
-      class="bp3-navbar sc-EHOje kGnsSl"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
         class="sc-bxivhb sc-bZQynM ftKVqf"
@@ -439,7 +442,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
     class="sc-cmTdod ftrAGQ"
   >
     <div
-      class="bp3-navbar sc-EHOje kGnsSl"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
         class="sc-bxivhb sc-bZQynM ftKVqf"
@@ -459,6 +462,9 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
               />
             </a>
           </div>
+          <div
+            class="bp3-navbar-heading"
+          />
         </div>
         <div
           class="bp3-navbar-group bp3-align-right"
@@ -516,7 +522,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthentic
     class="sc-cmTdod ftrAGQ"
   >
     <div
-      class="bp3-navbar sc-EHOje kGnsSl"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
         class="sc-bxivhb sc-bZQynM ftKVqf"
@@ -589,7 +595,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
     class="sc-cmTdod ftrAGQ"
   >
     <div
-      class="bp3-navbar sc-EHOje kGnsSl"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
         class="sc-bxivhb sc-bZQynM ftKVqf"
@@ -728,7 +734,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
     class="sc-cmTdod ftrAGQ"
   >
     <div
-      class="bp3-navbar sc-EHOje kGnsSl"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
         class="sc-bxivhb sc-bZQynM ftKVqf"
@@ -747,6 +753,11 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logge
                 src="/arlo.png"
               />
             </a>
+          </div>
+          <div
+            class="bp3-navbar-heading"
+          >
+            Jurisdiction: Jurisdiction One
           </div>
         </div>
         <div
@@ -942,7 +953,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthen
     class="sc-cmTdod ftrAGQ"
   >
     <div
-      class="bp3-navbar sc-EHOje kGnsSl"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
         class="sc-bxivhb sc-bZQynM ftKVqf"
