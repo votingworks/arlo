@@ -58,7 +58,7 @@ const getBatches = async (
         (a, batch) =>
           batch.results
             ? reformatResults({ ...a, [batch.id]: batch.results }, false)
-            : { ...a },
+            : { ...a, [batch.id]: {} },
         {}
       ),
     ]
@@ -82,6 +82,7 @@ const useBatchResults = (
   const [batches, setBatches] = useState<IBatch[] | null>(null)
 
   const updateResults = async (newResults: IResultValues): Promise<boolean> => {
+    /* istanbul ignore next */
     if (!results) return false
     try {
       await api(

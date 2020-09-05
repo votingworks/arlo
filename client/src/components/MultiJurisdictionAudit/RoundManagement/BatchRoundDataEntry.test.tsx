@@ -60,6 +60,23 @@ describe('offline round data entry', () => {
     })
   })
 
+  it('renders after submission', async () => {
+    const expectedCalls = [
+      apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
+      apiCalls.getBatches(batchesMocks.complete),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderWithRouter(
+        <BatchRoundDataEntry round={roundMocks.singleIncomplete[0]} />,
+        {
+          route: '/election/1/jurisdiction/1',
+        }
+      )
+      await screen.findByText('Round 1 Data Entry')
+      expect(container).toMatchSnapshot()
+    })
+  })
+
   it('submits', async () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),

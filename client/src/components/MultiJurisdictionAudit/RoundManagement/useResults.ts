@@ -55,6 +55,7 @@ const useResults = (
   const [results, setResults] = useState<IResultValues | null>(null)
 
   const updateResults = async (newResults: IResultValues): Promise<boolean> => {
+    /* istanbul ignore next */
     if (!results) return false
     try {
       await api(

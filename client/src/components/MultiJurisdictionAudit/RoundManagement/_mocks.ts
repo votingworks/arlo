@@ -84,22 +84,40 @@ export const batchesMocks: {
         id: 'batch-1',
         name: 'Batch One',
         numBallots: 100,
-        auditBoard: null,
-        results: null,
+        auditBoard: {
+          id: 'ab-1',
+          name: 'Audit Board One',
+        },
+        results: {
+          'choice-id-1': 1,
+          'choice-id-2': 2,
+        },
       },
       {
         id: 'batch-2',
         name: 'Batch Two',
         numBallots: 100,
-        auditBoard: null,
-        results: null,
+        auditBoard: {
+          id: 'ab-1',
+          name: 'Audit Board One',
+        },
+        results: {
+          'choice-id-1': 1,
+          'choice-id-2': 2,
+        },
       },
       {
         id: 'batch-3',
         name: 'Batch Three',
         numBallots: 100,
-        auditBoard: null,
-        results: null,
+        auditBoard: {
+          id: 'ab-1',
+          name: 'Audit Board One',
+        },
+        results: {
+          'choice-id-1': 1,
+          'choice-id-2': 2,
+        },
       },
     ],
   },
