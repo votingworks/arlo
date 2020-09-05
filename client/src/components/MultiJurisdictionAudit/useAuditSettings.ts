@@ -29,13 +29,13 @@ const useAuditSettings = (
   const [settings, setSettings] = useState(defaultValues)
 
   const getSettings = useCallback(async (): Promise<IAuditSettings> => {
-    const settingsOrError: IAuditSettings | IErrorResponse = await api(
+    const response = await api<IAuditSettings>(
       `/election/${electionId}/settings`
     )
-    if (checkAndToast(settingsOrError)) {
+    if (!response) {
       return defaultValues
     }
-    return settingsOrError
+    return response
   }, [electionId])
 
   const updateSettings = async (
@@ -46,21 +46,14 @@ const useAuditSettings = (
       ...oldSettings,
       ...newSettings,
     }
-    const response: IErrorResponse = await api(
-      `/election/${electionId}/settings`,
-      {
-        method: 'PUT',
-        body: JSON.stringify(mergedSettings),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-    if (checkAndToast(response)) {
-      return false
-    }
-    setSettings(mergedSettings)
-    return true
+    const response = await api(`/election/${electionId}/settings`, {
+      method: 'PUT',
+      body: JSON.stringify(mergedSettings),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return !!response
   }
 
   useEffect(() => {

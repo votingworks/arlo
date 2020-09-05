@@ -193,50 +193,46 @@ const EstimateSampleSize: React.FC<IProps> = ({
         })),
       })),
     }
-    try {
-      setIsLoading(true)
-      const response: IErrorResponse = await api(
-        `/election/${electionId}/audit/basic`,
-        {
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-      if (checkAndToast(response)) {
-        setIsLoading(false)
-        return
+    setIsLoading(true)
+    const response = await api<IErrorResponse>(
+      `/election/${electionId}/audit/basic`,
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
-
-      const freezeResponse: IErrorResponse = await api(
-        `/election/${electionId}/audit/freeze`,
-        {
-          method: 'POST',
-        }
-      )
-      if (checkAndToast(freezeResponse)) {
-        setIsLoading(false)
-        return
-      }
-
-      const condition = async () => {
-        const { rounds } = await getStatus()
-        return (
-          !!rounds.length &&
-          !!rounds[0].contests.length &&
-          rounds[0].contests.every(c => !!c.sampleSizeOptions)
-        )
-      }
-      const complete = () => {
-        updateAudit()
-        setIsLoading(false)
-      }
-      poll(condition, complete, (err: Error) => toast.error(err.message))
-    } catch (err) {
-      toast.error(err.message)
+    )
+    if (!response) {
+      setIsLoading(false)
+      return
     }
+
+    const freezeResponse = await api<IErrorResponse>(
+      `/election/${electionId}/audit/freeze`,
+      {
+        method: 'POST',
+      }
+    )
+    if (!freezeResponse) {
+      setIsLoading(false)
+      return
+    }
+
+    const condition = async () => {
+      const { rounds } = await getStatus()
+      return (
+        !!rounds.length &&
+        !!rounds[0].contests.length &&
+        rounds[0].contests.every(c => !!c.sampleSizeOptions)
+      )
+    }
+    const complete = () => {
+      updateAudit()
+      setIsLoading(false)
+    }
+    poll(condition, complete, (err: Error) => toast.error(err.message))
   }
 
   const contestValues = [

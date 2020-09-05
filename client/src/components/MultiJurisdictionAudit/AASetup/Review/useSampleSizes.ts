@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import { api } from '../../../utilities'
 import { ISampleSizeOption } from '../../../../types'
 
@@ -28,62 +27,51 @@ export interface ISampleSizes {
 const loadSampleSizes = async (
   electionId: string
 ): Promise<IStringSampleSizeOptions | null> => {
-  try {
-    const {
-      sampleSizes: options,
-    }: { sampleSizes: ISampleSizeOptions } = await api(
-      `/election/${electionId}/sample-sizes`
-    )
-    return Object.keys(options).reduce(
-      (a, contestId) => ({
-        [contestId]: [
-          ...options[contestId].map(option => ({
-            ...option,
-            size: `${option.size}`,
-          })),
-          { key: 'custom', size: '', prob: null },
-        ],
-        ...a,
-      }),
-      {}
-    )
-  } catch (err) {
-    toast.error(err.message)
-    return null
-  }
+  const response = await api<{ sampleSizes: ISampleSizeOptions }>(
+    `/election/${electionId}/sample-sizes`
+  )
+  if (!response) return null
+  const { sampleSizes: options } = response
+  return Object.keys(options).reduce(
+    (a, contestId) => ({
+      [contestId]: [
+        ...options[contestId].map(option => ({
+          ...option,
+          size: `${option.size}`,
+        })),
+        { key: 'custom', size: '', prob: null },
+      ],
+      ...a,
+    }),
+    {}
+  )
 }
 
 const postRound = async (
   electionId: string,
   stringSampleSizes: IStringSampleSizes
 ): Promise<boolean> => {
-  try {
-    const sampleSizes: ISampleSizes = {
-      // converts to number so it submits in the form: { [contestId: string]: number }
-      ...Object.keys(stringSampleSizes).reduce(
-        (a, v) => ({
-          ...a,
-          [v]: Number(stringSampleSizes[v]),
-        }),
-        {}
-      ),
-    }
-    await api(`/election/${electionId}/round`, {
-      method: 'POST',
-      body: JSON.stringify({
-        sampleSizes,
-        roundNum: 1,
+  const sampleSizes: ISampleSizes = {
+    // converts to number so it submits in the form: { [contestId: string]: number }
+    ...Object.keys(stringSampleSizes).reduce(
+      (a, v) => ({
+        ...a,
+        [v]: Number(stringSampleSizes[v]),
       }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    return true
-  } catch (err) /* istanbul ignore next */ {
-    // TEST TODO move toast handling to api
-    toast.error(err.message)
-    return false
+      {}
+    ),
   }
+  const response = await api(`/election/${electionId}/round`, {
+    method: 'POST',
+    body: JSON.stringify({
+      sampleSizes,
+      roundNum: 1,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return !!response
 }
 
 const useSampleSizes = (

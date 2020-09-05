@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
-import { toast } from 'react-toastify'
 import { Formik, FormikProps, Form, getIn, Field } from 'formik'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
@@ -57,24 +56,17 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(electionId)
 
   const submit = async () => {
-    try {
-      /* istanbul ignore else */
-      if (
-        await uploadSampleSizes(
-          Object.keys(sampleSizes).reduce((a, contestId) => {
-            return { ...a, [contestId]: sampleSizes[contestId].size }
-          }, {})
-        )
-      ) {
-        refresh()
-        history.push(`/election/${electionId}/progress`)
-      } else {
-        // TEST TODO when withMockFetch works with error handling
-        return
-      }
-    } catch (err) /* istanbul ignore next */ {
-      // TEST TODO
-      toast.error(err.message)
+    if (
+      await uploadSampleSizes(
+        Object.keys(sampleSizes).reduce((a, contestId) => {
+          return { ...a, [contestId]: sampleSizes[contestId].size }
+        }, {})
+      )
+    ) {
+      refresh()
+      history.push(`/election/${electionId}/progress`)
+    } else {
+      // TEST TODO when withMockFetch works with error handling
     }
   }
 

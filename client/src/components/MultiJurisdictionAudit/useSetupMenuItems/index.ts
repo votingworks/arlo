@@ -55,10 +55,10 @@ function useSetupMenuItems(
       setContests('processing')
       const condition = async () => {
         const fileProcessing = await getJurisdictionFileStatus(electionId)
-        const { status, error } = fileProcessing!
+        const { status } = fileProcessing!
         if (status === FileProcessingStatus.Processed) return true
         if (status === FileProcessingStatus.Errored)
-          throw new Error(error || 'File processing error') // TODO test coverage isn't reaching this line
+          throw new Error('File processing error') // TODO test coverage isn't reaching this line
         return false
       }
       const complete = () => {

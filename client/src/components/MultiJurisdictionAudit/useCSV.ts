@@ -8,14 +8,11 @@ const loadCSV = async (
   jurisdictionId: string,
   filePurpose: 'ballot-manifest' | 'batch-tallies'
 ): Promise<IFileInfo | null> => {
-  try {
-    return await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/${filePurpose}`
-    )
-  } catch (err) {
-    toast.error(err.message)
-    return null
-  }
+  const response = await api<IFileInfo>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/${filePurpose}`
+  )
+  if (!response) return null
+  return response
 }
 
 const putCSVFile = async (
@@ -30,19 +27,14 @@ const putCSVFile = async (
     csv,
     csv.name
   )
-  try {
-    await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/${filePurpose}`,
-      {
-        method: 'PUT',
-        body: formData,
-      }
-    )
-    return true
-  } catch (err) {
-    toast.error(err.message)
-    return false
-  }
+  const response = await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/${filePurpose}`,
+    {
+      method: 'PUT',
+      body: formData,
+    }
+  )
+  return !!response
 }
 
 const deleteCSVFile = async (
@@ -50,15 +42,11 @@ const deleteCSVFile = async (
   jurisdictionId: string,
   filePurpose: 'ballot-manifest' | 'batch-tallies'
 ): Promise<boolean> => {
-  try {
-    return await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/${filePurpose}`,
-      { method: 'DELETE' }
-    )
-  } catch (err) {
-    toast.error(err.message)
-    return false
-  }
+  const response = await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/${filePurpose}`,
+    { method: 'DELETE' }
+  )
+  return !!response
 }
 
 const useCSV = (

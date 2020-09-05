@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import { api } from '../../utilities'
 import { IContest } from '../../../types'
 
@@ -7,16 +6,11 @@ const getContests = async (
   electionId: string,
   jurisdictionId: string
 ): Promise<IContest[] | null> => {
-  try {
-    const response: { contests: IContest[] } = await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/contest`
-    )
-    return response.contests
-  } catch (err) /* istanbul ignore next */ {
-    // TODO move toasting into api
-    toast.error(err.message)
-    return null
-  }
+  const response = await api<{ contests: IContest[] }>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/contest`
+  )
+  if (!response) return null
+  return response.contests
 }
 
 const useContestsJurisdictionAdmin = (

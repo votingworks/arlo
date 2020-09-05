@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { toast } from 'react-toastify'
 import { Formik, FormikProps, Field } from 'formik'
 import { RouteComponentProps } from 'react-router-dom'
 import styled from 'styled-components'
@@ -34,26 +33,24 @@ const Wrapper = styled.div`
 const CreateSingleJurisdictionAudit = ({ history }: RouteComponentProps) => {
   const [loading, setLoading] = useState(false)
   const onSubmit = async ({ auditName }: IValues) => {
-    try {
-      setLoading(true)
-      const response: { electionId: string } = await api('/election/new', {
-        method: 'POST',
-        body: JSON.stringify({
-          auditName,
-          auditType: 'BALLOT_POLLING',
-          isMultiJurisdiction: false,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const { electionId } = response
-      history.push(`/audit/${electionId}/setup`)
-    } catch (err) /* istanbul ignore next */ {
-      // will be removed when we migrate toasting to the api function
-      toast.error(err.message)
+    setLoading(true)
+    const response = await api<{ electionId: string }>('/election/new', {
+      method: 'POST',
+      body: JSON.stringify({
+        auditName,
+        auditType: 'BALLOT_POLLING',
+        isMultiJurisdiction: false,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    if (!response) {
       setLoading(false)
+      return
     }
+    const { electionId } = response
+    history.push(`/audit/${electionId}/setup`)
   }
   return (
     <Wrapper>

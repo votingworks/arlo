@@ -24,15 +24,12 @@ export interface IJurisdictionsFileResponse {
 
 const getJurisdictionFileStatus = async (
   electionId: string
-): Promise<{ status: FileProcessingStatus; error: string | null } | null> => {
-  try {
-    const fileStatus: IJurisdictionsFileResponse = await api(
-      `/election/${electionId}/jurisdiction/file`
-    )
-    return fileStatus.processing
-  } catch (err) {
-    return { status: FileProcessingStatus.Errored, error: err.message }
-  }
+): Promise<{ status: FileProcessingStatus } | null> => {
+  const fileStatus = await api<IJurisdictionsFileResponse>(
+    `/election/${electionId}/jurisdiction/file`
+  )
+  if (!fileStatus) return { status: FileProcessingStatus.Errored }
+  return fileStatus.processing
 }
 
 export default getJurisdictionFileStatus

@@ -31,13 +31,9 @@ const SingleJurisdictionAudit: React.FC = () => {
   const [audit, setAudit] = useState(initialData)
 
   const getStatus = useCallback(async (): Promise<IAudit> => {
-    const auditStatusOrError: IAudit | IErrorResponse = await api(
-      `/election/${electionId}/audit/status`
-    )
-    if (checkAndToast(auditStatusOrError)) {
-      return initialData
-    }
-    return auditStatusOrError
+    const response = await api<IAudit>(`/election/${electionId}/audit/status`)
+    if (!response) return initialData
+    return response
   }, [electionId])
 
   const updateAudit = useCallback(async () => {
