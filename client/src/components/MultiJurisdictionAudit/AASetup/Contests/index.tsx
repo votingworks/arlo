@@ -31,6 +31,7 @@ interface IProps {
   nextStage: ISidebarMenuItem
   prevStage: ISidebarMenuItem
   locked: boolean
+  isBatch?: boolean
 }
 
 const Contests: React.FC<IProps> = ({
@@ -38,6 +39,7 @@ const Contests: React.FC<IProps> = ({
   nextStage,
   prevStage,
   locked,
+  isBatch,
 }) => {
   const contestValues: IContest[] = [
     {
@@ -255,17 +257,19 @@ const Contests: React.FC<IProps> = ({
                       </Card>
                     )
                   })}
-                  <FormButtonBar>
-                    <FormButton
-                      type="button"
-                      onClick={() =>
-                        contestsArrayHelpers.push({ ...contestValues[0] })
-                      }
-                    >
-                      Add another {isTargeted ? 'targeted' : 'opportunistic'}{' '}
-                      contest
-                    </FormButton>
-                  </FormButtonBar>
+                  {!isBatch && ( // TODO support multiple contests in batch comparison audits
+                    <FormButtonBar>
+                      <FormButton
+                        type="button"
+                        onClick={() =>
+                          contestsArrayHelpers.push({ ...contestValues[0] })
+                        }
+                      >
+                        Add another {isTargeted ? 'targeted' : 'opportunistic'}{' '}
+                        contest
+                      </FormButton>
+                    </FormButtonBar>
+                  )}
                 </>
               )}
             />
