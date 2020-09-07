@@ -46,10 +46,10 @@ describe('utilities.ts', () => {
 
     it('throws an error', async () => {
       fetchSpy.mockImplementationOnce(async () => badResponse())
-      const result = api('/test', { method: 'GET' })
+      const result = await api('/test', { method: 'GET' })
 
-      await expect(result).rejects.toHaveProperty('message', 'An error message')
-      await expect(result).rejects.toHaveProperty('response')
+      await expect(toastSpy).toBeCalledWith('An error message')
+      await expect(result).toBe(false)
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/api/test', {
@@ -59,10 +59,10 @@ describe('utilities.ts', () => {
 
     it('handles an error without a message', async () => {
       fetchSpy.mockImplementationOnce(async () => badResponseNoMessage())
-      const result = api('/test', { method: 'GET' })
+      const result = await api('/test', { method: 'GET' })
 
-      await expect(result).rejects.toHaveProperty('message', 'A test error')
-      await expect(result).rejects.toHaveProperty('response')
+      await expect(toastSpy).toBeCalledWith('A test error')
+      await expect(result).toBe(false)
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/api/test', {
@@ -72,10 +72,10 @@ describe('utilities.ts', () => {
 
     it('handles an error that fails parsing', async () => {
       fetchSpy.mockImplementationOnce(async () => badResponseBadParse())
-      const result = api('/test', { method: 'GET' })
+      const result = await api('/test', { method: 'GET' })
 
-      await expect(result).rejects.toHaveProperty('message', 'A test error')
-      await expect(result).rejects.toHaveProperty('response')
+      await expect(toastSpy).toBeCalledWith('A test error')
+      await expect(result).toBe(false)
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/api/test', {
