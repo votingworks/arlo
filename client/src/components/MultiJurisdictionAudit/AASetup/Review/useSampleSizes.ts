@@ -30,7 +30,7 @@ const loadSampleSizes = async (
   const response = await api<{ sampleSizes: ISampleSizeOptions }>(
     `/election/${electionId}/sample-sizes`
   )
-  if (!response) return null
+  if (!response || !response.sampleSizes) return null
   const { sampleSizes: options } = response
   return Object.keys(options).reduce(
     (a, contestId) => ({
