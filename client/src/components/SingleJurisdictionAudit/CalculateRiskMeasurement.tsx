@@ -15,7 +15,7 @@ import FormWrapper from '../Atoms/Form/FormWrapper'
 import FormButton from '../Atoms/Form/FormButton'
 import FormField from '../Atoms/Form/FormField'
 import FormButtonBar from '../Atoms/Form/FormButtonBar'
-import { api, testNumber, poll, checkAndToast, apiDownload } from '../utilities'
+import { api, testNumber, poll, apiDownload } from '../utilities'
 import {
   IContest,
   IRound,

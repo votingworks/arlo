@@ -73,8 +73,8 @@ describe('RiskLimitingAuditForm', () => {
   })
 
   it('still renders if there is a server error', async () => {
-    checkAndToastMock.mockReturnValueOnce(true)
-    render(
+    apiMock.mockImplementation(async () => false)
+    const { container } = render(
       <Router>
         <SingleJurisdictionAudit />
       </Router>
@@ -82,7 +82,7 @@ describe('RiskLimitingAuditForm', () => {
     await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
     })
-    expect(checkAndToastMock).toBeCalledTimes(1)
+    expect(container).toMatchSnapshot()
   })
 
   it('does not render SelectBallotsToAudit when /audit/status is processing samplesizes', async () => {

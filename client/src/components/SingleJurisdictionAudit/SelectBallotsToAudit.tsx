@@ -26,13 +26,8 @@ import FormSection, {
 import FormWrapper from '../Atoms/Form/FormWrapper'
 import FormButton from '../Atoms/Form/FormButton'
 import FormButtonBar from '../Atoms/Form/FormButtonBar'
-import {
-  IJurisdiction,
-  IAudit,
-  IUnkeyedSampleSizeOption,
-  IErrorResponse,
-} from '../../types'
-import { api, testNumber, checkAndToast, poll } from '../utilities'
+import { IJurisdiction, IAudit, IUnkeyedSampleSizeOption } from '../../types'
+import { api, testNumber, poll } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Atoms/Form/_helpers'
 import H2Title from '../Atoms/H2Title'
 import FormField from '../Atoms/Form/FormField'
