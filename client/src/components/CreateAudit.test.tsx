@@ -39,7 +39,7 @@ afterEach(() => {
 
 describe('CreateAudit', () => {
   it('renders correctly', async () => {
-    apiMock.mockRejectedValueOnce({})
+    apiMock.mockImplementationOnce(async () => false)
     const { container } = render(
       <AuthDataProvider>
         <CreateAudit {...routeProps} />
@@ -52,7 +52,7 @@ describe('CreateAudit', () => {
   it.skip('calls the /election/new endpoint for nonauthenticated user', async () => {
     // we have moved the unauthenticated functionality for creating an audit to CreateSingleJurisdictionAudit
     apiMock
-      .mockRejectedValueOnce({})
+      .mockImplementationOnce(async () => false)
       .mockImplementation(async () => ({ electionId: '1' }))
     const { getByText, getByLabelText } = render(
       <AuthDataProvider>
@@ -115,7 +115,7 @@ describe('CreateAudit', () => {
         ],
       }))
       .mockImplementationOnce(async () => ({ electionId: '1' }))
-    // apiMock.mockRejectedValueOnce({})
+    // apiMock.mockImplementationOnce(async () => false)
     const { getByText } = render(
       <AuthDataProvider>
         <CreateAudit {...routeProps} />
