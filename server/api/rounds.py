@@ -1,4 +1,5 @@
 import uuid
+from collections import defaultdict
 from typing import Optional, NamedTuple, List, Tuple, Dict
 from datetime import datetime
 from flask import jsonify, request
@@ -10,10 +11,10 @@ from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_election_access, with_jurisdiction_access
-from .sample_sizes import sample_size_options, cumulative_contest_results
+from . import sample_sizes as sample_sizes_module
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
-from ..audit_math import sampler, bravo, sampler_contest
+from ..audit_math import sampler, bravo, macro, sampler_contest
 
 
 def get_current_round(election: Election) -> Optional[Round]:
@@ -44,47 +45,60 @@ def count_audited_votes(election: Election, round: Round):
     for round_contest in round.round_contests:
         contest = round_contest.contest
 
-        # For online audits, count the votes from each BallotInterpretation
-        if election.online:
-            interpretations_query = (
-                BallotInterpretation.query.filter_by(
-                    contest_id=contest.id, is_overvote=False
+        # For batch audits, count the votes from each BatchResult
+        if election.audit_type == AuditType.BATCH_COMPARISON:
+            vote_counts = dict(
+                BatchResult.query.join(
+                    SampledBatchDraw, BatchResult.batch_id == SampledBatchDraw.batch_id
                 )
-                .join(SampledBallot)
-                .join(SampledBallotDraw)
                 .filter_by(round_id=round.id)
-                .join(BallotInterpretation.selected_choices)
-                .group_by(ContestChoice.id)
+                .group_by(BatchResult.contest_choice_id)
+                .values(BatchResult.contest_choice_id, func.sum(BatchResult.result),)
             )
-            # For a targeted contest, count the ballot draws sampled for the contest
-            if contest.is_targeted:
-                vote_counts = dict(
-                    interpretations_query.filter(
-                        SampledBallotDraw.contest_id == contest.id
-                    ).values(ContestChoice.id, func.count())
+
+        # For ballot polling audits...
+        else:
+            # For online audits, count the votes from each BallotInterpretation
+            if election.online:
+                interpretations_query = (
+                    BallotInterpretation.query.filter_by(
+                        contest_id=contest.id, is_overvote=False
+                    )
+                    .join(SampledBallot)
+                    .join(SampledBallotDraw)
+                    .filter_by(round_id=round.id)
+                    .join(BallotInterpretation.selected_choices)
+                    .group_by(ContestChoice.id)
                 )
-            # For an opportunistic contest, count the unique ballots that were
-            # audited for this contest, regardless of which contest they were
-            # sampled for.
+                # For a targeted contest, count the ballot draws sampled for the contest
+                if contest.is_targeted:
+                    vote_counts = dict(
+                        interpretations_query.filter(
+                            SampledBallotDraw.contest_id == contest.id
+                        ).values(ContestChoice.id, func.count())
+                    )
+                # For an opportunistic contest, count the unique ballots that were
+                # audited for this contest, regardless of which contest they were
+                # sampled for.
+                else:
+                    vote_counts = dict(
+                        interpretations_query.values(
+                            ContestChoice.id, func.count(SampledBallot.id.distinct())
+                        )
+                    )
+
+            # For offline audits, sum the JurisdictionResults
             else:
                 vote_counts = dict(
-                    interpretations_query.values(
-                        ContestChoice.id, func.count(SampledBallot.id.distinct())
+                    JurisdictionResult.query.filter_by(
+                        round_id=round.id, contest_id=contest.id,
+                    )
+                    .group_by(JurisdictionResult.contest_choice_id)
+                    .values(
+                        JurisdictionResult.contest_choice_id,
+                        func.sum(JurisdictionResult.result),
                     )
                 )
-
-        # For offline audits, sum the JurisdictionResults
-        else:
-            vote_counts = dict(
-                JurisdictionResult.query.filter_by(
-                    round_id=round.id, contest_id=contest.id,
-                )
-                .group_by(JurisdictionResult.contest_choice_id)
-                .values(
-                    JurisdictionResult.contest_choice_id,
-                    func.sum(JurisdictionResult.result),
-                )
-            )
 
         for contest_choice in contest.choices:
             result = RoundContestResult(
@@ -96,6 +110,66 @@ def count_audited_votes(election: Election, round: Round):
             db_session.add(result)
 
 
+# Sum the audit results for each contest choice from all rounds so far
+def cumulative_contest_results(contest: Contest) -> Dict[str, int]:
+    results_by_choice: Dict[str, int] = defaultdict(int)
+    for result in contest.results:
+        results_by_choice[result.contest_choice_id] += result.result
+    return results_by_choice
+
+
+# { batch_key: { contest_id: { choice_id: votes }}}
+BatchTallies = Dict[Tuple[str, str], Dict[str, Dict[str, int]]]
+
+
+def batch_tallies(election: Election,) -> BatchTallies:
+    # Key each batch by jurisdiction name and batch name since batch names
+    # are only guaranteed unique within a jurisdiction
+    return {
+        (jurisdiction.name, batch_name): tally
+        for jurisdiction in election.jurisdictions
+        if jurisdiction.batch_tallies
+        for batch_name, tally in jurisdiction.batch_tallies.items()  # type: ignore
+    }
+
+
+def cumulative_batch_results(election: Election,) -> BatchTallies:
+    results_by_batch_and_choice = (
+        Batch.query.join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .join(Jurisdiction.contests)
+        .join(ContestChoice)
+        .outerjoin(
+            BatchResult,
+            and_(
+                BatchResult.batch_id == Batch.id,
+                BatchResult.contest_choice_id == ContestChoice.id,
+            ),
+        )
+        .group_by(Jurisdiction.id, Batch.id, ContestChoice.id)
+        .values(
+            Jurisdiction.name,
+            Batch.name,
+            ContestChoice.id,
+            func.coalesce(func.sum(BatchResult.result), 0),
+        )
+    )
+    results_by_batch = group_by(
+        results_by_batch_and_choice,
+        key=lambda result: (result[0], result[1]),  # (jurisdiction_name, batch_name)
+    )
+    # We only support one contest for batch audits
+    contest_id = list(election.contests)[0].id
+    return {
+        batch_key: {
+            contest_id: {
+                choice_id: result for (_, _, choice_id, result) in batch_results
+            }
+        }
+        for batch_key, batch_results in results_by_batch.items()
+    }
+
+
 def calculate_risk_measurements(election: Election, round: Round):
     if not election.risk_limit:  # Shouldn't happen, we need this for typechecking
         raise Exception("Risk limit not defined")  # pragma: no cover
@@ -103,13 +177,23 @@ def calculate_risk_measurements(election: Election, round: Round):
 
     for round_contest in round.round_contests:
         contest = round_contest.contest
-        risk, is_complete = bravo.compute_risk(
-            float(risk_limit) / 100,
-            sampler_contest.from_db_contest(contest),
-            cumulative_contest_results(contest),
-        )
 
-        round_contest.end_p_value = max(risk.values())
+        if election.audit_type == AuditType.BALLOT_POLLING:
+            p_values, is_complete = bravo.compute_risk(
+                float(risk_limit) / 100,
+                sampler_contest.from_db_contest(contest),
+                cumulative_contest_results(contest),
+            )
+            p_value = max(p_values.values())
+        else:
+            p_value, is_complete = macro.compute_risk(
+                float(risk_limit) / 100,
+                sampler_contest.from_db_contest(contest),
+                batch_tallies(election),
+                cumulative_batch_results(election),
+            )
+
+        round_contest.end_p_value = p_value
         round_contest.is_complete = is_complete
 
 
@@ -120,6 +204,18 @@ def end_round(election: Election, round: Round):
 
 
 def is_round_complete(election: Election, round: Round) -> bool:
+    # For batch audits, check that all sampled batches have recorded results
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        num_batches_without_results: int = (
+            Batch.query.join(SampledBatchDraw)
+            .filter_by(round_id=round.id)
+            .outerjoin(BatchResult)
+            .group_by(Batch.id)
+            .having(func.count(BatchResult.batch_id) == 0)
+            .count()
+        )
+        return num_batches_without_results == 0
+
     # For online audits, check that all the audit boards are finished auditing
     if election.online:
         num_jurisdictions_without_audit_boards_set_up: int = (
@@ -159,7 +255,7 @@ def is_round_complete(election: Election, round: Round) -> bool:
     # For offline audits, check that we have results recorded for every
     # jurisdiction that had ballots sampled
     else:
-        num_jurisdictions_without_results = (
+        num_jurisdictions_without_results: int = (
             # For each jurisdiction...
             Jurisdiction.query.filter_by(election_id=election.id)
             # Where ballots were sampled...
@@ -184,7 +280,7 @@ def is_round_complete(election: Election, round: Round) -> bool:
             .having(func.count(JurisdictionResult.result) == 0)
             .count()
         )
-        return bool(num_jurisdictions_without_results == 0)
+        return num_jurisdictions_without_results == 0
 
 
 class BallotDraw(NamedTuple):
@@ -343,15 +439,6 @@ def sample_batches(
         .count()
     )
 
-    batch_tallies = {
-        # Key each batch by jurisdiction name and batch name since batch names
-        # are only guaranteed unique within a jurisdiction
-        (jurisdiction.name, batch_name): tally
-        for jurisdiction in election.jurisdictions
-        if jurisdiction.batch_tallies
-        for batch_name, tally in jurisdiction.batch_tallies.items()  # type: ignore
-    }
-
     # Create a mapping from batch keys used in the sampling back to batch ids
     batches = (
         Batch.query.join(Jurisdiction)
@@ -368,7 +455,7 @@ def sample_batches(
         sampler_contest.from_db_contest(contest),
         sample_sizes[contest.id],
         num_previously_sampled,
-        batch_tallies,
+        batch_tallies(election),
     )
 
     for (ticket_number, batch_key, _) in sample:
@@ -425,16 +512,23 @@ def create_round(election: Election):
     )
     db_session.add(round)
 
-    # For round 1, use the given sample size for each contest. In later rounds,
-    # use the 90% probability sample size.
-    sample_sizes = (
-        json_round["sampleSizes"]
-        if json_round["roundNum"] == 1
-        else {
-            contest_id: options["0.9"]["size"]
-            for contest_id, options in sample_size_options(election).items()
+    # For round 1, use the given sample size for each contest.
+    if json_round["roundNum"] == 1:
+        sample_sizes = json_round["sampleSizes"]
+    # In later rounds, use:
+    # - the 90% probability sample size for ballot polling audits
+    # - the macro sample size for batch comparison audits
+    else:
+        sample_size_options = sample_sizes_module.sample_size_options(election)
+        sample_sizes = {
+            contest_id: (
+                options["0.9"]["size"]
+                if election.audit_type == AuditType.BALLOT_POLLING
+                else options["macro"]["size"]
+            )
+            for contest_id, options in sample_size_options.items()
         }
-    )
+
     draw_sample(election, round, sample_sizes)
 
     db_session.commit()

@@ -218,6 +218,9 @@ class Batch(BaseModel):
         String(200), ForeignKey("audit_board.id", ondelete="cascade"),
     )
     audit_board = relationship("AuditBoard")
+    results = relationship(
+        "BatchResult", uselist=True, cascade="all, delete-orphan", passive_deletes=True,
+    )
 
     __table_args__ = (UniqueConstraint("jurisdiction_id", "name"),)
 
@@ -569,6 +572,22 @@ class SampledBatchDraw(BaseModel):
     ticket_number = Column(String(200), nullable=False)
 
     __table_args__ = (PrimaryKeyConstraint("batch_id", "round_id", "ticket_number"),)
+
+
+# Records the audited vote count for one sampled batch for one contest choice.
+class BatchResult(BaseModel):
+    batch_id = Column(
+        String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
+    )
+    contest_choice_id = Column(
+        String(200),
+        ForeignKey("contest_choice.id", ondelete="cascade"),
+        nullable=False,
+    )
+
+    result = Column(Integer, nullable=False)
+
+    __table_args__ = (PrimaryKeyConstraint("batch_id", "contest_choice_id"),)
 
 
 class File(BaseModel):

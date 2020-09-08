@@ -1,9 +1,9 @@
 import React from 'react'
-import { render, waitFor } from '@testing-library/react'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { waitFor, screen } from '@testing-library/react'
 import Header from './Header'
 import * as utilities from './utilities'
 import AuthDataProvider from './UserContext'
+import { renderWithRouter } from './testUtilities'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -14,15 +14,13 @@ const checkAndToastMock: jest.SpyInstance<
   Parameters<typeof utilities.checkAndToast>
 > = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
-  useRouteMatch: () => ({
-    url: '/election/1',
-    params: {
-      electionId: '1',
-    },
-  }),
-}))
+const renderHeader = (route: string) =>
+  renderWithRouter(
+    <AuthDataProvider>
+      <Header />
+    </AuthDataProvider>,
+    { route }
+  )
 
 checkAndToastMock.mockReturnValue(false)
 
@@ -32,12 +30,10 @@ afterEach(() => {
 })
 
 describe('Header', () => {
-  it('renders correctly', () => {
-    const { container } = render(
-      <Router>
-        <Header />
-      </Router>
-    )
+  it('renders correctly', async () => {
+    apiMock.mockRejectedValue(async () => ({}))
+    const { container } = renderHeader('/election/1')
+    await screen.findAllByAltText('Arlo, by VotingWorks')
     expect(container).toMatchSnapshot()
   })
 
@@ -49,30 +45,18 @@ describe('Header', () => {
       jurisdictions: [],
       organizations: [],
     }))
-    const { findByText } = render(
-      <Router>
-        <AuthDataProvider>
-          <Header />
-        </AuthDataProvider>
-      </Router>
-    )
+    renderHeader('/election/1')
 
-    await findByText('Log out')
+    await screen.findByText('Log out')
     expect(apiMock).toHaveBeenCalledTimes(1)
     expect(apiMock).toHaveBeenCalledWith('/me')
   })
 
   it('does not show logout button if not authenticated', async () => {
     apiMock.mockRejectedValue(async () => ({}))
-    const { queryByText } = render(
-      <Router>
-        <AuthDataProvider>
-          <Header />
-        </AuthDataProvider>
-      </Router>
-    )
+    renderHeader('/election/1')
 
-    const loginButton = queryByText('Log out')
+    const loginButton = screen.queryByText('Log out')
     await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock).toHaveBeenCalledWith('/me')
@@ -83,15 +67,9 @@ describe('Header', () => {
   it('does not show logout button if the authentication verification has a server error', async () => {
     checkAndToastMock.mockReturnValue(true)
     apiMock.mockRejectedValue(async () => ({}))
-    const { queryByText } = render(
-      <Router>
-        <AuthDataProvider>
-          <Header />
-        </AuthDataProvider>
-      </Router>
-    )
+    renderHeader('/election/1')
 
-    const loginButton = queryByText('Log out')
+    const loginButton = screen.queryByText('Log out')
     await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(1)
       expect(apiMock).toHaveBeenCalledWith('/me')
@@ -108,19 +86,37 @@ describe('Header', () => {
       jurisdictions: [],
       organizations: [],
     }))
-    const { container, getByText } = render(
-      <Router>
-        <AuthDataProvider>
-          <Header />
-        </AuthDataProvider>
-      </Router>
-    )
+    const { container } = renderHeader('/election/1')
     await waitFor(() => {
-      expect(getByText('Audit Setup')).toBeTruthy()
-      expect(getByText('Audit Progress')).toBeTruthy()
-      expect(getByText('View Audits')).toBeTruthy()
-      expect(getByText('New Audit')).toBeTruthy()
+      expect(screen.getByText('Audit Setup')).toBeTruthy()
+      expect(screen.getByText('Audit Progress')).toBeTruthy()
+      expect(screen.getByText('View Audits')).toBeTruthy()
+      expect(screen.getByText('New Audit')).toBeTruthy()
       expect(container).toMatchSnapshot()
     })
+  })
+
+  it('shows the active jurisdiction name when authenticated as ja', async () => {
+    apiMock.mockImplementation(async () => ({
+      type: 'jurisdiction_admin',
+      name: 'Joe',
+      email: 'test@email.org',
+      jurisdictions: [
+        {
+          id: 'jurisdiction-id-1',
+          name: 'Jurisdiction One',
+        },
+        {
+          id: 'jurisdiction-id-2',
+          name: 'Jurisdiction Two',
+        },
+      ],
+      organizations: [],
+    }))
+    renderHeader('/election/1/jurisdiction/jurisdiction-id-1')
+
+    await screen.findByText('Jurisdiction: Jurisdiction One')
+    expect(apiMock).toHaveBeenCalledTimes(1)
+    expect(apiMock).toHaveBeenCalledWith('/me')
   })
 })

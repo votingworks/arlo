@@ -23,7 +23,7 @@ from .ballot_manifest import (
     clear_ballot_manifest_file,
 )
 from .audit_boards import serialize_members
-from .sample_sizes import cumulative_contest_results
+from .rounds import cumulative_contest_results
 from ..audit_math import bravo, sampler_contest, sampler
 from ..util.binpacking import BalancedBucketList, Bucket
 from ..util.csv_parse import decode_csv_file

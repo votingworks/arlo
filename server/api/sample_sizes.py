@@ -1,4 +1,3 @@
-from collections import defaultdict
 from typing import Dict
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
@@ -7,15 +6,7 @@ from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_election_access
 from ..audit_math import bravo, macro, sampler_contest
-
-
-# Sum the audit results for each contest choice from all rounds so far
-def cumulative_contest_results(contest: Contest) -> Dict[str, int]:
-    results_by_choice: Dict[str, int] = defaultdict(int)
-    for result in contest.results:
-        results_by_choice[result.contest_choice_id] += result.result
-    return results_by_choice
-
+from . import rounds  # pylint: disable=cyclic-import
 
 # Because the /sample-sizes endpoint is only used for the audit setup flow,
 # we always want it to return the sample size options for the first round.
@@ -35,7 +26,7 @@ def sample_size_options(
             cumulative_results = (
                 {choice.id: 0 for choice in contest.choices}
                 if round_one
-                else cumulative_contest_results(contest)
+                else rounds.cumulative_contest_results(contest)
             )
 
             sample_size_options = bravo.get_sample_size(
@@ -50,21 +41,21 @@ def sample_size_options(
             }
 
         else:
-            batch_tallies = {
-                # Key each batch by jurisdiction name and batch name since batch names
-                # are only guaranteed unique within a jurisdiction
-                (jurisdiction.name, batch_name): tally
-                for jurisdiction in election.jurisdictions
-                if jurisdiction.batch_tallies
-                for batch_name, tally in jurisdiction.batch_tallies.items()  # type: ignore
-            }
+            sample_results = rounds.cumulative_batch_results(election)
+            if round_one:
+                sample_results = {
+                    batch_key: {
+                        contest_id: {choice_id: 0 for choice_id in contest_results}
+                        for contest_id, contest_results in batch_results.items()
+                    }
+                    for batch_key, batch_results in sample_results.items()
+                }
             sample_size = macro.get_sample_sizes(
                 float(risk_limit) / 100,
                 sampler_contest.from_db_contest(contest),
-                batch_tallies,
-                {},  # The cumulative results so far isn't used currently
+                rounds.batch_tallies(election),
+                sample_results,
             )
-            # TODO macro should return a probability
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 
     targeted_contests = Contest.query.filter_by(
