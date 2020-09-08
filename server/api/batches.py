@@ -9,6 +9,7 @@ from ..models import *  # pylint: disable=wildcard-import
 from .rounds import is_round_complete, end_round, get_current_round
 from ..util.csv_download import csv_response, election_timestamp_name
 from ..util.jsonschema import JSONDict, validate
+from ..util.group_by import group_by
 
 
 @api.route(
@@ -21,14 +22,14 @@ def get_batch_retrieval_list(
 ):
     round = get_or_404(Round, round_id)
 
-    previous_batches = set(
+    previous_batches = {
         batch_name
         for batch_name, in Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .join(Round)
         .filter(Round.round_num < round.round_num)
         .values(Batch.name)
-    )
+    }
 
     batches = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
@@ -70,17 +71,11 @@ def get_batch_retrieval_list(
 
 def serialize_batch(batch: Batch) -> JSONDict:
     audit_board = batch.audit_board
-    results = (
-        {r.contest_choice_id: r.result for r in batch.results}
-        if len(list(batch.results)) > 0
-        else None
-    )
     return {
         "id": batch.id,
         "name": batch.name,
         "numBallots": batch.num_ballots,
         "auditBoard": audit_board and {"id": audit_board.id, "name": audit_board.name},
-        "results": results,
     }
 
 
@@ -94,15 +89,27 @@ def list_batches_for_jurisdiction(
     jurisdiction: Jurisdiction,
     round_id: str,
 ):
-    get_or_404(Round, round_id)
+    round = get_or_404(Round, round_id)
+
+    previous_batches = [
+        batch_id
+        for batch_id, in Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .join(SampledBatchDraw)
+        .join(Round)
+        .filter(Round.round_num < round.round_num)
+        .values(Batch.id)
+    ]
+
     batches = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round_id)
+        .filter(Batch.id.notin_(previous_batches))
         .outerjoin(AuditBoard)
         .order_by(AuditBoard.name, Batch.name)
         .all()
     )
+
     return jsonify({"batches": [serialize_batch(batch) for batch in batches]})
 
 
@@ -195,3 +202,51 @@ def record_batch_results(
     db_session.commit()
 
     return jsonify(status="ok")
+
+
+@api.route(
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/results",
+    methods=["GET"],
+)
+@with_jurisdiction_access
+def get_batch_results(
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+    round_id: str,
+):
+    round = get_or_404(Round, round_id)
+
+    previous_batches = [
+        batch_id
+        for batch_id, in Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .join(SampledBatchDraw)
+        .join(Round)
+        .filter(Round.round_num < round.round_num)
+        .values(Batch.id)
+    ]
+
+    results = list(
+        Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .join(SampledBatchDraw)
+        .filter_by(round_id=round_id)
+        .filter(Batch.id.notin_(previous_batches))
+        .join(Jurisdiction)
+        .join(Jurisdiction.contests)
+        .join(ContestChoice)
+        .outerjoin(
+            BatchResult,
+            and_(
+                BatchResult.batch_id == Batch.id,
+                BatchResult.contest_choice_id == ContestChoice.id,
+            ),
+        )
+        .values(Batch.id, ContestChoice.id, BatchResult.result)
+    )
+    results_by_batch = group_by(results, lambda result: result[0])  # batch_id
+
+    batch_results = {
+        batch_id: {choice_id: result for (_, choice_id, result) in batch_results}
+        for batch_id, batch_results in results_by_batch.items()
+    }
+
+    return jsonify(batch_results)

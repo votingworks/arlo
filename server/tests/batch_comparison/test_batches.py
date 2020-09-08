@@ -34,13 +34,7 @@ def test_list_batches(
     assert len(batches) == J1_BATCHES_ROUND_1
     compare_json(
         batches[0],
-        {
-            "id": assert_is_id,
-            "name": "Batch 1",
-            "numBallots": 200,
-            "auditBoard": None,
-            "results": None,
-        },
+        {"id": assert_is_id, "name": "Batch 1", "numBallots": 200, "auditBoard": None,},
     )
 
     rv = post_json(
@@ -62,7 +56,6 @@ def test_list_batches(
             "name": "Batch 1",
             "numBallots": 200,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
-            "results": None,
         },
     )
 
@@ -129,6 +122,7 @@ def test_record_batch_results(
     rv = client.get(f"/api/election/{election_id}/contest")
     assert rv.status_code == 200
     contests = json.loads(rv.data)["contests"]
+    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
@@ -136,29 +130,55 @@ def test_record_batch_results(
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
     assert len(batches) == 3
+    round_1_batch_ids = [batch["id"] for batch in batches]
 
-    choice_ids = [choice["id"] for choice in contests[0]["choices"]]
-    batch_results = {
-        batches[0]["id"]: {choice_ids[0]: 30, choice_ids[1]: 20, choice_ids[2]: 25,},
-        batches[1]["id"]: {choice_ids[0]: 10, choice_ids[1]: 5, choice_ids[2]: 7,},
-        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 75,},
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results"
+    )
+    assert rv.status_code == 200
+    results = json.loads(rv.data)
+
+    assert results == {
+        batches[0]["id"]: {
+            choice_ids[0]: None,
+            choice_ids[1]: None,
+            choice_ids[2]: None,
+        },
+        batches[1]["id"]: {
+            choice_ids[0]: None,
+            choice_ids[1]: None,
+            choice_ids[2]: None,
+        },
+        batches[2]["id"]: {
+            choice_ids[0]: None,
+            choice_ids[1]: None,
+            choice_ids[2]: None,
+        },
     }
+
+    results[batches[0]["id"]][choice_ids[0]] = 30
+    results[batches[0]["id"]][choice_ids[1]] = 20
+    results[batches[0]["id"]][choice_ids[2]] = 25
+    results[batches[1]["id"]][choice_ids[0]] = 10
+    results[batches[1]["id"]][choice_ids[1]] = 5
+    results[batches[1]["id"]][choice_ids[2]] = 7
+    results[batches[2]["id"]][choice_ids[0]] = 100
+    results[batches[2]["id"]][choice_ids[1]] = 50
+    results[batches[2]["id"]][choice_ids[2]] = 75
 
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
-        batch_results,
+        results,
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results"
     )
     assert rv.status_code == 200
-    batches = json.loads(rv.data)["batches"]
-    assert batches[0]["results"] == batch_results[batches[0]["id"]]
-    assert batches[1]["results"] == batch_results[batches[1]["id"]]
-    assert batches[2]["results"] == batch_results[batches[2]["id"]]
+    new_results = json.loads(rv.data)
+    assert new_results == results
 
     # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled batches
     rv = client.get(f"/api/election/{election_id}/round")
@@ -178,25 +198,45 @@ def test_record_batch_results(
     batches = json.loads(rv.data)["batches"]
     assert len(batches) == 2
 
-    batch_results = {
-        batches[0]["id"]: {choice_ids[0]: 1, choice_ids[1]: 2, choice_ids[2]: 3,},
-        batches[1]["id"]: {choice_ids[0]: 1, choice_ids[1]: 2, choice_ids[2]: 3,},
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/results"
+    )
+    assert rv.status_code == 200
+    results = json.loads(rv.data)
+
+    assert results == {
+        batches[0]["id"]: {
+            choice_ids[0]: None,
+            choice_ids[1]: None,
+            choice_ids[2]: None,
+        },
+        batches[1]["id"]: {
+            choice_ids[0]: None,
+            choice_ids[1]: None,
+            choice_ids[2]: None,
+        },
     }
+
+    results[batches[0]["id"]][choice_ids[0]] = 1
+    results[batches[0]["id"]][choice_ids[1]] = 2
+    results[batches[0]["id"]][choice_ids[2]] = 3
+    results[batches[1]["id"]][choice_ids[0]] = 1
+    results[batches[1]["id"]][choice_ids[1]] = 2
+    results[batches[1]["id"]][choice_ids[2]] = 3
 
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/results",
-        batch_results,
+        results,
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/results"
     )
     assert rv.status_code == 200
-    batches = json.loads(rv.data)["batches"]
-    assert batches[0]["results"] == batch_results[batches[0]["id"]]
-    assert batches[1]["results"] == batch_results[batches[1]["id"]]
+    new_results = json.loads(rv.data)
+    assert new_results == results
 
     # Round should be over
     rv = client.get(f"/api/election/{election_id}/round")
@@ -209,6 +249,38 @@ def test_record_batch_results(
             for result in RoundContestResult.query.filter_by(round_id=round_1_id).all()
         }
     )
+
+    # Start a new round to test round 2
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round")
+    assert rv.status_code == 200
+    rounds = json.loads(rv.data)["rounds"]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[1]['id']}/audit-board",
+        [{"name": "Audit Board #1"}],
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[1]['id']}/batches"
+    )
+    assert rv.status_code == 200
+    batches = json.loads(rv.data)["batches"]
+    # TODO design a test case so that there are actually some new batches sampled in round 2
+    assert len(batches) == 0
+    for batch in batches:
+        assert batch["id"] not in round_1_batch_ids
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[1]['id']}/batches/results"
+    )
+    assert rv.status_code == 200
+    results = json.loads(rv.data)
+    assert list(results.keys()) == [batch["id"] for batch in batches]
 
 
 def test_record_batch_results_without_audit_boards(
