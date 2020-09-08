@@ -27,7 +27,8 @@ jobs:
             - pip-packages-v4-
       - restore_cache:
           keys:
-            - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}          - run:
+            - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run:
           parallelism: 4
           name: install
           command: |
