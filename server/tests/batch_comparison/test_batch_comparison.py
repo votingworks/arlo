@@ -32,11 +32,8 @@ def test_batch_comparison_sample_batches(
     manifests,  # pylint: disable=unused-argument
     batch_tallies,  # pylint: disable=unused-argument
 ):
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    assert rv.status_code == 200
-    sample_size_options = json.loads(rv.data)["sampleSizes"]
-    sample_size = sample_size_options[contest_id][0]["size"]
-
+    # Use an artificially large sample size in order to have enough samples to work with
+    sample_size = 20
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
@@ -130,9 +127,8 @@ def test_batch_comparison_sample_batches_round_2(
 
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
     batch_results = {
-        batches[0]["id"]: {choice_ids[0]: 30, choice_ids[1]: 20, choice_ids[2]: 25,},
-        batches[1]["id"]: {choice_ids[0]: 10, choice_ids[1]: 5, choice_ids[2]: 7,},
-        batches[2]["id"]: {choice_ids[0]: 100, choice_ids[1]: 50, choice_ids[2]: 75,},
+        batch["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,}
+        for batch in batches
     }
 
     rv = put_json(
@@ -155,8 +151,8 @@ def test_batch_comparison_sample_batches_round_2(
     batches = json.loads(rv.data)["batches"]
 
     batch_results = {
-        batches[0]["id"]: {choice_ids[0]: 1, choice_ids[1]: 2, choice_ids[2]: 3,},
-        batches[1]["id"]: {choice_ids[0]: 1, choice_ids[1]: 2, choice_ids[2]: 3,},
+        batch["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,}
+        for batch in batches
     }
 
     rv = put_json(
@@ -198,7 +194,7 @@ def test_batch_comparison_sample_batches_round_2(
 
     # Check that we automatically select the sample size
     batch_draws = SampledBatchDraw.query.filter_by(round_id=rounds[1]["id"]).all()
-    assert len(batch_draws) == 18
+    assert len(batch_draws) == 6
 
     # Check that we're sampling batches from the jurisdiction that uploaded manifests
     sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in batch_draws}

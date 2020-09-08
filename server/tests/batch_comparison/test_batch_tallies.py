@@ -1,11 +1,36 @@
 import io, json
 from typing import List
 from flask.testing import FlaskClient
+import pytest
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...bgcompute import bgcompute_update_batch_tallies_file
+from ...bgcompute import (
+    bgcompute_update_batch_tallies_file,
+    bgcompute_update_ballot_manifest_file,
+)
 from ...util.process_file import ProcessingStatus
+
+
+@pytest.fixture
+def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Batch Name,Number of Ballots\n"
+                    b"Batch 1,200\n"
+                    b"Batch 2,300\n"
+                    b"Batch 3,400\n"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+    bgcompute_update_ballot_manifest_file()
 
 
 def test_batch_tallies_upload(

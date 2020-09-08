@@ -8,13 +8,13 @@ from snapshottest import Snapshot
 snapshots = Snapshot()
 
 snapshots["test_batch_comparison_sample_size 1"] = [
-    {"key": "macro", "prob": None, "size": 18}
+    {"key": "macro", "prob": None, "size": 6}
 ]
 
 snapshots[
     "test_batch_comparison_sample_batches_round_2 1"
 ] = """Batch Name,Storage Location,Tabulator,Already Audited,Audit Board
-Batch 1,,,Yes,Audit Board #1
-Batch 3,,,Yes,Audit Board #1
-Batch 2,,,Yes,Audit Board #2
+Batch 2,,,No,Audit Board #1
+Batch 4,,,No,Audit Board #1
+Batch 3,,,Yes,Audit Board #2
 """

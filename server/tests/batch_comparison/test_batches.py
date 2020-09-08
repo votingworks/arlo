@@ -4,7 +4,8 @@ from flask.testing import FlaskClient
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 
-J1_BATCHES_ROUND_1 = 3
+J1_BATCHES_ROUND_1 = 2
+J2_BATCHES_ROUND_1 = 2
 
 
 def test_list_batches_bad_round_id(
@@ -34,7 +35,7 @@ def test_list_batches(
     assert len(batches) == J1_BATCHES_ROUND_1
     compare_json(
         batches[0],
-        {"id": assert_is_id, "name": "Batch 1", "numBallots": 200, "auditBoard": None,},
+        {"id": assert_is_id, "name": "Batch 1", "numBallots": 500, "auditBoard": None,},
     )
 
     rv = post_json(
@@ -54,7 +55,7 @@ def test_list_batches(
         {
             "id": assert_is_id,
             "name": "Batch 1",
-            "numBallots": 200,
+            "numBallots": 500,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
         },
     )
@@ -129,7 +130,7 @@ def test_record_batch_results(
     )
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
-    assert len(batches) == 3
+    assert len(batches) == J1_BATCHES_ROUND_1
     round_1_batch_ids = [batch["id"] for batch in batches]
 
     rv = client.get(
@@ -139,32 +140,14 @@ def test_record_batch_results(
     results = json.loads(rv.data)
 
     assert results == {
-        batches[0]["id"]: {
-            choice_ids[0]: None,
-            choice_ids[1]: None,
-            choice_ids[2]: None,
-        },
-        batches[1]["id"]: {
-            choice_ids[0]: None,
-            choice_ids[1]: None,
-            choice_ids[2]: None,
-        },
-        batches[2]["id"]: {
-            choice_ids[0]: None,
-            choice_ids[1]: None,
-            choice_ids[2]: None,
-        },
+        batch["id"]: {choice_ids[0]: None, choice_ids[1]: None, choice_ids[2]: None,}
+        for batch in batches
     }
 
-    results[batches[0]["id"]][choice_ids[0]] = 30
-    results[batches[0]["id"]][choice_ids[1]] = 20
-    results[batches[0]["id"]][choice_ids[2]] = 25
-    results[batches[1]["id"]][choice_ids[0]] = 10
-    results[batches[1]["id"]][choice_ids[1]] = 5
-    results[batches[1]["id"]][choice_ids[2]] = 7
-    results[batches[2]["id"]][choice_ids[0]] = 100
-    results[batches[2]["id"]][choice_ids[1]] = 50
-    results[batches[2]["id"]][choice_ids[2]] = 75
+    for batch in batches:
+        results[batch["id"]][choice_ids[0]] = 400
+        results[batch["id"]][choice_ids[1]] = 50
+        results[batch["id"]][choice_ids[2]] = 40
 
     rv = put_json(
         client,
@@ -196,7 +179,7 @@ def test_record_batch_results(
     )
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
-    assert len(batches) == 2
+    assert len(batches) == J2_BATCHES_ROUND_1
 
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/batches/results"
@@ -205,24 +188,14 @@ def test_record_batch_results(
     results = json.loads(rv.data)
 
     assert results == {
-        batches[0]["id"]: {
-            choice_ids[0]: None,
-            choice_ids[1]: None,
-            choice_ids[2]: None,
-        },
-        batches[1]["id"]: {
-            choice_ids[0]: None,
-            choice_ids[1]: None,
-            choice_ids[2]: None,
-        },
+        batch["id"]: {choice_ids[0]: None, choice_ids[1]: None, choice_ids[2]: None,}
+        for batch in batches
     }
 
-    results[batches[0]["id"]][choice_ids[0]] = 1
-    results[batches[0]["id"]][choice_ids[1]] = 2
-    results[batches[0]["id"]][choice_ids[2]] = 3
-    results[batches[1]["id"]][choice_ids[0]] = 1
-    results[batches[1]["id"]][choice_ids[1]] = 2
-    results[batches[1]["id"]][choice_ids[2]] = 3
+    for batch in batches:
+        results[batch["id"]][choice_ids[0]] = 400
+        results[batch["id"]][choice_ids[1]] = 50
+        results[batch["id"]][choice_ids[2]] = 40
 
     rv = put_json(
         client,
@@ -270,8 +243,8 @@ def test_record_batch_results(
     )
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
-    # TODO design a test case so that there are actually some new batches sampled in round 2
-    assert len(batches) == 0
+    assert len(batches) == 2
+    # Batches that were sampled in round 1 should be filtered out
     for batch in batches:
         assert batch["id"] not in round_1_batch_ids
 
@@ -280,7 +253,7 @@ def test_record_batch_results(
     )
     assert rv.status_code == 200
     results = json.loads(rv.data)
-    assert list(results.keys()) == [batch["id"] for batch in batches]
+    assert set(results.keys()) == {batch["id"] for batch in batches}
 
 
 def test_record_batch_results_without_audit_boards(
@@ -361,10 +334,10 @@ def test_record_batch_results_invalid(
         ),
         (
             {
-                batch_id: {choice_id: 200 for choice_id in choice_ids}
+                batch_id: {choice_id: 400 for choice_id in choice_ids}
                 for batch_id in batch_ids
             },
-            "Total votes for batch Batch 1 should not exceed 400 - the number of ballots in the batch (200) times the number of votes allowed (2).",
+            "Total votes for batch Batch 1 should not exceed 1000 - the number of ballots in the batch (500) times the number of votes allowed (2).",
         ),
     ]
 
