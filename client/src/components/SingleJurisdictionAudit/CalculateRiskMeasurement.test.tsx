@@ -262,6 +262,29 @@ describe('CalculateRiskMeasurement', () => {
     expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
   })
 
+  it('handles api error on ballot list endpoint', async () => {
+    apiMock.mockImplementationOnce(async () => false)
+    const { getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates.jurisdictionsInitial}
+        isLoading={false}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
+        electionId="1"
+      />
+    )
+
+    fireEvent.click(getByText('Download Label Sheets for Round 1'), {
+      bubbles: true,
+    })
+
+    await waitFor(() => {
+      expect(apiMock).toHaveBeenCalledTimes(1)
+      expect(jspdfMock).toHaveBeenCalledTimes(0)
+    })
+  })
+
   it('downloads placeholder sheets', async () => {
     apiMock.mockImplementationOnce(async () => dummyBallots)
     const { getByText } = render(
