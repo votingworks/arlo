@@ -13,8 +13,11 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     parallelism: 16
+    resource_class: large
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
@@ -78,7 +81,7 @@ jobs:
       - run:
           name: tests # server tests
           command: |
-            circleci tests glob server/tests/test*.py server/tests/*/test*.py  | circleci tests split --split-by=timings | xargs pipenv run pytest --cov=.
+            circleci tests glob server/tests/test*.py server/tests/*/test*.py  | circleci tests split --split-by=timings | xargs pipenv run pytest 
 
             if [[ $CIRCLE_NODE_INDEX = 0 ]]; then
               make lint-server
