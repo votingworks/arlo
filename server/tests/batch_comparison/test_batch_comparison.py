@@ -213,3 +213,12 @@ def test_batch_comparison_sample_batches_round_2(
     )
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     snapshot.assert_match(retrieval_list)
+
+    # Test the audit reports
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
+    )
+    assert_match_report(rv.data, snapshot)

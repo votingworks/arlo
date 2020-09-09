@@ -218,6 +218,12 @@ class Batch(BaseModel):
         String(200), ForeignKey("audit_board.id", ondelete="cascade"),
     )
     audit_board = relationship("AuditBoard")
+    draws = relationship(
+        "SampledBatchDraw",
+        uselist=True,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
     results = relationship(
         "BatchResult", uselist=True, cascade="all, delete-orphan", passive_deletes=True,
     )
