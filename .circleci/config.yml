@@ -12,7 +12,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 1
+    parallelism: 83
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -76,13 +76,11 @@ jobs:
             make format-server
             git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
       - run:
-          parallelism: 83
           name: server tests
           command: |
             circleci tests glob server/tests/**.py | circleci tests split --split-by=timings | xargs pipenv run pytest -n auto
 
       - run:
-          parallelism: 83
           name: client tests
           command: |
             make test-client
