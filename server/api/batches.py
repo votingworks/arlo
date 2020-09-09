@@ -1,4 +1,5 @@
 import io, csv
+from typing import List
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
 
@@ -12,6 +13,17 @@ from ..util.jsonschema import JSONDict, validate
 from ..util.group_by import group_by
 
 
+def already_audited_batch_ids(jurisdiction: Jurisdiction, round: Round) -> List[str]:
+    return [
+        batch_id
+        for batch_id, in Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .join(SampledBatchDraw)
+        .join(Round)
+        .filter(Round.round_num < round.round_num)
+        .values(Batch.id)
+    ]
+
+
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/retrieval-list",
     methods=["GET"],
@@ -22,42 +34,19 @@ def get_batch_retrieval_list(
 ):
     round = get_or_404(Round, round_id)
 
-    previous_batches = {
-        batch_name
-        for batch_name, in Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBatchDraw)
-        .join(Round)
-        .filter(Round.round_num < round.round_num)
-        .values(Batch.name)
-    }
-
     batches = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round_id)
+        .filter(Batch.id.notin_(already_audited_batch_ids(jurisdiction, round)))
         .join(AuditBoard)
         .group_by(AuditBoard.id, Batch.id)
         .order_by(AuditBoard.name, Batch.name)
         .values(Batch.name, Batch.storage_location, Batch.tabulator, AuditBoard.name,)
     )
     retrieval_list_rows = [
-        [
-            "Batch Name",
-            "Storage Location",
-            "Tabulator",
-            "Already Audited",
-            "Audit Board",
-        ]
-    ] + [
-        [
-            batch_name,
-            storage_location,
-            tabulator,
-            "Yes" if batch_name in previous_batches else "No",
-            audit_board_name,
-        ]
-        for (batch_name, storage_location, tabulator, audit_board_name) in batches
-    ]
+        ["Batch Name", "Storage Location", "Tabulator", "Audit Board",]
+    ] + [list(batch_tuple) for batch_tuple in batches]
 
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)
@@ -91,20 +80,11 @@ def list_batches_for_jurisdiction(
 ):
     round = get_or_404(Round, round_id)
 
-    previous_batches = [
-        batch_id
-        for batch_id, in Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBatchDraw)
-        .join(Round)
-        .filter(Round.round_num < round.round_num)
-        .values(Batch.id)
-    ]
-
     batches = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round_id)
-        .filter(Batch.id.notin_(previous_batches))
+        .filter(Batch.id.notin_(already_audited_batch_ids(jurisdiction, round)))
         .outerjoin(AuditBoard)
         .order_by(AuditBoard.name, Batch.name)
         .all()
@@ -216,20 +196,11 @@ def get_batch_results(
 ):
     round = get_or_404(Round, round_id)
 
-    previous_batches = [
-        batch_id
-        for batch_id, in Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
-        .join(SampledBatchDraw)
-        .join(Round)
-        .filter(Round.round_num < round.round_num)
-        .values(Batch.id)
-    ]
-
     results = list(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round_id)
-        .filter(Batch.id.notin_(previous_batches))
+        .filter(Batch.id.notin_(already_audited_batch_ids(jurisdiction, round)))
         .join(Jurisdiction)
         .join(Jurisdiction.contests)
         .join(ContestChoice)

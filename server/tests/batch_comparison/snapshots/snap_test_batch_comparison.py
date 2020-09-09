@@ -13,8 +13,7 @@ snapshots["test_batch_comparison_sample_size 1"] = [
 
 snapshots[
     "test_batch_comparison_sample_batches_round_2 1"
-] = """Batch Name,Storage Location,Tabulator,Already Audited,Audit Board
-Batch 2,,,No,Audit Board #1
-Batch 4,,,No,Audit Board #1
-Batch 3,,,Yes,Audit Board #2
+] = """Batch Name,Storage Location,Tabulator,Audit Board
+Batch 2,,,Audit Board #1
+Batch 4,,,Audit Board #1
 """

@@ -90,10 +90,7 @@ def test_batch_retrieval_list_round_1(
     assert ".csv" in rv.headers["Content-Disposition"]
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
-    assert (
-        retrieval_list
-        == "Batch Name,Storage Location,Tabulator,Already Audited,Audit Board\n"
-    )
+    assert retrieval_list == "Batch Name,Storage Location,Tabulator,Audit Board\n"
 
     rv = post_json(
         client,

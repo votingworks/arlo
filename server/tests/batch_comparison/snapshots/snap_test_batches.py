@@ -9,9 +9,9 @@ snapshots = Snapshot()
 
 snapshots[
     "test_batch_retrieval_list_round_1 1"
-] = """Batch Name,Storage Location,Tabulator,Already Audited,Audit Board
-Batch 1,,,No,Audit Board #1
-Batch 3,,,No,Audit Board #2
+] = """Batch Name,Storage Location,Tabulator,Audit Board
+Batch 1,,,Audit Board #1
+Batch 3,,,Audit Board #2
 """
 
 snapshots["test_record_batch_results 1"] = {
