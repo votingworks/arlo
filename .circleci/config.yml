@@ -12,7 +12,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 4
+    parallelism: 16
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
