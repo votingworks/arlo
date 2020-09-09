@@ -12,7 +12,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 83
+    parallelism: 4
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -76,23 +76,17 @@ jobs:
             make format-server
             git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
       - run:
-          name: server tests
+          name: tests # server tests
           command: |
-            circleci tests glob server/tests/**.py | circleci tests split --split-by=names --total=16 | xargs pipenv run pytest --reuse-db -n auto
-
-      - run:
-          name: client tests
-          command: |
-            make test-client
-
-      - run:
-          name: wdio end-to-end tests
-          command: |
-            yarn --cwd client test:wdio
-      - run:
-          name: cypress end-to-end tests
-          command: |
-            ./client/run-cypress-tests.sh
+            if [[ $CIRCLE_NODE_INDEX = 0 ]]; then
+              make test-server
+            elif [[ $CIRCLE_NODE_INDEX = 1 ]]; then
+              make test-client
+            elif [[ $CIRCLE_NODE_INDEX = 2 ]]; then
+              yarn --cwd client test:wdio
+            elif [[ $CIRCLE_NODE_INDEX = 3 ]]; then
+              ./client/run-cypress-tests.sh
+            fi
 
 workflows:
   version: 2
