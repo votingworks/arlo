@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   cypress: cypress-io/cypress@1
 jobs:
-  build-and-test:
+  build:
     docker:
       - image: circleci/python:3.7.3-node-browsers
         environment:
@@ -12,7 +12,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    working_directory: ~/arlo
+    parallelism: 4
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -29,10 +29,10 @@ jobs:
           keys:
             - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
-          parallelism: 4
           name: install
           command: |
             make install install-development
+
       - save_cache:
           key: yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
@@ -46,9 +46,9 @@ jobs:
       - save_cache:
           key: npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
-            #- "/usr/local/lib/node_modules" # location depends on npm version
             - "node_modules"
             - "client/node_modules"
+
       - run:
           name: Install Chrome
           command: |
@@ -60,39 +60,141 @@ jobs:
           name: create data model
           command: |
             make resetdb
+  server-preflight:
+    docker:
+      - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v4-{{ .Branch }}-
+            - pip-packages-v4-
       - run:
-          parallelism: 4
           name: lint server (pylint)
           command: |
             make lint-server
       - run:
-          name: line client (yarn)
-          command: |
-            yarn --cwd client lint
-      - run:
           name: type check
           command: |
             make typecheck-server
+
       - run:
           name: check formatting
           command: |
             make format-server
+            git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
+  server-tests:
+    parallelism: 4
+    docker:
+      - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v4-{{ .Branch }}-
+            - pip-packages-v4-
       - run:
-          parallelism: 4
           name: server tests
           command: |
             circleci tests glob server/tests/**.py | circleci tests split --split-by=timings | xargs pipenv run pytest -n auto
+
+  client-tests:
+    parallelism: 4
+    docker:
+      - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          keys:
+            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v4-{{ .Branch }}-
+            - pip-packages-v4-
+      - restore_cache:
+          keys:
+            - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
-          parallelism: 4
           name: client tests
           command: |
-            yarn --cwd client test
+            make test-client
+  wdio:
+    parallelism: 4
+    docker:
+      - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          keys:
+            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v4-{{ .Branch }}-
+            - pip-packages-v4-
+      - restore_cache:
+          keys:
+            - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: wdio end-to-end tests
           command: |
             yarn --cwd client test:wdio
+  cypress:
+    parallelism: 4
+    docker:
+      - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          keys:
+            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v4-{{ .Branch }}-
+            - pip-packages-v4-
+      - restore_cache:
+          keys:
+            - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
-          parallelism: 4
           name: cypress end-to-end tests
           command: |
             ./client/run-cypress-tests.sh
@@ -101,4 +203,21 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - build-and-test
+      - build
+      - server-preflight:
+          requires:
+            - build
+      - server-tests:
+          requires:
+            - server-preflight
+      - client-tests:
+          requires:
+            - build
+      - wdio:
+          requires:
+            - server-tests
+            - client-tests
+      - cypress:
+          requires:
+            - server-tests
+            - client-tests
