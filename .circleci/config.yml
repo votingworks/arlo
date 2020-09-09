@@ -2,6 +2,61 @@ version: 2.1
 orbs:
   cypress: cypress-io/cypress@1
 jobs:
+  preflight:
+    docker:
+      - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.3-alpine-ram
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
+    parallelism: 5
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:
+          name: Restore Pip Cache
+          keys:
+            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v5-{{ .Branch }}-
+            - pip-packages-v5-
+      - run:
+          name: install
+          command: |
+            pipenv install --dev
+
+      - save_cache:
+          name: Save Pip Cache
+          key: pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ~/.local
+            - ~/.cache
+      - run:
+          name: create data model
+          command: |
+            make resetdb
+
+      - run:
+          name: typecheck server
+          command: |
+            make typecheck-server
+
+      - run:
+          name: format server
+          command: |
+            make format-server
+            git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
+      - run:
+          name: lint server
+          command: |
+            make lint-server
+
   build-and-test-server:
     docker:
       - image: circleci/python:3.7.3-node-browsers
@@ -37,51 +92,15 @@ jobs:
           paths:
             - ~/.local
             - ~/.cache
-              #      - run:
-              #          name: Install Chrome
-              #          command: |
-              #            curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-              #            sudo dpkg -i google-chrome.deb
-              #            sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
-              #            rm google-chrome.deb
       - run:
           name: create data model
           command: |
             make resetdb
-
-      - run:
-          name: preflight-checks
-          command: |
-            #            if [[ $CIRCLE_NODE_INDEX = 0 ]]; then
-              make typecheck-server
-              make lint-server
-              make format-server
-              git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
-              # fi
       - run:
           name: test-server # server tests
           command: |
-            #if [[ $CIRCLE_NODE_INDEX = 1 ]]; then
-              pipenv run pytest --cov=.
-              #fi
-              #      - run:
-              #          name: test-client
-              #          command: |
-              #            if [[ $CIRCLE_NODE_INDEX = 2 ]]; then
-              #              make test-client
-              #            fi
-              #      - run:
-              #          name: wdio
-              #          command: |
-              #            if [[ $CIRCLE_NODE_INDEX = 3 ]]; then
-              #              yarn --cwd client test:wdio
-              #            fi
-              #      - run:
-              #          name: cypress
-              #          command: |
-              #            if [[ $CIRCLE_NODE_INDEX = 4 ]]; then
-              #              ./client/run-cypress-tests.sh
-              #            fi
+            pipenv run pytest --cov=.
+
   build-and-test-client:
     docker:
       - image: circleci/python:3.7.3-node-browsers
@@ -135,10 +154,10 @@ jobs:
             sudo dpkg -i google-chrome.deb
             sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
             rm google-chrome.deb
-      - run:
-          name: create data model
-          command: |
-            make resetdb
+            # - run:
+            #     name: create data model
+            #     command: |
+            #       make resetdb
 
       - run:
           name: test-client
@@ -147,7 +166,7 @@ jobs:
               make test-client
               #fi
 
-  end-to-end:
+  wdio:
     docker:
       - image: circleci/python:3.7.3-node-browsers
         environment:
@@ -200,6 +219,55 @@ jobs:
           name: wdio
           command: |
             yarn --cwd client test:wdio
+
+  cypress:
+    docker:
+      - image: circleci/python:3.7.3-node-browsers
+        environment:
+          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
+          FLASK_ENV: test
+      - image: circleci/postgres:9.6.3-alpine-ram
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: arlo-test
+    parallelism: 5
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:
+          name: Restore Yarn Cache
+          keys:
+            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          name: Restore Node Cache
+          keys:
+            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - restore_cache:
+          name: Restore Pip Cache
+          keys:
+            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v5-{{ .Branch }}-
+            - pip-packages-v5-
+      - run:
+          name: install
+          command: |
+            make install install-development
+
+      - run:
+          name: Install Chrome
+          command: |
+            curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            sudo dpkg -i google-chrome.deb
+            sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
+            rm google-chrome.deb
+      - run:
+          name: create data model
+          command: |
+            make resetdb
       - run:
           name: cypress
           command: |
@@ -208,6 +276,8 @@ workflows:
   version: 2
   build-and-test:
     jobs:
+      - preflight
       - build-and-test-server
       - build-and-test-client
-      - end-to-end
+      - wdio
+      - cypress
