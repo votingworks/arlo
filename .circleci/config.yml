@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   cypress: cypress-io/cypress@1
 jobs:
-  dependencies:
+  build-and-test:
     docker:
       - image: circleci/python:3.7.3-node-browsers
         environment:
@@ -101,4 +101,4 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - dependencies
+      - build-and-test
