@@ -21,14 +21,17 @@ jobs:
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
+          name: Restore Yarn Cache
           keys:
             - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
+          name: Restore Pip Cache
           keys:
             - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
             - pip-packages-v5-{{ .Branch }}-
             - pip-packages-v5-
       - restore_cache:
+          name: Restore Node Cache
           keys:
             - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
@@ -37,16 +40,19 @@ jobs:
             make install install-development
 
       - save_cache:
+          name: Save Yarn Cache
           key: yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
 
       - save_cache:
+          name: Save Pip Cache
           key: pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
             - ~/.local
             - ~/.cache
       - save_cache:
+          name: Save Node Cache
           key: npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
