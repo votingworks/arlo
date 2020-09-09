@@ -12,7 +12,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 5
+    parallelism: 1
     resource_class: xlarge
     steps:
       - checkout
@@ -66,37 +66,32 @@ jobs:
 
       - run:
           name: preflight-checks
+          background: true
           command: |
-            if [[ $CIRCLE_NODE_INDEX = 0 ]]; then
-              make typecheck-server
-              make lint-server
-              make format-server
-              git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
-            fi
+            make typecheck-server
+            make lint-server
+            make format-server
+            git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
       - run:
           name: test-server # server tests
+          background: true
           command: |
-            if [[ $CIRCLE_NODE_INDEX = 1 ]]; then
-              pipenv run pytest --cov=.
-            fi
+            pipenv run pytest --cov=.
       - run:
           name: test-client
+          background: true
           command: |
-            if [[ $CIRCLE_NODE_INDEX = 2 ]]; then
-              make test-client
-            fi
+            make test-client
       - run:
           name: wdio
+          background: true
           command: |
-            if [[ $CIRCLE_NODE_INDEX = 3 ]]; then
-              yarn --cwd client test:wdio
-            fi
+            yarn --cwd client test:wdio
       - run:
           name: cypress
+          background: true
           command: |
-            if [[ $CIRCLE_NODE_INDEX = 4 ]]; then
-              ./client/run-cypress-tests.sh
-            fi
+            ./client/run-cypress-tests.sh
 
 workflows:
   version: 2
