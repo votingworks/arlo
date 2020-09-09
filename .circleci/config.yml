@@ -12,7 +12,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 7
+    parallelism: 5
     resource_class: xlarge
     steps:
       - checkout
@@ -65,24 +65,10 @@ jobs:
             make resetdb
 
       - run:
-          name: lint server (pylint)
-          command: |
-            make lint-server
-      - run:
-          name: type check
-          command: |
-            make typecheck-server
-
-      - run:
-          name: check formatting
-          command: |
-            make format-server
-            git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
-      - run:
           name: tests # server tests
           command: |
             if [[ $CIRCLE_NODE_INDEX = 0 ]]; then
-              make lint-server
+              make test-server-coverage
             elif [[ $CIRCLE_NODE_INDEX = 1 ]]; then
               make test-client
             elif [[ $CIRCLE_NODE_INDEX = 2 ]]; then
@@ -91,12 +77,9 @@ jobs:
               ./client/run-cypress-tests.sh
             elif [[ $CIRCLE_NODE_INDEX = 4 ]]; then
               make typecheck-server
-            elif [[ $CIRCLE_NODE_INDEX = 5 ]]; then
+              make lint-server
               make format-server
               git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
-            elif [[ $CIRCLE_NODE_INDEX = 7 ]]; then
-              make test-server-coverage
-
             fi
 
 workflows:
