@@ -191,7 +191,7 @@ jobs:
       - run:
           name: install
           command: |
-            make install install-development
+            make install
 
       - run:
           name: Install Chrome
@@ -244,7 +244,7 @@ jobs:
       - run:
           name: install
           command: |
-            make install install-development
+            make install
 
       - run:
           name: Install Chrome
