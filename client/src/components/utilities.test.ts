@@ -49,7 +49,7 @@ describe('utilities.ts', () => {
       const result = await api('/test', { method: 'GET' })
 
       await expect(toastSpy).toBeCalledWith('An error message')
-      await expect(result).toBe(false)
+      await expect(result).toBe(null)
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/api/test', {
@@ -62,7 +62,7 @@ describe('utilities.ts', () => {
       const result = await api('/test', { method: 'GET' })
 
       await expect(toastSpy).toBeCalledWith('A test error')
-      await expect(result).toBe(false)
+      await expect(result).toBe(null)
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/api/test', {
@@ -75,7 +75,7 @@ describe('utilities.ts', () => {
       const result = await api('/test', { method: 'GET' })
 
       await expect(toastSpy).toBeCalledWith('A test error')
-      await expect(result).toBe(false)
+      await expect(result).toBe(null)
       expect(window.fetch).toBeCalledTimes(1)
 
       expect(window.fetch).toBeCalledWith('/api/test', {

@@ -13,7 +13,7 @@ const tryJson = (responseText: string) => {
 export const api = async <T>(
   endpoint: string,
   options?: RequestInit
-): Promise<T | false> => {
+): Promise<T | null> => {
   try {
     const response = await fetch(`/api${endpoint}`, options)
     if (!response.ok) {
@@ -28,7 +28,7 @@ export const api = async <T>(
     return response.json() as Promise<T>
   } catch (err) {
     toast.error(err.message)
-    return false
+    return null
   }
 }
 

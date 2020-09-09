@@ -20,7 +20,7 @@ const PaddedInner = styled(Inner)`
   padding-top: 30px;
 `
 
-const loadAuditBoard = async (): Promise<IAuditBoard | false> => {
+const loadAuditBoard = async (): Promise<IAuditBoard | null> => {
   return api(`/me`)
 }
 
