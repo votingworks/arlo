@@ -51,89 +51,121 @@ exports[`App / renders aa logged in properly 1`] = `
       </div>
     </div>
     <div
-      class="sc-tilXH dTGWnV"
+      class="sc-htpNat GipZb"
     >
-      <img
-        alt="Arlo, by VotingWorks"
-        height="50px"
-        src="/arlo.png"
-      />
       <div
-        class="sc-VigVT jXYKmK"
+        class="sc-bxivhb ddQihQ"
       >
-        <label
-          for="audit-name"
-          id="audit-name-label"
+        <div
+          style="width: 50%;"
         >
-          Give your new audit a unique name.
           <div
-            class="sc-ktHwxA cVevTH sc-cSHVUG gyNSie"
+            class="sc-tilXH gRVTVe"
           >
-            <div
-              class="bp3-input-group sc-kAzzGY fpNxNJ"
-            >
-              <input
-                aria-labelledby="audit-name-label"
-                class="bp3-input"
-                id="audit-name"
-                name="auditName"
-                style="padding-right: 10px;"
-                value=""
-              />
+            <div>
+              <h2>
+                Audits - 
+                State of California
+              </h2>
+              <p>
+                You haven't created any audits yet for 
+                State of California
+              </p>
             </div>
           </div>
-        </label>
-      </div>
-      <div
-        class="sc-VigVT jXYKmK"
-      >
-        <label
-          for="auditType"
+        </div>
+        <div
+          style="width: 50%;"
         >
-          Audit type:
           <div
-            class="sc-cIShpX bCVOLk"
+            class="sc-ktHwxA hSKWPm"
           >
-            <label
-              class="bp3-control bp3-radio"
+            <h2>
+              New Audit
+            </h2>
+            <div
+              class="sc-VigVT jXYKmK"
+            />
+            <div
+              class="sc-VigVT jXYKmK"
             >
-              <input
-                checked=""
-                name="auditType"
-                type="radio"
-                value="BALLOT_POLLING"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Ballot Polling
-            </label>
-            <label
-              class="bp3-control bp3-radio"
+              <label
+                for="auditName"
+              >
+                <p>
+                  Audit name
+                </p>
+                <div
+                  class="sc-cIShpX krZqZq sc-cSHVUG gyNSie"
+                >
+                  <div
+                    class="bp3-input-group sc-kAzzGY fpNxNJ"
+                  >
+                    <input
+                      class="bp3-input"
+                      id="auditName"
+                      name="auditName"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+            </div>
+            <div
+              class="sc-VigVT jXYKmK"
             >
-              <input
-                name="auditType"
-                type="radio"
-                value="BATCH_COMPARISON"
-              />
+              <label
+                for="auditType"
+              >
+                <p>
+                  Audit type
+                </p>
+                <div>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      checked=""
+                      name="auditType"
+                      type="radio"
+                      value="BALLOT_POLLING"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Ballot Polling
+                  </label>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      name="auditType"
+                      type="radio"
+                      value="BATCH_COMPARISON"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Batch Comparison
+                  </label>
+                </div>
+              </label>
+            </div>
+            <button
+              class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH eBfcXh"
+              type="button"
+            >
               <span
-                class="bp3-control-indicator"
-              />
-              Batch Comparison
-            </label>
+                class="bp3-button-text"
+              >
+                Create Audit
+              </span>
+            </button>
           </div>
-        </label>
+        </div>
       </div>
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fYxtnH hDfnYs sc-bwzfXH eBfcXh"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Create a New Audit
-        </span>
-      </button>
     </div>
   </div>
 </div>
@@ -193,27 +225,65 @@ exports[`App / renders ja logged in properly 1`] = `
       </div>
     </div>
     <div
-      class="sc-tilXH dTGWnV"
+      class="sc-htpNat GipZb"
     >
-      <img
-        alt="Arlo, by VotingWorks"
-        height="50px"
-        src="/arlo.png"
-      />
-      <a
-        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
-        href="/election/1/jurisdiction/jurisdiction-id-1"
+      <div
+        class="sc-bxivhb ddQihQ"
       >
-        audit one
-         (AL)
-      </a>
-      <a
-        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
-        href="/election/2/jurisdiction/jurisdiction-id-2"
-      >
-        audit two
-         (AL)
-      </a>
+        <div
+          style="width: 50%;"
+        >
+          <div
+            class="sc-tilXH gRVTVe"
+          >
+            <div>
+              <h2>
+                Jurisdictions - 
+                audit one
+              </h2>
+              <button
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM ebRVuV"
+                href="/election/1/jurisdiction/jurisdiction-id-1"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Jurisdiction One
+                </span>
+              </button>
+              <button
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM ebRVuV"
+                href="/election/1/jurisdiction/jurisdiction-id-3"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Jurisdiction Three
+                </span>
+              </button>
+            </div>
+            <div>
+              <h2>
+                Jurisdictions - 
+                audit two
+              </h2>
+              <button
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM ebRVuV"
+                href="/election/2/jurisdiction/jurisdiction-id-2"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Jurisdiction Two
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -260,33 +330,44 @@ exports[`App / renders unauthenticated properly 1`] = `
       </div>
     </div>
     <div
-      class="sc-tilXH dTGWnV"
+      class="sc-fYxtnH hdEbW"
     >
       <img
         alt="Arlo, by VotingWorks"
         height="50px"
         src="/arlo.png"
       />
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fYxtnH hDfnYs sc-bdVaJa gLVjYw"
-        type="button"
+      <div
+        class="bp3-card bp3-elevation-0"
+        style="margin: 25px 0px 15px 0px;"
       >
-        <span
-          class="bp3-button-text"
+        <p>
+          Participating in an audit in your local jurisdiction?
+        </p>
+        <a
+          class="bp3-button bp3-large bp3-intent-primary"
+          href="/auth/jurisdictionadmin/start"
+          role="button"
+          tabindex="0"
         >
-          Log in as an Audit Admin
-        </span>
-      </button>
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fYxtnH hDfnYs sc-bdVaJa gLVjYw"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Log in as a Jurisdiction Admin
-        </span>
-      </button>
+          <span
+            class="bp3-button-text"
+          >
+            Log in to your audit
+          </span>
+        </a>
+      </div>
+      <div>
+        <p>
+          State-level audit administrators:
+           
+          <a
+            href="/auth/auditadmin/start"
+          >
+            Log in as an admin
+          </a>
+        </p>
+      </div>
     </div>
   </div>
 </div>
@@ -343,89 +424,121 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
       </div>
     </div>
     <div
-      class="sc-tilXH dTGWnV"
+      class="sc-htpNat GipZb"
     >
-      <img
-        alt="Arlo, by VotingWorks"
-        height="50px"
-        src="/arlo.png"
-      />
       <div
-        class="sc-VigVT jXYKmK"
+        class="sc-bxivhb ddQihQ"
       >
-        <label
-          for="audit-name"
-          id="audit-name-label"
+        <div
+          style="width: 50%;"
         >
-          Give your new audit a unique name.
           <div
-            class="sc-ktHwxA cVevTH sc-cSHVUG gyNSie"
+            class="sc-tilXH gRVTVe"
           >
-            <div
-              class="bp3-input-group sc-kAzzGY fpNxNJ"
-            >
-              <input
-                aria-labelledby="audit-name-label"
-                class="bp3-input"
-                id="audit-name"
-                name="auditName"
-                style="padding-right: 10px;"
-                value=""
-              />
+            <div>
+              <h2>
+                Audits - 
+                State of California
+              </h2>
+              <p>
+                You haven't created any audits yet for 
+                State of California
+              </p>
             </div>
           </div>
-        </label>
-      </div>
-      <div
-        class="sc-VigVT jXYKmK"
-      >
-        <label
-          for="auditType"
+        </div>
+        <div
+          style="width: 50%;"
         >
-          Audit type:
           <div
-            class="sc-cIShpX bCVOLk"
+            class="sc-ktHwxA hSKWPm"
           >
-            <label
-              class="bp3-control bp3-radio"
+            <h2>
+              New Audit
+            </h2>
+            <div
+              class="sc-VigVT jXYKmK"
+            />
+            <div
+              class="sc-VigVT jXYKmK"
             >
-              <input
-                checked=""
-                name="auditType"
-                type="radio"
-                value="BALLOT_POLLING"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Ballot Polling
-            </label>
-            <label
-              class="bp3-control bp3-radio"
+              <label
+                for="auditName"
+              >
+                <p>
+                  Audit name
+                </p>
+                <div
+                  class="sc-cIShpX krZqZq sc-cSHVUG gyNSie"
+                >
+                  <div
+                    class="bp3-input-group sc-kAzzGY fpNxNJ"
+                  >
+                    <input
+                      class="bp3-input"
+                      id="auditName"
+                      name="auditName"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+            </div>
+            <div
+              class="sc-VigVT jXYKmK"
             >
-              <input
-                name="auditType"
-                type="radio"
-                value="BATCH_COMPARISON"
-              />
+              <label
+                for="auditType"
+              >
+                <p>
+                  Audit type
+                </p>
+                <div>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      checked=""
+                      name="auditType"
+                      type="radio"
+                      value="BALLOT_POLLING"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Ballot Polling
+                  </label>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      name="auditType"
+                      type="radio"
+                      value="BATCH_COMPARISON"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Batch Comparison
+                  </label>
+                </div>
+              </label>
+            </div>
+            <button
+              class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH eBfcXh"
+              type="button"
+            >
               <span
-                class="bp3-control-indicator"
-              />
-              Batch Comparison
-            </label>
+                class="bp3-button-text"
+              >
+                Create Audit
+              </span>
+            </button>
           </div>
-        </label>
+        </div>
       </div>
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fYxtnH hDfnYs sc-bwzfXH eBfcXh"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Create a New Audit
-        </span>
-      </button>
     </div>
   </div>
 </div>
@@ -487,27 +600,65 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
       </div>
     </div>
     <div
-      class="sc-tilXH dTGWnV"
+      class="sc-htpNat GipZb"
     >
-      <img
-        alt="Arlo, by VotingWorks"
-        height="50px"
-        src="/arlo.png"
-      />
-      <a
-        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
-        href="/election/1/jurisdiction/jurisdiction-id-1"
+      <div
+        class="sc-bxivhb ddQihQ"
       >
-        audit one
-         (AL)
-      </a>
-      <a
-        class="bp3-button bp3-intent-primary sc-hEsumM jFXUpm"
-        href="/election/2/jurisdiction/jurisdiction-id-2"
-      >
-        audit two
-         (AL)
-      </a>
+        <div
+          style="width: 50%;"
+        >
+          <div
+            class="sc-tilXH gRVTVe"
+          >
+            <div>
+              <h2>
+                Jurisdictions - 
+                audit one
+              </h2>
+              <button
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM ebRVuV"
+                href="/election/1/jurisdiction/jurisdiction-id-1"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Jurisdiction One
+                </span>
+              </button>
+              <button
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM ebRVuV"
+                href="/election/1/jurisdiction/jurisdiction-id-3"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Jurisdiction Three
+                </span>
+              </button>
+            </div>
+            <div>
+              <h2>
+                Jurisdictions - 
+                audit two
+              </h2>
+              <button
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM ebRVuV"
+                href="/election/2/jurisdiction/jurisdiction-id-2"
+                type="button"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Jurisdiction Two
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -554,33 +705,44 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthentic
       </div>
     </div>
     <div
-      class="sc-tilXH dTGWnV"
+      class="sc-fYxtnH hdEbW"
     >
       <img
         alt="Arlo, by VotingWorks"
         height="50px"
         src="/arlo.png"
       />
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fYxtnH hDfnYs sc-bdVaJa gLVjYw"
-        type="button"
+      <div
+        class="bp3-card bp3-elevation-0"
+        style="margin: 25px 0px 15px 0px;"
       >
-        <span
-          class="bp3-button-text"
+        <p>
+          Participating in an audit in your local jurisdiction?
+        </p>
+        <a
+          class="bp3-button bp3-large bp3-intent-primary"
+          href="/auth/jurisdictionadmin/start"
+          role="button"
+          tabindex="0"
         >
-          Log in as an Audit Admin
-        </span>
-      </button>
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fYxtnH hDfnYs sc-bdVaJa gLVjYw"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Log in as a Jurisdiction Admin
-        </span>
-      </button>
+          <span
+            class="bp3-button-text"
+          >
+            Log in to your audit
+          </span>
+        </a>
+      </div>
+      <div>
+        <p>
+          State-level audit administrators:
+           
+          <a
+            href="/auth/auditadmin/start"
+          >
+            Log in as an admin
+          </a>
+        </p>
+      </div>
     </div>
   </div>
 </div>
@@ -637,89 +799,121 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
       </div>
     </div>
     <div
-      class="sc-tilXH dTGWnV"
+      class="sc-htpNat GipZb"
     >
-      <img
-        alt="Arlo, by VotingWorks"
-        height="50px"
-        src="/arlo.png"
-      />
       <div
-        class="sc-VigVT jXYKmK"
+        class="sc-bxivhb ddQihQ"
       >
-        <label
-          for="audit-name"
-          id="audit-name-label"
+        <div
+          style="width: 50%;"
         >
-          Give your new audit a unique name.
           <div
-            class="sc-ktHwxA cVevTH sc-cSHVUG gyNSie"
+            class="sc-tilXH gRVTVe"
           >
-            <div
-              class="bp3-input-group sc-kAzzGY fpNxNJ"
-            >
-              <input
-                aria-labelledby="audit-name-label"
-                class="bp3-input"
-                id="audit-name"
-                name="auditName"
-                style="padding-right: 10px;"
-                value=""
-              />
+            <div>
+              <h2>
+                Audits - 
+                State of California
+              </h2>
+              <p>
+                You haven't created any audits yet for 
+                State of California
+              </p>
             </div>
           </div>
-        </label>
-      </div>
-      <div
-        class="sc-VigVT jXYKmK"
-      >
-        <label
-          for="auditType"
+        </div>
+        <div
+          style="width: 50%;"
         >
-          Audit type:
           <div
-            class="sc-cIShpX bCVOLk"
+            class="sc-ktHwxA hSKWPm"
           >
-            <label
-              class="bp3-control bp3-radio"
+            <h2>
+              New Audit
+            </h2>
+            <div
+              class="sc-VigVT jXYKmK"
+            />
+            <div
+              class="sc-VigVT jXYKmK"
             >
-              <input
-                checked=""
-                name="auditType"
-                type="radio"
-                value="BALLOT_POLLING"
-              />
-              <span
-                class="bp3-control-indicator"
-              />
-              Ballot Polling
-            </label>
-            <label
-              class="bp3-control bp3-radio"
+              <label
+                for="auditName"
+              >
+                <p>
+                  Audit name
+                </p>
+                <div
+                  class="sc-cIShpX krZqZq sc-cSHVUG gyNSie"
+                >
+                  <div
+                    class="bp3-input-group sc-kAzzGY fpNxNJ"
+                  >
+                    <input
+                      class="bp3-input"
+                      id="auditName"
+                      name="auditName"
+                      style="padding-right: 10px;"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </label>
+            </div>
+            <div
+              class="sc-VigVT jXYKmK"
             >
-              <input
-                name="auditType"
-                type="radio"
-                value="BATCH_COMPARISON"
-              />
+              <label
+                for="auditType"
+              >
+                <p>
+                  Audit type
+                </p>
+                <div>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      checked=""
+                      name="auditType"
+                      type="radio"
+                      value="BALLOT_POLLING"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Ballot Polling
+                  </label>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      name="auditType"
+                      type="radio"
+                      value="BATCH_COMPARISON"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Batch Comparison
+                  </label>
+                </div>
+              </label>
+            </div>
+            <button
+              class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-bwzfXH eBfcXh"
+              type="button"
+            >
               <span
-                class="bp3-control-indicator"
-              />
-              Batch Comparison
-            </label>
+                class="bp3-button-text"
+              >
+                Create Audit
+              </span>
+            </button>
           </div>
-        </label>
+        </div>
       </div>
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fYxtnH hDfnYs sc-bwzfXH eBfcXh"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Create a New Audit
-        </span>
-      </button>
     </div>
   </div>
 </div>
@@ -985,33 +1179,44 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthen
       </div>
     </div>
     <div
-      class="sc-tilXH dTGWnV"
+      class="sc-fYxtnH hdEbW"
     >
       <img
         alt="Arlo, by VotingWorks"
         height="50px"
         src="/arlo.png"
       />
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fYxtnH hDfnYs sc-bdVaJa gLVjYw"
-        type="button"
+      <div
+        class="bp3-card bp3-elevation-0"
+        style="margin: 25px 0px 15px 0px;"
       >
-        <span
-          class="bp3-button-text"
+        <p>
+          Participating in an audit in your local jurisdiction?
+        </p>
+        <a
+          class="bp3-button bp3-large bp3-intent-primary"
+          href="/auth/jurisdictionadmin/start"
+          role="button"
+          tabindex="0"
         >
-          Log in as an Audit Admin
-        </span>
-      </button>
-      <button
-        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-fYxtnH hDfnYs sc-bdVaJa gLVjYw"
-        type="button"
-      >
-        <span
-          class="bp3-button-text"
-        >
-          Log in as a Jurisdiction Admin
-        </span>
-      </button>
+          <span
+            class="bp3-button-text"
+          >
+            Log in to your audit
+          </span>
+        </a>
+      </div>
+      <div>
+        <p>
+          State-level audit administrators:
+           
+          <a
+            href="/auth/auditadmin/start"
+          >
+            Log in as an admin
+          </a>
+        </p>
+      </div>
     </div>
   </div>
 </div>

@@ -54,6 +54,7 @@ const HomeScreen: React.FC = () => {
     case 'audit_board':
       return <LoginScreen />
     default:
+      /* istanbul ignore next */
       return null // Shouldn't happen
   }
 }
@@ -120,7 +121,7 @@ const ListAuditsAuditAdmin: React.FC = () => {
       try {
         const userMeta: IUserMeta = await api('/me')
         setMeta(userMeta)
-      } catch (err) {
+      } catch (err) /* istanbul ignore next */ {
         setMeta(null)
       }
     })()
@@ -204,8 +205,6 @@ const CreateAudit: React.FC = () => {
   const history = useHistory()
   const [submitting, setSubmitting] = useState(false)
 
-  if (!meta) return null
-
   const onSubmit = async ({
     organizationId,
     auditName,
@@ -237,7 +236,7 @@ const CreateAudit: React.FC = () => {
     <Formik
       onSubmit={onSubmit}
       initialValues={{
-        organizationId: meta.organizations[0].id,
+        organizationId: meta!.organizations[0].id,
         auditName: '',
         auditType: 'BALLOT_POLLING',
       }}
@@ -247,16 +246,17 @@ const CreateAudit: React.FC = () => {
           <h2>New Audit</h2>
           <FormSection>
             {/* eslint-disable jsx-a11y/label-has-associated-control */}
-            {meta.organizations.length > 1 && (
+            {meta!.organizations.length > 1 && (
               <label htmlFor="organizationId">
                 <p>Organization</p>
                 <HTMLSelect
+                  id="organizationId"
                   name="organizationId"
                   onChange={e =>
                     setFieldValue('organizationId', e.currentTarget.value)
                   }
                   value={values.organizationId}
-                  options={meta.organizations.map(({ id, name }) => ({
+                  options={meta!.organizations.map(({ id, name }) => ({
                     label: name,
                     value: id,
                   }))}

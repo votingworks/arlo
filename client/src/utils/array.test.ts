@@ -16,7 +16,7 @@ test('groupBy', () => {
 
 test('sortBy', () => {
   expect(sortBy([], () => '')).toEqual([])
-  expect(sortBy([2, 1, 3], x => x)).toEqual([1, 2, 3])
+  expect(sortBy([2, 1, 3, 2], x => x)).toEqual([1, 2, 2, 3])
   expect(sortBy(['b', 'c', 'a'], x => x)).toEqual(['a', 'b', 'c'])
   expect(sortBy([{ a: 'b' }, { a: 'c' }, { a: 'a' }], x => x.a)).toEqual([
     { a: 'a' },
