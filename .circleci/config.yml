@@ -78,7 +78,7 @@ jobs:
       - run:
           name: server tests
           command: |
-            circleci tests glob server/tests/**.py | circleci tests split --split-by=timings | xargs pipenv run pytest -n auto
+            circleci tests glob server/tests/**.py | circleci tests split --split-by=names --total=16 | xargs pipenv run pytest -n auto --cov=.
 
       - run:
           name: client tests
