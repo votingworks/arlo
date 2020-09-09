@@ -133,11 +133,10 @@ def batch_tallies(election: Election,) -> BatchTallies:
     }
 
 
-def cumulative_batch_results(election: Election) -> BatchTallies:
+def cumulative_batch_results(election: Election,) -> BatchTallies:
     results_by_batch_and_choice = (
         Batch.query.join(Jurisdiction)
         .filter_by(election_id=election.id)
-        .join(SampledBatchDraw)
         .join(Jurisdiction.contests)
         .join(ContestChoice)
         .outerjoin(
