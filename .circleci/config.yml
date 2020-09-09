@@ -22,12 +22,12 @@ jobs:
             - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           keys:
-            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v4-{{ .Branch }}-
-            - pip-packages-v4-
+            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v5-{{ .Branch }}-
+            - pip-packages-v5-
       - restore_cache:
           keys:
-            - npm-packages-v7-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: install
           command: |
@@ -36,19 +36,18 @@ jobs:
       - save_cache:
           key: yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-            - "~/.cache/yarn"
+            - ~/.cache/yarn
 
       - save_cache:
-          key: pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
-            - "~/.local"
-            - "~/.cache"
+            - ~/.local
+            - ~/.cache
       - save_cache:
-          key: npm-packages-v7-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
-            - "/usr/local/lib/node_modules"
-            - "node_modules"
-            - "client/node_modules"
+            - node_modules
+            - client/node_modules
 
       - run:
           name: Install Chrome
@@ -75,9 +74,9 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v4-{{ .Branch }}-
-            - pip-packages-v4-
+            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v5-{{ .Branch }}-
+            - pip-packages-v5-
       - run:
           name: lint server (pylint)
           command: |
@@ -107,9 +106,9 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v4-{{ .Branch }}-
-            - pip-packages-v4-
+            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v5-{{ .Branch }}-
+            - pip-packages-v5-
       - run:
           name: server tests
           command: |
@@ -133,12 +132,12 @@ jobs:
             - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           keys:
-            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v4-{{ .Branch }}-
-            - pip-packages-v4-
+            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v5-{{ .Branch }}-
+            - pip-packages-v5-
       - restore_cache:
           keys:
-            - npm-packages-v7-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: client tests
           command: |
@@ -161,12 +160,12 @@ jobs:
             - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           keys:
-            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v4-{{ .Branch }}-
-            - pip-packages-v4-
+            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v5-{{ .Branch }}-
+            - pip-packages-v5-
       - restore_cache:
           keys:
-            - npm-packages-v7-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: wdio end-to-end tests
           command: |
@@ -189,12 +188,12 @@ jobs:
             - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
           keys:
-            - pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v4-{{ .Branch }}-
-            - pip-packages-v4-
+            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v5-{{ .Branch }}-
+            - pip-packages-v5-
       - restore_cache:
           keys:
-            - npm-packages-v7-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: cypress end-to-end tests
           command: |

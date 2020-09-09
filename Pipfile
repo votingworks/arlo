@@ -40,4 +40,5 @@ sqlalchemy = "*"
 typing-extensions = "*"
 
 [requires]
-python_version = "3.7"
+# Specifying a more precise version here may help with CircleCI
+python_version = "3.7.3"
