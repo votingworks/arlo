@@ -77,7 +77,7 @@ jobs:
           name: test-server # server tests
           command: |
             if [[ $CIRCLE_NODE_INDEX = 1 ]]; then
-              make test-server-coverage
+              pipenv run pytest --cov=.
             fi
       - run:
           name: test-client
@@ -90,6 +90,7 @@ jobs:
           command: |
             if [[ $CIRCLE_NODE_INDEX = 3 ]]; then
               yarn --cwd client test:wdio
+            fi
       - run:
           name: cypress
           command: |
