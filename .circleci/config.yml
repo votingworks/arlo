@@ -8,7 +8,7 @@ jobs:
         environment:
           DATABASE_URL: postgresql://root@localhost:5432/arlo-test
           FLASK_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
+      - image: circleci/postgres:9.6.2-alpine-ram
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
@@ -78,14 +78,21 @@ jobs:
       - run:
           name: tests # server tests
           command: |
+            circleci tests glob server/tests/test*.py server/tests/*/test*.py  | circleci tests split --split-by=timings | xargs pipenv run pytest --cov=.
+
             if [[ $CIRCLE_NODE_INDEX = 0 ]]; then
-              make test-server
+              make lint-server
             elif [[ $CIRCLE_NODE_INDEX = 1 ]]; then
               make test-client
             elif [[ $CIRCLE_NODE_INDEX = 2 ]]; then
               yarn --cwd client test:wdio
             elif [[ $CIRCLE_NODE_INDEX = 3 ]]; then
               ./client/run-cypress-tests.sh
+            elif [[ $CIRCLE_NODE_INDEX = 4 ]]; then
+              make typecheck-server
+            elif [[ $CIRCLE_NODE_INDEX = 5 ]]; then
+              make format-server
+              git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
             fi
 
 workflows:
