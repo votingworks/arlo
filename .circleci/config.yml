@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   cypress: cypress-io/cypress@1
 jobs:
-  build:
+  build-and-test:
     docker:
       - image: circleci/python:3.7.3-node-browsers
         environment:
@@ -61,28 +61,6 @@ jobs:
           command: |
             make resetdb
 
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - .cache
-            - .local
-            - node_modules
-            - client/node_modules
-
-  server-preflight:
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
       - run:
           name: lint server (pylint)
           command: |
@@ -97,79 +75,22 @@ jobs:
           command: |
             make format-server
             git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
-  server-tests:
-    parallelism: 83
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
       - run:
+          parallelism: 83
           name: server tests
           command: |
             circleci tests glob server/tests/**.py | circleci tests split --split-by=timings | xargs pipenv run pytest -n auto
 
-  client-tests:
-    parallelism: 4
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
       - run:
+          parallelism: 83
           name: client tests
           command: |
             make test-client
-  wdio:
-    parallelism: 4
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
+
       - run:
           name: wdio end-to-end tests
           command: |
             yarn --cwd client test:wdio
-  cypress:
-    parallelism: 4
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
       - run:
           name: cypress end-to-end tests
           command: |
@@ -179,21 +100,4 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - build
-      - server-preflight:
-          requires:
-            - build
-      - server-tests:
-          requires:
-            - server-preflight
-      - client-tests:
-          requires:
-            - build
-      - wdio:
-          requires:
-            - server-tests
-            - client-tests
-      - cypress:
-          requires:
-            - server-tests
-            - client-tests
+      - build-and-test
