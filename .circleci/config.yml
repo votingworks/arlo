@@ -3,8 +3,6 @@ orbs:
   cypress: cypress-io/cypress@1
 jobs:
   build:
-    machine:
-      docker_layer_caching: true
     docker:
       - image: circleci/python:3.7.3-node-browsers
         environment:
