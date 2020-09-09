@@ -12,7 +12,6 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 5
     resource_class: xlarge
     steps:
       - checkout
@@ -67,7 +66,6 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 5
     resource_class: xlarge
     steps:
       - checkout
@@ -111,7 +109,6 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 5
     resource_class: xlarge
     steps:
       - checkout
@@ -154,17 +151,11 @@ jobs:
             sudo dpkg -i google-chrome.deb
             sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
             rm google-chrome.deb
-            # - run:
-            #     name: create data model
-            #     command: |
-            #       make resetdb
 
       - run:
           name: test-client
           command: |
-            #  if [[ $CIRCLE_NODE_INDEX = 2 ]]; then
-              make test-client
-              #fi
+            make test-client
 
   wdio:
     docker:
@@ -176,7 +167,6 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 5
     resource_class: xlarge
     steps:
       - checkout
@@ -230,7 +220,6 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 5
     resource_class: xlarge
     steps:
       - checkout
