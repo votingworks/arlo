@@ -13,7 +13,7 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     parallelism: 5
-    resource_class: xlarge
+    resource_class: 2xlarge
     steps:
       - checkout
       - setup_remote_docker:
