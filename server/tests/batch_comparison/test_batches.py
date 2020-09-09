@@ -227,16 +227,17 @@ def test_record_batch_results(
     rv = client.get(f"/api/election/{election_id}/round")
     assert rv.status_code == 200
     rounds = json.loads(rv.data)["rounds"]
+    round_2_id = rounds[1]["id"]
 
     rv = post_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[1]['id']}/audit-board",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
         [{"name": "Audit Board #1"}],
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[1]['id']}/batches"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches"
     )
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
@@ -246,11 +247,30 @@ def test_record_batch_results(
         assert batch["id"] not in round_1_batch_ids
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[1]['id']}/batches/results"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/results"
     )
     assert rv.status_code == 200
     results = json.loads(rv.data)
     assert set(results.keys()) == {batch["id"] for batch in batches}
+
+    for batch in batches:
+        results[batch["id"]][choice_ids[0]] = 400
+        results[batch["id"]][choice_ids[1]] = 50
+        results[batch["id"]][choice_ids[2]] = 40
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/results",
+        results,
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/batches/results"
+    )
+    assert rv.status_code == 200
+    new_results = json.loads(rv.data)
+    assert new_results == results
 
 
 def test_record_batch_results_without_audit_boards(

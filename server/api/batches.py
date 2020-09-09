@@ -126,6 +126,7 @@ def validate_batch_results(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round.id)
+        .filter(Batch.id.notin_(already_audited_batch_ids(jurisdiction, round)))
         .order_by(Batch.name)
         .all()
     )
