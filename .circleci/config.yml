@@ -12,7 +12,7 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
-    parallelism: 4
+    parallelism: 1
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -27,7 +27,7 @@ jobs:
             - pip-packages-v4-
       - restore_cache:
           keys:
-            - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v7-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: install
           command: |
@@ -36,7 +36,7 @@ jobs:
       - save_cache:
           key: yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-            - ~/.cache/yarn
+            - "~/.cache/yarn"
 
       - save_cache:
           key: pip-packages-v4-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
@@ -44,8 +44,9 @@ jobs:
             - "~/.local"
             - "~/.cache"
       - save_cache:
-          key: npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: npm-packages-v7-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
+            - "/usr/local/lib/node_modules"
             - "node_modules"
             - "client/node_modules"
 
@@ -137,7 +138,7 @@ jobs:
             - pip-packages-v4-
       - restore_cache:
           keys:
-            - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v7-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: client tests
           command: |
@@ -165,7 +166,7 @@ jobs:
             - pip-packages-v4-
       - restore_cache:
           keys:
-            - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v7-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: wdio end-to-end tests
           command: |
@@ -193,7 +194,7 @@ jobs:
             - pip-packages-v4-
       - restore_cache:
           keys:
-            - npm-packages-v6-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-packages-v7-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: cypress end-to-end tests
           command: |
