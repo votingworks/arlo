@@ -65,21 +65,36 @@ jobs:
             make resetdb
 
       - run:
-          name: tests # server tests
+          name: preflight-checks
           command: |
             if [[ $CIRCLE_NODE_INDEX = 0 ]]; then
-              make test-server-coverage
-            elif [[ $CIRCLE_NODE_INDEX = 1 ]]; then
-              make test-client
-            elif [[ $CIRCLE_NODE_INDEX = 2 ]]; then
-              yarn --cwd client test:wdio
-            elif [[ $CIRCLE_NODE_INDEX = 3 ]]; then
-              ./client/run-cypress-tests.sh
-            elif [[ $CIRCLE_NODE_INDEX = 4 ]]; then
               make typecheck-server
               make lint-server
               make format-server
               git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
+            fi
+      - run:
+          name: test-server # server tests
+          command: |
+            if [[ $CIRCLE_NODE_INDEX = 1 ]]; then
+              make test-server-coverage
+            fi
+      - run:
+          name: test-client
+          command: |
+            if [[ $CIRCLE_NODE_INDEX = 2 ]]; then
+              make test-client
+            fi
+      - run:
+          name: wdio
+          command: |
+            if [[ $CIRCLE_NODE_INDEX = 3 ]]; then
+              yarn --cwd client test:wdio
+      - run:
+          name: cypress
+          command: |
+            if [[ $CIRCLE_NODE_INDEX = 4 ]]; then
+              ./client/run-cypress-tests.sh
             fi
 
 workflows:
