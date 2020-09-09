@@ -71,6 +71,8 @@ const Contests: React.FC<IProps> = ({
   if (!contests) return null // Still loading
   const filteredContests = contests.filter(c => c.isTargeted === isTargeted)
 
+  if (isBatch && !isTargeted && nextStage.activate) nextStage.activate() // skip to next stage if on opportunistic contests screen and during a batch audit (until batch audits support multiple contests)
+
   const submit = async (values: { contests: IContest[] }) => {
     const response = await updateContests(values.contests)
     // TEST TODO

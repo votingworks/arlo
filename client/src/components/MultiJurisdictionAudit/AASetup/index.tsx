@@ -19,7 +19,7 @@ interface IProps {
   stage: ElementType<typeof setupStages>
   menuItems: ISidebarMenuItem[]
   refresh: () => void
-  isBatch?: boolean
+  isBatch?: boolean // TODO support multiple contests in batch comparison audits
 }
 
 const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
@@ -49,13 +49,14 @@ const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
         />
       )
     case 'Opportunistic Contests':
-      return isBatch ? null : ( // TODO support multiple contests in batch comparison audits
+      return (
         <Contests
           isTargeted={false}
           key="opportunistic"
           nextStage={nextStage!}
           prevStage={prevStage!}
           locked={activeStage!.state === 'locked'}
+          isBatch={isBatch}
         />
       )
     case 'Audit Settings':
