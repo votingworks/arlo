@@ -60,6 +60,15 @@ jobs:
           name: create data model
           command: |
             make resetdb
+
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - .cache
+            - .local
+            - node_modules
+            - client/node_modules
+
   server-preflight:
     docker:
       - image: circleci/python:3.7.3-node-browsers
@@ -71,12 +80,8 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v5-{{ .Branch }}-
-            - pip-packages-v5-
+      - attach_workspace:
+          at: ~/
       - run:
           name: lint server (pylint)
           command: |
@@ -92,7 +97,7 @@ jobs:
             make format-server
             git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
   server-tests:
-    parallelism: 4
+    parallelism: 83
     docker:
       - image: circleci/python:3.7.3-node-browsers
         environment:
@@ -103,12 +108,8 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v5-{{ .Branch }}-
-            - pip-packages-v5-
+      - attach_workspace:
+          at: ~/
       - run:
           name: server tests
           command: |
@@ -126,18 +127,8 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          keys:
-            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v5-{{ .Branch }}-
-            - pip-packages-v5-
-      - restore_cache:
-          keys:
-            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - attach_workspace:
+          at: ~/
       - run:
           name: client tests
           command: |
@@ -154,18 +145,8 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          keys:
-            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v5-{{ .Branch }}-
-            - pip-packages-v5-
-      - restore_cache:
-          keys:
-            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - attach_workspace:
+          at: ~/
       - run:
           name: wdio end-to-end tests
           command: |
@@ -182,18 +163,8 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          keys:
-            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v5-{{ .Branch }}-
-            - pip-packages-v5-
-      - restore_cache:
-          keys:
-            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - attach_workspace:
+          at: ~/
       - run:
           name: cypress end-to-end tests
           command: |
