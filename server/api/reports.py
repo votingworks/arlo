@@ -40,7 +40,7 @@ def pretty_pvalue(value: float) -> str:
         return ret
 
 
-def pretty_ticket_numbers(
+def pretty_ballot_ticket_numbers(
     ballot: SampledBallot,
     round_id_to_num: Dict[str, int],
     targeted_contests: List[Contest],
@@ -58,7 +58,17 @@ def pretty_ticket_numbers(
     return columns
 
 
-def pretty_interpretations(
+def pretty_batch_ticket_numbers(batch: Batch, round_id_to_num: Dict[str, int]) -> str:
+    ticket_numbers = []
+    for round_num, draws in group_by(
+        list(batch.draws), key=lambda d: round_id_to_num[d.round_id]
+    ).items():
+        ticket_numbers_str = ", ".join(sorted(d.ticket_number for d in draws))
+        ticket_numbers.append(f"Round {round_num}: {ticket_numbers_str}")
+    return ", ".join(ticket_numbers)
+
+
+def pretty_ballot_interpretations(
     interpretations: List[BallotInterpretation], contests: List[Contest],
 ) -> List[str]:
     columns = []
@@ -80,6 +90,21 @@ def pretty_interpretations(
         else:
             columns.append("")
     return columns
+
+
+def pretty_batch_results(batch: Batch, contest: Contest) -> str:
+    choice_votes = []
+    for choice in contest.choices:
+        choice_result = next(
+            (
+                result.result
+                for result in batch.results
+                if result.contest_choice_id == choice.id
+            ),
+            0,
+        )
+        choice_votes.append(f"{choice.name}: {choice_result}")
+    return "; ".join(choice_votes)
 
 
 def heading(heading: str):
@@ -127,9 +152,10 @@ def contest_rows(election: Election):
 def audit_settings_rows(election: Election):
     return [
         heading("AUDIT SETTINGS"),
-        ["Audit Name", "Risk Limit", "Random Seed", "Online Data Entry?"],
+        ["Audit Name", "Audit Type", "Risk Limit", "Random Seed", "Online Data Entry?"],
         [
             election.audit_name,
+            election.audit_type,
             f"{election.risk_limit}%",
             election.random_seed,
             pretty_boolean(election.online),
@@ -138,7 +164,7 @@ def audit_settings_rows(election: Election):
 
 
 def audit_board_rows(election: Election):
-    if not election.online:
+    if not (election.audit_type == AuditType.BALLOT_POLLING and election.online):
         return None
     rows = [
         heading("AUDIT BOARDS"),
@@ -261,15 +287,59 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     for ballot in ballots:
         rows.append(
             [ballot.batch.jurisdiction.name, ballot.batch.name, ballot.ballot_position,]
-            + pretty_ticket_numbers(ballot, round_id_to_num, targeted_contests)
+            + pretty_ballot_ticket_numbers(ballot, round_id_to_num, targeted_contests)
             + (
                 [ballot.status]
-                + pretty_interpretations(
+                + pretty_ballot_interpretations(
                     list(ballot.interpretations), list(election.contests)
                 )
                 if election.online
                 else []
             )
+        )
+    return rows
+
+
+def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
+    rows = [heading("SAMPLED BATCHES")]
+
+    batches_query = (
+        Batch.query.join(SampledBatchDraw)
+        .join(Round)
+        .join(Jurisdiction)
+        .filter_by(election_id=election.id)
+        .order_by(
+            Round.round_num,
+            Jurisdiction.name,
+            Batch.name,
+            SampledBatchDraw.ticket_number,
+        )
+    )
+    if jurisdiction:
+        batches_query = batches_query.filter(Jurisdiction.id == jurisdiction.id)
+    batches = batches_query.all()
+
+    round_id_to_num = {round.id: round.round_num for round in election.rounds}
+
+    contest = list(election.contests)[0]  # We only support one contest for batch audits
+    rows.append(
+        [
+            "Jurisdiction Name",
+            "Batch Name",
+            "Ticket Numbers",
+            "Audited?",
+            "Audit Result",
+        ]
+    )
+    for batch in batches:
+        rows.append(
+            [
+                batch.jurisdiction.name,
+                batch.name,
+                pretty_batch_ticket_numbers(batch, round_id_to_num),
+                pretty_boolean(len(batch.results) > 0),
+                pretty_batch_results(batch, contest),
+            ]
         )
     return rows
 
@@ -283,7 +353,9 @@ def audit_admin_audit_report(election: Election):
         audit_settings_rows(election),
         audit_board_rows(election),
         round_rows(election),
-        sampled_ballot_rows(election),
+        sampled_ballot_rows(election)
+        if election.audit_type == AuditType.BALLOT_POLLING
+        else sampled_batch_rows(election),
     ]
     row_sets = [row_set for row_set in row_sets if row_set]
 
@@ -309,7 +381,11 @@ def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdictio
     csv_io = io.StringIO()
     report = csv.writer(csv_io)
 
-    report.writerows(sampled_ballot_rows(election, jurisdiction))
+    report.writerows(
+        sampled_ballot_rows(election, jurisdiction)
+        if election.audit_type == AuditType.BALLOT_POLLING
+        else sampled_batch_rows(election, jurisdiction)
+    )
 
     return csv_response(
         csv_io.getvalue(),
