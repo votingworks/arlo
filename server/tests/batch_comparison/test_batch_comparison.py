@@ -8,6 +8,51 @@ from ...util.group_by import group_by
 from ...bgcompute import bgcompute_update_batch_tallies_file
 
 
+def test_batch_comparison_only_one_contest_allowed(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    contests = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 5000},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 2500},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 2500},
+            ],
+            "totalBallotsCast": 5000,
+            "numWinners": 1,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 2",
+            "isTargeted": False,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 5000},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 2500},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 2500},
+            ],
+            "totalBallotsCast": 5000,
+            "numWinners": 1,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Batch comparison audits may only have one contest.",
+            }
+        ]
+    }
+
+
 def test_batch_comparison_sample_size(
     client: FlaskClient,
     election_id: str,

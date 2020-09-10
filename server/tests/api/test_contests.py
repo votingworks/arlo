@@ -222,7 +222,22 @@ def test_update_contests_after_audit_starts(
     }
 
 
-def test_contests_missing_field(
+def test_update_contests_no_targeted(
+    client: FlaskClient, election_id: str, json_contests: List[JSONDict]
+):
+    rv = put_json(client, f"/api/election/{election_id}/contest", [json_contests[1]])
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Must have at least one targeted contest",
+            }
+        ]
+    }
+
+
+def test_update_contests_missing_field(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
     contest: JSONDict = {
