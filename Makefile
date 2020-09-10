@@ -1,6 +1,6 @@
 deps:
-	sudo apt install python3.7 python3-pip nodejs libpython3.7-dev libpq-dev
-	python3.7 -m pip install pipenv
+	sudo apt install python3.8 python3-pip nodejs libpython3.8-dev libpq-dev
+	python3.8 -m pip install pipenv
 	sudo npm install -g yarn
 	sudo apt install postgresql
 
