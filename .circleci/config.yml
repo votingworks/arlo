@@ -17,12 +17,24 @@ executors:
 commands:
   restore-pip-cache:
     steps:
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
           name: Restore Pip Cache
           keys:
             - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
             - pip-packages-v5-{{ .Branch }}-
             - pip-packages-v5-
+  save-pip-cache:
+    steps:
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - save_cache:
+          name: Save Pip Cache
+          key: pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ~/.local
+            - ~/.cache
 
   pip-install:
     steps:
@@ -30,6 +42,53 @@ commands:
           name: install
           command: |
             pipenv install --dev
+
+  create-data-model:
+    steps:
+      - run:
+          name: create data model
+          command: |
+            make resetdb
+
+  restore-yarn-cache:
+    steps:
+      - restore_cache:
+          name: Restore Yarn Cache
+          keys:
+            - yarn-packages-v4-{{ .Branch }}-{{ checksum "yarn.lock" }}
+
+  save-yarn-cache:
+    steps:
+      - save_cache:
+          name: Save Yarn Cache
+          key: yarn-packages-v4-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+            - node_modules
+            - client/node_modules
+  restore-caches:
+    steps:
+      - restore-pip-cache
+      - restore-yarn-cache
+
+  install-yarn:
+    steps:
+      - run:
+          name: install
+          command: |
+            yarn install
+            yarn --cwd client install
+            yarn --cwd client build
+
+  install-chrome:
+    steps:
+      - run:
+          name: Install Chrome
+          command: |
+            curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            sudo dpkg -i google-chrome.deb
+            sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
+            rm google-chrome.deb
 
 jobs:
   preflight:
@@ -39,21 +98,10 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
-      - run: restore-pip-cache
-      - run: pip-install
-
-      - save_cache:
-          name: Save Pip Cache
-          key: pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-          paths:
-            - ~/.local
-            - ~/.cache
-      - run:
-          name: create data model
-          command: |
-            make resetdb
+      - restore-pip-cache
+      - pip-install
+      - save-pip-cache
+      - create-data-model
 
       - run:
           name: typecheck server
@@ -71,97 +119,32 @@ jobs:
             make lint-server
 
   build-and-test-server:
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.3-alpine-ram
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
+    executor: arlo
     resource_class: xlarge
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
-
-      - run: restore-pip-cache
-
-      - run:
-          name: install
-          command: |
-            pipenv install --dev
-
-      - save_cache:
-          name: Save Pip Cache
-          key: pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-          paths:
-            - ~/.local
-            - ~/.cache
-      - run:
-          name: create data model
-          command: |
-            make resetdb
+      - restore-pip-cache
+      - pip-install
+      - save-pip-cache
+      - create-data-model
       - run:
           name: test-server # server tests
           command: |
             make test-server-coverage
 
   build-and-test-client:
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.3-alpine-ram
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
+    executor: arlo
     resource_class: xlarge
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
-      - restore_cache:
-          name: Restore Yarn Cache
-          keys:
-            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          name: Restore Node Cache
-          keys:
-            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - run:
-          name: install
-          command: |
-            yarn install
-            yarn --cwd client install
-            yarn --cwd client build
-
-      - save_cache:
-          name: Save Yarn Cache
-          key: yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
-
-      - save_cache:
-          name: Save Node Cache
-          key: npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
-            - client/node_modules
-
-      - run:
-          name: Install Chrome
-          command: |
-            curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-            sudo dpkg -i google-chrome.deb
-            sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
-            rm google-chrome.deb
+      - restore-yarn-cache
+      - install-yarn
+      - save-yarn-cache
+      - install-chrome
 
       - run:
           name: test-client
@@ -169,52 +152,22 @@ jobs:
             make test-client
 
   wdio:
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.3-alpine-ram
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
+    executor: arlo
     resource_class: xlarge
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
-      - restore_cache:
-          name: Restore Yarn Cache
-          keys:
-            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          name: Restore Node Cache
-          keys:
-            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - restore_cache:
-          name: Restore Pip Cache
-          keys:
-            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v5-{{ .Branch }}-
-            - pip-packages-v5-
+      - restore-yarn-cache
+      - restore-pip-cache
+      - install-chrome
+
       - run:
           name: install
           command: |
             make install
 
-      - run:
-          name: Install Chrome
-          command: |
-            curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-            sudo dpkg -i google-chrome.deb
-            sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
-            rm google-chrome.deb
-      - run:
-          name: create data model
-          command: |
-            make resetdb
+      - create-data-model
 
       - run:
           name: wdio
@@ -222,52 +175,20 @@ jobs:
             yarn --cwd client test:wdio
 
   cypress:
-    docker:
-      - image: circleci/python:3.7.3-node-browsers
-        environment:
-          DATABASE_URL: postgresql://root@localhost:5432/arlo-test
-          FLASK_ENV: test
-      - image: circleci/postgres:9.6.3-alpine-ram
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: arlo-test
+    executor: arlo
     resource_class: xlarge
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
-      - restore_cache:
-          name: Restore Yarn Cache
-          keys:
-            - yarn-packages-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - restore_cache:
-          name: Restore Node Cache
-          keys:
-            - npm-packages-v8-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - restore_cache:
-          name: Restore Pip Cache
-          keys:
-            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v5-{{ .Branch }}-
-            - pip-packages-v5-
+      - restore-caches
       - run:
           name: install
           command: |
             make install
 
-      - run:
-          name: Install Chrome
-          command: |
-            curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-            sudo dpkg -i google-chrome.deb
-            sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
-            rm google-chrome.deb
-      - run:
-          name: create data model
-          command: |
-            make resetdb
+      - install-chrome
+      - create-data-model
       - run:
           name: cypress
           command: |
