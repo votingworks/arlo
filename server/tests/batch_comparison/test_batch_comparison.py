@@ -23,7 +23,7 @@ def test_batch_comparison_sample_size(
     snapshot.assert_match(sample_size_options[contest_id])
 
 
-def test_batch_comparison_sample_batches(
+def test_batch_comparison_round_1(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -31,7 +31,14 @@ def test_batch_comparison_sample_batches(
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
     batch_tallies,  # pylint: disable=unused-argument
+    snapshot,
 ):
+    # Check jurisdiction status before starting the round
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"] is None
+    assert jurisdictions[1]["currentRoundStatus"] is None
+
     # Use an artificially large sample size in order to have enough samples to work with
     sample_size = 20
     rv = post_json(
@@ -56,6 +63,12 @@ def test_batch_comparison_sample_batches(
             }
         ],
     )
+
+    # Check jurisdiction status after starting the round
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # Check that we also created RoundContest objects
     round_contests = RoundContest.query.filter_by(round_id=rounds[0]["id"]).all()
@@ -82,6 +95,12 @@ def test_batch_comparison_sample_batches(
     )
     assert_ok(rv)
 
+    # Check jurisdiction status moved to IN_PROGRESS
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    assert jurisdictions[0]["currentRoundStatus"]["status"] == "IN_PROGRESS"
+    assert jurisdictions[1]["currentRoundStatus"]["status"] == "NOT_STARTED"
+
     # Check that the batches got divvied up evenly between the audit boards
     sampled_batches = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction_ids[0])
@@ -107,7 +126,7 @@ def test_batch_comparison_sample_batches(
     )
 
 
-def test_batch_comparison_sample_batches_round_2(
+def test_batch_comparison_round_2(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],
@@ -125,6 +144,7 @@ def test_batch_comparison_sample_batches_round_2(
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
 
+    # Record some batch results
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
     batch_results = {
         batch["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,}
@@ -138,6 +158,13 @@ def test_batch_comparison_sample_batches_round_2(
     )
     assert_ok(rv)
 
+    # Check jurisdiction status after recording results
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Now do the second jurisdiction
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
@@ -150,6 +177,7 @@ def test_batch_comparison_sample_batches_round_2(
     assert rv.status_code == 200
     batches = json.loads(rv.data)["batches"]
 
+    # Record results for the second jurisdiction
     batch_results = {
         batch["id"]: {choice_ids[0]: 400, choice_ids[1]: 50, choice_ids[2]: 40,}
         for batch in batches
@@ -162,6 +190,13 @@ def test_batch_comparison_sample_batches_round_2(
     )
     assert_ok(rv)
 
+    # Check jurisdiction status after recording results
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
+    # Start a second round
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
     assert_ok(rv)
 
@@ -186,6 +221,12 @@ def test_batch_comparison_sample_batches_round_2(
             },
         ],
     )
+
+    # Check jurisdiction status after starting the new round
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # Check that we also created RoundContest objects
     round_contests = RoundContest.query.filter_by(round_id=rounds[1]["id"]).all()

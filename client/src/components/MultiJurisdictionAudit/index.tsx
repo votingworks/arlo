@@ -92,7 +92,10 @@ export const AuditAdminView: React.FC = () => {
                 },
               ]}
             />
-            <Progress jurisdictions={jurisdictions} />
+            <Progress
+              jurisdictions={jurisdictions}
+              auditSettings={auditSettings}
+            />
           </Inner>
         </Wrapper>
       )

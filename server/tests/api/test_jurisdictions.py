@@ -210,22 +210,22 @@ def test_jurisdictions_status_round_1_no_audit_boards(
         "status": "NOT_STARTED",
         "numSamples": J1_SAMPLES_ROUND_1,
         "numSamplesAudited": 0,
-        "numBallots": J1_BALLOTS_ROUND_1,
-        "numBallotsAudited": 0,
+        "numUnique": J1_BALLOTS_ROUND_1,
+        "numUniqueAudited": 0,
     }
     assert jurisdictions[1]["currentRoundStatus"] == {
         "status": "NOT_STARTED",
         "numSamples": SAMPLE_SIZE_ROUND_1 - J1_SAMPLES_ROUND_1,
         "numSamplesAudited": 0,
-        "numBallots": BALLOTS_ROUND_1 - J1_BALLOTS_ROUND_1,
-        "numBallotsAudited": 0,
+        "numUnique": BALLOTS_ROUND_1 - J1_BALLOTS_ROUND_1,
+        "numUniqueAudited": 0,
     }
     assert jurisdictions[2]["currentRoundStatus"] == {
         "status": "COMPLETE",
         "numSamples": 0,
         "numSamplesAudited": 0,
-        "numBallots": 0,
-        "numBallotsAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
     }
 
 
@@ -239,22 +239,22 @@ def test_jurisdictions_status_round_1_with_audit_boards(
         "status": "IN_PROGRESS",
         "numSamples": J1_SAMPLES_ROUND_1,
         "numSamplesAudited": 0,
-        "numBallots": J1_BALLOTS_ROUND_1,
-        "numBallotsAudited": 0,
+        "numUnique": J1_BALLOTS_ROUND_1,
+        "numUniqueAudited": 0,
     }
     assert jurisdictions[1]["currentRoundStatus"] == {
         "status": "NOT_STARTED",
         "numSamples": SAMPLE_SIZE_ROUND_1 - J1_SAMPLES_ROUND_1,
         "numSamplesAudited": 0,
-        "numBallots": BALLOTS_ROUND_1 - J1_BALLOTS_ROUND_1,
-        "numBallotsAudited": 0,
+        "numUnique": BALLOTS_ROUND_1 - J1_BALLOTS_ROUND_1,
+        "numUniqueAudited": 0,
     }
     assert jurisdictions[2]["currentRoundStatus"] == {
         "status": "COMPLETE",
         "numSamples": 0,
         "numSamplesAudited": 0,
-        "numBallots": 0,
-        "numBallotsAudited": 0,
+        "numUnique": 0,
+        "numUniqueAudited": 0,
     }
 
     # Simulate one audit board auditing all its ballots and signing off
@@ -271,8 +271,8 @@ def test_jurisdictions_status_round_1_with_audit_boards(
         "status": "IN_PROGRESS",
         "numSamples": J1_SAMPLES_ROUND_1,
         "numSamplesAudited": AB1_SAMPLES_ROUND_1,
-        "numBallots": J1_BALLOTS_ROUND_1,
-        "numBallotsAudited": AB1_BALLOTS_ROUND_1,
+        "numUnique": J1_BALLOTS_ROUND_1,
+        "numUniqueAudited": AB1_BALLOTS_ROUND_1,
     }
 
     # Simulate the other audit board auditing all its ballots and signing off
@@ -289,8 +289,8 @@ def test_jurisdictions_status_round_1_with_audit_boards(
         "status": "COMPLETE",
         "numSamples": J1_SAMPLES_ROUND_1,
         "numSamplesAudited": J1_SAMPLES_ROUND_1,
-        "numBallots": J1_BALLOTS_ROUND_1,
-        "numBallotsAudited": J1_BALLOTS_ROUND_1,
+        "numUnique": J1_BALLOTS_ROUND_1,
+        "numUniqueAudited": J1_BALLOTS_ROUND_1,
     }
 
 
@@ -354,8 +354,8 @@ def test_jurisdictions_round_status_offline(
         "status": "NOT_STARTED",
         "numSamples": J1_SAMPLES_ROUND_1,
         "numSamplesAudited": 0,
-        "numBallots": J1_BALLOTS_ROUND_1,
-        "numBallotsAudited": 0,
+        "numUnique": J1_BALLOTS_ROUND_1,
+        "numUniqueAudited": 0,
     }
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
@@ -375,8 +375,8 @@ def test_jurisdictions_round_status_offline(
         "status": "IN_PROGRESS",
         "numSamples": J1_SAMPLES_ROUND_1,
         "numSamplesAudited": 0,
-        "numBallots": J1_BALLOTS_ROUND_1,
-        "numBallotsAudited": 0,
+        "numUnique": J1_BALLOTS_ROUND_1,
+        "numUniqueAudited": 0,
     }
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
@@ -408,6 +408,6 @@ def test_jurisdictions_round_status_offline(
         "status": "COMPLETE",
         "numSamples": J1_SAMPLES_ROUND_1,
         "numSamplesAudited": J1_SAMPLES_ROUND_1,
-        "numBallots": J1_BALLOTS_ROUND_1,
-        "numBallotsAudited": J1_BALLOTS_ROUND_1,
+        "numUnique": J1_BALLOTS_ROUND_1,
+        "numUniqueAudited": J1_BALLOTS_ROUND_1,
     }

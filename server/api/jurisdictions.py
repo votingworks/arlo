@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import Dict, Optional
 import enum
 from flask import jsonify
 from sqlalchemy import func
@@ -40,11 +40,19 @@ class JurisdictionStatus(str, enum.Enum):
 
 
 def round_status_by_jurisdiction(
-    round: Optional[Round], jurisdictions: List[Jurisdiction], online: bool
+    election: Election, round: Optional[Round],
 ) -> Dict[str, Optional[JSONDict]]:
     if not round:
-        return {j.id: None for j in jurisdictions}
+        return {j.id: None for j in election.jurisdictions}
+    if election.audit_type == AuditType.BALLOT_POLLING:
+        return ballot_polling_round_status(election, round)
+    else:
+        return batch_comparison_round_status(election, round)
 
+
+def ballot_polling_round_status(
+    election: Election, round: Round
+) -> Dict[str, Optional[JSONDict]]:
     audit_boards_set_up = dict(
         AuditBoard.query.filter_by(round_id=round.id)
         .group_by(AuditBoard.jurisdiction_id)
@@ -57,7 +65,7 @@ def round_status_by_jurisdiction(
             .group_by(AuditBoard.jurisdiction_id)
             .values(AuditBoard.jurisdiction_id, func.count(AuditBoard.id.distinct()))
         )
-        if online
+        if election.online
         else {}
     )
 
@@ -113,7 +121,7 @@ def round_status_by_jurisdiction(
                 .values(JurisdictionResult.jurisdiction_id)
             )
         }
-        if not online
+        if not election.online
         else {}
     )
 
@@ -139,7 +147,7 @@ def round_status_by_jurisdiction(
         if num_set_up == 0:
             return JurisdictionStatus.NOT_STARTED
 
-        if online:
+        if election.online:
             num_not_signed_off = audit_boards_with_ballots_not_signed_off.get(
                 jurisdiction_id, 0
             )
@@ -152,7 +160,7 @@ def round_status_by_jurisdiction(
         return JurisdictionStatus.COMPLETE
 
     def num_samples_audited(jurisdiction_id: str) -> int:
-        if online:
+        if election.online:
             return audited_sample_count_by_jurisdiction.get(jurisdiction_id, 0)
         else:
             return (
@@ -162,7 +170,7 @@ def round_status_by_jurisdiction(
             )
 
     def num_ballots_audited(jurisdiction_id: str) -> int:
-        if online:
+        if election.online:
             return audited_ballot_count_by_jurisdiction.get(jurisdiction_id, 0)
         else:
             return (
@@ -176,10 +184,93 @@ def round_status_by_jurisdiction(
             "status": status(j.id),
             "numSamples": num_samples(j.id),
             "numSamplesAudited": num_samples_audited(j.id),
-            "numBallots": num_ballots(j.id),
-            "numBallotsAudited": num_ballots_audited(j.id),
+            "numUnique": num_ballots(j.id),
+            "numUniqueAudited": num_ballots_audited(j.id),
         }
-        for j in jurisdictions
+        for j in election.jurisdictions
+    }
+
+
+def batch_comparison_round_status(
+    election: Election, round: Round
+) -> Dict[str, Optional[JSONDict]]:
+    jurisdictions_with_audit_boards = set(
+        jurisdiction_id
+        for jurisdiction_id, in AuditBoard.query.filter_by(round_id=round.id).values(
+            AuditBoard.jurisdiction_id.distinct()
+        )
+    )
+
+    sample_count_by_jurisdiction = dict(
+        SampledBatchDraw.query.filter_by(round_id=round.id)
+        .join(Batch)
+        .group_by(Batch.jurisdiction_id)
+        .values(
+            Batch.jurisdiction_id, func.count(SampledBatchDraw.ticket_number.distinct())
+        )
+    )
+    audited_sample_count_by_jurisdiction = dict(
+        SampledBatchDraw.query.filter_by(round_id=round.id)
+        .join(Batch)
+        .join(BatchResult)
+        .group_by(Batch.jurisdiction_id)
+        .having(func.count(BatchResult.batch_id) > 0)
+        .values(
+            Batch.jurisdiction_id, func.count(SampledBatchDraw.ticket_number.distinct())
+        )
+    )
+
+    batch_count_by_jurisdiction = dict(
+        Batch.query.join(SampledBatchDraw)
+        .filter_by(round_id=round.id)
+        .group_by(Batch.jurisdiction_id)
+        .values(Batch.jurisdiction_id, func.count(Batch.id.distinct()))
+    )
+    audited_batch_count_by_jurisdiction = dict(
+        Batch.query.join(SampledBatchDraw)
+        .filter_by(round_id=round.id)
+        .join(BatchResult)
+        .group_by(Batch.jurisdiction_id)
+        .having(func.count(BatchResult.batch_id) > 0)
+        .values(Batch.jurisdiction_id, func.count(Batch.id.distinct()))
+    )
+
+    def num_samples(jurisdiction_id: str) -> int:
+        return sample_count_by_jurisdiction.get(jurisdiction_id, 0)
+
+    def num_samples_audited(jurisdiction_id: str) -> int:
+        return audited_sample_count_by_jurisdiction.get(jurisdiction_id, 0)
+
+    def num_batches(jurisdiction_id: str) -> int:
+        return batch_count_by_jurisdiction.get(jurisdiction_id, 0)
+
+    def num_batches_audited(jurisdiction_id: str) -> int:
+        return audited_batch_count_by_jurisdiction.get(jurisdiction_id, 0)
+
+    # NOT_STARTED = the jurisdiction hasn’t set up any audit boards
+    # IN_PROGRESS = the audit boards are set up
+    # COMPLETE = all the batch results are recorded
+    def status(jurisdiction_id: str) -> JurisdictionStatus:
+        # Special case: jurisdictions that don't get any batches assigned are
+        # COMPLETE from the get-go
+        if num_samples(jurisdiction_id) == 0:
+            return JurisdictionStatus.COMPLETE
+        if jurisdiction_id not in jurisdictions_with_audit_boards:
+            return JurisdictionStatus.NOT_STARTED
+        if num_samples_audited(jurisdiction_id) < num_samples(jurisdiction_id):
+            return JurisdictionStatus.IN_PROGRESS
+        else:
+            return JurisdictionStatus.COMPLETE
+
+    return {
+        j.id: {
+            "status": status(j.id),
+            "numSamples": num_samples(j.id),
+            "numSamplesAudited": num_samples_audited(j.id),
+            "numUnique": num_batches(j.id),
+            "numUniqueAudited": num_batches_audited(j.id),
+        }
+        for j in election.jurisdictions
     }
 
 
@@ -187,9 +278,7 @@ def round_status_by_jurisdiction(
 @with_election_access
 def list_jurisdictions(election: Election):
     current_round = get_current_round(election)
-    round_status = round_status_by_jurisdiction(
-        current_round, list(election.jurisdictions), election.online
-    )
+    round_status = round_status_by_jurisdiction(election, current_round)
 
     json_jurisdictions = [
         serialize_jurisdiction(election, jurisdiction, round_status[jurisdiction.id])

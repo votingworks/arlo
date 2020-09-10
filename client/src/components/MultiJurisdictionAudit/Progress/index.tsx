@@ -11,6 +11,7 @@ import {
 } from '../useJurisdictions'
 import JurisdictionDetail from './JurisdictionDetail'
 import { Table, sortByRank, FilterInput } from '../../Atoms/Table'
+import { IAuditSettings } from '../../../types'
 
 const Wrapper = styled.div`
   flex-grow: 1;
@@ -32,12 +33,16 @@ const TableControls = styled.div`
 
 interface IProps {
   jurisdictions: IJurisdiction[]
+  auditSettings: IAuditSettings
 }
 
-const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
+const Progress: React.FC<IProps> = ({
+  jurisdictions,
+  auditSettings,
+}: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [filter, setFilter] = useState<string>('')
-  const [isShowingBallots, setIsShowingBallots] = useState<boolean>(true)
+  const [isShowingUnique, setIsShowingUnique] = useState<boolean>(true)
   const [
     jurisdictionDetail,
     setJurisdictionDetail,
@@ -91,14 +96,14 @@ const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
     {
       Header: 'Total Audited',
       accessor: ({ currentRoundStatus: s }) =>
-        s && (isShowingBallots ? s.numBallotsAudited : s.numSamplesAudited),
+        s && (isShowingUnique ? s.numUniqueAudited : s.numSamplesAudited),
     },
     {
       Header: 'Remaining in Round',
       accessor: ({ currentRoundStatus: s }) =>
         s &&
-        (isShowingBallots
-          ? s.numBallots - s.numBallotsAudited
+        (isShowingUnique
+          ? s.numUnique - s.numUniqueAudited
           : s.numSamples - s.numSamplesAudited),
     },
   ]
@@ -118,9 +123,11 @@ const Progress: React.FC<IProps> = ({ jurisdictions }: IProps) => {
       </p>
       <TableControls>
         <Switch
-          checked={isShowingBallots}
-          label="Count unique sampled ballots"
-          onChange={() => setIsShowingBallots(!isShowingBallots)}
+          checked={isShowingUnique}
+          label={`Count unique sampled ${
+            auditSettings.auditType === 'BALLOT_POLLING' ? 'ballots' : 'batches'
+          }`}
+          onChange={() => setIsShowingUnique(!isShowingUnique)}
         />
         <FilterInput
           placeholder="Filter by jurisdiction name..."
