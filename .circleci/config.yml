@@ -1,8 +1,9 @@
 version: 2.1
 orbs:
   cypress: cypress-io/cypress@1
-jobs:
-  preflight:
+
+executors:
+  arlo:
     docker:
       - image: circleci/python:3.7.3-node-browsers
         environment:
@@ -12,6 +13,27 @@ jobs:
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+
+commands:
+  restore-pip-cache:
+    steps:
+      - restore_cache:
+          name: Restore Pip Cache
+          keys:
+            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v5-{{ .Branch }}-
+            - pip-packages-v5-
+
+  pip-install:
+    steps:
+      - run:
+          name: install
+          command: |
+            pipenv install --dev
+
+jobs:
+  preflight:
+    executor: arlo
     resource_class: xlarge
     steps:
       - checkout
@@ -19,16 +41,8 @@ jobs:
           docker_layer_caching: true
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
-      - restore_cache:
-          name: Restore Pip Cache
-          keys:
-            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v5-{{ .Branch }}-
-            - pip-packages-v5-
-      - run:
-          name: install
-          command: |
-            pipenv install --dev
+      - run: restore-pip-cache
+      - run: pip-install
 
       - save_cache:
           name: Save Pip Cache
@@ -73,12 +87,9 @@ jobs:
           docker_layer_caching: true
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
-      - restore_cache:
-          name: Restore Pip Cache
-          keys:
-            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v5-{{ .Branch }}-
-            - pip-packages-v5-
+
+      - run: restore-pip-cache
+
       - run:
           name: install
           command: |
@@ -97,7 +108,7 @@ jobs:
       - run:
           name: test-server # server tests
           command: |
-            pipenv run pytest --cov=.
+            make test-server-coverage
 
   build-and-test-client:
     docker:
