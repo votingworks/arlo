@@ -16,9 +16,6 @@ export interface IBatch {
     id: string
     name: string
   }
-  results: {
-    [choiceId: string]: number
-  } | null
 }
 
 const stringifyPossibleNull = (v: string | number | null) => (v ? `${v}` : '')
@@ -43,29 +40,37 @@ const reformatResults = (r: IResultValues, numberify = true): IResultValues => {
 
 const numberifyResults = (r: IResultValues): IResultValues => reformatResults(r)
 
+const getResults = async (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string
+): Promise<IResultValues | null> => {
+  try {
+    const response: IResultValues = await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/results`
+    )
+    return reformatResults(response, false)
+  } catch (err) /* istanbul ignore next */ {
+    // TODO move toasting into api
+    toast.error(err.message)
+    return null
+  }
+}
+
 const getBatches = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-): Promise<[IBatch[] | null, IResultValues | null]> => {
+): Promise<IBatch[] | null> => {
   try {
     const { batches }: { batches: IBatch[] } = await api(
       `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches`
     )
-    return [
-      batches,
-      batches.reduce(
-        (a, batch) =>
-          batch.results
-            ? reformatResults({ ...a, [batch.id]: batch.results }, false)
-            : { ...a, [batch.id]: {} },
-        {}
-      ),
-    ]
+    return batches
   } catch (err) /* istanbul ignore next */ {
     // TODO move toasting into api
     toast.error(err.message)
-    return [null, null]
+    return null
   }
 }
 
@@ -107,11 +112,8 @@ const useBatchResults = (
 
   useEffect(() => {
     ;(async () => {
-      const [newBatches, newResults] = await getBatches(
-        electionId,
-        jurisdictionId,
-        roundId
-      )
+      const newBatches = await getBatches(electionId, jurisdictionId, roundId)
+      const newResults = await getResults(electionId, jurisdictionId, roundId)
       setBatches(newBatches)
       setResults(newResults)
     })()

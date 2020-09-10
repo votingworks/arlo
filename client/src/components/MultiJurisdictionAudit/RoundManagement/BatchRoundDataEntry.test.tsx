@@ -29,6 +29,10 @@ const apiCalls = {
     url: '/api/election/1/jurisdiction/1/round/round-1/batches',
     response,
   }),
+  getResults: (response: INullResultValues) => ({
+    url: '/api/election/1/jurisdiction/1/round/round-1/batches/results',
+    response,
+  }),
   putResults: (results: INullResultValues) => ({
     url: '/api/election/1/jurisdiction/1/round/round-1/batches/results',
     options: {
@@ -47,6 +51,7 @@ describe('offline round data entry', () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getResults(batchResultsMocks.empty),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
@@ -64,6 +69,7 @@ describe('offline round data entry', () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getBatches(batchesMocks.complete),
+      apiCalls.getResults(batchResultsMocks.complete),
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderWithRouter(
@@ -81,6 +87,7 @@ describe('offline round data entry', () => {
     const expectedCalls = [
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getBatches(batchesMocks.emptyInitial),
+      apiCalls.getResults(batchResultsMocks.empty),
       apiCalls.putResults(batchResultsMocks.complete),
     ]
     await withMockFetch(expectedCalls, async () => {

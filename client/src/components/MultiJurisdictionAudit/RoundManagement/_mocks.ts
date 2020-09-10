@@ -32,8 +32,22 @@ export const resultsMocks: {
 }
 
 export const batchResultsMocks: {
-  [key in 'complete']: INullResultValues
+  [key in 'empty' | 'complete']: INullResultValues
 } = {
+  empty: {
+    'batch-1': {
+      'choice-id-1': null,
+      'choice-id-2': null,
+    },
+    'batch-2': {
+      'choice-id-1': null,
+      'choice-id-2': null,
+    },
+    'batch-3': {
+      'choice-id-1': null,
+      'choice-id-2': null,
+    },
+  },
   complete: {
     'batch-1': {
       'choice-id-1': 1,
@@ -60,21 +74,18 @@ export const batchesMocks: {
         name: 'Batch One',
         numBallots: 100,
         auditBoard: null,
-        results: null,
       },
       {
         id: 'batch-2',
         name: 'Batch Two',
         numBallots: 100,
         auditBoard: null,
-        results: null,
       },
       {
         id: 'batch-3',
         name: 'Batch Three',
         numBallots: 100,
         auditBoard: null,
-        results: null,
       },
     ],
   },
@@ -88,10 +99,6 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
-        results: {
-          'choice-id-1': 1,
-          'choice-id-2': 2,
-        },
       },
       {
         id: 'batch-2',
@@ -101,10 +108,6 @@ export const batchesMocks: {
           id: 'ab-1',
           name: 'Audit Board One',
         },
-        results: {
-          'choice-id-1': 1,
-          'choice-id-2': 2,
-        },
       },
       {
         id: 'batch-3',
@@ -113,10 +116,6 @@ export const batchesMocks: {
         auditBoard: {
           id: 'ab-1',
           name: 'Audit Board One',
-        },
-        results: {
-          'choice-id-1': 1,
-          'choice-id-2': 2,
         },
       },
     ],

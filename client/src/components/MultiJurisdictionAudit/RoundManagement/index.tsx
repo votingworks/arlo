@@ -97,7 +97,9 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
                 )
               }
             >
-              Download Aggregated Ballot Retrieval List for Round {roundNum}
+              Download Aggregated{' '}
+              {auditType === 'BALLOT_POLLING' ? 'Ballot' : 'Batch'} Retrieval
+              List for Round {roundNum}
             </FormButton>
             <FormButton
               verticalSpaced
