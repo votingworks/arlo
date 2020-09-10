@@ -185,6 +185,7 @@ def validate_values(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterat
                 try:
                     locale.atoi(value)
                 except ValueError:
+                    # pylint: disable=raise-missing-from
                     raise CSVParseError(f"Expected a number in {where}. Got: {value}.")
 
             if column.value_type is CSVValueType.EMAIL:
@@ -237,6 +238,7 @@ def decode_csv_file(file: bytes) -> str:
                 raise
             return file.decode(detect_result["encoding"])
     except UnicodeDecodeError:
+        # pylint: disable=raise-missing-from
         raise BadRequest(
             "Please submit a valid CSV."
             " If you are working with an Excel spreadsheet,"
