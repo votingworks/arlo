@@ -1,7 +1,7 @@
 import io, csv
-from typing import List
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, Conflict
+from sqlalchemy.orm import Query
 
 from . import api
 from ..auth import with_jurisdiction_access
@@ -13,15 +13,16 @@ from ..util.jsonschema import JSONDict, validate
 from ..util.group_by import group_by
 
 
-def already_audited_batch_ids(jurisdiction: Jurisdiction, round: Round) -> List[str]:
-    return [
-        batch_id
-        for batch_id, in Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
+    query: Query = (
+        Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .join(Round)
         .filter(Round.round_num < round.round_num)
-        .values(Batch.id)
-    ]
+        .with_entities(Batch.id)
+        .subquery()
+    )
+    return query
 
 
 @api.route(
@@ -38,7 +39,7 @@ def get_batch_retrieval_list(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round_id)
-        .filter(Batch.id.notin_(already_audited_batch_ids(jurisdiction, round)))
+        .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .join(AuditBoard)
         .group_by(AuditBoard.id, Batch.id)
         .order_by(AuditBoard.name, Batch.name)
@@ -84,7 +85,7 @@ def list_batches_for_jurisdiction(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round_id)
-        .filter(Batch.id.notin_(already_audited_batch_ids(jurisdiction, round)))
+        .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .outerjoin(AuditBoard)
         .order_by(AuditBoard.name, Batch.name)
         .all()
@@ -126,7 +127,7 @@ def validate_batch_results(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round.id)
-        .filter(Batch.id.notin_(already_audited_batch_ids(jurisdiction, round)))
+        .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .order_by(Batch.name)
         .all()
     )
@@ -201,7 +202,7 @@ def get_batch_results(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
         .filter_by(round_id=round_id)
-        .filter(Batch.id.notin_(already_audited_batch_ids(jurisdiction, round)))
+        .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .join(Jurisdiction)
         .join(Jurisdiction.contests)
         .join(ContestChoice)
