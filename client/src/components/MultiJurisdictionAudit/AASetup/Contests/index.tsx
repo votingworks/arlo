@@ -31,6 +31,7 @@ interface IProps {
   nextStage: ISidebarMenuItem
   prevStage: ISidebarMenuItem
   locked: boolean
+  isBatch?: boolean
 }
 
 const Contests: React.FC<IProps> = ({
@@ -38,6 +39,7 @@ const Contests: React.FC<IProps> = ({
   nextStage,
   prevStage,
   locked,
+  isBatch,
 }) => {
   const contestValues: IContest[] = [
     {
@@ -68,6 +70,9 @@ const Contests: React.FC<IProps> = ({
 
   if (!contests) return null // Still loading
   const filteredContests = contests.filter(c => c.isTargeted === isTargeted)
+
+  /* istanbul ignore next */
+  if (isBatch && !isTargeted && nextStage.activate) nextStage.activate() // skip to next stage if on opportunistic contests screen and during a batch audit (until batch audits support multiple contests)
 
   const submit = async (values: { contests: IContest[] }) => {
     const response = await updateContests(values.contests)
@@ -255,17 +260,19 @@ const Contests: React.FC<IProps> = ({
                       </Card>
                     )
                   })}
-                  <FormButtonBar>
-                    <FormButton
-                      type="button"
-                      onClick={() =>
-                        contestsArrayHelpers.push({ ...contestValues[0] })
-                      }
-                    >
-                      Add another {isTargeted ? 'targeted' : 'opportunistic'}{' '}
-                      contest
-                    </FormButton>
-                  </FormButtonBar>
+                  {!isBatch && ( // TODO support multiple contests in batch comparison audits
+                    <FormButtonBar>
+                      <FormButton
+                        type="button"
+                        onClick={() =>
+                          contestsArrayHelpers.push({ ...contestValues[0] })
+                        }
+                      >
+                        Add another {isTargeted ? 'targeted' : 'opportunistic'}{' '}
+                        contest
+                      </FormButton>
+                    </FormButtonBar>
+                  )}
                 </>
               )}
             />
