@@ -44,7 +44,7 @@ const BatchRoundDataEntry = ({ round }: IProps) => {
   if (!results || !allContests || !batches) return null
 
   // batch comparison audits only support a single contest for now
-  const contest = allContests.filter(c => c.isTargeted)[0]
+  const contest = allContests[0]
 
   const alreadySubmittedResults = Object.values(results).some(a =>
     Object.values(a).some(b => b)

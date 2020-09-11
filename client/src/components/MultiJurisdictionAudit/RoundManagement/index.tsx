@@ -124,7 +124,7 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
                 <QRs passphrases={auditBoards.map(b => b.passphrase)} />
                 <RoundProgress auditBoards={auditBoards} round={round} />
               </>
-            ) : auditType === 'BATCH_COMPARISON' ? (
+            ) : auditType === 'BATCH_COMPARISON' ? ( // batch comparison audits are always offline
               <BatchRoundDataEntry round={round} />
             ) : (
               <RoundDataEntry round={round} />

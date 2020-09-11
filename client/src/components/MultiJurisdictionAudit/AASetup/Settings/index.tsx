@@ -46,7 +46,7 @@ const Settings: React.FC<IProps> = ({
     randomSeed: randomSeed === null ? '' : randomSeed,
     riskLimit: riskLimit === null ? 10 : riskLimit,
     online:
-      auditType === 'BATCH_COMPARISON'
+      auditType === 'BATCH_COMPARISON' // batch comparison audits are always offline
         ? false
         : online === null
         ? true

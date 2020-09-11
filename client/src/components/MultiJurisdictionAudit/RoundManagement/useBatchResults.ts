@@ -87,8 +87,6 @@ const useBatchResults = (
   const [batches, setBatches] = useState<IBatch[] | null>(null)
 
   const updateResults = async (newResults: IResultValues): Promise<boolean> => {
-    /* istanbul ignore next */
-    if (!results) return false
     try {
       await api(
         `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/results`,
