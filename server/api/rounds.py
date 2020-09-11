@@ -124,6 +124,7 @@ BatchTallies = Dict[Tuple[str, str], Dict[str, Dict[str, int]]]
 
 def batch_tallies(election: Election) -> BatchTallies:
     # We only support one contest for batch audits
+    assert len(list(election.contests)) == 1
     contest = list(election.contests)[0]
 
     # Validate the batch tallies files. We can't do this validation when they
@@ -183,6 +184,7 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
         key=lambda result: (result[0], result[1]),  # (jurisdiction_name, batch_name)
     )
     # We only support one contest for batch audits
+    assert len(list(election.contests)) == 1
     contest_id = list(election.contests)[0].id
     return {
         batch_key: {
@@ -453,7 +455,8 @@ def sample_batches(
     contests: List[Contest],
     sample_sizes: Dict[str, int],
 ):
-    # We currently only support one contest for batch audits
+    # We only support one contest for batch audits
+    assert len(contests) == 1
     contest = contests[0]
 
     num_previously_sampled = (

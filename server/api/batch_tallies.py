@@ -26,6 +26,7 @@ def process_batch_tallies_file(
     def process():
         # We only support one contest for batch audits, so we can just take the
         # first contest from the jurisdiction's universe.
+        assert len(jurisdiction.contests) == 1
         contest = jurisdiction.contests[0]
 
         columns = [CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True)] + [
