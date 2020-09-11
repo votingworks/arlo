@@ -75,7 +75,8 @@ const postRound = async (
 }
 
 const useSampleSizes = (
-  electionId: string
+  electionId: string,
+  shouldFetch: boolean
 ): [
   IStringSampleSizeOptions | null,
   (sampleSizes: IStringSampleSizes) => Promise<boolean>
@@ -100,9 +101,9 @@ const useSampleSizes = (
 
   useEffect(() => {
     ;(async () => {
-      setSampleSizeOptions(await loadSampleSizes(electionId))
+      if (shouldFetch) setSampleSizeOptions(await loadSampleSizes(electionId))
     })()
-  }, [electionId])
+  }, [electionId, shouldFetch])
 
   return [sampleSizeOptions, uploadSampleSizes]
 }

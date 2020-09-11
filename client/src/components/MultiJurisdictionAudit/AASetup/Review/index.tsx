@@ -53,7 +53,16 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const [sampleSizes, setSampleSizes] = useState<IFormOptions>({})
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
-  const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(electionId)
+
+  const talliesUploadsCompleted = jurisdictions.every(
+    j =>
+      j.batchTallies.processing &&
+      j.batchTallies.processing.status === FileProcessingStatus.PROCESSED
+  )
+  const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(
+    electionId,
+    auditType !== 'BATCH_COMPARISON' || talliesUploadsCompleted // do not fetch sample sizes if we don't have all batch tallies files for a batch comparison audit
+  )
 
   const submit = async () => {
     if (
@@ -197,110 +206,118 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       </ElevatedCard>
       <br />
       <H4>Sample Size</H4>
-      <Formik
-        initialValues={{
-          sampleSizes: initialValues,
-        }}
-        enableReinitialize
-        onSubmit={({ sampleSizes: sizes }) => {
-          setSampleSizes(sizes)
-          setIsConfirmDialogOpen(true)
-        }}
-      >
-        {({
-          values,
-          handleSubmit,
-          setFieldValue,
-        }: FormikProps<{
-          sampleSizes: { [key: string]: IStringSampleSizeOption }
-        }>) => (
-          <Form data-testid="sample-size-form">
-            {sampleSizeOptions && (
-              <FormSection>
-                <FormSectionDescription>
-                  Choose the initial sample size for each contest you would like
-                  to use for Round 1 of the audit from the options below.
-                </FormSectionDescription>
-                {targetedContests.map(contest => {
-                  const currentOption = getIn(
-                    values,
-                    `sampleSizes[${contest.id}]`
-                  )
-                  return (
-                    <ElevatedCard key={contest.id}>
-                      <FormSectionDescription>
-                        <H4>{contest.name}</H4>
-                        <RadioGroup
-                          name={`sampleSizes[${contest.id}]`}
-                          onChange={e => {
-                            const selectedOption = sampleSizeOptions[
-                              contest.id
-                            ].find(c => c.key === e.currentTarget.value)
-                            setFieldValue(
-                              `sampleSizes[${contest.id}]`,
-                              selectedOption
-                            )
-                          }}
-                          selectedValue={getIn(
-                            values,
-                            `sampleSizes[${contest.id}][key]`
-                          )}
-                          disabled={locked}
-                        >
-                          {sampleSizeOptions[contest.id].map(
-                            (option: ISampleSizeOption) => {
-                              return option.key === 'custom' ? (
-                                <Radio value="custom" key={option.key}>
-                                  Enter your own sample size (not recommended)
-                                </Radio>
-                              ) : (
-                                <Radio value={option.key} key={option.key}>
-                                  {option.key === 'asn'
-                                    ? 'BRAVO Average Sample Number: '
-                                    : ''}
-                                  {`${
-                                    option.size
-                                  } samples (${percentFormatter.format(
-                                    option.prob as number // never returns null on this endpoint source
-                                  )} chance of reaching risk limit and completing the audit in one round)`}
-                                </Radio>
+      {auditType !== 'BATCH_COMPARISON' || talliesUploadsCompleted ? (
+        <p>
+          Waiting for jurisdiction data to calculate required number of batches
+          …
+        </p>
+      ) : (
+        <Formik
+          initialValues={{
+            sampleSizes: initialValues,
+          }}
+          enableReinitialize
+          onSubmit={({ sampleSizes: sizes }) => {
+            setSampleSizes(sizes)
+            setIsConfirmDialogOpen(true)
+          }}
+        >
+          {({
+            values,
+            handleSubmit,
+            setFieldValue,
+          }: FormikProps<{
+            sampleSizes: { [key: string]: IStringSampleSizeOption }
+          }>) => (
+            <Form data-testid="sample-size-form">
+              {sampleSizeOptions && (
+                <FormSection>
+                  <FormSectionDescription>
+                    Choose the initial sample size for each contest you would
+                    like to use for Round 1 of the audit from the options below.
+                  </FormSectionDescription>
+                  {targetedContests.map(contest => {
+                    const currentOption = getIn(
+                      values,
+                      `sampleSizes[${contest.id}]`
+                    )
+                    return (
+                      <ElevatedCard key={contest.id}>
+                        <FormSectionDescription>
+                          <H4>{contest.name}</H4>
+                          <RadioGroup
+                            name={`sampleSizes[${contest.id}]`}
+                            onChange={e => {
+                              const selectedOption = sampleSizeOptions[
+                                contest.id
+                              ].find(c => c.key === e.currentTarget.value)
+                              setFieldValue(
+                                `sampleSizes[${contest.id}]`,
+                                selectedOption
                               )
-                            }
-                          )}
-                        </RadioGroup>
-                        {currentOption && currentOption.key === 'custom' && (
-                          <Field
-                            component={FormField}
-                            name={`sampleSizes[${contest.id}][size]`}
-                            type="text"
-                            validate={testNumber(
-                              Number(contest.totalBallotsCast),
-                              `Must be less than or equal to: ${contest.totalBallotsCast} (the total number of ballots in this targeted contest)`
+                            }}
+                            selectedValue={getIn(
+                              values,
+                              `sampleSizes[${contest.id}][key]`
                             )}
-                          />
-                        )}
-                      </FormSectionDescription>
-                    </ElevatedCard>
-                  )
-                })}
-              </FormSection>
-            )}
-            <FormButtonBar>
-              <FormButton onClick={prevStage.activate}>Back</FormButton>
-              <FormButton
-                intent="primary"
-                disabled={
-                  locked ||
-                  !isSetupComplete(jurisdictions, contests, auditSettings)
-                }
-                onClick={handleSubmit}
-              >
-                Launch Audit
-              </FormButton>
-            </FormButtonBar>
-          </Form>
-        )}
-      </Formik>
+                            disabled={locked}
+                          >
+                            {sampleSizeOptions[contest.id].map(
+                              (option: ISampleSizeOption) => {
+                                return option.key === 'custom' ? (
+                                  <Radio value="custom" key={option.key}>
+                                    Enter your own sample size (not recommended)
+                                  </Radio>
+                                ) : (
+                                  <Radio value={option.key} key={option.key}>
+                                    {option.key === 'asn'
+                                      ? 'BRAVO Average Sample Number: '
+                                      : ''}
+                                    {`${option.size} samples`}
+                                    {option.prob
+                                      ? ` (${percentFormatter.format(
+                                          option.prob
+                                        )} chance of reaching risk limit and completing the audit in one round)`
+                                      : ''}
+                                  </Radio>
+                                )
+                              }
+                            )}
+                          </RadioGroup>
+                          {currentOption && currentOption.key === 'custom' && (
+                            <Field
+                              component={FormField}
+                              name={`sampleSizes[${contest.id}][size]`}
+                              type="text"
+                              validate={testNumber(
+                                Number(contest.totalBallotsCast),
+                                `Must be less than or equal to: ${contest.totalBallotsCast} (the total number of ballots in this targeted contest)`
+                              )}
+                            />
+                          )}
+                        </FormSectionDescription>
+                      </ElevatedCard>
+                    )
+                  })}
+                </FormSection>
+              )}
+              <FormButtonBar>
+                <FormButton onClick={prevStage.activate}>Back</FormButton>
+                <FormButton
+                  intent="primary"
+                  disabled={
+                    locked ||
+                    !isSetupComplete(jurisdictions, contests, auditSettings)
+                  }
+                  onClick={handleSubmit}
+                >
+                  Launch Audit
+                </FormButton>
+              </FormButtonBar>
+            </Form>
+          )}
+        </Formik>
+      )}
       <ConfirmLaunch
         isOpen={isConfirmDialogOpen}
         handleClose={() => setIsConfirmDialogOpen(false)}
