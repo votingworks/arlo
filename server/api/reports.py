@@ -321,7 +321,9 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
 
-    contest = list(election.contests)[0]  # We only support one contest for batch audits
+    # We only support one contest for batch audits
+    assert len(list(election.contests)) == 1
+    contest = list(election.contests)[0]
     rows.append(
         [
             "Jurisdiction Name",

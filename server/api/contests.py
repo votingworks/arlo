@@ -114,6 +114,12 @@ def validate_contests(contests: List[JSONDict], election: Election):
 
     validate(contests, {"type": "array", "items": CONTEST_SCHEMA})
 
+    if not any(contest["isTargeted"] for contest in contests):
+        raise BadRequest("Must have at least one targeted contest")
+
+    if election.audit_type == AuditType.BATCH_COMPARISON and len(contests) > 1:
+        raise BadRequest("Batch comparison audits may only have one contest.")
+
     for contest in contests:
         total_votes = sum(c["numVotes"] for c in contest["choices"])
         total_allowed_votes = contest["totalBallotsCast"] * contest["votesAllowed"]

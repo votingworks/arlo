@@ -1,9 +1,56 @@
+import io
 from typing import List
 from flask.testing import FlaskClient
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...util.group_by import group_by
+from ...bgcompute import bgcompute_update_batch_tallies_file
+
+
+def test_batch_comparison_only_one_contest_allowed(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    contests = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 1",
+            "isTargeted": True,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 5000},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 2500},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 2500},
+            ],
+            "totalBallotsCast": 5000,
+            "numWinners": 1,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 2",
+            "isTargeted": False,
+            "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 5000},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 2500},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 2500},
+            ],
+            "totalBallotsCast": 5000,
+            "numWinners": 1,
+            "votesAllowed": 2,
+            "jurisdictionIds": jurisdiction_ids[:2],
+        },
+    ]
+    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Batch comparison audits may only have one contest.",
+            }
+        ]
+    }
 
 
 def test_batch_comparison_sample_size(
@@ -21,6 +68,82 @@ def test_batch_comparison_sample_size(
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     assert len(sample_size_options) == 1
     snapshot.assert_match(sample_size_options[contest_id])
+
+
+def test_batch_comparison_without_all_batch_tallies(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_id: str,
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+):
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Some jurisdictions haven't uploaded their batch tallies files yet.",
+            }
+        ]
+    }
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: 1}},
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Some jurisdictions haven't uploaded their batch tallies files yet.",
+            }
+        ]
+    }
+
+
+def test_batch_comparison_too_many_votes(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    contest_id: str,
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    batch_tallies,  # pylint: disable=unused-argument
+):
+    batch_tallies_file = (
+        b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+        b"Batch 1,1000,0,0\n"  # Too many votes for candidate 1
+        b"Batch 2,500,250,250\n"
+        b"Batch 3,500,250,250\n"
+        b"Batch 4,500,250,250\n"
+        b"Batch 5,100,50,50\n"
+        b"Batch 6,100,50,50\n"
+    )
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies",
+        data={"batchTallies": (io.BytesIO(batch_tallies_file), "batchTallies.csv",)},
+    )
+    assert_ok(rv)
+    bgcompute_update_batch_tallies_file()
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest_id: 1}},
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Total votes in batch tallies files for contest choice candidate 1 (5200) is greater than the reported number of votes for that choice (5000).",
+            }
+        ]
+    }
 
 
 def test_batch_comparison_round_1(

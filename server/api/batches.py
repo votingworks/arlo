@@ -135,7 +135,8 @@ def validate_batch_results(
     if set(batch_results.keys()) != {batch.id for batch in batches}:
         raise BadRequest("Invalid batch ids")
 
-    # For now, we only support one contest for batch audits
+    # We only support one contest for batch audits
+    assert len(list(jurisdiction.contests)) == 1
     contest = list(jurisdiction.contests)[0]
     contest_choice_ids = {choice.id for choice in contest.choices}
 

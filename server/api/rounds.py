@@ -1,6 +1,6 @@
 import uuid
 from collections import defaultdict
-from typing import Optional, NamedTuple, List, Tuple, Dict
+from typing import Optional, NamedTuple, List, Tuple, Dict, cast as typing_cast
 from datetime import datetime
 from flask import jsonify, request
 from jsonschema import validate
@@ -122,13 +122,37 @@ def cumulative_contest_results(contest: Contest) -> Dict[str, int]:
 BatchTallies = Dict[Tuple[str, str], Dict[str, Dict[str, int]]]
 
 
-def batch_tallies(election: Election,) -> BatchTallies:
+def batch_tallies(election: Election) -> BatchTallies:
+    # We only support one contest for batch audits
+    assert len(list(election.contests)) == 1
+    contest = list(election.contests)[0]
+
+    # Validate the batch tallies files. We can't do this validation when they
+    # are uploaded because we need all of the jurisdictions' files.
+    total_votes_by_choice: Dict[str, int] = defaultdict(int)
+    for jurisdiction in contest.jurisdictions:
+        batch_tallies = typing_cast(BatchTallies, jurisdiction.batch_tallies)
+        if batch_tallies is None:
+            raise Conflict(
+                "Some jurisdictions haven't uploaded their batch tallies files yet."
+            )
+        for tally in batch_tallies.values():
+            for choice_id, votes in tally[contest.id].items():
+                total_votes_by_choice[choice_id] += votes
+
+    for choice in contest.choices:
+        if total_votes_by_choice[choice.id] > choice.num_votes:
+            raise Conflict(
+                f"Total votes in batch tallies files for contest choice {choice.name}"
+                f" ({total_votes_by_choice[choice.id]}) is greater than the"
+                f" reported number of votes for that choice ({choice.num_votes})."
+            )
+
     # Key each batch by jurisdiction name and batch name since batch names
     # are only guaranteed unique within a jurisdiction
     return {
         (jurisdiction.name, batch_name): tally
-        for jurisdiction in election.jurisdictions
-        if jurisdiction.batch_tallies
+        for jurisdiction in contest.jurisdictions
         for batch_name, tally in jurisdiction.batch_tallies.items()  # type: ignore
     }
 
@@ -160,6 +184,7 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
         key=lambda result: (result[0], result[1]),  # (jurisdiction_name, batch_name)
     )
     # We only support one contest for batch audits
+    assert len(list(election.contests)) == 1
     contest_id = list(election.contests)[0].id
     return {
         batch_key: {
@@ -430,7 +455,8 @@ def sample_batches(
     contests: List[Contest],
     sample_sizes: Dict[str, int],
 ):
-    # We currently only support one contest for batch audits
+    # We only support one contest for batch audits
+    assert len(contests) == 1
     contest = contests[0]
 
     num_previously_sampled = (
