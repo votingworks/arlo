@@ -26,13 +26,8 @@ import FormSection, {
 import FormWrapper from '../Atoms/Form/FormWrapper'
 import FormButton from '../Atoms/Form/FormButton'
 import FormButtonBar from '../Atoms/Form/FormButtonBar'
-import {
-  IJurisdiction,
-  IAudit,
-  IUnkeyedSampleSizeOption,
-  IErrorResponse,
-} from '../../types'
-import { api, testNumber, checkAndToast, poll } from '../utilities'
+import { IJurisdiction, IAudit, IUnkeyedSampleSizeOption } from '../../types'
+import { api, testNumber, poll } from '../utilities'
 import { generateOptions, ErrorLabel } from '../Atoms/Form/_helpers'
 import H2Title from '../Atoms/H2Title'
 import FormField from '../Atoms/Form/FormField'
@@ -106,98 +101,94 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
   const sampleSizeSelected = audit.rounds[0].contests.every(c => !!c.sampleSize)
 
   const handlePost = async (values: ISelectBallotsToAuditValues) => {
-    try {
-      const auditBoards = [
-        ...formattedUpTo(parseNumber(values.auditBoards)),
-      ].map(auditBoardIndex => {
+    const auditBoards = [...formattedUpTo(parseNumber(values.auditBoards))].map(
+      auditBoardIndex => {
         return {
           id: uuidv4(),
           name: `Audit Board #${auditBoardIndex}`,
           members: [],
         }
-      })
-
-      // upload jurisdictions
-      const data: IJurisdiction[] = [
-        {
-          id: uuidv4(),
-          name: 'Jurisdiction 1',
-          contests: audit.contests.map(contest => contest.id),
-          auditBoards,
-        },
-      ]
-      setIsLoading(true)
-      /* istanbul ignore else */
-      if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
-        const size =
-          values.sampleSize[audit.contests[0].id] === 'custom'
-            ? values.customSampleSize[audit.contests[0].id]
-            : values.sampleSize[audit.contests[0].id]
-        const body = {
-          size, // until multiple contests are supported
-        }
-        const response: IErrorResponse = await api(
-          `/election/${electionId}/audit/sample-size`,
-          {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        )
-        if (checkAndToast(response)) return
       }
-      const response: IErrorResponse = await api(
-        `/election/${electionId}/audit/jurisdictions`,
+    )
+
+    // upload jurisdictions
+    const data: IJurisdiction[] = [
+      {
+        id: uuidv4(),
+        name: 'Jurisdiction 1',
+        contests: audit.contests.map(contest => contest.id),
+        auditBoards,
+      },
+    ]
+    setIsLoading(true)
+    /* istanbul ignore else */
+    if (Object.values(values.sampleSize).some(sampleSize => !!sampleSize)) {
+      const size =
+        values.sampleSize[audit.contests[0].id] === 'custom'
+          ? values.customSampleSize[audit.contests[0].id]
+          : values.sampleSize[audit.contests[0].id]
+      const body = {
+        size, // until multiple contests are supported
+      }
+      const sampleSizeResponse = await api(
+        `/election/${electionId}/audit/sample-size`,
         {
           method: 'POST',
-          body: JSON.stringify({ jurisdictions: data }),
+          body: JSON.stringify(body),
           headers: {
             'Content-Type': 'application/json',
           },
         }
       )
-      if (checkAndToast(response)) return
-
-      const newStatus = await getStatus()
-      const jurisdictionID: string = newStatus.jurisdictions[0].id
-
-      /* istanbul ignore else */
-      if (values.manifest) {
-        const formData: FormData = new FormData()
-        formData.append('manifest', values.manifest, values.manifest.name)
-        const errorResponse: IErrorResponse = await api(
-          `/election/${electionId}/jurisdiction/${jurisdictionID}/manifest`,
-          {
-            method: 'PUT',
-            body: formData,
-          }
-        )
-        if (checkAndToast(errorResponse)) return
-      }
-
-      const condition = async () => {
-        const { jurisdictions } = await getStatus()
-        const { ballotManifest } = jurisdictions[0]
-        /* istanbul ignore next */
-        if (!ballotManifest) {
-          return false
-        }
-        const { processing } = ballotManifest
-        return (
-          !!processing &&
-          (processing.status === 'PROCESSED' || processing.status === 'ERRORED')
-        )
-      }
-      const complete = () => {
-        updateAudit()
-        setIsLoading(false)
-      }
-      poll(condition, complete, (err: Error) => toast.error(err.message))
-    } catch (err) {
-      toast.error(err.message)
+      if (!sampleSizeResponse) return
     }
+    const jurisdictionsResponse = await api(
+      `/election/${electionId}/audit/jurisdictions`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ jurisdictions: data }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    if (!jurisdictionsResponse) return
+
+    const newStatus = await getStatus()
+    const jurisdictionID: string = newStatus.jurisdictions[0].id
+
+    /* istanbul ignore else */
+    if (values.manifest) {
+      const formData: FormData = new FormData()
+      formData.append('manifest', values.manifest, values.manifest.name)
+      const fileResponse = await api(
+        `/election/${electionId}/jurisdiction/${jurisdictionID}/manifest`,
+        {
+          method: 'PUT',
+          body: formData,
+        }
+      )
+      if (!fileResponse) return
+    }
+
+    const condition = async () => {
+      const { jurisdictions } = await getStatus()
+      const { ballotManifest } = jurisdictions[0]
+      /* istanbul ignore next */
+      if (!ballotManifest) {
+        return false
+      }
+      const { processing } = ballotManifest
+      return (
+        !!processing &&
+        (processing.status === 'PROCESSED' || processing.status === 'ERRORED')
+      )
+    }
+    const complete = () => {
+      updateAudit()
+      setIsLoading(false)
+    }
+    poll(condition, complete, (err: Error) => toast.error(err.message))
   }
 
   const numberOfBoards =

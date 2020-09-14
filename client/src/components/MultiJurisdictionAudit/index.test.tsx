@@ -13,7 +13,6 @@ import {
   manifestFile,
   talliesFile,
 } from './useSetupMenuItems/_mocks'
-import * as utilities from '../utilities'
 import {
   routerTestProps,
   withMockFetch,
@@ -26,13 +25,6 @@ import { jaApiCalls, aaApiCalls } from './_mocks'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
-
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
-
-checkAndToastMock.mockReturnValue(false)
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'), // use actual for all non-hook parts
@@ -51,7 +43,6 @@ getJurisdictionFileStatusMock.mockReturnValue('PROCESSED')
 getRoundStatusMock.mockReturnValue(false)
 
 afterEach(() => {
-  checkAndToastMock.mockClear()
   paramsMock.mockReturnValue({
     electionId: '1',
     view: 'setup',

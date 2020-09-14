@@ -1,8 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Button } from '@blueprintjs/core'
-import { toast } from 'react-toastify'
-import { api, checkAndToast } from './utilities'
+import { api } from './utilities'
 import { IErrorResponse } from '../types'
 import { useAuthDataContext } from './UserContext'
 
@@ -20,18 +19,14 @@ const ResetButton: React.FC<IProps> = ({
   const { isAuthenticated } = useAuthDataContext()
   const resetButtonWrapper = document.getElementById('reset-button-wrapper')
   const reset = async () => {
-    try {
-      const response: IErrorResponse = await api(
-        `/election/${electionId}/audit/reset`,
-        { method: 'POST' }
-      )
-      if (checkAndToast(response)) {
-        return
-      }
-      updateAudit()
-    } catch (err) {
-      toast.error(err.message)
+    const response = await api<IErrorResponse>(
+      `/election/${electionId}/audit/reset`,
+      { method: 'POST' }
+    )
+    if (!response) {
+      return
     }
+    updateAudit()
   }
   if (resetButtonWrapper && !isAuthenticated) {
     return ReactDOM.createPortal(

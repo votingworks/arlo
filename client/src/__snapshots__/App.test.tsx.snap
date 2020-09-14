@@ -517,7 +517,34 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthentic
 <div>
   <div
     class="Toastify"
-  />
+  >
+    <div
+      class="Toastify__toast-container Toastify__toast-container--top-right"
+    >
+      <div
+        class="Toastify__toast Toastify__toast--error Toastify__bounce-enter--top-right"
+        style="animation-fill-mode: forwards; animation-duration: 0.75s;"
+      >
+        <div
+          class="Toastify__toast-body"
+          role="alert"
+        >
+          UNAUTHORIZED
+        </div>
+        <button
+          aria-label="close"
+          class="Toastify__close-button Toastify__close-button--error"
+          type="button"
+        >
+          ✖
+        </button>
+        <div
+          class="Toastify__progress-bar Toastify__progress-bar--animated Toastify__progress-bar--error"
+          style="animation-duration: 5000ms; animation-play-state: running; opacity: 1;"
+        />
+      </div>
+    </div>
+  </div>
   <div
     class="sc-btzYZH dFjlDG"
   >
@@ -948,7 +975,34 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthen
 <div>
   <div
     class="Toastify"
-  />
+  >
+    <div
+      class="Toastify__toast-container Toastify__toast-container--top-right"
+    >
+      <div
+        class="Toastify__toast Toastify__toast--error Toastify__bounce-enter--top-right"
+        style="animation-fill-mode: forwards; animation-duration: 0.75s;"
+      >
+        <div
+          class="Toastify__toast-body"
+          role="alert"
+        >
+          UNAUTHORIZED
+        </div>
+        <button
+          aria-label="close"
+          class="Toastify__close-button Toastify__close-button--error"
+          type="button"
+        >
+          ✖
+        </button>
+        <div
+          class="Toastify__progress-bar Toastify__progress-bar--animated Toastify__progress-bar--error"
+          style="animation-duration: 5000ms; animation-play-state: running; opacity: 1;"
+        />
+      </div>
+    </div>
+  </div>
   <div
     class="sc-btzYZH dFjlDG"
   >

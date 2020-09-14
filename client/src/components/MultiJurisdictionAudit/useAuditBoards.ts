@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import { api } from '../utilities'
 import { IRound } from './useRoundsJurisdictionAdmin'
 
@@ -24,15 +23,11 @@ const getAuditBoards = async (
   jurisdictionId: string,
   roundId: string
 ): Promise<IAuditBoard[] | null> => {
-  try {
-    const { auditBoards } = await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board`
-    )
-    return auditBoards
-  } catch (err) {
-    toast.error(err.message)
-    return null
-  }
+  const response = await api<{ auditBoards: IAuditBoard[] }>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board`
+  )
+  if (!response) return null
+  return response.auditBoards
 }
 
 const postAuditBoards = async (
@@ -41,22 +36,17 @@ const postAuditBoards = async (
   roundId: string,
   auditBoards: { name: string }[]
 ): Promise<boolean> => {
-  try {
-    await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(auditBoards),
-      }
-    )
-    return true
-  } catch (err) {
-    toast.error(err.message)
-    return false
-  }
+  const response = await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(auditBoards),
+    }
+  )
+  return !!response
 }
 
 const useAuditBoards = (

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { H1 } from '@blueprintjs/core'
 import { Route, Switch, useParams, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import { toast } from 'react-toastify'
 import {
   IAuditBoard,
   IBallotInterpretation,
@@ -21,7 +20,7 @@ const PaddedInner = styled(Inner)`
   padding-top: 30px;
 `
 
-const loadAuditBoard = async (): Promise<IAuditBoard> => {
+const loadAuditBoard = async (): Promise<IAuditBoard | null> => {
   return api(`/me`)
 }
 
@@ -31,10 +30,13 @@ const loadContests = async (
   roundId: string,
   auditBoardId: string
 ): Promise<IContest[]> => {
-  const { contests } = await api(
+  const response = await api<{ contests: IContest[] }>(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/contest`
   )
-  return contests
+  if (!response) {
+    return []
+  }
+  return response.contests
 }
 
 const loadBallots = async (
@@ -43,10 +45,13 @@ const loadBallots = async (
   roundId: string,
   auditBoardId: string
 ): Promise<IBallot[]> => {
-  const { ballots } = await api(
+  const response = await api<{ ballots: IBallot[] }>(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/ballots`
   )
-  return ballots
+  if (!response) {
+    return []
+  }
+  return response.ballots
 }
 
 const putMembers = async (
@@ -55,21 +60,18 @@ const putMembers = async (
   roundId: string,
   auditBoardId: string,
   members: IAuditBoardMember[]
-) => {
-  try {
-    await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/members`,
-      {
-        method: 'PUT',
-        body: JSON.stringify(members),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-  } catch (err) {
-    toast.error(err.message)
-  }
+): Promise<boolean> => {
+  const response = await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/members`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(members),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  )
+  return !!response
 }
 
 const putBallotAudit = async (
@@ -80,21 +82,18 @@ const putBallotAudit = async (
   ballotId: string,
   status: BallotStatus,
   interpretations: IBallotInterpretation[]
-) => {
-  try {
-    await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/ballots/${ballotId}`,
-      {
-        method: 'PUT',
-        body: JSON.stringify({ status, interpretations }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-  } catch (err) {
-    toast.error(err.message)
-  }
+): Promise<boolean> => {
+  const response = await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/ballots/${ballotId}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify({ status, interpretations }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  )
+  return !!response
 }
 
 const postSignoff = async (
@@ -103,24 +102,21 @@ const postSignoff = async (
   roundId: string,
   auditBoardId: string,
   memberNames: string[]
-) => {
-  try {
-    await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/sign-off`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          memberName1: memberNames[0] || '',
-          memberName2: memberNames[1] || '',
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-  } catch (err) {
-    toast.error(err.message)
-  }
+): Promise<boolean> => {
+  const response = await api(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/audit-board/${auditBoardId}/sign-off`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        memberName1: memberNames[0] || '',
+        memberName2: memberNames[1] || '',
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  )
+  return !!response
 }
 
 const DataEntry: React.FC = () => {
@@ -135,7 +131,9 @@ const DataEntry: React.FC = () => {
 
   useEffect(() => {
     ;(async () => {
-      setAuditBoard(await loadAuditBoard())
+      const response = await loadAuditBoard()
+      if (!response) return
+      setAuditBoard(response)
     })()
   }, [electionId, auditBoardId])
 
@@ -150,14 +148,17 @@ const DataEntry: React.FC = () => {
   }, [electionId, auditBoard])
 
   const submitMembers = async (members: IAuditBoardMember[]) => {
-    await putMembers(
+    const response1 = await putMembers(
       electionId,
       auditBoard!.jurisdictionId,
       auditBoard!.roundId,
       auditBoardId,
       members
     )
-    setAuditBoard(await loadAuditBoard())
+    if (!response1) return
+    const response2 = await loadAuditBoard()
+    if (!response2) return
+    setAuditBoard(response2)
   }
 
   if (auditBoard && auditBoard.members.length === 0) {
@@ -214,7 +215,7 @@ const DataEntry: React.FC = () => {
     interpretations: IBallotInterpretation[]
   ) => {
     const { jurisdictionId, roundId } = auditBoard
-    await putBallotAudit(
+    const response1 = await putBallotAudit(
       electionId,
       jurisdictionId,
       roundId,
@@ -223,20 +224,29 @@ const DataEntry: React.FC = () => {
       status,
       interpretations
     )
-    setBallots(
-      await loadBallots(electionId, jurisdictionId, roundId, auditBoardId)
+    if (!response1) return
+    const response2 = await loadBallots(
+      electionId,
+      jurisdictionId,
+      roundId,
+      auditBoardId
     )
+    if (!response2) return
+    setBallots(response2)
   }
 
   const submitSignoff = async (memberNames: string[]) => {
-    await postSignoff(
+    const response1 = await postSignoff(
       electionId,
       auditBoard.jurisdictionId,
       auditBoard.roundId,
       auditBoardId,
       memberNames
     )
-    setAuditBoard(await loadAuditBoard())
+    if (!response1) return
+    const response2 = await loadAuditBoard()
+    if (!response2) return
+    setAuditBoard(response2)
   }
 
   if (auditBoard.signedOffAt) {

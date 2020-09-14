@@ -31,7 +31,7 @@ afterEach(() => {
 
 describe('Header', () => {
   it('renders correctly', async () => {
-    apiMock.mockRejectedValue(async () => ({}))
+    apiMock.mockImplementation(async () => false)
     const { container } = renderHeader('/election/1')
     await screen.findAllByAltText('Arlo, by VotingWorks')
     expect(container).toMatchSnapshot()
@@ -53,7 +53,7 @@ describe('Header', () => {
   })
 
   it('does not show logout button if not authenticated', async () => {
-    apiMock.mockRejectedValue(async () => ({}))
+    apiMock.mockImplementation(async () => false)
     renderHeader('/election/1')
 
     const loginButton = screen.queryByText('Log out')
@@ -66,7 +66,7 @@ describe('Header', () => {
 
   it('does not show logout button if the authentication verification has a server error', async () => {
     checkAndToastMock.mockReturnValue(true)
-    apiMock.mockRejectedValue(async () => ({}))
+    apiMock.mockImplementation(async () => false)
     renderHeader('/election/1')
 
     const loginButton = screen.queryByText('Log out')

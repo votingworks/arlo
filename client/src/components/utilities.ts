@@ -13,18 +13,23 @@ const tryJson = (responseText: string) => {
 export const api = async <T>(
   endpoint: string,
   options?: RequestInit
-): Promise<T> => {
-  const response = await fetch(`/api${endpoint}`, options)
-  if (!response.ok) {
-    const responseText = await response.text()
-    const { errors } = tryJson(responseText)
-    const error =
-      errors && errors.length ? errors[0] : { message: response.statusText }
-    const errorData = { ...error, responseText, response }
-    console.error(responseText) // eslint-disable-line no-console
-    throw errorData
+): Promise<T | null> => {
+  try {
+    const response = await fetch(`/api${endpoint}`, options)
+    if (!response.ok) {
+      const responseText = await response.text()
+      const { errors } = tryJson(responseText)
+      const error =
+        errors && errors.length ? errors[0] : { message: response.statusText }
+      const errorData = { ...error, responseText, response }
+      console.error(responseText) // eslint-disable-line no-console
+      throw errorData
+    }
+    return response.json() as Promise<T>
+  } catch (err) {
+    toast.error(err.message)
+    return null
   }
-  return response.json() as Promise<T>
 }
 
 export const apiDownload = (endpoint: string) => window.open(`/api${endpoint}`)

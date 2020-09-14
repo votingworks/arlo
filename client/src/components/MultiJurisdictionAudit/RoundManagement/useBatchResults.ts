@@ -45,16 +45,11 @@ const getResults = async (
   jurisdictionId: string,
   roundId: string
 ): Promise<IResultValues | null> => {
-  try {
-    const response: IResultValues = await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/results`
-    )
-    return reformatResults(response, false)
-  } catch (err) /* istanbul ignore next */ {
-    // TODO move toasting into api
-    toast.error(err.message)
-    return null
-  }
+  const response = await api<IResultValues>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/results`
+  )
+  if (!response) return null
+  return reformatResults(response, false)
 }
 
 const getBatches = async (
@@ -62,16 +57,11 @@ const getBatches = async (
   jurisdictionId: string,
   roundId: string
 ): Promise<IBatch[] | null> => {
-  try {
-    const { batches }: { batches: IBatch[] } = await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches`
-    )
-    return batches
-  } catch (err) /* istanbul ignore next */ {
-    // TODO move toasting into api
-    toast.error(err.message)
-    return null
-  }
+  const response = await api<{ batches: IBatch[] }>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches`
+  )
+  if (!response) return null
+  return response.batches
 }
 
 const useBatchResults = (

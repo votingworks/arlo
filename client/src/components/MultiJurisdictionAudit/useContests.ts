@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import uuidv4 from 'uuidv4'
 import { api } from '../utilities'
 import { IContest } from '../../types'
@@ -38,16 +37,11 @@ export const numberifyContest = (contest: IContest): IContestNumbered => {
 }
 
 const getContests = async (electionId: string): Promise<IContest[] | null> => {
-  try {
-    const response: { contests: IContest[] } = await api(
-      `/election/${electionId}/contest`
-    )
-    return response.contests
-  } catch (err) /* istanbul ignore next */ {
-    // TODO move error testing into api.
-    toast.error(err.message)
-    return null
-  }
+  const response = await api<{ contests: IContest[] }>(
+    `/election/${electionId}/contest`
+  )
+  if (!response) return null
+  return response.contests
 }
 
 const useContests = (
@@ -74,20 +68,15 @@ const useContests = (
       // merge in all the new contests that weren't found by id
       ...newContests,
     ]
-    try {
-      await api(`/election/${electionId}/contest`, {
-        method: 'PUT',
-        // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
-        body: JSON.stringify(mergedContests.map(c => numberifyContest(c))),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-    } catch (err) /* istanbul ignore next */ {
-      // TODO move error testing into api.
-      toast.error(err.message)
-      return false
-    }
+    const response = await api(`/election/${electionId}/contest`, {
+      method: 'PUT',
+      // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
+      body: JSON.stringify(mergedContests.map(c => numberifyContest(c))),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    if (!response) return false
     setContests(mergedContests)
     return true
   }

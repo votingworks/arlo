@@ -1,5 +1,4 @@
 import React from 'react'
-import { toast } from 'react-toastify'
 import { BrowserRouter as Router, useParams } from 'react-router-dom'
 import { render, fireEvent, screen } from '@testing-library/react'
 import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from '.'
@@ -30,11 +29,8 @@ const apiMock: jest.SpyInstance<
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
 
-const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
-
 afterEach(() => {
   apiMock.mockClear()
-  toastSpy.mockClear()
 })
 
 describe('StatusBox', () => {
@@ -163,9 +159,7 @@ describe('StatusBox', () => {
     })
 
     it('handles an error when trying to create next round', () => {
-      apiMock.mockImplementationOnce(() => {
-        throw new Error('A test error')
-      })
+      apiMock.mockImplementationOnce(async () => false)
       render(
         <Router>
           <AuditAdminStatusBox
@@ -189,8 +183,6 @@ describe('StatusBox', () => {
           'Content-Type': 'application/json',
         },
       })
-      expect(toastSpy).toHaveBeenCalledTimes(1)
-      expect(toastSpy).toBeCalledWith('A test error')
     })
 
     it('renders audit completion state', () => {

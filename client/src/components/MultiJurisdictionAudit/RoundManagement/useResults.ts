@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import { api } from '../../utilities'
 
 export interface IResultValues {
@@ -35,16 +34,11 @@ const getResults = async (
   jurisdictionId: string,
   roundId: string
 ): Promise<IResultValues | null> => {
-  try {
-    const response: IResultValues = await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results`
-    )
-    return reformatResults(response, false)
-  } catch (err) /* istanbul ignore next */ {
-    // TODO move toasting into api
-    toast.error(err.message)
-    return null
-  }
+  const response = await api<IResultValues>(
+    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results`
+  )
+  if (!response) return null
+  return reformatResults(response, false)
 }
 
 const useResults = (
@@ -55,25 +49,19 @@ const useResults = (
   const [results, setResults] = useState<IResultValues | null>(null)
 
   const updateResults = async (newResults: IResultValues): Promise<boolean> => {
-    try {
-      await api(
-        `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results`,
-        {
-          method: 'PUT',
-          // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
-          body: JSON.stringify(numberifyResults(newResults)),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-    } catch (err) /* istanbul ignore next */ {
-      // TODO move toasting into api
-      toast.error(err.message)
-      return false
-    }
+    const response = await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results`,
+      {
+        method: 'PUT',
+        // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
+        body: JSON.stringify(numberifyResults(newResults)),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
     setResults(newResults)
-    return true
+    return !!response
   }
 
   useEffect(() => {
