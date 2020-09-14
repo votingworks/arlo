@@ -1,23 +1,88 @@
 version: 2.1
 orbs:
   cypress: cypress-io/cypress@1
-jobs:
-  build-and-test:
+
+executors:
+  arlo:
     docker:
       - image: circleci/python:3.8.3-node-browsers
         environment:
           DATABASE_URL: postgresql://root@localhost:5432/arlo-test
           FLASK_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
+      - image: circleci/postgres:9.6.3-alpine-ram
         environment:
           POSTGRES_USER: root
           POSTGRES_DB: arlo-test
+
+commands:
+  restore-pip-cache:
     steps:
-      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
+      - restore_cache:
+          name: Restore Pip Cache
+          keys:
+            - pip-packages-v6-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v6-{{ .Branch }}-
+            - pip-packages-v6-
+  save-pip-cache:
+    steps:
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
+      - save_cache:
+          name: Save Pip Cache
+          key: pip-packages-v6-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ~/.local
+            - ~/.cache
+
+  pip-install:
+    steps:
       - run:
           name: install
           command: |
-            make install install-development
+            pipenv install --dev
+
+  create-data-model:
+    steps:
+      - run:
+          name: create data model
+          command: |
+            make resetdb
+
+  restore-yarn-cache:
+    steps:
+      - restore_cache:
+          name: Restore Yarn Cache
+          keys:
+            - yarn-packages-v6-{{ .Branch }}-{{ checksum "yarn.lock" }}
+
+  save-yarn-cache:
+    steps:
+      - save_cache:
+          name: Save Yarn Cache
+          key: yarn-packages-v6-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+            - ~/.cache/Cypress
+            - node_modules
+            - client/node_modules
+  restore-caches:
+    steps:
+      - restore-pip-cache
+      - restore-yarn-cache
+
+  install-yarn:
+    steps:
+      - run:
+          name: install
+          command: |
+            yarn install
+            yarn --cwd client install
+            yarn --cwd client build
+
+  install-chrome:
+    steps:
       - run:
           name: Install Chrome
           command: |
@@ -25,42 +90,116 @@ jobs:
             sudo dpkg -i google-chrome.deb
             sudo sed -i 's|HERE/chrome\"|HERE/chrome\" --disable-setuid-sandbox|g' /opt/google/chrome/google-chrome
             rm google-chrome.deb
+
+jobs:
+  preflight:
+    executor: arlo
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - restore-pip-cache
+      - pip-install
+      - save-pip-cache
+      - create-data-model
+
       - run:
-          name: create data model
-          command: |
-            make resetdb
-      - run:
-          name: lint server (pylint)
-          command: |
-            make lint-server
-      - run:
-          name: type check
+          name: typecheck server
           command: |
             make typecheck-server
+
       - run:
-          name: check formatting
+          name: format server
           command: |
             make format-server
             git diff-index --quiet HEAD -- || (echo "Found unexpected changes!" && git diff && exit 1)
       - run:
-          name: server tests
+          name: lint server
           command: |
-            pipenv run pytest -n 2 --cov=.
+            make lint-server
+
+  build-and-test-server:
+    executor: arlo
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - restore-pip-cache
+      - pip-install
+      - save-pip-cache
+      - create-data-model
       - run:
-          name: client tests
+          name: test-server # server tests
+          command: |
+            make test-server-coverage
+
+  build-and-test-client:
+    executor: arlo
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - restore-yarn-cache
+      - install-yarn
+      - save-yarn-cache
+      - install-chrome
+
+      - run:
+          name: test-client
           command: |
             make test-client
+
+  wdio:
+    executor: arlo
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - restore-yarn-cache
+      - restore-pip-cache
+      - install-chrome
+
       - run:
-          name: wdio end-to-end tests
+          name: install
+          command: |
+            make install
+
+      - create-data-model
+
+      - run:
+          name: wdio
           command: |
             yarn --cwd client test:wdio
+
+  cypress:
+    executor: arlo
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - restore-caches
       - run:
-          name: cypress end-to-end tests
+          name: install
+          command: |
+            make install
+
+      - install-chrome
+      - create-data-model
+      - run:
+          name: cypress
           command: |
             ./client/run-cypress-tests.sh
-
 workflows:
   version: 2
   build-and-test:
     jobs:
-      - build-and-test
+      - preflight
+      - build-and-test-server
+      - build-and-test-client
+      - wdio
+      - cypress

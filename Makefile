@@ -35,17 +35,17 @@ format-server:
 	pipenv run black .
 
 lint-server:
-	pipenv run pylint server scripts
+	pipenv run pylint -j 0 server scripts
 
 test-client:
 	yarn --cwd client lint
 	yarn --cwd client test
 
 test-server:
-	pipenv run pytest -n auto
+	pipenv run pytest -n 4
 
 test-server-coverage:
-	pipenv run pytest -n auto --cov=.
+	pipenv run pytest -n 4 --cov=.
 
 run-dev:
 	./run-dev.sh
