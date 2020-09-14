@@ -55,13 +55,13 @@ commands:
       - restore_cache:
           name: Restore Yarn Cache
           keys:
-            - yarn-packages-v5-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v6-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
   save-yarn-cache:
     steps:
       - save_cache:
           name: Save Yarn Cache
-          key: yarn-packages-v5-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-packages-v6-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
             - ~/.cache/Cypress
