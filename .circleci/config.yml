@@ -49,6 +49,13 @@ commands:
           name: create data model
           command: |
             make resetdb
+      # Generate the en_US.UTF-8 locale (which for some reason isn't set up in
+      # the Docker container we use). arlo uses this locale to parse numbers in CSVs.
+      - run:
+          name: generate locale en_US.UTF-8
+          command: |
+            sudo sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+            sudo locale-gen
 
   restore-yarn-cache:
     steps:
