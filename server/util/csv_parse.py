@@ -43,6 +43,7 @@ def parse_csv(csv_string: str, columns: List[CSVColumnType]) -> CSVDictIterator:
     csv = reject_no_rows(csv)
     csv = validate_headers(csv, columns)
     csv = reject_empty_cells(csv, columns)
+    csv = reject_total_rows(csv)
     csv = validate_and_parse_values(csv, columns)
     csv = reject_duplicate_values(csv, columns)
     # Filter out empty rows last so we can get accurate row numbers in all the
@@ -227,6 +228,17 @@ def reject_duplicate_values(
                 )
             else:
                 seen[column.name].add(value)
+
+        yield row
+
+
+def reject_total_rows(csv: CSVIterator) -> CSVIterator:
+    yield next(csv)  # Skip the headers
+
+    for r, row in enumerate(csv):  # pylint: disable=invalid-name
+        for value in row:
+            if value.lower() in ["total", "totals"]:
+                raise CSVParseError(f"Remove total row (row {r+2})")
 
         yield row
 
