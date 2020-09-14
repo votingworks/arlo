@@ -22,16 +22,16 @@ commands:
       - restore_cache:
           name: Restore Pip Cache
           keys:
-            - pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
-            - pip-packages-v5-{{ .Branch }}-
-            - pip-packages-v5-
+            - pip-packages-v6-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v6-{{ .Branch }}-
+            - pip-packages-v6-
   save-pip-cache:
     steps:
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
       - save_cache:
           name: Save Pip Cache
-          key: pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: pip-packages-v6-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
             - ~/.local
             - ~/.cache
@@ -55,13 +55,13 @@ commands:
       - restore_cache:
           name: Restore Yarn Cache
           keys:
-            - yarn-packages-v4-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v5-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
   save-yarn-cache:
     steps:
       - save_cache:
           name: Save Yarn Cache
-          key: yarn-packages-v4-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-packages-v5-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
             - node_modules
