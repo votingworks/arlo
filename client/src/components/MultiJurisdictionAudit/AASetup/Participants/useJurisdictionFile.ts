@@ -1,18 +1,15 @@
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import { api } from '../../../utilities'
 import { IFileInfo } from '../../useJurisdictions'
 
 const loadJurisdictionFile = async (
   electionId: string
 ): Promise<IFileInfo | null> => {
-  try {
-    return await api(`/election/${electionId}/jurisdiction/file`)
-  } catch (err) /* istanbul ignore next */ {
-    // TODO migrate toasting to api to consolidate testing
-    toast.error(err.message)
-    return null
-  }
+  const response = await api<IFileInfo>(
+    `/election/${electionId}/jurisdiction/file`
+  )
+  if (!response) return null
+  return response
 }
 
 const putJurisdictionFileFile = async (
@@ -21,16 +18,11 @@ const putJurisdictionFileFile = async (
 ): Promise<boolean> => {
   const formData: FormData = new FormData()
   formData.append('jurisdictions', csv, csv.name)
-  try {
-    await api(`/election/${electionId}/jurisdiction/file`, {
-      method: 'PUT',
-      body: formData,
-    })
-    return true
-  } catch (err) {
-    toast.error(err.message)
-    return false
-  }
+  const response = await api(`/election/${electionId}/jurisdiction/file`, {
+    method: 'PUT',
+    body: formData,
+  })
+  return !!response
 }
 
 const useJurisdictionFile = (

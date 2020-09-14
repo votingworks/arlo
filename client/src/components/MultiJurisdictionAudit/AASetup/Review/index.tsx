@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
 import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
-import { toast } from 'react-toastify'
 import { Formik, FormikProps, Form, getIn, Field } from 'formik'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
@@ -57,24 +56,17 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(electionId)
 
   const submit = async () => {
-    try {
-      /* istanbul ignore else */
-      if (
-        await uploadSampleSizes(
-          Object.keys(sampleSizes).reduce((a, contestId) => {
-            return { ...a, [contestId]: sampleSizes[contestId].size }
-          }, {})
-        )
-      ) {
-        refresh()
-        history.push(`/election/${electionId}/progress`)
-      } else {
-        // TEST TODO when withMockFetch works with error handling
-        return
-      }
-    } catch (err) /* istanbul ignore next */ {
-      // TEST TODO
-      toast.error(err.message)
+    if (
+      await uploadSampleSizes(
+        Object.keys(sampleSizes).reduce((a, contestId) => {
+          return { ...a, [contestId]: sampleSizes[contestId].size }
+        }, {})
+      )
+    ) {
+      refresh()
+      history.push(`/election/${electionId}/progress`)
+    } else {
+      // TEST TODO when withMockFetch works with error handling
     }
   }
 
@@ -266,12 +258,11 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                                   {option.key === 'asn'
                                     ? 'BRAVO Average Sample Number: '
                                     : ''}
-                                  {`${option.size} samples`}
-                                  {option.prob
-                                    ? ` (${percentFormatter.format(
-                                        option.prob
-                                      )} chance of reaching risk limit and completing the audit in one round)`
-                                    : ''}
+                                  {`${
+                                    option.size
+                                  } samples (${percentFormatter.format(
+                                    option.prob as number // never returns null on this endpoint source
+                                  )} chance of reaching risk limit and completing the audit in one round)`}
                                 </Radio>
                               )
                             }

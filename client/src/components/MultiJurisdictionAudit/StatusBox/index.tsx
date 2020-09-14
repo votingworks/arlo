@@ -2,7 +2,6 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Callout, H4 } from '@blueprintjs/core'
-import { toast } from 'react-toastify'
 import {
   IJurisdiction,
   FileProcessingStatus,
@@ -60,19 +59,15 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
 }
 
 const createRound = async (electionId: string, roundNum: number) => {
-  try {
-    api(`/election/${electionId}/round`, {
-      method: 'POST',
-      body: JSON.stringify({
-        roundNum,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-  } catch (err) {
-    toast.error(err.message)
-  }
+  await api(`/election/${electionId}/round`, {
+    method: 'POST',
+    body: JSON.stringify({
+      roundNum,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
 }
 
 const downloadAuditAdminReport = (electionId: string) => {

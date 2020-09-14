@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { toast } from 'react-toastify'
 import { api } from '../utilities'
 
 export interface IRound {
@@ -18,14 +17,11 @@ const useRoundsJurisdictionAdmin = (
 
   useEffect(() => {
     ;(async () => {
-      try {
-        const response: { rounds: IRound[] } = await api(
-          `/election/${electionId}/jurisdiction/${jurisdictionId}/round`
-        )
-        setRounds(response.rounds)
-      } catch (err) {
-        toast.error(err.message)
-      }
+      const response = await api<{ rounds: IRound[] }>(
+        `/election/${electionId}/jurisdiction/${jurisdictionId}/round`
+      )
+      if (!response) return
+      setRounds(response.rounds)
     })()
   }, [electionId, jurisdictionId])
 

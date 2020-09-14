@@ -8,17 +8,11 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 apiMock.mockResolvedValue(auditSettings.blank)
-checkAndToastMock.mockReturnValue(false)
 
 afterEach(() => {
   apiMock.mockClear()
-  checkAndToastMock.mockClear()
 })
 
 describe('useAuditSettings', () => {
@@ -48,14 +42,12 @@ describe('useAuditSettings', () => {
 
     await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(3)
-      expect(checkAndToastMock).toHaveBeenCalledTimes(3)
       expect(settings).toStrictEqual(auditSettings.all)
     })
   })
 
   it('should handle GET error', async () => {
-    apiMock.mockResolvedValue(auditSettings.all)
-    checkAndToastMock.mockReturnValue(true)
+    apiMock.mockResolvedValueOnce(null)
     const {
       result: {
         current: [settings],
@@ -63,7 +55,6 @@ describe('useAuditSettings', () => {
     } = renderHook(() => useAuditSettings('1'))
 
     await waitFor(() => {
-      expect(checkAndToastMock).toHaveBeenCalledTimes(1)
       expect(settings).toStrictEqual(auditSettings.blank)
     })
   })
@@ -72,11 +63,7 @@ describe('useAuditSettings', () => {
     apiMock
       .mockResolvedValueOnce(auditSettings.blank)
       .mockResolvedValueOnce(auditSettings.blank)
-      .mockResolvedValueOnce({ status: 'ok' })
-    checkAndToastMock
-      .mockReturnValueOnce(false)
-      .mockReturnValueOnce(false)
-      .mockReturnValueOnce(true)
+      .mockResolvedValueOnce(null)
     const { result, waitForNextUpdate } = renderHook(() =>
       useAuditSettings('1')
     )
@@ -86,7 +73,6 @@ describe('useAuditSettings', () => {
     expect(success).toBeFalsy()
     await waitFor(() => {
       expect(apiMock).toHaveBeenCalledTimes(3)
-      expect(checkAndToastMock).toHaveBeenCalledTimes(3)
       expect(result.current[0]).toStrictEqual(auditSettings.blank)
     })
   })

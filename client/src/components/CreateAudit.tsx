@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { toast } from 'react-toastify'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import { RadioGroup, Radio } from '@blueprintjs/core'
 import { Formik, FormikProps, Field } from 'formik'
@@ -54,27 +53,25 @@ const CreateAudit = ({ history }: RouteComponentProps<ICreateAuditParams>) => {
 
   const [loading, setLoading] = useState(false)
   const onSubmit = async ({ auditName, auditType }: IValues) => {
-    try {
-      setLoading(true)
-      const response: { electionId: string } = await api('/election/new', {
-        method: 'POST',
-        body: JSON.stringify({
-          organizationId: meta!.organizations[0].id,
-          auditName,
-          auditType,
-          isMultiJurisdiction: true,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const { electionId } = response
-      history.push(`/election/${electionId}/setup`)
-    } catch (err) /* istanbul ignore next */ {
-      // TODO move toasting into api
-      toast.error(err.message)
+    setLoading(true)
+    const response = await api<{ electionId: string }>('/election/new', {
+      method: 'POST',
+      body: JSON.stringify({
+        organizationId: meta!.organizations[0].id,
+        auditName,
+        auditType,
+        isMultiJurisdiction: true,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    if (!response) {
       setLoading(false)
+      return
     }
+    const { electionId } = response
+    history.push(`/election/${electionId}/setup`)
   }
 
   if (isAuthenticated === null) return null // Still loading

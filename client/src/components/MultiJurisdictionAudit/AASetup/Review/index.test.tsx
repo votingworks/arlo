@@ -316,4 +316,21 @@ describe('Audit Setup > Review & Launch', () => {
       await waitFor(() => expect(refreshMock).toHaveBeenCalled())
     })
   })
+
+  it('renders full state with batch comparison audit', async () => {
+    auditSettingsMock.mockReturnValue(settingsMock.fullBatchComparison)
+    const expectedCalls = [
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getSampleSizeOptions,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderView()
+      await screen.findByText('Review & Launch')
+      expect(container).toMatchSnapshot()
+    })
+  })
 })

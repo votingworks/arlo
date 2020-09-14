@@ -18,10 +18,6 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 jest.mock('jspdf')
 
@@ -53,7 +49,6 @@ beforeEach(() => {
   sharedToastSpy.mockClear()
   apiMock.mockClear()
   jspdfMock.mockClear()
-  checkAndToastMock.mockClear()
 })
 
 describe('CalculateRiskMeasurement', () => {
@@ -239,60 +234,6 @@ describe('CalculateRiskMeasurement', () => {
     })
   })
 
-  it(`handles server errors`, async () => {
-    apiMock.mockImplementation(async () => ({
-      message: 'success',
-      ok: true,
-    }))
-    checkAndToastMock
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(true)
-
-    const getStatusMock = jest
-      .fn()
-      .mockImplementation(
-        async () => statusStates.firstRoundSampleSizeOptionsNull
-      )
-
-    const { getByText } = render(
-      <CalculateRiskMeasurement
-        audit={statusStates.ballotManifestProcessed}
-        isLoading={false}
-        setIsLoading={sharedSetIsLoadingMock}
-        updateAudit={sharedUpdateAuditMock}
-        getStatus={getStatusMock}
-        electionId="1"
-      />
-    )
-
-    fireEvent.click(getByText('Calculate Risk Measurement'), {
-      bubbles: true,
-    })
-
-    await waitFor(() => {
-      expect(checkAndToastMock).toBeCalledTimes(1)
-      expect(sharedToastSpy).toBeCalledTimes(0)
-      expect(apiMock).toBeCalled()
-      expect(sharedSetIsLoadingMock).toBeCalledTimes(2)
-      expect(getStatusMock).toBeCalledTimes(0)
-      expect(sharedUpdateAuditMock).toBeCalledTimes(0)
-    })
-
-    fireEvent.click(getByText('Download Label Sheets for Round 1'), {
-      bubbles: true,
-    })
-
-    fireEvent.click(getByText('Download Placeholders for Round 1'), {
-      bubbles: true,
-    })
-
-    await waitFor(() => {
-      expect(checkAndToastMock).toHaveBeenCalledTimes(3)
-      expect(jspdfMock).toHaveBeenCalledTimes(0)
-    })
-  })
-
   it('downloads labels sheets', async () => {
     apiMock.mockImplementationOnce(async () => dummyBallots)
     const { getByText } = render(
@@ -319,6 +260,29 @@ describe('CalculateRiskMeasurement', () => {
     expect(jspdfInstance.text).toHaveBeenCalledTimes(120) // called thrice per label, with 40 labels
     expect(jspdfInstance.addPage).toHaveBeenCalledTimes(1) // 40 ballots have 40 labels, which requires two pages
     expect(jspdfInstance.save).toHaveBeenCalledTimes(1)
+  })
+
+  it('handles api error on ballot list endpoint', async () => {
+    apiMock.mockResolvedValueOnce(null)
+    const { getByText } = render(
+      <CalculateRiskMeasurement
+        audit={statusStates.jurisdictionsInitial}
+        isLoading={false}
+        setIsLoading={sharedSetIsLoadingMock}
+        updateAudit={sharedUpdateAuditMock}
+        getStatus={sharedGetStatusMock}
+        electionId="1"
+      />
+    )
+
+    fireEvent.click(getByText('Download Label Sheets for Round 1'), {
+      bubbles: true,
+    })
+
+    await waitFor(() => {
+      expect(apiMock).toHaveBeenCalledTimes(1)
+      expect(jspdfMock).toHaveBeenCalledTimes(0)
+    })
   })
 
   it('downloads placeholder sheets', async () => {
@@ -393,12 +357,7 @@ describe('CalculateRiskMeasurement', () => {
   })
 
   it('handles errors from api', async () => {
-    apiMock.mockReset()
-    apiMock.mockRejectedValueOnce({
-      message: 'error',
-      ok: false,
-    })
-    const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
+    apiMock.mockResolvedValueOnce(null)
     const { getByLabelText, getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates.ballotManifestProcessed}
@@ -428,9 +387,8 @@ describe('CalculateRiskMeasurement', () => {
 
       await waitFor(() => {
         expect(apiMock).toBeCalledTimes(1)
-        expect(sharedSetIsLoadingMock).toBeCalledTimes(1)
+        expect(sharedSetIsLoadingMock).toBeCalledTimes(2)
         expect(sharedUpdateAuditMock).toBeCalledTimes(0)
-        expect(toastSpy).toBeCalledTimes(1)
       })
     }
   })

@@ -15,7 +15,7 @@ import FormWrapper from '../Atoms/Form/FormWrapper'
 import FormButton from '../Atoms/Form/FormButton'
 import FormField from '../Atoms/Form/FormField'
 import FormButtonBar from '../Atoms/Form/FormButtonBar'
-import { api, testNumber, poll, checkAndToast, apiDownload } from '../utilities'
+import { api, testNumber, poll, apiDownload } from '../utilities'
 import {
   IContest,
   IRound,
@@ -106,17 +106,10 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
   const getBallots = useCallback(
     async (r: number): Promise<IBallot[]> => {
       const round = audit.rounds[r]
-      const response = await api<
-        | {
-            ballots: IBallot[]
-          }
-        | IErrorResponse
-      >(
+      const response = await api<{ ballots: IBallot[] }>(
         `/election/${electionId}/jurisdiction/${jId}/round/${round.id}/ballot-list`
       )
-      if (checkAndToast(response)) {
-        return []
-      }
+      if (!response) return []
       return response.ballots
     },
     [electionId, jId, audit.rounds]
@@ -261,35 +254,31 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
       })),
     }
 
-    try {
-      setIsLoading(true)
-      const response: IErrorResponse = await api(
-        `/election/${electionId}/jurisdiction/${jurisdictionID}/${values.round}/results`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        }
-      )
-      if (checkAndToast(response)) {
-        setIsLoading(false)
-        return
+    setIsLoading(true)
+    const response = await api<IErrorResponse>(
+      `/election/${electionId}/jurisdiction/${jurisdictionID}/${values.round}/results`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       }
-      const condition = async () => {
-        const { rounds } = await getStatus()
-        const { contests } = rounds[rounds.length - 1]
-        return !!contests.length && contests.every(c => !!c.sampleSize)
-      }
-      const complete = () => {
-        updateAudit()
-        setIsLoading(false)
-      }
-      poll(condition, complete, (err: Error) => toast.error(err.message))
-    } catch (err) {
-      toast.error(err.message)
+    )
+    if (!response) {
+      setIsLoading(false)
+      return
     }
+    const condition = async () => {
+      const { rounds } = await getStatus()
+      const { contests } = rounds[rounds.length - 1]
+      return !!contests.length && contests.every(c => !!c.sampleSize)
+    }
+    const complete = () => {
+      updateAudit()
+      setIsLoading(false)
+    }
+    poll(condition, complete, (err: Error) => toast.error(err.message))
   }
 
   const [ballots, setBallots] = useState<IBallot[]>([])

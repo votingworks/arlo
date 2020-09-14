@@ -1,9 +1,29 @@
 import { IBatch } from './useBatchResults'
+import { IRound } from '../useRoundsJurisdictionAdmin'
 
 export interface INullResultValues {
   [contestId: string]: {
     [choiceId: string]: null | string | number
   }
+}
+
+export const roundMocks: {
+  [key in 'incomplete' | 'complete']: IRound
+} = {
+  incomplete: {
+    id: 'round-1',
+    roundNum: 1,
+    startedAt: '2020-09-14T17:35:19.482Z',
+    endedAt: null,
+    isAuditComplete: false,
+  },
+  complete: {
+    id: 'round-1',
+    roundNum: 1,
+    startedAt: '2020-09-14T17:35:19.482Z',
+    endedAt: '2020-09-14T17:35:19.482Z',
+    isAuditComplete: true,
+  },
 }
 
 export const resultsMocks: {

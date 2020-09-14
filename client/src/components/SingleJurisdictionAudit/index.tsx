@@ -3,8 +3,8 @@ import { Redirect, useParams } from 'react-router-dom'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
-import { api, checkAndToast } from '../utilities'
-import { IAudit, IErrorResponse } from '../../types'
+import { api } from '../utilities'
+import { IAudit } from '../../types'
 import ResetButton from '../ResetButton'
 import { Wrapper } from '../Atoms/Wrapper'
 
@@ -31,13 +31,9 @@ const SingleJurisdictionAudit: React.FC = () => {
   const [audit, setAudit] = useState(initialData)
 
   const getStatus = useCallback(async (): Promise<IAudit> => {
-    const auditStatusOrError: IAudit | IErrorResponse = await api(
-      `/election/${electionId}/audit/status`
-    )
-    if (checkAndToast(auditStatusOrError)) {
-      return initialData
-    }
-    return auditStatusOrError
+    const response = await api<IAudit>(`/election/${electionId}/audit/status`)
+    if (!response) return initialData
+    return response
   }, [electionId])
 
   const updateAudit = useCallback(async () => {

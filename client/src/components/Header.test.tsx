@@ -9,10 +9,6 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 const renderHeader = (route: string) =>
   renderWithRouter(
@@ -22,29 +18,26 @@ const renderHeader = (route: string) =>
     { route }
   )
 
-checkAndToastMock.mockReturnValue(false)
-
 afterEach(() => {
   apiMock.mockClear()
-  checkAndToastMock.mockClear()
 })
 
 describe('Header', () => {
   it('renders correctly', async () => {
-    apiMock.mockRejectedValue(async () => ({}))
+    apiMock.mockResolvedValue(null)
     const { container } = renderHeader('/election/1')
     await screen.findAllByAltText('Arlo, by VotingWorks')
     expect(container).toMatchSnapshot()
   })
 
   it('shows the logout button when authenticated', async () => {
-    apiMock.mockImplementation(async () => ({
+    apiMock.mockResolvedValue({
       type: 'audit_admin',
       name: 'Joe',
       email: 'test@email.org',
       jurisdictions: [],
       organizations: [],
-    }))
+    })
     renderHeader('/election/1')
 
     await screen.findByText('Log out')
@@ -53,7 +46,7 @@ describe('Header', () => {
   })
 
   it('does not show logout button if not authenticated', async () => {
-    apiMock.mockRejectedValue(async () => ({}))
+    apiMock.mockResolvedValue(null)
     renderHeader('/election/1')
 
     const loginButton = screen.queryByText('Log out')
@@ -65,8 +58,7 @@ describe('Header', () => {
   })
 
   it('does not show logout button if the authentication verification has a server error', async () => {
-    checkAndToastMock.mockReturnValue(true)
-    apiMock.mockRejectedValue(async () => ({}))
+    apiMock.mockResolvedValue(null)
     renderHeader('/election/1')
 
     const loginButton = screen.queryByText('Log out')
@@ -78,14 +70,13 @@ describe('Header', () => {
   })
 
   it('shows the nav bar when authenticated and there is an electionId', async () => {
-    checkAndToastMock.mockReturnValue(false)
-    apiMock.mockImplementation(async () => ({
+    apiMock.mockResolvedValue({
       type: 'audit_admin',
       name: 'Joe',
       email: 'test@email.org',
       jurisdictions: [],
       organizations: [],
-    }))
+    })
     const { container } = renderHeader('/election/1')
     await waitFor(() => {
       expect(screen.getByText('Audit Setup')).toBeTruthy()
@@ -97,7 +88,7 @@ describe('Header', () => {
   })
 
   it('shows the active jurisdiction name when authenticated as ja', async () => {
-    apiMock.mockImplementation(async () => ({
+    apiMock.mockResolvedValue({
       type: 'jurisdiction_admin',
       name: 'Joe',
       email: 'test@email.org',
@@ -112,7 +103,7 @@ describe('Header', () => {
         },
       ],
       organizations: [],
-    }))
+    })
     renderHeader('/election/1/jurisdiction/jurisdiction-id-1')
 
     await screen.findByText('Jurisdiction: Jurisdiction One')

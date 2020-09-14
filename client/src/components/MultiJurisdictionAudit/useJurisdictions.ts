@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { toast } from 'react-toastify'
 import { api } from '../utilities'
 
 export enum FileProcessingStatus {
@@ -62,14 +61,11 @@ const useJurisdictions = (electionId: string, refreshId?: string) => {
   const [jurisdictions, setJurisdictions] = useState<IJurisdiction[]>([])
   useEffect(() => {
     ;(async () => {
-      try {
-        const response: { jurisdictions: IJurisdiction[] } = await api(
-          `/election/${electionId}/jurisdiction`
-        )
-        setJurisdictions(response.jurisdictions)
-      } catch (err) {
-        toast.error(err.message)
-      }
+      const response = await api<{ jurisdictions: IJurisdiction[] }>(
+        `/election/${electionId}/jurisdiction`
+      )
+      if (!response) return
+      setJurisdictions(response.jurisdictions)
     })()
   }, [electionId, refreshId])
   return jurisdictions

@@ -28,6 +28,7 @@ export const auditSettings: {
     | 'onlyState'
     | 'otherSettings'
     | 'all'
+    | 'offlineAll'
     | 'batchComparisonAll']: IAuditSettings
 } = {
   blank: {
@@ -62,10 +63,18 @@ export const auditSettings: {
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
   },
+  offlineAll: {
+    state: 'AL',
+    electionName: 'Election Name',
+    online: false,
+    randomSeed: '12345',
+    riskLimit: 10,
+    auditType: 'BALLOT_POLLING',
+  },
   batchComparisonAll: {
     state: 'AL',
     electionName: 'Election Name',
-    online: true,
+    online: false,
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BATCH_COMPARISON',

@@ -12,10 +12,6 @@ const apiMock: jest.SpyInstance<
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
 
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 const toastSpy = jest.spyOn(toast, 'error').mockImplementation()
 
 async function inputAndSubmitForm() {
@@ -69,7 +65,6 @@ async function inputAndSubmitForm() {
 beforeEach(() => {
   apiMock.mockClear()
   toastSpy.mockClear()
-  checkAndToastMock.mockClear()
 })
 
 describe('SelectBallotsToAudit', () => {
@@ -137,7 +132,7 @@ describe('SelectBallotsToAudit', () => {
     const updateAuditMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
-    apiMock.mockImplementation(async () => {})
+    apiMock.mockResolvedValue({ status: 'ok' })
 
     const {
       getByText,
@@ -217,7 +212,6 @@ describe('SelectBallotsToAudit', () => {
 
       expect(getStatusMock).toBeCalledTimes(2)
       expect(updateAuditMock).toBeCalledTimes(1)
-      expect(checkAndToastMock).toBeCalledTimes(3)
     })
   })
 
@@ -228,7 +222,7 @@ describe('SelectBallotsToAudit', () => {
     const updateAuditMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
-    apiMock.mockImplementation(async () => {})
+    apiMock.mockResolvedValue({ status: 'ok' })
 
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
@@ -252,7 +246,6 @@ describe('SelectBallotsToAudit', () => {
 
       expect(getStatusMock).toBeCalledTimes(2)
       expect(updateAuditMock).toBeCalledTimes(0)
-      expect(checkAndToastMock).toBeCalledTimes(3)
     })
   })
 
@@ -263,7 +256,7 @@ describe('SelectBallotsToAudit', () => {
     const updateAuditMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
-    apiMock.mockImplementation(async () => {})
+    apiMock.mockResolvedValue({ status: 'ok' })
 
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
@@ -287,7 +280,6 @@ describe('SelectBallotsToAudit', () => {
 
       expect(getStatusMock).toBeCalledTimes(2)
       expect(updateAuditMock).toBeCalledTimes(1)
-      expect(checkAndToastMock).toBeCalledTimes(3)
     })
   })
 
@@ -309,7 +301,7 @@ describe('SelectBallotsToAudit', () => {
     const updateAuditMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
-    apiMock.mockImplementation(async () => {})
+    apiMock.mockResolvedValue({ status: 'ok' })
 
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
@@ -334,7 +326,6 @@ describe('SelectBallotsToAudit', () => {
       expect(updateAuditMock).toBeCalledTimes(0)
       expect(toastSpy).toBeCalledTimes(1)
       expect(getStatusMock).toBeCalledTimes(2)
-      expect(checkAndToastMock).toBeCalledTimes(3)
     })
   })
 
@@ -388,7 +379,7 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('submits sample size, ballot manifest, and audits', async () => {
-    apiMock.mockImplementation(async () => {})
+    apiMock.mockImplementation(async () => true)
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -447,15 +438,16 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('handles api error on /audit/sample-size', async () => {
+    apiMock.mockReset()
     apiMock
-      .mockRejectedValueOnce({ message: 'error' })
-      .mockImplementation(async () => ({}))
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ status: 'ok' })
+      .mockResolvedValueOnce({ status: 'ok' })
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
     await waitFor(() => {
       expect(apiMock).toBeCalledTimes(1)
-      expect(toastSpy).toBeCalledTimes(1)
 
       expect(getStatusMock).toBeCalledTimes(0)
       expect(updateAuditMock).toBeCalledTimes(0)
@@ -463,16 +455,16 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('handles api error on /audit/jurisdictions', async () => {
+    apiMock.mockReset()
     apiMock
-      .mockResolvedValueOnce(undefined)
-      .mockRejectedValueOnce({ message: 'error' })
-      .mockResolvedValue(undefined)
+      .mockResolvedValueOnce({ status: 'ok' })
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ status: 'ok' })
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
     await waitFor(() => {
       expect(apiMock).toBeCalledTimes(2)
-      expect(toastSpy).toBeCalledTimes(1)
 
       expect(getStatusMock).toBeCalledTimes(0)
       expect(updateAuditMock).toBeCalledTimes(0)
@@ -480,69 +472,17 @@ describe('SelectBallotsToAudit', () => {
   })
 
   it('handles api error on /audit/jurisdiction/:id/manifest', async () => {
+    apiMock.mockReset()
     apiMock
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined)
-      .mockRejectedValueOnce({ message: 'error' })
+      .mockResolvedValueOnce({ status: 'ok' })
+      .mockResolvedValueOnce({ status: 'ok' })
+      .mockResolvedValueOnce(null)
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
     await waitFor(() => {
       expect(apiMock).toBeCalledTimes(3)
-      expect(toastSpy).toBeCalledTimes(1)
 
-      expect(getStatusMock).toBeCalledTimes(1)
-      expect(updateAuditMock).toBeCalledTimes(0)
-    })
-  })
-
-  it('handles server error on /audit/sample-size', async () => {
-    apiMock.mockResolvedValue(undefined)
-    checkAndToastMock.mockReturnValueOnce(true).mockReturnValue(false)
-
-    const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
-
-    await waitFor(() => {
-      expect(apiMock).toBeCalledTimes(1)
-      expect(toastSpy).toBeCalledTimes(0)
-      expect(checkAndToastMock).toBeCalledTimes(1)
-      expect(getStatusMock).toBeCalledTimes(0)
-      expect(updateAuditMock).toBeCalledTimes(0)
-    })
-  })
-
-  it('handles server error on /audit/jurisdictions', async () => {
-    apiMock.mockResolvedValue(undefined)
-    checkAndToastMock
-      .mockReturnValueOnce(false)
-      .mockReturnValueOnce(true)
-      .mockReturnValue(false)
-
-    const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
-
-    await waitFor(() => {
-      expect(apiMock).toBeCalledTimes(2)
-      expect(toastSpy).toBeCalledTimes(0)
-      expect(checkAndToastMock).toBeCalledTimes(2)
-      expect(getStatusMock).toBeCalledTimes(0)
-      expect(updateAuditMock).toBeCalledTimes(0)
-    })
-  })
-
-  it('handles server error on /audit/jurisdiction/:id/manifest', async () => {
-    apiMock.mockResolvedValue(undefined)
-    checkAndToastMock
-      .mockReturnValueOnce(false)
-      .mockReturnValueOnce(false)
-      .mockReturnValueOnce(true)
-      .mockReturnValue(false)
-
-    const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
-
-    await waitFor(() => {
-      expect(apiMock).toBeCalledTimes(3)
-      expect(toastSpy).toBeCalledTimes(0)
-      expect(checkAndToastMock).toBeCalledTimes(3)
       expect(getStatusMock).toBeCalledTimes(1)
       expect(updateAuditMock).toBeCalledTimes(0)
     })

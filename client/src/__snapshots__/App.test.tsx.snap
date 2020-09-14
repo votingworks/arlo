@@ -1,6 +1,225 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`App renders properly 1`] = `
+exports[`App / renders aa logged in properly 1`] = `
+<div>
+  <div
+    class="Toastify"
+  />
+  <div
+    class="sc-btzYZH dFjlDG"
+  >
+    <div
+      class="bp3-navbar sc-EHOje gMcVig"
+    >
+      <div
+        class="sc-bxivhb sc-bZQynM ftKVqf"
+      >
+        <div
+          class="bp3-navbar-group bp3-align-left"
+        >
+          <div
+            class="bp3-navbar-heading"
+          >
+            <a
+              href="/"
+            >
+              <img
+                alt="Arlo, by VotingWorks"
+                src="/arlo.png"
+              />
+            </a>
+          </div>
+        </div>
+        <div
+          class="bp3-navbar-group bp3-align-right"
+        >
+          <div
+            class="sc-ifAKCX jNLPyG"
+            id="reset-button-wrapper"
+          />
+          <button
+            class="bp3-button bp3-small sc-bwzfXH eBfcXh"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Log out
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-ktHwxA hrUTbT"
+    >
+      <img
+        alt="Arlo, by VotingWorks"
+        height="50px"
+        src="/arlo.png"
+      />
+      <div
+        class="sc-VigVT jXYKmK"
+      >
+        <label
+          for="audit-name"
+          id="audit-name-label"
+        >
+          Give your new audit a unique name.
+          <div
+            class="sc-kafWEX bTASmM sc-cSHVUG gyNSie"
+          >
+            <div
+              class="bp3-input-group sc-kAzzGY fpNxNJ"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                id="audit-name"
+                name="auditName"
+                style="padding-right: 10px;"
+                value=""
+              />
+            </div>
+          </div>
+        </label>
+      </div>
+      <div
+        class="sc-VigVT jXYKmK"
+      >
+        <label
+          for="auditType"
+        >
+          Audit type:
+          <div
+            class="sc-feJyhm jzkeHz"
+          >
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                checked=""
+                name="auditType"
+                type="radio"
+                value="BALLOT_POLLING"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Ballot Polling
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="auditType"
+                type="radio"
+                value="BATCH_COMPARISON"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Batch Comparison
+            </label>
+          </div>
+        </label>
+      </div>
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM kwrEpe sc-bwzfXH eBfcXh"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Create a New Audit
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`App / renders ja logged in properly 1`] = `
+<div>
+  <div
+    class="Toastify"
+  />
+  <div
+    class="sc-btzYZH dFjlDG"
+  >
+    <div
+      class="bp3-navbar sc-EHOje gMcVig"
+    >
+      <div
+        class="sc-bxivhb sc-bZQynM ftKVqf"
+      >
+        <div
+          class="bp3-navbar-group bp3-align-left"
+        >
+          <div
+            class="bp3-navbar-heading"
+          >
+            <a
+              href="/"
+            >
+              <img
+                alt="Arlo, by VotingWorks"
+                src="/arlo.png"
+              />
+            </a>
+          </div>
+          <div
+            class="bp3-navbar-heading"
+          />
+        </div>
+        <div
+          class="bp3-navbar-group bp3-align-right"
+        >
+          <div
+            class="sc-ifAKCX jNLPyG"
+            id="reset-button-wrapper"
+          />
+          <button
+            class="bp3-button bp3-small sc-bwzfXH eBfcXh"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Log out
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-ktHwxA hrUTbT"
+    >
+      <img
+        alt="Arlo, by VotingWorks"
+        height="50px"
+        src="/arlo.png"
+      />
+      <a
+        class="bp3-button bp3-intent-primary sc-cIShpX cAnFhs"
+        href="/election/1/jurisdiction/jurisdiction-id-1"
+      >
+        audit one
+         (AL)
+      </a>
+      <a
+        class="bp3-button bp3-intent-primary sc-cIShpX cAnFhs"
+        href="/election/2/jurisdiction/jurisdiction-id-2"
+      >
+        audit two
+         (AL)
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`App / renders unauthenticated properly 1`] = `
 <div>
   <div
     class="Toastify"
@@ -39,6 +258,814 @@ exports[`App renders properly 1`] = `
           />
         </div>
       </div>
+    </div>
+    <div
+      class="sc-ktHwxA hrUTbT"
+    >
+      <img
+        alt="Arlo, by VotingWorks"
+        height="50px"
+        src="/arlo.png"
+      />
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM kwrEpe sc-bdVaJa gLVjYw"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Log in as an Audit Admin
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM kwrEpe sc-bdVaJa gLVjYw"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Log in as a Jurisdiction Admin
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged in properly 1`] = `
+<div>
+  <div
+    class="Toastify"
+  />
+  <div
+    class="sc-btzYZH dFjlDG"
+  >
+    <div
+      class="bp3-navbar sc-EHOje gMcVig"
+    >
+      <div
+        class="sc-bxivhb sc-bZQynM ftKVqf"
+      >
+        <div
+          class="bp3-navbar-group bp3-align-left"
+        >
+          <div
+            class="bp3-navbar-heading"
+          >
+            <a
+              href="/"
+            >
+              <img
+                alt="Arlo, by VotingWorks"
+                src="/arlo.png"
+              />
+            </a>
+          </div>
+        </div>
+        <div
+          class="bp3-navbar-group bp3-align-right"
+        >
+          <div
+            class="sc-ifAKCX jNLPyG"
+            id="reset-button-wrapper"
+          />
+          <button
+            class="bp3-button bp3-small sc-bwzfXH eBfcXh"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Log out
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-ktHwxA hrUTbT"
+    >
+      <img
+        alt="Arlo, by VotingWorks"
+        height="50px"
+        src="/arlo.png"
+      />
+      <div
+        class="sc-VigVT jXYKmK"
+      >
+        <label
+          for="audit-name"
+          id="audit-name-label"
+        >
+          Give your new audit a unique name.
+          <div
+            class="sc-kafWEX bTASmM sc-cSHVUG gyNSie"
+          >
+            <div
+              class="bp3-input-group sc-kAzzGY fpNxNJ"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                id="audit-name"
+                name="auditName"
+                style="padding-right: 10px;"
+                value=""
+              />
+            </div>
+          </div>
+        </label>
+      </div>
+      <div
+        class="sc-VigVT jXYKmK"
+      >
+        <label
+          for="auditType"
+        >
+          Audit type:
+          <div
+            class="sc-feJyhm jzkeHz"
+          >
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                checked=""
+                name="auditType"
+                type="radio"
+                value="BALLOT_POLLING"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Ballot Polling
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="auditType"
+                type="radio"
+                value="BATCH_COMPARISON"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Batch Comparison
+            </label>
+          </div>
+        </label>
+      </div>
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM kwrEpe sc-bwzfXH eBfcXh"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Create a New Audit
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`App /election/:electionId/audit-board/:auditBoardId renders ab logged in properly 1`] = `<div />`;
+
+exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged in properly 1`] = `
+<div>
+  <div
+    class="Toastify"
+  />
+  <div
+    class="sc-btzYZH dFjlDG"
+  >
+    <div
+      class="bp3-navbar sc-EHOje gMcVig"
+    >
+      <div
+        class="sc-bxivhb sc-bZQynM ftKVqf"
+      >
+        <div
+          class="bp3-navbar-group bp3-align-left"
+        >
+          <div
+            class="bp3-navbar-heading"
+          >
+            <a
+              href="/"
+            >
+              <img
+                alt="Arlo, by VotingWorks"
+                src="/arlo.png"
+              />
+            </a>
+          </div>
+          <div
+            class="bp3-navbar-heading"
+          />
+        </div>
+        <div
+          class="bp3-navbar-group bp3-align-right"
+        >
+          <div
+            class="sc-ifAKCX jNLPyG"
+            id="reset-button-wrapper"
+          />
+          <button
+            class="bp3-button bp3-small sc-bwzfXH eBfcXh"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Log out
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-ktHwxA hrUTbT"
+    >
+      <img
+        alt="Arlo, by VotingWorks"
+        height="50px"
+        src="/arlo.png"
+      />
+      <a
+        class="bp3-button bp3-intent-primary sc-cIShpX cAnFhs"
+        href="/election/1/jurisdiction/jurisdiction-id-1"
+      >
+        audit one
+         (AL)
+      </a>
+      <a
+        class="bp3-button bp3-intent-primary sc-cIShpX cAnFhs"
+        href="/election/2/jurisdiction/jurisdiction-id-2"
+      >
+        audit two
+         (AL)
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthenticated properly 1`] = `
+<div>
+  <div
+    class="Toastify"
+  >
+    <div
+      class="Toastify__toast-container Toastify__toast-container--top-right"
+    >
+      <div
+        class="Toastify__toast Toastify__toast--error Toastify__bounce-enter--top-right"
+        style="animation-fill-mode: forwards; animation-duration: 0.75s;"
+      >
+        <div
+          class="Toastify__toast-body"
+          role="alert"
+        >
+          UNAUTHORIZED
+        </div>
+        <button
+          aria-label="close"
+          class="Toastify__close-button Toastify__close-button--error"
+          type="button"
+        >
+          ✖
+        </button>
+        <div
+          class="Toastify__progress-bar Toastify__progress-bar--animated Toastify__progress-bar--error"
+          style="animation-duration: 5000ms; animation-play-state: running; opacity: 1;"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="sc-btzYZH dFjlDG"
+  >
+    <div
+      class="bp3-navbar sc-EHOje gMcVig"
+    >
+      <div
+        class="sc-bxivhb sc-bZQynM ftKVqf"
+      >
+        <div
+          class="bp3-navbar-group bp3-align-left"
+        >
+          <div
+            class="bp3-navbar-heading"
+          >
+            <a
+              href="/"
+            >
+              <img
+                alt="Arlo, by VotingWorks"
+                src="/arlo.png"
+              />
+            </a>
+          </div>
+        </div>
+        <div
+          class="bp3-navbar-group bp3-align-right"
+        >
+          <div
+            class="sc-ifAKCX jNLPyG"
+            id="reset-button-wrapper"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-ktHwxA hrUTbT"
+    >
+      <img
+        alt="Arlo, by VotingWorks"
+        height="50px"
+        src="/arlo.png"
+      />
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM kwrEpe sc-bdVaJa gLVjYw"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Log in as an Audit Admin
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM kwrEpe sc-bdVaJa gLVjYw"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Log in as a Jurisdiction Admin
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logged in properly 1`] = `
+<div>
+  <div
+    class="Toastify"
+  />
+  <div
+    class="sc-btzYZH dFjlDG"
+  >
+    <div
+      class="bp3-navbar sc-EHOje gMcVig"
+    >
+      <div
+        class="sc-bxivhb sc-bZQynM ftKVqf"
+      >
+        <div
+          class="bp3-navbar-group bp3-align-left"
+        >
+          <div
+            class="bp3-navbar-heading"
+          >
+            <a
+              href="/"
+            >
+              <img
+                alt="Arlo, by VotingWorks"
+                src="/arlo.png"
+              />
+            </a>
+          </div>
+        </div>
+        <div
+          class="bp3-navbar-group bp3-align-right"
+        >
+          <div
+            class="sc-ifAKCX jNLPyG"
+            id="reset-button-wrapper"
+          />
+          <button
+            class="bp3-button bp3-small sc-bwzfXH eBfcXh"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Log out
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-ktHwxA hrUTbT"
+    >
+      <img
+        alt="Arlo, by VotingWorks"
+        height="50px"
+        src="/arlo.png"
+      />
+      <div
+        class="sc-VigVT jXYKmK"
+      >
+        <label
+          for="audit-name"
+          id="audit-name-label"
+        >
+          Give your new audit a unique name.
+          <div
+            class="sc-kafWEX bTASmM sc-cSHVUG gyNSie"
+          >
+            <div
+              class="bp3-input-group sc-kAzzGY fpNxNJ"
+            >
+              <input
+                aria-labelledby="audit-name-label"
+                class="bp3-input"
+                id="audit-name"
+                name="auditName"
+                style="padding-right: 10px;"
+                value=""
+              />
+            </div>
+          </div>
+        </label>
+      </div>
+      <div
+        class="sc-VigVT jXYKmK"
+      >
+        <label
+          for="auditType"
+        >
+          Audit type:
+          <div
+            class="sc-feJyhm jzkeHz"
+          >
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                checked=""
+                name="auditType"
+                type="radio"
+                value="BALLOT_POLLING"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Ballot Polling
+            </label>
+            <label
+              class="bp3-control bp3-radio"
+            >
+              <input
+                name="auditType"
+                type="radio"
+                value="BATCH_COMPARISON"
+              />
+              <span
+                class="bp3-control-indicator"
+              />
+              Batch Comparison
+            </label>
+          </div>
+        </label>
+      </div>
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM kwrEpe sc-bwzfXH eBfcXh"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Create a New Audit
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders ja logged in properly 1`] = `
+<div>
+  <div
+    class="Toastify"
+  />
+  <div
+    class="sc-btzYZH dFjlDG"
+  >
+    <div
+      class="bp3-navbar sc-EHOje gMcVig"
+    >
+      <div
+        class="sc-bxivhb sc-bZQynM ftKVqf"
+      >
+        <div
+          class="bp3-navbar-group bp3-align-left"
+        >
+          <div
+            class="bp3-navbar-heading"
+          >
+            <a
+              href="/"
+            >
+              <img
+                alt="Arlo, by VotingWorks"
+                src="/arlo.png"
+              />
+            </a>
+          </div>
+          <div
+            class="bp3-navbar-heading"
+          >
+            Jurisdiction: Jurisdiction One
+          </div>
+        </div>
+        <div
+          class="bp3-navbar-group bp3-align-right"
+        >
+          <div
+            class="sc-ifAKCX jNLPyG"
+            id="reset-button-wrapper"
+          />
+          <button
+            class="bp3-button bp3-small sc-bwzfXH eBfcXh"
+            type="button"
+          >
+            <span
+              class="bp3-button-text"
+            >
+              Log out
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-htpNat GipZb"
+    >
+      <div
+        class="bp3-callout sc-eHgmQL gudjM"
+      >
+        <div
+          class="sc-bxivhb ddQihQ"
+        >
+          <div
+            class="text"
+          >
+            <h4
+              class="bp3-heading"
+            >
+              The audit has not started.
+            </h4>
+            <p>
+              Ballot manifest not uploaded.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="sc-bxivhb sc-fMiknA grfJwm"
+      >
+        <h2
+          class="bp3-heading sc-gzVnrw hQaoin"
+        >
+          Audit Source Data
+        </h2>
+        <form>
+          <div
+            class="sc-dnqmqq kymPuI"
+          >
+            <h2
+              class="bp3-heading sc-gzVnrw hQaoin"
+            />
+            <div
+              class="sc-VigVT jXYKmK"
+            >
+              <h4
+                class="bp3-heading"
+              >
+                Ballot Manifest
+              </h4>
+              <div
+                class="sc-jTzLTM jNuIPn"
+              >
+                Click "Browse" to choose the appropriate Ballot Manifest file from your computer. This file should be a comma-separated list of all the ballot boxes/containers used to store ballots for this particular election, plus a count of how many ballot cards (individual pieces of paper) are stored in each container.
+                <br />
+                <br />
+                <a
+                  href="/sample_ballot_manifest.csv"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  (Click here to view a sample file in the correct format.)
+                </a>
+              </div>
+            </div>
+            <div
+              class="sc-VigVT jXYKmK"
+            >
+              <label
+                class="bp3-file-input"
+              >
+                <input
+                  accept=".csv"
+                  name="csv"
+                  type="file"
+                />
+                <span
+                  class="bp3-file-upload-input"
+                >
+                  Select a CSV...
+                </span>
+              </label>
+            </div>
+            <div>
+              <button
+                class="bp3-button bp3-intent-primary sc-bwzfXH eBfcXh"
+                type="submit"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Upload File
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
+        <form>
+          <div
+            class="sc-dnqmqq kymPuI"
+          >
+            <h2
+              class="bp3-heading sc-gzVnrw hQaoin"
+            />
+            <div
+              class="sc-VigVT jXYKmK"
+            >
+              <h4
+                class="bp3-heading"
+              >
+                Candidate Totals by Batch
+              </h4>
+              <div
+                class="sc-jTzLTM jNuIPn"
+              >
+                Click "Browse" to choose the appropriate Candidate Totals by Batch file from your computer. This file should be a comma-separated list of all the ballot boxes/containers used to store ballots for this particular election, plus a count of how many votes were counted for each candidate in each of those containers.
+                <br />
+                <br />
+                <a
+                  href="/sample_batch_tallies.csv"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  (Click here to view a sample file in the correct format.)
+                </a>
+              </div>
+            </div>
+            <div
+              class="sc-VigVT jXYKmK"
+            >
+              <label
+                class="bp3-file-input bp3-disabled"
+              >
+                <input
+                  accept=".csv"
+                  disabled=""
+                  name="csv"
+                  type="file"
+                />
+                <span
+                  class="bp3-file-upload-input"
+                >
+                  Select a CSV...
+                </span>
+              </label>
+            </div>
+            <div>
+              <button
+                class="bp3-button bp3-disabled bp3-intent-primary sc-bwzfXH eBfcXh"
+                disabled=""
+                tabindex="-1"
+                type="submit"
+              >
+                <span
+                  class="bp3-button-text"
+                >
+                  Upload File
+                </span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthenticated properly 1`] = `
+<div>
+  <div
+    class="Toastify"
+  >
+    <div
+      class="Toastify__toast-container Toastify__toast-container--top-right"
+    >
+      <div
+        class="Toastify__toast Toastify__toast--error Toastify__bounce-enter--top-right"
+        style="animation-fill-mode: forwards; animation-duration: 0.75s;"
+      >
+        <div
+          class="Toastify__toast-body"
+          role="alert"
+        >
+          UNAUTHORIZED
+        </div>
+        <button
+          aria-label="close"
+          class="Toastify__close-button Toastify__close-button--error"
+          type="button"
+        >
+          ✖
+        </button>
+        <div
+          class="Toastify__progress-bar Toastify__progress-bar--animated Toastify__progress-bar--error"
+          style="animation-duration: 5000ms; animation-play-state: running; opacity: 1;"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="sc-btzYZH dFjlDG"
+  >
+    <div
+      class="bp3-navbar sc-EHOje gMcVig"
+    >
+      <div
+        class="sc-bxivhb sc-bZQynM ftKVqf"
+      >
+        <div
+          class="bp3-navbar-group bp3-align-left"
+        >
+          <div
+            class="bp3-navbar-heading"
+          >
+            <a
+              href="/"
+            >
+              <img
+                alt="Arlo, by VotingWorks"
+                src="/arlo.png"
+              />
+            </a>
+          </div>
+        </div>
+        <div
+          class="bp3-navbar-group bp3-align-right"
+        >
+          <div
+            class="sc-ifAKCX jNLPyG"
+            id="reset-button-wrapper"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="sc-ktHwxA hrUTbT"
+    >
+      <img
+        alt="Arlo, by VotingWorks"
+        height="50px"
+        src="/arlo.png"
+      />
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM kwrEpe sc-bdVaJa gLVjYw"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Log in as an Audit Admin
+        </span>
+      </button>
+      <button
+        class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-hEsumM kwrEpe sc-bdVaJa gLVjYw"
+        type="button"
+      >
+        <span
+          class="bp3-button-text"
+        >
+          Log in as a Jurisdiction Admin
+        </span>
+      </button>
     </div>
   </div>
 </div>
