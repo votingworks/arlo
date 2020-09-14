@@ -268,6 +268,29 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: null,
     },
   ],
+  allManifestsAndTallies: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
+      batchTallies: talliesMocks.processed,
+      currentRoundStatus: null,
+    },
+  ],
   oneComplete: [
     {
       id: 'jurisdiction-id-1',

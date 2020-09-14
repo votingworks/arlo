@@ -131,6 +131,27 @@ export const aaApiCalls = {
       ],
     },
   },
+  getBatchJurisdictions: {
+    url: '/api/election/1/jurisdiction',
+    response: {
+      jurisdictions: [
+        {
+          id: 'jurisdiction-id-1',
+          name: 'Jurisdiction One',
+          ballotManifest: { file: null, processing: null },
+          batchTallies: { file: null, processing: null },
+          currentRoundStatus: null,
+        },
+        {
+          id: 'jurisdiction-id-2',
+          name: 'Jurisdiction Two',
+          ballotManifest: { file: null, processing: null },
+          batchTallies: { file: null, processing: null },
+          currentRoundStatus: null,
+        },
+      ],
+    },
+  },
   getJurisdictionFile: {
     url: '/api/election/1/jurisdiction/file',
     response: {

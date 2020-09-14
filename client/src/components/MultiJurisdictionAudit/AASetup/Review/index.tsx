@@ -56,6 +56,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
 
   const talliesUploadsCompleted = jurisdictions.every(
     j =>
+      j.batchTallies &&
       j.batchTallies.processing &&
       j.batchTallies.processing.status === FileProcessingStatus.PROCESSED
   )
@@ -206,7 +207,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       </ElevatedCard>
       <br />
       <H4>Sample Size</H4>
-      {auditType !== 'BATCH_COMPARISON' || talliesUploadsCompleted ? (
+      {auditType === 'BATCH_COMPARISON' && !talliesUploadsCompleted ? (
         <p>
           Waiting for jurisdiction data to calculate required number of batches
           …
