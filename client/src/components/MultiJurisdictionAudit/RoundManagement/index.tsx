@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { Spinner } from '@blueprintjs/core'
 import { Wrapper } from '../../Atoms/Wrapper'
 import H2Title from '../../Atoms/H2Title'
 import { IRound } from '../useRoundsJurisdictionAdmin'
@@ -25,13 +26,17 @@ const PaddedWrapper = styled(Wrapper)`
   padding: 30px 0;
 `
 
-interface IProps {
+export interface IRoundManagementProps {
   round: IRound
   auditBoards: IAuditBoard[]
   createAuditBoards: (auditBoards: { name: string }[]) => Promise<boolean>
 }
 
-const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
+const RoundManagement = ({
+  round,
+  auditBoards,
+  createAuditBoards,
+}: IRoundManagementProps) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
     jurisdictionId: string
@@ -67,7 +72,12 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
     jurisdictionId
   )
 
-  if (!ballots || online === null) return null // Still loading
+  if (!ballots || online === null)
+    return (
+      <p>
+        Loading... <Spinner size={Spinner.SIZE_SMALL} tagName="span" />
+      </p>
+    )
 
   if (!round.isAuditComplete) {
     const { roundNum } = round
@@ -87,14 +97,16 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
           <>
             <FormButton
               verticalSpaced
-              onClick={() =>
-                apiDownload(
-                  `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${
-                    round.id
-                  }/${
-                    auditType === 'BALLOT_POLLING' ? 'ballots' : 'batches'
-                  }/retrieval-list`
-                )
+              onClick={
+                /* istanbul ignore next */ // tested in generateSheets.test.tsx
+                () =>
+                  apiDownload(
+                    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${
+                      round.id
+                    }/${
+                      auditType === 'BALLOT_POLLING' ? 'ballots' : 'batches'
+                    }/retrieval-list`
+                  )
               }
             >
               Download Aggregated{' '}
@@ -103,13 +115,19 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
             </FormButton>
             <FormButton
               verticalSpaced
-              onClick={() => downloadPlaceholders(roundNum, ballots)}
+              onClick={
+                /* istanbul ignore next */ // tested in generateSheets.test.tsx
+                () => downloadPlaceholders(roundNum, ballots)
+              }
             >
               Download Placeholder Sheets for Round {roundNum}
             </FormButton>
             <FormButton
               verticalSpaced
-              onClick={() => downloadLabels(roundNum, ballots)}
+              onClick={
+                /* istanbul ignore next */ // tested in generateSheets.test.tsx
+                () => downloadLabels(roundNum, ballots)
+              }
             >
               Download Ballot Labels for Round {roundNum}
             </FormButton>
@@ -117,7 +135,10 @@ const RoundManagement = ({ round, auditBoards, createAuditBoards }: IProps) => {
               <>
                 <FormButton
                   verticalSpaced
-                  onClick={() => downloadDataEntry(auditBoards)}
+                  onClick={
+                    /* istanbul ignore next */ // tested in generateSheets.test.tsx
+                    () => downloadDataEntry(auditBoards)
+                  }
                 >
                   Download Audit Board Credentials for Data Entry
                 </FormButton>
