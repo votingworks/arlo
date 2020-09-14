@@ -41,6 +41,7 @@ def parse_csv(csv_string: str, columns: List[CSVColumnType]) -> CSVDictIterator:
     csv: CSVIterator = py_csv.reader(io.StringIO(csv_string), delimiter=",")
     csv = strip_whitespace(csv)
     csv = reject_no_rows(csv)
+    csv = skip_empty_trailing_columns(csv)
     csv = validate_headers(csv, columns)
     csv = reject_empty_cells(csv, columns)
     csv = reject_total_rows(csv)
@@ -86,7 +87,7 @@ def reject_no_rows(csv: CSVIterator) -> CSVIterator:
     yield from csv
 
 
-def validate_headers(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterator:
+def skip_empty_trailing_columns(csv: CSVIterator) -> CSVIterator:
     headers = next(csv)
 
     # Count empty trailing columns so we can ignore them.
@@ -96,9 +97,29 @@ def validate_headers(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVItera
             empty_trailing_header_count += 1
         else:
             break
-    if empty_trailing_header_count > 0:
-        headers = headers[0:-empty_trailing_header_count]
 
+    if empty_trailing_header_count == 0:
+        # No empty trailing columns, just send the data through as-is.
+        yield headers
+        yield from csv
+    else:
+        yield headers[0:-empty_trailing_header_count]
+        for r, row in enumerate(csv):  # pylint: disable=invalid-name
+            for (empty_trailing_column_index, cell) in enumerate(
+                row[-empty_trailing_header_count:]
+            ):
+                if len(cell) > 0:
+                    raise CSVParseError(
+                        f"Empty trailing column {len(headers) - empty_trailing_header_count + empty_trailing_column_index + 1}"
+                        f" expected to have no values, but row {r+2} has a value: {cell}."
+                    )
+
+            # Pass only cells for non-empty columns.
+            yield row[0:-empty_trailing_header_count]
+
+
+def validate_headers(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterator:
+    headers = next(csv)
     lowercase_headers = [header.lower() for header in headers]
 
     allowed_headers = [c.name for c in columns]
@@ -132,22 +153,7 @@ def validate_headers(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVItera
         )
 
     yield headers
-
-    if empty_trailing_header_count == 0:
-        # No empty trailing columns, just send the data through as-is.
-        yield from csv
-    else:
-        for (row_index, row) in enumerate(csv):
-            for (empty_trailing_column_index, cell) in enumerate(
-                row[-empty_trailing_header_count:]
-            ):
-                if len(cell) > 0:
-                    raise CSVParseError(
-                        f"Empty trailing column {len(headers) + empty_trailing_column_index + 1} expected to have no values, but row {row_index + 1} has a value: {cell}."
-                    )
-
-            # Pass only cells for non-empty columns.
-            yield row[0:-empty_trailing_header_count]
+    yield from csv
 
 
 def is_empty_row(row: List[str]):
@@ -174,7 +180,7 @@ def reject_empty_cells(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIte
                 f" Expected {len(headers)} {pluralize('cell', len(headers))},"
                 f" got {len(row)} {pluralize('cell', len(row))}."
             )
-        for c, value in enumerate(row):
+        for c, value in enumerate(row):  # pylint: disable=invalid-name
             if columns[c].required and value == "":
                 raise CSVParseError(
                     "All cells must have values."
