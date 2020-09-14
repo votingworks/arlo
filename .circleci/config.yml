@@ -18,7 +18,7 @@ commands:
   restore-pip-cache:
     steps:
       - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
       - restore_cache:
           name: Restore Pip Cache
           keys:
@@ -28,7 +28,7 @@ commands:
   save-pip-cache:
     steps:
       - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.8/site-packages
       - save_cache:
           name: Save Pip Cache
           key: pip-packages-v5-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
