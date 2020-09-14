@@ -26,10 +26,10 @@ def test_parse_csv_happy_path():
         )
     )
     assert parsed == [
-        {"Batch Name": "Batch A", "Number of Ballots": "20"},
-        {"Batch Name": "B", "Number of Ballots": "4"},
-        {"Batch Name": "c1111111", "Number of Ballots": "100"},
-        {"Batch Name": "box 2", "Number of Ballots": "100000"},
+        {"Batch Name": "Batch A", "Number of Ballots": 20},
+        {"Batch Name": "B", "Number of Ballots": 4},
+        {"Batch Name": "c1111111", "Number of Ballots": 100},
+        {"Batch Name": "box 2", "Number of Ballots": 100000},
     ]
 
 
@@ -247,7 +247,7 @@ def test_parse_csv_header_wrong_case():
     )
     assert len(parsed) == 1
     assert parsed[0]["Batch Name"] == "Batch A"
-    assert parsed[0]["Number of Ballots"] == "20"
+    assert parsed[0]["Number of Ballots"] == 20
 
     parsed = list(
         parse_csv(
@@ -256,7 +256,7 @@ def test_parse_csv_header_wrong_case():
     )
     assert len(parsed) == 1
     assert parsed[0]["Batch Name"] == "Batch A"
-    assert parsed[0]["Number of Ballots"] == "20"
+    assert parsed[0]["Number of Ballots"] == 20
 
 
 def test_parse_csv_space_in_header():
@@ -267,7 +267,7 @@ def test_parse_csv_space_in_header():
     )
     assert len(parsed) == 1
     assert parsed[0]["Batch Name"] == "Batch A"
-    assert parsed[0]["Number of Ballots"] == "20"
+    assert parsed[0]["Number of Ballots"] == 20
 
     parsed = list(
         parse_csv(
@@ -277,7 +277,7 @@ def test_parse_csv_space_in_header():
     )
     assert len(parsed) == 1
     assert parsed[0]["Batch Name"] == "Batch A"
-    assert parsed[0]["Number of Ballots"] == "20"
+    assert parsed[0]["Number of Ballots"] == 20
 
 
 def test_parse_csv_space_in_value():
@@ -288,7 +288,7 @@ def test_parse_csv_space_in_value():
     )
     assert len(parsed) == 1
     assert parsed[0]["Batch Name"] == "Batch A"
-    assert parsed[0]["Number of Ballots"] == "20"
+    assert parsed[0]["Number of Ballots"] == 20
 
     parsed = list(
         parse_csv(
@@ -297,6 +297,17 @@ def test_parse_csv_space_in_value():
         )
     )
     assert len(parsed) == 1
+
+
+def test_parse_csv_comma_in_number():
+    parsed = list(
+        parse_csv(
+            ("Batch Name,Number of Ballots\n" 'Batch A,"2,020"\n'),
+            BALLOT_MANIFEST_COLUMNS,
+        )
+    )
+    assert len(parsed) == 1
+    assert parsed[0]["Number of Ballots"] == 2020
 
 
 def test_parse_csv_empty_row():
@@ -340,7 +351,7 @@ def test_parse_csv_empty_trailing_columns():
             BALLOT_MANIFEST_COLUMNS,
         )
     )
-    assert parsed == [{"Batch Name": "Batch A", "Number of Ballots": "20"}]
+    assert parsed == [{"Batch Name": "Batch A", "Number of Ballots": 20}]
 
 
 REAL_WORLD_REJECTED_CSVS = [

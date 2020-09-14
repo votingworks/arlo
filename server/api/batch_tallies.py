@@ -81,7 +81,7 @@ def process_batch_tallies_file(
             row[BATCH_NAME]: {
                 contest.id: {
                     "ballots": num_ballots_by_batch[row[BATCH_NAME]],
-                    **{choice.id: int(row[choice.name]) for choice in contest.choices},
+                    **{choice.id: row[choice.name] for choice in contest.choices},
                 }
             }
             for row in batch_tallies_csv

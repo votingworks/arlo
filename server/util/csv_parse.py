@@ -6,6 +6,8 @@ import io, re, locale, chardet
 from werkzeug.exceptions import BadRequest
 from .process_file import UserError
 
+locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
+
 
 class CSVParseError(UserError):
     pass
@@ -42,7 +44,7 @@ def parse_csv(csv_string: str, columns: List[CSVColumnType]) -> CSVDictIterator:
     csv = validate_headers(csv, columns)
     csv = skip_empty_rows(csv)
     csv = reject_empty_cells(csv, columns)
-    csv = validate_values(csv, columns)
+    csv = validate_and_parse_values(csv, columns)
     csv = reject_duplicate_values(csv, columns)
     return convert_rows_to_dicts(csv, columns)
 
@@ -172,29 +174,34 @@ def reject_empty_cells(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIte
         yield row
 
 
-def validate_values(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterator:
+def validate_and_parse_values(
+    csv: CSVIterator, columns: List[CSVColumnType]
+) -> CSVIterator:
     yield next(csv)  # Skip the headers
 
-    # pylint: disable=invalid-name
-    for r, row in enumerate(csv):
+    def parse_and_validate_value(column, value, r):  # pylint: disable=invalid-name
+        where = f"column {column.name}, row {r+1}"
 
-        for column, value in zip(columns, row):
-            where = f"column {column.name}, row {r+1}"
+        if column.value_type is CSVValueType.NUMBER:
+            try:
+                return locale.atoi(value)
+            except ValueError:
+                # pylint: disable=raise-missing-from
+                raise CSVParseError(f"Expected a number in {where}. Got: {value}.")
 
-            if column.value_type is CSVValueType.NUMBER:
-                try:
-                    locale.atoi(value)
-                except ValueError:
-                    # pylint: disable=raise-missing-from
-                    raise CSVParseError(f"Expected a number in {where}. Got: {value}.")
+        if column.value_type is CSVValueType.EMAIL:
+            if not EMAIL_REGEX.match(value):
+                raise CSVParseError(
+                    f"Expected an email address in {where}. Got: {value}."
+                )
 
-            if column.value_type is CSVValueType.EMAIL:
-                if not EMAIL_REGEX.match(value):
-                    raise CSVParseError(
-                        f"Expected an email address in {where}. Got: {value}."
-                    )
+        return value
 
-        yield row
+    for r, row in enumerate(csv):  # pylint: disable=invalid-name
+        yield [
+            parse_and_validate_value(column, value, r)
+            for column, value in zip(columns, row)
+        ]
 
 
 def reject_duplicate_values(
