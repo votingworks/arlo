@@ -64,6 +64,7 @@ commands:
           key: yarn-packages-v5-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
+            - ~/.cache/Cypress
             - node_modules
             - client/node_modules
   restore-caches:
