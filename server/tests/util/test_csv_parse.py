@@ -104,7 +104,7 @@ def test_parse_csv_bad_number():
         )
     assert (
         str(error.value)
-        == "Expected a number in column Number of Ballots, row 1. Got: not a number."
+        == "Expected a number in column Number of Ballots, row 2. Got: not a number."
     )
 
 
@@ -120,7 +120,7 @@ def test_parse_csv_bad_email():
             )
         assert (
             str(error.value)
-            == f"Expected an email address in column Admin Email, row 1. Got: {bad_email}."
+            == f"Expected an email address in column Admin Email, row 2. Got: {bad_email}."
         )
 
 
@@ -131,7 +131,7 @@ def test_parse_csv_empty_cell_in_column():
         )
     assert (
         str(error.value)
-        == "All cells must have values. Got empty cell at column Number of Ballots, row 1."
+        == "All cells must have values. Got empty cell at column Number of Ballots, row 2."
     )
 
     with pytest.raises(CSVParseError) as error:
@@ -142,7 +142,7 @@ def test_parse_csv_empty_cell_in_column():
         )
     assert (
         str(error.value)
-        == "All cells must have values. Got empty cell at column Number of Ballots, row 1."
+        == "All cells must have values. Got empty cell at column Number of Ballots, row 2."
     )
 
 
@@ -151,7 +151,7 @@ def test_parse_csv_missing_cell_in_row():
         list(parse_csv(("Batch Name,Number of Ballots\n" "1"), BALLOT_MANIFEST_COLUMNS))
     assert (
         str(error.value)
-        == "Wrong number of cells in row 1. Expected 2 cells, got 1 cell."
+        == "Wrong number of cells in row 2. Expected 2 cells, got 1 cell."
     )
 
 
@@ -164,7 +164,7 @@ def test_parse_csv_extra_cell_in_row():
         )
     assert (
         str(error.value)
-        == "Wrong number of cells in row 1. Expected 2 cells, got 3 cells."
+        == "Wrong number of cells in row 2. Expected 2 cells, got 3 cells."
     )
 
 
@@ -218,7 +218,7 @@ def test_parse_csv_empty_trailing_columns_with_data_in_those_columns():
 
     assert (
         str(error.value)
-        == "Empty trailing column 4 expected to have no values, but row 1 has a value: z."
+        == "Empty trailing column 4 expected to have no values, but row 2 has a value: z."
     )
 
 
