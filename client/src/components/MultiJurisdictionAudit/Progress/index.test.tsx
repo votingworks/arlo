@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Progress from '.'
-import { jurisdictionMocks } from '../useSetupMenuItems/_mocks'
+import { jurisdictionMocks, auditSettings } from '../useSetupMenuItems/_mocks'
 
 jest.mock('react-router', () => ({
   useParams: jest.fn().mockReturnValue({ electionId: '1' }),
@@ -11,7 +11,10 @@ jest.mock('react-router', () => ({
 describe('Progress screen', () => {
   it('shows ballot manifest upload status', () => {
     const { container } = render(
-      <Progress jurisdictions={jurisdictionMocks.oneManifest} />
+      <Progress
+        jurisdictions={jurisdictionMocks.oneManifest}
+        auditSettings={auditSettings.all}
+      />
     )
 
     screen.getByText('Audit Progress by Jurisdiction')
@@ -34,7 +37,10 @@ describe('Progress screen', () => {
 
   it('shows round status', () => {
     const { container } = render(
-      <Progress jurisdictions={jurisdictionMocks.oneComplete} />
+      <Progress
+        jurisdictions={jurisdictionMocks.oneComplete}
+        auditSettings={auditSettings.all}
+      />
     )
 
     screen.getByText('Audit Progress by Jurisdiction')
@@ -60,7 +66,12 @@ describe('Progress screen', () => {
   })
 
   it('toggles between ballots and samples', () => {
-    render(<Progress jurisdictions={jurisdictionMocks.oneComplete} />)
+    render(
+      <Progress
+        jurisdictions={jurisdictionMocks.oneComplete}
+        auditSettings={auditSettings.all}
+      />
+    )
 
     const ballotsSwitch = screen.getByRole('checkbox', {
       name: 'Count unique sampled ballots',
@@ -84,9 +95,24 @@ describe('Progress screen', () => {
     within(rows[3]).getByRole('cell', { name: '0' })
   })
 
+  it('shows a different toggle label for batch audits', () => {
+    render(
+      <Progress
+        jurisdictions={jurisdictionMocks.oneComplete}
+        auditSettings={auditSettings.batchComparisonAll}
+      />
+    )
+    screen.getByRole('checkbox', {
+      name: 'Count unique sampled batches',
+    })
+  })
+
   it('shows the detail modal', () => {
     const { container } = render(
-      <Progress jurisdictions={jurisdictionMocks.oneManifest} />
+      <Progress
+        jurisdictions={jurisdictionMocks.oneManifest}
+        auditSettings={auditSettings.all}
+      />
     )
 
     // Click on a jurisdiction name to open the detail modal
@@ -103,7 +129,10 @@ describe('Progress screen', () => {
 
   it('shows the detail modal for a jurisdiction without an upload', () => {
     const { container } = render(
-      <Progress jurisdictions={jurisdictionMocks.oneManifest} />
+      <Progress
+        jurisdictions={jurisdictionMocks.oneManifest}
+        auditSettings={auditSettings.all}
+      />
     )
 
     // Click on a jurisdiction name to open the detail modal
@@ -119,7 +148,12 @@ describe('Progress screen', () => {
   })
 
   it('filters by jurisdiction name', async () => {
-    render(<Progress jurisdictions={jurisdictionMocks.oneManifest} />)
+    render(
+      <Progress
+        jurisdictions={jurisdictionMocks.oneManifest}
+        auditSettings={auditSettings.all}
+      />
+    )
 
     const filter = screen.getByPlaceholderText('Filter by jurisdiction name...')
     await userEvent.type(filter, '1')
@@ -135,7 +169,10 @@ describe('Progress screen', () => {
 
   it('sorts', () => {
     const { rerender } = render(
-      <Progress jurisdictions={jurisdictionMocks.oneManifest} />
+      <Progress
+        jurisdictions={jurisdictionMocks.oneManifest}
+        auditSettings={auditSettings.all}
+      />
     )
 
     // Toggle sorting by name
@@ -174,7 +211,12 @@ describe('Progress screen', () => {
     })
 
     // Toggle sorting by status once audit begins
-    rerender(<Progress jurisdictions={jurisdictionMocks.oneComplete} />)
+    rerender(
+      <Progress
+        jurisdictions={jurisdictionMocks.oneComplete}
+        auditSettings={auditSettings.all}
+      />
+    )
 
     statusHeader = screen.getByRole('columnheader', {
       name: 'Status',

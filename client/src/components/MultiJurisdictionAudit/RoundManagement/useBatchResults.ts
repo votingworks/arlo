@@ -3,8 +3,18 @@ import { toast } from 'react-toastify'
 import { api } from '../../utilities'
 
 export interface IResultValues {
-  [contestId: string]: {
+  [batchId: string]: {
     [choiceId: string]: number | string
+  }
+}
+
+export interface IBatch {
+  id: string
+  name: string
+  numBallots: number
+  auditBoard: null | {
+    id: string
+    name: string
   }
 }
 
@@ -12,14 +22,14 @@ const stringifyPossibleNull = (v: string | number | null) => (v ? `${v}` : '')
 
 const reformatResults = (r: IResultValues, numberify = true): IResultValues => {
   return Object.keys(r).reduce(
-    (a, contestId) => ({
+    (a, batchId) => ({
       ...a,
-      [contestId]: Object.keys(r[contestId]).reduce(
+      [batchId]: Object.keys(r[batchId]).reduce(
         (b, choiceId) => ({
           ...b,
           [choiceId]: numberify
-            ? Number(r[contestId][choiceId])
-            : stringifyPossibleNull(r[contestId][choiceId]),
+            ? Number(r[batchId][choiceId])
+            : stringifyPossibleNull(r[batchId][choiceId]),
         }),
         {}
       ),
@@ -37,7 +47,7 @@ const getResults = async (
 ): Promise<IResultValues | null> => {
   try {
     const response: IResultValues = await api(
-      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results`
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/results`
     )
     return reformatResults(response, false)
   } catch (err) /* istanbul ignore next */ {
@@ -47,17 +57,39 @@ const getResults = async (
   }
 }
 
-const useResults = (
+const getBatches = async (
   electionId: string,
   jurisdictionId: string,
   roundId: string
-): [IResultValues | null, (arg0: IResultValues) => Promise<boolean>] => {
+): Promise<IBatch[] | null> => {
+  try {
+    const { batches }: { batches: IBatch[] } = await api(
+      `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches`
+    )
+    return batches
+  } catch (err) /* istanbul ignore next */ {
+    // TODO move toasting into api
+    toast.error(err.message)
+    return null
+  }
+}
+
+const useBatchResults = (
+  electionId: string,
+  jurisdictionId: string,
+  roundId: string
+): [
+  IResultValues | null,
+  IBatch[] | null,
+  (arg0: IResultValues) => Promise<boolean>
+] => {
   const [results, setResults] = useState<IResultValues | null>(null)
+  const [batches, setBatches] = useState<IBatch[] | null>(null)
 
   const updateResults = async (newResults: IResultValues): Promise<boolean> => {
     try {
       await api(
-        `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results`,
+        `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/batches/results`,
         {
           method: 'PUT',
           // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
@@ -78,11 +110,13 @@ const useResults = (
 
   useEffect(() => {
     ;(async () => {
+      const newBatches = await getBatches(electionId, jurisdictionId, roundId)
       const newResults = await getResults(electionId, jurisdictionId, roundId)
+      setBatches(newBatches)
       setResults(newResults)
     })()
   }, [electionId, jurisdictionId, roundId])
-  return [results, updateResults]
+  return [results, batches, updateResults]
 }
 
-export default useResults
+export default useBatchResults

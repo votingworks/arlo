@@ -141,6 +141,23 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
+  it('renders full state with batch comparison', async () => {
+    auditSettingsMock.mockReturnValue(settingsMock.batch)
+    const expectedCalls = [
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+      apiCalls.getSampleSizeOptions,
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderView()
+      await screen.findByText('Batch Comparison')
+      expect(container).toMatchSnapshot()
+    })
+  })
+
   it('renders full state with jurisdictions on opportunistic contest', async () => {
     auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [

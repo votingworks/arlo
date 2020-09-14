@@ -41,8 +41,8 @@ export interface IJurisdiction {
     status: JurisdictionRoundStatus
     numSamples: number
     numSamplesAudited: number
-    numBallots: number
-    numBallotsAudited: number
+    numUnique: number
+    numUniqueAudited: number
   } | null
 }
 

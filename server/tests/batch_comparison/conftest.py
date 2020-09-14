@@ -27,11 +27,11 @@ def contest_ids(client: FlaskClient, election_id: str, jurisdiction_ids: List[st
             "name": "Contest 1",
             "isTargeted": True,
             "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400},
-                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 500},
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 5000},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 2500},
+                {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 2500},
             ],
-            "totalBallotsCast": 1500,
+            "totalBallotsCast": 5000,
             "numWinners": 1,
             "votesAllowed": 2,
             "jurisdictionIds": jurisdiction_ids[:2],
@@ -57,9 +57,15 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
             "manifest": (
                 io.BytesIO(
                     b"Batch Name,Number of Ballots\n"
-                    b"Batch 1,200\n"
-                    b"Batch 2,300\n"
-                    b"Batch 3,400\n"
+                    b"Batch 1,500\n"
+                    b"Batch 2,500\n"
+                    b"Batch 3,500\n"
+                    b"Batch 4,500\n"
+                    b"Batch 5,100\n"
+                    b"Batch 6,100\n"
+                    b"Batch 7,100\n"
+                    b"Batch 8,100\n"
+                    b"Batch 9,100\n"
                 ),
                 "manifest.csv",
             )
@@ -71,7 +77,13 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         data={
             "manifest": (
                 io.BytesIO(
-                    b"Batch Name,Number of Ballots\n" b"Batch 1,300\n" b"Batch 2,400\n"
+                    b"Batch Name,Number of Ballots\n"
+                    b"Batch 1,500\n"
+                    b"Batch 2,500\n"
+                    b"Batch 3,500\n"
+                    b"Batch 4,500\n"
+                    b"Batch 5,250\n"
+                    b"Batch 6,250\n"
                 ),
                 "manifest.csv",
             )
@@ -92,9 +104,15 @@ def batch_tallies(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     batch_tallies_file = (
         b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-        b"Batch 1,1,10,100\n"
-        b"Batch 2,2,20,200\n"
-        b"Batch 3,3,30,300\n"
+        b"Batch 1,500,250,250\n"
+        b"Batch 2,500,250,250\n"
+        b"Batch 3,500,250,250\n"
+        b"Batch 4,500,250,250\n"
+        b"Batch 5,100,50,50\n"
+        b"Batch 6,100,50,50\n"
+        b"Batch 7,100,50,50\n"
+        b"Batch 8,100,50,50\n"
+        b"Batch 9,100,50,50\n"
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
@@ -102,8 +120,12 @@ def batch_tallies(
     )
     batch_tallies_file = (
         b"Batch Name,candidate 1,candidate 2,candidate 3\n"
-        b"Batch 1,1,10,100\n"
-        b"Batch 2,2,20,200\n"
+        b"Batch 1,500,250,250\n"
+        b"Batch 2,500,250,250\n"
+        b"Batch 3,500,250,250\n"
+        b"Batch 4,500,250,250\n"
+        b"Batch 5,100,50,50\n"
+        b"Batch 6,100,50,50\n"
     )
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/batch-tallies",

@@ -54,6 +54,12 @@ export const AuditAdminView: React.FC = () => {
     refresh()
   }, [refresh])
 
+  // TODO support multiple contests in batch comparison audits
+  const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
+  const singleContestMenuItems = menuItems.filter(
+    i => i.title !== 'Opportunistic Contests'
+  )
+
   if (!contests || !rounds) return null // Still loading
 
   switch (view) {
@@ -67,8 +73,16 @@ export const AuditAdminView: React.FC = () => {
             auditSettings={auditSettings}
           />
           <Inner>
-            <Sidebar title="Audit Setup" menuItems={menuItems} />
-            <Setup stage={stage} refresh={refresh} menuItems={menuItems} />
+            <Sidebar
+              title="Audit Setup"
+              menuItems={isBatch ? singleContestMenuItems : menuItems}
+            />
+            <Setup
+              stage={stage}
+              refresh={refresh}
+              menuItems={menuItems}
+              isBatch={isBatch}
+            />
           </Inner>
         </Wrapper>
       )
@@ -92,7 +106,10 @@ export const AuditAdminView: React.FC = () => {
                 },
               ]}
             />
-            <Progress jurisdictions={jurisdictions} />
+            <Progress
+              jurisdictions={jurisdictions}
+              auditSettings={auditSettings}
+            />
           </Inner>
         </Wrapper>
       )
