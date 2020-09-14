@@ -1000,7 +1000,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
 </div>
 `;
 
-exports[`Audit Setup > Review & Launch renders full state with batch comparison audit 1`] = `
+exports[`Audit Setup > Review & Launch renders full state with batch comparison 1`] = `
 <div>
   <div>
     <h2
@@ -1270,7 +1270,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
 </div>
 `;
 
-exports[`Audit Setup > Review & Launch renders full state with batch comparison 1`] = `
+exports[`Audit Setup > Review & Launch renders full state with batch comparison audit 1`] = `
 <div>
   <div>
     <h2
@@ -1908,8 +1908,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
                   class="bp3-control-indicator"
                 />
                 BRAVO Average Sample Number: 
-                46 samples
-                 (54% chance of reaching risk limit and completing the audit in one round)
+                46 samples (54% chance of reaching risk limit and completing the audit in one round)
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -1923,8 +1922,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
                   class="bp3-control-indicator"
                 />
                 
-                67 samples
-                 (70% chance of reaching risk limit and completing the audit in one round)
+                67 samples (70% chance of reaching risk limit and completing the audit in one round)
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -1938,8 +1936,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
                   class="bp3-control-indicator"
                 />
                 
-                88 samples
-                 (50% chance of reaching risk limit and completing the audit in one round)
+                88 samples (50% chance of reaching risk limit and completing the audit in one round)
               </label>
               <label
                 class="bp3-control bp3-radio"
@@ -1953,8 +1950,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
                   class="bp3-control-indicator"
                 />
                 
-                125 samples
-                 (90% chance of reaching risk limit and completing the audit in one round)
+                125 samples (90% chance of reaching risk limit and completing the audit in one round)
               </label>
               <label
                 class="bp3-control bp3-radio"
