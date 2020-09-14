@@ -15,10 +15,6 @@ const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
 > = jest.spyOn(utilities, 'api').mockImplementation()
-const checkAndToastMock: jest.SpyInstance<
-  ReturnType<typeof utilities.checkAndToast>,
-  Parameters<typeof utilities.checkAndToast>
-> = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 
 const generateApiMock = (
   roundReturn: { rounds: IRound[] },
@@ -41,11 +37,9 @@ apiMock.mockImplementation(
     { file: null, processing: null }
   )
 )
-checkAndToastMock.mockReturnValue(false)
 
 afterEach(() => {
   apiMock.mockClear()
-  checkAndToastMock.mockClear()
 })
 
 describe('useSetupMenuItems', () => {

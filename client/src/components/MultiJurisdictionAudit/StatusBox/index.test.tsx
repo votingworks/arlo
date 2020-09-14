@@ -132,7 +132,7 @@ describe('StatusBox', () => {
     })
 
     it('creates the next round', () => {
-      apiMock.mockImplementation(async () => ({ status: 'ok' }))
+      apiMock.mockResolvedValue({ status: 'ok' })
       render(
         <Router>
           <AuditAdminStatusBox
@@ -159,7 +159,7 @@ describe('StatusBox', () => {
     })
 
     it('handles an error when trying to create next round', () => {
-      apiMock.mockImplementationOnce(async () => false)
+      apiMock.mockResolvedValueOnce(null)
       render(
         <Router>
           <AuditAdminStatusBox

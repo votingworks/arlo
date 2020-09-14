@@ -94,7 +94,7 @@ describe('ResetButton', () => {
   })
 
   it('handles 404 errors', async () => {
-    apiMock.mockImplementationOnce(async () => false)
+    apiMock.mockResolvedValueOnce(null)
     const updateAuditMock = jest.fn()
     const wrapper = document.createElement('div')
     wrapper.setAttribute('id', 'reset-button-wrapper')

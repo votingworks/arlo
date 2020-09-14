@@ -47,7 +47,7 @@ describe('useAuditSettings', () => {
   })
 
   it('should handle GET error', async () => {
-    apiMock.mockResolvedValue(false)
+    apiMock.mockResolvedValueOnce(null)
     const {
       result: {
         current: [settings],
@@ -63,7 +63,7 @@ describe('useAuditSettings', () => {
     apiMock
       .mockResolvedValueOnce(auditSettings.blank)
       .mockResolvedValueOnce(auditSettings.blank)
-      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(null)
     const { result, waitForNextUpdate } = renderHook(() =>
       useAuditSettings('1')
     )

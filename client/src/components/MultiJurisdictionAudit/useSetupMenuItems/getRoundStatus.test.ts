@@ -4,7 +4,7 @@ import * as utilities from '../../utilities'
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
   Parameters<typeof utilities.api>
-> = jest.spyOn(utilities, 'api').mockImplementation(async () => false)
+> = jest.spyOn(utilities, 'api').mockResolvedValue(null)
 
 describe('getRoundStatus', () => {
   it('handles api request error', async () => {

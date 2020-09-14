@@ -132,7 +132,7 @@ describe('SelectBallotsToAudit', () => {
     const updateAuditMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
-    apiMock.mockImplementation(async () => true)
+    apiMock.mockResolvedValue({ status: 'ok' })
 
     const {
       getByText,
@@ -222,7 +222,7 @@ describe('SelectBallotsToAudit', () => {
     const updateAuditMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
-    apiMock.mockImplementation(async () => true)
+    apiMock.mockResolvedValue({ status: 'ok' })
 
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
@@ -256,7 +256,7 @@ describe('SelectBallotsToAudit', () => {
     const updateAuditMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
-    apiMock.mockImplementation(async () => true)
+    apiMock.mockResolvedValue({ status: 'ok' })
 
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
@@ -301,7 +301,7 @@ describe('SelectBallotsToAudit', () => {
     const updateAuditMock = jest
       .fn()
       .mockImplementationOnce(async () => statusStates.ballotManifestProcessed) // the POST to /election/{electionId}/audit/status after manifest
-    apiMock.mockImplementation(async () => true)
+    apiMock.mockResolvedValue({ status: 'ok' })
 
     const { getByText, getByLabelText } = render(
       <SelectBallotsToAudit
@@ -440,9 +440,9 @@ describe('SelectBallotsToAudit', () => {
   it('handles api error on /audit/sample-size', async () => {
     apiMock.mockReset()
     apiMock
-      .mockImplementationOnce(async () => false)
-      .mockImplementation(async () => true)
-      .mockImplementationOnce(async () => true)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ status: 'ok' })
+      .mockResolvedValueOnce({ status: 'ok' })
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -457,9 +457,9 @@ describe('SelectBallotsToAudit', () => {
   it('handles api error on /audit/jurisdictions', async () => {
     apiMock.mockReset()
     apiMock
-      .mockImplementationOnce(async () => true)
-      .mockImplementationOnce(async () => false)
-      .mockImplementationOnce(async () => true)
+      .mockResolvedValueOnce({ status: 'ok' })
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ status: 'ok' })
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 
@@ -474,9 +474,9 @@ describe('SelectBallotsToAudit', () => {
   it('handles api error on /audit/jurisdiction/:id/manifest', async () => {
     apiMock.mockReset()
     apiMock
-      .mockImplementationOnce(async () => true)
-      .mockImplementationOnce(async () => true)
-      .mockImplementationOnce(async () => false)
+      .mockResolvedValueOnce({ status: 'ok' })
+      .mockResolvedValueOnce({ status: 'ok' })
+      .mockResolvedValueOnce(null)
 
     const [getStatusMock, updateAuditMock] = await inputAndSubmitForm()
 

@@ -263,7 +263,7 @@ describe('CalculateRiskMeasurement', () => {
   })
 
   it('handles api error on ballot list endpoint', async () => {
-    apiMock.mockImplementationOnce(async () => false)
+    apiMock.mockResolvedValueOnce(null)
     const { getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates.jurisdictionsInitial}
@@ -357,7 +357,7 @@ describe('CalculateRiskMeasurement', () => {
   })
 
   it('handles errors from api', async () => {
-    apiMock.mockImplementationOnce(async () => false)
+    apiMock.mockResolvedValueOnce(null)
     const { getByLabelText, getByText } = render(
       <CalculateRiskMeasurement
         audit={statusStates.ballotManifestProcessed}

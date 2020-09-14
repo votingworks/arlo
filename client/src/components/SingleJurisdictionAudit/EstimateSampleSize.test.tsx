@@ -667,7 +667,7 @@ describe('EstimateSampleSize', () => {
   })
 
   it('handles errors from the form submission', async () => {
-    apiMock.mockImplementationOnce(async () => false)
+    apiMock.mockResolvedValueOnce(null)
     const updateAuditMock = jest.fn()
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
@@ -697,9 +697,7 @@ describe('EstimateSampleSize', () => {
   })
 
   it('handles errors from server side on freeze call', async () => {
-    apiMock
-      .mockImplementationOnce(async () => true)
-      .mockImplementationOnce(async () => false)
+    apiMock.mockResolvedValueOnce({ status: 'ok' }).mockResolvedValueOnce(null)
     const updateAuditMock = jest.fn()
     const { getByLabelText, getByText } = render(
       <EstimateSampleSize
