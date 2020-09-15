@@ -26,10 +26,10 @@ def test_parse_csv_happy_path():
         )
     )
     assert parsed == [
-        {"Batch Name": "Batch A", "Number of Ballots": "20"},
-        {"Batch Name": "B", "Number of Ballots": "4"},
-        {"Batch Name": "c1111111", "Number of Ballots": "100"},
-        {"Batch Name": "box 2", "Number of Ballots": "100000"},
+        {"Batch Name": "Batch A", "Number of Ballots": 20},
+        {"Batch Name": "B", "Number of Ballots": 4},
+        {"Batch Name": "c1111111", "Number of Ballots": 100},
+        {"Batch Name": "box 2", "Number of Ballots": 100000},
     ]
 
 
@@ -104,7 +104,7 @@ def test_parse_csv_bad_number():
         )
     assert (
         str(error.value)
-        == "Expected a number in column Number of Ballots, row 1. Got: not a number."
+        == "Expected a number in column Number of Ballots, row 2. Got: not a number."
     )
 
 
@@ -120,7 +120,7 @@ def test_parse_csv_bad_email():
             )
         assert (
             str(error.value)
-            == f"Expected an email address in column Admin Email, row 1. Got: {bad_email}."
+            == f"Expected an email address in column Admin Email, row 2. Got: {bad_email}."
         )
 
 
@@ -131,7 +131,7 @@ def test_parse_csv_empty_cell_in_column():
         )
     assert (
         str(error.value)
-        == "All cells must have values. Got empty cell at column Number of Ballots, row 1."
+        == "All cells must have values. Got empty cell at column Number of Ballots, row 2."
     )
 
     with pytest.raises(CSVParseError) as error:
@@ -142,7 +142,7 @@ def test_parse_csv_empty_cell_in_column():
         )
     assert (
         str(error.value)
-        == "All cells must have values. Got empty cell at column Number of Ballots, row 1."
+        == "All cells must have values. Got empty cell at column Number of Ballots, row 2."
     )
 
 
@@ -151,7 +151,7 @@ def test_parse_csv_missing_cell_in_row():
         list(parse_csv(("Batch Name,Number of Ballots\n" "1"), BALLOT_MANIFEST_COLUMNS))
     assert (
         str(error.value)
-        == "Wrong number of cells in row 1. Expected 2 cells, got 1 cell."
+        == "Wrong number of cells in row 2. Expected 2 cells, got 1 cell."
     )
 
 
@@ -164,7 +164,7 @@ def test_parse_csv_extra_cell_in_row():
         )
     assert (
         str(error.value)
-        == "Wrong number of cells in row 1. Expected 2 cells, got 3 cells."
+        == "Wrong number of cells in row 2. Expected 2 cells, got 3 cells."
     )
 
 
@@ -218,7 +218,7 @@ def test_parse_csv_empty_trailing_columns_with_data_in_those_columns():
 
     assert (
         str(error.value)
-        == "Empty trailing column 4 expected to have no values, but row 1 has a value: z."
+        == "Empty trailing column 4 expected to have no values, but row 2 has a value: z."
     )
 
 
@@ -236,6 +236,23 @@ def test_parse_csv_duplicate_value_in_unique_column():
     )
 
 
+def test_parse_csv_total_row():
+    for total_word in ["Total", "total", "Totals", "totals"]:
+        with pytest.raises(CSVParseError) as error:
+            list(
+                parse_csv(
+                    (
+                        "Batch Name,Number of Ballots\n"
+                        "Batch A,20\n"
+                        "Batch B,30\n"
+                        f"{total_word},50\n"
+                    ),
+                    BALLOT_MANIFEST_COLUMNS,
+                )
+            )
+    assert str(error.value) == "Remove total row (row 4)"
+
+
 # Cases where we are lenient
 
 
@@ -247,7 +264,7 @@ def test_parse_csv_header_wrong_case():
     )
     assert len(parsed) == 1
     assert parsed[0]["Batch Name"] == "Batch A"
-    assert parsed[0]["Number of Ballots"] == "20"
+    assert parsed[0]["Number of Ballots"] == 20
 
     parsed = list(
         parse_csv(
@@ -256,7 +273,7 @@ def test_parse_csv_header_wrong_case():
     )
     assert len(parsed) == 1
     assert parsed[0]["Batch Name"] == "Batch A"
-    assert parsed[0]["Number of Ballots"] == "20"
+    assert parsed[0]["Number of Ballots"] == 20
 
 
 def test_parse_csv_space_in_header():
@@ -267,7 +284,7 @@ def test_parse_csv_space_in_header():
     )
     assert len(parsed) == 1
     assert parsed[0]["Batch Name"] == "Batch A"
-    assert parsed[0]["Number of Ballots"] == "20"
+    assert parsed[0]["Number of Ballots"] == 20
 
     parsed = list(
         parse_csv(
@@ -277,7 +294,7 @@ def test_parse_csv_space_in_header():
     )
     assert len(parsed) == 1
     assert parsed[0]["Batch Name"] == "Batch A"
-    assert parsed[0]["Number of Ballots"] == "20"
+    assert parsed[0]["Number of Ballots"] == 20
 
 
 def test_parse_csv_space_in_value():
@@ -288,7 +305,7 @@ def test_parse_csv_space_in_value():
     )
     assert len(parsed) == 1
     assert parsed[0]["Batch Name"] == "Batch A"
-    assert parsed[0]["Number of Ballots"] == "20"
+    assert parsed[0]["Number of Ballots"] == 20
 
     parsed = list(
         parse_csv(
@@ -297,6 +314,17 @@ def test_parse_csv_space_in_value():
         )
     )
     assert len(parsed) == 1
+
+
+def test_parse_csv_comma_in_number():
+    parsed = list(
+        parse_csv(
+            ("Batch Name,Number of Ballots\n" 'Batch A,"2,020"\n'),
+            BALLOT_MANIFEST_COLUMNS,
+        )
+    )
+    assert len(parsed) == 1
+    assert parsed[0]["Number of Ballots"] == 2020
 
 
 def test_parse_csv_empty_row():
@@ -340,7 +368,7 @@ def test_parse_csv_empty_trailing_columns():
             BALLOT_MANIFEST_COLUMNS,
         )
     )
-    assert parsed == [{"Batch Name": "Batch A", "Number of Ballots": "20"}]
+    assert parsed == [{"Batch Name": "Batch A", "Number of Ballots": 20}]
 
 
 REAL_WORLD_REJECTED_CSVS = [
@@ -381,6 +409,100 @@ Center Twp,,,180
 "City of Whitehall, Precinct 1",813
 """,
         "Values in column Batch Name must be unique. Found duplicate value: Whitehall Township, Precinct 1.",
+        BALLOT_MANIFEST_COLUMNS,
+    ),
+    (
+        """BATCH NAME,NUMBER OF BALLOTS
+1-BELLEFONTE NORTH,227
+2-BELLEFONTE NORTHEAST,384
+3-BELLEFONTE SOUTH,231
+4-BELLEFONTE SOUTHEAST,373
+5-BELLEFONTE WEST,465
+6-CENTRE HALL,362
+7-HOWARD BOROUGH,177
+8-MILESBURG,265
+9-MILLHEIM,212
+10-PHILIPSBURG 1,216
+11-PHILIPSBURG 2,169
+12-PHILIPSBURG 3,148
+13-PORT MATILDA,134
+14-SNOW SHOE BOROUGH,180
+15-RUSH NORTH CENTRAL,89
+16-STATE COLLEGE NORTH,380
+17-STATE COLLEGE NORTHEAST,279
+18-STATE COLLEGE NORTHWEST,147
+19-STATE COLLEGE SOUTH 1,468
+20-STATE COLLEGE SOUTH 2,625
+21-STATE COLLEGE SOUTHEAST,502
+22-STATE COLLEGE SOUTH CENTRAL 1,149
+23-STATE COLLEGE SOUTH CENTRAL 2,309
+24-PSU,323
+26-STATE COLLEGE EAST 3,155
+29-STATE COLLEGE EAST CENTRAL 2,139
+30-STATE COLLEGE EAST CENTRAL 3,73
+31-STATE COLLEGE WEST 1,344
+32-STATE COLLEGE WEST 2,424
+34-STATE COLLEGE WEST CENTRAL 2,154
+35-UNIONVILLE,77
+36-BENNER NORTH,547
+37-BENNER SOUTH,749
+38-BOGGS EAST,275
+39-BOGGS WEST,383
+40-BURNSIDE,109
+41-COLLEGE NORTH,"1,007"
+42-COLLEGE SOUTH,848
+43-COLLEGE EAST,757
+44-COLLEGE WEST,220
+45-CURTIN NORTH,31
+46-CURTIN SOUTH,108
+47-FERGUSON NORTH 1,669
+48-FERGUSON NORTH 2,385
+49-FERGUSON NORTHEAST 1,546
+50-FERGUSON NORTHEAST 2,305
+51-FERGUSON EAST,536
+52-FERGUSON WEST,557
+53-GREGG,611
+54-HAINES,285
+55-HALFMOON PROPER,312
+56-HARRIS EAST,"1,114"
+57-HARRIS WEST,920
+58-HOWARD TOWNSHIP,252
+59-HUSTON,329
+60-LIBERTY,423
+61-MARION,260
+62-MILES EAST,184
+63-MILES WEST,93
+64-PATTON NORTH 1,816
+65-PATTON NORTH 2,864
+66-PATTON SOUTH 1,382
+67-PATTON SOUTH 2,470
+68-PATTON SOUTH 3,822
+69-PENN,222
+70-POTTER NORTH,390
+71-POTTER SOUTH,661
+72-RUSH NORTH,503
+73-RUSH SOUTH,98
+74-RUSH EAST,41
+75-RUSH WEST,175
+76-SNOW SHOE EAST,284
+77-SNOW SHOE WEST,155
+78-SPRING NORTH,593
+79-SPRING SOUTH,392
+80-SPRING WEST,210
+81-TAYLOR,213
+82-UNION,403
+83-WALKER EAST,393
+84-WALKER WEST,825
+85-WORTH,213
+86-SPRING EAST,449
+87-SPRING SOUTHWEST,435
+88-FERGUSON NORTH 3,505
+89-FERGUSON WEST CENTRAL,612
+90-HALFMOON EAST CENTRAL,496
+91-FERGUSON NORTH CENTRAL,373
+Totals,"32,990"
+""",
+        "Remove total row (row 89)",
         BALLOT_MANIFEST_COLUMNS,
     ),
 ]

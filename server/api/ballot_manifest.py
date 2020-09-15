@@ -1,4 +1,4 @@
-import locale, uuid
+import uuid
 from datetime import datetime
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
@@ -42,14 +42,11 @@ def process_ballot_manifest_file(
         num_batches = 0
         num_ballots = 0
         for row in manifest_csv:
-            num_ballots_in_batch_csv = row[NUMBER_OF_BALLOTS]
-            num_ballots_in_batch = locale.atoi(num_ballots_in_batch_csv)
-
             batch = Batch(
                 id=str(uuid.uuid4()),
                 name=row[BATCH_NAME],
                 jurisdiction_id=jurisdiction.id,
-                num_ballots=num_ballots_in_batch,
+                num_ballots=row[NUMBER_OF_BALLOTS],
                 storage_location=row.get(STORAGE_LOCATION) or None,
                 tabulator=row.get(TABULATOR) or None,
             )

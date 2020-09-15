@@ -305,7 +305,7 @@ def test_ballot_manifest_upload_invalid_num_ballots(
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "Expected a number in column Number of Ballots, row 1. Got: not a number.",
+                "error": "Expected a number in column Number of Ballots, row 2. Got: not a number.",
             },
         },
     )
