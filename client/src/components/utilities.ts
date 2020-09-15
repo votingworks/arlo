@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import number from '../utils/number-schema'
 import { IErrorResponse } from '../types'
@@ -124,4 +125,32 @@ export const checkAndToast = (
     return true
   }
   return false
+}
+
+// https://overreacted.io/making-setinterval-declarative-with-react-hooks/
+/* istanbul ignore next */
+export const useInterval = (
+  callback: Function,
+  delay: number,
+  callImmediately: boolean
+) => {
+  const savedCallback = useRef<Function>()
+
+  // Remember the latest function.
+  useEffect(() => {
+    savedCallback.current = callback
+  }, [callback])
+
+  // Set up the interval.
+  useEffect(/* eslint consistent-return: "off" */
+  () => {
+    function tick() {
+      savedCallback.current!()
+    }
+    if (callImmediately) tick()
+    if (delay !== null) {
+      const id = setInterval(tick, delay)
+      return () => clearInterval(id)
+    }
+  }, [delay, callImmediately])
 }

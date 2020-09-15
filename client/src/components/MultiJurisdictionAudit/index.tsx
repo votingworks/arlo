@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ElementType } from '../../types'
@@ -23,6 +23,7 @@ import useRoundsAuditAdmin from './useRoundsAuditAdmin'
 import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
 import H2Title from '../Atoms/H2Title'
 import CSVFile from './CSVForm'
+import { useInterval } from '../utilities'
 
 const VerticalInner = styled(Inner)`
   flex-direction: column;
@@ -50,9 +51,7 @@ export const AuditAdminView: React.FC = () => {
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
-  useEffect(() => {
-    refresh()
-  }, [refresh])
+  useInterval(refresh, 300000, true) // poll the apis every 5 minutes
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
