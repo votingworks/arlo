@@ -4,7 +4,11 @@ from typing import Dict, List, Optional
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import with_election_access, with_jurisdiction_access
-from ..util.csv_download import csv_response, election_timestamp_name
+from ..util.csv_download import (
+    csv_response,
+    election_timestamp_name,
+    jurisdiction_timestamp_name,
+)
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
 
@@ -391,5 +395,5 @@ def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdictio
 
     return csv_response(
         csv_io.getvalue(),
-        filename=f"audit-report-{election_timestamp_name(election)}.csv",
+        filename=f"audit-report-{jurisdiction_timestamp_name(election, jurisdiction)}.csv",
     )

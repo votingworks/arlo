@@ -86,8 +86,10 @@ def test_batch_retrieval_list_round_1(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/retrieval-list"
     )
     assert rv.status_code == 200
-    assert "attachment; filename=" in rv.headers["Content-Disposition"]
-    assert ".csv" in rv.headers["Content-Disposition"]
+    assert (
+        scrub_datetime(rv.headers["Content-Disposition"])
+        == 'attachment; filename="batch-retrieval-J1-Test-Audit-test-batch-retrieval-list-round-1-DATETIME.csv"'
+    )
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     assert retrieval_list == "Batch Name,Storage Location,Tabulator,Audit Board\n"

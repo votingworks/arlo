@@ -2,12 +2,10 @@ from typing import List
 from flask.testing import FlaskClient
 from .test_audit_boards import set_up_audit_board
 from ...models import *  # pylint: disable=wildcard-import
-from ..helpers import set_logged_in_user, DEFAULT_JA_EMAIL, assert_match_report
+from ..helpers import *  # pylint: disable=wildcard-import
 from ...auth import UserType
 
 
-# TODO This is just a basic snapshot test. We still need to implement more
-# comprehensive testing.
 def test_audit_admin_report(
     client: FlaskClient,
     election_id: str,
@@ -27,6 +25,10 @@ def test_audit_admin_report(
             audit_board_id,
         )
     rv = client.get(f"/api/election/{election_id}/report")
+    assert (
+        scrub_datetime(rv.headers["Content-Disposition"])
+        == 'attachment; filename="audit-report-Test-Audit-test-audit-admin-report-DATETIME.csv"'
+    )
     assert_match_report(rv.data, snapshot)
 
 
@@ -51,5 +53,9 @@ def test_jurisdiction_admin_report(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
+    )
+    assert (
+        scrub_datetime(rv.headers["Content-Disposition"])
+        == 'attachment; filename="audit-report-J1-Test-Audit-test-jurisdiction-admin-report-DATETIME.csv"'
     )
     assert_match_report(rv.data, snapshot)

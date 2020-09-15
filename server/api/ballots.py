@@ -9,7 +9,7 @@ from . import api
 from ..auth import with_jurisdiction_access, with_audit_board_access
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from ..util.csv_download import csv_response, election_timestamp_name
+from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 
 
@@ -95,7 +95,7 @@ def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round_id:
     retrieval_list_csv = ballot_retrieval_list(jurisdiction, round)
     return csv_response(
         retrieval_list_csv,
-        filename=f"ballot-retrieval-{election_timestamp_name(election)}.csv",
+        filename=f"ballot-retrieval-{jurisdiction_timestamp_name(election, jurisdiction)}.csv",
     )
 
 
