@@ -131,7 +131,7 @@ export const checkAndToast = (
 /* istanbul ignore next */
 export const useInterval = (
   callback: Function,
-  delay: number,
+  delay: number | null,
   callImmediately: boolean
 ) => {
   const savedCallback = useRef<Function>()
@@ -149,6 +149,7 @@ export const useInterval = (
     }
     if (callImmediately) tick()
     if (delay !== null) {
+      // allows for pausing
       const id = setInterval(tick, delay)
       return () => clearInterval(id)
     }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { Tag } from '@blueprintjs/core'
 import { ElementType } from '../../types'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import Sidebar from '../Atoms/Sidebar'
@@ -29,6 +30,12 @@ const VerticalInner = styled(Inner)`
   flex-direction: column;
 `
 
+const RefreshStatusWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+`
+
 interface IParams {
   electionId: string
   view: 'setup' | 'progress' | ''
@@ -51,7 +58,28 @@ export const AuditAdminView: React.FC = () => {
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
-  useInterval(refresh, 300000, true) // poll the apis every 5 minutes
+  const [refreshTime, setRefreshTime] = useState(0)
+  const incrementRefreshTime = () => setRefreshTime(refreshTime + 1000)
+
+  // poll the apis every 5 minutes
+  useInterval(
+    () => {
+      setRefreshTime(0)
+      refresh()
+    },
+    300000,
+    true
+  )
+  // update the refresh time tracker every second
+  useInterval(incrementRefreshTime, 1000, false)
+  // prettify the results for the status
+  const refreshStatus = (() => {
+    if (refreshTime < 10000) return 'Refreshed just now'
+    if (refreshTime < 60000)
+      return `Refreshed ${Math.floor(refreshTime / 10000) * 10} seconds ago`
+    if (refreshTime < 120000) return `Refreshed 1 minute ago`
+    return `Refreshed ${Math.floor(refreshTime / 60000)} minutes ago`
+  })()
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
@@ -83,6 +111,9 @@ export const AuditAdminView: React.FC = () => {
               isBatch={isBatch}
             />
           </Inner>
+          <RefreshStatusWrapper>
+            <Tag>{refreshStatus}</Tag>
+          </RefreshStatusWrapper>
         </Wrapper>
       )
     case 'progress':
@@ -110,6 +141,9 @@ export const AuditAdminView: React.FC = () => {
               auditSettings={auditSettings}
             />
           </Inner>
+          <RefreshStatusWrapper>
+            <Tag>{refreshStatus}</Tag>
+          </RefreshStatusWrapper>
         </Wrapper>
       )
     default:
