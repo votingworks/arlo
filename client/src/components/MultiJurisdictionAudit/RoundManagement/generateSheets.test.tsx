@@ -3,13 +3,17 @@ import { render } from '@testing-library/react'
 import { auditBoardMocks } from '../useSetupMenuItems/_mocks'
 import QRs from './QRs'
 import {
-  downloadDataEntry,
+  downloadAuditBoardCredentials,
   downloadPlaceholders,
   downloadLabels,
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
 import { dummyBallots } from '../../SingleJurisdictionAudit/_mocks'
+import { jaApiCalls } from '../_mocks'
 
+const mockJurisdiction = jaApiCalls.getUser.response.jurisdictions[0]
+
+const mockSavePDF = jest.fn()
 jest.mock('jspdf', () => {
   const realjspdf = jest.requireActual('jspdf')
   const mockjspdf = new realjspdf({ format: 'letter' })
@@ -18,7 +22,7 @@ jest.mock('jspdf', () => {
     return {
       ...mockjspdf,
       addImage: jest.fn(),
-      save: jest.fn(), // original function throws an error because it's trying to open a new location: https://github.com/jsdom/jsdom/issues/2112
+      save: mockSavePDF,
     }
   }
 })
@@ -26,17 +30,26 @@ jest.mock('jspdf', () => {
 window.URL.createObjectURL = jest.fn()
 
 describe('generateSheets', () => {
+  beforeEach(() => mockSavePDF.mockClear())
+
   describe('downloadLabels', () => {
     it('generates label sheets', async () => {
-      const pdf = await downloadLabels(1, dummyBallots.ballots)
+      const pdf = await downloadLabels(
+        1,
+        dummyBallots.ballots,
+        mockJurisdiction
+      )
       const deterministicPDF = pdf
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
         .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
       expect(deterministicPDF).toMatchSnapshot()
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Round 1 Labels - Jurisdiction One - audit one.pdf'
+      )
     })
 
     it('does nothing with no ballots', async () => {
-      const pdf = await downloadLabels(1, [])
+      const pdf = await downloadLabels(1, [], mockJurisdiction)
       const deterministicPDF = pdf
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
         .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
@@ -46,15 +59,22 @@ describe('generateSheets', () => {
 
   describe('downloadPlaceholders', () => {
     it('generates placeholder sheets', async () => {
-      const pdf = await downloadPlaceholders(1, dummyBallots.ballots)
+      const pdf = await downloadPlaceholders(
+        1,
+        dummyBallots.ballots,
+        mockJurisdiction
+      )
       const deterministicPDF = pdf
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
         .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
       expect(deterministicPDF).toMatchSnapshot()
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Round 1 Placeholders - Jurisdiction One - audit one.pdf'
+      )
     })
 
     it('does nothing with no ballots', async () => {
-      const pdf = await downloadPlaceholders(1, [])
+      const pdf = await downloadPlaceholders(1, [], mockJurisdiction)
       const deterministicPDF = pdf
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
         .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
@@ -62,8 +82,8 @@ describe('generateSheets', () => {
     })
   })
 
-  describe('downloadDataEntry', () => {
-    it('generates data entry sheets', () => {
+  describe('downloadAuditBoardCredentials', () => {
+    it('generates audit board credentials sheets', () => {
       render(
         <QRs
           passphrases={auditBoardMocks.double.map(
@@ -71,13 +91,19 @@ describe('generateSheets', () => {
           )}
         />
       )
-      const pdf = downloadDataEntry(auditBoardMocks.double)
+      const pdf = downloadAuditBoardCredentials(
+        auditBoardMocks.double,
+        mockJurisdiction
+      )
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
         .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
       expect(pdf).toMatchSnapshot() // test the rest of the file now it's deterministic
+      expect(mockSavePDF).toHaveBeenCalledWith(
+        'Audit Board Credentials - Jurisdiction One - audit one.pdf'
+      )
     })
 
-    it('generates data entry sheets with ballotless audit board', () => {
+    it('generates audit board credentials sheets with ballotless audit board', () => {
       render(
         <QRs
           passphrases={auditBoardMocks.noBallots.map(
@@ -85,7 +111,10 @@ describe('generateSheets', () => {
           )}
         />
       )
-      const pdf = downloadDataEntry(auditBoardMocks.noBallots)
+      const pdf = downloadAuditBoardCredentials(
+        auditBoardMocks.noBallots,
+        mockJurisdiction
+      )
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
         .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
       expect(pdf).toMatchSnapshot() // test the rest of the file now it's deterministic
