@@ -150,9 +150,7 @@ describe('Audit Setup > Review & Launch', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
-      await screen.findByText(
-        'Waiting for jurisdiction data to calculate required number of batches…'
-      )
+      await screen.findByText('View jurisdiction upload progress.')
       expect(container).toMatchSnapshot()
     })
   })

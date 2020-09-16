@@ -1435,7 +1435,13 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
       data-testid="sample-size-form"
     >
       <p>
-        Waiting for jurisdiction data to calculate required number of batches…
+        All jurisdiction files must be uploaded to calculate the sample size.
+         
+        <a
+          href="/election/1/progress"
+        >
+          View jurisdiction upload progress.
+        </a>
       </p>
       <div
         class="sc-htpNat gtULUV"

@@ -1883,7 +1883,13 @@ exports[`Setup renders Review & Launch stage 1`] = `
       data-testid="sample-size-form"
     >
       <p>
-        Waiting for jurisdiction data to calculate required number of batches…
+        All jurisdiction files must be uploaded to calculate the sample size.
+         
+        <a
+          href="/election/1/progress"
+        >
+          View jurisdiction upload progress.
+        </a>
       </p>
       <div
         class="sc-htpNat gtULUV"
@@ -2061,7 +2067,13 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       data-testid="sample-size-form"
     >
       <p>
-        Waiting for jurisdiction data to calculate required number of batches…
+        All jurisdiction files must be uploaded to calculate the sample size.
+         
+        <a
+          href="/election/1/progress"
+        >
+          View jurisdiction upload progress.
+        </a>
       </p>
       <div
         class="sc-htpNat gtULUV"
@@ -2239,7 +2251,13 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       data-testid="sample-size-form"
     >
       <p>
-        Waiting for jurisdiction data to calculate required number of batches…
+        All jurisdiction files must be uploaded to calculate the sample size.
+         
+        <a
+          href="/election/1/progress"
+        >
+          View jurisdiction upload progress.
+        </a>
       </p>
       <div
         class="sc-htpNat gtULUV"

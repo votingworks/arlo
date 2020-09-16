@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams, useHistory } from 'react-router-dom'
+import { useParams, useHistory, Link } from 'react-router-dom'
 import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
 import { Formik, FormikProps, Form, getIn, Field } from 'formik'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
@@ -299,8 +299,11 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
               </FormSection>
             ) : (
               <p>
-                Waiting for jurisdiction data to calculate required number of
-                batches…
+                All jurisdiction files must be uploaded to calculate the sample
+                size.{' '}
+                <Link to={`/election/${electionId}/progress`}>
+                  View jurisdiction upload progress.
+                </Link>
               </p>
             )}
             <FormButtonBar>
