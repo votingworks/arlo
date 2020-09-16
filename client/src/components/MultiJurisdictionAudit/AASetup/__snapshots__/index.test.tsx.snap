@@ -1882,6 +1882,9 @@ exports[`Setup renders Review & Launch stage 1`] = `
     <form
       data-testid="sample-size-form"
     >
+      <p>
+        Waiting for jurisdiction data to calculate required number of batches…
+      </p>
       <div
         class="sc-htpNat gtULUV"
       >
@@ -2057,6 +2060,9 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
     <form
       data-testid="sample-size-form"
     >
+      <p>
+        Waiting for jurisdiction data to calculate required number of batches…
+      </p>
       <div
         class="sc-htpNat gtULUV"
       >
@@ -2232,6 +2238,9 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
     <form
       data-testid="sample-size-form"
     >
+      <p>
+        Waiting for jurisdiction data to calculate required number of batches…
+      </p>
       <div
         class="sc-htpNat gtULUV"
       >

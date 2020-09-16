@@ -283,7 +283,7 @@ const CreateAudit: React.FC = () => {
                 onChange={e =>
                   setFieldValue('auditType', e.currentTarget.value)
                 }
-                selectedValue={values.auditType}
+                selectedValue={values.auditType || 'BALLOT_POLLING'}
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>

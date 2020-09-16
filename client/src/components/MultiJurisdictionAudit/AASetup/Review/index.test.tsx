@@ -147,11 +147,12 @@ describe('Audit Setup > Review & Launch', () => {
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
-      await screen.findByText('Batch Comparison')
+      await screen.findByText(
+        'Waiting for jurisdiction data to calculate required number of batches…'
+      )
       expect(container).toMatchSnapshot()
     })
   })
@@ -168,7 +169,9 @@ describe('Audit Setup > Review & Launch', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
-      await screen.findByText('Batch Comparison')
+      await screen.findByText(
+        'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
+      )
       expect(container).toMatchSnapshot()
     })
   })

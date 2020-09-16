@@ -1431,9 +1431,39 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
     >
       Sample Size
     </h4>
-    <p>
-      Waiting for jurisdiction data to calculate required number of batches …
-    </p>
+    <form
+      data-testid="sample-size-form"
+    >
+      <p>
+        Waiting for jurisdiction data to calculate required number of batches…
+      </p>
+      <div
+        class="sc-htpNat gtULUV"
+      >
+        <button
+          class="bp3-button sc-EHOje gmpgQN"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Back
+          </span>
+        </button>
+        <button
+          class="bp3-button bp3-disabled bp3-intent-primary sc-EHOje gmpgQN"
+          disabled=""
+          tabindex="-1"
+          type="button"
+        >
+          <span
+            class="bp3-button-text"
+          >
+            Launch Audit
+          </span>
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 `;

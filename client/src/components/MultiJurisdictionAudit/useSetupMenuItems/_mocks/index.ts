@@ -37,7 +37,7 @@ export const auditSettings: {
     online: null,
     randomSeed: null,
     riskLimit: null,
-    auditType: 'BALLOT_POLLING',
+    auditType: null,
   },
   onlyState: {
     state: 'AL',
