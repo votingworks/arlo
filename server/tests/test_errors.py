@@ -1,10 +1,10 @@
 import io
 import json
-import threading
 import logging
 from flask.testing import FlaskClient
 
 from ..app import app
+from .. import bgcompute
 from ..bgcompute import (
     bgcompute_update_election_jurisdictions_file,
     bgcompute_update_ballot_manifest_file,
@@ -39,37 +39,25 @@ def test_internal_error_500(client: FlaskClient):
 
 
 def test_bgcompute_jurisdictions_file_errors(
-    client: FlaskClient, election_id: str, caplog
+    client: FlaskClient, election_id: str, caplog, monkeypatch
 ):
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/file",
         data={
             "jurisdictions": (
-                io.BytesIO(
-                    (
-                        "Jurisdiction,Admin Email\n"
-                        + "\n".join(f"J{i},ja{i}@example.com" for i in range(100))
-                    ).encode()
-                ),
+                io.BytesIO(("Jurisdiction,Admin Email\n").encode()),
                 "jurisdictions.csv",
             )
         },
     )
     assert_ok(rv)
 
-    # We'll delete the election out from under bgcompute to cause it to error
-    def delete_election():
-        election = Election.query.get(election_id)
-        db_session.delete(election)
-        db_session.commit()
+    def raise_exception():
+        raise Exception("mock error")
 
-    thread1 = threading.Thread(target=bgcompute_update_election_jurisdictions_file)
-    thread2 = threading.Thread(target=delete_election)
+    monkeypatch.setattr(bgcompute, "process_jurisdictions_file", raise_exception)
 
-    thread1.start()
-    thread2.start()
-    thread1.join()
-    thread2.join()
+    bgcompute_update_election_jurisdictions_file()
 
     assert (
         "server.app",
@@ -84,38 +72,30 @@ def test_bgcompute_jurisdictions_file_errors(
 
 
 def test_bgcompute_ballot_manifest_errors(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], caplog
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    caplog,
+    monkeypatch,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, user_key=DEFAULT_JA_EMAIL)
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
-                io.BytesIO(
-                    (
-                        "Batch Name,Number of Ballots\n"
-                        + "\n".join(f"B{i},{i}" for i in range(100))
-                    ).encode()
-                ),
+                io.BytesIO(("Batch Name,Number of Ballots\n").encode()),
                 "manifest.csv",
             )
         },
     )
     assert_ok(rv)
 
-    # We'll delete the election out from under bgcompute to cause it to error
-    def delete_election():
-        election = Election.query.get(election_id)
-        db_session.delete(election)
-        db_session.commit()
+    def raise_exception():
+        raise Exception("mock error")
 
-    thread1 = threading.Thread(target=bgcompute_update_ballot_manifest_file)
-    thread2 = threading.Thread(target=delete_election)
+    monkeypatch.setattr(bgcompute, "process_ballot_manifest_file", raise_exception)
 
-    thread1.start()
-    thread2.start()
-    thread1.join()
-    thread2.join()
+    bgcompute_update_ballot_manifest_file()
 
     assert (
         "server.app",
@@ -134,7 +114,9 @@ def test_bgcompute_batch_tallies_errors(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
     caplog,
+    monkeypatch,
 ):
     election = Election.query.get(election_id)
     election.audit_type = AuditType.BATCH_COMPARISON
@@ -144,50 +126,22 @@ def test_bgcompute_batch_tallies_errors(
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, user_key=DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    (
-                        "Batch Name,Number of Ballots\n"
-                        + "\n".join(f"B{i},{i}" for i in range(100))
-                    ).encode()
-                ),
-                "manifest.csv",
-            )
-        },
-    )
-    assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
-    rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/batch-tallies",
         data={
             "batchTallies": (
-                io.BytesIO(
-                    (
-                        "Batch Name,candidate 1,candidate 2\n"
-                        + "\n".join(f"B{i},0,0" for i in range(100))
-                    ).encode()
-                ),
+                io.BytesIO(("Batch Name,candidate 1,candidate 2\n").encode()),
                 "batchTallies.csv",
             )
         },
     )
     assert_ok(rv)
 
-    # We'll delete the jurisdiction out from under bgcompute to cause it to error
-    def delete_jurisdiction():
-        jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
-        db_session.delete(jurisdiction)
-        db_session.commit()
+    def raise_exception():
+        raise Exception("mock error")
 
-    thread1 = threading.Thread(target=bgcompute_update_batch_tallies_file)
-    thread2 = threading.Thread(target=delete_jurisdiction)
+    monkeypatch.setattr(bgcompute, "process_batch_tallies_file", raise_exception)
 
-    thread1.start()
-    thread2.start()
-    thread1.join()
-    thread2.join()
+    bgcompute_update_batch_tallies_file()
 
     assert (
         "server.app",
