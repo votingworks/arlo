@@ -500,15 +500,8 @@ def test_restrict_access_jurisdiction_admin_with_audit_admin(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/test_auth"
     )
-    assert rv.status_code == 403
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Forbidden",
-                "message": "Access forbidden for user type audit_admin",
-            }
-        ]
-    }
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == [election_id, jurisdiction_id]
 
 
 def test_restrict_access_jurisdiction_admin_with_audit_board_user(

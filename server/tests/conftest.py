@@ -278,7 +278,7 @@ def auth_decorator_test_routes():
         return jsonify(election.id)
 
     @app.route("/api/election/<election_id>/jurisdiction/<jurisdiction_id>/test_auth")
-    @restrict_access([UserType.JURISDICTION_ADMIN])
+    @restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
     def fake_jurisdiction_route(
         election: Election, jurisdiction: Jurisdiction
     ):  # pylint: disable=unused-variable
