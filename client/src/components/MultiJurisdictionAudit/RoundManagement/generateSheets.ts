@@ -1,11 +1,12 @@
 import jsPDF from 'jspdf'
-import { IBallot, IJurisdictionMeta } from '../../../types'
 import { IAuditBoard } from '../useAuditBoards'
+import { IBallot } from './useBallots'
 
 export const downloadLabels = async (
   roundNum: number,
   ballots: IBallot[],
-  jurisdiction: IJurisdictionMeta
+  jurisdictionName: string,
+  auditName: string
 ): Promise<string> => {
   /* istanbul ignore else */
   if (ballots.length) {
@@ -40,7 +41,7 @@ export const downloadLabels = async (
     })
     labels.autoPrint()
     labels.save(
-      `Round ${roundNum} Labels - ${jurisdiction.name} - ${jurisdiction.election.auditName}.pdf`
+      `Round ${roundNum} Labels - ${jurisdictionName} - ${auditName}.pdf`
     )
     return labels.output() // returned for test snapshots
   }
@@ -50,7 +51,8 @@ export const downloadLabels = async (
 export const downloadPlaceholders = async (
   roundNum: number,
   ballots: IBallot[],
-  jurisdiction: IJurisdictionMeta
+  jurisdictionName: string,
+  auditName: string
 ): Promise<string> => {
   /* istanbul ignore else */
   if (ballots.length) {
@@ -74,7 +76,7 @@ export const downloadPlaceholders = async (
     })
     placeholders.autoPrint()
     placeholders.save(
-      `Round ${roundNum} Placeholders - ${jurisdiction.name} - ${jurisdiction.election.auditName}.pdf`
+      `Round ${roundNum} Placeholders - ${jurisdictionName} - ${auditName}.pdf`
     )
     return placeholders.output() // returned for test snapshots
   }
@@ -83,7 +85,8 @@ export const downloadPlaceholders = async (
 
 export const downloadAuditBoardCredentials = (
   auditBoards: IAuditBoard[],
-  jurisdiction: IJurisdictionMeta
+  jurisdictionName: string,
+  auditName: string
 ): string => {
   const auditBoardsWithoutBallots: string[] = []
   const auditBoardCreds = new jsPDF({ format: 'letter' })
@@ -135,7 +138,7 @@ export const downloadAuditBoardCredentials = (
   }
   auditBoardCreds.autoPrint()
   auditBoardCreds.save(
-    `Audit Board Credentials - ${jurisdiction.name} - ${jurisdiction.election.auditName}.pdf`
+    `Audit Board Credentials - ${jurisdictionName} - ${auditName}.pdf`
   )
   return auditBoardCreds.output() // returned for test snapshots
 }

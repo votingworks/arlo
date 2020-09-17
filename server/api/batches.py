@@ -29,7 +29,7 @@ def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/retrieval-list",
     methods=["GET"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def get_batch_retrieval_list(
     election: Election, jurisdiction: Jurisdiction, round: Round
 ):
@@ -71,7 +71,7 @@ def serialize_batch(batch: Batch) -> JSONDict:
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches",
     methods=["GET"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def list_batches_for_jurisdiction(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,

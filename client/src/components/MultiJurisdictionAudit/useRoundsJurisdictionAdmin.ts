@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react'
 import { api } from '../utilities'
-
-export interface IRound {
-  id: string
-  roundNum: number
-  startedAt: string
-  endedAt: string | null
-  isAuditComplete: boolean
-}
+import { IRound } from './useRoundsAuditAdmin'
 
 const useRoundsJurisdictionAdmin = (
   electionId: string,

@@ -100,7 +100,7 @@ const CSVFileForm = ({
                   <br />
                   <br />
                   <a
-                    href="/sample_batch_tallies.csv"
+                    href="/sample_candidate_totals_by_batch.csv"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

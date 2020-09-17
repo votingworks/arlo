@@ -5,7 +5,7 @@ export interface IRound {
   id: string
   roundNum: number
   startedAt: string
-  endedAt: string
+  endedAt: string | null
   isAuditComplete: boolean
 }
 

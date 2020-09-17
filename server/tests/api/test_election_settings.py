@@ -15,6 +15,7 @@ def test_settings_get_empty(client: FlaskClient, election_id: str):
         "riskLimit": None,
         "state": None,
         "auditType": "BALLOT_POLLING",
+        "auditName": "Test Audit test_settings_get_empty",
     }
 
 
@@ -33,6 +34,7 @@ def test_jurisdiction_settings_get_empty(
         "riskLimit": None,
         "state": None,
         "auditType": "BALLOT_POLLING",
+        "auditName": "Test Audit test_jurisdiction_settings_get_empty",
     }
 
 
@@ -58,6 +60,7 @@ def test_update_election(
         "riskLimit": 15,
         "state": "MS",
         "auditType": "BALLOT_POLLING",
+        "auditName": "Test Audit test_update_election",
     }
 
     rv = client.get(f"/api/election/{election_id}/settings")

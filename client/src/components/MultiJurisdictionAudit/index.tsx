@@ -113,6 +113,7 @@ export const AuditAdminView: React.FC = () => {
             <Progress
               jurisdictions={jurisdictions}
               auditSettings={auditSettings}
+              round={rounds[rounds.length - 1]}
             />
           </Inner>
         </Wrapper>

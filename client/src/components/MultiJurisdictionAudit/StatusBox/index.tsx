@@ -12,8 +12,8 @@ import FormButton from '../../Atoms/Form/FormButton'
 import { api, apiDownload } from '../../utilities'
 import { Inner } from '../../Atoms/Wrapper'
 import { IAuditSettings, IContest } from '../../../types'
-import { IRound } from '../useRoundsJurisdictionAdmin'
 import { IAuditBoard } from '../useAuditBoards'
+import { IRound } from '../useRoundsAuditAdmin'
 
 const Wrapper = styled(Callout)`
   display: flex;

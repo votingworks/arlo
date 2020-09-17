@@ -8,8 +8,8 @@ import {
   downloadLabels,
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
-import { dummyBallots } from '../../SingleJurisdictionAudit/_mocks'
 import { jaApiCalls } from '../_mocks'
+import { dummyBallots } from '../../DataEntry/_mocks'
 
 const mockJurisdiction = jaApiCalls.getUser.response.jurisdictions[0]
 
@@ -37,7 +37,8 @@ describe('generateSheets', () => {
       const pdf = await downloadLabels(
         1,
         dummyBallots.ballots,
-        mockJurisdiction
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
       )
       const deterministicPDF = pdf
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
@@ -49,7 +50,12 @@ describe('generateSheets', () => {
     })
 
     it('does nothing with no ballots', async () => {
-      const pdf = await downloadLabels(1, [], mockJurisdiction)
+      const pdf = await downloadLabels(
+        1,
+        [],
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
+      )
       const deterministicPDF = pdf
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
         .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
@@ -62,7 +68,8 @@ describe('generateSheets', () => {
       const pdf = await downloadPlaceholders(
         1,
         dummyBallots.ballots,
-        mockJurisdiction
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
       )
       const deterministicPDF = pdf
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
@@ -74,7 +81,12 @@ describe('generateSheets', () => {
     })
 
     it('does nothing with no ballots', async () => {
-      const pdf = await downloadPlaceholders(1, [], mockJurisdiction)
+      const pdf = await downloadPlaceholders(
+        1,
+        [],
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
+      )
       const deterministicPDF = pdf
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
         .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
@@ -93,7 +105,8 @@ describe('generateSheets', () => {
       )
       const pdf = downloadAuditBoardCredentials(
         auditBoardMocks.double,
-        mockJurisdiction
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
       )
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
         .replace(/ID \[[^\]]+\]/g, '') // remove the unique id
@@ -113,7 +126,8 @@ describe('generateSheets', () => {
       )
       const pdf = downloadAuditBoardCredentials(
         auditBoardMocks.noBallots,
-        mockJurisdiction
+        mockJurisdiction.name,
+        mockJurisdiction.election.auditName
       )
         .replace(/CreationDate \([^)]+\)/g, '') // remove the timestamp
         .replace(/ID \[[^\]]+\]/g, '') // remove the unique id

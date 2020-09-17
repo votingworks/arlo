@@ -10,6 +10,7 @@ export const settingsMock: {
     randomSeed: null,
     riskLimit: null,
     auditType: 'BALLOT_POLLING',
+    auditName: 'Test Audit',
   },
   full: {
     state: 'AL',
@@ -18,6 +19,7 @@ export const settingsMock: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
+    auditName: 'Test Audit',
   },
   offline: {
     state: 'AL',
@@ -26,6 +28,7 @@ export const settingsMock: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
+    auditName: 'Test Audit',
   },
   batch: {
     state: 'AL',
@@ -34,6 +37,7 @@ export const settingsMock: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BATCH_COMPARISON',
+    auditName: 'Test Audit',
   },
 }
 

@@ -4,8 +4,8 @@ import { Table as BPTable, Column, Cell as BPCell } from '@blueprintjs/table'
 import { H1 } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
 import { IAuditBoard, BallotStatus } from '../../types'
-import { IBallot } from './Ballot'
 import LinkButton from '../Atoms/LinkButton'
+import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 
 const RightWrapper = styled.div`
   display: flex;

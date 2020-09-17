@@ -205,4 +205,5 @@ export interface IAuditSettings {
   randomSeed: string | null
   riskLimit: number | null
   auditType: 'BALLOT_POLLING' | 'BATCH_COMPARISON'
+  auditName: string
 }

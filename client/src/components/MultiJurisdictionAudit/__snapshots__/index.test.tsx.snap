@@ -26,7 +26,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-fBuWsC exjrNq"
+            class="bp3-tag sc-eqIVtm cEclbE"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -67,7 +67,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
         </ul>
       </div>
       <div
-        class="sc-hSdWYo jmKYUK"
+        class="sc-jhAzac jVSfxT"
       >
         <h2
           class="bp3-heading sc-htpNat fysvnw"
@@ -80,7 +80,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
            To view a single jurisdiction's data, click the name of the jurisdiction.
         </p>
         <div
-          class="sc-eHgmQL kyIlpv"
+          class="sc-fBuWsC kOQtkb"
         >
           <label
             class="bp3-control bp3-switch"
@@ -109,7 +109,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
           </div>
         </div>
         <table
-          class="sc-iAyFgw lbSVII"
+          class="sc-hzDkRC jWaxCC"
           role="table"
         >
           <thead>
@@ -118,9 +118,13 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                 colspan="1"
                 role="columnheader"
                 style="cursor: pointer;"
-                title="Jurisdiction Name"
+                title="Jurisdiction"
               >
-                Jurisdiction Name
+                <span
+                  style="margin-right: 3px;"
+                >
+                  Jurisdiction
+                </span>
                 <span>
                   <span
                     class="bp3-icon bp3-icon-double-caret-vertical"
@@ -149,7 +153,11 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                 style="cursor: pointer;"
                 title="Status"
               >
-                Status
+                <span
+                  style="margin-right: 3px;"
+                >
+                  Status
+                </span>
                 <span>
                   <span
                     class="bp3-icon bp3-icon-double-caret-vertical"
@@ -176,67 +184,13 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                 colspan="1"
                 role="columnheader"
                 style="cursor: pointer;"
-                title="Total Audited"
+                title="Total in Manifest"
               >
-                Total Audited
-                <span>
-                  <span
-                    class="bp3-icon bp3-icon-double-caret-vertical"
-                    icon="double-caret-vertical"
-                  >
-                    <svg
-                      data-icon="double-caret-vertical"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      width="16"
-                    >
-                      <desc>
-                        double-caret-vertical
-                      </desc>
-                      <path
-                        d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                        fill-rule="evenodd"
-                      />
-                    </svg>
-                  </span>
+                <span
+                  style="margin-right: 3px;"
+                >
+                  Total in Manifest
                 </span>
-              </th>
-              <th
-                colspan="1"
-                role="columnheader"
-                style="cursor: pointer;"
-                title="Total Ballots in Manifest"
-              >
-                Total Ballots in Manifest
-                <span>
-                  <span
-                    class="bp3-icon bp3-icon-double-caret-vertical"
-                    icon="double-caret-vertical"
-                  >
-                    <svg
-                      data-icon="double-caret-vertical"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      width="16"
-                    >
-                      <desc>
-                        double-caret-vertical
-                      </desc>
-                      <path
-                        d="M5 7h6a1.003 1.003 0 00.71-1.71l-3-3C8.53 2.11 8.28 2 8 2s-.53.11-.71.29l-3 3A1.003 1.003 0 005 7zm6 2H5a1.003 1.003 0 00-.71 1.71l3 3c.18.18.43.29.71.29s.53-.11.71-.29l3-3A1.003 1.003 0 0011 9z"
-                        fill-rule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                </span>
-              </th>
-              <th
-                colspan="1"
-                role="columnheader"
-                style="cursor: pointer;"
-                title="Remaining in Round"
-              >
-                Remaining in Round
                 <span>
                   <span
                     class="bp3-icon bp3-icon-double-caret-vertical"
@@ -284,19 +238,22 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
               <td
                 role="cell"
               >
-                No manifest uploaded
+                <span
+                  class="bp3-tag bp3-interactive bp3-minimal sc-csuQGl ggzkQ"
+                  tabindex="0"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    No manifest uploaded
+                  </span>
+                </span>
               </td>
-              <td
-                role="cell"
-              />
               <td
                 role="cell"
               >
                 
               </td>
-              <td
-                role="cell"
-              />
             </tr>
             <tr
               role="row"
@@ -318,19 +275,22 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
               <td
                 role="cell"
               >
-                No manifest uploaded
+                <span
+                  class="bp3-tag bp3-interactive bp3-minimal sc-csuQGl ggzkQ"
+                  tabindex="0"
+                >
+                  <span
+                    class="bp3-text-overflow-ellipsis bp3-fill"
+                  >
+                    No manifest uploaded
+                  </span>
+                </span>
               </td>
-              <td
-                role="cell"
-              />
               <td
                 role="cell"
               >
                 
               </td>
-              <td
-                role="cell"
-              />
             </tr>
           </tbody>
         </table>
@@ -366,7 +326,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-fBuWsC exjrNq"
+            class="bp3-tag sc-eqIVtm cEclbE"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -983,7 +943,7 @@ exports[`JA setup renders initial state 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-jhAzac dWgAMN"
+      class="sc-bwzfXH sc-dVhcbM jpYGJw"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1074,7 +1034,7 @@ exports[`JA setup renders initial state 1`] = `
               <br />
               <br />
               <a
-                href="/sample_batch_tallies.csv"
+                href="/sample_candidate_totals_by_batch.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -1151,7 +1111,7 @@ exports[`JA setup submits ballot manifest 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-jhAzac dWgAMN"
+      class="sc-bwzfXH sc-dVhcbM jpYGJw"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1245,7 +1205,7 @@ exports[`JA setup submits ballot manifest 1`] = `
               <br />
               <br />
               <a
-                href="/sample_batch_tallies.csv"
+                href="/sample_candidate_totals_by_batch.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -1319,7 +1279,7 @@ exports[`JA setup submits batch tallies 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-jhAzac dWgAMN"
+      class="sc-bwzfXH sc-dVhcbM jpYGJw"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1413,7 +1373,7 @@ exports[`JA setup submits batch tallies 1`] = `
               <br />
               <br />
               <a
-                href="/sample_batch_tallies.csv"
+                href="/sample_candidate_totals_by_batch.csv"
                 rel="noopener noreferrer"
                 target="_blank"
               >

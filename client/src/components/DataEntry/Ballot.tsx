@@ -6,14 +6,7 @@ import BallotAudit from './BallotAudit'
 import BallotReview from './BallotReview'
 import { IBallotInterpretation, IContest, BallotStatus } from '../../types'
 import { BallotRow, FlushDivider } from './Atoms'
-
-export interface IBallot {
-  id: string
-  batch: { id: string; name: string; tabulator: string | null }
-  position: number
-  status: BallotStatus
-  interpretations: IBallotInterpretation[]
-}
+import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 
 const TopH1 = styled(H1)`
   margin: 40px 0 25px 0;
