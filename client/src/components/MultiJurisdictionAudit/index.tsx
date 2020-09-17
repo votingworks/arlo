@@ -38,10 +38,10 @@ const VerticalInner = styled(Inner)`
   flex-direction: column;
 `
 
-const RefreshStatusWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
+const RefreshStatusTag = styled(Tag)`
+  margin-top: 20px;
+  width: 20em;
+  text-align: center;
 `
 
 interface IParams {
@@ -99,7 +99,9 @@ export const AuditAdminView: React.FC = () => {
             jurisdictions={jurisdictions}
             contests={contests}
             auditSettings={auditSettings}
-          />
+          >
+            <RefreshStatusTag>{refreshStatus}</RefreshStatusTag>
+          </AuditAdminStatusBox>
           <Inner>
             <Sidebar
               title="Audit Setup"
@@ -112,9 +114,6 @@ export const AuditAdminView: React.FC = () => {
               isBatch={isBatch}
             />
           </Inner>
-          <RefreshStatusWrapper>
-            <Tag>{refreshStatus}</Tag>
-          </RefreshStatusWrapper>
         </Wrapper>
       )
     case 'progress':
@@ -125,7 +124,9 @@ export const AuditAdminView: React.FC = () => {
             jurisdictions={jurisdictions}
             contests={contests}
             auditSettings={auditSettings}
-          />
+          >
+            <RefreshStatusTag>{refreshStatus}</RefreshStatusTag>
+          </AuditAdminStatusBox>
           <Inner>
             <Sidebar
               title="Audit Progress"
@@ -142,9 +143,6 @@ export const AuditAdminView: React.FC = () => {
               auditSettings={auditSettings}
             />
           </Inner>
-          <RefreshStatusWrapper>
-            <Tag>{refreshStatus}</Tag>
-          </RefreshStatusWrapper>
         </Wrapper>
       )
     default:
