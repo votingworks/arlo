@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import with_election_access, with_jurisdiction_access
+from ..auth import restrict_access, UserType
 from ..util.csv_download import (
     csv_response,
     election_timestamp_name,
@@ -351,7 +351,7 @@ def sampled_batch_rows(election: Election, jurisdiction: Jurisdiction = None):
 
 
 @api.route("/election/<election_id>/report", methods=["GET"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def audit_admin_audit_report(election: Election):
     row_sets = [
         election_info_rows(election),
@@ -382,7 +382,7 @@ def audit_admin_audit_report(election: Election):
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/report", methods=["GET"]
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdiction):
     csv_io = io.StringIO()
     report = csv.writer(csv_io)

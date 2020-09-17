@@ -5,7 +5,7 @@ from sqlalchemy import func
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import with_election_access
+from ..auth import restrict_access, UserType
 from .rounds import get_current_round
 from ..util.process_file import serialize_file, serialize_file_processing
 from ..util.jsonschema import JSONDict
@@ -275,7 +275,7 @@ def batch_comparison_round_status(
 
 
 @api.route("/election/<election_id>/jurisdiction", methods=["GET"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def list_jurisdictions(election: Election):
     current_round = get_current_round(election)
     round_status = round_status_by_jurisdiction(election, current_round)

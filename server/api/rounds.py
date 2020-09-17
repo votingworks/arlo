@@ -10,7 +10,7 @@ from sqlalchemy import and_
 from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import with_election_access, with_jurisdiction_access
+from ..auth import restrict_access, UserType
 from . import sample_sizes as sample_sizes_module
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
@@ -529,7 +529,7 @@ def validate_round(round: dict, election: Election):
 
 
 @api.route("/election/<election_id>/round", methods=["POST"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def create_round(election: Election):
     json_round = request.get_json()
     validate_round(json_round, election)
@@ -574,7 +574,7 @@ def serialize_round(round: Round) -> dict:
 
 
 @api.route("/election/<election_id>/round", methods=["GET"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def list_rounds_audit_admin(election: Election):
     return jsonify({"rounds": [serialize_round(r) for r in election.rounds]})
 
@@ -586,7 +586,7 @@ def list_rounds_audit_admin(election: Election):
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round", methods=["GET"]
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def list_rounds_jurisdiction_admin(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):

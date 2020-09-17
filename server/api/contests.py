@@ -4,11 +4,7 @@ from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy import func
 
 from . import api
-from ..auth import (
-    with_election_access,
-    with_audit_board_access,
-    with_jurisdiction_access,
-)
+from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import get_current_round
@@ -165,7 +161,7 @@ def round_status_by_contest(
 
 
 @api.route("/election/<election_id>/contest", methods=["PUT"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def create_or_update_all_contests(election: Election):
     json_contests = request.get_json()
     validate_contests(json_contests, election)
@@ -182,7 +178,7 @@ def create_or_update_all_contests(election: Election):
 
 
 @api.route("/election/<election_id>/contest", methods=["GET"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def list_contests(election: Election):
     current_round = get_current_round(election)
     round_status = round_status_by_contest(current_round, list(election.contests))
@@ -196,7 +192,7 @@ def list_contests(election: Election):
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/contest", methods=["GET"]
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def list_jurisdictions_contests(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
@@ -208,7 +204,7 @@ def list_jurisdictions_contests(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/contest",
     methods=["GET"],
 )
-@with_audit_board_access
+@restrict_access([UserType.AUDIT_BOARD])
 def list_audit_board_contests(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,

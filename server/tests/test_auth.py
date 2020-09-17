@@ -316,16 +316,14 @@ def test_auth_me_not_logged_in(client: FlaskClient):
 # decorators that are set up in conftest.py.
 
 
-def test_with_election_access_audit_admin(
-    client: FlaskClient, election_id: str, aa_email
-):
+def test_restrict_access_audit_admin(client: FlaskClient, election_id: str, aa_email):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
     rv = client.get(f"/api/election/{election_id}/test_auth")
     assert rv.status_code == 200
     assert json.loads(rv.data) == election_id
 
 
-def test_with_election_access_wrong_org(
+def test_restrict_access_audit_admin_wrong_org(
     client: FlaskClient, org_id: str, election_id: str
 ):
     create_org_and_admin("Org 2", "aa2@example.com")
@@ -342,7 +340,7 @@ def test_with_election_access_wrong_org(
     }
 
 
-def test_with_election_access_not_found(
+def test_restrict_access_audit_admin_not_found(
     client: FlaskClient,
     election_id: str,  # pylint: disable=unused-argument
     aa_email: str,  # pylint: disable=unused-argument
@@ -352,7 +350,7 @@ def test_with_election_access_not_found(
     assert rv.status_code == 404
 
 
-def test_with_election_access_jurisdiction_admin(
+def test_restrict_access_audit_admin_with_jurisdiction_admin(
     client: FlaskClient, org_id: str, election_id: str, ja_email: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
@@ -362,13 +360,13 @@ def test_with_election_access_jurisdiction_admin(
         "errors": [
             {
                 "errorType": "Forbidden",
-                "message": f"User is not logged in as an audit admin and so does not have access to organization {org_id}",
+                "message": "Access forbidden for user type jurisdiction_admin",
             }
         ]
     }
 
 
-def test_with_election_access_audit_board_user(
+def test_restrict_access_audit_admin_audit_board_user(
     client: FlaskClient, org_id: str, election_id: str, audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
@@ -379,13 +377,13 @@ def test_with_election_access_audit_board_user(
         "errors": [
             {
                 "errorType": "Forbidden",
-                "message": f"User is not logged in as an audit admin and so does not have access to organization {org_id}",
+                "message": "Access forbidden for user type audit_board",
             }
         ]
     }
 
 
-def test_with_election_access_anonymous_user(
+def test_restrict_access_audit_admin_anonymous_user(
     client: FlaskClient, org_id: str, election_id: str
 ):
     clear_logged_in_user(client)
@@ -393,15 +391,12 @@ def test_with_election_access_anonymous_user(
     assert rv.status_code == 401
     assert json.loads(rv.data) == {
         "errors": [
-            {
-                "errorType": "Unauthorized",
-                "message": f"Anonymous users do not have access to organization {org_id}",
-            }
+            {"errorType": "Unauthorized", "message": "Please log in to access Arlo",}
         ]
     }
 
 
-def test_with_jurisdiction_access_jurisdiction_admin(
+def test_restrict_access_jurisdiction_admin_jurisdiction_admin(
     client: FlaskClient, election_id: str, jurisdiction_id: str, ja_email: str
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
@@ -412,7 +407,7 @@ def test_with_jurisdiction_access_jurisdiction_admin(
     assert json.loads(rv.data) == [election_id, jurisdiction_id]
 
 
-def test_with_jurisdiction_access_wrong_org(
+def test_restrict_access_jurisdiction_admin_wrong_org(
     client: FlaskClient, election_id: str, jurisdiction_id: str
 ):
     org_id_2, _ = create_org_and_admin("Org 2", "aa2@example.com")
@@ -434,7 +429,7 @@ def test_with_jurisdiction_access_wrong_org(
     }
 
 
-def test_with_jurisdiction_access_wrong_election(
+def test_restrict_access_jurisdiction_admin_wrong_election(
     client: FlaskClient, org_id: str, election_id: str, aa_email: str
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
@@ -448,18 +443,10 @@ def test_with_jurisdiction_access_wrong_election(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id_2}/test_auth"
     )
-    assert rv.status_code == 403
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Forbidden",
-                "message": f"Jurisdiction {jurisdiction_id_2} is not associated with election {election_id}",
-            }
-        ]
-    }
+    assert rv.status_code == 404
 
 
-def test_with_jurisdiction_access_wrong_jurisdiction(
+def test_restrict_access_jurisdiction_admin_wrong_jurisdiction(
     client: FlaskClient, election_id: str, ja_email: str,
 ):
     jurisdiction_id_2, _ = create_jurisdiction_and_admin(
@@ -480,7 +467,7 @@ def test_with_jurisdiction_access_wrong_jurisdiction(
     }
 
 
-def test_with_jurisdiction_access_election_not_found(
+def test_restrict_access_jurisdiction_admin_election_not_found(
     client: FlaskClient, jurisdiction_id: str, ja_email: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
@@ -490,7 +477,7 @@ def test_with_jurisdiction_access_election_not_found(
     assert rv.status_code == 404
 
 
-def test_with_jurisdiction_access_jurisdiction_not_found(
+def test_restrict_access_jurisdiction_admin_jurisdiction_not_found(
     client: FlaskClient, election_id: str, ja_email: str
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
@@ -498,7 +485,7 @@ def test_with_jurisdiction_access_jurisdiction_not_found(
     assert rv.status_code == 404
 
 
-def test_with_jurisdiction_access_audit_admin(
+def test_restrict_access_jurisdiction_admin_with_audit_admin(
     client: FlaskClient, election_id: str, jurisdiction_id: str, aa_email: str
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
@@ -510,13 +497,13 @@ def test_with_jurisdiction_access_audit_admin(
         "errors": [
             {
                 "errorType": "Forbidden",
-                "message": f"User is not logged in as a jurisdiction admin and so does not have access to jurisdiction {jurisdiction_id}",
+                "message": "Access forbidden for user type audit_admin",
             }
         ]
     }
 
 
-def test_with_jurisdiction_access_audit_board_user(
+def test_restrict_access_jurisdiction_admin_with_audit_board_user(
     client: FlaskClient, election_id: str, jurisdiction_id: str, audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
@@ -528,13 +515,13 @@ def test_with_jurisdiction_access_audit_board_user(
         "errors": [
             {
                 "errorType": "Forbidden",
-                "message": f"User is not logged in as a jurisdiction admin and so does not have access to jurisdiction {jurisdiction_id}",
+                "message": "Access forbidden for user type audit_board",
             }
         ]
     }
 
 
-def test_with_jurisdiction_access_anonymous_user(
+def test_restrict_access_jurisdiction_admin_with_anonymous_user(
     client: FlaskClient, election_id: str, jurisdiction_id: str
 ):
     clear_logged_in_user(client)
@@ -544,15 +531,12 @@ def test_with_jurisdiction_access_anonymous_user(
     assert rv.status_code == 401
     assert json.loads(rv.data) == {
         "errors": [
-            {
-                "errorType": "Unauthorized",
-                "message": f"Anonymous users do not have access to jurisdiction {jurisdiction_id}",
-            }
+            {"errorType": "Unauthorized", "message": "Please log in to access Arlo"}
         ]
     }
 
 
-def test_with_audit_board_access_audit_board_user(
+def test_restrict_access_audit_board_with_audit_board_user(
     client: FlaskClient,
     election_id: str,
     jurisdiction_id: str,
@@ -572,7 +556,7 @@ def test_with_audit_board_access_audit_board_user(
     ]
 
 
-def test_with_audit_board_access_audit_admin(
+def test_restrict_access_audit_board_with_audit_admin(
     client: FlaskClient,
     election_id: str,
     jurisdiction_id: str,
@@ -590,13 +574,13 @@ def test_with_audit_board_access_audit_admin(
         "errors": [
             {
                 "errorType": "Forbidden",
-                "message": f"User is not logged in as an audit board and so does not have access to audit board {audit_board_id}",
+                "message": "Access forbidden for user type audit_admin",
             }
         ]
     }
 
 
-def test_with_audit_board_access_jurisdiction_admin(
+def test_restrict_access_audit_board_with_jurisdiction_admin(
     client: FlaskClient,
     election_id: str,
     jurisdiction_id: str,
@@ -614,13 +598,13 @@ def test_with_audit_board_access_jurisdiction_admin(
         "errors": [
             {
                 "errorType": "Forbidden",
-                "message": f"User is not logged in as an audit board and so does not have access to audit board {audit_board_id}",
+                "message": "Access forbidden for user type jurisdiction_admin",
             }
         ]
     }
 
 
-def test_with_audit_board_access_anonymous_user(
+def test_restrict_access_audit_board_with_anonymous_user(
     client: FlaskClient,
     election_id: str,
     jurisdiction_id: str,
@@ -635,15 +619,12 @@ def test_with_audit_board_access_anonymous_user(
     assert rv.status_code == 401
     assert json.loads(rv.data) == {
         "errors": [
-            {
-                "errorType": "Unauthorized",
-                "message": f"Anonymous users do not have access to audit board {audit_board_id}",
-            }
+            {"errorType": "Unauthorized", "message": "Please log in to access Arlo"}
         ]
     }
 
 
-def test_with_audit_board_access_wrong_org(
+def test_restrict_access_audit_board_wrong_org(
     client: FlaskClient,
     election_id: str,
     jurisdiction_id: str,
@@ -675,7 +656,7 @@ def test_with_audit_board_access_wrong_org(
     }
 
 
-def test_with_audit_board_access_wrong_election(
+def test_restrict_access_audit_board_wrong_election(
     client: FlaskClient, audit_board_id: str,
 ):
     org_id_2, _ = create_org_and_admin("Org 4", "aa4@example.com")
@@ -691,18 +672,10 @@ def test_with_audit_board_access_wrong_election(
     rv = client.get(
         f"/api/election/{election_id_2}/jurisdiction/{jurisdiction_id_2}/round/{round_id_2}/audit-board/{audit_board_id}/test_auth"
     )
-    assert rv.status_code == 403
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Forbidden",
-                "message": f"Audit board {audit_board_id} is not associated with election {election_id_2}",
-            }
-        ]
-    }
+    assert rv.status_code == 404
 
 
-def test_with_audit_board_access_wrong_jurisdiction(
+def test_restrict_access_audit_board_wrong_jurisdiction(
     client: FlaskClient,
     election_id: str,
     round_id: str,
@@ -719,18 +692,10 @@ def test_with_audit_board_access_wrong_jurisdiction(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id_2}/round/{round_id}/audit-board/{audit_board_id}/test_auth"
     )
-    assert rv.status_code == 403
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Forbidden",
-                "message": f"Audit board {audit_board_id} is not associated with jurisdiction {jurisdiction_id_2}",
-            }
-        ]
-    }
+    assert rv.status_code == 404
 
 
-def test_with_audit_board_access_wrong_round(
+def test_restrict_access_audit_board_wrong_round(
     client: FlaskClient, election_id: str, jurisdiction_id: str, audit_board_id: str,
 ):
     round_id_2 = create_round(election_id, round_num=2)
@@ -738,18 +703,10 @@ def test_with_audit_board_access_wrong_round(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_id_2}/audit-board/{audit_board_id}/test_auth"
     )
-    assert rv.status_code == 403
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "errorType": "Forbidden",
-                "message": f"Audit board {audit_board_id} is not associated with round {round_id_2}",
-            }
-        ]
-    }
+    assert rv.status_code == 404
 
 
-def test_with_audit_board_access_wrong_audit_board(
+def test_restrict_access_audit_board_wrong_audit_board(
     client: FlaskClient,
     election_id: str,
     jurisdiction_id: str,
@@ -772,7 +729,7 @@ def test_with_audit_board_access_wrong_audit_board(
     }
 
 
-def test_with_audit_board_access_election_not_found(
+def test_restrict_access_audit_board_election_not_found(
     client: FlaskClient, jurisdiction_id: str, round_id: str, audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
@@ -782,7 +739,7 @@ def test_with_audit_board_access_election_not_found(
     assert rv.status_code == 404
 
 
-def test_with_audit_board_access_jurisdiction_not_found(
+def test_restrict_access_audit_board_jurisdiction_not_found(
     client: FlaskClient, election_id: str, round_id: str, audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
@@ -792,7 +749,7 @@ def test_with_audit_board_access_jurisdiction_not_found(
     assert rv.status_code == 404
 
 
-def test_with_audit_board_access_round_not_found(
+def test_restrict_access_audit_board_round_not_found(
     client: FlaskClient, election_id: str, jurisdiction_id: str, audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
@@ -802,7 +759,7 @@ def test_with_audit_board_access_round_not_found(
     assert rv.status_code == 404
 
 
-def test_with_audit_board_access_audit_board_not_found(
+def test_restrict_access_audit_board_audit_board_not_found(
     client: FlaskClient,
     election_id: str,
     jurisdiction_id: str,

@@ -2,7 +2,7 @@ from flask import jsonify, request
 from werkzeug.exceptions import Conflict
 
 from . import api
-from ..auth import with_election_access, with_jurisdiction_access
+from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import validate, JSONDict
@@ -48,7 +48,7 @@ def serialize_election_settings(election: Election) -> JSONDict:
 
 
 @api.route("/election/<election_id>/settings", methods=["GET"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def get_election_settings(election: Election):
     return jsonify(serialize_election_settings(election))
 
@@ -56,7 +56,7 @@ def get_election_settings(election: Election):
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/settings", methods=["GET"]
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def get_jurisdiction_election_settings(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
@@ -71,7 +71,7 @@ def validate_election_settings(settings: JSONDict, election: Election):
 
 
 @api.route("/election/<election_id>/settings", methods=["PUT"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def put_election_settings(election: Election):
     settings = request.get_json()
     validate_election_settings(settings, election)

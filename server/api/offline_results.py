@@ -6,7 +6,7 @@ from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import is_round_complete, end_round, get_current_round
-from ..auth import with_jurisdiction_access
+from ..auth import restrict_access, UserType
 from ..util.jsonschema import JSONDict, validate
 
 OFFLINE_RESULTS_SCHEMA = {
@@ -84,7 +84,7 @@ def validate_offline_results(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results",
     methods=["PUT"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def record_offline_results(
     election: Election,
     jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
@@ -147,7 +147,7 @@ def serialize_results(round: Round, results: List[JurisdictionResult]) -> JSONDi
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/results",
     methods=["GET"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def get_offline_results(
     election: Election,
     jurisdiction: Jurisdiction,  # pylint: disable=unused-argument

@@ -13,12 +13,7 @@ os.environ["FLASK_ENV"] = "test"
 from ..app import app
 from ..database import reset_db
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import (
-    UserType,
-    with_election_access,
-    with_jurisdiction_access,
-    with_audit_board_access,
-)
+from ..auth import UserType, restrict_access
 from .helpers import *  # pylint: disable=wildcard-import
 from ..bgcompute import (
     bgcompute_update_election_jurisdictions_file,
@@ -59,7 +54,12 @@ def client() -> FlaskClient:
 
 @pytest.fixture
 def election_id(client: FlaskClient, request) -> str:
-    return create_election(client, audit_name=f"Test Audit {request.node.name}")
+    org = create_organization(f"Test Org {request.node.name}")
+    assign_admin_to_org(org.id, DEFAULT_AA_EMAIL)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, user_key=DEFAULT_AA_EMAIL)
+    return create_election(
+        client, audit_name=f"Test Audit {request.node.name}", organization_id=org.id
+    )
 
 
 @pytest.fixture
@@ -267,13 +267,13 @@ def audit_board_round_2_ids(
 @pytest.fixture(scope="session", autouse=True)
 def auth_decorator_test_routes():
     @app.route("/api/election/<election_id>/test_auth")
-    @with_election_access
+    @restrict_access([UserType.AUDIT_ADMIN])
     def fake_election_route(election: Election):  # pylint: disable=unused-variable
         assert election
         return jsonify(election.id)
 
     @app.route("/api/election/<election_id>/jurisdiction/<jurisdiction_id>/test_auth")
-    @with_jurisdiction_access
+    @restrict_access([UserType.JURISDICTION_ADMIN])
     def fake_jurisdiction_route(
         election: Election, jurisdiction: Jurisdiction
     ):  # pylint: disable=unused-variable
@@ -284,7 +284,7 @@ def auth_decorator_test_routes():
     @app.route(
         "/api/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/test_auth"
     )
-    @with_audit_board_access
+    @restrict_access([UserType.AUDIT_BOARD])
     def fake_audit_board_route(
         election: Election,
         jurisdiction: Jurisdiction,

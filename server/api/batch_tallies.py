@@ -7,7 +7,7 @@ from werkzeug.exceptions import BadRequest, NotFound, Conflict
 from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import with_jurisdiction_access, with_election_access
+from ..auth import restrict_access, UserType
 from ..util.process_file import (
     process_file,
     serialize_file,
@@ -119,7 +119,7 @@ def clear_batch_tallies_file(jurisdiction: Jurisdiction):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies",
     methods=["PUT"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def upload_batch_tallies(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
@@ -144,7 +144,7 @@ def upload_batch_tallies(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies",
     methods=["GET"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_tallies(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
@@ -158,7 +158,7 @@ def get_batch_tallies(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies/csv",
     methods=["GET"],
 )
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def download_batch_tallies_file(
     election: Election, jurisdiction_id: str,  # pylint: disable=unused-argument
 ):
@@ -177,7 +177,7 @@ def download_batch_tallies_file(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch-tallies",
     methods=["DELETE"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_batch_tallies(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):

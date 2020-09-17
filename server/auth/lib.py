@@ -1,8 +1,9 @@
 import functools
 import enum
-from typing import Callable, Optional, Tuple, Union
+from typing import Callable, Tuple, Union, List
 from flask import session
 from werkzeug.exceptions import Forbidden, Unauthorized
+from sqlalchemy.orm import Query
 
 from ..models import *  # pylint: disable=wildcard-import
 
@@ -40,7 +41,6 @@ def clear_loggedin_user():
     session[_USER] = None
 
 
-##
 ## The super admin bit lets a user impersonate any other user
 ## Having the bit only grants access to the superadmin functionality
 ## that enables becoming any other user, and then taking action as them.
@@ -49,9 +49,6 @@ def clear_loggedin_user():
 ## field so that impersonation can be as close as possible to the same user session
 ## and so that a superadmin can become any other user at any other time without having
 ## to re-login
-##
-
-
 def set_superadmin():
     session[_SUPERADMIN] = True  # pragma: no cover
 
@@ -65,211 +62,117 @@ def is_superadmin():
     return session.get(_SUPERADMIN, False)  # pragma: no cover
 
 
-def require_superadmin():
-    if not is_superadmin():
-        raise Forbidden(description="requires superadmin privileges")
+def find_or_404(query: Query):
+    instance = query.first()
+    if instance:
+        return instance
+    raise NotFound()
 
 
-def require_audit_admin_for_organization(organization_id: Optional[str]):
-    if not organization_id:
+def check_access(
+    user_types: List[UserType],
+    election: Election,
+    jurisdiction: Jurisdiction = None,
+    round: Round = None,
+    audit_board: AuditBoard = None,
+):
+    # Bypass for single-jurisdiction flow - no auth check
+    if not election.is_multi_jurisdiction:
         return
 
+    # Check user type is allowed
     user_type, user_key = get_loggedin_user()
-
-    if not user_type:
-        raise Unauthorized(
-            description=f"Anonymous users do not have access to organization {organization_id}"
-        )
-
-    if user_type != UserType.AUDIT_ADMIN:
-        raise Forbidden(
-            description=f"User is not logged in as an audit admin and so does not have access to organization {organization_id}"
-        )
-
-    user = User.query.filter_by(email=user_key).one()
-    for org in user.organizations:
-        if org.id == organization_id:
-            return
-    raise Forbidden(
-        description=f"{user.email} does not have access to organization {organization_id}"
-    )
-
-
-def require_jurisdiction_admin_for_jurisdiction(jurisdiction_id: str, election_id: str):
-    user_type, user_key = get_loggedin_user()
-
-    if not user_type:
-        raise Unauthorized(
-            description=f"Anonymous users do not have access to jurisdiction {jurisdiction_id}"
-        )
-
-    if user_type != UserType.JURISDICTION_ADMIN:
-        raise Forbidden(
-            description=f"User is not logged in as a jurisdiction admin and so does not have access to jurisdiction {jurisdiction_id}"
-        )
-
-    user = User.query.filter_by(email=user_key).one()
-    jurisdiction = next(
-        (j for j in user.jurisdictions if j.id == jurisdiction_id), None
-    )
-    if not jurisdiction:
-        raise Forbidden(
-            description=f"{user.email} does not have access to jurisdiction {jurisdiction_id}"
-        )
-    if jurisdiction.election_id != election_id:
-        raise Forbidden(
-            description=f"Jurisdiction {jurisdiction.id} is not associated with election {election_id}"
-        )
-
-
-def require_audit_board_logged_in(
-    audit_board: AuditBoard, election_id: str, jurisdiction: Jurisdiction, round_id: str
-):
-    user_type, user_key = get_loggedin_user()
-
     if not user_key:
-        raise Unauthorized(
-            description=f"Anonymous users do not have access to audit board {audit_board.id}"
-        )
+        raise Unauthorized("Please log in to access Arlo")
 
-    if user_type != UserType.AUDIT_BOARD:
-        raise Forbidden(
-            description=f"User is not logged in as an audit board and so does not have access to audit board {audit_board.id}"
-        )
+    if user_type not in user_types:
+        raise Forbidden(f"Access forbidden for user type {user_type}")
 
-    if audit_board.id != user_key:
-        raise Forbidden(
-            description=f"User does not have access to audit board {audit_board.id}"
-        )
+    # Check that the user has access to the resource they are requesting
+    if user_type == UserType.AUDIT_ADMIN:
+        user = User.query.filter_by(email=user_key).one()
+        if not any(
+            org for org in user.organizations if org.id == election.organization_id
+        ):
+            raise Forbidden(
+                description=f"{user.email} does not have access to organization {election.organization_id}"
+            )
 
-    if audit_board.jurisdiction.election_id != election_id:
-        raise Forbidden(
-            description=f"Audit board {audit_board.id} is not associated with election {election_id}"
-        )
-    if audit_board.jurisdiction_id != jurisdiction.id:
-        raise Forbidden(
-            description=f"Audit board {audit_board.id} is not associated with jurisdiction {jurisdiction.id}"
-        )
-    if audit_board.round_id != round_id:
-        raise Forbidden(
-            description=f"Audit board {audit_board.id} is not associated with round {round_id}"
-        )
+    elif user_type == UserType.JURISDICTION_ADMIN:
+        user = User.query.filter_by(email=user_key).one()
+        if not any(j for j in user.jurisdictions if j.id == jurisdiction.id):
+            raise Forbidden(
+                description=f"{user.email} does not have access to jurisdiction {jurisdiction.id}"
+            )
+
+    else:
+        assert user_type == UserType.AUDIT_BOARD
+        if audit_board.id != user_key:
+            raise Forbidden(
+                description=f"User does not have access to audit board {audit_board.id}"
+            )
 
 
-def with_election_access(route: Callable):
+def restrict_access(user_types: List[UserType]):
     """
-    Flask route decorator that restricts access to a route to Audit Admins
-    that have access to the election at the route's path. It also loads the
-    election object.
-
-    To use this, you must have:
-    - a path component named `election_id`
-    - a route parameter named `election`
+    Flask route decorator that restricts access to a route to the given user types.
     """
 
-    @functools.wraps(route)
-    def wrapper(*args, **kwargs):
-        if "election_id" not in kwargs:
-            raise Exception(
-                f"expected 'election_id' in kwargs but got: {kwargs}"
-            )  # pragma: no cover
+    def restrict_access_decorator(route: Callable):
+        @functools.wraps(route)
+        def wrapper(*args, **kwargs):
+            # Substitute route params for their corresponding resources
+            if "election_id" in kwargs:
+                election = get_or_404(Election, kwargs.pop("election_id"))
+                kwargs["election"] = election
 
-        election = get_or_404(Election, kwargs.pop("election_id"))
+            jurisdiction = None
+            if "jurisdiction_id" in kwargs:
+                jurisdiction = find_or_404(
+                    Jurisdiction.query.filter_by(
+                        id=kwargs.pop("jurisdiction_id"), election_id=election.id
+                    )
+                )
+                kwargs["jurisdiction"] = jurisdiction
 
-        require_audit_admin_for_organization(election.organization_id)
+            round = None
+            if "round_id" in kwargs:
+                round = find_or_404(
+                    Round.query.filter_by(
+                        id=kwargs.pop("round_id"), election_id=election.id
+                    )
+                )
+                kwargs["round"] = round
 
-        kwargs["election"] = election
+            audit_board = None
+            if "audit_board_id" in kwargs:
+                audit_board = find_or_404(
+                    AuditBoard.query.filter_by(
+                        id=kwargs.pop("audit_board_id"),
+                        round_id=round.id,
+                        jurisdiction_id=jurisdiction.id,
+                    )
+                )
+                kwargs["audit_board"] = audit_board
 
-        return route(*args, **kwargs)
+            check_access(user_types, election, jurisdiction, round, audit_board)
 
-    return wrapper
+            return route(*args, **kwargs)
 
+        return wrapper
 
-def with_jurisdiction_access(route: Callable):
-    """
-    Flask route decorator that restricts access to a route to Jurisdiction
-    Admins that have access to the election and jurisdiction at the route's
-    path. It also loads the election and jurisdiction objects.
-
-    To use this, you must have:
-    - a path component named `election_id`
-    - a route parameter named `election`
-    - a path component named `jurisdiction_id`
-    - a route parameter named `jurisdiction`
-    """
-
-    @functools.wraps(route)
-    def wrapper(*args, **kwargs):
-        for key in ["election_id", "jurisdiction_id"]:
-            if key not in kwargs:
-                raise Exception(
-                    f"expected '{key}' in kwargs but got: {kwargs}"
-                )  # pragma: no cover
-
-        election = get_or_404(Election, kwargs.pop("election_id"))
-        jurisdiction = get_or_404(Jurisdiction, kwargs.pop("jurisdiction_id"))
-
-        require_jurisdiction_admin_for_jurisdiction(jurisdiction.id, election.id)
-
-        kwargs["election"] = election
-        kwargs["jurisdiction"] = jurisdiction
-
-        return route(*args, **kwargs)
-
-    return wrapper
+    return restrict_access_decorator
 
 
-def with_audit_board_access(route: Callable):
-    """
-    Flask route decorator that restricts access to a route to Audit Board
-    members that are part of the audit board for the election, jurisdiction,
-    round, and audit board ids in the route's path. It also loads the
-    election, jurisdiction, round, and audit board objects.
-
-    To use this, you must have:
-    - a path component named `election_id`
-    - a route parameter named `election`
-    - a path component named `jurisdiction_id`
-    - a route parameter named `jurisdiction`
-    - a path component named `round_id`
-    - a route parameter named `round`
-    - a path component named `audit_board_id`
-    - a route parameter named `audit_board`
-    """
-
-    @functools.wraps(route)
-    def wrapper(*args, **kwargs):
-        for key in ["election_id", "jurisdiction_id", "round_id", "audit_board_id"]:
-            if key not in kwargs:
-                raise Exception(
-                    f"expected '{key}' in kwargs but got: {kwargs}"
-                )  # pragma: no cover
-
-        election = get_or_404(Election, kwargs.pop("election_id"))
-        jurisdiction = get_or_404(Jurisdiction, kwargs.pop("jurisdiction_id"))
-        round = get_or_404(Round, kwargs.pop("round_id"))
-        audit_board = get_or_404(AuditBoard, kwargs.pop("audit_board_id"))
-
-        require_audit_board_logged_in(audit_board, election.id, jurisdiction, round.id)
-
-        kwargs["election"] = election
-        kwargs["jurisdiction"] = jurisdiction
-        kwargs["round"] = round
-        kwargs["audit_board"] = audit_board
-
-        return route(*args, **kwargs)
-
-    return wrapper
-
-
-def with_superadmin_access(route: Callable):
+def restrict_access_superadmin(route: Callable):
     """
     Flask route decorator that restricts access to a route to a superadmin.
     """
 
     @functools.wraps(route)
     def wrapper(*args, **kwargs):
-        require_superadmin()
+        if not is_superadmin():
+            raise Forbidden(description="requires superadmin privileges")
         return route(*args, **kwargs)
 
     return wrapper
