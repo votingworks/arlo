@@ -286,10 +286,14 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                             component={FormField}
                             name={`sampleSizes[${contest.id}][size]`}
                             type="text"
-                            validate={testNumber(
-                              Number(contest.totalBallotsCast),
-                              `Must be less than or equal to: ${contest.totalBallotsCast} (the total number of ballots in this targeted contest)`
-                            )}
+                            validate={
+                              auditType === 'BATCH_COMPARISON'
+                                ? testNumber()
+                                : testNumber(
+                                    Number(contest.totalBallotsCast),
+                                    `Must be less than or equal to: ${contest.totalBallotsCast} (the total number of ballots in this targeted contest)`
+                                  )
+                            }
                           />
                         )}
                       </FormSectionDescription>
