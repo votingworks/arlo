@@ -90,8 +90,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
     methods=["GET"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round_id: str):
-    round = get_or_404(Round, round_id)
+def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round: Round):
     retrieval_list_csv = ballot_retrieval_list(jurisdiction, round)
     return csv_response(
         retrieval_list_csv,
@@ -148,14 +147,13 @@ def serialize_ballot(ballot: SampledBallot) -> JSONDict:
 def list_ballots_for_jurisdiction(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
-    round_id: str,
+    round: Round,
 ):
-    get_or_404(Round, round_id)
     ballots = (
         SampledBallot.query.join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBallotDraw)
-        .filter_by(round_id=round_id)
+        .filter_by(round_id=round.id)
         .outerjoin(SampledBallot.audit_board)
         .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position)
         .options(

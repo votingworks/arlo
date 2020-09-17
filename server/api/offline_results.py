@@ -1,6 +1,6 @@
 from typing import List, Optional
 from flask import jsonify, request
-from werkzeug.exceptions import BadRequest, NotFound, Conflict
+from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
 from ..database import db_session
@@ -86,14 +86,8 @@ def validate_offline_results(
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def record_offline_results(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-    round_id: str,
+    election: Election, jurisdiction: Jurisdiction, round: Round,
 ):
-    round = Round.query.filter_by(id=round_id, election_id=election.id).first()
-    if round is None:
-        raise NotFound()
-
     results = request.get_json()
     validate_offline_results(election, jurisdiction, round, results)
 
@@ -149,14 +143,10 @@ def serialize_results(round: Round, results: List[JurisdictionResult]) -> JSONDi
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def get_offline_results(
-    election: Election,
-    jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-    round_id: str,
+    election: Election,  # pylint: disable=unused-argument
+    jurisdiction: Jurisdiction,
+    round: Round,
 ):
-    round = Round.query.filter_by(id=round_id, election_id=election.id).first()
-    if round is None:
-        raise NotFound()
-
     results = JurisdictionResult.query.filter_by(
         jurisdiction_id=jurisdiction.id, round_id=round.id
     ).all()

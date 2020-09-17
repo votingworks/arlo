@@ -24,6 +24,7 @@ def test_audit_admin_report(
             contest_ids[0],
             audit_board_id,
         )
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert (
         scrub_datetime(rv.headers["Content-Disposition"])

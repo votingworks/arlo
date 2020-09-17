@@ -105,9 +105,8 @@ def assign_sampled_batches(
     methods=["POST"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round_id: str):
+def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round: Round):
     json_audit_boards = request.get_json()
-    round = get_or_404(Round, round_id)
     validate_audit_boards(json_audit_boards, election, jurisdiction, round)
 
     audit_boards = [
@@ -194,15 +193,14 @@ def serialize_members(audit_board):
 def list_audit_boards(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
-    round_id: str,
+    round: Round,
 ):
-    get_or_404(Round, round_id)
     audit_boards = (
-        AuditBoard.query.filter_by(jurisdiction_id=jurisdiction.id, round_id=round_id)
+        AuditBoard.query.filter_by(jurisdiction_id=jurisdiction.id, round_id=round.id)
         .order_by(AuditBoard.name)
         .all()
     )
-    round_status = round_status_by_audit_board(jurisdiction.id, round_id)
+    round_status = round_status_by_audit_board(jurisdiction.id, round.id)
     json_audit_boards = [
         serialize_audit_board(ab, round_status[ab.id]) for ab in audit_boards
     ]

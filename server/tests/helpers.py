@@ -97,13 +97,6 @@ def create_org_and_admin(
     return org.id, audit_admin.id
 
 
-def assign_admin_to_org(org_id: str, user_email: str):
-    user = User.query.filter_by(email=user_email).first()
-    admin = AuditAdministration(organization_id=org.id, user_id=user.id)
-    db_session.add(admin)
-    db_session.commit()
-
-
 def create_jurisdiction_admin(
     jurisdiction_id: str, user_email: str = DEFAULT_JA_EMAIL
 ) -> str:

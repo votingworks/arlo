@@ -35,7 +35,7 @@ format-server:
 	pipenv run black .
 
 lint-server:
-	pipenv run pylint -j 0 server scripts
+	pipenv run pylint server scripts
 
 test-client:
 	yarn --cwd client lint

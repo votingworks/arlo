@@ -73,7 +73,6 @@ def check_access(
     user_types: List[UserType],
     election: Election,
     jurisdiction: Jurisdiction = None,
-    round: Round = None,
     audit_board: AuditBoard = None,
 ):
     # Bypass for single-jurisdiction flow - no auth check
@@ -99,6 +98,7 @@ def check_access(
             )
 
     elif user_type == UserType.JURISDICTION_ADMIN:
+        assert jurisdiction
         user = User.query.filter_by(email=user_key).one()
         if not any(j for j in user.jurisdictions if j.id == jurisdiction.id):
             raise Forbidden(
@@ -107,6 +107,7 @@ def check_access(
 
     else:
         assert user_type == UserType.AUDIT_BOARD
+        assert audit_board
         if audit_board.id != user_key:
             raise Forbidden(
                 description=f"User does not have access to audit board {audit_board.id}"
@@ -155,7 +156,7 @@ def restrict_access(user_types: List[UserType]):
                 )
                 kwargs["audit_board"] = audit_board
 
-            check_access(user_types, election, jurisdiction, round, audit_board)
+            check_access(user_types, election, jurisdiction, audit_board)
 
             return route(*args, **kwargs)
 

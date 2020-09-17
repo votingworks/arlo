@@ -111,7 +111,6 @@ def test_ballot_manifest_replace(
 
     bgcompute_update_ballot_manifest_file()
 
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={

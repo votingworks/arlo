@@ -53,12 +53,16 @@ def client() -> FlaskClient:
 
 
 @pytest.fixture
-def election_id(client: FlaskClient, request) -> str:
-    org = create_organization(f"Test Org {request.node.name}")
-    assign_admin_to_org(org.id, DEFAULT_AA_EMAIL)
+def org_id(client: FlaskClient, request) -> str:  # pylint: disable=unused-argument
+    org_id, _ = create_org_and_admin(f"Test Org {request.node.name}", DEFAULT_AA_EMAIL)
+    return org_id
+
+
+@pytest.fixture
+def election_id(client: FlaskClient, org_id: str, request) -> str:
     set_logged_in_user(client, UserType.AUDIT_ADMIN, user_key=DEFAULT_AA_EMAIL)
     return create_election(
-        client, audit_name=f"Test Audit {request.node.name}", organization_id=org.id
+        client, audit_name=f"Test Audit {request.node.name}", organization_id=org_id
     )
 
 
@@ -132,6 +136,7 @@ def contest_ids(
 
 @pytest.fixture
 def election_settings(client: FlaskClient, election_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     settings = {
         "electionName": "Test Election",
         "online": True,

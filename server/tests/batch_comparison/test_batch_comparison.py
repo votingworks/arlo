@@ -63,6 +63,7 @@ def test_batch_comparison_sample_size(
     batch_tallies,  # pylint: disable=unused-argument
     snapshot,
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     assert rv.status_code == 200
     sample_size_options = json.loads(rv.data)["sampleSizes"]
@@ -78,6 +79,7 @@ def test_batch_comparison_without_all_batch_tallies(
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     assert rv.status_code == 409
     assert json.loads(rv.data) == {
@@ -130,6 +132,7 @@ def test_batch_comparison_too_many_votes(
     assert_ok(rv)
     bgcompute_update_batch_tallies_file()
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
@@ -157,6 +160,7 @@ def test_batch_comparison_round_1(
     snapshot,
 ):
     # Check jurisdiction status before starting the round
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     assert jurisdictions[0]["currentRoundStatus"] is None
@@ -219,6 +223,7 @@ def test_batch_comparison_round_1(
     assert_ok(rv)
 
     # Check jurisdiction status moved to IN_PROGRESS
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     assert jurisdictions[0]["currentRoundStatus"]["status"] == "IN_PROGRESS"
@@ -257,10 +262,12 @@ def test_batch_comparison_round_2(
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
     snapshot,
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest")
     assert rv.status_code == 200
     contests = json.loads(rv.data)["contests"]
 
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches"
     )
@@ -282,12 +289,14 @@ def test_batch_comparison_round_2(
     assert_ok(rv)
 
     # Check jurisdiction status after recording results
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
     snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
 
     # Now do the second jurisdiction
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_1_id}/audit-board",
@@ -314,6 +323,7 @@ def test_batch_comparison_round_2(
     assert_ok(rv)
 
     # Check jurisdiction status after recording results
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
@@ -364,6 +374,7 @@ def test_batch_comparison_round_2(
     sampled_jurisdictions = {draw.batch.jurisdiction_id for draw in batch_draws}
     assert sampled_jurisdictions == set(jurisdiction_ids[:2])
 
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{rounds[1]['id']}/audit-board",
@@ -379,9 +390,11 @@ def test_batch_comparison_round_2(
     snapshot.assert_match(retrieval_list)
 
     # Test the audit reports
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
 
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/report"
     )

@@ -160,12 +160,9 @@ def get_batch_tallies(
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_batch_tallies_file(
-    election: Election, jurisdiction_id: str,  # pylint: disable=unused-argument
+    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
-    jurisdiction = Jurisdiction.query.filter_by(
-        election_id=election.id, id=jurisdiction_id
-    ).first()
-    if not jurisdiction or not jurisdiction.batch_tallies_file:
+    if not jurisdiction.batch_tallies_file:
         return NotFound()
 
     return csv_response(

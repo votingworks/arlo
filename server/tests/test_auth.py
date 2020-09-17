@@ -351,7 +351,10 @@ def test_restrict_access_audit_admin_not_found(
 
 
 def test_restrict_access_audit_admin_with_jurisdiction_admin(
-    client: FlaskClient, org_id: str, election_id: str, ja_email: str,
+    client: FlaskClient,
+    org_id: str,  # pylint: disable=unused-argument
+    election_id: str,
+    ja_email: str,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, ja_email)
     rv = client.get(f"/api/election/{election_id}/test_auth")
@@ -367,7 +370,10 @@ def test_restrict_access_audit_admin_with_jurisdiction_admin(
 
 
 def test_restrict_access_audit_admin_audit_board_user(
-    client: FlaskClient, org_id: str, election_id: str, audit_board_id: str,
+    client: FlaskClient,
+    org_id: str,  # pylint: disable=unused-argument
+    election_id: str,
+    audit_board_id: str,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_id)
 
@@ -384,7 +390,9 @@ def test_restrict_access_audit_admin_audit_board_user(
 
 
 def test_restrict_access_audit_admin_anonymous_user(
-    client: FlaskClient, org_id: str, election_id: str
+    client: FlaskClient,
+    org_id: str,  # pylint: disable=unused-argument
+    election_id: str,
 ):
     clear_logged_in_user(client)
     rv = client.get(f"/api/election/{election_id}/test_auth")

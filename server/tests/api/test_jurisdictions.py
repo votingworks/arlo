@@ -76,6 +76,7 @@ def test_jurisdictions_list_with_manifest(
     assert_ok(rv)
     bgcompute_update_ballot_manifest_file()
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)
     expected = {
@@ -151,6 +152,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
 
     bgcompute_update_ballot_manifest_file()
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)
     expected = {
@@ -232,6 +234,7 @@ def test_jurisdictions_status_round_1_no_audit_boards(
 def test_jurisdictions_status_round_1_with_audit_boards(
     client: FlaskClient, election_id: str, audit_board_round_1_ids: List[str],
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
@@ -302,6 +305,7 @@ def test_jurisdictions_status_round_1_with_audit_boards_without_ballots(
     SampledBallot.query.filter_by(audit_board_id=audit_board_round_1_ids[0]).delete()
     db_session.commit()
 
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
     assert jurisdictions[0]["currentRoundStatus"]["status"] == "IN_PROGRESS"
@@ -326,6 +330,7 @@ def test_jurisdictions_round_status_offline(
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     # Change the settings to offline
     settings = {
         "electionName": "Test Election",

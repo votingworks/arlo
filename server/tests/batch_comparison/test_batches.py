@@ -118,8 +118,9 @@ def test_record_batch_results(
     snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-
-    rv = client.get(f"/api/election/{election_id}/contest")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
+    )
     assert rv.status_code == 200
     contests = json.loads(rv.data)["contests"]
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
@@ -163,7 +164,9 @@ def test_record_batch_results(
     assert new_results == results
 
     # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled batches
-    rv = client.get(f"/api/election/{election_id}/round")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round"
+    )
     rounds = json.loads(rv.data)["rounds"]
     assert rounds[0]["endedAt"] is None
 
@@ -211,7 +214,9 @@ def test_record_batch_results(
     assert new_results == results
 
     # Round should be over
-    rv = client.get(f"/api/election/{election_id}/round")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round"
+    )
     rounds = json.loads(rv.data)["rounds"]
     assert rounds[0]["endedAt"] is not None
 
@@ -223,10 +228,14 @@ def test_record_batch_results(
     )
 
     # Start a new round to test round 2
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2})
     assert_ok(rv)
 
-    rv = client.get(f"/api/election/{election_id}/round")
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round"
+    )
     assert rv.status_code == 200
     rounds = json.loads(rv.data)["rounds"]
     round_2_id = rounds[1]["id"]
@@ -303,7 +312,9 @@ def test_record_batch_results_invalid(
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/contest")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/contest"
+    )
     assert rv.status_code == 200
     contests = json.loads(rv.data)["contests"]
 
@@ -373,15 +384,21 @@ def test_record_batch_results_invalid(
 
 
 def test_record_batch_results_bad_round(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    org_id: str,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     rv = client.get(f"/api/election/{election_id}/contest")
     assert rv.status_code == 200
     contests = json.loads(rv.data)["contests"]
 
     choice_ids = [choice["id"] for choice in contests[0]["choices"]]
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
     for jurisdiction_id in jurisdiction_ids[:2]:
         rv = post_json(
@@ -433,14 +450,16 @@ def test_record_batch_results_bad_round(
     # Hackily set the round's election id to be a different election to test
     # that we correctly check the round and election match
     round = Round.query.get(round_1_id)
-    election_id_2 = create_election(client, "Other Election")
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    election_id_2 = create_election(client, "Other Election", organization_id=org_id)
     round.election_id = election_id_2
     db_session.add(round)
     db_session.commit()
 
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = put_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/batches/results",
         {},
     )
-    assert rv.status_code == 409
+    assert rv.status_code == 404
