@@ -6,7 +6,11 @@ import {
   Router as RegularRouter,
   useParams,
 } from 'react-router-dom'
-import { AuditAdminView, JurisdictionAdminView } from './index'
+import {
+  AuditAdminView,
+  JurisdictionAdminView,
+  prettifyRefreshStatus,
+} from './index'
 import {
   manifestMocks,
   talliesMocks,
@@ -326,5 +330,30 @@ describe('JA setup', () => {
       )
       expect(container).toMatchSnapshot()
     })
+  })
+})
+
+describe('prettifyRefreshStatus', () => {
+  it('handles recent values', () => {
+    expect(prettifyRefreshStatus(0)).toBe('Refreshed just now')
+    expect(prettifyRefreshStatus(9000)).toBe('Refreshed just now')
+  })
+
+  it('handles ten second increments', () => {
+    expect(prettifyRefreshStatus(10001)).toBe('Refreshed 10 seconds ago')
+    expect(prettifyRefreshStatus(20001)).toBe('Refreshed 20 seconds ago')
+    expect(prettifyRefreshStatus(30001)).toBe('Refreshed 30 seconds ago')
+    expect(prettifyRefreshStatus(40001)).toBe('Refreshed 40 seconds ago')
+    expect(prettifyRefreshStatus(50001)).toBe('Refreshed 50 seconds ago')
+  })
+  it('handles a single minute', () => {
+    expect(prettifyRefreshStatus(60001)).toBe('Refreshed 1 minute ago')
+    expect(prettifyRefreshStatus(119999)).toBe('Refreshed 1 minute ago')
+  })
+  it('handles minute increments', () => {
+    expect(prettifyRefreshStatus(120000)).toBe('Refreshed 2 minutes ago')
+    expect(prettifyRefreshStatus(180000)).toBe('Refreshed 3 minutes ago')
+    expect(prettifyRefreshStatus(240000)).toBe('Refreshed 4 minutes ago')
+    expect(prettifyRefreshStatus(300000)).toBe('Refreshed 5 minutes ago')
   })
 })

@@ -26,6 +26,14 @@ import H2Title from '../Atoms/H2Title'
 import CSVFile from './CSVForm'
 import { useInterval } from '../utilities'
 
+export const prettifyRefreshStatus = (refreshTime: number) => {
+  if (refreshTime < 10000) return 'Refreshed just now'
+  if (refreshTime < 60000)
+    return `Refreshed ${Math.floor(refreshTime / 10000) * 10} seconds ago`
+  if (refreshTime < 120000) return `Refreshed 1 minute ago`
+  return `Refreshed ${Math.floor(refreshTime / 60000)} minutes ago`
+}
+
 const VerticalInner = styled(Inner)`
   flex-direction: column;
 `
@@ -72,14 +80,7 @@ export const AuditAdminView: React.FC = () => {
   )
   // update the refresh time tracker every second
   useInterval(incrementRefreshTime, 1000, false)
-  // prettify the results for the status
-  const refreshStatus = (() => {
-    if (refreshTime < 10000) return 'Refreshed just now'
-    if (refreshTime < 60000)
-      return `Refreshed ${Math.floor(refreshTime / 10000) * 10} seconds ago`
-    if (refreshTime < 120000) return `Refreshed 1 minute ago`
-    return `Refreshed ${Math.floor(refreshTime / 60000)} minutes ago`
-  })()
+  const refreshStatus = prettifyRefreshStatus(refreshTime)
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
