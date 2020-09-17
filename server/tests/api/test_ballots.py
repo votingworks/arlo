@@ -2,19 +2,7 @@ from typing import List
 import json
 from flask.testing import FlaskClient
 
-from ..helpers import (
-    set_logged_in_user,
-    DEFAULT_JA_EMAIL,
-    assert_is_id,
-    compare_json,
-    put_json,
-    assert_ok,
-    J1_BALLOTS_ROUND_1,
-    J1_BALLOTS_ROUND_2,
-    AB1_BALLOTS_ROUND_1,
-    AB2_BALLOTS_ROUND_1,
-    AB1_BALLOTS_ROUND_2,
-)
+from ..helpers import *  # pylint: disable=wildcard-import
 from ...auth import UserType
 from ...models import *  # pylint: disable=wildcard-import
 from ...util.jsonschema import JSONDict
@@ -779,8 +767,10 @@ def test_ja_ballot_retrieval_list_round_1(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots/retrieval-list"
     )
     assert rv.status_code == 200
-    assert "attachment; filename=" in rv.headers["Content-Disposition"]
-    assert ".csv" in rv.headers["Content-Disposition"]
+    assert (
+        scrub_datetime(rv.headers["Content-Disposition"])
+        == 'attachment; filename="ballot-retrieval-J1-Test-Audit-test-ja-ballot-retrieval-list-round-1-DATETIME.csv"'
+    )
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     assert len(retrieval_list.splitlines()) == J1_BALLOTS_ROUND_1 + 1
@@ -800,7 +790,10 @@ def test_ja_ballot_retrieval_list_round_2(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/ballots/retrieval-list"
     )
     assert rv.status_code == 200
-    assert "attachment; filename=" in rv.headers["Content-Disposition"]
+    assert (
+        scrub_datetime(rv.headers["Content-Disposition"])
+        == 'attachment; filename="ballot-retrieval-J1-Test-Audit-test-ja-ballot-retrieval-list-round-2-DATETIME.csv"'
+    )
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     assert len(retrieval_list.splitlines()) == J1_BALLOTS_ROUND_2 + 1

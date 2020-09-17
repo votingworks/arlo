@@ -17,12 +17,18 @@ import {
 } from '../useSetupMenuItems/_mocks'
 import { IAuditSettings, IContest } from '../../../types'
 import { IBatch } from './useBatchResults'
+import { jaApiCalls } from '../_mocks'
+import AuthDataProvider from '../../UserContext'
 
 const renderView = (props: IRoundManagementProps) =>
   renderWithRouter(
     <Route
       path="/election/:electionId/jurisdiction/:jurisdictionId"
-      render={routeProps => <RoundManagement {...routeProps} {...props} />}
+      render={routeProps => (
+        <AuthDataProvider>
+          <RoundManagement {...routeProps} {...props} />
+        </AuthDataProvider>
+      )}
     />,
     {
       route: '/election/1/jurisdiction/jurisdiction-id-1',
@@ -62,6 +68,7 @@ describe('RoundManagement', () => {
     const expectedCalls = [
       apiCalls.getBallots,
       apiCalls.getSettings(auditSettings.blank),
+      jaApiCalls.getUser,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView({
@@ -78,6 +85,7 @@ describe('RoundManagement', () => {
     const expectedCalls = [
       apiCalls.getBallots,
       apiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getUser,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView({
@@ -94,6 +102,7 @@ describe('RoundManagement', () => {
     const expectedCalls = [
       apiCalls.getBallots,
       apiCalls.getSettings(auditSettings.all),
+      jaApiCalls.getUser,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView({
@@ -110,6 +119,7 @@ describe('RoundManagement', () => {
     const expectedCalls = [
       apiCalls.getBallots,
       apiCalls.getSettings(auditSettings.all),
+      jaApiCalls.getUser,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView({
@@ -128,6 +138,7 @@ describe('RoundManagement', () => {
     const expectedCalls = [
       apiCalls.getBallots,
       apiCalls.getSettings(auditSettings.all),
+      jaApiCalls.getUser,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView({
@@ -146,6 +157,7 @@ describe('RoundManagement', () => {
     const expectedCalls = [
       apiCalls.getBallots,
       apiCalls.getSettings(auditSettings.offlineAll),
+      jaApiCalls.getUser,
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getResults(batchResultsMocks.empty),
     ]
@@ -166,6 +178,7 @@ describe('RoundManagement', () => {
     const expectedCalls = [
       apiCalls.getBallots,
       apiCalls.getSettings(auditSettings.batchComparisonAll),
+      jaApiCalls.getUser,
       apiCalls.getJAContests({ contests: contestMocks.oneTargeted }),
       apiCalls.getBatches(batchesMocks.emptyInitial),
       apiCalls.getBatchResults(batchResultsMocks.empty),

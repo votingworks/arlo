@@ -13,13 +13,14 @@ import FormButton from '../../Atoms/Form/FormButton'
 import {
   downloadPlaceholders,
   downloadLabels,
-  downloadDataEntry,
+  downloadAuditBoardCredentials,
 } from './generateSheets'
 import { IAuditBoard } from '../useAuditBoards'
 import QRs from './QRs'
 import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
 import BatchRoundDataEntry from './BatchRoundDataEntry'
+import { useAuthDataContext } from '../../UserContext'
 
 const PaddedWrapper = styled(Wrapper)`
   padding: 30px 0;
@@ -40,6 +41,7 @@ const RoundManagement = ({
     electionId: string
     jurisdictionId: string
   }>()
+  const { meta } = useAuthDataContext()
 
   const [ballots, setBallots] = useState<IBallot[] | null>(null)
   useEffect(() => {
@@ -64,12 +66,14 @@ const RoundManagement = ({
     jurisdictionId
   )
 
-  if (!ballots || online === null)
+  if (!meta || !ballots || online === null)
     return (
       <p>
         Loading... <Spinner size={Spinner.SIZE_SMALL} tagName="span" />
       </p>
     )
+
+  const jurisdiction = meta.jurisdictions.find(j => j.id === jurisdictionId)!
 
   if (!round.isAuditComplete) {
     const { roundNum } = round
@@ -109,7 +113,7 @@ const RoundManagement = ({
               verticalSpaced
               onClick={
                 /* istanbul ignore next */ // tested in generateSheets.test.tsx
-                () => downloadPlaceholders(roundNum, ballots)
+                () => downloadPlaceholders(roundNum, ballots, jurisdiction)
               }
             >
               Download Placeholder Sheets for Round {roundNum}
@@ -118,7 +122,7 @@ const RoundManagement = ({
               verticalSpaced
               onClick={
                 /* istanbul ignore next */ // tested in generateSheets.test.tsx
-                () => downloadLabels(roundNum, ballots)
+                () => downloadLabels(roundNum, ballots, jurisdiction)
               }
             >
               Download Ballot Labels for Round {roundNum}
@@ -129,7 +133,8 @@ const RoundManagement = ({
                   verticalSpaced
                   onClick={
                     /* istanbul ignore next */ // tested in generateSheets.test.tsx
-                    () => downloadDataEntry(auditBoards)
+                    () =>
+                      downloadAuditBoardCredentials(auditBoards, jurisdiction)
                   }
                 >
                   Download Audit Board Credentials for Data Entry

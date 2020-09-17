@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`generateSheets downloadDataEntry generates data entry sheets 1`] = `
+exports[`generateSheets downloadAuditBoardCredentials generates audit board credentials sheets 1`] = `
 "%PDF-1.3
 %ºß¬à
 3 0 obj
@@ -2860,7 +2860,7 @@ startxref
 %%EOF"
 `;
 
-exports[`generateSheets downloadDataEntry generates data entry sheets with ballotless audit board 1`] = `
+exports[`generateSheets downloadAuditBoardCredentials generates audit board credentials sheets with ballotless audit board 1`] = `
 "%PDF-1.3
 %ºß¬à
 3 0 obj

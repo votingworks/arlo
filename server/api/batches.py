@@ -8,7 +8,7 @@ from ..auth import with_jurisdiction_access
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import is_round_complete, end_round, get_current_round
-from ..util.csv_download import csv_response, election_timestamp_name
+from ..util.csv_download import csv_response, jurisdiction_timestamp_name
 from ..util.jsonschema import JSONDict, validate
 from ..util.group_by import group_by
 
@@ -55,7 +55,7 @@ def get_batch_retrieval_list(
 
     return csv_response(
         csv_io.getvalue(),
-        filename=f"batch-retrieval-{election_timestamp_name(election)}.csv",
+        filename=f"batch-retrieval-{jurisdiction_timestamp_name(election, jurisdiction)}.csv",
     )
 
 
