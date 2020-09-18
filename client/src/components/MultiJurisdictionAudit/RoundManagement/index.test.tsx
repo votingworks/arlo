@@ -64,23 +64,6 @@ const apiCalls = {
 }
 
 describe('RoundManagement', () => {
-  it('renders null when still loading', async () => {
-    const expectedCalls = [
-      apiCalls.getBallots,
-      apiCalls.getSettings(auditSettings.blank),
-      jaApiCalls.getUser,
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView({
-        round: roundMocks.incomplete,
-        auditBoards: [],
-        createAuditBoards: jest.fn(),
-      })
-      expect(container).toMatchSnapshot()
-      await screen.findByText('Loading...')
-    })
-  })
-
   it('renders audit setup with batch audit', async () => {
     const expectedCalls = [
       apiCalls.getBallots,
@@ -146,9 +129,7 @@ describe('RoundManagement', () => {
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText(
-        'Download Aggregated Ballot Retrieval List for Round 1'
-      )
+      await screen.findByText('Download Aggregated Ballot Retrieval List')
       expect(container).toMatchSnapshot()
     })
   })
@@ -167,9 +148,7 @@ describe('RoundManagement', () => {
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText(
-        'Download Aggregated Ballot Retrieval List for Round 1'
-      )
+      await screen.findByText('Download Aggregated Ballot Retrieval List')
       expect(container).toMatchSnapshot()
     })
   })
@@ -189,9 +168,7 @@ describe('RoundManagement', () => {
         auditBoards: auditBoardMocks.unfinished,
         createAuditBoards: jest.fn(),
       })
-      await screen.findByText(
-        'Download Aggregated Batch Retrieval List for Round 1'
-      )
+      await screen.findByText('Download Aggregated Batch Retrieval List')
       expect(container).toMatchSnapshot()
     })
   })

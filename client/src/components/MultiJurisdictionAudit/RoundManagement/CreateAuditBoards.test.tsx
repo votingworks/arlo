@@ -5,12 +5,7 @@ import CreateAuditBoards from './CreateAuditBoards'
 test('names audit boards numerically', async () => {
   const createAuditBoards = jest.fn()
   const { getByText, getByTestId } = render(
-    <CreateAuditBoards
-      auditBoards={[]}
-      numBallots={10}
-      roundNum={1}
-      createAuditBoards={createAuditBoards}
-    />
+    <CreateAuditBoards createAuditBoards={createAuditBoards} />
   )
 
   fireEvent.change(getByTestId('numAuditBoards'), { target: { value: '3' } })
@@ -28,12 +23,7 @@ test('names audit boards numerically', async () => {
 test('names audit boards such that the names sort sensibly', async () => {
   const createAuditBoards = jest.fn()
   const { getByText, getByTestId } = render(
-    <CreateAuditBoards
-      auditBoards={[]}
-      numBallots={10}
-      roundNum={1}
-      createAuditBoards={createAuditBoards}
-    />
+    <CreateAuditBoards createAuditBoards={createAuditBoards} />
   )
 
   fireEvent.change(getByTestId('numAuditBoards'), { target: { value: '10' } })
