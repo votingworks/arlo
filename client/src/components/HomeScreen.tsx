@@ -9,7 +9,6 @@ import {
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { Formik, FormikProps, Field } from 'formik'
-import { toast } from 'react-toastify'
 import { useAuthDataContext } from './UserContext'
 import { api } from './utilities'
 import { IAuditSettings, IUserMeta } from '../types'
@@ -119,7 +118,7 @@ const ListAuditsAuditAdmin: React.FC = () => {
   useEffect(() => {
     ;(async () => {
       try {
-        const userMeta: IUserMeta = await api('/me')
+        const userMeta: IUserMeta | null = await api('/me')
         setMeta(userMeta)
       } catch (err) /* istanbul ignore next */ {
         setMeta(null)
@@ -210,25 +209,23 @@ const CreateAudit: React.FC = () => {
     auditName,
     auditType,
   }: IValues) => {
-    try {
-      setSubmitting(true)
-      const response: { electionId: string } = await api('/election/new', {
-        method: 'POST',
-        body: JSON.stringify({
-          organizationId,
-          auditName,
-          auditType,
-          isMultiJurisdiction: true,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+    setSubmitting(true)
+    const response: { electionId: string } | null = await api('/election/new', {
+      method: 'POST',
+      body: JSON.stringify({
+        organizationId,
+        auditName,
+        auditType,
+        isMultiJurisdiction: true,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    if (response) {
       const { electionId } = response
       history.push(`/election/${electionId}/setup`)
-    } catch (err) /* istanbul ignore next */ {
-      // TODO move toasting into api
-      toast.error(err.message)
+    } else {
       setSubmitting(false)
     }
   }
