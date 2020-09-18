@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Tag } from '@blueprintjs/core'
@@ -66,21 +66,23 @@ export const AuditAdminView: React.FC = () => {
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
-  const [refreshTime, setRefreshTime] = useState(0)
-  const incrementRefreshTime = () => setRefreshTime(refreshTime + 1000)
+  const [time, setTime] = useState(Date.now())
+  const updateTime = () => setTime(Date.now())
+  const [lastRefreshTime, setLastRefreshTime] = useState(Date.now())
+
+  useEffect(refresh, [refresh]) // call refresh on mount
 
   // poll the apis every 5 minutes
-  useInterval(
-    () => {
-      setRefreshTime(0)
+  // TODO figure out how to test timer-related code
+  /* istanbul ignore next */
+  useInterval(() => {
+    if (time - lastRefreshTime > 1000 * 60 * 5) {
       refresh()
-    },
-    300000,
-    true
-  )
-  // update the refresh time tracker every second
-  useInterval(incrementRefreshTime, 1000, false)
-  const refreshStatus = prettifyRefreshStatus(refreshTime)
+      setLastRefreshTime(time)
+    }
+  }, 1000)
+  useInterval(updateTime, 1000) // have to force rerender on a regular basis so the clocks update regularly
+  const refreshStatus = prettifyRefreshStatus(time - lastRefreshTime)
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'

@@ -132,7 +132,7 @@ export const checkAndToast = (
 export const useInterval = (
   callback: Function,
   delay: number | null,
-  callImmediately: boolean
+  callImmediately?: boolean
 ) => {
   const savedCallback = useRef<Function>()
 
