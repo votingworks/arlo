@@ -66,9 +66,9 @@ export const AuditAdminView: React.FC = () => {
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
+  const [lastRefreshTime, setLastRefreshTime] = useState(Date.now())
   const [time, setTime] = useState(Date.now())
   const updateTime = () => setTime(Date.now())
-  const [lastRefreshTime, setLastRefreshTime] = useState(Date.now())
 
   useEffect(refresh, [refresh]) // call refresh on mount
 
@@ -80,9 +80,10 @@ export const AuditAdminView: React.FC = () => {
       refresh()
       setLastRefreshTime(time)
     }
-  }, 1000)
-  useInterval(updateTime, 1000) // have to force rerender on a regular basis so the clocks update regularly
+  }, 500)
+  useInterval(updateTime, 500) // have to force rerender on a regular basis so the clocks update regularly
   const refreshStatus = prettifyRefreshStatus(time - lastRefreshTime)
+  console.log(time - lastRefreshTime, time, lastRefreshTime)
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'

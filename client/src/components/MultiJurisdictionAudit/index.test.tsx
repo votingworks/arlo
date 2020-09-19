@@ -218,13 +218,17 @@ describe('AA setup flow', () => {
     })
   })
 
-  describe.skip('timers', () => {
-    beforeEach(() => {
-      jest.useFakeTimers()
-    })
-    afterEach(() => {
-      jest.runOnlyPendingTimers()
-      jest.useRealTimers()
+  describe('timers', () => {
+    const j = (function* idMaker() {
+      let index = 0
+      while (true) yield (index += 180000)
+    })()
+    const dateSpy = jest
+      .spyOn(Date, 'now')
+      .mockImplementation(() => j.next().value)
+
+    afterAll(() => {
+      dateSpy.mockRestore()
     })
 
     it('refreshes every five minutes on progress', async () => {
@@ -241,12 +245,12 @@ describe('AA setup flow', () => {
             </Router>
           </AuthDataProvider>
         )
-        jest.advanceTimersByTime(5000)
+        // jest.advanceTimersByTime(5000)
 
         await screen.findByText('Refreshed just now')
-        jest.advanceTimersByTime(180000)
+        // jest.advanceTimersByTime(180000)
         await screen.findByText('Refreshed 3 minutes ago')
-        jest.advanceTimersByTime(120005)
+        // jest.advanceTimersByTime(120005)
         await screen.findByText('Refreshed just now')
       })
     })
