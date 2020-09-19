@@ -83,7 +83,6 @@ export const AuditAdminView: React.FC = () => {
   }, 500)
   useInterval(updateTime, 500) // have to force rerender on a regular basis so the clocks update regularly
   const refreshStatus = prettifyRefreshStatus(time - lastRefreshTime)
-  console.log(time - lastRefreshTime, time, lastRefreshTime)
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'

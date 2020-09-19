@@ -217,44 +217,6 @@ describe('AA setup flow', () => {
       })
     })
   })
-
-  describe('timers', () => {
-    const j = (function* idMaker() {
-      let index = 0
-      while (true) yield (index += 180000)
-    })()
-    const dateSpy = jest
-      .spyOn(Date, 'now')
-      .mockImplementation(() => j.next().value)
-
-    afterAll(() => {
-      dateSpy.mockRestore()
-    })
-
-    it('refreshes every five minutes on progress', async () => {
-      paramsMock.mockReturnValue({
-        electionId: '1',
-        view: 'progress',
-      })
-      const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
-      await withMockFetch(expectedCalls, async () => {
-        render(
-          <AuthDataProvider>
-            <Router>
-              <AuditAdminViewWithAuth />
-            </Router>
-          </AuthDataProvider>
-        )
-        // jest.advanceTimersByTime(5000)
-
-        await screen.findByText('Refreshed just now')
-        // jest.advanceTimersByTime(180000)
-        await screen.findByText('Refreshed 3 minutes ago')
-        // jest.advanceTimersByTime(120005)
-        await screen.findByText('Refreshed just now')
-      })
-    })
-  })
 })
 
 describe('JA setup', () => {
