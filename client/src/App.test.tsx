@@ -26,7 +26,7 @@ const apiMocks = {
   },
   abAuth: {
     url: '/api/me',
-    response: { type: 'AUDIT_BOARD', ...dummyBoards()[1] },
+    response: { type: 'audit_board', ...dummyBoards()[1] },
   },
 }
 
@@ -53,11 +53,19 @@ describe('App', () => {
     })
 
     it('renders aa logged in properly', async () => {
-      const expectedCalls = [aaApiCalls.getUser]
+      const expectedCalls = [aaApiCalls.getUser, aaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView('/')
         await screen.findByAltText('Arlo, by VotingWorks')
         expect(container).toMatchSnapshot()
+      })
+    })
+
+    it('when logged in as an audit board, shows the login screen', async () => {
+      const expectedCalls = [apiMocks.abAuth]
+      await withMockFetch(expectedCalls, async () => {
+        renderView('/')
+        await screen.findByRole('button', { name: 'Log in to your audit' })
       })
     })
   })
@@ -86,7 +94,7 @@ describe('App', () => {
     })
 
     it('renders aa logged in properly', async () => {
-      const expectedCalls = [aaApiCalls.getUser]
+      const expectedCalls = [aaApiCalls.getUser, aaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView(
           '/election/1/audit-board/audit-board-1'
@@ -143,12 +151,12 @@ describe('App', () => {
     })
 
     it('renders aa logged in properly', async () => {
-      const expectedCalls = [aaApiCalls.getUser]
+      const expectedCalls = [aaApiCalls.getUser, aaApiCalls.getUser]
       await withMockFetch(expectedCalls, async () => {
         const { container } = renderView(
           '/election/1/jurisdiction/jurisdiction-id-1'
         )
-        await screen.findByText('Give your new audit a unique name.')
+        await screen.findByText('New Audit')
         expect(container).toMatchSnapshot()
       })
     })

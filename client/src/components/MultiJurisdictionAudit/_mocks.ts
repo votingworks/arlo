@@ -42,6 +42,17 @@ export const jaApiCalls = {
             isMultiJurisdiction: true,
           },
         },
+        {
+          id: 'jurisdiction-id-3',
+          name: 'Jurisdiction Three',
+          election: {
+            id: '1',
+            auditName: 'audit one',
+            electionName: 'election one',
+            state: 'AL',
+            isMultiJurisdiction: true,
+          },
+        },
       ],
       organizations: [],
     },
@@ -91,7 +102,7 @@ export const aaApiCalls = {
       organizations: [
         {
           id: 'org-id',
-          name: 'State',
+          name: 'State of California',
           elections: [],
         },
       ],
