@@ -99,6 +99,10 @@ const Progress: React.FC<IProps> = ({
         s && (isShowingUnique ? s.numUniqueAudited : s.numSamplesAudited),
     },
     {
+      Header: 'Total Ballots in Manifest',
+      accessor: ({ ballotManifest: { numBallots } }) => numBallots,
+    },
+    {
       Header: 'Remaining in Round',
       accessor: ({ currentRoundStatus: s }) =>
         s &&
