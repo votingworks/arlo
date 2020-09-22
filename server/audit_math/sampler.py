@@ -104,7 +104,7 @@ def draw_ppeb_sample(
 
     assert batch_results, "Must have batch-level results to use MACRO"
 
-    U = macro.compute_U(batch_results, contest)
+    U = macro.compute_U(batch_results, {}, contest)
 
     # Map each batch to its weighted probability of being picked
     batch_to_prob = {}
