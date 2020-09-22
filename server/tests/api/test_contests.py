@@ -145,6 +145,7 @@ def test_contests_round_status(
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
     assert_ok(rv)
 
@@ -394,6 +395,7 @@ def test_audit_board_contests_list(
     round_1_id: str,
     audit_board_round_1_ids: List[str],
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest")
     expected_contests = json.loads(rv.data)["contests"]
 

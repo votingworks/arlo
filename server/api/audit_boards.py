@@ -11,7 +11,7 @@ from sqlalchemy.orm import contains_eager
 from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import with_jurisdiction_access, with_audit_board_access
+from ..auth import restrict_access, UserType
 from .rounds import get_current_round, is_round_complete, end_round
 from ..util.jsonschema import validate, JSONDict
 from ..util.binpacking import BalancedBucketList, Bucket
@@ -104,10 +104,9 @@ def assign_sampled_batches(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board",
     methods=["POST"],
 )
-@with_jurisdiction_access
-def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round_id: str):
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round: Round):
     json_audit_boards = request.get_json()
-    round = get_or_404(Round, round_id)
     validate_audit_boards(json_audit_boards, election, jurisdiction, round)
 
     audit_boards = [
@@ -190,19 +189,18 @@ def serialize_members(audit_board):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board",
     methods=["GET"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def list_audit_boards(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
-    round_id: str,
+    round: Round,
 ):
-    get_or_404(Round, round_id)
     audit_boards = (
-        AuditBoard.query.filter_by(jurisdiction_id=jurisdiction.id, round_id=round_id)
+        AuditBoard.query.filter_by(jurisdiction_id=jurisdiction.id, round_id=round.id)
         .order_by(AuditBoard.name)
         .all()
     )
-    round_status = round_status_by_audit_board(jurisdiction.id, round_id)
+    round_status = round_status_by_audit_board(jurisdiction.id, round.id)
     json_audit_boards = [
         serialize_audit_board(ab, round_status[ab.id]) for ab in audit_boards
     ]
@@ -252,7 +250,7 @@ def validate_members(members: List[JSONDict]):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/members",
     methods=["PUT"],
 )
-@with_audit_board_access
+@restrict_access([UserType.AUDIT_BOARD])
 def set_audit_board_members(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
@@ -305,7 +303,7 @@ def validate_sign_off(sign_off_request: JSONDict, audit_board: AuditBoard):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/sign-off",
     methods=["POST"],
 )
-@with_audit_board_access
+@restrict_access([UserType.AUDIT_BOARD])
 def sign_off_audit_board(
     election: Election,
     jurisdiction: Jurisdiction,  # pylint: disable=unused-argument

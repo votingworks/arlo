@@ -16,7 +16,7 @@
     ],
     "*.py": [
       "pipenv run black",
-      "pipenv run pylint"
+      "pipenv run pylint -j 0"
     ],
     "package.json": [
       "sort-package-json"

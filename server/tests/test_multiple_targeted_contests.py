@@ -65,6 +65,7 @@ def test_sample_size_round_1(
     election_settings,  # pylint: disable=unused-argument
     snapshot,
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
     contest_id_to_name = dict(Contest.query.values(Contest.id, Contest.name))
@@ -82,6 +83,7 @@ def test_two_rounds(
     manifests,  # pylint: disable=unused-argument
     snapshot,
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_sizes = json.loads(rv.data)["sampleSizes"]
     selected_sample_sizes = {

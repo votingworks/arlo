@@ -45,6 +45,7 @@ def test_run_offline_audit(
     manifests,  # pylint: disable=unused-argument
     snapshot,
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
 
@@ -93,7 +94,9 @@ def test_run_offline_audit(
     assert json.loads(rv.data) == jurisdiction_1_results
 
     # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled ballots
-    rv = client.get(f"/api/election/{election_id}/round")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round"
+    )
     rounds = json.loads(rv.data)["rounds"]
     assert rounds[0]["endedAt"] is None
 
@@ -129,7 +132,9 @@ def test_run_offline_audit(
     assert json.loads(rv.data) == jurisdiction_2_results
 
     # Round should be over
-    rv = client.get(f"/api/election/{election_id}/round")
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round"
+    )
     rounds = json.loads(rv.data)["rounds"]
     assert rounds[0]["endedAt"] is not None
 
@@ -233,12 +238,20 @@ def test_offline_results_invalid(
 
 
 def test_offline_results_bad_round(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    org_id: str,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    election_id_2 = create_election(client, "Other Election", organization_id=org_id)
 
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
+
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
     for jurisdiction_id in jurisdiction_ids[:2]:
         rv = post_json(
@@ -290,7 +303,6 @@ def test_offline_results_bad_round(
     # Hackily set the round's election id to be a different election to test
     # that we correctly check the round and election match
     round = Round.query.get(round_1_id)
-    election_id_2 = create_election(client, "Other Election")
     round.election_id = election_id_2
     db_session.add(round)
     db_session.commit()
@@ -330,7 +342,8 @@ def test_offline_results_in_online_election(
 def test_offline_results_jurisdiction_with_no_ballots(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
 ):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    # Try submitting results for all the contests, even though J3 isn't assigned to every contest
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
 

@@ -4,7 +4,7 @@ from werkzeug.exceptions import BadRequest
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import with_election_access
+from ..auth import restrict_access, UserType
 from ..audit_math import bravo, macro, sampler_contest
 from . import rounds  # pylint: disable=cyclic-import
 
@@ -73,7 +73,7 @@ def sample_size_options(
 
 
 @api.route("/election/<election_id>/sample-sizes", methods=["GET"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def get_sample_sizes(election: Election):
     sample_sizes = {
         contest_id: list(options.values())

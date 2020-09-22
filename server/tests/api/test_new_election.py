@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 
 from ...auth import UserType
 from ...api.routes import create_organization
-from ..helpers import assert_ok, create_org_and_admin, set_logged_in_user, post_json
+from ..helpers import *  # pylint: disable=wildcard-import
 from ...models import *  # pylint: disable=wildcard-import
 
 
@@ -21,6 +21,25 @@ def test_without_org_with_anonymous_user(client: FlaskClient):
     assert json.loads(rv.data)["electionId"]
 
 
+def test_multi_jurisdiction_without_org(client: FlaskClient):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        "/api/election/new",
+        {
+            "auditName": "Test Multi-jurisdiction Without Org",
+            "isMultiJurisdiction": True,
+            "auditType": AuditType.BALLOT_POLLING,
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {"message": "organizationId is required", "errorType": "Bad Request",}
+        ]
+    }
+
+
 def test_in_org_with_anonymous_user(client: FlaskClient):
     org = create_organization()
     rv = post_json(
@@ -35,10 +54,7 @@ def test_in_org_with_anonymous_user(client: FlaskClient):
     )
     assert json.loads(rv.data) == {
         "errors": [
-            {
-                "message": f"Anonymous users do not have access to organization {org.id}",
-                "errorType": "Unauthorized",
-            }
+            {"message": "Please log in to access Arlo", "errorType": "Unauthorized",}
         ]
     }
     assert rv.status_code == 401
@@ -110,7 +126,7 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": f"User is not logged in as an audit admin and so does not have access to organization {org_id}",
+                "message": "Access forbidden for user type jurisdiction_admin",
                 "errorType": "Forbidden",
             }
         ]

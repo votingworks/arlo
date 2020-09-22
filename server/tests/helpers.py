@@ -150,7 +150,7 @@ def create_election(
     )
     result = json.loads(rv.data)
     if "electionId" not in result:
-        raise Exception(f"No electionID in response: {rv.data}")
+        raise Exception(f"No electionId in response: {rv.data}")
     return str(result["electionId"])
 
 

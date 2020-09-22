@@ -4,7 +4,7 @@ from werkzeug.exceptions import BadRequest, Conflict
 from sqlalchemy.orm import Query
 
 from . import api
-from ..auth import with_jurisdiction_access
+from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .rounds import is_round_complete, end_round, get_current_round
@@ -29,16 +29,14 @@ def already_audited_batches(jurisdiction: Jurisdiction, round: Round) -> Query:
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/retrieval-list",
     methods=["GET"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_retrieval_list(
-    election: Election, jurisdiction: Jurisdiction, round_id: str
+    election: Election, jurisdiction: Jurisdiction, round: Round
 ):
-    round = get_or_404(Round, round_id)
-
     batches = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
-        .filter_by(round_id=round_id)
+        .filter_by(round_id=round.id)
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .join(AuditBoard)
         .group_by(AuditBoard.id, Batch.id)
@@ -73,18 +71,16 @@ def serialize_batch(batch: Batch) -> JSONDict:
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches",
     methods=["GET"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def list_batches_for_jurisdiction(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
-    round_id: str,
+    round: Round,
 ):
-    round = get_or_404(Round, round_id)
-
     batches = (
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
-        .filter_by(round_id=round_id)
+        .filter_by(round_id=round.id)
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .outerjoin(AuditBoard)
         .order_by(AuditBoard.name, Batch.name)
@@ -158,14 +154,12 @@ def validate_batch_results(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/results",
     methods=["PUT"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def record_batch_results(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
-    round_id: str,
+    round: Round,
 ):
-    round = get_or_404(Round, round_id)
-
     batch_results = request.get_json()
     validate_batch_results(election, jurisdiction, round, batch_results)
 
@@ -191,18 +185,16 @@ def record_batch_results(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/batches/results",
     methods=["GET"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def get_batch_results(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
-    round_id: str,
+    round: Round,
 ):
-    round = get_or_404(Round, round_id)
-
     results = list(
         Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBatchDraw)
-        .filter_by(round_id=round_id)
+        .filter_by(round_id=round.id)
         .filter(Batch.id.notin_(already_audited_batches(jurisdiction, round)))
         .join(Jurisdiction)
         .join(Jurisdiction.contests)

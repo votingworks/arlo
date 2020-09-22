@@ -2,7 +2,7 @@ import datetime, csv, io, json, uuid
 from typing import Dict, List, Tuple
 
 from flask import jsonify, request
-from werkzeug.exceptions import NotFound, Forbidden, Conflict
+from werkzeug.exceptions import NotFound, Forbidden, Conflict, BadRequest
 
 from xkcdpass import xkcd_password as xp
 
@@ -10,7 +10,7 @@ from sqlalchemy.orm.session import Session
 
 
 from . import api
-from ..auth import with_election_access, require_audit_admin_for_organization
+from ..auth import restrict_access, UserType, check_access
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from .ballots import (
@@ -242,6 +242,10 @@ ELECTION_NEW_SCHEMA = {
 
 def validate_new_election(election: JSONDict, organization_id: str):
     validate(election, ELECTION_NEW_SCHEMA)
+
+    if election["isMultiJurisdiction"] and not organization_id:
+        raise BadRequest("organizationId is required")
+
     if (
         organization_id
         and Election.query.filter_by(
@@ -258,7 +262,6 @@ def election_new():
     election = request.get_json()
 
     organization_id = election.get("organizationId", None)
-    require_audit_admin_for_organization(organization_id)
 
     validate_new_election(election, organization_id)
 
@@ -269,6 +272,9 @@ def election_new():
         organization_id=organization_id,
         is_multi_jurisdiction=election["isMultiJurisdiction"],
     )
+
+    check_access([UserType.AUDIT_ADMIN], election)
+
     db_session.add(election)
 
     db_session.commit()
@@ -277,7 +283,7 @@ def election_new():
 
 
 @api.route("/election/<election_id>/jurisdiction/file", methods=["GET"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def get_jurisdictions_file(election: Election):
     return jsonify(
         file=serialize_file(election.jurisdictions_file),
@@ -286,7 +292,7 @@ def get_jurisdictions_file(election: Election):
 
 
 @api.route("/election/<election_id>/jurisdiction/file/csv", methods=["GET"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def download_jurisdictions_file(election: Election):
     if not election.jurisdictions_file:
         return NotFound()
@@ -301,7 +307,7 @@ ADMIN_EMAIL = "Admin Email"
 
 
 @api.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def update_jurisdictions_file(election: Election):
     if len(list(election.rounds)) > 0:
         raise Conflict("Cannot update jurisdictions after audit has started.")
@@ -362,7 +368,7 @@ def update_jurisdictions_file(election: Election):
 
 
 @api.route("/election/<election_id>/audit/status", methods=["GET"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def audit_status(election):
     return jsonify(
         organizationId=election.organization_id,
@@ -457,7 +463,7 @@ def audit_status(election):
 
 
 @api.route("/election/<election_id>/audit/basic", methods=["POST"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def audit_basic_update(election):
     info = request.get_json()
     election.election_name = info["name"]
@@ -515,7 +521,7 @@ def audit_basic_update(election):
 
 
 @api.route("/election/<election_id>/audit/sample-size", methods=["POST"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def samplesize_set(election):
     # only works if there's only one round
     rounds = election.rounds
@@ -529,7 +535,7 @@ def samplesize_set(election):
 
 
 @api.route("/election/<election_id>/audit/jurisdictions", methods=["POST"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def jurisdictions_set(election):
     jurisdictions = request.get_json()["jurisdictions"]
 
@@ -567,17 +573,8 @@ def jurisdictions_set(election):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/manifest",
     methods=["DELETE", "PUT"],
 )
-@with_election_access
-def jurisdiction_manifest(election, jurisdiction_id):
-    jurisdiction = Jurisdiction.query.filter_by(
-        election_id=election.id, id=jurisdiction_id
-    ).first()
-
-    if not jurisdiction:
-        raise NotFound()
-    if election.is_multi_jurisdiction:
-        raise Forbidden()
-
+@restrict_access([UserType.AUDIT_ADMIN])
+def jurisdiction_manifest(election, jurisdiction):  # pylint: disable=unused-argument
     if request.method == "DELETE":
         clear_ballot_manifest_file(jurisdiction)
     else:
@@ -588,7 +585,7 @@ def jurisdiction_manifest(election, jurisdiction_id):
 
 
 @api.route("/election/<election_id>/audit/freeze", methods=["POST"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def audit_launch(election):
     # don't freeze an already frozen election
     if election.frozen_at:
@@ -609,8 +606,11 @@ def audit_launch(election):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>",
     methods=["GET"],
 )
-@with_election_access
-def audit_board(election, jurisdiction_id, audit_board_id):
+def audit_board(election_id, jurisdiction_id, audit_board_id):
+    election = get_or_404(Election, election_id)
+    if election.is_multi_jurisdiction:
+        raise Forbidden()
+
     audit_boards = (
         AuditBoard.query.filter_by(id=audit_board_id)
         .join(AuditBoard.jurisdiction)
@@ -635,13 +635,16 @@ def audit_board(election, jurisdiction_id, audit_board_id):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>",
     methods=["POST"],
 )
-@with_election_access
-def set_audit_board(election, jurisdiction_id, audit_board_id):
+def set_audit_board(election_id, jurisdiction_id, audit_board_id):
+    election = get_or_404(Election, election_id)
+    if election.is_multi_jurisdiction:
+        raise Forbidden()
+
     attributes = request.get_json()
     audit_boards = (
         AuditBoard.query.filter_by(id=audit_board_id)
         .join(Jurisdiction)
-        .filter_by(id=jurisdiction_id, election_id=election.id)
+        .filter_by(id=jurisdiction_id, election_id=election_id)
         .all()
     )
 
@@ -707,8 +710,8 @@ def set_audit_board(election, jurisdiction_id, audit_board_id):
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballot-list"
 )
-@with_election_access
-def ballot_list(election, jurisdiction_id, round_id):
+@restrict_access([UserType.AUDIT_ADMIN])
+def ballot_list(election, jurisdiction, round):
     query = (
         SampledBallotDraw.query.join(SampledBallot)
         .join(SampledBallot.batch)
@@ -717,9 +720,9 @@ def ballot_list(election, jurisdiction_id, round_id):
         .add_entity(SampledBallot)
         .add_entity(Batch)
         .add_entity(AuditBoard)
-        .filter(Round.id == round_id)
+        .filter(Round.id == round.id)
         .filter(Round.election_id == election.id)
-        .filter(Batch.jurisdiction_id == jurisdiction_id)
+        .filter(Batch.jurisdiction_id == jurisdiction.id)
         .order_by(
             AuditBoard.name,
             Batch.name,
@@ -753,8 +756,11 @@ def ballot_list(election, jurisdiction_id, round_id):
 @api.route(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/audit-board/<audit_board_id>/round/<round_id>/ballot-list"
 )
-@with_election_access
-def ballot_list_by_audit_board(election, jurisdiction_id, audit_board_id, round_id):
+def ballot_list_by_audit_board(election_id, jurisdiction_id, audit_board_id, round_id):
+    election = get_or_404(Election, election_id)
+    if election.is_multi_jurisdiction:
+        return Forbidden()
+
     query = (
         SampledBallotDraw.query.join(Round)
         .join(SampledBallot)
@@ -762,7 +768,7 @@ def ballot_list_by_audit_board(election, jurisdiction_id, audit_board_id, round_
         .add_entity(SampledBallot)
         .add_entity(Batch)
         .filter(Round.id == round_id)
-        .filter(Round.election_id == election.id)
+        .filter(Round.election_id == election_id)
         .filter(Batch.jurisdiction_id == jurisdiction_id)
         .filter(SampledBallot.audit_board_id == audit_board_id)
         .order_by(
@@ -806,16 +812,16 @@ def get_ballot(election_id, jurisdiction_id, batch_id, ballot_position):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>/set-not-found",
     methods=["POST"],
 )
-@with_election_access
-def ballot_set_not_found(election, jurisdiction_id, batch_id, ballot_position):
-    ballot = get_ballot(election.id, jurisdiction_id, batch_id, ballot_position)
+@restrict_access([UserType.AUDIT_ADMIN])
+def ballot_set_not_found(election, jurisdiction, batch_id, ballot_position):
+    ballot = get_ballot(election.id, jurisdiction.id, batch_id, ballot_position)
 
     if not ballot:
         return (
             jsonify(
                 errors=[
                     {
-                        "message": f"No ballot found with election_id={election.id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}",
+                        "message": f"No ballot found with election_id={election.id}, jurisdiction_id={jurisdiction.id}, batch_id={batch_id}, ballot_position={ballot_position}",
                         "errorType": "NotFoundError",
                     }
                 ]
@@ -836,17 +842,17 @@ def ballot_set_not_found(election, jurisdiction_id, batch_id, ballot_position):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/batch/<batch_id>/ballot/<ballot_position>",
     methods=["POST"],
 )
-@with_election_access
-def ballot_set(election, jurisdiction_id, batch_id, ballot_position):
+@restrict_access([UserType.AUDIT_ADMIN])
+def ballot_set(election, jurisdiction, batch_id, ballot_position):
     attributes = request.get_json()
-    ballot = get_ballot(election.id, jurisdiction_id, batch_id, ballot_position)
+    ballot = get_ballot(election.id, jurisdiction.id, batch_id, ballot_position)
 
     if not ballot:
         return (
             jsonify(
                 errors=[
                     {
-                        "message": f"No ballot found with election_id={election.id}, jurisdiction_id={jurisdiction_id}, batch_id={batch_id}, ballot_position={ballot_position}",
+                        "message": f"No ballot found with election_id={election.id}, jurisdiction_id={jurisdiction.id}, batch_id={batch_id}, ballot_position={ballot_position}",
                         "errorType": "NotFoundError",
                     }
                 ]
@@ -869,11 +875,11 @@ def ballot_set(election, jurisdiction_id, batch_id, ballot_position):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/retrieval-list",
     methods=["GET"],
 )
-@with_election_access
-def jurisdiction_retrieval_list(election, jurisdiction_id, round_num):
+@restrict_access([UserType.AUDIT_ADMIN])
+def jurisdiction_retrieval_list(election, jurisdiction, round_num):
     # check the jurisdiction and round
     jurisdiction = Jurisdiction.query.filter_by(
-        election_id=election.id, id=jurisdiction_id
+        election_id=election.id, id=jurisdiction.id
     ).one()
     round = Round.query.filter_by(election_id=election.id, round_num=round_num).one()
 
@@ -888,8 +894,8 @@ def jurisdiction_retrieval_list(election, jurisdiction_id, round_num):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/<round_num>/results",
     methods=["POST"],
 )
-@with_election_access
-def jurisdiction_results(election, jurisdiction_id, round_num):
+@restrict_access([UserType.AUDIT_ADMIN])
+def jurisdiction_results(election, jurisdiction, round_num):
     results = request.get_json()
 
     # check the round ownership
@@ -910,7 +916,7 @@ def jurisdiction_results(election, jurisdiction_id, round_num):
             )
             db_session.add(contest_result)
 
-    if not check_round(election, jurisdiction_id, round.id):
+    if not check_round(election, jurisdiction.id, round.id):
         setup_next_round(election)
 
     db_session.commit()
@@ -919,7 +925,7 @@ def jurisdiction_results(election, jurisdiction_id, round_num):
 
 
 @api.route("/election/<election_id>/audit/reset", methods=["POST"])
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def audit_reset(election):
     # deleting the election cascades to all the data structures
     db_session.delete(election)

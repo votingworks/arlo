@@ -6,7 +6,7 @@ from flask import jsonify, request
 from werkzeug.exceptions import BadRequest, NotFound
 
 from . import api
-from ..auth import with_jurisdiction_access, with_audit_board_access
+from ..auth import restrict_access, UserType
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.csv_download import csv_response, jurisdiction_timestamp_name
@@ -89,9 +89,8 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballots/retrieval-list",
     methods=["GET"],
 )
-@with_jurisdiction_access
-def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round_id: str):
-    round = get_or_404(Round, round_id)
+@restrict_access([UserType.JURISDICTION_ADMIN])
+def get_retrieval_list(election: Election, jurisdiction: Jurisdiction, round: Round):
     retrieval_list_csv = ballot_retrieval_list(jurisdiction, round)
     return csv_response(
         retrieval_list_csv,
@@ -144,18 +143,17 @@ def serialize_ballot(ballot: SampledBallot) -> JSONDict:
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/ballots",
     methods=["GET"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def list_ballots_for_jurisdiction(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,
-    round_id: str,
+    round: Round,
 ):
-    get_or_404(Round, round_id)
     ballots = (
         SampledBallot.query.join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBallotDraw)
-        .filter_by(round_id=round_id)
+        .filter_by(round_id=round.id)
         .outerjoin(SampledBallot.audit_board)
         .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position)
         .options(
@@ -172,7 +170,7 @@ def list_ballots_for_jurisdiction(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/ballots",
     methods=["GET"],
 )
-@with_audit_board_access
+@restrict_access([UserType.AUDIT_BOARD])
 def list_ballots_for_audit_board(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
@@ -266,7 +264,7 @@ def validate_audit_ballot(ballot_audit: JSONDict):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board/<audit_board_id>/ballots/<ballot_id>",
     methods=["PUT"],
 )
-@with_audit_board_access
+@restrict_access([UserType.AUDIT_BOARD])
 def audit_ballot(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,  # pylint: disable=unused-argument

@@ -29,6 +29,7 @@ def test_rounds_create_one(
     contest_ids: List[str],
     manifests,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",

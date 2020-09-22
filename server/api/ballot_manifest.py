@@ -7,7 +7,7 @@ from werkzeug.exceptions import BadRequest, NotFound
 from . import api
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
-from ..auth import with_jurisdiction_access, with_election_access
+from ..auth import restrict_access, UserType
 from ..util.process_file import (
     process_file,
     serialize_file,
@@ -104,7 +104,7 @@ def clear_ballot_manifest_file(jurisdiction: Jurisdiction):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest",
     methods=["PUT"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def upload_ballot_manifest(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
@@ -119,7 +119,7 @@ def upload_ballot_manifest(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest",
     methods=["GET"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def get_ballot_manifest(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
@@ -133,14 +133,11 @@ def get_ballot_manifest(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest/csv",
     methods=["GET"],
 )
-@with_election_access
+@restrict_access([UserType.AUDIT_ADMIN])
 def download_ballot_manifest_file(
-    election: Election, jurisdiction_id: str,  # pylint: disable=unused-argument
+    election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
-    jurisdiction = Jurisdiction.query.filter_by(
-        election_id=election.id, id=jurisdiction_id
-    ).first()
-    if not jurisdiction or not jurisdiction.manifest_file:
+    if not jurisdiction.manifest_file:
         return NotFound()
 
     return csv_response(
@@ -152,7 +149,7 @@ def download_ballot_manifest_file(
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/ballot-manifest",
     methods=["DELETE"],
 )
-@with_jurisdiction_access
+@restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_ballot_manifest(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
