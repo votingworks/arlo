@@ -136,6 +136,76 @@ def test_max_error(contests, batches):
             )
 
 
+def test_get_sample_sizes(contests, batches):
+    expected_first_round = {
+        "Contest A": 29,
+        "Contest B": 15,
+        "Contest C": 10,
+    }
+
+    sample = {}
+    for contest in contests:
+        computed = macro.get_sample_sizes(
+            RISK_LIMIT, contests[contest], batches, sample
+        )
+
+        assert (
+            expected_first_round[contest] == computed
+        ), "First round sample expected {}, got {}".format(
+            expected_first_round[contest], computed
+        )
+
+    # Add 31 batches to the sample that is correct
+    for i in range(31):
+        sample["Batch {}".format(i)] = {
+            "Contest A": {"winner": 200, "loser": 180,},
+            "Contest B": {"winner": 200, "loser": 160,},
+            "Contest C": {"winner": 200, "loser": 140,},
+        }
+
+    expected_second_round = {
+        "Contest A": 26,
+        "Contest B": 12,
+        "Contest C": 7,
+    }
+
+    for contest in contests:
+        computed = macro.get_sample_sizes(
+            RISK_LIMIT, contests[contest], batches, sample
+        )
+
+        assert (
+            expected_second_round[contest] == computed
+        ), "Second round sample expected {}, got {}".format(
+            expected_second_round[contest], computed
+        )
+
+    # Now add in some errors
+    # draws with taint of 0.04047619
+    for i in range(100, 106):
+        sample["Batch {}".format(i)] = {
+            "Contest A": {"winner": 190, "loser": 190,},
+            "Contest C": {"winner": 200, "loser": 140,},
+        }
+
+    expected_third_round = {
+        "Contest A": 25,
+        "Contest B": 12,
+        "Contest C": 6,
+    }
+
+    for contest in contests:
+        computed = macro.get_sample_sizes(
+            RISK_LIMIT, contests[contest], batches, sample
+        )
+
+        assert (
+            expected_third_round[contest] == computed
+        ), "Third round sample expected {}, got {}".format(
+            expected_third_round[contest], computed
+        )
+
+
 def test_compute_risk(contests, batches):
 
     sample = {}
@@ -152,7 +222,6 @@ def test_compute_risk(contests, batches):
     for i in range(100, 106):
         sample["Batch {}".format(i)] = {
             "Contest A": {"winner": 190, "loser": 190,},
-            "Contest B": {"winner": 200, "loser": 160,},
             "Contest C": {"winner": 200, "loser": 140,},
         }
 

@@ -17,8 +17,8 @@ from .sampler_contest import Contest
 
 def compute_error(
     batch_results: Dict[str, Dict[str, int]],
-    contest: Contest,
     sampled_results: Dict[str, Dict[str, int]],
+    contest: Contest,
 ) -> float:
     """
     Computes the error in this batch
@@ -44,6 +44,10 @@ def compute_error(
 
     error = 0.0
     margins = contest.margins
+
+    if contest.name not in batch_results:
+        return 0.0
+
     for winner in margins["winners"]:
         for loser in margins["losers"]:
             v_wp = batch_results[contest.name][winner]
@@ -110,7 +114,9 @@ def compute_max_error(
 
 
 def compute_U(
-    reported_results: Dict[str, Dict[str, Dict[str, int]]], contest: Contest
+    reported_results: Dict[str, Dict[str, Dict[str, int]]],
+    sample_results: Dict[Any, Dict[str, Dict[str, int]]],
+    contest: Contest,
 ) -> float:
     """
     Computes U, the sum of the batch-wise relative overstatement limits,
@@ -136,7 +142,10 @@ def compute_U(
     """
     U = 0.0
     for batch in reported_results:
-        U += compute_max_error(reported_results[batch], contest)
+        if batch in sample_results:
+            U += compute_error(reported_results[batch], sample_results[batch], contest)
+        else:
+            U += compute_max_error(reported_results[batch], contest)
 
     return U
 
@@ -145,9 +154,7 @@ def get_sample_sizes(
     risk_limit: float,
     contest: Contest,
     reported_results: Dict[Any, Dict[str, Dict[str, int]]],
-    sample_results: Dict[
-        Any, Dict[str, Dict[str, int]]
-    ],  # pylint: disable=unused-argument
+    sample_results: Dict[Any, Dict[str, Dict[str, int]]],
 ) -> float:
     """
     Computes initial sample sizes parameterized by likelihood that the
@@ -187,9 +194,12 @@ def get_sample_sizes(
     """
     assert risk_limit < 1, "The risk-limit must be less than one!"
 
-    # TODO: actually use past batch results
+    # Computing U with the max error for already sampled batches knocked out
+    # to try to provide a sense of "how close" the audit is to finishing.
+    U = compute_U(reported_results, sample_results, contest)
 
-    U = compute_U(reported_results, contest)
+    if not U:
+        return 1
 
     return math.ceil(math.log(risk_limit) / (math.log(1 - (1 / U))))
 
@@ -232,10 +242,11 @@ def compute_risk(
 
     p = 1.0
 
-    U = compute_U(reported_results, contest)
+    # Computing U without the sample preserves conservative-ness
+    U = compute_U(reported_results, {}, contest)
 
     for batch in sample_results:
-        e_p = compute_error(reported_results[batch], contest, sample_results[batch])
+        e_p = compute_error(reported_results[batch], sample_results[batch], contest)
 
         u_p = compute_max_error(reported_results[batch], contest)
 

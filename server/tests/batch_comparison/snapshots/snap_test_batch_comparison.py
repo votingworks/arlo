@@ -60,10 +60,10 @@ snapshots["test_batch_comparison_round_2 4"] = {
 }
 
 snapshots["test_batch_comparison_round_2 5"] = {
-    "numSamples": 4,
-    "numSamplesAudited": 2,
-    "numUnique": 3,
-    "numUniqueAudited": 1,
+    "numSamples": 2,
+    "numSamplesAudited": 0,
+    "numUnique": 2,
+    "numUniqueAudited": 0,
     "status": "NOT_STARTED",
 }
 
@@ -79,7 +79,7 @@ snapshots[
     "test_batch_comparison_round_2 7"
 ] = """Batch Name,Storage Location,Tabulator,Audit Board
 Batch 2,,,Audit Board #1
-Batch 4,,,Audit Board #1
+Batch 4,,,Audit Board #2
 """
 
 snapshots[
@@ -99,12 +99,12 @@ Test Audit test_batch_comparison_round_2,BATCH_COMPARISON,10%,1234567890,Yes\r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
 1,Contest 1,Targeted,6,No,0.189590948,DATETIME,DATETIME,candidate 1: 2400; candidate 2: 300; candidate 3: 240\r
-2,Contest 1,Targeted,6,No,,DATETIME,,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
+2,Contest 1,Targeted,4,No,,DATETIME,,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
 \r
 ######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ticket Numbers,Audited?,Audit Result\r
 J1,Batch 1,Round 1: 0.025053745,Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40\r
-J1,Batch 3,"Round 1: 0.023650366, 0.122600189, 0.150810694, Round 2: 0.216697081, 0.236539754",Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40\r
+J1,Batch 3,"Round 1: 0.023650366, 0.122600189, 0.150810694",Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40\r
 J2,Batch 1,Round 1: 0.128219632,Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40\r
 J2,Batch 5,"Round 1: 0.121751602, Round 2: 0.172408497",Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40\r
 J1,Batch 2,Round 2: 0.203857756,No,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
@@ -117,7 +117,7 @@ snapshots[
 ] = """######## SAMPLED BATCHES ########\r
 Jurisdiction Name,Batch Name,Ticket Numbers,Audited?,Audit Result\r
 J1,Batch 1,Round 1: 0.025053745,Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40\r
-J1,Batch 3,"Round 1: 0.023650366, 0.122600189, 0.150810694, Round 2: 0.216697081, 0.236539754",Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40\r
+J1,Batch 3,"Round 1: 0.023650366, 0.122600189, 0.150810694",Yes,candidate 1: 400; candidate 2: 50; candidate 3: 40\r
 J1,Batch 2,Round 2: 0.203857756,No,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
 J1,Batch 4,Round 2: 0.169018243,No,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
 """
