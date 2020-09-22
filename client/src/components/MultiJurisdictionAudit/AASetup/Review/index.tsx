@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams, useHistory } from 'react-router-dom'
+import { useParams, useHistory, Link } from 'react-router-dom'
 import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
 import { Formik, FormikProps, Form, getIn, Field } from 'formik'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
@@ -53,7 +53,19 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const [sampleSizes, setSampleSizes] = useState<IFormOptions>({})
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
-  const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(electionId)
+
+  const talliesUploadsCompleted =
+    !!jurisdictions.length &&
+    jurisdictions.every(
+      j =>
+        j.batchTallies &&
+        j.batchTallies.processing &&
+        j.batchTallies.processing.status === FileProcessingStatus.PROCESSED
+    )
+  const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(
+    electionId,
+    auditType === 'BALLOT_POLLING' || talliesUploadsCompleted // only fetch sample sizes for ballot polling audits or if all tallies files are uploaded
+  )
 
   const submit = async () => {
     if (
@@ -215,7 +227,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           sampleSizes: { [key: string]: IStringSampleSizeOption }
         }>) => (
           <Form data-testid="sample-size-form">
-            {sampleSizeOptions && (
+            {sampleSizeOptions ? (
               <FormSection>
                 <FormSectionDescription>
                   Choose the initial sample size for each contest you would like
@@ -258,11 +270,12 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                                   {option.key === 'asn'
                                     ? 'BRAVO Average Sample Number: '
                                     : ''}
-                                  {`${
-                                    option.size
-                                  } samples (${percentFormatter.format(
-                                    option.prob as number // never returns null on this endpoint source
-                                  )} chance of reaching risk limit and completing the audit in one round)`}
+                                  {`${option.size} samples`}
+                                  {option.prob
+                                    ? ` (${percentFormatter.format(
+                                        option.prob
+                                      )} chance of reaching risk limit and completing the audit in one round)`
+                                    : ''}
                                 </Radio>
                               )
                             }
@@ -273,10 +286,14 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                             component={FormField}
                             name={`sampleSizes[${contest.id}][size]`}
                             type="text"
-                            validate={testNumber(
-                              Number(contest.totalBallotsCast),
-                              `Must be less than or equal to: ${contest.totalBallotsCast} (the total number of ballots in this targeted contest)`
-                            )}
+                            validate={
+                              auditType === 'BATCH_COMPARISON'
+                                ? testNumber()
+                                : testNumber(
+                                    Number(contest.totalBallotsCast),
+                                    `Must be less than or equal to: ${contest.totalBallotsCast} (the total number of ballots in this targeted contest)`
+                                  )
+                            }
                           />
                         )}
                       </FormSectionDescription>
@@ -284,6 +301,14 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                   )
                 })}
               </FormSection>
+            ) : (
+              <p>
+                All jurisdiction files must be uploaded to calculate the sample
+                size.{' '}
+                <Link to={`/election/${electionId}/progress`}>
+                  View jurisdiction upload progress.
+                </Link>
+              </p>
             )}
             <FormButtonBar>
               <FormButton onClick={prevStage.activate}>Back</FormButton>
@@ -291,7 +316,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                 intent="primary"
                 disabled={
                   locked ||
-                  !isSetupComplete(jurisdictions, contests, auditSettings)
+                  !isSetupComplete(jurisdictions, contests, auditSettings) ||
+                  (auditType === 'BATCH_COMPARISON' && !talliesUploadsCompleted)
                 }
                 onClick={handleSubmit}
               >

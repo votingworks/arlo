@@ -1,69 +1,40 @@
-export const settingsMock = {
-  empty: [
-    {
-      state: null,
-      electionName: null,
-      online: null,
-      randomSeed: null,
-      riskLimit: null,
-      auditType: 'BALLOT_POLLING',
-    },
-    // here for type completion but not used in this context
-    /* istanbul ignore next */
-    async () => true,
-  ],
-  full: [
-    {
-      state: 'AL',
-      electionName: 'Election Name',
-      online: true,
-      randomSeed: '12345',
-      riskLimit: 10,
-      auditType: 'BALLOT_POLLING',
-    },
-    // here for type completion but not used in this context
-    /* istanbul ignore next */
-    async () => true,
-  ],
-  fullBatchComparison: [
-    {
-      state: 'AL',
-      electionName: 'Election Name',
-      online: false,
-      randomSeed: '12345',
-      riskLimit: 10,
-      auditType: 'BATCH_COMPARISON',
-    },
-    // here for type completion but not used in this context
-    /* istanbul ignore next */
-    async () => true,
-  ],
-  offline: [
-    {
-      state: 'AL',
-      electionName: 'Election Name',
-      online: false,
-      randomSeed: '12345',
-      riskLimit: 10,
-      auditType: 'BALLOT_POLLING',
-    },
-    // here for type completion but not used in this context
-    /* istanbul ignore next */
-    async () => true,
-  ],
-  batch: [
-    {
-      state: 'AL',
-      electionName: 'Election Name',
-      online: false,
-      randomSeed: '12345',
-      riskLimit: 10,
-      auditType: 'BATCH_COMPARISON',
-    },
-    // here for type completion but not used in this context
-    /* istanbul ignore next */
-    async () => true,
-  ],
+import { IAuditSettings } from '../../../../types'
+
+export const settingsMock: {
+  [key in 'empty' | 'full' | 'offline' | 'batch']: IAuditSettings
+} = {
+  empty: {
+    state: null,
+    electionName: null,
+    online: null,
+    randomSeed: null,
+    riskLimit: null,
+    auditType: 'BALLOT_POLLING',
+  },
+  full: {
+    state: 'AL',
+    electionName: 'Election Name',
+    online: true,
+    randomSeed: '12345',
+    riskLimit: 10,
+    auditType: 'BALLOT_POLLING',
+  },
+  offline: {
+    state: 'AL',
+    electionName: 'Election Name',
+    online: false,
+    randomSeed: '12345',
+    riskLimit: 10,
+    auditType: 'BALLOT_POLLING',
+  },
+  batch: {
+    state: 'AL',
+    electionName: 'Election Name',
+    online: false,
+    randomSeed: '12345',
+    riskLimit: 10,
+    auditType: 'BATCH_COMPARISON',
+  },
 }
 
 export const sampleSizeMock = {

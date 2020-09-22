@@ -6,18 +6,19 @@ import { toast } from 'react-toastify'
 import relativeStages from '../_mocks'
 import Review from './index'
 import * as utilities from '../../../utilities'
-import useAuditSettings from '../../useAuditSettings'
 import { settingsMock, sampleSizeMock } from './_mocks'
 import { contestMocks } from '../Contests/_mocks'
 import { jurisdictionMocks } from '../../useSetupMenuItems/_mocks'
 import { withMockFetch, renderWithRouter } from '../../../testUtilities'
 import { ISampleSizes } from './useSampleSizes'
 import { IJurisdiction } from '../../useJurisdictions'
-import { IContest } from '../../../../types'
-
-const auditSettingsMock = useAuditSettings as jest.Mock
+import { IAuditSettings, IContest } from '../../../../types'
 
 const apiCalls = {
+  getSettings: (response: IAuditSettings) => ({
+    url: '/api/election/1/settings',
+    response,
+  }),
   getSampleSizeOptions: {
     url: '/api/election/1/sample-sizes',
     response: sampleSizeMock,
@@ -66,9 +67,6 @@ routeMock.mockReturnValue({
   view: 'setup',
 })
 
-jest.mock('../../useAuditSettings')
-auditSettingsMock.mockReturnValue(settingsMock.full)
-
 const { prevStage } = relativeStages('Review & Launch')
 
 const refreshMock = jest.fn()
@@ -87,12 +85,12 @@ beforeEach(() => {
   checkAndToastMock.mockClear()
   routeMock.mockClear()
   ;(prevStage.activate as jest.Mock).mockClear()
-  auditSettingsMock.mockClear()
 })
 
 describe('Audit Setup > Review & Launch', () => {
   it('renders empty state', async () => {
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -108,8 +106,8 @@ describe('Audit Setup > Review & Launch', () => {
   })
 
   it('renders full state', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -125,8 +123,8 @@ describe('Audit Setup > Review & Launch', () => {
   })
 
   it('renders full state with offline setting', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.offline)
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.offline),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -141,11 +139,27 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
-  it('renders full state with batch comparison', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.batch)
+  it('renders full state with batch comparison and no tallies files uploaded', async () => {
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.batch),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
+      }),
+      apiCalls.getJurisdictionFile,
+      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
+    ]
+    await withMockFetch(expectedCalls, async () => {
+      const { container } = renderView()
+      await screen.findByText('View jurisdiction upload progress.')
+      expect(container).toMatchSnapshot()
+    })
+  })
+
+  it('renders full state with batch comparison and all tallies files uploaded', async () => {
+    const expectedCalls = [
+      apiCalls.getSettings(settingsMock.batch),
+      apiCalls.getJurisdictions({
+        jurisdictions: jurisdictionMocks.allManifestsAndTallies,
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
@@ -153,14 +167,16 @@ describe('Audit Setup > Review & Launch', () => {
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
-      await screen.findByText('Batch Comparison')
+      await screen.findByText(
+        'Choose the initial sample size for each contest you would like to use for Round 1 of the audit from the options below.'
+      )
       expect(container).toMatchSnapshot()
     })
   })
 
   it('renders full state with jurisdictions on opportunistic contest', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -176,8 +192,8 @@ describe('Audit Setup > Review & Launch', () => {
   })
 
   it('renders despite missing jurisdictions on targeted contest', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({ jurisdictions: [] }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
@@ -191,8 +207,8 @@ describe('Audit Setup > Review & Launch', () => {
   })
 
   it('renders despite missing jurisdictions on opportunistic contest', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({ jurisdictions: [] }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledOpportunisticWithJurisdictionId),
@@ -206,8 +222,8 @@ describe('Audit Setup > Review & Launch', () => {
   })
 
   it('launches the first round', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -229,8 +245,8 @@ describe('Audit Setup > Review & Launch', () => {
   })
 
   it('cancels audit launch', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -251,8 +267,8 @@ describe('Audit Setup > Review & Launch', () => {
   })
 
   it('launches the first round with a non-default sample size', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -277,8 +293,8 @@ describe('Audit Setup > Review & Launch', () => {
   })
 
   it('accepts custom sample size', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.full)
     const expectedCalls = [
+      apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
@@ -314,23 +330,6 @@ describe('Audit Setup > Review & Launch', () => {
       const confirmLaunchButton = screen.getAllByText('Launch Audit')[1]
       userEvent.click(confirmLaunchButton)
       await waitFor(() => expect(refreshMock).toHaveBeenCalled())
-    })
-  })
-
-  it('renders full state with batch comparison audit', async () => {
-    auditSettingsMock.mockReturnValue(settingsMock.fullBatchComparison)
-    const expectedCalls = [
-      apiCalls.getJurisdictions({
-        jurisdictions: jurisdictionMocks.allManifests,
-      }),
-      apiCalls.getJurisdictionFile,
-      apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
-    ]
-    await withMockFetch(expectedCalls, async () => {
-      const { container } = renderView()
-      await screen.findByText('Review & Launch')
-      expect(container).toMatchSnapshot()
     })
   })
 })
