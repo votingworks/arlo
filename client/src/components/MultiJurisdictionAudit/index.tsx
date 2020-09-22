@@ -52,13 +52,13 @@ export const AuditAdminView: React.FC = () => {
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
+  if (!contests || !rounds || !auditSettings) return null // Still loading
+
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
   const singleContestMenuItems = menuItems.filter(
     i => i.title !== 'Opportunistic Contests'
   )
-
-  if (!contests || !rounds) return null // Still loading
 
   switch (view) {
     case 'setup':
@@ -156,13 +156,14 @@ export const JurisdictionAdminView: React.FC = () => {
   )
 
   if (
-    !auditSettings ||
     !rounds ||
     !ballotManifest ||
     !batchTallies ||
-    !auditBoards
+    !auditBoards ||
+    !auditSettings
   )
     return null // Still loading
+
   if (!rounds.length) {
     return (
       <Wrapper>

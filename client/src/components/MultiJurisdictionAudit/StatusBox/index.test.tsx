@@ -42,7 +42,7 @@ describe('StatusBox', () => {
             rounds={[]}
             jurisdictions={[]}
             contests={[]}
-            auditSettings={auditSettings.blank}
+            auditSettings={auditSettings.blank!}
           />
         </Router>
       )
@@ -57,7 +57,7 @@ describe('StatusBox', () => {
             rounds={[]}
             jurisdictions={jurisdictionMocks.oneManifest}
             contests={[]}
-            auditSettings={auditSettings.blank}
+            auditSettings={auditSettings.blank!}
           />
         </Router>
       )
@@ -73,7 +73,7 @@ describe('StatusBox', () => {
             rounds={[]}
             jurisdictions={jurisdictionMocks.allManifests}
             contests={[]}
-            auditSettings={auditSettings.blank}
+            auditSettings={auditSettings.blank!}
           />
         </Router>
       )
@@ -89,7 +89,7 @@ describe('StatusBox', () => {
             rounds={[]}
             jurisdictions={jurisdictionMocks.allManifests}
             contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            auditSettings={auditSettings.all!}
           />
         </Router>
       )
@@ -105,7 +105,7 @@ describe('StatusBox', () => {
             rounds={roundMocks.singleIncomplete}
             jurisdictions={jurisdictionMocks.oneComplete}
             contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            auditSettings={auditSettings.all!}
           />
         </Router>
       )
@@ -120,7 +120,7 @@ describe('StatusBox', () => {
             rounds={roundMocks.needAnother}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            auditSettings={auditSettings.all!}
           />
         </Router>
       )
@@ -139,7 +139,7 @@ describe('StatusBox', () => {
             rounds={roundMocks.needAnother}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            auditSettings={auditSettings.all!}
           />
         </Router>
       )
@@ -166,7 +166,7 @@ describe('StatusBox', () => {
             rounds={roundMocks.needAnother}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            auditSettings={auditSettings.all!}
           />
         </Router>
       )
@@ -192,7 +192,7 @@ describe('StatusBox', () => {
             rounds={roundMocks.singleComplete}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            auditSettings={auditSettings.all!}
           />
         </Router>
       )
@@ -208,7 +208,7 @@ describe('StatusBox', () => {
             rounds={roundMocks.singleComplete}
             jurisdictions={jurisdictionMocks.allComplete}
             contests={contestMocks.filledTargeted.contests}
-            auditSettings={auditSettings.all}
+            auditSettings={auditSettings.all!}
           />
         </Router>
       )

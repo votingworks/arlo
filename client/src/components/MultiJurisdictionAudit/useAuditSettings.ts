@@ -1,17 +1,18 @@
 import { useEffect, useCallback, useState } from 'react'
 import { api } from '../utilities'
-import { IAuditSettings } from '../../types'
+import { IAuditSettings, IAuditSettingsPossNull } from '../../types'
 
-const defaultValues: IAuditSettings = {
-  state: null,
-  electionName: null,
-  online: null,
-  randomSeed: null,
-  riskLimit: null,
-  auditType: null,
-}
+// const defaultValues: IAuditSettings = {
+//   state: null,
+//   electionName: null,
+//   online: null,
+//   randomSeed: null,
+//   riskLimit: null,
+//   auditType: 'BALLOT_POLLING',
+// }
 
 type TNewSettings =
+  | null
   | {
       state: IAuditSettings['state']
     }
@@ -25,15 +26,15 @@ type TNewSettings =
 const useAuditSettings = (
   electionId: string,
   refreshId?: string
-): [IAuditSettings, (arg0: TNewSettings) => Promise<boolean>] => {
-  const [settings, setSettings] = useState(defaultValues)
+): [IAuditSettingsPossNull, (arg0: TNewSettings) => Promise<boolean>] => {
+  const [settings, setSettings] = useState<IAuditSettingsPossNull>(null)
 
-  const getSettings = useCallback(async (): Promise<IAuditSettings> => {
+  const getSettings = useCallback(async (): Promise<IAuditSettingsPossNull> => {
     const response = await api<IAuditSettings>(
       `/election/${electionId}/settings`
     )
     if (!response) {
-      return defaultValues
+      return null
     }
     return response
   }, [electionId])

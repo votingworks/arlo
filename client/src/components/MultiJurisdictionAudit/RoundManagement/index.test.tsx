@@ -15,7 +15,7 @@ import {
   auditBoardMocks,
   contestMocks,
 } from '../useSetupMenuItems/_mocks'
-import { IAuditSettings, IContest } from '../../../types'
+import { IAuditSettingsPossNull, IContest } from '../../../types'
 import { IBatch } from './useBatchResults'
 import { jaApiCalls } from '../_mocks'
 import AuthDataProvider from '../../UserContext'
@@ -40,7 +40,7 @@ const apiCalls = {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots',
     response: dummyBallots,
   },
-  getSettings: (response: IAuditSettings) => ({
+  getSettings: (response: IAuditSettingsPossNull) => ({
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/settings',
     response,
   }),
