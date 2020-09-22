@@ -2,16 +2,14 @@
 
 exports[`RoundProgress renders complete round 1`] = `
 <div>
-  <h2
-    class="bp3-heading sc-bdVaJa ibVpPq"
-  >
-    Round 
-    1
-     Progress
-  </h2>
   <div
-    class="sc-bwzfXH eeIcAa"
+    class="sc-bdVaJa dXfzyv"
   >
+    <h4
+      class="bp3-heading"
+    >
+      Audit Board Progress
+    </h4>
     <span>
       30
        of 
@@ -29,7 +27,7 @@ exports[`RoundProgress renders complete round 1`] = `
     </div>
   </div>
   <div
-    class="sc-htpNat jxYgaV"
+    class="sc-bwzfXH jGjlAC"
   >
     <span>
       Audit Board #01: 30 of 30 ballots audited 
@@ -48,16 +46,14 @@ exports[`RoundProgress renders complete round 1`] = `
 
 exports[`RoundProgress renders incomplete round with an audit board 1`] = `
 <div>
-  <h2
-    class="bp3-heading sc-bdVaJa ibVpPq"
-  >
-    Round 
-    1
-     Progress
-  </h2>
   <div
-    class="sc-bwzfXH eeIcAa"
+    class="sc-bdVaJa dXfzyv"
   >
+    <h4
+      class="bp3-heading"
+    >
+      Audit Board Progress
+    </h4>
     <span>
       0
        of 
@@ -75,7 +71,7 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
     </div>
   </div>
   <div
-    class="sc-htpNat jxYgaV"
+    class="sc-bwzfXH jGjlAC"
   >
     <span>
       Audit Board #01: 0 of 30 ballots audited 
@@ -94,16 +90,14 @@ exports[`RoundProgress renders incomplete round with an audit board 1`] = `
 
 exports[`RoundProgress renders incomplete round with an audit board with no ballots sampled 1`] = `
 <div>
-  <h2
-    class="bp3-heading sc-bdVaJa ibVpPq"
-  >
-    Round 
-    1
-     Progress
-  </h2>
   <div
-    class="sc-bwzfXH eeIcAa"
+    class="sc-bdVaJa dXfzyv"
   >
+    <h4
+      class="bp3-heading"
+    >
+      Audit Board Progress
+    </h4>
     <span>
       0
        of 
@@ -121,7 +115,7 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
     </div>
   </div>
   <div
-    class="sc-htpNat jxYgaV"
+    class="sc-bwzfXH jGjlAC"
   >
     <span>
       Audit Board #01
@@ -129,7 +123,7 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
     </span>
   </div>
   <div
-    class="sc-htpNat jxYgaV"
+    class="sc-bwzfXH jGjlAC"
   >
     <span>
       Audit Board #02: 0 of 30 ballots audited 
@@ -148,16 +142,14 @@ exports[`RoundProgress renders incomplete round with an audit board with no ball
 
 exports[`RoundProgress renders incomplete round with auditing in progress 1`] = `
 <div>
-  <h2
-    class="bp3-heading sc-bdVaJa ibVpPq"
-  >
-    Round 
-    1
-     Progress
-  </h2>
   <div
-    class="sc-bwzfXH eeIcAa"
+    class="sc-bdVaJa dXfzyv"
   >
+    <h4
+      class="bp3-heading"
+    >
+      Audit Board Progress
+    </h4>
     <span>
       15
        of 
@@ -175,7 +167,7 @@ exports[`RoundProgress renders incomplete round with auditing in progress 1`] = 
     </div>
   </div>
   <div
-    class="sc-htpNat jxYgaV"
+    class="sc-bwzfXH jGjlAC"
   >
     <span>
       Audit Board #01: 15 of 30 ballots audited 
@@ -196,16 +188,14 @@ exports[`RoundProgress renders incomplete round with no audit boards 1`] = `<div
 
 exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
 <div>
-  <h2
-    class="bp3-heading sc-bdVaJa ibVpPq"
-  >
-    Round 
-    1
-     Progress
-  </h2>
   <div
-    class="sc-bwzfXH eeIcAa"
+    class="sc-bdVaJa dXfzyv"
   >
+    <h4
+      class="bp3-heading"
+    >
+      Audit Board Progress
+    </h4>
     <span>
       0
        of 
@@ -223,7 +213,7 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
     </div>
   </div>
   <div
-    class="sc-htpNat jxYgaV"
+    class="sc-bwzfXH jGjlAC"
   >
     <span>
       Audit Board #01: 0 of 30 ballots audited 
@@ -238,7 +228,7 @@ exports[`RoundProgress renders incomplete round with two audit boards 1`] = `
     </div>
   </div>
   <div
-    class="sc-htpNat jxYgaV"
+    class="sc-bwzfXH jGjlAC"
   >
     <span>
       Audit Board #02: 0 of 30 ballots audited 
