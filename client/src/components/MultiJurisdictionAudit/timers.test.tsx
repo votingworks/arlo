@@ -58,16 +58,16 @@ describe('timers', () => {
       await act(async () => {
         await clock.nextAsync()
       })
-      screen.getByText('Refreshed just now')
+      screen.getByText('Will refresh in 5 minutes')
       await act(async () => {
-        await clock.tickAsync(1000 * 10)
+        await clock.tickAsync(1000 * 60)
       })
-      screen.getByText('Refreshed 10 seconds ago')
+      screen.getByText('Will refresh in 4 minutes')
       await act(async () => {
         // Five minutes minus the ten seconds we already ticked
         await clock.tickAsync(1000 * (60 * 5 - 10))
       })
-      screen.getByText('Refreshed just now')
+      screen.getByText('Will refresh in 5 minutes')
     })
   })
 })

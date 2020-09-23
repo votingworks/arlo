@@ -31,7 +31,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
             >
-              Refreshed just now
+              Will refresh in 5 minutes
             </span>
           </span>
         </div>
@@ -371,7 +371,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
             >
-              Refreshed just now
+              Will refresh in 5 minutes
             </span>
           </span>
         </div>
@@ -914,7 +914,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 2`] = `
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
             >
-              Refreshed just now
+              Will refresh in 5 minutes
             </span>
           </span>
         </div>

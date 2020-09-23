@@ -27,11 +27,10 @@ import CSVFile from './CSVForm'
 import { useInterval } from '../utilities'
 
 export const prettifyRefreshStatus = (refreshTime: number) => {
-  if (refreshTime < 10000) return 'Refreshed just now'
-  if (refreshTime < 60000)
-    return `Refreshed ${Math.floor(refreshTime / 10000) * 10} seconds ago`
-  if (refreshTime < 120000) return `Refreshed 1 minute ago`
-  return `Refreshed ${Math.floor(refreshTime / 60000)} minutes ago`
+  if (refreshTime < 240000)
+    return `Will refresh in ${5 - Math.floor(refreshTime / 60000)} minutes`
+  return `Will refresh in ${Math.ceil((300000 - refreshTime) / 10000) *
+    10} seconds`
 }
 
 const VerticalInner = styled(Inner)`
