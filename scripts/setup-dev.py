@@ -76,13 +76,14 @@ try:
 
     print("Running nOAuth on port {}".format(res))
     command = "PORT=8080 pipenv run python app.py"
+    # pylint: disable=subprocess-popen-preexec-fn
     child = subprocess.Popen(
         [command],
         shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         preexec_fn=os.setsid,
-    )  # pylint: disable=subprocess-popen-preexec-fn
+    )
 
     children.append(child)
 
