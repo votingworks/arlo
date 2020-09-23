@@ -123,17 +123,19 @@ def restrict_access(user_types: List[UserType]):
         @functools.wraps(route)
         def wrapper(*args, **kwargs):
             if "jurisdiction_id" in kwargs and "election_id" not in kwargs:
-                # pragma: no cover
-                raise Exception("election_id required in route params")
+                raise Exception(
+                    "election_id required in route params"
+                )  # pragma: no cover
             if "round_id" in kwargs and "election_id" not in kwargs:
-                # pragma: no cover
-                raise Exception("election_id required in route params")
+                raise Exception(
+                    "election_id required in route params"
+                )  # pragma: no cover
             if "audit_board_id" in kwargs and "jurisdiction_id" not in kwargs:
-                # pragma: no cover
-                raise Exception("jurisdiction_id required in route params")
+                raise Exception(
+                    "jurisdiction_id required in route params"
+                )  # pragma: no cover
             if "audit_board_id" in kwargs and "round_id" not in kwargs:
-                # pragma: no cover
-                raise Exception("round_id required in route params")
+                raise Exception("round_id required in route params")  # pragma: no cover
 
             # Substitute route params for their corresponding resources
             if "election_id" in kwargs:
