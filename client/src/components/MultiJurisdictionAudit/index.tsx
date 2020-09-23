@@ -162,7 +162,7 @@ export const JurisdictionAdminView: React.FC = () => {
     jurisdictionId: string
   }>()
 
-  const { auditType } = useAuditSettingsJurisdictionAdmin(
+  const auditSettings = useAuditSettingsJurisdictionAdmin(
     electionId,
     jurisdictionId
   )
@@ -183,7 +183,14 @@ export const JurisdictionAdminView: React.FC = () => {
     rounds
   )
 
-  if (!rounds || !ballotManifest || !batchTallies || !auditBoards) return null // Still loading
+  if (
+    !auditSettings ||
+    !rounds ||
+    !ballotManifest ||
+    !batchTallies ||
+    !auditBoards
+  )
+    return null // Still loading
   if (!rounds.length) {
     return (
       <Wrapper>
@@ -201,7 +208,7 @@ export const JurisdictionAdminView: React.FC = () => {
             filePurpose="ballot-manifest"
             enabled
           />
-          {auditType === 'BATCH_COMPARISON' && (
+          {auditSettings.auditType === 'BATCH_COMPARISON' && (
             <CSVFile
               csvFile={batchTallies}
               enabled={

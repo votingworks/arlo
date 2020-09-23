@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { Spinner } from '@blueprintjs/core'
+import { ButtonGroup, Button, H2, H3 } from '@blueprintjs/core'
 import { Wrapper } from '../../Atoms/Wrapper'
-import H2Title from '../../Atoms/H2Title'
 import { IRound } from '../useRoundsJurisdictionAdmin'
 import { IBallot } from '../../../types'
 import { api, apiDownload } from '../../utilities'
 import CreateAuditBoards from './CreateAuditBoards'
 import RoundProgress from './RoundProgress'
-import FormButton from '../../Atoms/Form/FormButton'
 import {
   downloadPlaceholders,
   downloadLabels,
@@ -23,7 +21,18 @@ import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { useAuthDataContext } from '../../UserContext'
 
 const PaddedWrapper = styled(Wrapper)`
+  flex-direction: column;
+  align-items: flex-start;
+  width: 510px;
   padding: 30px 0;
+`
+
+const SpacedDiv = styled.div`
+  margin-bottom: 30px;
+`
+
+const StrongP = styled.p`
+  font-weight: 500;
 `
 
 export interface IRoundManagementProps {
@@ -61,102 +70,107 @@ const RoundManagement = ({
     auditBoards,
   ])
 
-  const { online, auditType } = useAuditSettingsJurisdictionAdmin(
+  const auditSettings = useAuditSettingsJurisdictionAdmin(
     electionId,
     jurisdictionId
   )
 
-  if (!meta || !ballots || online === null)
-    return (
-      <p>
-        Loading... <Spinner size={Spinner.SIZE_SMALL} tagName="span" />
-      </p>
-    )
+  if (!meta || !ballots || !auditSettings) return null // Still loading
 
   const jurisdiction = meta.jurisdictions.find(j => j.id === jurisdictionId)!
+  const { roundNum } = round
 
-  if (!round.isAuditComplete) {
-    const { roundNum } = round
+  if (round.isAuditComplete) {
     return (
-      <PaddedWrapper className="single-page left">
-        {auditBoards.length === 0 ? (
-          <>
-            <H2Title>Round {roundNum} Audit Board Setup</H2Title>
-            <CreateAuditBoards
-              auditBoards={auditBoards}
-              createAuditBoards={createAuditBoards}
-              numBallots={ballots.length}
-              roundNum={roundNum}
-            />
-          </>
-        ) : (
-          <>
-            <FormButton
-              verticalSpaced
-              onClick={
-                /* istanbul ignore next */ // tested in generateSheets.test.tsx
-                () =>
-                  apiDownload(
-                    `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${
-                      round.id
-                    }/${
-                      auditType === 'BALLOT_POLLING' ? 'ballots' : 'batches'
-                    }/retrieval-list`
-                  )
-              }
-            >
-              Download Aggregated{' '}
-              {auditType === 'BALLOT_POLLING' ? 'Ballot' : 'Batch'} Retrieval
-              List for Round {roundNum}
-            </FormButton>
-            <FormButton
-              verticalSpaced
-              onClick={
-                /* istanbul ignore next */ // tested in generateSheets.test.tsx
-                () => downloadPlaceholders(roundNum, ballots, jurisdiction)
-              }
-            >
-              Download Placeholder Sheets for Round {roundNum}
-            </FormButton>
-            <FormButton
-              verticalSpaced
-              onClick={
-                /* istanbul ignore next */ // tested in generateSheets.test.tsx
-                () => downloadLabels(roundNum, ballots, jurisdiction)
-              }
-            >
-              Download Ballot Labels for Round {roundNum}
-            </FormButton>
-            {online ? (
-              <>
-                <FormButton
-                  verticalSpaced
-                  onClick={
-                    /* istanbul ignore next */ // tested in generateSheets.test.tsx
-                    () =>
-                      downloadAuditBoardCredentials(auditBoards, jurisdiction)
-                  }
-                >
-                  Download Audit Board Credentials for Data Entry
-                </FormButton>
-                <QRs passphrases={auditBoards.map(b => b.passphrase)} />
-                <RoundProgress auditBoards={auditBoards} round={round} />
-              </>
-            ) : auditType === 'BATCH_COMPARISON' ? ( // batch comparison audits are always offline
-              <BatchRoundDataEntry round={round} />
-            ) : (
-              <RoundDataEntry round={round} />
-            )}
-          </>
-        )}
+      <PaddedWrapper>
+        <H2>Congratulations! Your Risk-Limiting Audit is now complete.</H2>
       </PaddedWrapper>
     )
   }
+
+  if (auditBoards.length === 0) {
+    return (
+      <PaddedWrapper>
+        <H3>Round {roundNum} Audit Board Setup</H3>
+        <StrongP>
+          {ballots.length} ballots to audit in Round {roundNum}
+        </StrongP>
+        <CreateAuditBoards createAuditBoards={createAuditBoards} />
+      </PaddedWrapper>
+    )
+  }
+
   return (
-    <PaddedWrapper className="single-page">
-      <H2Title>
-        Congratulations! Your Risk-Limiting Audit is now complete.
-      </H2Title>
+    <PaddedWrapper>
+      <H3>Round {roundNum} Data Entry</H3>
+      <SpacedDiv>
+        <StrongP>
+          {ballots.length} ballots to audit in Round {roundNum}
+        </StrongP>
+        <ButtonGroup vertical alignText="left">
+          <Button
+            icon="th"
+            onClick={
+              /* istanbul ignore next */ // tested in generateSheets.test.tsx
+              () =>
+                apiDownload(
+                  `/election/${electionId}/jurisdiction/${
+                    jurisdiction.id
+                  }/round/${round.id}/${
+                    auditSettings.auditType === 'BALLOT_POLLING'
+                      ? 'ballots'
+                      : 'batches'
+                  }/retrieval-list`
+                )
+            }
+          >
+            Download Aggregated{' '}
+            {auditSettings.auditType === 'BALLOT_POLLING' ? 'Ballot' : 'Batch'}{' '}
+            Retrieval List
+          </Button>
+          <Button
+            icon="document"
+            onClick={
+              /* istanbul ignore next */ // tested in generateSheets.test.tsx
+              () => downloadPlaceholders(roundNum, ballots, jurisdiction)
+            }
+          >
+            Download Placeholder Sheets
+          </Button>
+          <Button
+            icon="label"
+            onClick={
+              /* istanbul ignore next */ // tested in generateSheets.test.tsx
+              () => downloadLabels(roundNum, ballots, jurisdiction)
+            }
+          >
+            Download Ballot Labels
+          </Button>
+          {auditSettings.online && (
+            <>
+              <Button
+                icon="key"
+                onClick={
+                  /* istanbul ignore next */ // tested in generateSheets.test.tsx
+                  () => downloadAuditBoardCredentials(auditBoards, jurisdiction)
+                }
+              >
+                Download Audit Board Credentials
+              </Button>
+              <QRs passphrases={auditBoards.map(b => b.passphrase)} />
+            </>
+          )}
+        </ButtonGroup>
+      </SpacedDiv>
+      <SpacedDiv>
+        {auditSettings.auditType === 'BATCH_COMPARISON' ? (
+          <BatchRoundDataEntry round={round} />
+        ) : auditSettings.online ? (
+          <RoundProgress auditBoards={auditBoards} />
+        ) : (
+          <RoundDataEntry round={round} />
+        )}
+      </SpacedDiv>
     </PaddedWrapper>
   )
 }

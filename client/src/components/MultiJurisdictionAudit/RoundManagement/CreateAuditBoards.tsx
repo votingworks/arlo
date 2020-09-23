@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { H4 } from '@blueprintjs/core'
 import { Formik, Field } from 'formik'
 import styled from 'styled-components'
 import { generateOptions } from '../../Atoms/Form/_helpers'
 import FormButton from '../../Atoms/Form/FormButton'
 import Select from '../../Atoms/Form/Select'
-import { IAuditBoard } from '../useAuditBoards'
+import FormSection from '../../Atoms/Form/FormSection'
 
 const Wrapper = styled.div`
   margin: 20px 0;
@@ -15,29 +15,17 @@ const AuditBoardsInput = styled(Field)`
   margin-left: 0;
   width: 100px;
 `
-
-const BallotsToAudit = styled.p`
-  margin: 15px 0;
-  font-weight: 500;
-`
-
 interface IValues {
   numAuditBoards: number
 }
 
 interface IProps {
   createAuditBoards: (auditBoards: { name: string }[]) => Promise<boolean>
-  auditBoards: IAuditBoard[]
-  numBallots: number
-  roundNum: number
 }
 
-const CreateAuditBoards = ({
-  createAuditBoards,
-  auditBoards,
-  numBallots,
-  roundNum,
-}: IProps) => {
+const CreateAuditBoards = ({ createAuditBoards }: IProps) => {
+  const [submitting, setSubmitting] = useState(false)
+
   const submit = async ({ numAuditBoards }: IValues) => {
     const maxAuditBoardsIndexLength = numAuditBoards.toString().length
     const boards = [...Array(numAuditBoards).keys()].map(i => ({
@@ -45,10 +33,9 @@ const CreateAuditBoards = ({
         .toString()
         .padStart(maxAuditBoardsIndexLength, '0')}`,
     }))
-    createAuditBoards(boards)
+    await createAuditBoards(boards)
+    setSubmitting(false)
   }
-
-  const disabled = auditBoards.length > 0
 
   return (
     <Wrapper>
@@ -60,31 +47,30 @@ const CreateAuditBoards = ({
         number of audit boards before the next round of the audit, if another
         round is required.
       </p>
-      <Formik
-        enableReinitialize
-        initialValues={{ numAuditBoards: auditBoards.length || 1 }}
-        onSubmit={submit}
-      >
+      <Formik initialValues={{ numAuditBoards: 1 }} onSubmit={submit}>
         {({ handleSubmit, setFieldValue }) => (
           <>
-            <AuditBoardsInput
-              component={Select}
-              id="numAuditBoards"
-              data-testid="numAuditBoards"
-              name="numAuditBoards"
-              onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-                setFieldValue('numAuditBoards', Number(e.currentTarget.value))
-              }
-              disabled={disabled}
+            <FormSection>
+              <AuditBoardsInput
+                component={Select}
+                id="numAuditBoards"
+                data-testid="numAuditBoards"
+                name="numAuditBoards"
+                onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                  setFieldValue('numAuditBoards', Number(e.currentTarget.value))
+                }
+                disabled={submitting}
+              >
+                {generateOptions(15)}
+              </AuditBoardsInput>
+            </FormSection>
+            <FormButton
+              intent="primary"
+              onClick={handleSubmit}
+              loading={submitting}
             >
-              {generateOptions(15)}
-            </AuditBoardsInput>
-            <BallotsToAudit>
-              {numBallots} Ballots to Audit in Round {roundNum}
-            </BallotsToAudit>
-            {!disabled && (
-              <FormButton onClick={handleSubmit}>Save &amp; Next</FormButton>
-            )}
+              Save &amp; Next
+            </FormButton>
           </>
         )}
       </Formik>
