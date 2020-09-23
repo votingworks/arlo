@@ -79,12 +79,6 @@ const setupScreenCalls = [
   aaApiCalls.getJurisdictions,
   aaApiCalls.getContests,
   aaApiCalls.getSettings,
-  aaApiCalls.getJurisdictionFile,
-  aaApiCalls.getRounds,
-  aaApiCalls.getRounds,
-  aaApiCalls.getJurisdictions,
-  aaApiCalls.getContests,
-  aaApiCalls.getSettings,
   aaApiCalls.getSettings,
   aaApiCalls.getJurisdictionFile,
 ]

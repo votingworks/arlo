@@ -6,7 +6,11 @@ import {
   Router as RegularRouter,
   useParams,
 } from 'react-router-dom'
-import { AuditAdminView, JurisdictionAdminView } from './index'
+import {
+  AuditAdminView,
+  JurisdictionAdminView,
+  prettifyRefreshStatus,
+} from './index'
 import {
   manifestMocks,
   talliesMocks,
@@ -68,7 +72,6 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
-      ...loadEach,
       aaApiCalls.getSettings,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getSettings,
@@ -98,7 +101,6 @@ describe('AA setup flow', () => {
   it('next and back buttons change stages', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
-      ...loadEach,
       ...loadEach,
       aaApiCalls.getSettings,
       aaApiCalls.getJurisdictionFile,
@@ -149,7 +151,6 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
-      ...loadEach,
       aaApiCalls.getSettings,
       aaApiCalls.getJurisdictionFile,
     ]
@@ -174,7 +175,7 @@ describe('AA setup flow', () => {
       electionId: '1',
       view: 'progress',
     })
-    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
+    const expectedCalls = [aaApiCalls.getUser, ...loadEach]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render(
         <AuthDataProvider>
@@ -192,7 +193,7 @@ describe('AA setup flow', () => {
   })
 
   it('redirects to /progress by default', async () => {
-    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
+    const expectedCalls = [aaApiCalls.getUser, ...loadEach]
     const routeProps = routerTestProps('/election/1', { electionId: '1' })
     await withMockFetch(expectedCalls, async () => {
       paramsMock.mockReturnValue({
@@ -326,5 +327,27 @@ describe('JA setup', () => {
       )
       expect(container).toMatchSnapshot()
     })
+  })
+})
+
+describe('prettifyRefreshStatus', () => {
+  it('handles recent values', () => {
+    expect(prettifyRefreshStatus(0)).toBe('Will refresh in 5 minutes')
+    expect(prettifyRefreshStatus(9000)).toBe('Will refresh in 5 minutes')
+  })
+
+  it('handles minute increments', () => {
+    expect(prettifyRefreshStatus(60000)).toBe('Will refresh in 4 minutes')
+    expect(prettifyRefreshStatus(120000)).toBe('Will refresh in 3 minutes')
+    expect(prettifyRefreshStatus(180000)).toBe('Will refresh in 2 minutes')
+    expect(prettifyRefreshStatus(240000)).toBe('Will refresh in 1 minute')
+  })
+
+  it('handles ten second increments', () => {
+    expect(prettifyRefreshStatus(250000)).toBe('Will refresh in 50 seconds')
+    expect(prettifyRefreshStatus(260001)).toBe('Will refresh in 40 seconds')
+    expect(prettifyRefreshStatus(270001)).toBe('Will refresh in 30 seconds')
+    expect(prettifyRefreshStatus(280001)).toBe('Will refresh in 20 seconds')
+    expect(prettifyRefreshStatus(290001)).toBe('Will refresh in 10 seconds')
   })
 })

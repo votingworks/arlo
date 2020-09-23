@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { Tag } from '@blueprintjs/core'
 import { ElementType } from '../../types'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
 import Sidebar from '../Atoms/Sidebar'
@@ -23,9 +24,24 @@ import useRoundsAuditAdmin from './useRoundsAuditAdmin'
 import useAuditSettingsJurisdictionAdmin from './RoundManagement/useAuditSettingsJurisdictionAdmin'
 import H2Title from '../Atoms/H2Title'
 import CSVFile from './CSVForm'
+import { useInterval } from '../utilities'
+
+export const prettifyRefreshStatus = (refreshTime: number) => {
+  if (refreshTime < 240000)
+    return `Will refresh in ${5 - Math.floor(refreshTime / 60000)} minutes`
+  if (refreshTime < 250000) return `Will refresh in 1 minute`
+  return `Will refresh in ${Math.ceil((300000 - refreshTime) / 10000) *
+    10} seconds`
+}
 
 const VerticalInner = styled(Inner)`
   flex-direction: column;
+`
+
+const RefreshStatusTag = styled(Tag)`
+  margin-top: 20px;
+  width: 20em;
+  text-align: center;
 `
 
 interface IParams {
@@ -50,9 +66,19 @@ export const AuditAdminView: React.FC = () => {
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
-  useEffect(() => {
-    refresh()
-  }, [refresh])
+  const [lastRefreshTime, setLastRefreshTime] = useState(Date.now())
+  const [time, setTime] = useState(Date.now())
+
+  // poll the apis every 5 minutes
+  useInterval(() => {
+    const now = Date.now()
+    if (now - lastRefreshTime >= 1000 * 60 * 5) {
+      setLastRefreshTime(now)
+      refresh()
+    }
+    setTime(now)
+  }, 1000)
+  const refreshStatus = prettifyRefreshStatus(time - lastRefreshTime)
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
@@ -71,7 +97,9 @@ export const AuditAdminView: React.FC = () => {
             jurisdictions={jurisdictions}
             contests={contests}
             auditSettings={auditSettings}
-          />
+          >
+            <RefreshStatusTag>{refreshStatus}</RefreshStatusTag>
+          </AuditAdminStatusBox>
           <Inner>
             <Sidebar
               title="Audit Setup"
@@ -94,7 +122,9 @@ export const AuditAdminView: React.FC = () => {
             jurisdictions={jurisdictions}
             contests={contests}
             auditSettings={auditSettings}
-          />
+          >
+            <RefreshStatusTag>{refreshStatus}</RefreshStatusTag>
+          </AuditAdminStatusBox>
           <Inner>
             <Sidebar
               title="Audit Progress"

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Callout, H4 } from '@blueprintjs/core'
@@ -31,6 +31,7 @@ interface IStatusBoxProps {
   details: string[]
   buttonLabel?: string
   onButtonClick?: () => void
+  children?: ReactElement
 }
 
 const StatusBox: React.FC<IStatusBoxProps> = ({
@@ -38,6 +39,7 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
   details,
   buttonLabel,
   onButtonClick,
+  children,
 }: IStatusBoxProps) => {
   return (
     <Wrapper>
@@ -47,6 +49,7 @@ const StatusBox: React.FC<IStatusBoxProps> = ({
           {details.map(detail => (
             <p key={detail}>{detail}</p>
           ))}
+          {children}
         </div>
         {buttonLabel && onButtonClick && (
           <FormButton intent="success" onClick={onButtonClick}>
@@ -95,6 +98,7 @@ interface IAuditAdminProps {
   jurisdictions: IJurisdiction[]
   contests: IContest[]
   auditSettings: IAuditSettings
+  children?: ReactElement
 }
 
 export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
@@ -102,6 +106,7 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
   jurisdictions,
   contests,
   auditSettings,
+  children,
 }: IAuditAdminProps) => {
   const { electionId } = useParams<{ electionId: string }>()
 
@@ -122,7 +127,11 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
           ' jurisdictions have completed file uploads.'
       )
     }
-    return <StatusBox headline="The audit has not started." details={details} />
+    return (
+      <StatusBox headline="The audit has not started." details={details}>
+        {children}
+      </StatusBox>
+    )
   }
 
   const { roundNum, endedAt, isAuditComplete } = rounds[rounds.length - 1]
@@ -141,7 +150,9 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
           `${numCompleted} of ${jurisdictions.length} jurisdictions` +
             ` have completed Round ${roundNum}`,
         ]}
-      />
+      >
+        {children}
+      </StatusBox>
     )
   }
 
@@ -153,7 +164,9 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
         details={[`When you are ready, start Round ${roundNum + 1}`]}
         buttonLabel={`Start Round ${roundNum + 1}`}
         onButtonClick={() => createRound(electionId, roundNum + 1)}
-      />
+      >
+        {children}
+      </StatusBox>
     )
   }
 
@@ -164,7 +177,9 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
       details={[]}
       buttonLabel="Download Audit Report"
       onButtonClick={() => downloadAuditAdminReport(electionId)}
-    />
+    >
+      {children}
+    </StatusBox>
   )
 }
 
@@ -172,12 +187,14 @@ interface IJurisdictionAdminProps {
   rounds: IRound[]
   ballotManifest: IFileInfo
   auditBoards: IAuditBoard[]
+  children?: ReactElement
 }
 
 export const JurisdictionAdminStatusBox = ({
   rounds,
   ballotManifest,
   auditBoards,
+  children,
 }: IJurisdictionAdminProps) => {
   const { electionId, jurisdictionId } = useParams<{
     electionId: string
@@ -198,7 +215,9 @@ export const JurisdictionAdminStatusBox = ({
               ]
             : ['Ballot manifest not uploaded.']
         }
-      />
+      >
+        {children}
+      </StatusBox>
     )
   }
 
@@ -211,7 +230,9 @@ export const JurisdictionAdminStatusBox = ({
       <StatusBox
         headline={inProgressHeadline}
         details={['Audit boards not set up.']}
-      />
+      >
+        {children}
+      </StatusBox>
     )
 
   // Round in progress, audit boards set up
@@ -228,7 +249,11 @@ export const JurisdictionAdminStatusBox = ({
       details.push(
         `Waiting for all jurisdictions to complete Round ${roundNum}.`
       )
-    return <StatusBox headline={inProgressHeadline} details={details} />
+    return (
+      <StatusBox headline={inProgressHeadline} details={details}>
+        {children}
+      </StatusBox>
+    )
   }
 
   // Audit complete
@@ -240,6 +265,8 @@ export const JurisdictionAdminStatusBox = ({
       onButtonClick={() =>
         downloadJurisdictionAdminReport(electionId, jurisdictionId)
       }
-    />
+    >
+      {children}
+    </StatusBox>
   )
 }
