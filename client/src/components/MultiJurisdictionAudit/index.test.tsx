@@ -340,11 +340,11 @@ describe('prettifyRefreshStatus', () => {
     expect(prettifyRefreshStatus(60000)).toBe('Will refresh in 4 minutes')
     expect(prettifyRefreshStatus(120000)).toBe('Will refresh in 3 minutes')
     expect(prettifyRefreshStatus(180000)).toBe('Will refresh in 2 minutes')
+    expect(prettifyRefreshStatus(240000)).toBe('Will refresh in 1 minute')
   })
 
   it('handles ten second increments', () => {
-    expect(prettifyRefreshStatus(240000)).toBe('Will refresh in 60 seconds')
-    expect(prettifyRefreshStatus(250001)).toBe('Will refresh in 50 seconds')
+    expect(prettifyRefreshStatus(250000)).toBe('Will refresh in 50 seconds')
     expect(prettifyRefreshStatus(260001)).toBe('Will refresh in 40 seconds')
     expect(prettifyRefreshStatus(270001)).toBe('Will refresh in 30 seconds')
     expect(prettifyRefreshStatus(280001)).toBe('Will refresh in 20 seconds')
