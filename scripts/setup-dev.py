@@ -75,9 +75,9 @@ try:
             print('"{}" is not a valid port.'.format(res))
 
     print('Running nOAuth on port {}'.format(res))
-    #os.environ["PORT"] = port
     command = 'PORT=8080 pipenv run python app.py'
     child = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setsid) # pylint: disable=subprocess-popen-preexec-fn
+
 
     children.append(child)
 
@@ -100,25 +100,13 @@ try:
     print(orgid)
 
 
-    while True:
-        num = input('How many administrators would you like to create for this organization? [1]')
 
-        if not num:
-            num = 1
+    email = input('What is the email for administrator {}? [test@test.test]'.format(i+1))
 
-        try:
-            int(num)
-            break
-        except ValueError:
-            print('{} is not a valid number. Please enter a positive integer.')
+    if not email:
+        email = 'test@test.test'
 
-    for i in range(num):
-        email = input('What is the email for administrator {}? [test@test.test]'.format(i+1))
-
-        if not email:
-            email = 'test@test.test'
-
-        output = subprocess.run(['pipenv run python -m scripts.create-admin {} {}'.format(orgid, email)], shell=True, check=True)
+    output = subprocess.run(['pipenv run python -m scripts.create-admin {} {}'.format(orgid, email)], shell=True, check=True)
 
 
 
