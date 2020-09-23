@@ -101,12 +101,12 @@ try:
 
 
 
-    email = input('What is the email for administrator {}? [test@test.test]'.format(i+1))
+    email = input('What is the email for the audit administrator? [test@test.test]')
 
     if not email:
         email = 'test@test.test'
 
-    output = subprocess.run(['pipenv run python -m scripts.create-admin {} {}'.format(orgid, email)], shell=True, check=True)
+    subprocess.run(['pipenv run python -m scripts.create-admin {} {}'.format(orgid, email)], shell=True, check=True)
 
 
 
