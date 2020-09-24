@@ -13,8 +13,15 @@ try:
     noAuthPath = ""
 
     print("Running script to setup local Arlo instance...")
+    print()
 
-    res = input("Do you have an instance of nOAuth configured? [y/N]")
+    print(
+        "If this is your first time running Arlo, we recommend that you answer\n"
+        + "no to the following question and follow the steps to use VotingWorks'\n"
+        + "instance of nOAuth.\n"
+    )
+
+    res = input("Do you have an instance of nOAuth configured? [y/N]:")
 
     if res != "y":
 
@@ -114,13 +121,13 @@ try:
 
     res = input(
         "Would you like to install the Arlo dev environment?\n"
-        + "If this is your first run of Arlo after install, you should do this. [y/N]"
+        + "If this is your first run of Arlo after download, you should do this. [y/N]"
     )
 
     if res == "y":
         subprocess.run(["make dev-environment"], check=True, shell=True)
 
-    print("Migrating the database to the newset data model")
+    print("Migrating the database to the newest data model")
     subprocess.run(["alembic upgrade head"], check=True, shell=True)
 
     orgname = input("What is the name of your test organization? [test]")
