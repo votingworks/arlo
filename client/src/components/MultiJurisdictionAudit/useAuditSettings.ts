@@ -2,15 +2,6 @@ import { useEffect, useCallback, useState } from 'react'
 import { api } from '../utilities'
 import { IAuditSettings, IAuditSettingsPossNull } from '../../types'
 
-// const defaultValues: IAuditSettings = {
-//   state: null,
-//   electionName: null,
-//   online: null,
-//   randomSeed: null,
-//   riskLimit: null,
-//   auditType: 'BALLOT_POLLING',
-// }
-
 type TNewSettings =
   | null
   | {
