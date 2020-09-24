@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import { H5 } from '@blueprintjs/core'
 import { Field, Formik, Form, FormikProps } from 'formik'
 import styled from 'styled-components'
-import H2Title from '../../Atoms/H2Title'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
 import { IRound } from '../useRoundsJurisdictionAdmin'
 import Card from '../../Atoms/SpacedCard'
@@ -55,7 +54,6 @@ const RoundDataEntry = ({ round }: IProps) => {
     <Formik initialValues={{ results }} enableReinitialize onSubmit={submit}>
       {({ handleSubmit }: FormikProps<IValues>) => (
         <Form>
-          <H2Title>Round {round.roundNum} Data Entry</H2Title>
           <p>
             When you have examined all the ballots assigned to you, enter the
             number of votes recorded for each candidate/choice from the audited
@@ -70,17 +68,13 @@ const RoundDataEntry = ({ round }: IProps) => {
                   htmlFor={`results[${contest.id}][${choice.id}]`}
                 >
                   Votes for {choice.name}:
-                  {alreadySubmittedResults ? (
-                    results[contest.id][choice.id]
-                  ) : (
-                    <Field
-                      id={`results[${contest.id}][${choice.id}]`}
-                      name={`results[${contest.id}][${choice.id}]`}
-                      disabled={alreadySubmittedResults}
-                      validate={testNumber()}
-                      component={FormField}
-                    />
-                  )}
+                  <Field
+                    id={`results[${contest.id}][${choice.id}]`}
+                    name={`results[${contest.id}][${choice.id}]`}
+                    disabled={alreadySubmittedResults}
+                    validate={testNumber()}
+                    component={FormField}
+                  />
                 </BlockLabel>
               ))}
             </Card>

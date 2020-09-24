@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
+import styled from 'styled-components'
 import EstimateSampleSize from './EstimateSampleSize'
 import SelectBallotsToAudit from './SelectBallotsToAudit'
 import CalculateRiskMeasurement from './CalculateRiskMeasurement'
@@ -7,6 +8,11 @@ import { api } from '../utilities'
 import { IAudit } from '../../types'
 import ResetButton from '../ResetButton'
 import { Wrapper } from '../Atoms/Wrapper'
+
+const SinglePageWrapper = styled(Wrapper)`
+  flex-direction: column;
+  align-items: center;
+`
 
 interface IParams {
   electionId: string
@@ -58,7 +64,7 @@ const SingleJurisdictionAudit: React.FC = () => {
     !!audit.rounds.length && audit.rounds[0].contests.every(c => !!c.sampleSize)
 
   return (
-    <Wrapper className="single-page">
+    <SinglePageWrapper>
       <ResetButton
         electionId={electionId}
         disabled={!audit.contests.length || isLoading}
@@ -92,7 +98,7 @@ const SingleJurisdictionAudit: React.FC = () => {
           electionId={electionId}
         />
       )}
-    </Wrapper>
+    </SinglePageWrapper>
   )
 }
 

@@ -1,8 +1,6 @@
 import React from 'react'
-import { ProgressBar } from '@blueprintjs/core'
+import { ProgressBar, H4 } from '@blueprintjs/core'
 import styled from 'styled-components'
-import H2Title from '../../Atoms/H2Title'
-import { IRound } from '../useRoundsJurisdictionAdmin'
 import { IAuditBoard } from '../useAuditBoards'
 
 const MainBarWrapper = styled.div`
@@ -16,13 +14,7 @@ const SmallBarWrapper = styled.div`
   width: 400px;
 `
 
-const RoundProgress = ({
-  auditBoards,
-  round,
-}: {
-  auditBoards: IAuditBoard[]
-  round: IRound
-}) => {
+const RoundProgress = ({ auditBoards }: { auditBoards: IAuditBoard[] }) => {
   if (!auditBoards.length) return null
   const sum = (ns: number[]) => ns.reduce((a, b) => a + b)
   const auditedBallots = sum(
@@ -33,8 +25,8 @@ const RoundProgress = ({
   )
   return (
     <>
-      <H2Title>Round {round.roundNum} Progress</H2Title>
       <MainBarWrapper>
+        <H4>Audit Board Progress</H4>
         <span>
           {auditedBallots} of {sampledBallots} ballots audited{' '}
         </span>
