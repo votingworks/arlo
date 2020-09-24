@@ -109,6 +109,9 @@ try:
     os.environ["ARLO_AUDITADMIN_AUTH0_CLIENT_SECRET"] = "secret"
     os.environ["ARLO_JURISDICTIONADMIN_AUTH0_CLIENT_SECRET"] = "secret"
 
+    os.environ["ARLO_SESSION_SECRET"] = "secret"
+    os.environ["ARLO_HTTP_ORIGIN"] = "http://localhost:3000"
+
     res = input(
         "Would you like to install the Arlo dev environment?\n"
         + "If this is your first run of Arlo after install, you should do this. [y/N]"
@@ -137,7 +140,6 @@ try:
     )
 
     orgid = output.stdout.strip()
-    print(orgid)
 
     email = input("What is the email for the audit administrator? [test@test.test]")
 
