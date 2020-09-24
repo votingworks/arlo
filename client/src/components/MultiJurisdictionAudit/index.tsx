@@ -26,22 +26,8 @@ import H2Title from '../Atoms/H2Title'
 import CSVFile from './CSVForm'
 import { useInterval } from '../utilities'
 
-export const prettifyRefreshStatus = (refreshTime: number) => {
-  if (refreshTime < 240000)
-    return `Will refresh in ${5 - Math.floor(refreshTime / 60000)} minutes`
-  if (refreshTime < 250000) return `Will refresh in 1 minute`
-  return `Will refresh in ${Math.ceil((300000 - refreshTime) / 10000) *
-    10} seconds`
-}
-
 const VerticalInner = styled(Inner)`
   flex-direction: column;
-`
-
-const RefreshStatusTag = styled(Tag)`
-  margin-top: 20px;
-  width: 20em;
-  text-align: center;
 `
 
 interface IParams {
@@ -66,20 +52,6 @@ export const AuditAdminView: React.FC = () => {
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
-  const [lastRefreshTime, setLastRefreshTime] = useState(Date.now())
-  const [time, setTime] = useState(Date.now())
-
-  // poll the apis every 5 minutes
-  useInterval(() => {
-    const now = Date.now()
-    if (now - lastRefreshTime >= 1000 * 60 * 5) {
-      setLastRefreshTime(now)
-      refresh()
-    }
-    setTime(now)
-  }, 1000)
-  const refreshStatus = prettifyRefreshStatus(time - lastRefreshTime)
-
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
   const singleContestMenuItems = menuItems.filter(
@@ -98,7 +70,7 @@ export const AuditAdminView: React.FC = () => {
             contests={contests}
             auditSettings={auditSettings}
           >
-            <RefreshStatusTag>{refreshStatus}</RefreshStatusTag>
+            <RefreshTag refresh={refresh} />
           </AuditAdminStatusBox>
           <Inner>
             <Sidebar
@@ -123,7 +95,7 @@ export const AuditAdminView: React.FC = () => {
             contests={contests}
             auditSettings={auditSettings}
           >
-            <RefreshStatusTag>{refreshStatus}</RefreshStatusTag>
+            <RefreshTag refresh={refresh} />
           </AuditAdminStatusBox>
           <Inner>
             <Sidebar
@@ -240,5 +212,40 @@ export const JurisdictionAdminView: React.FC = () => {
         />
       </Inner>
     </Wrapper>
+  )
+}
+
+const RefreshStatusTag = styled(Tag)`
+  margin-top: 20px;
+  width: 14em;
+  text-align: center;
+`
+
+export const prettifyRefreshStatus = (refreshTime: number) => {
+  if (refreshTime < 240000)
+    return `Will refresh in ${5 - Math.floor(refreshTime / 60000)} minutes`
+  if (refreshTime < 250000) return `Will refresh in 1 minute`
+  return `Will refresh in ${Math.ceil((300000 - refreshTime) / 10000) *
+    10} seconds`
+}
+
+const RefreshTag = ({ refresh }: { refresh: () => void }) => {
+  const [lastRefreshTime, setLastRefreshTime] = useState(Date.now())
+  const [time, setTime] = useState(Date.now())
+
+  // poll the apis every 5 minutes
+  useInterval(() => {
+    const now = Date.now()
+    if (now - lastRefreshTime >= 1000 * 60 * 5) {
+      setLastRefreshTime(now)
+      refresh()
+    }
+    setTime(now)
+  }, 1000)
+
+  return (
+    <RefreshStatusTag>
+      {prettifyRefreshStatus(time - lastRefreshTime)}
+    </RefreshStatusTag>
   )
 }
