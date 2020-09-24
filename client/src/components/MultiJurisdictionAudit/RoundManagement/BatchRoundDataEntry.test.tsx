@@ -60,7 +60,7 @@ describe('offline round data entry', () => {
           route: '/election/1/jurisdiction/1',
         }
       )
-      await screen.findByText('Round 1 Data Entry')
+      await screen.findByText('Batch: Batch One, Contest: Contest 1')
       expect(container).toMatchSnapshot()
     })
   })
@@ -78,7 +78,7 @@ describe('offline round data entry', () => {
           route: '/election/1/jurisdiction/1',
         }
       )
-      await screen.findByText('Round 1 Data Entry')
+      await screen.findByText('Batch: Batch One, Contest: Contest 1')
       expect(container).toMatchSnapshot()
     })
   })
@@ -97,7 +97,7 @@ describe('offline round data entry', () => {
           route: '/election/1/jurisdiction/1',
         }
       )
-      await screen.findByText('Round 1 Data Entry')
+      await screen.findByText('Batch: Batch One, Contest: Contest 1')
       ;[0, 1, 2].forEach(batch => {
         fireEvent.change(
           screen.getAllByLabelText('Votes for Choice One:')[batch],

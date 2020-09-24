@@ -3,7 +3,7 @@
 exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
 <div>
   <div
-    class="sc-bdVaJa AANBu"
+    class="sc-bdVaJa bsPuXO"
   >
     <div
       class="bp3-callout sc-kkGfuU jfrnYf"
@@ -26,7 +26,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-jhAzac bQjcXi"
+            class="bp3-tag sc-fBuWsC exjrNq"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -343,7 +343,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
 exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
 <div>
   <div
-    class="sc-bdVaJa AANBu"
+    class="sc-bdVaJa bsPuXO"
   >
     <div
       class="bp3-callout sc-kkGfuU jfrnYf"
@@ -366,7 +366,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-jhAzac bQjcXi"
+            class="bp3-tag sc-fBuWsC exjrNq"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -886,7 +886,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
 exports[`AA setup flow renders sidebar when authenticated on /setup 2`] = `
 <div>
   <div
-    class="sc-bdVaJa AANBu"
+    class="sc-bdVaJa bsPuXO"
   >
     <div
       class="bp3-callout sc-kkGfuU jfrnYf"
@@ -909,7 +909,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 2`] = `
             0 of 2 jurisdictions have completed file uploads.
           </p>
           <span
-            class="bp3-tag sc-jhAzac bQjcXi"
+            class="bp3-tag sc-fBuWsC exjrNq"
           >
             <span
               class="bp3-text-overflow-ellipsis bp3-fill"
@@ -1429,7 +1429,7 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 2`] = `
 exports[`JA setup renders initial state 1`] = `
 <div>
   <div
-    class="sc-bdVaJa AANBu"
+    class="sc-bdVaJa bsPuXO"
   >
     <div
       class="bp3-callout sc-kkGfuU jfrnYf"
@@ -1452,7 +1452,7 @@ exports[`JA setup renders initial state 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-hzDkRC kJxuMx"
+      class="sc-bwzfXH sc-jhAzac dWgAMN"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1594,7 +1594,7 @@ exports[`JA setup renders initial state 1`] = `
 exports[`JA setup submits ballot manifest 1`] = `
 <div>
   <div
-    class="sc-bdVaJa AANBu"
+    class="sc-bdVaJa bsPuXO"
   >
     <div
       class="bp3-callout sc-kkGfuU jfrnYf"
@@ -1620,7 +1620,7 @@ exports[`JA setup submits ballot manifest 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-hzDkRC kJxuMx"
+      class="sc-bwzfXH sc-jhAzac dWgAMN"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"
@@ -1762,7 +1762,7 @@ exports[`JA setup submits ballot manifest 1`] = `
 exports[`JA setup submits batch tallies 1`] = `
 <div>
   <div
-    class="sc-bdVaJa AANBu"
+    class="sc-bdVaJa bsPuXO"
   >
     <div
       class="bp3-callout sc-kkGfuU jfrnYf"
@@ -1788,7 +1788,7 @@ exports[`JA setup submits batch tallies 1`] = `
       </div>
     </div>
     <div
-      class="sc-bwzfXH sc-hzDkRC kJxuMx"
+      class="sc-bwzfXH sc-jhAzac dWgAMN"
     >
       <h2
         class="bp3-heading sc-htpNat fysvnw"

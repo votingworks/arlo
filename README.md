@@ -155,7 +155,7 @@ We recommend Ubuntu 18.0.4.
 
 #### Automatic configuration and setup
 
-If you would just like to run Arlo and do not wish to setup a custom configuration, you can run `pipenv run python -m scripts.setup-dev`, which provides interactive configuration. The script installs VotingWorks' fork of nOAuth locally, runs it, and configures Arlo to use it. It creates the necessary audit administrator and jurisdiction administrator credentials discussed above, and launches a dev instance of Arlo. Once you have navigated to `localhost:3000` in your broswer, you should be able to log in as an audit admin using the credentials you configured earlier in the script. 
+If you would just like to run Arlo and do not wish to setup a custom configuration, you can run `pipenv run python -m scripts.setup-dev`, which provides interactive configuration. The script optionally installs VotingWorks' [nOAuth](https://github.com/votingworks/nOAuth) locally, runs it, and configures Arlo to use it. It creates the necessary audit administrator and jurisdiction administrator credentials discussed above, and launches a dev instance of Arlo. Once you have navigated to `localhost:3000` in your broswer, you should be able to log in as an audit admin using the credentials you configured earlier in the script. 
 
 #### Troubleshooting
 

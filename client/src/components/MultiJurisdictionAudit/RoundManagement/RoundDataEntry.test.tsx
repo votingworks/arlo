@@ -54,7 +54,7 @@ describe('offline round data entry', () => {
           route: '/election/1/jurisdiction/1',
         }
       )
-      await screen.findByText('Round 1 Data Entry')
+      await screen.findByText('Votes for Choice One:')
       expect(container).toMatchSnapshot()
     })
   })
@@ -72,7 +72,7 @@ describe('offline round data entry', () => {
           route: '/election/1/jurisdiction/1',
         }
       )
-      await screen.findByText('Round 1 Data Entry')
+      await screen.findByText('Votes for Choice One:')
       fireEvent.change(screen.getByLabelText('Votes for Choice One:'), {
         target: { value: '1' },
       })

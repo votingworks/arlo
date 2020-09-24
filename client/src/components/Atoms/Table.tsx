@@ -64,6 +64,7 @@ export const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
     {
       data: React.useMemo(() => data, [data]),
       columns: React.useMemo(() => columns, [columns]),
+      autoResetSortBy: false,
     },
     useSortBy
   )
