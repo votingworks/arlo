@@ -53,7 +53,12 @@ describe('timers', () => {
   })
   afterEach(() => clock.uninstall())
   it('refreshes every five minutes on progress', async () => {
-    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadEach,
+      ...loadEach,
+      ...loadEach,
+    ]
     await withMockFetch(expectedCalls, async () => {
       renderWithRoute('/election/1/progress', <AuditAdminViewWithAuth />)
       await act(async () => {

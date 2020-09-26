@@ -80,8 +80,6 @@ const setupScreenCalls = [
   aaApiCalls.getJurisdictions,
   aaApiCalls.getContests,
   aaApiCalls.getSettings(auditSettings.blank),
-  aaApiCalls.getSettings(auditSettings.blank),
-  aaApiCalls.getJurisdictionFile,
 ]
 
 const renderView = (route: string) => renderWithRouter(<App />, { route })
@@ -117,8 +115,18 @@ describe('Home screen', () => {
         isMultiJurisdiction: true,
       }),
       ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getRounds,
+      ...setupScreenCalls,
+      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getJurisdictionFile,
       apiCalls.getUserWithAudit,
       ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getRounds,
+      ...setupScreenCalls,
+      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderView('/')
@@ -167,7 +175,7 @@ describe('Home screen', () => {
     })
   })
 
-  it('shows a list of audits and create audit form for audit admins', async () => {
+  it('shows a list of audits and create audit form for audit admins with multiple orgs', async () => {
     const expectedCalls = [
       apiCalls.getUserMultipleOrgs,
       apiCalls.getUserMultipleOrgs,
@@ -178,6 +186,11 @@ describe('Home screen', () => {
         isMultiJurisdiction: true,
       }),
       ...setupScreenCalls,
+      aaApiCalls.getJurisdictionFile,
+      aaApiCalls.getRounds,
+      ...setupScreenCalls,
+      aaApiCalls.getSettings(auditSettings.blank),
+      aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
