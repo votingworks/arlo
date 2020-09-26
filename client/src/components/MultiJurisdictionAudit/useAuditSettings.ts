@@ -1,9 +1,8 @@
 import { useEffect, useCallback, useState } from 'react'
 import { api } from '../utilities'
-import { IAuditSettings, IAuditSettingsPossNull } from '../../types'
+import { IAuditSettings } from '../../types'
 
 type TNewSettings =
-  | null
   | {
       state: IAuditSettings['state']
     }
@@ -17,17 +16,11 @@ type TNewSettings =
 const useAuditSettings = (
   electionId: string,
   refreshId?: string
-): [IAuditSettingsPossNull, (arg0: TNewSettings) => Promise<boolean>] => {
-  const [settings, setSettings] = useState<IAuditSettingsPossNull>(null)
+): [IAuditSettings | null, (arg0: TNewSettings) => Promise<boolean>] => {
+  const [settings, setSettings] = useState<IAuditSettings | null>(null)
 
-  const getSettings = useCallback(async (): Promise<IAuditSettingsPossNull> => {
-    const response = await api<IAuditSettings>(
-      `/election/${electionId}/settings`
-    )
-    if (!response) {
-      return null
-    }
-    return response
+  const getSettings = useCallback(async (): Promise<IAuditSettings | null> => {
+    return api<IAuditSettings>(`/election/${electionId}/settings`)
   }, [electionId])
 
   const updateSettings = async (

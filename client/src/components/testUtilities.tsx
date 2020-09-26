@@ -73,7 +73,7 @@ export const renderWithRouter = (
 interface FetchRequest {
   url: string
   options?: RequestInit
-  response: object | null
+  response: object
   skipBody?: boolean
   error?: {
     status: number

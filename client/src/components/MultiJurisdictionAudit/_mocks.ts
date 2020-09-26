@@ -6,7 +6,7 @@ import {
   talliesFile,
 } from './useSetupMenuItems/_mocks'
 import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileStatus'
-import { IAuditSettingsPossNull } from '../../types'
+import { IAuditSettings } from '../../types'
 
 const manifestFormData: FormData = new FormData()
 manifestFormData.append('manifest', manifestFile, manifestFile.name)
@@ -70,7 +70,7 @@ export const jaApiCalls = {
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
     response,
   }),
-  getSettings: (response: IAuditSettingsPossNull) => ({
+  getSettings: (response: IAuditSettings) => ({
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/settings',
     response,
   }),
@@ -173,7 +173,7 @@ export const aaApiCalls = {
     url: '/api/election/1/contest',
     response: contestMocks.filledTargeted,
   },
-  getSettings: (response: IAuditSettingsPossNull) => ({
+  getSettings: (response: IAuditSettings) => ({
     url: '/api/election/1/settings',
     response,
   }),

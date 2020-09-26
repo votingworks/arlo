@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
-import { IAuditSettingsPossNull, IContest } from '../../../../types'
+import { IAuditSettings, IContest } from '../../../../types'
 import {
   IJurisdiction,
   FileProcessingStatus,
@@ -24,16 +24,14 @@ export const talliesFile = new File(
 
 export const auditSettings: {
   [key in
-    | 'null'
     | 'blank'
     | 'blankBatch'
     | 'onlyState'
     | 'otherSettings'
     | 'all'
     | 'offlineAll'
-    | 'batchComparisonAll']: IAuditSettingsPossNull
+    | 'batchComparisonAll']: IAuditSettings
 } = {
-  null: null,
   blank: {
     state: null,
     electionName: null,

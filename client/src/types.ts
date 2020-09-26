@@ -206,5 +206,3 @@ export interface IAuditSettings {
   riskLimit: number | null
   auditType: 'BALLOT_POLLING' | 'BATCH_COMPARISON'
 }
-
-export type IAuditSettingsPossNull = IAuditSettings | null

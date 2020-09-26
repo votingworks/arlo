@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { api } from '../../utilities'
-import { IAuditSettings, IAuditSettingsPossNull } from '../../../types'
+import { IAuditSettings } from '../../../types'
 
 const getSettings = async (
   electionId: string,
@@ -12,8 +12,8 @@ const getSettings = async (
 const useAuditSettingsJurisdictionAdmin = (
   electionId: string,
   jurisdictionId: string
-): IAuditSettingsPossNull => {
-  const [settings, setSettings] = useState<IAuditSettingsPossNull>(null)
+): IAuditSettings | null => {
+  const [settings, setSettings] = useState<IAuditSettings | null>(null)
 
   useEffect(() => {
     ;(async () => {
