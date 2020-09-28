@@ -13,7 +13,7 @@ describe('Progress screen', () => {
     const { container } = render(
       <Progress
         jurisdictions={jurisdictionMocks.oneManifest}
-        auditSettings={auditSettings.all!}
+        auditSettings={auditSettings.all}
       />
     )
 
@@ -41,7 +41,7 @@ describe('Progress screen', () => {
     const { container } = render(
       <Progress
         jurisdictions={jurisdictionMocks.oneComplete}
-        auditSettings={auditSettings.all!}
+        auditSettings={auditSettings.all}
       />
     )
 
@@ -75,7 +75,7 @@ describe('Progress screen', () => {
     render(
       <Progress
         jurisdictions={jurisdictionMocks.oneComplete}
-        auditSettings={auditSettings.all!}
+        auditSettings={auditSettings.all}
       />
     )
 
@@ -117,7 +117,7 @@ describe('Progress screen', () => {
     const { container } = render(
       <Progress
         jurisdictions={jurisdictionMocks.oneManifest}
-        auditSettings={auditSettings.all!}
+        auditSettings={auditSettings.all}
       />
     )
 
@@ -137,7 +137,7 @@ describe('Progress screen', () => {
     const { container } = render(
       <Progress
         jurisdictions={jurisdictionMocks.oneManifest}
-        auditSettings={auditSettings.all!}
+        auditSettings={auditSettings.all}
       />
     )
 
@@ -157,7 +157,7 @@ describe('Progress screen', () => {
     render(
       <Progress
         jurisdictions={jurisdictionMocks.oneManifest}
-        auditSettings={auditSettings.all!}
+        auditSettings={auditSettings.all}
       />
     )
 
@@ -177,7 +177,7 @@ describe('Progress screen', () => {
     const { rerender } = render(
       <Progress
         jurisdictions={jurisdictionMocks.oneManifest}
-        auditSettings={auditSettings.all!}
+        auditSettings={auditSettings.all}
       />
     )
 
@@ -220,7 +220,7 @@ describe('Progress screen', () => {
     rerender(
       <Progress
         jurisdictions={jurisdictionMocks.oneComplete}
-        auditSettings={auditSettings.all!}
+        auditSettings={auditSettings.all}
       />
     )
 
