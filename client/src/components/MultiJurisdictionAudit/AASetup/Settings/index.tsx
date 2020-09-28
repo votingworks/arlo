@@ -26,11 +26,16 @@ const Settings: React.FC<IProps> = ({
   prevStage,
   locked,
 }: IProps) => {
-  const { electionId } = useParams()
-  const [
-    { electionName, randomSeed, riskLimit, online, auditType },
-    updateState,
-  ] = useAuditSettings(electionId!)
+  const { electionId } = useParams<{ electionId: string }>()
+  const [auditSettings, updateState] = useAuditSettings(electionId!)
+  if (!auditSettings) return null // still loading
+  const {
+    electionName,
+    randomSeed,
+    riskLimit,
+    online,
+    auditType,
+  } = auditSettings
   const submit = async (values: IValues) => {
     const response = await updateState({
       ...values,

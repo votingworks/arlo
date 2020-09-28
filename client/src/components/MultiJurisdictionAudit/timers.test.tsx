@@ -12,6 +12,7 @@ import AuthDataProvider, { AuthDataContext } from '../UserContext'
 import getJurisdictionFileStatus from './useSetupMenuItems/getJurisdictionFileStatus'
 import getRoundStatus from './useSetupMenuItems/getRoundStatus'
 import { aaApiCalls } from './_mocks'
+import { auditSettings } from './useSetupMenuItems/_mocks'
 
 const getJurisdictionFileStatusMock = getJurisdictionFileStatus as jest.Mock
 const getRoundStatusMock = getRoundStatus as jest.Mock
@@ -42,7 +43,7 @@ const loadEach = [
   aaApiCalls.getRounds,
   aaApiCalls.getJurisdictions,
   aaApiCalls.getContests,
-  aaApiCalls.getSettings,
+  aaApiCalls.getSettings(auditSettings.all),
 ]
 
 describe('timers', () => {

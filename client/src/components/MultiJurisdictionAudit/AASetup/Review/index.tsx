@@ -40,13 +40,6 @@ interface IProps {
 const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings] = useAuditSettings(electionId)
-  const {
-    electionName,
-    randomSeed,
-    riskLimit,
-    online,
-    auditType,
-  } = auditSettings
   const jurisdictions = useJurisdictions(electionId)
   const [jurisdictionFile] = useJurisdictionFile(electionId)
   const [contests] = useContests(electionId)
@@ -64,7 +57,8 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
     )
   const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(
     electionId,
-    auditType === 'BALLOT_POLLING' || talliesUploadsCompleted // only fetch sample sizes for ballot polling audits or if all tallies files are uploaded
+    !!auditSettings &&
+      (auditSettings.auditType === 'BALLOT_POLLING' || talliesUploadsCompleted) // only fetch sample sizes for ballot polling audits or if all tallies files are uploaded
   )
 
   const submit = async () => {
@@ -82,7 +76,15 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
     }
   }
 
-  if (!contests) return null // Still loading
+  if (!contests || !auditSettings) return null // Still loading
+
+  const {
+    electionName,
+    randomSeed,
+    riskLimit,
+    online,
+    auditType,
+  } = auditSettings
 
   const targetedContests = contests
     .filter(c => c.isTargeted === true)

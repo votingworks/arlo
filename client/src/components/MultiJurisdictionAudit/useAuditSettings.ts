@@ -2,15 +2,6 @@ import { useEffect, useCallback, useState } from 'react'
 import { api } from '../utilities'
 import { IAuditSettings } from '../../types'
 
-const defaultValues: IAuditSettings = {
-  state: null,
-  electionName: null,
-  online: null,
-  randomSeed: null,
-  riskLimit: null,
-  auditType: null,
-}
-
 type TNewSettings =
   | {
       state: IAuditSettings['state']
@@ -25,17 +16,11 @@ type TNewSettings =
 const useAuditSettings = (
   electionId: string,
   refreshId?: string
-): [IAuditSettings, (arg0: TNewSettings) => Promise<boolean>] => {
-  const [settings, setSettings] = useState(defaultValues)
+): [IAuditSettings | null, (arg0: TNewSettings) => Promise<boolean>] => {
+  const [settings, setSettings] = useState<IAuditSettings | null>(null)
 
-  const getSettings = useCallback(async (): Promise<IAuditSettings> => {
-    const response = await api<IAuditSettings>(
-      `/election/${electionId}/settings`
-    )
-    if (!response) {
-      return defaultValues
-    }
-    return response
+  const getSettings = useCallback(async (): Promise<IAuditSettings | null> => {
+    return api<IAuditSettings>(`/election/${electionId}/settings`)
   }, [electionId])
 
   const updateSettings = async (

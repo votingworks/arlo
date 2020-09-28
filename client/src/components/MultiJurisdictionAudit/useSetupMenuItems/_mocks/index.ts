@@ -25,6 +25,7 @@ export const talliesFile = new File(
 export const auditSettings: {
   [key in
     | 'blank'
+    | 'blankBatch'
     | 'onlyState'
     | 'otherSettings'
     | 'all'
@@ -37,7 +38,15 @@ export const auditSettings: {
     online: null,
     randomSeed: null,
     riskLimit: null,
-    auditType: null,
+    auditType: 'BALLOT_POLLING',
+  },
+  blankBatch: {
+    state: null,
+    electionName: null,
+    online: null,
+    randomSeed: null,
+    riskLimit: null,
+    auditType: 'BATCH_COMPARISON',
   },
   onlyState: {
     state: 'AL',

@@ -5,6 +5,7 @@ import App from './App'
 import { withMockFetch, renderWithRouter } from './components/testUtilities'
 import { dummyBoards } from './components/DataEntry/_mocks'
 import {
+  auditSettings,
   manifestMocks,
   talliesMocks,
 } from './components/MultiJurisdictionAudit/useSetupMenuItems/_mocks'
@@ -136,7 +137,7 @@ describe('App', () => {
     it('renders ja logged in properly', async () => {
       const expectedCalls = [
         jaApiCalls.getUser,
-        jaApiCalls.getSettings,
+        jaApiCalls.getSettings(auditSettings.batchComparisonAll),
         jaApiCalls.getRounds,
         jaApiCalls.getBallotManifestFile(manifestMocks.empty),
         jaApiCalls.getBatchTalliesFile(talliesMocks.empty),

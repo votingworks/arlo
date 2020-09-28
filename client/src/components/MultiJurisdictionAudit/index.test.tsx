@@ -16,6 +16,7 @@ import {
   talliesMocks,
   manifestFile,
   talliesFile,
+  auditSettings,
 } from './useSetupMenuItems/_mocks'
 import {
   routerTestProps,
@@ -65,16 +66,16 @@ describe('AA setup flow', () => {
     aaApiCalls.getRounds,
     aaApiCalls.getJurisdictions,
     aaApiCalls.getContests,
-    aaApiCalls.getSettings,
+    aaApiCalls.getSettings(auditSettings.all),
   ]
 
   it('sidebar changes stages', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
-      aaApiCalls.getSettings,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getSettings,
+      aaApiCalls.getSettings(auditSettings.all),
       ...loadEach,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -102,19 +103,19 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
-      aaApiCalls.getSettings,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getSettings,
+      aaApiCalls.getSettings(auditSettings.all),
       ...loadEach,
-      aaApiCalls.getSettings,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.putSettings,
       ...loadEach,
-      aaApiCalls.getSettings,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictions,
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getContests,
       aaApiCalls.getSampleSizes,
-      aaApiCalls.getSettings,
+      aaApiCalls.getSettings(auditSettings.all),
       ...loadEach,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -151,7 +152,7 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
-      aaApiCalls.getSettings,
+      aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -245,7 +246,7 @@ describe('JA setup', () => {
   it('renders initial state', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings,
+      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getRounds,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
@@ -260,7 +261,7 @@ describe('JA setup', () => {
   it('submits ballot manifest', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings,
+      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getRounds,
       jaApiCalls.getBallotManifestFile(manifestMocks.empty),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),
@@ -295,7 +296,7 @@ describe('JA setup', () => {
   it('submits batch tallies', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings,
+      jaApiCalls.getSettings(auditSettings.batchComparisonAll),
       jaApiCalls.getRounds,
       jaApiCalls.getBallotManifestFile(manifestMocks.processed),
       jaApiCalls.getBatchTalliesFile(talliesMocks.empty),

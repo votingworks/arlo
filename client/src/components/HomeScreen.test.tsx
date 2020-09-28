@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { withMockFetch, renderWithRouter } from './testUtilities'
 import App from '../App'
 import { aaApiCalls, jaApiCalls } from './MultiJurisdictionAudit/_mocks'
+import { auditSettings } from './MultiJurisdictionAudit/useSetupMenuItems/_mocks'
 
 const apiCalls = {
   unauthenticatedUser: {
@@ -78,8 +79,8 @@ const setupScreenCalls = [
   aaApiCalls.getRounds,
   aaApiCalls.getJurisdictions,
   aaApiCalls.getContests,
-  aaApiCalls.getSettings,
-  aaApiCalls.getSettings,
+  aaApiCalls.getSettings(auditSettings.blank),
+  aaApiCalls.getSettings(auditSettings.blank),
   aaApiCalls.getJurisdictionFile,
 ]
 
@@ -227,7 +228,7 @@ describe('Home screen', () => {
   it('shows a list of audits for jurisdiction admins', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
-      jaApiCalls.getSettings,
+      jaApiCalls.getSettings(auditSettings.blank),
       jaApiCalls.getRounds,
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
       jaApiCalls.getBatchTalliesFile({ file: null, processing: null }),

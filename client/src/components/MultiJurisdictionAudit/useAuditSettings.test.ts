@@ -25,7 +25,7 @@ describe('useAuditSettings', () => {
     } = renderHook(() => useAuditSettings('1'))
 
     await waitForNextUpdate()
-    expect(settings).toStrictEqual(auditSettings.blank)
+    expect(settings).toStrictEqual(null)
   })
 
   it.skip('should update values', async () => {
@@ -55,7 +55,7 @@ describe('useAuditSettings', () => {
     } = renderHook(() => useAuditSettings('1'))
 
     await waitFor(() => {
-      expect(settings).toStrictEqual(auditSettings.blank)
+      expect(settings).toStrictEqual(null)
     })
   })
 

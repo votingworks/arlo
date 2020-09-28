@@ -42,7 +42,7 @@ describe('StatusBox', () => {
             rounds={[]}
             jurisdictions={[]}
             contests={[]}
-            auditSettings={auditSettings.blank}
+            auditSettings={auditSettings.blank!}
           />
         </Router>
       )
@@ -57,7 +57,7 @@ describe('StatusBox', () => {
             rounds={[]}
             jurisdictions={jurisdictionMocks.oneManifest}
             contests={[]}
-            auditSettings={auditSettings.blank}
+            auditSettings={auditSettings.blank!}
           />
         </Router>
       )
@@ -73,7 +73,7 @@ describe('StatusBox', () => {
             rounds={[]}
             jurisdictions={jurisdictionMocks.allManifests}
             contests={[]}
-            auditSettings={auditSettings.blank}
+            auditSettings={auditSettings.blank!}
           />
         </Router>
       )

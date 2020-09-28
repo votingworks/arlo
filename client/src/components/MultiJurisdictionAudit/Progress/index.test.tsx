@@ -105,7 +105,7 @@ describe('Progress screen', () => {
     render(
       <Progress
         jurisdictions={jurisdictionMocks.oneComplete}
-        auditSettings={auditSettings.batchComparisonAll}
+        auditSettings={auditSettings.batchComparisonAll!}
       />
     )
     screen.getByRole('checkbox', {
