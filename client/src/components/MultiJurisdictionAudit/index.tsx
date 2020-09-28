@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { Tag } from '@blueprintjs/core'
@@ -51,6 +51,8 @@ export const AuditAdminView: React.FC = () => {
   const jurisdictions = useJurisdictions(electionId, refreshId)
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
+
+  useEffect(refresh, [refresh])
 
   if (!contests || !rounds || !auditSettings) return null // Still loading
 

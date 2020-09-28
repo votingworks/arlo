@@ -73,6 +73,7 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
+      ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
       aaApiCalls.getSettings(auditSettings.all),
@@ -102,6 +103,7 @@ describe('AA setup flow', () => {
   it('next and back buttons change stages', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
+      ...loadEach,
       ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
@@ -152,6 +154,7 @@ describe('AA setup flow', () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       ...loadEach,
+      ...loadEach,
       aaApiCalls.getSettings(auditSettings.all),
       aaApiCalls.getJurisdictionFile,
     ]
@@ -166,8 +169,8 @@ describe('AA setup flow', () => {
 
       await waitFor(() => {
         expect(queryAllByText('Participants').length).toBe(2)
-        expect(container).toMatchSnapshot()
       })
+      expect(container).toMatchSnapshot()
     })
   })
 
@@ -176,7 +179,7 @@ describe('AA setup flow', () => {
       electionId: '1',
       view: 'progress',
     })
-    const expectedCalls = [aaApiCalls.getUser, ...loadEach]
+    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
     await withMockFetch(expectedCalls, async () => {
       const { container, queryAllByText } = render(
         <AuthDataProvider>
@@ -194,7 +197,7 @@ describe('AA setup flow', () => {
   })
 
   it('redirects to /progress by default', async () => {
-    const expectedCalls = [aaApiCalls.getUser, ...loadEach]
+    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
     const routeProps = routerTestProps('/election/1', { electionId: '1' })
     await withMockFetch(expectedCalls, async () => {
       paramsMock.mockReturnValue({
