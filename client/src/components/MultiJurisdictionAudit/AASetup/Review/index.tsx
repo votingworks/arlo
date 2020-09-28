@@ -49,11 +49,13 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
 
   const talliesUploadsCompleted =
     !!jurisdictions.length &&
+    !!contests &&
     jurisdictions.every(
       j =>
-        j.batchTallies &&
-        j.batchTallies.processing &&
-        j.batchTallies.processing.status === FileProcessingStatus.PROCESSED
+        contests.every(contest => !contest.jurisdictionIds.includes(j.id)) || // don't worry about this jurisdiction if it's not in the contest universe
+        (j.batchTallies &&
+          j.batchTallies.processing &&
+          j.batchTallies.processing.status === FileProcessingStatus.PROCESSED)
     )
   const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(
     electionId,
