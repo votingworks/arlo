@@ -1,4 +1,5 @@
 import uuid
+import io
 from datetime import datetime
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
@@ -7,7 +8,7 @@ import tempfile
 import csv
 
 from . import api
-from ..database import db_session
+from ..database import db_session, engine
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
 from ..util.process_file import (
@@ -23,14 +24,26 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
     assert jurisdiction.cvr_file_id == file.id
 
     def process():
-        cvrs = csv.reader(jurisdiction.cvr_file.contents, delimiter=",")
+        cvrs = csv.reader(io.StringIO(jurisdiction.cvr_file.contents), delimiter=",")
 
         election_name = next(cvrs)[0]
+        print(election_name)
         contest_names_row = next(cvrs)
+        print(contest_names_row)
         contest_choices_row = next(cvrs)
+        print(contest_names_row)
         headers_and_party_affiliations_row = next(cvrs)
+        print(headers_and_party_affiliations_row)
 
-        with tempfile.TemporaryFile() as temp_file:
+        batch_name_to_id = dict(
+            Batch.query.filter_by(jurisdiction_id=jurisdiction.id).values(
+                Batch.name, Batch.id
+            )
+        )
+        print(batch_name_to_id)
+
+        with tempfile.TemporaryFile(mode="w+") as temp_file:
+            temp_csv = csv.writer(temp_file)
             for row in cvrs:
                 [
                     cvr_number,
@@ -42,30 +55,38 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                     ballot_type,
                     *votes,
                 ] = row
-                temp_file.write(
-                    ",".join(
-                        [f"{tabulator_number} - {batch_id}", record_id, imprinted_id,]
-                    )
-                    + "\n"
-                )
+                db_batch_id = batch_name_to_id[f"{tabulator_number} - {batch_id}"]
+                temp_csv.writerow([db_batch_id, record_id, imprinted_id])
 
             temp_file.seek(0)
 
-            connection = session.connection.engine.raw_connection()
-            cursor = connection.cursor()
-            copy_from = """
-                COPY cvr_ballot 
-                FROM STDIN
-                WITH (
-                    FORMAT CSV,
-                    DELIMITER ',',
-                    HEADER
-                );
-            """
-            cursor.copy_expert(copy_from, temp_file)
-            cursor.close()
-            connection.commit()
-            connection.close()
+            connection = engine.raw_connection()
+            try:
+                cursor = connection.cursor()
+                cursor.execute(
+                    f"""
+                    DELETE FROM cvr_ballot
+                    WHERE batch_id IN (
+                        SELECT id FROM batch
+                        WHERE jurisdiction_id = '{jurisdiction.id}'
+                    );
+                    """
+                )
+                cursor.copy_expert(
+                    """
+                    COPY cvr_ballot 
+                    FROM STDIN
+                    WITH (
+                        FORMAT CSV,
+                        DELIMITER ','
+                    );
+                    """,
+                    temp_file,
+                )
+                cursor.close()
+                connection.commit()
+            finally:
+                connection.close()
 
     process_file(session, file, process)
 

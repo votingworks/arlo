@@ -5,9 +5,10 @@ from server.app import app
 from server.database import db_session
 from server.models import *  # pylint: disable=wildcard-import
 from server.api.routes import compute_sample_sizes
+from server.util.jurisdiction_bulk_update import process_jurisdictions_file
 from server.api.ballot_manifest import process_ballot_manifest_file
 from server.api.batch_tallies import process_batch_tallies_file
-from server.util.jurisdiction_bulk_update import process_jurisdictions_file
+from server.api.cvrs import process_cvr_file
 
 
 def bgcompute():
@@ -15,6 +16,7 @@ def bgcompute():
     bgcompute_update_election_jurisdictions_file()
     bgcompute_update_ballot_manifest_file()
     bgcompute_update_batch_tallies_file()
+    bgcompute_update_cvr_file()
 
 
 def bgcompute_compute_round_contests_sample_sizes():
@@ -161,6 +163,39 @@ def bgcompute_update_batch_tallies_file() -> int:
         except Exception:
             app.logger.exception(
                 f"ERROR updating batch tallies file. election_id: {election_id}, jurisdiction_id: {jurisdiction_id}"
+            )
+
+    return len(files)
+
+
+def bgcompute_update_cvr_file() -> int:
+    files = (
+        File.query.join(Jurisdiction, File.id == Jurisdiction.cvr_file_id)
+        .filter(File.processing_started_at.is_(None))
+        .all()
+    )
+
+    for file in files:
+        try:
+            jurisdiction = Jurisdiction.query.filter_by(cvr_file_id=file.id).one()
+
+            # Save ids in variables so we can log them even if some
+            # error happens and the ORM objects are borked
+            election_id = jurisdiction.election_id
+            jurisdiction_id = jurisdiction.id
+
+            app.logger.info(
+                f"START updating CVR file. election_id: {election_id}, jurisdiction_id: {jurisdiction_id}"
+            )
+
+            process_cvr_file(db_session, jurisdiction, file)
+
+            app.logger.info(
+                f"DONE updating CVR file. election_id: {election_id}, jurisdiction_id: {jurisdiction_id}"
+            )
+        except Exception:
+            app.logger.exception(
+                f"ERROR updating CVR file. election_id: {election_id}, jurisdiction_id: {jurisdiction_id}"
             )
 
     return len(files)
