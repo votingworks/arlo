@@ -597,6 +597,18 @@ class BatchResult(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("batch_id", "contest_choice_id"),)
 
 
+class CvrBallot(Base):
+    # batch_id = Column(
+    #     String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
+    # )
+    # id = Column(String(200), nullable=False, primary_key=True)
+    batch_name = Column(String(200), nullable=False)
+    ballot_position = Column(Integer, nullable=False)
+    imprinted_id = Column(String(200), nullable=False)
+
+    __table_args__ = (PrimaryKeyConstraint("batch_name", "ballot_position"),)
+
+
 class File(BaseModel):
     id = Column(String(200), primary_key=True)
     name = Column(String(250), nullable=False)
