@@ -12,9 +12,10 @@ import {
 import { api } from '../utilities'
 import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
-import Ballot, { IBallot } from './Ballot'
+import Ballot from './Ballot'
 import SignOff from './SignOff'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
+import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 
 const PaddedInner = styled(Inner)`
   padding-top: 30px;

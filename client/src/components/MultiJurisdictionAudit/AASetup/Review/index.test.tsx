@@ -159,7 +159,7 @@ describe('Audit Setup > Review & Launch', () => {
     const expectedCalls = [
       apiCalls.getSettings(settingsMock.batch),
       apiCalls.getJurisdictions({
-        jurisdictions: jurisdictionMocks.allManifestsAndTallies,
+        jurisdictions: jurisdictionMocks.allManifestsAllTallies,
       }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),

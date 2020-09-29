@@ -16,7 +16,7 @@ const StyledTable = styled.table`
   th,
   td {
     margin: 0;
-    padding: 0.5rem;
+    padding: 0.5rem 0.4rem;
     text-align: left;
   }
 
@@ -82,7 +82,9 @@ export const Table = <T extends object>({ data, columns }: ITableProps<T>) => {
                 column.getSortByToggleProps({ title: column.Header })
               )}
             >
-              {column.render('Header')}
+              <span style={{ marginRight: '3px' }}>
+                {column.render('Header')}
+              </span>
               <span>
                 {column.isSorted ? (
                   column.isSortedDesc ? (

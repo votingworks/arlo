@@ -189,7 +189,7 @@ def serialize_members(audit_board):
     "/election/<election_id>/jurisdiction/<jurisdiction_id>/round/<round_id>/audit-board",
     methods=["GET"],
 )
-@restrict_access([UserType.JURISDICTION_ADMIN])
+@restrict_access([UserType.AUDIT_ADMIN, UserType.JURISDICTION_ADMIN])
 def list_audit_boards(
     election: Election,  # pylint: disable=unused-argument
     jurisdiction: Jurisdiction,

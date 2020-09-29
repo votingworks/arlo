@@ -4,12 +4,12 @@ import { H5 } from '@blueprintjs/core'
 import { Field, Formik, Form, FormikProps } from 'formik'
 import styled from 'styled-components'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
-import { IRound } from '../useRoundsJurisdictionAdmin'
 import Card from '../../Atoms/SpacedCard'
 import FormField from '../../Atoms/Form/FormField'
 import FormButton from '../../Atoms/Form/FormButton'
 import { testNumber } from '../../utilities'
 import useBatchResults, { IResultValues } from './useBatchResults'
+import { IRound } from '../useRoundsAuditAdmin'
 
 const BottomButton = styled(FormButton)`
   margin: 30px 0;

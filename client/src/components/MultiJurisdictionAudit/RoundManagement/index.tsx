@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { ButtonGroup, Button, H2, H3 } from '@blueprintjs/core'
 import { Wrapper } from '../../Atoms/Wrapper'
-import { IRound } from '../useRoundsJurisdictionAdmin'
-import { IBallot } from '../../../types'
-import { api, apiDownload } from '../../utilities'
+import { IAuditSettings } from '../../../types'
+import { apiDownload } from '../../utilities'
 import CreateAuditBoards from './CreateAuditBoards'
 import RoundProgress from './RoundProgress'
 import {
@@ -19,6 +18,8 @@ import RoundDataEntry from './RoundDataEntry'
 import useAuditSettingsJurisdictionAdmin from './useAuditSettingsJurisdictionAdmin'
 import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { useAuthDataContext } from '../../UserContext'
+import useBallots, { IBallot } from './useBallots'
+import { IRound } from '../useRoundsAuditAdmin'
 
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
@@ -51,25 +52,7 @@ const RoundManagement = ({
     jurisdictionId: string
   }>()
   const { meta } = useAuthDataContext()
-
-  const [ballots, setBallots] = useState<IBallot[] | null>(null)
-  useEffect(() => {
-    ;(async () => {
-      const response = await api<{ ballots: IBallot[] }>(
-        `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${round.id}/ballots`
-      )
-      if (!response) return
-      setBallots(response.ballots)
-    })()
-  }, [
-    electionId,
-    jurisdictionId,
-    round,
-    // We need to reload the ballots after we create the audit boards in order
-    // to populate ballot.auditBoard
-    auditBoards,
-  ])
-
+  const ballots = useBallots(electionId, jurisdictionId, round.id, auditBoards)
   const auditSettings = useAuditSettingsJurisdictionAdmin(
     electionId,
     jurisdictionId
@@ -107,60 +90,15 @@ const RoundManagement = ({
         <StrongP>
           {ballots.length} ballots to audit in Round {roundNum}
         </StrongP>
-        <ButtonGroup vertical alignText="left">
-          <Button
-            icon="th"
-            onClick={
-              /* istanbul ignore next */ // tested in generateSheets.test.tsx
-              () =>
-                apiDownload(
-                  `/election/${electionId}/jurisdiction/${
-                    jurisdiction.id
-                  }/round/${round.id}/${
-                    auditSettings.auditType === 'BALLOT_POLLING'
-                      ? 'ballots'
-                      : 'batches'
-                  }/retrieval-list`
-                )
-            }
-          >
-            Download Aggregated{' '}
-            {auditSettings.auditType === 'BALLOT_POLLING' ? 'Ballot' : 'Batch'}{' '}
-            Retrieval List
-          </Button>
-          <Button
-            icon="document"
-            onClick={
-              /* istanbul ignore next */ // tested in generateSheets.test.tsx
-              () => downloadPlaceholders(roundNum, ballots, jurisdiction)
-            }
-          >
-            Download Placeholder Sheets
-          </Button>
-          <Button
-            icon="label"
-            onClick={
-              /* istanbul ignore next */ // tested in generateSheets.test.tsx
-              () => downloadLabels(roundNum, ballots, jurisdiction)
-            }
-          >
-            Download Ballot Labels
-          </Button>
-          {auditSettings.online && (
-            <>
-              <Button
-                icon="key"
-                onClick={
-                  /* istanbul ignore next */ // tested in generateSheets.test.tsx
-                  () => downloadAuditBoardCredentials(auditBoards, jurisdiction)
-                }
-              >
-                Download Audit Board Credentials
-              </Button>
-              <QRs passphrases={auditBoards.map(b => b.passphrase)} />
-            </>
-          )}
-        </ButtonGroup>
+        <JAFileDownloadButtons
+          electionId={electionId}
+          jurisdictionId={jurisdictionId}
+          jurisdictionName={jurisdiction.name}
+          round={round}
+          auditSettings={auditSettings}
+          ballots={ballots}
+          auditBoards={auditBoards}
+        />
       </SpacedDiv>
       <SpacedDiv>
         {auditSettings.auditType === 'BATCH_COMPARISON' ? (
@@ -174,5 +112,97 @@ const RoundManagement = ({
     </PaddedWrapper>
   )
 }
+
+export interface IJAFileDownloadButtonsProps {
+  electionId: string
+  jurisdictionId: string
+  jurisdictionName: string
+  round: IRound
+  auditSettings: IAuditSettings
+  ballots: IBallot[]
+  auditBoards: IAuditBoard[]
+}
+
+export const JAFileDownloadButtons = ({
+  electionId,
+  jurisdictionId,
+  jurisdictionName,
+  round,
+  auditSettings,
+  ballots,
+  auditBoards,
+}: IJAFileDownloadButtonsProps) => (
+  <ButtonGroup vertical alignText="left">
+    <Button
+      icon="th"
+      onClick={
+        /* istanbul ignore next */ // tested in generateSheets.test.tsx
+        () =>
+          apiDownload(
+            `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${
+              round.id
+            }/${
+              auditSettings.auditType === 'BALLOT_POLLING'
+                ? 'ballots'
+                : 'batches'
+            }/retrieval-list`
+          )
+      }
+    >
+      Download Aggregated{' '}
+      {auditSettings.auditType === 'BALLOT_POLLING' ? 'Ballot' : 'Batch'}{' '}
+      Retrieval List
+    </Button>
+    <Button
+      icon="document"
+      onClick={
+        /* istanbul ignore next */ // tested in generateSheets.test.tsx
+        () =>
+          downloadPlaceholders(
+            round.roundNum,
+            ballots,
+            jurisdictionName,
+            auditSettings.auditName
+          )
+      }
+    >
+      Download Placeholder Sheets
+    </Button>
+    <Button
+      icon="label"
+      onClick={
+        /* istanbul ignore next */ // tested in generateSheets.test.tsx
+        () =>
+          downloadLabels(
+            round.roundNum,
+            ballots,
+            jurisdictionName,
+            auditSettings.auditName
+          )
+      }
+    >
+      Download Ballot Labels
+    </Button>
+    {auditSettings.online && (
+      <>
+        <Button
+          icon="key"
+          onClick={
+            /* istanbul ignore next */ // tested in generateSheets.test.tsx
+            () =>
+              downloadAuditBoardCredentials(
+                auditBoards,
+                jurisdictionName,
+                auditSettings.auditName
+              )
+          }
+        >
+          Download Audit Board Credentials
+        </Button>
+        <QRs passphrases={auditBoards.map(b => b.passphrase)} />
+      </>
+    )}
+  </ButtonGroup>
+)
 
 export default RoundManagement

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../utilities'
-import { IRound } from './useRoundsJurisdictionAdmin'
+import { hashBy } from '../../utils/array'
+import { IRound } from './useRoundsAuditAdmin'
 
 export interface IAuditBoardMember {
   name: string
@@ -59,6 +60,7 @@ const useAuditBoards = (
 ] => {
   const [auditBoards, setAuditBoards] = useState<IAuditBoard[] | null>(null)
 
+  const roundsHash = hashBy(rounds, r => r.id)
   useEffect(() => {
     ;(async () => {
       if (!rounds) return setAuditBoards(null)
@@ -68,7 +70,7 @@ const useAuditBoards = (
         await getAuditBoards(electionId, jurisdictionId, roundId)
       )
     })()
-  }, [electionId, jurisdictionId, rounds])
+  }, [electionId, jurisdictionId, roundsHash]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const createAuditBoards = async (
     boards: { name: string }[]

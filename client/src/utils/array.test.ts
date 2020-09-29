@@ -1,4 +1,4 @@
-import { groupBy, sortBy } from './array'
+import { groupBy, sortBy, hashBy } from './array'
 
 test('groupBy', () => {
   expect(groupBy([], () => '')).toEqual({})
@@ -23,4 +23,13 @@ test('sortBy', () => {
     { a: 'b' },
     { a: 'c' },
   ])
+})
+
+test('hashBy', () => {
+  expect(hashBy(null, () => 1)).toEqual(null)
+  expect(hashBy([], () => 1)).toEqual('')
+  expect(hashBy([2, 1, 3, 2], x => x)).toEqual('2;1;3;2')
+  expect(hashBy([{ a: 'b' }, { a: 'c' }, { a: 'a' }], x => x.a)).toEqual(
+    'b;c;a'
+  )
 })

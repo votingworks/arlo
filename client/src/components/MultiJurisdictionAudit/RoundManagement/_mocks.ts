@@ -1,5 +1,8 @@
 import { IBatch } from './useBatchResults'
-import { IRound } from '../useRoundsJurisdictionAdmin'
+import { IRound } from '../useRoundsAuditAdmin'
+import { BallotStatus } from '../../../types'
+import { IBallot } from './useBallots'
+import { auditBoardMocks } from '../useSetupMenuItems/_mocks'
 
 export interface INullResultValues {
   [contestId: string]: {
@@ -141,5 +144,3 @@ export const batchesMocks: {
     ],
   },
 }
-
-export default resultsMocks

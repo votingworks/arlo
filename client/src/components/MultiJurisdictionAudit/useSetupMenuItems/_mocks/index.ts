@@ -8,8 +8,8 @@ import {
   JurisdictionRoundStatus,
   IBallotManifestInfo,
 } from '../../useJurisdictions' // uses IFileInfo instead of IBallotManifest and allows `file: null`
-import { IRound } from '../../useRoundsJurisdictionAdmin' // has roundNum
 import { IAuditBoard } from '../../useAuditBoards'
+import { IRound } from '../../useRoundsAuditAdmin'
 
 export const manifestFile = new File(
   [readFileSync(join(__dirname, './test_manifest.csv'), 'utf8')],
@@ -39,6 +39,7 @@ export const auditSettings: {
     randomSeed: null,
     riskLimit: null,
     auditType: 'BALLOT_POLLING',
+    auditName: 'Test Audit',
   },
   blankBatch: {
     state: null,
@@ -47,6 +48,7 @@ export const auditSettings: {
     randomSeed: null,
     riskLimit: null,
     auditType: 'BATCH_COMPARISON',
+    auditName: 'Test Audit',
   },
   onlyState: {
     state: 'AL',
@@ -55,6 +57,7 @@ export const auditSettings: {
     randomSeed: null,
     riskLimit: null,
     auditType: 'BALLOT_POLLING',
+    auditName: 'Test Audit',
   },
   otherSettings: {
     state: null,
@@ -63,6 +66,7 @@ export const auditSettings: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
+    auditName: 'Test Audit',
   },
   all: {
     state: 'AL',
@@ -71,6 +75,7 @@ export const auditSettings: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
+    auditName: 'Test Audit',
   },
   offlineAll: {
     state: 'AL',
@@ -79,6 +84,7 @@ export const auditSettings: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
+    auditName: 'Test Audit',
   },
   batchComparisonAll: {
     state: 'AL',
@@ -87,6 +93,7 @@ export const auditSettings: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BATCH_COMPARISON',
+    auditName: 'Test Audit',
   },
 }
 
@@ -208,7 +215,69 @@ export const talliesMocks: { [key: string]: IFileInfo } = {
 
 export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
   empty: [],
+  // Setup - Ballot polling
   noManifests: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.empty,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.empty,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.empty,
+      currentRoundStatus: null,
+    },
+  ],
+  oneManifest: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.errored,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.empty,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
+      currentRoundStatus: null,
+    },
+  ],
+  allManifests: [
+    {
+      id: 'jurisdiction-id-1',
+      name: 'Jurisdiction 1',
+      ballotManifest: manifestMocks.processed,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-2',
+      name: 'Jurisdiction 2',
+      ballotManifest: manifestMocks.processed,
+      currentRoundStatus: null,
+    },
+    {
+      id: 'jurisdiction-id-3',
+      name: 'Jurisdiction 3',
+      ballotManifest: manifestMocks.processed,
+      currentRoundStatus: null,
+    },
+  ],
+  // Setup - Batch comparison
+  noManifestsNoTallies: [
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
@@ -231,7 +300,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: null,
     },
   ],
-  oneManifest: [
+  twoManifestsOneTallies: [
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
@@ -242,29 +311,6 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
     {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
-      ballotManifest: manifestMocks.empty,
-      batchTallies: talliesMocks.empty,
-      currentRoundStatus: null,
-    },
-    {
-      id: 'jurisdiction-id-3',
-      name: 'Jurisdiction 3',
-      ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.empty,
-      currentRoundStatus: null,
-    },
-  ],
-  allManifests: [
-    {
-      id: 'jurisdiction-id-1',
-      name: 'Jurisdiction 1',
-      ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.empty,
-      currentRoundStatus: null,
-    },
-    {
-      id: 'jurisdiction-id-2',
-      name: 'Jurisdiction 2',
       ballotManifest: manifestMocks.processed,
       batchTallies: talliesMocks.empty,
       currentRoundStatus: null,
@@ -273,11 +319,11 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
       ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.empty,
+      batchTallies: talliesMocks.processed,
       currentRoundStatus: null,
     },
   ],
-  allManifestsAndTallies: [
+  allManifestsAllTallies: [
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
@@ -300,12 +346,13 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       currentRoundStatus: null,
     },
   ],
+  // In progress - Batch comparison (can also be used for ballot polling)
   oneComplete: [
     {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
       ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.empty,
+      batchTallies: talliesMocks.processed,
       currentRoundStatus: {
         status: JurisdictionRoundStatus.IN_PROGRESS,
         numUniqueAudited: 4,
@@ -318,7 +365,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
       ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.empty,
+      batchTallies: talliesMocks.processed,
       currentRoundStatus: {
         status: JurisdictionRoundStatus.NOT_STARTED,
         numUniqueAudited: 0,
@@ -331,7 +378,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
       ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.empty,
+      batchTallies: talliesMocks.processed,
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
         numUniqueAudited: 30,
@@ -346,7 +393,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       id: 'jurisdiction-id-1',
       name: 'Jurisdiction 1',
       ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.empty,
+      batchTallies: talliesMocks.processed,
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
         numUniqueAudited: 10,
@@ -359,7 +406,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       id: 'jurisdiction-id-2',
       name: 'Jurisdiction 2',
       ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.empty,
+      batchTallies: talliesMocks.processed,
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
         numUniqueAudited: 20,
@@ -372,7 +419,7 @@ export const jurisdictionMocks: { [key: string]: IJurisdiction[] } = {
       id: 'jurisdiction-id-3',
       name: 'Jurisdiction 3',
       ballotManifest: manifestMocks.processed,
-      batchTallies: talliesMocks.empty,
+      batchTallies: talliesMocks.processed,
       currentRoundStatus: {
         status: JurisdictionRoundStatus.COMPLETE,
         numUniqueAudited: 30,

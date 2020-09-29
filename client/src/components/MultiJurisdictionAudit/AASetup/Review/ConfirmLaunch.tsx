@@ -2,15 +2,6 @@ import React from 'react'
 import { Classes, Dialog, Intent } from '@blueprintjs/core'
 import FormButton from '../../../Atoms/Form/FormButton'
 
-export interface IDialogExampleState {
-  autoFocus: boolean
-  canEscapeKeyClose: boolean
-  canOutsideClickClose: boolean
-  enforceFocus: boolean
-  isOpen: boolean
-  usePortal: boolean
-}
-
 const ConfirmLaunch = ({
   isOpen,
   handleClose,

@@ -7,6 +7,8 @@ import {
 } from './useSetupMenuItems/_mocks'
 import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileStatus'
 import { IAuditSettings } from '../../types'
+import { IBallot } from './RoundManagement/useBallots'
+import { IAuditBoard } from './useAuditBoards'
 
 const manifestFormData: FormData = new FormData()
 manifestFormData.append('manifest', manifestFile, manifestFile.name)
@@ -90,6 +92,15 @@ export const jaApiCalls = {
     },
     response: { status: 'ok' },
   },
+  getAuditBoards: (auditBoards: IAuditBoard[]) => ({
+    url:
+      '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/audit-board',
+    response: { auditBoards },
+  }),
+  getBallots: (ballots: IBallot[]) => ({
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/round/round-1/ballots',
+    response: { ballots },
+  }),
 }
 
 export const aaApiCalls = {

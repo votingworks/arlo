@@ -24,3 +24,10 @@ export function sortBy<T>(arr: T[], keyFn: (elt: T) => number | string): T[] {
     return 0
   })
 }
+
+export function hashBy<T>(
+  arr: T[] | null,
+  hashFn: (elt: T) => number | string
+): string | null {
+  return arr && arr.map(hashFn).join(';')
+}
