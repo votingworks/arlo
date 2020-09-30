@@ -1,7 +1,7 @@
 import io, json
-import pytest
 from typing import List
 from flask.testing import FlaskClient
+import pytest
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
@@ -68,7 +68,11 @@ CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,R
 
 
 def test_cvr_upload(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], manifests
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
@@ -112,10 +116,33 @@ def test_cvr_upload(
         },
     )
 
-    cvrs = (
+    cvr_ballots = (
         CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
     )
-    for cvr in cvrs:
-        print(cvr.imprinted_id)
-    assert len(cvrs) == 15
+    assert len(cvr_ballots) == 15
+    snapshot.assert_match(
+        [
+            dict(
+                batch_name=cvr.batch.name,
+                ballot_position=cvr.ballot_position,
+                imprinted_id=cvr.imprinted_id,
+                interpretations=[
+                    dict(
+                        contest_name=interpretation.contest_name,
+                        contest_choice_name=interpretation.contest_choice_name,
+                        is_voted_for=interpretation.is_voted_for,
+                    )
+                    for interpretation in cvr.interpretations
+                ],
+            )
+            for cvr in cvr_ballots
+        ]
+    )
+    snapshot.assert_match(
+        Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
+    )
 
+
+# TODO
+# - copy all the tests from test_batch_tallies.py
+# - test a bunch of CVR parse errors

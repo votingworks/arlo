@@ -121,6 +121,7 @@ class Jurisdiction(BaseModel):
     # create a CvrBallot for each row.
     cvr_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
     cvr_file = relationship("File", foreign_keys=[cvr_file_id])
+    cvr_contests_metadata = Column(JSON)
 
     batches = relationship(
         "Batch", back_populates="jurisdiction", uselist=True, passive_deletes=True
@@ -607,12 +608,39 @@ class CvrBallot(Base):
     batch_id = Column(
         String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
     )
-    # id = Column(String(200), nullable=False, primary_key=True)
-    # batch_name = Column(String(200), nullable=False)
+    batch = relationship("Batch")
     ballot_position = Column(Integer, nullable=False)
     imprinted_id = Column(String(200), nullable=False)
 
+    interpretations = relationship(
+        "CvrBallotInterpretation",
+        uselist=True,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
     __table_args__ = (PrimaryKeyConstraint("batch_id", "ballot_position"),)
+
+
+class CvrBallotInterpretation(Base):
+    batch_id = Column(
+        String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
+    )
+    ballot_position = Column(Integer, nullable=False)
+    contest_name = Column(String, nullable=False)
+    contest_choice_name = Column(String, nullable=False)
+    is_voted_for = Column(Boolean)  # null means this contest wasn't on the ballot
+
+    __table_args__ = (
+        PrimaryKeyConstraint(
+            "batch_id", "ballot_position", "contest_name", "contest_choice_name"
+        ),
+        ForeignKeyConstraint(
+            ["batch_id", "ballot_position"],
+            ["cvr_ballot.batch_id", "cvr_ballot.ballot_position"],
+            ondelete="cascade",
+        ),
+    )
 
 
 class File(BaseModel):
