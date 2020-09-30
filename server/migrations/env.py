@@ -75,7 +75,7 @@ def run_migrations_online():
     """
     connectable = config.attributes.get("connection", None)
 
-    if connectable is None:
+    if connectable is None:  # pragma: no cover
         connectable = engine_from_config(
             config.get_section(config.config_ini_section),
             prefix="sqlalchemy.",

@@ -116,6 +116,13 @@ class Jurisdiction(BaseModel):
     batch_tallies_file = relationship("File", foreign_keys=[batch_tallies_file_id])
     batch_tallies = Column(JSON)
 
+    # The CVR file (only used in ballot comparison audits), tells us all of the
+    # recorded votes for each ballot in the election. We load this file and
+    # create a CvrBallot for each row.
+    cvr_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
+    cvr_file = relationship("File", foreign_keys=[cvr_file_id])
+    cvr_contests_metadata = Column(JSON)
+
     batches = relationship(
         "Batch", back_populates="jurisdiction", uselist=True, passive_deletes=True
     )
@@ -595,6 +602,24 @@ class BatchResult(BaseModel):
     result = Column(Integer, nullable=False)
 
     __table_args__ = (PrimaryKeyConstraint("batch_id", "contest_choice_id"),)
+
+
+# Only used in ballot comparison audits, a CvrBallot stores one row from the
+# cast-vote record (CVR) uploaded by a jurisdiction. We compare this record to
+# the audit board's interpretation of the ballot.
+class CvrBallot(Base):
+    batch_id = Column(
+        String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
+    )
+    batch = relationship("Batch")
+    ballot_position = Column(Integer, nullable=False)
+    imprinted_id = Column(String(200), nullable=False)
+    # We store the raw string of 0s and 1s from the CVR row to make insertion
+    # fast. We parse them when needed by the audit math using the contest
+    # headers saved in Juridsiction.cvr_contests_metadata.
+    interpretations = Column(Text, nullable=False)
+
+    __table_args__ = (PrimaryKeyConstraint("batch_id", "ballot_position"),)
 
 
 class File(BaseModel):

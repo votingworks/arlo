@@ -46,7 +46,7 @@ def reset_db():
     init_db()
 
 
-def clear_db():
+def clear_db():  # pragma: no cover
     # pylint: disable=wildcard-import,import-outside-toplevel,unused-import
     import server.models
 
