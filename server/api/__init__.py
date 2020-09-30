@@ -11,6 +11,7 @@ from . import routes
 from . import election_settings
 from . import contests
 from . import jurisdictions
+from . import standardized_contests
 from . import rounds
 from . import sample_sizes
 from . import ballot_manifest

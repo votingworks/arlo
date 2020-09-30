@@ -81,10 +81,25 @@ class Election(BaseModel):
         order_by="Round.round_num",
     )
 
+    # The jurisdictions file contains a list of jurisdictions participating in
+    # the audit and emails for the admins of each jurisdiction. We use this to
+    # create Jurisdictions and JAs.
     jurisdictions_file_id = Column(
         String(200), ForeignKey("file.id", ondelete="set null")
     )
-    jurisdictions_file = relationship("File")
+    jurisdictions_file = relationship("File", foreign_keys=[jurisdictions_file_id])
+
+    # The standardized contests file (only used in ballot comparison audits)
+    # contains a list of all possible contests and the corresponding list of
+    # jurisdictions for those contests. The AA will select some of these
+    # contests to target in the audit.
+    standardized_contests_file_id = Column(
+        String(200), ForeignKey("file.id", ondelete="set null")
+    )
+    standardized_contests_file = relationship(
+        "File", foreign_keys=[standardized_contests_file_id]
+    )
+    standardized_contests = Column(JSON)
 
     __table_args__ = (UniqueConstraint("organization_id", "audit_name"),)
 
@@ -249,9 +264,10 @@ class Contest(BaseModel):
     name = Column(String(200), nullable=False)
     # is_targeted = True for targeted contests, False for opportunistic contests
     is_targeted = Column(Boolean, nullable=False)
-    total_ballots_cast = Column(Integer, nullable=False)
-    num_winners = Column(Integer, nullable=False)
-    votes_allowed = Column(Integer, nullable=False)
+
+    total_ballots_cast = Column(Integer)
+    num_winners = Column(Integer)
+    votes_allowed = Column(Integer)
 
     choices = relationship(
         "ContestChoice",

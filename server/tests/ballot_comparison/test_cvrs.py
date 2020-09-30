@@ -1,51 +1,14 @@
 import io, json
 from typing import List
 from flask.testing import FlaskClient
-import pytest
 
 from ...models import *  # pylint: disable=wildcard-import
 from ..helpers import *  # pylint: disable=wildcard-import
-from ...bgcompute import (
-    bgcompute_update_cvr_file,
-    bgcompute_update_ballot_manifest_file,
-)
+from ...bgcompute import bgcompute_update_cvr_file
 from ...util.process_file import ProcessingStatus
 
 
-@pytest.fixture
-def election_id(client: FlaskClient, org_id: str, request):
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    return create_election(
-        client,
-        audit_name=f"Test Audit {request.node.name}",
-        audit_type=AuditType.BALLOT_COMPARISON,
-        organization_id=org_id,
-    )
-
-
-@pytest.fixture
-def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]):
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
-        data={
-            "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"1 - 1,23\n"
-                    b"1 - 2,101\n"
-                    b"2 - 1,122\n"
-                    b"2 - 2,400"
-                ),
-                "manifest.csv",
-            )
-        },
-    )
-    assert_ok(rv)
-    bgcompute_update_ballot_manifest_file()
-
-
-TEST_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
+TEST_CVRS = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
 ,,,,,,,Contest 1 (Vote For=1),Contest 1 (Vote For=1),Contest 2 (Vote For=2),Contest 2 (Vote For=2),Contest 2 (Vote For=2)
 ,,,,,,,Choice 1-1,Choice 1-2,Choice 2-1,Choice 2-2,Choice 2-3
 CvrNumber,TabulatorNum,BatchId,RecordId,ImprintedId,PrecinctPortion,BallotType,REP,DEM,LBR,IND,,
@@ -77,7 +40,7 @@ def test_cvr_upload(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
-        data={"cvrs": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",)},
+        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)
 
