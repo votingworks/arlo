@@ -32,9 +32,7 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
         _election_name = next(cvrs)[0]
         contest_headers = next(cvrs)[7:]
         contest_choices = next(cvrs)[7:]
-        headers_and_affiliations = next(cvrs)
-        _headers = headers_and_affiliations[:7]
-        affiliations = headers_and_affiliations[7:]
+        _headers_and_affiliations = next(cvrs)
 
         # Contest headers look like this: "Presidential Primary (Vote For=1)"
         # We want to parse: contest_name="Presidential Primary", votes_allowed=1
@@ -46,22 +44,20 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             contest_votes_allowed.append(match[2])
 
         interpretation_headers = list(
-            zip(contest_names, contest_votes_allowed, contest_choices, affiliations)
+            zip(contest_names, contest_votes_allowed, contest_choices)
         )
 
         # Parse out metadata about the contests to store - we'll later use this
         # to populate the Contest object.
         contests_metadata = defaultdict(lambda: dict(choices=dict()))
-        for (
-            column,
-            (contest_name, votes_allowed, contest_choice, affiliation),
-        ) in enumerate(interpretation_headers):
+        for column, (contest_name, votes_allowed, contest_choice) in enumerate(
+            interpretation_headers
+        ):
             contests_metadata[contest_name]["votes_allowed"] = votes_allowed
             contests_metadata[contest_name]["choices"][contest_choice] = dict(
                 # Store the column index of this contest choice so we can parse
                 # interpretations later
                 column=column,
-                affiliation=affiliation,
                 num_votes=0,  # Will be counted below
             )
             # Will be counted below
@@ -109,7 +105,7 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                 # Add to our running totals for ContestChoice.num_votes and
                 # Contest.total_ballots_cast
                 contests_on_ballot = set()
-                for (contest_name, _, contest_choice, _), interpretation in zip(
+                for (contest_name, _, contest_choice), interpretation in zip(
                     interpretation_headers, interpretations
                 ):
                     if interpretation:

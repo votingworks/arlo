@@ -103,17 +103,17 @@ snapshots["test_cvr_upload 1"] = [
 snapshots["test_cvr_upload 2"] = {
     "Contest 1": {
         "choices": {
-            "Choice 1-1": {"affiliation": "REP", "column": 0, "num_votes": 6},
-            "Choice 1-2": {"affiliation": "DEM", "column": 1, "num_votes": 6},
+            "Choice 1-1": {"column": 0, "num_votes": 6},
+            "Choice 1-2": {"column": 1, "num_votes": 6},
         },
         "total_ballots_cast": 12,
         "votes_allowed": "1",
     },
     "Contest 2": {
         "choices": {
-            "Choice 2-1": {"affiliation": "LBR", "column": 2, "num_votes": 15},
-            "Choice 2-2": {"affiliation": "IND", "column": 3, "num_votes": 7},
-            "Choice 2-3": {"affiliation": "", "column": 4, "num_votes": 8},
+            "Choice 2-1": {"column": 2, "num_votes": 15},
+            "Choice 2-2": {"column": 3, "num_votes": 7},
+            "Choice 2-3": {"column": 4, "num_votes": 8},
         },
         "total_ballots_cast": 15,
         "votes_allowed": "2",
