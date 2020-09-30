@@ -20,7 +20,6 @@ from ..util.process_file import (
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
-from ..util.group_by import group_by
 
 
 def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
@@ -46,24 +45,27 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             contest_names.append(match[1])
             contest_votes_allowed.append(match[2])
 
-        vote_column_headers = list(
+        interpretation_headers = list(
             zip(contest_names, contest_votes_allowed, contest_choices, affiliations)
         )
 
         # Parse out metadata about the contests to store - we'll later use this
-        # to populate the Contest object
-        contests_metadata = defaultdict(dict)
-        for contest_name, choice_tuples in group_by(
-            vote_column_headers, lambda h: h[0]  # contest_name
-        ).items():
-            contests_metadata[contest_name] = dict(
-                votes_allowed=int(choice_tuples[0][1]),  # votes_allowed
-                choices=[
-                    (choice_name, affiliation)
-                    for _, _, choice_name, affiliation in choice_tuples
-                ],
+        # to populate the Contest object.
+        contests_metadata = defaultdict(lambda: dict(choices=dict()))
+        for (
+            column,
+            (contest_name, votes_allowed, contest_choice, affiliation),
+        ) in enumerate(interpretation_headers):
+            contests_metadata[contest_name]["votes_allowed"] = votes_allowed
+            contests_metadata[contest_name]["choices"][contest_choice] = dict(
+                # Store the column index of this contest choice so we can parse
+                # interpretations later
+                column=column,
+                affiliation=affiliation,
+                num_votes=0,  # Will be counted below
             )
-        jurisdiction.cvr_contests_metadata = contests_metadata
+            # Will be counted below
+            contests_metadata[contest_name]["total_ballots_cast"] = 0
 
         batch_name_to_id = dict(
             Batch.query.filter_by(jurisdiction_id=jurisdiction.id).values(
@@ -71,93 +73,93 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             )
         )
 
-        # Now we're at the ballot rows. We store them in two models: CvrBallot
-        # (a row), and CvrBallotInterpretation (a cell in a row). Since we may
-        # have 1-2 million rows, we write this data into tempfiles and load it
-        # into the db using the COPY command (muuuuch faster than INSERT).
+        # Parse ballot rows and store them as CvrBallots. Since we may have
+        # millions of rows, we write this data into a tempfile and load it into
+        # the db using the COPY command (muuuuch faster than INSERT).
         with tempfile.TemporaryFile(mode="w+") as ballots_tempfile:
-            with tempfile.TemporaryFile(mode="w+") as interpretations_tempfile:
-                ballots_csv = csv.writer(ballots_tempfile)
-                interpretations_csv = csv.writer(interpretations_tempfile)
+            ballots_csv = csv.writer(ballots_tempfile)
+            ballots_csv.writerow(
+                ["batch_id", "ballot_position", "imprinted_id", "interpretations"]
+            )
 
-                for row in cvrs:
+            for row in cvrs:
+                [
+                    _cvr_number,
+                    tabulator_number,
+                    batch_id,
+                    record_id,
+                    imprinted_id,
+                    _precinct_portion,
+                    _ballot_type,
+                    *interpretations,
+                ] = row
+                db_batch_id = batch_name_to_id[f"{tabulator_number} - {batch_id}"]
+                ballots_csv.writerow(
                     [
-                        _cvr_number,
-                        tabulator_number,
-                        batch_id,
+                        db_batch_id,
                         record_id,
                         imprinted_id,
-                        _precinct_portion,
-                        _ballot_type,
-                        *votes,
-                    ] = row
-                    db_batch_id = batch_name_to_id[f"{tabulator_number} - {batch_id}"]
-                    ballots_csv.writerow([db_batch_id, record_id, imprinted_id])
+                        # Store the raw interpretation columns to save time/space -
+                        # we can parse them on demand for just the ballots that get
+                        # sampled using the contest metadata we stored above
+                        ",".join(interpretations),
+                    ]
+                )
 
-                    for (contest_name, _, contest_choice, _), vote_str in zip(
-                        vote_column_headers, votes
-                    ):
-                        is_voted_for = {"1": True, "0": False}.get(vote_str, None)
-                        interpretations_csv.writerow(
-                            [
-                                db_batch_id,
-                                record_id,
-                                contest_name,
-                                contest_choice,
-                                is_voted_for,
-                            ]
-                        )
+                # Add to our running totals for ContestChoice.num_votes and
+                # Contest.total_ballots_cast
+                contests_on_ballot = set()
+                for (contest_name, _, contest_choice, _), interpretation in zip(
+                    interpretation_headers, interpretations
+                ):
+                    if interpretation:
+                        contests_metadata[contest_name]["choices"][contest_choice][
+                            "num_votes"
+                        ] += int(interpretation)
+                        contests_on_ballot.add(contest_name)
+                for contest_name in contests_on_ballot:
+                    contests_metadata[contest_name]["total_ballots_cast"] += 1
 
-                ballots_tempfile.seek(0)
-                interpretations_tempfile.seek(0)
+            jurisdiction.cvr_contests_metadata = contests_metadata
 
-                # In order to use COPY, we have to bypass SQLAlchemy and use
-                # the underlying DBAPI (psycogp2). This means these commands
-                # will happen in a separate transaction from the surrounding
-                # context.
-                connection = db_engine.raw_connection()
-                try:
-                    cursor = connection.cursor()
-                    cursor.execute("BEGIN")
-                    cursor.execute(
-                        f"""
+            # In order to use COPY, we have to bypass SQLAlchemy and use
+            # the underlying DBAPI (psycogp2). This means these commands
+            # will happen in a separate transaction from the surrounding
+            # context.
+            connection = db_engine.raw_connection()
+            try:
+                cursor = connection.cursor()
+                cursor.execute("BEGIN")
+                cursor.execute(
+                    f"""
                         DELETE FROM cvr_ballot
                         WHERE batch_id IN (
                             SELECT id FROM batch
                             WHERE jurisdiction_id = '{jurisdiction.id}'
                         )
                         """
-                    )
-                    cursor.copy_expert(
-                        """
+                )
+                ballots_tempfile.seek(0)
+                cursor.copy_expert(
+                    """
                         COPY cvr_ballot
                         FROM STDIN
                         WITH (
                             FORMAT CSV,
-                            DELIMITER ','
+                            DELIMITER ',',
+                            HEADER
                         )
                         """,
-                        ballots_tempfile,
-                    )
-                    cursor.copy_expert(
-                        """
-                        COPY cvr_ballot_interpretation
-                        FROM STDIN
-                        WITH (
-                            FORMAT CSV,
-                            DELIMITER ','
-                        )
-                        """,
-                        interpretations_tempfile,
-                    )
-                    cursor.execute("COMMIT")
-                    cursor.close()
-                    connection.commit()
-                except Exception as exc:
-                    cursor.execute("ROLLBACK")
-                    raise exc
-                finally:
-                    connection.close()
+                    ballots_tempfile,
+                )
+                cursor.execute("COMMIT")
+                cursor.close()
+                connection.commit()
+            except Exception as exc:
+                cursor.execute("ROLLBACK")
+                raise exc
+            finally:
+                connection.close()
 
     process_file(session, file, process)
 

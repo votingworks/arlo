@@ -23,6 +23,7 @@ def upgrade():
         sa.Column("batch_id", sa.String(length=200), nullable=False),
         sa.Column("ballot_position", sa.Integer(), nullable=False),
         sa.Column("imprinted_id", sa.String(length=200), nullable=False),
+        sa.Column("interpretations", sa.Text(), nullable=False),
         sa.ForeignKeyConstraint(
             ["batch_id"],
             ["batch.id"],
@@ -31,33 +32,6 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint(
             "batch_id", "ballot_position", name=op.f("cvr_ballot_pkey")
-        ),
-    )
-    op.create_table(
-        "cvr_ballot_interpretation",
-        sa.Column("batch_id", sa.String(length=200), nullable=False),
-        sa.Column("ballot_position", sa.Integer(), nullable=False),
-        sa.Column("contest_name", sa.String(), nullable=False),
-        sa.Column("contest_choice_name", sa.String(), nullable=False),
-        sa.Column("is_voted_for", sa.Boolean(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["batch_id", "ballot_position"],
-            ["cvr_ballot.batch_id", "cvr_ballot.ballot_position"],
-            name=op.f("cvr_ballot_interpretation_batch_id_ballot_position_fkey"),
-            ondelete="cascade",
-        ),
-        sa.ForeignKeyConstraint(
-            ["batch_id"],
-            ["batch.id"],
-            name=op.f("cvr_ballot_interpretation_batch_id_fkey"),
-            ondelete="cascade",
-        ),
-        sa.PrimaryKeyConstraint(
-            "batch_id",
-            "ballot_position",
-            "contest_name",
-            "contest_choice_name",
-            name=op.f("cvr_ballot_interpretation_pkey"),
         ),
     )
     op.add_column(

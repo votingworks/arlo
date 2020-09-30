@@ -614,38 +614,12 @@ class CvrBallot(Base):
     batch = relationship("Batch")
     ballot_position = Column(Integer, nullable=False)
     imprinted_id = Column(String(200), nullable=False)
-
-    interpretations = relationship(
-        "CvrBallotInterpretation",
-        uselist=True,
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-    )
+    # We store the raw string of 0s and 1s from the CVR row to make insertion
+    # fast. We parse them when needed by the audit math using the contest
+    # headers saved in Juridsiction.cvr_contests_metadata.
+    interpretations = Column(Text, nullable=False)
 
     __table_args__ = (PrimaryKeyConstraint("batch_id", "ballot_position"),)
-
-
-# A CvrBallotInterpretation records one vote for a specific contest choice
-# (i.e. cell) of the CVR for a given CvrBallot (i.e. row).
-class CvrBallotInterpretation(Base):
-    batch_id = Column(
-        String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
-    )
-    ballot_position = Column(Integer, nullable=False)
-    contest_name = Column(String, nullable=False)
-    contest_choice_name = Column(String, nullable=False)
-    is_voted_for = Column(Boolean)  # null means this contest wasn't on the ballot
-
-    __table_args__ = (
-        PrimaryKeyConstraint(
-            "batch_id", "ballot_position", "contest_name", "contest_choice_name"
-        ),
-        ForeignKeyConstraint(
-            ["batch_id", "ballot_position"],
-            ["cvr_ballot.batch_id", "cvr_ballot.ballot_position"],
-            ondelete="cascade",
-        ),
-    )
 
 
 class File(BaseModel):

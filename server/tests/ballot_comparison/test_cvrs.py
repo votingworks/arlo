@@ -84,7 +84,6 @@ def test_cvr_upload(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvr"
     )
-    print(json.loads(rv.data))
     compare_json(
         json.loads(rv.data),
         {
@@ -126,14 +125,7 @@ def test_cvr_upload(
                 batch_name=cvr.batch.name,
                 ballot_position=cvr.ballot_position,
                 imprinted_id=cvr.imprinted_id,
-                interpretations=[
-                    dict(
-                        contest_name=interpretation.contest_name,
-                        contest_choice_name=interpretation.contest_choice_name,
-                        is_voted_for=interpretation.is_voted_for,
-                    )
-                    for interpretation in cvr.interpretations
-                ],
+                interpretations=cvr.interpretations,
             )
             for cvr in cvr_ballots
         ]
