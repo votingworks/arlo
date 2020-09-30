@@ -83,6 +83,40 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
     assert json.loads(rv.data)["organizationId"] == org_id
 
 
+def test_new_batch_comparison_audit(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = post_json(
+        client,
+        "/api/election/new",
+        {
+            "auditName": "Test Audit Batch Comparison",
+            "organizationId": org_id,
+            "isMultiJurisdiction": True,
+            "auditType": "BATCH_COMPARISON",
+        },
+    )
+    assert rv.status_code == 200
+    assert "electionId" in json.loads(rv.data)
+
+
+def test_new_ballot_comparison_audit(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    rv = post_json(
+        client,
+        "/api/election/new",
+        {
+            "auditName": "Test Audit Ballot Comparison",
+            "organizationId": org_id,
+            "isMultiJurisdiction": True,
+            "auditType": "BALLOT_COMPARISON",
+        },
+    )
+    assert rv.status_code == 200
+    assert "electionId" in json.loads(rv.data)
+
+
 def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
     _org1_id, _user1_id = create_org_and_admin(user_email="without-access@example.com")
     org2_id, _user2_id = create_org_and_admin(user_email="with-access@example.com")
@@ -148,7 +182,7 @@ def test_bad_audit_type(client: FlaskClient):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "'NOT A REAL TYPE' is not one of ['BALLOT_POLLING', 'BATCH_COMPARISON']",
+                "message": "'NOT A REAL TYPE' is not one of ['BALLOT_POLLING', 'BATCH_COMPARISON', 'BALLOT_COMPARISON']",
                 "errorType": "Bad Request",
             }
         ]

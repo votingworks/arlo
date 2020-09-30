@@ -29,6 +29,7 @@ class Organization(BaseModel):
 class AuditType(str, enum.Enum):
     BALLOT_POLLING = "BALLOT_POLLING"
     BATCH_COMPARISON = "BATCH_COMPARISON"
+    BALLOT_COMPARISON = "BALLOT_COMPARISON"
 
 
 # Election is a slight misnomer - this model represents an audit.
