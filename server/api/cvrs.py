@@ -29,14 +29,16 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
     def process():
         cvrs = csv.reader(io.StringIO(jurisdiction.cvr_file.contents), delimiter=",")
 
+        # Parse out all the initial metadata
         _election_name = next(cvrs)[0]
-
         contest_headers = next(cvrs)[7:]
         contest_choices = next(cvrs)[7:]
         headers_and_affiliations = next(cvrs)
         _headers = headers_and_affiliations[:7]
         affiliations = headers_and_affiliations[7:]
 
+        # Contest headers look like this: "Presidential Primary (Vote For=1)"
+        # We want to parse: contest_name="Presidential Primary", votes_allowed=1
         contest_names = []
         contest_votes_allowed = []
         for contest_header in contest_headers:
@@ -48,6 +50,8 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             zip(contest_names, contest_votes_allowed, contest_choices, affiliations)
         )
 
+        # Parse out metadata about the contests to store - we'll later use this
+        # to populate the Contest object
         contests_metadata = defaultdict(dict)
         for contest_name, choice_tuples in group_by(
             vote_column_headers, lambda h: h[0]  # contest_name
@@ -67,6 +71,10 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             )
         )
 
+        # Now we're at the ballot rows. We store them in two models: CvrBallot
+        # (a row), and CvrBallotInterpretation (a cell in a row). Since we may
+        # have 1-2 million rows, we write this data into tempfiles and load it
+        # into the db using the COPY command (muuuuch faster than INSERT).
         with tempfile.TemporaryFile(mode="w+") as ballots_tempfile:
             with tempfile.TemporaryFile(mode="w+") as interpretations_tempfile:
                 ballots_csv = csv.writer(ballots_tempfile)
@@ -103,16 +111,21 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                 ballots_tempfile.seek(0)
                 interpretations_tempfile.seek(0)
 
+                # In order to use COPY, we have to bypass SQLAlchemy and use
+                # the underlying DBAPI (psycogp2). This means these commands
+                # will happen in a separate transaction from the surrounding
+                # context.
                 connection = db_engine.raw_connection()
                 try:
                     cursor = connection.cursor()
+                    cursor.execute("BEGIN")
                     cursor.execute(
                         f"""
                         DELETE FROM cvr_ballot
                         WHERE batch_id IN (
                             SELECT id FROM batch
                             WHERE jurisdiction_id = '{jurisdiction.id}'
-                        );
+                        )
                         """
                     )
                     cursor.copy_expert(
@@ -122,7 +135,7 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                         WITH (
                             FORMAT CSV,
                             DELIMITER ','
-                        );
+                        )
                         """,
                         ballots_tempfile,
                     )
@@ -133,12 +146,16 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                         WITH (
                             FORMAT CSV,
                             DELIMITER ','
-                        );
+                        )
                         """,
                         interpretations_tempfile,
                     )
+                    cursor.execute("COMMIT")
                     cursor.close()
                     connection.commit()
+                except Exception as exc:
+                    cursor.execute("ROLLBACK")
+                    raise exc
                 finally:
                     connection.close()
 

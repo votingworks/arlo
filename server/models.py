@@ -604,6 +604,9 @@ class BatchResult(BaseModel):
     __table_args__ = (PrimaryKeyConstraint("batch_id", "contest_choice_id"),)
 
 
+# Only used in ballot comparison audits, a CvrBallot stores one row from the
+# cast-vote record (CVR) uploaded by a jurisdiction. We compare this record to
+# the audit board's interpretation of the ballot.
 class CvrBallot(Base):
     batch_id = Column(
         String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
@@ -622,6 +625,8 @@ class CvrBallot(Base):
     __table_args__ = (PrimaryKeyConstraint("batch_id", "ballot_position"),)
 
 
+# A CvrBallotInterpretation records one vote for a specific contest choice
+# (i.e. cell) of the CVR for a given CvrBallot (i.e. row).
 class CvrBallotInterpretation(Base):
     batch_id = Column(
         String(200), ForeignKey("batch.id", ondelete="cascade"), nullable=False,
