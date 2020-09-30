@@ -53,7 +53,7 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
         for column, (contest_name, votes_allowed, contest_choice) in enumerate(
             interpretation_headers
         ):
-            contests_metadata[contest_name]["votes_allowed"] = votes_allowed
+            contests_metadata[contest_name]["votes_allowed"] = int(votes_allowed)
             contests_metadata[contest_name]["choices"][contest_choice] = dict(
                 # Store the column index of this contest choice so we can parse
                 # interpretations later

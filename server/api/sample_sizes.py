@@ -1,12 +1,46 @@
-from typing import Dict
+import uuid
+from typing import Dict, Union
+import typing
 from flask import jsonify
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
-from ..audit_math import bravo, macro, sampler_contest
+from ..audit_math import bravo, macro, supersimple, sampler_contest
 from . import rounds  # pylint: disable=cyclic-import
+from ..util.jsonschema import JSONDict
+
+
+def set_contest_metadata_from_cvrs(contest: Contest):
+    contest.num_winners = 1  # TODO how do we get this from the CVRs?
+    contest.total_ballots_cast = 0
+
+    for jurisdiction in contest.jurisdictions:
+        cvr_contests_metadata = typing.cast(
+            JSONDict, jurisdiction.cvr_contests_metadata
+        )
+        contest_metadata = cvr_contests_metadata[contest.name]
+        if contest_metadata is None:
+            raise Conflict("Some jurisdictions haven't uploaded their CVRs yet.")
+
+        if not contest.choices:
+            contest.choices = [
+                ContestChoice(
+                    id=str(uuid.uuid4()),
+                    contest_id=contest.id,
+                    name=choice_name,
+                    num_votes=0,
+                )
+                for choice_name in contest_metadata["choices"]
+            ]
+
+        contest.total_ballots_cast += contest_metadata["total_ballots_cast"]
+        contest.votes_allowed = contest_metadata["votes_allowed"]
+        for choice_name, choice_metadata in contest_metadata["choices"].items():
+            choice = next(c for c in contest.choices if c.name == choice_name)
+            choice.num_votes += choice_metadata["num_votes"]
+
 
 # Because the /sample-sizes endpoint is only used for the audit setup flow,
 # we always want it to return the sample size options for the first round.
@@ -19,7 +53,7 @@ def sample_size_options(
         raise BadRequest("Cannot compute sample sizes until contests are set")
     if not election.risk_limit:
         raise BadRequest("Cannot compute sample sizes until risk limit is set")
-    risk_limit: int = election.risk_limit  # Need this to pass typechecking
+    risk_limit = float(election.risk_limit) / 100
 
     def sample_sizes_for_contest(contest: Contest):
         if election.audit_type == AuditType.BALLOT_POLLING:
@@ -30,7 +64,7 @@ def sample_size_options(
             )
 
             sample_size_options = bravo.get_sample_size(
-                float(risk_limit) / 100,
+                risk_limit,
                 sampler_contest.from_db_contest(contest),
                 cumulative_results,
             )
@@ -40,7 +74,7 @@ def sample_size_options(
                 for key, option in sample_size_options.items()
             }
 
-        else:
+        elif election.audit_type == AuditType.BATCH_COMPARISON:
             sample_results = rounds.cumulative_batch_results(election)
             if round_one:
                 sample_results = {
@@ -51,12 +85,33 @@ def sample_size_options(
                     for batch_key, batch_results in sample_results.items()
                 }
             sample_size = macro.get_sample_sizes(
-                float(risk_limit) / 100,
+                risk_limit,
                 sampler_contest.from_db_contest(contest),
                 rounds.batch_tallies(election),
                 sample_results,
             )
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
+
+        else:
+            assert election.audit_type == AuditType.BALLOT_COMPARISON
+
+            set_contest_metadata_from_cvrs(contest)
+            # TODO compute sample_results
+            ballot_comparison_sample_results: Dict[str, Union[int, float]] = {
+                "sample_size": 0,
+                "1-under": 0,
+                "1-over": 0,
+                "2-under": 0,
+                "2-over": 0,
+            }
+            sample_size = supersimple.get_sample_sizes(
+                risk_limit,
+                sampler_contest.from_db_contest(contest),
+                ballot_comparison_sample_results,
+            )
+            return {
+                "supersimple": {"key": "supersimple", "size": sample_size, "prob": None}
+            }
 
     targeted_contests = Contest.query.filter_by(
         election_id=election.id, is_targeted=True

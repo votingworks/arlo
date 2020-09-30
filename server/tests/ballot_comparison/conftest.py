@@ -41,6 +41,22 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         },
     )
     assert_ok(rv)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/ballot-manifest",
+        data={
+            "manifest": (
+                io.BytesIO(
+                    b"Batch Name,Number of Ballots\n"
+                    b"1 - 1,23\n"
+                    b"1 - 2,101\n"
+                    b"2 - 1,122\n"
+                    b"2 - 2,400"
+                ),
+                "manifest.csv",
+            )
+        },
+    )
+    assert_ok(rv)
     bgcompute_update_ballot_manifest_file()
 
 
@@ -54,6 +70,11 @@ def cvrs(
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+    )
+    assert_ok(rv)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/cvrs",
         data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)

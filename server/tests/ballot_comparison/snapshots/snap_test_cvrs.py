@@ -107,7 +107,7 @@ snapshots["test_cvr_upload 2"] = {
             "Choice 1-2": {"column": 1, "num_votes": 6},
         },
         "total_ballots_cast": 12,
-        "votes_allowed": "1",
+        "votes_allowed": 1,
     },
     "Contest 2": {
         "choices": {
@@ -116,6 +116,6 @@ snapshots["test_cvr_upload 2"] = {
             "Choice 2-3": {"column": 4, "num_votes": 8},
         },
         "total_ballots_cast": 15,
-        "votes_allowed": "2",
+        "votes_allowed": 2,
     },
 }
