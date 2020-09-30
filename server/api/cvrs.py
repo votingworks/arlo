@@ -146,7 +146,8 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
 
 
 # Raises if invalid
-def validate_cvr_upload(request: Request):
+def validate_cvr_upload(request: Request):  # pragma: no cover
+    # TODO test
     if "cvr" not in request.files:
         raise BadRequest("Missing required file parameter 'cvr'")
 
@@ -166,7 +167,8 @@ def save_cvr_file(cvr, jurisdiction: Jurisdiction):
 def clear_cvr_file(jurisdiction: Jurisdiction, delete_cvrs: bool = True):
     if jurisdiction.cvr_file_id:
         File.query.filter_by(id=jurisdiction.cvr_file_id).delete()
-    if delete_cvrs:
+    if delete_cvrs:  # pragma: no cover
+        # TODO test
         CvrBallot.query.filter_by(jurisdiction_id=jurisdiction.id).delete()
 
 
@@ -203,7 +205,8 @@ def get_cvr(
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_cvr_file(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-):
+):  # pragma: no cover
+    # TODO test
     if not jurisdiction.cvr_file:
         return NotFound()
 
@@ -216,7 +219,8 @@ def download_cvr_file(
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_cvr(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-):
+):  # pragma: no cover
+    # TODO test
     clear_cvr_file(jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
