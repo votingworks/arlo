@@ -47,6 +47,22 @@ CONTEST_SCHEMA = {
     ],
 }
 
+# In ballot comparison audits, the AA selects contests from the standardized
+# contests file, so we create contests without choices, totalBallotsCast,
+# numWinners, and votesAllowed. We later populate these fields using the
+# metadata in the CVRs that the jurisdictions provide.
+BALLOT_COMPARISON_CONTEST_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "isTargeted": {"type": "boolean"},
+        "jurisdictionIds": {"type": "array", "items": {"type": "string"}},
+    },
+    "additionalProperties": False,
+    "required": ["id", "name", "isTargeted", "jurisdictionIds"],
+}
+
 
 def serialize_contest_choice(contest_choice: ContestChoice) -> JSONDict:
     return {
@@ -89,16 +105,19 @@ def deserialize_contest(contest: JSONDict, election_id: str) -> Contest:
         .filter(Jurisdiction.id.in_(contest["jurisdictionIds"]))
         .all()
     )
-    choices = [deserialize_contest_choice(c, contest["id"]) for c in contest["choices"]]
+    choices = [
+        deserialize_contest_choice(choice, contest["id"])
+        for choice in contest.get("choices", [])
+    ]
     return Contest(
         election_id=election_id,
         id=contest["id"],
         name=contest["name"],
         is_targeted=contest["isTargeted"],
         choices=choices,
-        total_ballots_cast=contest["totalBallotsCast"],
-        num_winners=contest["numWinners"],
-        votes_allowed=contest["votesAllowed"],
+        total_ballots_cast=contest.get("totalBallotsCast", None),
+        num_winners=contest.get("numWinners", None),
+        votes_allowed=contest.get("votesAllowed", None),
         jurisdictions=jurisdictions,
     )
 
@@ -108,7 +127,15 @@ def validate_contests(contests: List[JSONDict], election: Election):
     if len(list(election.rounds)) > 0:
         raise Conflict("Cannot update contests after audit has started.")
 
-    validate(contests, {"type": "array", "items": CONTEST_SCHEMA})
+    validate(
+        contests,
+        {
+            "type": "array",
+            "items": BALLOT_COMPARISON_CONTEST_SCHEMA
+            if election.audit_type == AuditType.BALLOT_COMPARISON
+            else CONTEST_SCHEMA,
+        },
+    )
 
     if not any(contest["isTargeted"] for contest in contests):
         raise BadRequest("Must have at least one targeted contest")
@@ -116,14 +143,15 @@ def validate_contests(contests: List[JSONDict], election: Election):
     if election.audit_type == AuditType.BATCH_COMPARISON and len(contests) > 1:
         raise BadRequest("Batch comparison audits may only have one contest.")
 
-    for contest in contests:
-        total_votes = sum(c["numVotes"] for c in contest["choices"])
-        total_allowed_votes = contest["totalBallotsCast"] * contest["votesAllowed"]
-        if total_votes > total_allowed_votes:
-            raise BadRequest(
-                f"Too many votes cast in contest: {contest['name']}"
-                f" ({total_votes} votes, {total_allowed_votes} allowed)"
-            )
+    if election.audit_type != AuditType.BALLOT_COMPARISON:
+        for contest in contests:
+            total_votes = sum(c["numVotes"] for c in contest["choices"])
+            total_allowed_votes = contest["totalBallotsCast"] * contest["votesAllowed"]
+            if total_votes > total_allowed_votes:
+                raise BadRequest(
+                    f"Too many votes cast in contest: {contest['name']}"
+                    f" ({total_votes} votes, {total_allowed_votes} allowed)"
+                )
 
 
 def round_status_by_contest(
