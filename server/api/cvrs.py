@@ -163,8 +163,8 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
 # Raises if invalid
 def validate_cvr_upload(request: Request):  # pragma: no cover
     # TODO test
-    if "cvr" not in request.files:
-        raise BadRequest("Missing required file parameter 'cvr'")
+    if "cvrs" not in request.files:
+        raise BadRequest("Missing required file parameter 'cvrs'")
 
 
 # We save the CVR file, and bgcompute finds it and processes it in
@@ -188,24 +188,24 @@ def clear_cvr_file(jurisdiction: Jurisdiction, delete_cvrs: bool = True):
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvr", methods=["PUT"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["PUT"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def upload_cvr(
+def upload_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     validate_cvr_upload(request)
     clear_cvr_file(jurisdiction, delete_cvrs=False)
-    save_cvr_file(request.files["cvr"], jurisdiction)
+    save_cvr_file(request.files["cvrs"], jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvr", methods=["GET"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["GET"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def get_cvr(
+def get_cvrs(
     election: Election, jurisdiction: Jurisdiction  # pylint: disable=unused-argument
 ):
     return jsonify(
@@ -215,7 +215,7 @@ def get_cvr(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvr/csv", methods=["GET"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs/csv", methods=["GET"],
 )
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_cvr_file(
@@ -229,10 +229,10 @@ def download_cvr_file(
 
 
 @api.route(
-    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvr", methods=["DELETE"],
+    "/election/<election_id>/jurisdiction/<jurisdiction_id>/cvrs", methods=["DELETE"],
 )
 @restrict_access([UserType.JURISDICTION_ADMIN])
-def clear_cvr(
+def clear_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):  # pragma: no cover
     # TODO test

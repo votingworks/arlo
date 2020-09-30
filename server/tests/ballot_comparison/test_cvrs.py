@@ -76,18 +76,18 @@ def test_cvr_upload(
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.put(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvr",
-        data={"cvr": (io.BytesIO(TEST_CVR.encode()), "cvr.csv",)},
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": (io.BytesIO(TEST_CVR.encode()), "cvrs.csv",)},
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvr"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvr.csv", "uploadedAt": assert_is_date,},
+            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
             "processing": {
                 "status": ProcessingStatus.READY_TO_PROCESS,
                 "startedAt": None,
@@ -100,12 +100,12 @@ def test_cvr_upload(
     bgcompute_update_cvr_file()
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvr"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
     )
     compare_json(
         json.loads(rv.data),
         {
-            "file": {"name": "cvr.csv", "uploadedAt": assert_is_date,},
+            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
             "processing": {
                 "status": ProcessingStatus.PROCESSED,
                 "startedAt": assert_is_date,
