@@ -15,6 +15,8 @@ def test_ballot_comparison_round_1(
     manifests,  # pylint: disable=unused-argument
     cvrs,  # pylint: disable=unused-argument
 ):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
     # AA uploads standardized contests file
     rv = client.put(
         f"/api/election/{election_id}/standardized-contests/file",
