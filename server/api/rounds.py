@@ -209,7 +209,7 @@ def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
         )
         choices_metadata = cvr_contests_metadata[contest.name]["choices"]
 
-        interpretations_by_draw = (
+        interpretations_query = (
             CvrBallot.query.join(Batch)
             .filter_by(jurisdiction_id=jurisdiction.id)
             .join(
@@ -219,12 +219,23 @@ def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
                     CvrBallot.ballot_position == SampledBallot.ballot_position,
                 ),
             )
-            # TODO diff logic for targeted/opportunistic contests
-            .join(SampledBallotDraw)
-            .values(SampledBallotDraw.ticket_number, CvrBallot.interpretations)
         )
+        # For targeted contests, use the ticket number to key the ballots so
+        # that we count all sample draws
+        if contest.is_targeted:
+            interpretations_by_ballot = (
+                interpretations_query.join(SampledBallotDraw)
+                .filter(SampledBallotDraw.contest_id == contest.id)
+                .values(SampledBallotDraw.ticket_number, CvrBallot.interpretations)
+            )
+        # For opportunistic contests, use the ballot id to key the ballots so
+        # that we only count unique ballots
+        else:
+            interpretations_by_ballot = interpretations_query.values(
+                SampledBallot.id, CvrBallot.interpretations
+            )
 
-        for ticket_number, interpretations_str in interpretations_by_draw:
+        for ballot_key, interpretations_str in interpretations_by_ballot:
             # interpretations is the raw CVR string: 1,0,0,1,0,1,0. We need to
             # pick out the interpretation for each contest choice. We saved the
             # column index for each choice when we parsed the CVR.
@@ -235,10 +246,10 @@ def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
                 # on the ballot, so we should skip this contest entirely for
                 # this ballot.
                 if interpretation == "":
-                    cvrs[ticket_number] = {}
+                    cvrs[ballot_key] = {}
                 else:
                     choice_id = choice_name_to_id[choice_name]
-                    cvrs[ticket_number][contest.id][choice_id] = int(interpretation)
+                    cvrs[ballot_key][contest.id][choice_id] = int(interpretation)
 
     return dict(cvrs)
 
@@ -253,26 +264,38 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS
             assert interpretation == Interpretation.CANT_AGREE
             return 0  # TODO what to do here?
 
-    interpretations = (
-        BallotInterpretation.query.filter_by(contest_id=contest.id)
-        .join(
+    interpretations_query = BallotInterpretation.query.filter_by(
+        contest_id=contest.id
+    ).join(BallotInterpretation.selected_choices)
+    # For targeted contests, use the ticket number to key the ballots so that
+    # we count all sample draws
+    if contest.is_targeted:
+        interpretations = interpretations_query.join(
             SampledBallotDraw,
-            BallotInterpretation.ballot_id == SampledBallotDraw.ballot_id,
-        )
-        .join(BallotInterpretation.selected_choices)
-        .values(
+            and_(
+                BallotInterpretation.ballot_id == SampledBallotDraw.ballot_id,
+                BallotInterpretation.contest_id == SampledBallotDraw.contest_id,
+            ),
+        ).values(
             SampledBallotDraw.ticket_number,
             ContestChoice.id,
             BallotInterpretation.interpretation,
         )
-    )
+    # For opportunistic contests, use the ballot id to key the ballots so that
+    # we only count unique ballots
+    else:
+        interpretations = interpretations_query.values(
+            BallotInterpretation.ballot_id,
+            ContestChoice.id,
+            BallotInterpretation.interpretation,
+        )
 
     cvrs: supersimple.CVRS = defaultdict(
         lambda: {contest.id: {choice.id: 0 for choice in contest.choices}}
     )
 
-    for ticket_number, choice_id, interpretation in interpretations:
-        cvrs[ticket_number][contest.id][choice_id] = interpretation_to_cvr_value(
+    for ballot_key, choice_id, interpretation in interpretations:
+        cvrs[ballot_key][contest.id][choice_id] = interpretation_to_cvr_value(
             interpretation
         )
 

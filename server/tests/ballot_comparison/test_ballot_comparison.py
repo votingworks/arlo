@@ -72,7 +72,7 @@ def test_ballot_comparison_round_1(
                 io.BytesIO(
                     b"Contest Name,Jurisdictions\n"
                     b'Contest 1,"J1,J2"\n'
-                    b"Contest 2,all\n"
+                    b'Contest 2,"J1,J2"\n'
                     b"Contest 3,J2\n"
                 ),
                 "standardized-contests.csv",
@@ -88,6 +88,7 @@ def test_ballot_comparison_round_1(
     standardized_contests = json.loads(rv.data)
 
     target_contest = standardized_contests[0]
+    opportunistic_contest = standardized_contests[1]
     rv = put_json(
         client,
         f"/api/election/{election_id}/contest",
@@ -97,25 +98,32 @@ def test_ballot_comparison_round_1(
                 "name": target_contest["name"],
                 "jurisdictionIds": target_contest["jurisdictionIds"],
                 "isTargeted": True,
-            }
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "name": opportunistic_contest["name"],
+                "jurisdictionIds": opportunistic_contest["jurisdictionIds"],
+                "isTargeted": False,
+            },
         ],
     )
     assert_ok(rv)
 
     # AA selects a sample size and launches the audit
     rv = client.get(f"/api/election/{election_id}/contest")
-    contest = json.loads(rv.data)["contests"][0]
+    contests = json.loads(rv.data)["contests"]
+    target_contest_id = contests[0]["id"]
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_size_options = json.loads(rv.data)["sampleSizes"][contest["id"]]
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
     assert len(sample_size_options) == 1
-    sample_size = sample_size_options[0]
+    sample_size = sample_size_options[target_contest_id][0]
     snapshot.assert_match(sample_size)
 
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest["id"]: sample_size["size"]}},
+        {"roundNum": 1, "sampleSizes": {target_contest_id: sample_size["size"]}},
     )
     assert_ok(rv)
 
@@ -124,7 +132,7 @@ def test_ballot_comparison_round_1(
 
     # JAs create audit boards
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    for jurisdiction_id in contest["jurisdictionIds"]:
+    for jurisdiction_id in target_contest["jurisdictionIds"]:
         rv = post_json(
             client,
             f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
@@ -135,42 +143,43 @@ def test_ballot_comparison_round_1(
     # Audit boards audit all the ballots
     vote_ratio = 0.5
     round = Round.query.get(round_1_id)
-    contest = Contest.query.get(contest["id"])
-    ballot_draws = (
-        SampledBallotDraw.query.filter_by(round_id=round.id)
-        .join(SampledBallot)
-        # There are a few CVR rows that are empty for our contest - the audit
-        # boards shouldn't record an interpretation for those ballots, since it
-        # means the contest wasn't on that ballot. So we un-audit those
-        # ballots.
-        .filter(
-            SampledBallot.id.notin_(
-                SampledBallot.query.join(Batch)
-                .filter_by(name="2 - 2")
-                .filter(SampledBallot.ballot_position.in_([4, 5, 6]))
-                .with_entities(SampledBallot.id)
-                .subquery()
+    for contest_id in [target_contest_id, contests[1]["id"]]:
+        contest = Contest.query.get(contest_id)
+        ballot_draws = (
+            SampledBallotDraw.query.filter_by(round_id=round.id)
+            .join(SampledBallot)
+            # There are a few CVR rows that are empty for our targeted contest
+            # - the audit boards shouldn't record an interpretation for those
+            # ballots, since it means the contest wasn't on that ballot. So we
+            # un-audit those ballots.
+            .filter(
+                SampledBallot.id.notin_(
+                    SampledBallot.query.join(Batch)
+                    .filter_by(name="2 - 2")
+                    .filter(SampledBallot.ballot_position.in_([4, 5, 6]))
+                    .with_entities(SampledBallot.id)
+                    .subquery()
+                )
             )
+            .join(Batch)
+            .order_by(Batch.name, SampledBallot.ballot_position)
+            .all()
         )
-        .join(Batch)
-        .order_by(Batch.name, SampledBallot.ballot_position)
-        .all()
-    )
-    winner_votes = int(vote_ratio * len(ballot_draws))
-    for ballot_draw in ballot_draws[:winner_votes]:
-        audit_ballot(
-            ballot_draw.sampled_ballot,
-            contest.id,
-            Interpretation.VOTE,
-            [contest.choices[0]],
-        )
-    for ballot_draw in ballot_draws[winner_votes:]:
-        audit_ballot(
-            ballot_draw.sampled_ballot,
-            contest.id,
-            Interpretation.VOTE,
-            [contest.choices[1]],
-        )
+        winner_votes = int(vote_ratio * len(ballot_draws))
+        for ballot_draw in ballot_draws[:winner_votes]:
+            audit_ballot(
+                ballot_draw.sampled_ballot,
+                contest.id,
+                Interpretation.VOTE,
+                [contest.choices[0]],
+            )
+        for ballot_draw in ballot_draws[winner_votes:]:
+            audit_ballot(
+                ballot_draw.sampled_ballot,
+                contest.id,
+                Interpretation.VOTE,
+                [contest.choices[1]],
+            )
     end_round(round.election, round)
     db_session.commit()
 
