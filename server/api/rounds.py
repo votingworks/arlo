@@ -14,7 +14,8 @@ from ..auth import restrict_access, UserType
 from . import sample_sizes as sample_sizes_module
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
-from ..audit_math import sampler, bravo, macro, sampler_contest
+from ..audit_math import sampler, bravo, macro, supersimple, sampler_contest
+from .cvrs import set_contest_metadata_from_cvrs
 
 
 def get_current_round(election: Election) -> Optional[Round]:
@@ -196,27 +197,113 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
     }
 
 
+def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
+    choice_name_to_id = {choice.name: choice.id for choice in contest.choices}
+
+    cvrs = defaultdict(lambda: {contest.id: {}})
+
+    for jurisdiction in contest.jurisdictions:
+        choices_metadata = jurisdiction.cvr_contests_metadata[contest.name]["choices"]
+
+        interpretations_by_draw = (
+            CvrBallot.query.join(Batch)
+            .filter_by(jurisdiction_id=jurisdiction.id)
+            .join(
+                SampledBallot,
+                and_(
+                    CvrBallot.batch_id == SampledBallot.batch_id,
+                    CvrBallot.ballot_position == SampledBallot.ballot_position,
+                ),
+            )
+            # TODO diff logic for targeted/opportunistic contests
+            .join(SampledBallotDraw)
+            .values(SampledBallotDraw.ticket_number, CvrBallot.interpretations)
+        )
+
+        for ticket_number, interpretations_str in interpretations_by_draw:
+            # interpretations is the raw CVR string: 1,0,0,1,0,1,0. We need to
+            # pick out the interpretation for each contest choice. We saved the
+            # column index for each choice when we parsed the CVR.
+            interpretations = interpretations_str.split(",")
+            for choice_name, choice_metadata in choices_metadata.items():
+                interpretation = interpretations[choice_metadata["column"]]
+                # If the interpretations are empty, it means the contest wasn't
+                # on the ballot, so we should skip this contest entirely for
+                # this ballot.
+                if interpretation == "":
+                    cvrs[ticket_number] = {}
+                else:
+                    choice_id = choice_name_to_id[choice_name]
+                    cvrs[ticket_number][contest.id][choice_id] = int(interpretation)
+
+    return dict(cvrs)
+
+
+def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS:
+    def interpretation_to_cvr_value(interpretation: Interpretation) -> int:
+        if interpretation == Interpretation.BLANK:
+            return 0
+        elif interpretation == Interpretation.VOTE:
+            return 1
+        else:
+            assert interpretation == Interpretation.CANT_AGREE
+            return 0  # TODO what to do here?
+
+    interpretations = (
+        BallotInterpretation.query.filter_by(contest_id=contest.id)
+        .join(
+            SampledBallotDraw,
+            BallotInterpretation.ballot_id == SampledBallotDraw.ballot_id,
+        )
+        .join(BallotInterpretation.selected_choices)
+        .values(
+            SampledBallotDraw.ticket_number,
+            ContestChoice.id,
+            BallotInterpretation.interpretation,
+        )
+    )
+
+    cvrs = defaultdict(
+        lambda: {contest.id: {choice.id: 0 for choice in contest.choices}}
+    )
+
+    for ticket_number, choice_id, interpretation in interpretations:
+        cvrs[ticket_number][contest.id][choice_id] = interpretation_to_cvr_value(
+            interpretation
+        )
+
+    return dict(cvrs)
+
+
 def calculate_risk_measurements(election: Election, round: Round):
     if not election.risk_limit:  # Shouldn't happen, we need this for typechecking
         raise Exception("Risk limit not defined")  # pragma: no cover
-    risk_limit: int = election.risk_limit
+    risk_limit = float(election.risk_limit) / 100
 
     for round_contest in round.round_contests:
         contest = round_contest.contest
 
         if election.audit_type == AuditType.BALLOT_POLLING:
             p_values, is_complete = bravo.compute_risk(
-                float(risk_limit) / 100,
+                risk_limit,
                 sampler_contest.from_db_contest(contest),
                 cumulative_contest_results(contest),
             )
             p_value = max(p_values.values())
-        else:
+        elif election.audit_type == AuditType.BATCH_COMPARISON:
             p_value, is_complete = macro.compute_risk(
-                float(risk_limit) / 100,
+                risk_limit,
                 sampler_contest.from_db_contest(contest),
                 batch_tallies(election),
                 cumulative_batch_results(election),
+            )
+        else:
+            assert election.audit_type == AuditType.BALLOT_COMPARISON
+            p_value, is_complete = supersimple.compute_risk(
+                risk_limit,
+                sampler_contest.from_db_contest(contest),
+                cvrs_for_contest(contest),
+                sampled_ballot_interpretations_to_cvrs(contest),
             )
 
         round_contest.end_p_value = p_value
@@ -347,10 +434,10 @@ def draw_sample(election: Election, round: Round, sample_sizes: Dict[str, int]):
         if contest.is_targeted
     ]
 
-    if election.audit_type == AuditType.BALLOT_POLLING:
-        return sample_ballots(election, round, contests_to_sample, sample_sizes)
-    else:
+    if election.audit_type == AuditType.BATCH_COMPARISON:
         return sample_batches(election, round, contests_to_sample, sample_sizes)
+    else:
+        return sample_ballots(election, round, contests_to_sample, sample_sizes)
 
 
 def sample_ballots(
@@ -555,6 +642,15 @@ def create_round(election: Election):
             )
             for contest_id, options in sample_size_options.items()
         }
+
+    # For ballot comparison audits, we need to lock in the contest metadata we
+    # parse from the CVRs when we launch the audit.
+    if (
+        election.audit_type == AuditType.BALLOT_COMPARISON
+        and json_round["roundNum"] == 1
+    ):
+        for contest in election.contests:
+            set_contest_metadata_from_cvrs(contest)
 
     draw_sample(election, round, sample_sizes)
 

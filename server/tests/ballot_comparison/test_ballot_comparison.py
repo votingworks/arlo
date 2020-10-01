@@ -107,7 +107,31 @@ def test_ballot_comparison_round_1(
     contest = json.loads(rv.data)["contests"][0]
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    sample_size_options = json.loads(rv.data)["sampleSizes"][contest["id"]]
     assert len(sample_size_options) == 1
-    sample_size = sample_size_options[contest["id"]]
+    sample_size = sample_size_options[0]
     snapshot.assert_match(sample_size)
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {contest["id"]: sample_size["size"]}},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+
+    # JAs create audit boards
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    for jurisdiction_id in contest["jurisdictionIds"]:
+        rv = post_json(
+            client,
+            f"/api/election/{election_id}/jurisdiction/{jurisdiction_id}/round/{round_1_id}/audit-board",
+            [{"name": "Audit Board #1"}],
+        )
+        assert_ok(rv)
+
+    # Audit boards audit all the ballots
+    run_audit_round(round_1_id, contest["id"], 0.5)
+

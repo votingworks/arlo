@@ -101,11 +101,12 @@ def get_sample_sizes(
     return nMin(risk_limit, contest, r1, r2, s1, s2)
 
 
+# { ballot_id: { contest_id: { choice_id: 0 | 1 }}}
+CVRS = Dict[str, Dict[str, Dict[str, int]]]
+
+
 def compute_risk(
-    risk_limit: float,
-    contest: Contest,
-    cvrs: Dict[str, Dict[str, Dict[str, int]]],
-    sample_cvr: Dict[str, Dict[str, Dict[str, int]]],
+    risk_limit: float, contest: Contest, cvrs: CVRS, sample_cvr: CVRS,
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -123,7 +124,7 @@ def compute_risk(
                     ...
                 }
 
-        sample_cvr - the CVR of the audited ballot
+        sample_cvr - the CVR of the audited ballots
                 {
                     'ballot_id': {
                         'contest': {
@@ -139,6 +140,10 @@ def compute_risk(
                           result is correct based on the sample, for each winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
+    import json
+
+    print(json.dumps(cvrs, indent=2))
+    print(json.dumps(sample_cvr, indent=2))
 
     p = 1.0
 
