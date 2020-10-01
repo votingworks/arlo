@@ -359,9 +359,9 @@ def audit_admin_audit_report(election: Election):
         audit_settings_rows(election),
         audit_board_rows(election),
         round_rows(election),
-        sampled_ballot_rows(election)
-        if election.audit_type == AuditType.BALLOT_POLLING
-        else sampled_batch_rows(election),
+        sampled_batch_rows(election)
+        if election.audit_type == AuditType.BATCH_COMPARISON
+        else sampled_ballot_rows(election),
     ]
     row_sets = [row_set for row_set in row_sets if row_set]
 

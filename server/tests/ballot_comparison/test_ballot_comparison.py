@@ -133,5 +133,48 @@ def test_ballot_comparison_round_1(
         assert_ok(rv)
 
     # Audit boards audit all the ballots
-    run_audit_round(round_1_id, contest["id"], 0.5)
+    vote_ratio = 0.5
+    round = Round.query.get(round_1_id)
+    contest = Contest.query.get(contest["id"])
+    ballot_draws = (
+        SampledBallotDraw.query.filter_by(round_id=round.id)
+        .join(SampledBallot)
+        # There are a few CVR rows that are empty for our contest - the audit
+        # boards shouldn't record an interpretation for those ballots, since it
+        # means the contest wasn't on that ballot. So we un-audit those
+        # ballots.
+        .filter(
+            SampledBallot.id.notin_(
+                SampledBallot.query.join(Batch)
+                .filter_by(name="2 - 2")
+                .filter(SampledBallot.ballot_position.in_([4, 5, 6]))
+                .with_entities(SampledBallot.id)
+                .subquery()
+            )
+        )
+        .join(Batch)
+        .order_by(Batch.name, SampledBallot.ballot_position)
+        .all()
+    )
+    winner_votes = int(vote_ratio * len(ballot_draws))
+    for ballot_draw in ballot_draws[:winner_votes]:
+        audit_ballot(
+            ballot_draw.sampled_ballot,
+            contest.id,
+            Interpretation.VOTE,
+            [contest.choices[0]],
+        )
+    for ballot_draw in ballot_draws[winner_votes:]:
+        audit_ballot(
+            ballot_draw.sampled_ballot,
+            contest.id,
+            Interpretation.VOTE,
+            [contest.choices[1]],
+        )
+    end_round(round.election, round)
+    db_session.commit()
 
+    # Check the audit report
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)

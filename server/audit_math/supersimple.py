@@ -140,11 +140,6 @@ def compute_risk(
                           result is correct based on the sample, for each winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
-    import json
-
-    print(json.dumps(cvrs, indent=2))
-    print(json.dumps(sample_cvr, indent=2))
-
     p = 1.0
 
     V = contest.diluted_margin * len(cvrs)

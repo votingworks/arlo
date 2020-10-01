@@ -14,6 +14,7 @@ from ..auth import restrict_access, UserType
 from . import sample_sizes as sample_sizes_module
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
+from ..util.jsonschema import JSONDict
 from ..audit_math import sampler, bravo, macro, supersimple, sampler_contest
 from .cvrs import set_contest_metadata_from_cvrs
 
@@ -200,10 +201,13 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
 def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
     choice_name_to_id = {choice.name: choice.id for choice in contest.choices}
 
-    cvrs = defaultdict(lambda: {contest.id: {}})
+    cvrs: supersimple.CVRS = defaultdict(lambda: {contest.id: {}})
 
     for jurisdiction in contest.jurisdictions:
-        choices_metadata = jurisdiction.cvr_contests_metadata[contest.name]["choices"]
+        cvr_contests_metadata = typing_cast(
+            JSONDict, jurisdiction.cvr_contests_metadata
+        )
+        choices_metadata = cvr_contests_metadata[contest.name]["choices"]
 
         interpretations_by_draw = (
             CvrBallot.query.join(Batch)
@@ -263,7 +267,7 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS
         )
     )
 
-    cvrs = defaultdict(
+    cvrs: supersimple.CVRS = defaultdict(
         lambda: {contest.id: {choice.id: 0 for choice in contest.choices}}
     )
 
