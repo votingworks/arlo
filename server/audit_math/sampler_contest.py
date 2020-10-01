@@ -132,7 +132,6 @@ class Contest:
 
         min_margin = self.ballots
 
-        print(self.winners)
         for winner in self.winners:
             s_w = self.winners[winner] / v_wl
 
@@ -151,11 +150,7 @@ class Contest:
                 "swl": swl,
             }
 
-        print(self)
-        # print(self.margins)
-        # print(self.losers)
         if self.losers:
-            print(min_margin, self.ballots)
             self.diluted_margin = float(min_margin) / self.ballots
         else:
             self.diluted_margin = -1.0

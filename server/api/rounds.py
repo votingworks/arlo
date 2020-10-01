@@ -270,16 +270,17 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS
     # For targeted contests, use the ticket number to key the ballots so that
     # we count all sample draws
     if contest.is_targeted:
-        interpretations = interpretations_query.join(
-            SampledBallotDraw,
-            and_(
+        interpretations = (
+            interpretations_query.join(
+                SampledBallotDraw,
                 BallotInterpretation.ballot_id == SampledBallotDraw.ballot_id,
-                BallotInterpretation.contest_id == SampledBallotDraw.contest_id,
-            ),
-        ).values(
-            SampledBallotDraw.ticket_number,
-            ContestChoice.id,
-            BallotInterpretation.interpretation,
+            )
+            .filter(SampledBallotDraw.contest_id == contest.id)
+            .values(
+                SampledBallotDraw.ticket_number,
+                ContestChoice.id,
+                BallotInterpretation.interpretation,
+            )
         )
     # For opportunistic contests, use the ballot id to key the ballots so that
     # we only count unique ballots
