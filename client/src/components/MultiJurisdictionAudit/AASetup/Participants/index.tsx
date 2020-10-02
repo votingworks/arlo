@@ -1,16 +1,16 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react'
-import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
+import { Formik, FormikProps, Field, ErrorMessage, useFormik } from 'formik'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
+import * as Yup from 'yup'
 import { HTMLSelect, Spinner, FileInput } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { IValues } from './types'
 import labelValueStates from './states'
-import schema from './schema'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import FormSection, {
   FormSectionDescription,
@@ -28,55 +28,50 @@ interface IProps {
   locked: boolean
 }
 
+type IFileSubmitStatus = 'submit' | 'success' | 'failure' | null
+
 const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [auditSettings, updateSettings] = useAuditSettings(electionId)
-  const [jurisdictionFile, uploadJurisdictionFile] = useJurisdictionFile(
-    electionId
-  )
-  const [isEditing, setIsEditing] = useState<boolean>(true)
-  useEffect(() => setIsEditing(!(jurisdictionFile && jurisdictionFile.file)), [
-    jurisdictionFile,
-  ])
-  if (!auditSettings || !jurisdictionFile) return null // Still loading
-  const { file } = jurisdictionFile
+  const [jurisdictionFileStatus, setJurisdictionFileStatus] = useState<
+    IFileSubmitStatus
+  >(null)
+  useEffect(() => {
+    // if the jurisdiction file is successfully submitted, go to the next screen
+    /* istanbul ignore else */
+    if (jurisdictionFileStatus === 'success') {
+      /* istanbul ignore else */
+      if (nextStage.activate) nextStage.activate()
+      else toast.error('Wrong menuItems passed in: activate() is missing')
+    }
+  }, [jurisdictionFileStatus, nextStage])
+
+  if (!auditSettings) return null // Still loading
 
   const submit = async (values: IValues) => {
-    try {
-      const responseOne = await updateSettings({ state: values.state })
-      if (!responseOne) return
-      /* istanbul ignore else */
-      if (values.csv) {
-        if (await uploadJurisdictionFile(values.csv)) {
-          setIsEditing(false)
-          /* istanbul ignore else */
-          if (nextStage.activate) nextStage.activate()
-          else
-            throw new Error('Wrong menuItems passed in: activate() is missing')
-        }
-      }
-    } catch (err) /* istanbul ignore next */ {
-      // TODO migrate toasting to api to consolidate testing
-      toast.error(err.message)
-    }
+    const responseOne = await updateSettings({ state: values.state })
+    if (!responseOne) return
+    setJurisdictionFileStatus('submit') // tell the jurisdiction file component to submit
   }
+
   return (
     <Formik
-      initialValues={{ state: auditSettings.state || '', csv: null }}
-      validationSchema={schema}
+      initialValues={{ state: auditSettings.state || '' }}
+      validationSchema={Yup.object().shape({
+        state: Yup.string().required('Required'),
+      })}
       onSubmit={submit}
       enableReinitialize
     >
-      {({
-        handleSubmit,
-        setFieldValue,
-        values,
-        touched,
-        errors,
-        handleBlur,
-      }: FormikProps<IValues>) => (
-        <Form data-testid="form-one">
-          <FormWrapper title="Participants">
+      {({ handleSubmit, setFieldValue, values }: FormikProps<IValues>) => (
+        <form data-testid="form-one">
+          <FormWrapper
+            title={
+              auditSettings.auditType === 'BALLOT_COMPARISON'
+                ? 'Participants & Contests'
+                : 'Participants'
+            }
+          >
             <label htmlFor="state">
               Choose your state from the options below
               <br />
@@ -94,58 +89,11 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
               />
             </label>
             <ErrorMessage name="state" component={ErrorLabel} />
-            {/* When one is already uploaded, this will be toggled to show its details, with a button to reveal the form to replace it */}
-            <FormSection>
-              <FormSectionDescription>
-                Click &quot;Browse&quot; to choose the appropriate file from
-                your computer. This file should be a comma-separated list of all
-                the jurisdictions participating in the audit, plus email
-                addresses for audit administrators in each participating
-                jurisdiction.
-                <br />
-                <br />
-                <a
-                  href="/sample_jurisdiction_filesheet.csv"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  (Click here to view a sample file in the correct format.)
-                </a>
-              </FormSectionDescription>
-            </FormSection>
-            <FormSection>
-              {isEditing || !file ? (
-                <>
-                  <FileInput
-                    inputProps={{
-                      accept: '.csv',
-                      name: 'csv',
-                    }}
-                    onInputChange={e => {
-                      setFieldValue(
-                        'csv',
-                        (e.currentTarget.files && e.currentTarget.files[0]) ||
-                          undefined
-                      )
-                    }}
-                    hasSelection={!!values.csv}
-                    text={values.csv ? values.csv.name : 'Select a CSV...'}
-                    onBlur={handleBlur}
-                  />
-                  {errors.csv && touched.csv && (
-                    <ErrorLabel>{errors.csv}</ErrorLabel>
-                  )}
-                </>
-              ) : (
-                <>
-                  <span>{file.name} </span>
-                  <FormButton key="replace" onClick={() => setIsEditing(true)}>
-                    {/* needs a key in order to not trigger submit */}
-                    Replace File
-                  </FormButton>
-                </>
-              )}
-            </FormSection>
+            <JurisdictionFileForm
+              electionId={electionId}
+              setJurisdictionFileStatus={setJurisdictionFileStatus}
+              jurisdictionFileStatus={jurisdictionFileStatus}
+            />
           </FormWrapper>
           {nextStage.state === 'processing' ? (
             <Spinner />
@@ -156,9 +104,116 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
               </FormButton>
             </FormButtonBar>
           )}
-        </Form>
+        </form>
       )}
     </Formik>
+  )
+}
+
+const JurisdictionFileForm = ({
+  electionId,
+  jurisdictionFileStatus,
+  setJurisdictionFileStatus,
+}: {
+  electionId: string
+  jurisdictionFileStatus: IFileSubmitStatus
+  setJurisdictionFileStatus: (status: IFileSubmitStatus) => void
+}) => {
+  const [jurisdictionFile, uploadJurisdictionFile] = useJurisdictionFile(
+    electionId
+  )
+  const [isEditing, setIsEditing] = useState<boolean>(true)
+  useEffect(() => setIsEditing(!(jurisdictionFile && jurisdictionFile.file)), [
+    jurisdictionFile,
+  ])
+  const onSubmit = async (values: { csv: File | null }) => {
+    /* istanbul ignore else */
+    if (values.csv) {
+      if (await uploadJurisdictionFile(values.csv)) {
+        setIsEditing(false)
+        setJurisdictionFileStatus('success')
+      } else {
+        setJurisdictionFileStatus('failure')
+      }
+    }
+  }
+  const {
+    setFieldValue,
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleSubmit,
+    isSubmitting,
+  } = useFormik<{
+    csv: File | null
+  }>({
+    initialValues: { csv: null },
+    validationSchema: Yup.object().shape({
+      csv: Yup.mixed().required('You must upload a file'),
+    }),
+    onSubmit,
+    enableReinitialize: true,
+  })
+
+  useEffect(() => {
+    if (jurisdictionFileStatus === 'submit' && !isSubmitting) handleSubmit()
+  }, [jurisdictionFileStatus, isSubmitting, handleSubmit])
+
+  if (!jurisdictionFile) return null // still loading
+  const { file } = jurisdictionFile
+  return (
+    <>
+      {/* When one is already uploaded, this will be toggled to show its details, with a button to reveal the form to replace it */}
+      <FormSection>
+        <FormSectionDescription>
+          Click &quot;Browse&quot; to choose the appropriate file from your
+          computer. This file should be a comma-separated list of all the
+          jurisdictions participating in the audit, plus email addresses for
+          audit administrators in each participating jurisdiction.
+          <br />
+          <br />
+          <a
+            href="/sample_jurisdiction_filesheet.csv"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            (Click here to view a sample file in the correct format.)
+          </a>
+        </FormSectionDescription>
+      </FormSection>
+      <FormSection>
+        {isEditing || !file ? (
+          <>
+            <FileInput
+              inputProps={{
+                accept: '.csv',
+                name: 'csv',
+              }}
+              onInputChange={e => {
+                setFieldValue(
+                  'csv',
+                  (e.currentTarget.files && e.currentTarget.files[0]) ||
+                    undefined
+                )
+              }}
+              hasSelection={!!values.csv}
+              text={values.csv ? values.csv.name : 'Select a CSV...'}
+              onBlur={handleBlur}
+            />
+            {errors.csv && touched.csv && <ErrorLabel>{errors.csv}</ErrorLabel>}
+          </>
+        ) : (
+          <>
+            <span>{file.name} </span>
+            <FormButton key="replace" onClick={() => setIsEditing(true)}>
+              {/* needs a key in order to not trigger submit */}
+              Replace File
+            </FormButton>
+          </>
+        )}
+      </FormSection>
+    </>
   )
 }
 

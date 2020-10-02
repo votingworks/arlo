@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import jsPDF from 'jspdf'
 import QRCode from 'qrcode.react'
 /* istanbul ignore next */
-import { Formik, FormikProps, FieldArray, Form, Field } from 'formik'
+import { Formik, FormikProps, FieldArray, Field } from 'formik'
 import { Spinner, ProgressBar } from '@blueprintjs/core'
 import FormSection, {
   FormSectionLabel,
@@ -342,7 +342,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
           values,
           handleSubmit,
         }: FormikProps<ICalculateRiskMeasurementValues>) => (
-          <Form data-testid={`form-three-${i + 1}`}>
+          <form data-testid={`form-three-${i + 1}`}>
             {i === 0 && (
               <QRs
                 electionId={electionId}
@@ -513,7 +513,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
                 )}
               </FormSection>
             </FormWrapper>
-          </Form>
+          </form>
         )}
       />
     )

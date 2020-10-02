@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react'
-import { Formik, FormikProps, Form } from 'formik'
+import { Formik, FormikProps } from 'formik'
 import styled from 'styled-components'
 import { HTMLSelect, FileInput, H4 } from '@blueprintjs/core'
 import FormWrapper from '../../Atoms/Form/FormWrapper'
@@ -64,7 +64,7 @@ const CSVFileForm = ({
         errors,
         handleBlur,
       }: FormikProps<IValues>) => (
-        <Form>
+        <form>
           <FormWrapper>
             {filePurpose === 'ballot-manifest' ? (
               <FormSection>
@@ -177,7 +177,7 @@ const CSVFileForm = ({
               )}
             </div>
           </FormWrapper>
-        </Form>
+        </form>
       )}
     </Formik>
   )

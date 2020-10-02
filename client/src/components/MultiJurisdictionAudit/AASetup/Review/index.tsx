@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useParams, useHistory, Link } from 'react-router-dom'
 import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
-import { Formik, FormikProps, Form, getIn, Field } from 'formik'
+import { Formik, FormikProps, getIn, Field } from 'formik'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
@@ -230,7 +230,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         }: FormikProps<{
           sampleSizes: { [key: string]: IStringSampleSizeOption }
         }>) => (
-          <Form data-testid="sample-size-form">
+          <form data-testid="sample-size-form">
             {sampleSizeOptions ? (
               <FormSection>
                 <FormSectionDescription>
@@ -328,7 +328,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                 Launch Audit
               </FormButton>
             </FormButtonBar>
-          </Form>
+          </form>
         )}
       </Formik>
       <ConfirmLaunch
