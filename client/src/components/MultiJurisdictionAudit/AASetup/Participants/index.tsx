@@ -138,12 +138,17 @@ const JurisdictionFileForm = ({
   const [jurisdictionFile, uploadJurisdictionFile] = useJurisdictionFile(
     electionId
   )
+  const text =
+    'Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the jurisdictions participating in the audit, plus email addresses for audit administrators in each participating jurisdiction.'
+  const sampleFileLink = '/sample_jurisdiction_filesheet.csv'
   return (
     <FileForm
       fileInfo={jurisdictionFile}
       fileStatus={jurisdictionFileStatus}
       setFileStatus={setJurisdictionFileStatus}
       uploadFile={uploadJurisdictionFile}
+      text={text}
+      sampleFileLink={sampleFileLink}
     />
   )
 }
@@ -158,12 +163,17 @@ const ContestFileForm = ({
   setContestFileStatus: (status: IFileSubmitStatus) => void
 }) => {
   const [contestFile, uploadContestFile] = useContestFile(electionId)
+  const text =
+    'Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the contests on the ballot, the vote choices available in each, and the jurisdiction(s) where each contest appeared on the ballot.'
+  const sampleFileLink = '/sample_standardized_contests.csv'
   return (
     <FileForm
       fileInfo={contestFile}
       fileStatus={contestFileStatus}
       setFileStatus={setContestFileStatus}
       uploadFile={uploadContestFile}
+      text={text}
+      sampleFileLink={sampleFileLink}
     />
   )
 }
@@ -173,11 +183,15 @@ const FileForm = ({
   fileStatus,
   setFileStatus,
   uploadFile,
+  text,
+  sampleFileLink,
 }: {
   fileInfo: IFileInfo | null
   fileStatus: IFileSubmitStatus
   setFileStatus: (status: IFileSubmitStatus) => void
   uploadFile: (csv: File) => Promise<boolean>
+  text: string
+  sampleFileLink: string
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(true)
   useEffect(() => setIsEditing(!(fileInfo && fileInfo.file)), [fileInfo])
@@ -222,17 +236,10 @@ const FileForm = ({
       {/* When one is already uploaded, this will be toggled to show its details, with a button to reveal the form to replace it */}
       <FormSection>
         <FormSectionDescription>
-          Click &quot;Browse&quot; to choose the appropriate file from your
-          computer. This file should be a comma-separated list of all the
-          jurisdictions participating in the audit, plus email addresses for
-          audit administrators in each participating jurisdiction.
+          {text}
           <br />
           <br />
-          <a
-            href="/sample_jurisdiction_filesheet.csv"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={sampleFileLink} target="_blank" rel="noopener noreferrer">
             (Click here to view a sample file in the correct format.)
           </a>
         </FormSectionDescription>
