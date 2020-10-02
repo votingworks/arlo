@@ -150,6 +150,19 @@ exports[`App / renders aa logged in properly 1`] = `
                     />
                     Batch Comparison
                   </label>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      name="auditType"
+                      type="radio"
+                      value="BALLOT_COMPARISON"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Ballot Comparison
+                  </label>
                 </div>
               </label>
             </div>
@@ -522,6 +535,19 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                       class="bp3-control-indicator"
                     />
                     Batch Comparison
+                  </label>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      name="auditType"
+                      type="radio"
+                      value="BALLOT_COMPARISON"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Ballot Comparison
                   </label>
                 </div>
               </label>
@@ -924,6 +950,19 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                       class="bp3-control-indicator"
                     />
                     Batch Comparison
+                  </label>
+                  <label
+                    class="bp3-control bp3-radio"
+                  >
+                    <input
+                      name="auditType"
+                      type="radio"
+                      value="BALLOT_COMPARISON"
+                    />
+                    <span
+                      class="bp3-control-indicator"
+                    />
+                    Ballot Comparison
                   </label>
                 </div>
               </label>

@@ -203,6 +203,6 @@ export interface IAuditSettings {
   online: boolean | null
   randomSeed: string | null
   riskLimit: number | null
-  auditType: 'BALLOT_POLLING' | 'BATCH_COMPARISON'
+  auditType: 'BALLOT_POLLING' | 'BATCH_COMPARISON' | 'BALLOT_COMPARISON'
   auditName: string
 }
