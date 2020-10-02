@@ -104,8 +104,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    expect(result.current[0][1].state === 'locked').toBeTruthy()
     expect(result.current[0][2].state === 'locked').toBeTruthy()
+    expect(result.current[0][3].state === 'locked').toBeTruthy()
   })
 
   it('handles NULL response from /jurisdiction/file api', async () => {
@@ -128,8 +128,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    expect(result.current[0][1].state === 'locked').toBeTruthy()
     expect(result.current[0][2].state === 'locked').toBeTruthy()
+    expect(result.current[0][3].state === 'locked').toBeTruthy()
   })
 
   it('handles PROCESSING response from /jurisdiction/file api', async () => {
@@ -152,8 +152,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    expect(result.current[0][1].state === 'processing').toBeTruthy()
     expect(result.current[0][2].state === 'processing').toBeTruthy()
+    expect(result.current[0][3].state === 'processing').toBeTruthy()
   })
 
   it('handles change of PROCESSING to PROCESSED response from /jurisdiction/file api', async () => {
@@ -191,8 +191,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    expect(result.current[0][1].state).toBe('live')
     expect(result.current[0][2].state).toBe('live')
+    expect(result.current[0][3].state).toBe('live')
   })
 
   it('handles change of PROCESSING to ERRORED response from /jurisdiction/file api', async () => {
@@ -230,8 +230,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    expect(result.current[0][1].state).toBe('processing')
     expect(result.current[0][2].state).toBe('processing')
+    expect(result.current[0][3].state).toBe('processing')
   })
 
   it('handles PROCESSED response from /jurisdiction/file api', async () => {
@@ -254,8 +254,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    expect(result.current[0][1].state === 'live').toBeTruthy()
     expect(result.current[0][2].state === 'live').toBeTruthy()
+    expect(result.current[0][3].state === 'live').toBeTruthy()
   })
 
   it('handles READY_TO_PROCESS response from /jurisdiction/file api', async () => {
@@ -278,8 +278,8 @@ describe('useSetupMenuItems', () => {
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
-    expect(result.current[0][1].state === 'processing').toBeTruthy()
     expect(result.current[0][2].state === 'processing').toBeTruthy()
+    expect(result.current[0][3].state === 'processing').toBeTruthy()
   })
 
   it('handles background process timeout', async () => {
@@ -316,7 +316,7 @@ describe('useSetupMenuItems', () => {
     expect(apiMock).toHaveBeenCalledTimes(3)
     expect(dateSpy).toHaveBeenCalled()
     expect(toastSpy).toHaveBeenCalledTimes(1)
-    expect(result.current[0][1].state === 'processing').toBeTruthy()
     expect(result.current[0][2].state === 'processing').toBeTruthy()
+    expect(result.current[0][3].state === 'processing').toBeTruthy()
   })
 })

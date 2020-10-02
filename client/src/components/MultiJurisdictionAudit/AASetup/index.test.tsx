@@ -57,6 +57,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Participants"
           menuItems={relativeStages('Participants').menuItems}
@@ -71,6 +72,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Participants"
           menuItems={relativeStages('Participants', 'locked').menuItems}
@@ -85,6 +87,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Participants"
           menuItems={relativeStages('Participants', 'processing').menuItems}
@@ -99,6 +102,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Target Contests"
           menuItems={relativeStages('Target Contests').menuItems}
@@ -113,6 +117,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Target Contests"
           menuItems={relativeStages('Target Contests', 'locked').menuItems}
@@ -127,6 +132,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Target Contests"
           menuItems={relativeStages('Target Contests', 'processing').menuItems}
@@ -145,6 +151,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Opportunistic Contests"
           menuItems={relativeStages('Opportunistic Contests').menuItems}
@@ -163,6 +170,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Opportunistic Contests"
           menuItems={
@@ -183,6 +191,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Opportunistic Contests"
           menuItems={
@@ -199,6 +208,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Audit Settings"
           menuItems={relativeStages('Audit Settings').menuItems}
@@ -212,6 +222,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Audit Settings"
           menuItems={relativeStages('Audit Settings', 'locked').menuItems}
@@ -225,6 +236,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Audit Settings"
           menuItems={relativeStages('Audit Settings', 'processing').menuItems}
@@ -238,6 +250,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Review & Launch"
           menuItems={relativeStages('Review & Launch').menuItems}
@@ -252,6 +265,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Review & Launch"
           menuItems={relativeStages('Review & Launch', 'locked').menuItems}
@@ -266,6 +280,7 @@ describe('Setup', () => {
     const { container } = render(
       <MemoryRouter>
         <Setup
+          auditType="BALLOT_POLLING"
           refresh={jest.fn()}
           stage="Review & Launch"
           menuItems={relativeStages('Review & Launch', 'processing').menuItems}

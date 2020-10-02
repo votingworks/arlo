@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
-import { ElementType } from '../../../types'
+import { ElementType, IAuditSettings } from '../../../types'
 import Participants from './Participants'
 import Contests from './Contests'
 import Settings from './Settings'
@@ -9,6 +9,7 @@ import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 
 export const setupStages = [
   'Participants',
+  'Participants & Contests',
   'Target Contests',
   'Opportunistic Contests',
   'Audit Settings',
@@ -19,10 +20,15 @@ interface IProps {
   stage: ElementType<typeof setupStages>
   menuItems: ISidebarMenuItem[]
   refresh: () => void
-  isBatch?: boolean // TODO support multiple contests in batch comparison audits
+  auditType: IAuditSettings['auditType']
 }
 
-const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
+const AASetup: React.FC<IProps> = ({
+  stage,
+  menuItems,
+  refresh,
+  auditType,
+}) => {
   const activeStage = menuItems.find(m => m.title === stage)
   const nextStage: ISidebarMenuItem | undefined =
     menuItems[menuItems.indexOf(activeStage!) + 1]
@@ -30,6 +36,7 @@ const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
     menuItems[menuItems.indexOf(activeStage!) - 1]
   switch (stage) {
     case 'Participants':
+    case 'Participants & Contests':
       // prevStage === undefined, so don't send it
       return (
         <Participants
@@ -45,7 +52,7 @@ const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
           nextStage={nextStage!}
           prevStage={prevStage!}
           locked={activeStage!.state === 'locked'}
-          isBatch={isBatch}
+          auditType={auditType}
         />
       )
     case 'Opportunistic Contests':
@@ -56,7 +63,7 @@ const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
           nextStage={nextStage!}
           prevStage={prevStage!}
           locked={activeStage!.state === 'locked'}
-          isBatch={isBatch}
+          auditType={auditType}
         />
       )
     case 'Audit Settings':

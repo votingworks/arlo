@@ -114,6 +114,7 @@ function useSetupMenuItems(
         const state = (() => {
           switch (s) {
             case 'Participants':
+            case 'Participants & Contests':
               return participants
             case 'Target Contests':
               return targetContests

@@ -886,30 +886,18 @@ exports[`AA setup flow renders sidebar when authenticated on /setup 1`] = `
           </div>
         </div>
         <div
-          class="bp3-spinner"
+          class="sc-EHOje kPsGPf"
         >
-          <div
-            class="bp3-spinner-animation"
+          <button
+            class="bp3-button bp3-intent-primary sc-htoDjs dESvso"
+            type="submit"
           >
-            <svg
-              height="50"
-              stroke-width="8.00"
-              viewBox="1.00 1.00 98.00 98.00"
-              width="50"
+            <span
+              class="bp3-button-text"
             >
-              <path
-                class="bp3-spinner-track"
-                d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-              />
-              <path
-                class="bp3-spinner-head"
-                d="M 50,50 m 0,-45 a 45,45 0 1 1 0,90 a 45,45 0 1 1 0,-90"
-                pathLength="280"
-                stroke-dasharray="280 280"
-                stroke-dashoffset="210"
-              />
-            </svg>
-          </div>
+              Save & Next
+            </span>
+          </button>
         </div>
       </form>
     </div>

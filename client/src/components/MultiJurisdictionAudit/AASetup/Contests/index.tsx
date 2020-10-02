@@ -21,7 +21,7 @@ import schema from './schema'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useContests from '../../useContests'
 import useJurisdictions from '../../useJurisdictions'
-import { IContest, ICandidate } from '../../../../types'
+import { IContest, ICandidate, IAuditSettings } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
 import Card from '../../../Atoms/SpacedCard'
 import { testNumber } from '../../../utilities'
@@ -31,7 +31,7 @@ interface IProps {
   nextStage: ISidebarMenuItem
   prevStage: ISidebarMenuItem
   locked: boolean
-  isBatch?: boolean
+  auditType: IAuditSettings['auditType']
 }
 
 const Contests: React.FC<IProps> = ({
@@ -39,7 +39,7 @@ const Contests: React.FC<IProps> = ({
   nextStage,
   prevStage,
   locked,
-  isBatch,
+  auditType,
 }) => {
   const contestValues: IContest[] = [
     {
@@ -70,6 +70,9 @@ const Contests: React.FC<IProps> = ({
 
   if (!contests) return null // Still loading
   const filteredContests = contests.filter(c => c.isTargeted === isTargeted)
+
+  const isBatch = auditType === 'BATCH_COMPARISON'
+  // const isBallotComparison = auditType === 'BALLOT_COMPARISON'
 
   /* istanbul ignore next */
   if (isBatch && !isTargeted && nextStage.activate) nextStage.activate() // skip to next stage if on opportunistic contests screen and during a batch audit (until batch audits support multiple contests)
