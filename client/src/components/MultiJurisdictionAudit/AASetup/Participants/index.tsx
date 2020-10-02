@@ -18,6 +18,8 @@ import FormSection, {
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useAuditSettings from '../../useAuditSettings'
 import useJurisdictionFile from './useJurisdictionFile'
+import { IFileInfo } from '../../useJurisdictions'
+import useContestFile from './useContestFile'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -36,15 +38,21 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
   const [jurisdictionFileStatus, setJurisdictionFileStatus] = useState<
     IFileSubmitStatus
   >(null)
+  const [contestFileStatus, setContestFileStatus] = useState<IFileSubmitStatus>(
+    null
+  )
   useEffect(() => {
-    // if the jurisdiction file is successfully submitted, go to the next screen
+    // if both files are successfully submitted, go to the next screen
     /* istanbul ignore else */
-    if (jurisdictionFileStatus === 'success') {
+    if (
+      jurisdictionFileStatus === 'success' &&
+      contestFileStatus === 'success'
+    ) {
       /* istanbul ignore else */
       if (nextStage.activate) nextStage.activate()
       else toast.error('Wrong menuItems passed in: activate() is missing')
     }
-  }, [jurisdictionFileStatus, nextStage])
+  }, [jurisdictionFileStatus, contestFileStatus, nextStage])
 
   if (!auditSettings) return null // Still loading
 
@@ -52,6 +60,7 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
     const responseOne = await updateSettings({ state: values.state })
     if (!responseOne) return
     setJurisdictionFileStatus('submit') // tell the jurisdiction file component to submit
+    setContestFileStatus('submit') // tell the contest file component to submit
   }
 
   return (
@@ -94,6 +103,13 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
               setJurisdictionFileStatus={setJurisdictionFileStatus}
               jurisdictionFileStatus={jurisdictionFileStatus}
             />
+            {auditSettings.auditType === 'BALLOT_COMPARISON' && (
+              <ContestFileForm
+                electionId={electionId}
+                setContestFileStatus={setContestFileStatus}
+                contestFileStatus={contestFileStatus}
+              />
+            )}
           </FormWrapper>
           {nextStage.state === 'processing' ? (
             <Spinner />
@@ -122,18 +138,57 @@ const JurisdictionFileForm = ({
   const [jurisdictionFile, uploadJurisdictionFile] = useJurisdictionFile(
     electionId
   )
+  return (
+    <FileForm
+      fileInfo={jurisdictionFile}
+      fileStatus={jurisdictionFileStatus}
+      setFileStatus={setJurisdictionFileStatus}
+      uploadFile={uploadJurisdictionFile}
+    />
+  )
+}
+
+const ContestFileForm = ({
+  electionId,
+  contestFileStatus,
+  setContestFileStatus,
+}: {
+  electionId: string
+  contestFileStatus: IFileSubmitStatus
+  setContestFileStatus: (status: IFileSubmitStatus) => void
+}) => {
+  const [contestFile, uploadContestFile] = useContestFile(electionId)
+  return (
+    <FileForm
+      fileInfo={contestFile}
+      fileStatus={contestFileStatus}
+      setFileStatus={setContestFileStatus}
+      uploadFile={uploadContestFile}
+    />
+  )
+}
+
+const FileForm = ({
+  fileInfo,
+  fileStatus,
+  setFileStatus,
+  uploadFile,
+}: {
+  fileInfo: IFileInfo | null
+  fileStatus: IFileSubmitStatus
+  setFileStatus: (status: IFileSubmitStatus) => void
+  uploadFile: (csv: File) => Promise<boolean>
+}) => {
   const [isEditing, setIsEditing] = useState<boolean>(true)
-  useEffect(() => setIsEditing(!(jurisdictionFile && jurisdictionFile.file)), [
-    jurisdictionFile,
-  ])
+  useEffect(() => setIsEditing(!(fileInfo && fileInfo.file)), [fileInfo])
   const onSubmit = async (values: { csv: File | null }) => {
     /* istanbul ignore else */
     if (values.csv) {
-      if (await uploadJurisdictionFile(values.csv)) {
+      if (await uploadFile(values.csv)) {
         setIsEditing(false)
-        setJurisdictionFileStatus('success')
+        setFileStatus('success')
       } else {
-        setJurisdictionFileStatus('failure')
+        setFileStatus('failure')
       }
     }
   }
@@ -157,11 +212,11 @@ const JurisdictionFileForm = ({
   })
 
   useEffect(() => {
-    if (jurisdictionFileStatus === 'submit' && !isSubmitting) handleSubmit()
-  }, [jurisdictionFileStatus, isSubmitting, handleSubmit])
+    if (fileStatus === 'submit' && !isSubmitting) handleSubmit()
+  }, [fileStatus, isSubmitting, handleSubmit])
 
-  if (!jurisdictionFile) return null // still loading
-  const { file } = jurisdictionFile
+  if (!fileInfo) return null // still loading
+  const { file } = fileInfo
   return (
     <>
       {/* When one is already uploaded, this will be toggled to show its details, with a button to reveal the form to replace it */}
