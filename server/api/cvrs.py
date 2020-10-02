@@ -2,12 +2,13 @@ import uuid
 import io
 import tempfile
 import csv
+import typing
 from collections import defaultdict
 import re
 from datetime import datetime
 from sqlalchemy.orm.session import Session
 from flask import request, jsonify, Request
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, Conflict
 
 from . import api
 from ..database import db_session, engine as db_engine
@@ -20,6 +21,37 @@ from ..util.process_file import (
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
+from ..util.jsonschema import JSONDict
+
+
+def set_contest_metadata_from_cvrs(contest: Contest):
+    contest.num_winners = 1  # TODO how do we get this from the CVRs?
+    contest.total_ballots_cast = 0
+
+    for jurisdiction in contest.jurisdictions:
+        cvr_contests_metadata = typing.cast(
+            JSONDict, jurisdiction.cvr_contests_metadata
+        )
+        contest_metadata = cvr_contests_metadata[contest.name]
+        if contest_metadata is None:
+            raise Conflict("Some jurisdictions haven't uploaded their CVRs yet.")
+
+        if not contest.choices:
+            contest.choices = [
+                ContestChoice(
+                    id=str(uuid.uuid4()),
+                    contest_id=contest.id,
+                    name=choice_name,
+                    num_votes=0,
+                )
+                for choice_name in contest_metadata["choices"]
+            ]
+
+        contest.total_ballots_cast += contest_metadata["total_ballots_cast"]
+        contest.votes_allowed = contest_metadata["votes_allowed"]
+        for choice_name, choice_metadata in contest_metadata["choices"].items():
+            choice = next(c for c in contest.choices if c.name == choice_name)
+            choice.num_votes += choice_metadata["num_votes"]
 
 
 def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
