@@ -9,7 +9,6 @@ import { HTMLSelect, Spinner, FileInput } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
-import { IValues } from './types'
 import labelValueStates from './states'
 import { ErrorLabel } from '../../../Atoms/Form/_helpers'
 import FormSection, {
@@ -20,6 +19,7 @@ import useAuditSettings from '../../useAuditSettings'
 import useJurisdictionFile from './useJurisdictionFile'
 import { IFileInfo } from '../../useJurisdictions'
 import useContestFile from './useContestFile'
+import { IAuditSettings } from '../../../../types'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -42,12 +42,20 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
     null
   )
   useEffect(() => {
-    // if both files are successfully submitted, go to the next screen
-    /* istanbul ignore else */
+    console.log(jurisdictionFileStatus, contestFileStatus)
+    // if in inital state do nothing
+    if (jurisdictionFileStatus === null && contestFileStatus === null) return
+    // if one has failed, reset it and don't advance
     if (
-      jurisdictionFileStatus === 'success' &&
-      contestFileStatus === 'success'
+      jurisdictionFileStatus === 'failure' ||
+      contestFileStatus === 'failure'
     ) {
+      if (contestFileStatus === 'failure') setContestFileStatus(null)
+      if (jurisdictionFileStatus === 'failure') setJurisdictionFileStatus(null)
+      return
+    }
+    // if neither file is currently submitting it must have succeeded and it's safe to advance
+    if (jurisdictionFileStatus !== 'submit' && contestFileStatus !== 'submit') {
       /* istanbul ignore else */
       if (nextStage.activate) nextStage.activate()
       else toast.error('Wrong menuItems passed in: activate() is missing')
@@ -56,9 +64,9 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
 
   if (!auditSettings) return null // Still loading
 
-  const submit = async (values: IValues) => {
-    const responseOne = await updateSettings({ state: values.state })
-    if (!responseOne) return
+  const submit = async ({ state }: { state: IAuditSettings['state'] }) => {
+    const response = await updateSettings({ state })
+    if (!response) return
     setJurisdictionFileStatus('submit') // tell the jurisdiction file component to submit
     setContestFileStatus('submit') // tell the contest file component to submit
   }
@@ -72,7 +80,11 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
       onSubmit={submit}
       enableReinitialize
     >
-      {({ handleSubmit, setFieldValue, values }: FormikProps<IValues>) => (
+      {({
+        handleSubmit,
+        setFieldValue,
+        values,
+      }: FormikProps<{ state: IAuditSettings['state'] }>) => (
         <form data-testid="form-one">
           <FormWrapper
             title={
@@ -226,8 +238,13 @@ const FileForm = ({
   })
 
   useEffect(() => {
-    if (fileStatus === 'submit' && !isSubmitting) handleSubmit()
-  }, [fileStatus, isSubmitting, handleSubmit])
+    // don't submit if already submitting or if this form hasn't been touched
+    if (fileStatus === 'submit' && !isSubmitting && touched.csv) {
+      handleSubmit()
+    } else {
+      setFileStatus(null)
+    }
+  }, [fileStatus, isSubmitting, handleSubmit, setFileStatus, touched.csv])
 
   if (!fileInfo) return null // still loading
   const { file } = fileInfo
