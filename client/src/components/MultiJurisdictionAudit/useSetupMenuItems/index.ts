@@ -40,6 +40,7 @@ function useSetupMenuItems(
   )
 
   const setOrPollParticipantsFile = useCallback(async () => {
+    // issue with ballot polling now?
     const processing = await getJurisdictionFileStatus(electionId)
     const jurisdictionStatus = processing
       ? processing.status

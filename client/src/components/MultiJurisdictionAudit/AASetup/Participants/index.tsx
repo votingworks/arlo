@@ -239,10 +239,12 @@ const FileForm = ({
 
   useEffect(() => {
     // don't submit if already submitting or if this form hasn't been touched
-    if (fileStatus === 'submit' && !isSubmitting && touched.csv) {
-      handleSubmit()
-    } else {
-      setFileStatus(null)
+    if (fileStatus === 'submit') {
+      if (!isSubmitting && touched.csv) {
+        handleSubmit()
+      } else {
+        setFileStatus(null)
+      }
     }
   }, [fileStatus, isSubmitting, handleSubmit, setFileStatus, touched.csv])
 
