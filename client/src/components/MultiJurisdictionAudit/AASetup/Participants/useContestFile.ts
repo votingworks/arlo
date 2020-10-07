@@ -17,7 +17,7 @@ const putContestFileFile = async (
   csv: File
 ): Promise<boolean> => {
   const formData: FormData = new FormData()
-  formData.append('standardize-contests', csv, csv.name)
+  formData.append('standardized-contests', csv, csv.name)
   const response = await api(
     `/election/${electionId}/standardized-contests/file`,
     {
