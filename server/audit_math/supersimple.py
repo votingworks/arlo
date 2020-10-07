@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name
 import math
-from typing import Dict, Tuple, Union
+from typing import Dict, Tuple, Union, TypedDict
 
 from .sampler_contest import Contest
 
@@ -14,6 +14,17 @@ u1: float = 0.001
 # This sets the expected two-vote misstatements at 1 in 10000
 o2: float = 0.0001
 u2: float = 0.0001
+
+# { ballot_id: { contest_id: { choice_id: 0 | 1 }}}
+CVRS = Dict[str, Dict[str, Dict[str, int]]]
+CVR = Dict[str, Dict[str, int]]
+
+
+class Discrepancy(TypedDict):
+    counted_as: int
+    weighted_error: float
+    cvr: CVR
+    sample_cvr: CVR
 
 
 def nMin(
@@ -38,6 +49,82 @@ def nMin(
             / contest.diluted_margin
         ),
     )
+
+
+def find_discrepancies(
+    contest: Contest, cvrs: CVRS, sample_cvr: CVRS,
+) -> Dict[str, Discrepancy]:
+    """
+    Iterates through a given sample and returns the discrepancies found.
+
+    Inputs:
+        contests       - the contests and results being audited
+        cvrs           - mapping of ballot_id to votes:
+                {
+                    'ballot_id': {
+                        'contest': {
+                            'candidate1': 1,
+                            'candidate2': 0,
+                            ...
+                        }
+                    ...
+                }
+
+        sample_cvr - the CVR of the audited ballots
+                {
+                    'ballot_id': {
+                        'contest': {
+                            'candidate1': 1,
+                            'candidate2': 0,
+                            ...
+                        }
+                    ...
+                }
+
+    Outputs:
+        discrepancies   - A mapping of ballot ids to their discrepancies. This
+                          includes entries for all ballots in the sample, even those without
+                          discrepancies.
+                {
+                    'ballot_id': {
+                        'counted_as': -1, # The maximum value for a discrepancy
+                        'weighted_error': -0.0033 # Weighted error used for p-value calculation
+                        'cvr': <CVR for this ballot>,
+                        'sample_cvr': <Sample CVR for this ballot>
+                    }
+    """
+
+    discrepancies: Dict[str, Discrepancy] = {}
+    for ballot in sample_cvr:
+        e_r = 0.0
+        e_int = 0
+
+        if contest.name not in sample_cvr[ballot]:
+            continue
+        for winner in contest.winners:
+            for loser in contest.losers:
+                v_w = cvrs[ballot][contest.name][winner]
+                a_w = sample_cvr[ballot][contest.name][winner]
+
+                v_l = cvrs[ballot][contest.name][loser]
+                a_l = sample_cvr[ballot][contest.name][loser]
+
+                V_wl = contest.candidates[winner] - contest.candidates[loser]
+
+                e = (v_w - a_w) - (v_l - a_l)
+                e_weighted = e / V_wl
+                if e_weighted > e_r:
+                    e_r = e_weighted
+                    e_int = e
+
+        discrepancies[ballot] = Discrepancy(
+            counted_as=e_int,
+            weighted_error=e_weighted,
+            cvr=cvrs[ballot],
+            sample_cvr=sample_cvr[ballot],
+        )
+
+    return discrepancies
 
 
 def get_sample_sizes(
@@ -101,10 +188,6 @@ def get_sample_sizes(
     return nMin(risk_limit, contest, r1, r2, s1, s2)
 
 
-# { ballot_id: { contest_id: { choice_id: 0 | 1 }}}
-CVRS = Dict[str, Dict[str, Dict[str, int]]]
-
-
 def compute_risk(
     risk_limit: float, contest: Contest, cvrs: CVRS, sample_cvr: CVRS,
 ) -> Tuple[float, bool]:
@@ -147,24 +230,11 @@ def compute_risk(
     U = 2 * gamma / contest.diluted_margin
 
     result = False
-    for ballot in sample_cvr:
-        e_r = 0.0
 
-        if contest.name not in sample_cvr[ballot]:
-            continue
-        for winner in contest.winners:
-            for loser in contest.losers:
-                v_w = cvrs[ballot][contest.name][winner]
-                a_w = sample_cvr[ballot][contest.name][winner]
+    discrepancies = find_discrepancies(contest, cvrs, sample_cvr)
 
-                v_l = cvrs[ballot][contest.name][loser]
-                a_l = sample_cvr[ballot][contest.name][loser]
-
-                V_wl = contest.candidates[winner] - contest.candidates[loser]
-
-                e = ((v_w - a_w) - (v_l - a_l)) / V_wl
-                if e > e_r:
-                    e_r = e
+    for ballot in discrepancies:
+        e_r = discrepancies[ballot]["weighted_error"]
 
         denom = (2 * gamma) / V
         p_b = (1 - 1 / U) / (1 - (e_r / denom))
