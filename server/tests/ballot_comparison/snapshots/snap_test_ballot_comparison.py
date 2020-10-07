@@ -41,8 +41,8 @@ Test Audit test_ballot_comparison_round_1,BALLOT_COMPARISON,10%,1234567890,Yes\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,11,No,1.1043717961,DATETIME,DATETIME,Choice 1-1: 4; Choice 1-2: 5\r
-1,Contest 2,Opportunistic,,No,0.4183843254,DATETIME,DATETIME,Choice 2-1: 4; Choice 2-2: 4; Choice 2-3: 0\r
+1,Contest 1,Targeted,11,No,0.7413124393,DATETIME,DATETIME,Choice 1-1: 4; Choice 1-2: 5\r
+1,Contest 2,Opportunistic,,No,0.3142300101,DATETIME,DATETIME,Choice 2-1: 4; Choice 2-2: 4; Choice 2-3: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Batch Name,Ballot Position,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,Audit Result: Contest 2\r
