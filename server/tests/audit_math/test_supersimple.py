@@ -60,6 +60,7 @@ def test_compute_diluted_margin(contests):
         )
 
 
+<<<<<<< HEAD
 def test_find_no_discrepancies(contests, cvrs):
 
     # Test no discrepancies
@@ -116,6 +117,65 @@ def test_find_one_discrepancy(contests, cvrs):
             )
 
 
+||||||| parent of 0dba92f1... Added typed dict
+=======
+def test_find_no_discrepancies(contests, cvrs):
+
+    # Test no discrepancies
+    sample_cvr = {
+        0: {
+            "Contest A": {"winner": 1, "loser": 0},
+            "Contest B": {"winner": 1, "loser": 0},
+            "Contest C": {"winner": 1, "loser": 0},
+            "Contest D": {"winner": 1, "loser": 0},
+            "Contest E": {"winner": 1, "loser": 0},
+        }
+    }
+
+    for contest in contests:
+        discrepancies = supersimple.find_discrepancies(
+            contests[contest], cvrs, sample_cvr
+        )
+
+        assert discrepancies[0]["counted_as"] == 0
+        assert discrepancies[0]["weighted_error"] == 0
+        assert discrepancies[0]["cvr"] == discrepancies[0]["sample_cvr"]
+
+
+def test_find_one_discrepancy(contests, cvrs):
+
+    # Test no discrepancies
+    sample_cvr = {
+        0: {
+            "Contest A": {"winner": 0, "loser": 0},
+            "Contest B": {"winner": 1, "loser": 0},
+            "Contest C": {"winner": 1, "loser": 0},
+            "Contest D": {"winner": 1, "loser": 0},
+            "Contest E": {"winner": 1, "loser": 0},
+        }
+    }
+
+    for contest in contests:
+        discrepancies = supersimple.find_discrepancies(
+            contests[contest], cvrs, sample_cvr
+        )
+        if contest == "Contest A":
+            assert discrepancies[0]["counted_as"] == 1
+            assert discrepancies[0]["weighted_error"] == 1 / 20000
+            assert (
+                discrepancies[0]["cvr"][contest]
+                != discrepancies[0]["sample_cvr"][contest]
+            )
+        else:
+            assert discrepancies[0]["counted_as"] == 0
+            assert discrepancies[0]["weighted_error"] == 0
+            assert (
+                discrepancies[0]["cvr"][contest]
+                == discrepancies[0]["sample_cvr"][contest]
+            )
+
+
+>>>>>>> 0dba92f1... Added typed dict
 def test_get_sample_sizes(contests):
     sample_results = {
         "sample_size": 0,
