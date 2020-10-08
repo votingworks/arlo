@@ -74,7 +74,7 @@ def test_find_no_discrepancies(contests, cvrs):
     }
 
     for contest in contests:
-        discrepancies = supersimple.find_discrepancies(
+        discrepancies = supersimple.compute_discrepancies(
             contests[contest], cvrs, sample_cvr
         )
 
@@ -97,7 +97,7 @@ def test_find_one_discrepancy(contests, cvrs):
     }
 
     for contest in contests:
-        discrepancies = supersimple.find_discrepancies(
+        discrepancies = supersimple.compute_discrepancies(
             contests[contest], cvrs, sample_cvr
         )
         if contest == "Contest A":

@@ -51,7 +51,7 @@ def nMin(
     )
 
 
-def find_discrepancies(
+def compute_discrepancies(
     contest: Contest, cvrs: CVRS, sample_cvr: CVRS,
 ) -> Dict[str, Discrepancy]:
     """
@@ -231,7 +231,7 @@ def compute_risk(
 
     result = False
 
-    discrepancies = find_discrepancies(contest, cvrs, sample_cvr)
+    discrepancies = compute_discrepancies(contest, cvrs, sample_cvr)
 
     for ballot in discrepancies:
         e_r = discrepancies[ballot]["weighted_error"]
