@@ -11,6 +11,7 @@ import FormSection, {
   FormSectionDescription,
 } from '../../Atoms/Form/FormSection'
 import { IFileInfo } from '../useJurisdictions'
+import { IFilePurpose } from '../useCSV'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -24,7 +25,7 @@ interface IProps {
   csvFile: IFileInfo
   uploadCSVFile: (csv: File) => Promise<boolean>
   deleteCSVFile: () => Promise<boolean>
-  filePurpose: 'ballot-manifest' | 'batch-tallies'
+  filePurpose: IFilePurpose
   enabled: boolean
 }
 
@@ -66,7 +67,7 @@ const CSVFileForm = ({
       }: FormikProps<IValues>) => (
         <form>
           <FormWrapper>
-            {filePurpose === 'ballot-manifest' ? (
+            {filePurpose === 'ballot-manifest' && (
               <FormSection>
                 <H4>Ballot Manifest</H4>
                 <FormSectionDescription>
@@ -87,7 +88,8 @@ const CSVFileForm = ({
                   </a>
                 </FormSectionDescription>
               </FormSection>
-            ) : (
+            )}
+            {filePurpose === 'batch-tallies' && (
               <FormSection>
                 <H4>Candidate Totals by Batch</H4>
                 <FormSectionDescription>
@@ -101,6 +103,26 @@ const CSVFileForm = ({
                   <br />
                   <a
                     href="/sample_candidate_totals_by_batch.csv"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    (Click here to view a sample file in the correct format.)
+                  </a>
+                </FormSectionDescription>
+              </FormSection>
+            )}
+            {filePurpose === 'cvrs' && (
+              <FormSection>
+                <H4>Cast Vote Records</H4>
+                <FormSectionDescription>
+                  Click &quot;Browse&quot; to choose the appropriate Cast Vote
+                  Records (CVR) file from your computer. This file should be a
+                  comma-separated list of all the ballots counted by your
+                  tabulator, in order.
+                  <br />
+                  <br />
+                  <a
+                    href="/sample_cast_vote_records.csv"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

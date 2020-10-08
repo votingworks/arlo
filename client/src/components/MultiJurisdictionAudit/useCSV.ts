@@ -3,10 +3,18 @@ import { toast } from 'react-toastify'
 import { api, poll } from '../utilities'
 import { IFileInfo } from './useJurisdictions'
 
+export type IFilePurpose = 'ballot-manifest' | 'batch-tallies' | 'cvrs'
+
+const filePurposeKeys: { [keys in IFilePurpose]: string } = {
+  'ballot-manifest': 'manifest',
+  'batch-tallies': 'batchTallies',
+  cvrs: 'cvrs',
+}
+
 const loadCSV = async (
   electionId: string,
   jurisdictionId: string,
-  filePurpose: 'ballot-manifest' | 'batch-tallies'
+  filePurpose: IFilePurpose
 ): Promise<IFileInfo | null> => {
   const response = await api<IFileInfo>(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/${filePurpose}`
@@ -19,14 +27,10 @@ const putCSVFile = async (
   electionId: string,
   jurisdictionId: string,
   csv: File,
-  filePurpose: 'ballot-manifest' | 'batch-tallies'
+  filePurpose: IFilePurpose
 ): Promise<boolean> => {
   const formData: FormData = new FormData()
-  formData.append(
-    filePurpose === 'ballot-manifest' ? 'manifest' : 'batchTallies',
-    csv,
-    csv.name
-  )
+  formData.append(filePurposeKeys[filePurpose], csv, csv.name)
   const response = await api(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/${filePurpose}`,
     {
@@ -40,7 +44,7 @@ const putCSVFile = async (
 const deleteCSVFile = async (
   electionId: string,
   jurisdictionId: string,
-  filePurpose: 'ballot-manifest' | 'batch-tallies'
+  filePurpose: IFilePurpose
 ): Promise<boolean> => {
   const response = await api(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/${filePurpose}`,
@@ -52,7 +56,7 @@ const deleteCSVFile = async (
 const useCSV = (
   electionId: string,
   jurisdictionId: string,
-  filePurpose: 'ballot-manifest' | 'batch-tallies'
+  filePurpose: IFilePurpose
 ): [
   IFileInfo | null,
   (csv: File) => Promise<boolean>,
@@ -118,5 +122,14 @@ export const useBatchTallies = (
   (csv: File) => Promise<boolean>,
   () => Promise<boolean>
 ] => useCSV(electionId, jurisdictionId, 'batch-tallies')
+
+export const useCVRS = (
+  electionId: string,
+  jurisdictionId: string
+): [
+  IFileInfo | null,
+  (csv: File) => Promise<boolean>,
+  () => Promise<boolean>
+] => useCSV(electionId, jurisdictionId, 'cvrs')
 
 export default useCSV

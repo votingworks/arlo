@@ -15,7 +15,7 @@ import {
   JurisdictionAdminStatusBox,
   isSetupComplete,
 } from './StatusBox'
-import { useBallotManifest, useBatchTallies } from './useCSV'
+import { useBallotManifest, useBatchTallies, useCVRS } from './useCSV'
 import useAuditBoards from './useAuditBoards'
 import useAuditSettings from './useAuditSettings'
 import useJurisdictions, { FileProcessingStatus } from './useJurisdictions'
@@ -162,6 +162,7 @@ export const JurisdictionAdminView: React.FC = () => {
     uploadBatchTallies,
     deleteBatchTallies,
   ] = useBatchTallies(electionId, jurisdictionId)
+  const [cvrs, uploadCVRS, deleteCVRS] = useCVRS(electionId, jurisdictionId)
   const [auditBoards, createAuditBoards] = useAuditBoards(
     electionId,
     jurisdictionId,
@@ -172,6 +173,7 @@ export const JurisdictionAdminView: React.FC = () => {
     !rounds ||
     !ballotManifest ||
     !batchTallies ||
+    !cvrs ||
     !auditBoards ||
     !auditSettings
   )
@@ -205,6 +207,19 @@ export const JurisdictionAdminView: React.FC = () => {
               uploadCSVFile={uploadBatchTallies}
               deleteCSVFile={deleteBatchTallies}
               filePurpose="batch-tallies"
+            />
+          )}
+          {auditSettings.auditType === 'BALLOT_COMPARISON' && (
+            <CSVFile
+              csvFile={cvrs}
+              enabled={
+                !!ballotManifest.processing &&
+                ballotManifest.processing.status ===
+                  FileProcessingStatus.PROCESSED
+              }
+              uploadCSVFile={uploadCVRS}
+              deleteCSVFile={deleteCVRS}
+              filePurpose="cvrs"
             />
           )}
         </VerticalInner>
