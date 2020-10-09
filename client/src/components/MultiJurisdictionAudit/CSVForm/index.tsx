@@ -119,15 +119,6 @@ const CSVFileForm = ({
                   Records (CVR) file from your computer. This file should be a
                   comma-separated list of all the ballots counted by your
                   tabulator, in order.
-                  <br />
-                  <br />
-                  <a
-                    href="/sample_cast_vote_records.csv"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    (Click here to view a sample file in the correct format.)
-                  </a>
                 </FormSectionDescription>
               </FormSection>
             )}
