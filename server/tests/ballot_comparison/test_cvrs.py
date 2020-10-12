@@ -97,6 +97,32 @@ def test_cvr_upload(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
 
+    # Test that the AA jurisdictions list includes CVRs
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    assert rv.status_code == 200
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    compare_json(
+        jurisdictions[0]["cvrs"],
+        {
+            "file": {"name": "cvrs.csv", "uploadedAt": assert_is_date,},
+            "processing": {
+                "status": "PROCESSED",
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": None,
+            },
+        },
+    )
+
+    # Test that the AA can download the CVR file
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs/csv"
+    )
+    assert rv.status_code == 200
+    assert rv.headers["Content-Disposition"] == 'attachment; filename="cvrs.csv"'
+    assert rv.data == TEST_CVRS.encode()
+
 
 # TODO
 # - copy all the tests from test_batch_tallies.py

@@ -30,6 +30,11 @@ def serialize_jurisdiction(
             "file": serialize_file(jurisdiction.batch_tallies_file),
             "processing": serialize_file_processing(jurisdiction.batch_tallies_file),
         }
+    if election.audit_type == AuditType.BALLOT_COMPARISON:
+        json_jurisdiction["cvrs"] = {
+            "file": serialize_file(jurisdiction.cvr_file),
+            "processing": serialize_file_processing(jurisdiction.cvr_file),
+        }
     return json_jurisdiction
 
 
