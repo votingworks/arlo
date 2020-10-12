@@ -43,7 +43,7 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
   )
   useEffect(() => {
     console.log(jurisdictionFileStatus, contestFileStatus)
-    // if in inital state do nothing
+    // if in inital state just advance
     if (jurisdictionFileStatus === null && contestFileStatus === null) return
     // if one has failed, reset it and don't advance
     if (
@@ -68,7 +68,8 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
     const response = await updateSettings({ state })
     if (!response) return
     setJurisdictionFileStatus('submit') // tell the jurisdiction file component to submit
-    setContestFileStatus('submit') // tell the contest file component to submit
+    if (auditSettings.auditType === 'BALLOT_COMPARISON')
+      setContestFileStatus('submit') // tell the contest file component to submit
   }
 
   return (
@@ -243,7 +244,7 @@ const FileForm = ({
       if (!isSubmitting && touched.csv) {
         handleSubmit()
       } else {
-        setFileStatus(null)
+        setFileStatus('success') // clear for advancing to next stage
       }
     }
   }, [fileStatus, isSubmitting, handleSubmit, setFileStatus, touched.csv])
