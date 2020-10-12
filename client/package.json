@@ -121,7 +121,7 @@
     "@wdio/local-runner": "^5.14.4",
     "@wdio/spec-reporter": "^5.16.11",
     "babel-jest": "^24.9.0",
-    "chromedriver": "84.0.0",
+    "chromedriver": "86.0.0",
     "cypress": "^4.11.0",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^17.1.0",
