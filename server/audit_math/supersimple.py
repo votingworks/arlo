@@ -96,6 +96,10 @@ def compute_discrepancies(
 
     discrepancies: Dict[str, Discrepancy] = {}
     for ballot in sample_cvr:
+        # We want to be conservative, so we will ignore the case where there are
+        # negative errors (i.e. errors that favor the winner. We can do that
+        # by setting these to zero and evaluating whether an error is greater
+        # than zero (i.e. positive).
         e_r = 0.0
         e_int = 0
 
