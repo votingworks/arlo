@@ -7,6 +7,7 @@ Note that this library works for one contest at a time, as if each contest being
 targeted is being audited completely independently.
 """
 import math
+from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, Optional
 from typing_extensions import Literal, TypedDict
 from scipy import stats
@@ -15,7 +16,7 @@ from .sampler_contest import Contest
 
 
 def get_expected_sample_sizes(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
+    risk_limit: Decimal, contest: Contest, sample_results: Dict[str, int]
 ) -> int:
     """
     Returns the expected sample size for a BRAVO audit of <contest>
@@ -36,22 +37,22 @@ def get_expected_sample_sizes(
     """
 
     margin = contest.margins
-    p_w = 10.0 ** 7
-    s_w = 0.0
-    p_l = 0.0
+    p_w = Decimal("inf")
+    s_w = Decimal(0)
+    p_l = Decimal(0)
     # Get smallest p_w - p_l
     for winner in margin["winners"]:
         if margin["winners"][winner]["p_w"] < p_w:
-            p_w = margin["winners"][winner]["p_w"]
+            p_w = Decimal(margin["winners"][winner]["p_w"])
 
     if not margin["losers"]:
         return -1
 
     for loser in margin["losers"]:
         if margin["losers"][loser]["p_l"] > p_l:
-            p_l = margin["losers"][loser]["p_l"]
+            p_l = Decimal(margin["losers"][loser]["p_l"])
 
-    s_w = p_w / (p_w + p_l)
+    s_w = Decimal(p_w / (p_w + p_l))
 
     if p_w == 1.0:
         # Handle single-candidate or crazy landslides
@@ -59,18 +60,22 @@ def get_expected_sample_sizes(
     elif p_w == p_l:
         return contest.ballots
     else:
-        z_w = math.log(2 * s_w)
-        z_l = math.log(2 - 2 * s_w)
+        z_w = (2 * s_w).ln()
+        z_l = (2 - 2 * s_w).ln()
 
         T = min(get_test_statistics(contest.margins, sample_results).values())
 
-        weighted_alpha = math.log((1.0 / risk_limit) / T)
-        return math.ceil((weighted_alpha + (z_w / 2.0)) / (p_w * z_w + p_l * z_l))
+        weighted_alpha = (Decimal(1.0) / risk_limit) / T
+        return int(
+            (
+                (weighted_alpha.ln() + (z_w / Decimal(2))) / (p_w * z_w + p_l * z_l)
+            ).quantize(Decimal(1), rounding=ROUND_CEILING)
+        )
 
 
 def get_test_statistics(
     margins: Dict[str, Dict], sample_results: Dict[str, int]
-) -> Dict[Tuple[str, str], float]:
+) -> Dict[Tuple[str, str], Decimal]:
     """
     Computes T*, the test statistic from an existing sample.
 
@@ -96,28 +101,36 @@ def get_test_statistics(
     # Setup pair-wise Ts:
     for winner in winners:
         for loser in losers:
-            T[(winner, loser)] = 1.0
+            T[(winner, loser)] = Decimal(1.0)
 
     # Handle the no-losers case
     if not losers:
         for winner in winners:
-            T[(winner, "")] = 1.0
+            T[(winner, "")] = Decimal(1.0)
 
     for cand, votes in sample_results.items():
+        # Avoid a degenerate case where T is 0 and votes is also 0
+        if not votes:
+            continue
+
         if cand in winners:
             for loser in losers:
-                T[(cand, loser)] *= (winners[cand]["swl"][loser] / 0.5) ** votes
+                T[(cand, loser)] *= (
+                    Decimal((winners[cand]["swl"][loser] / 0.5)) ** votes
+                )
+
         elif cand in losers:
             for winner in winners:
-                T[(winner, cand)] *= ((1 - winners[winner]["swl"][cand]) / 0.5) ** votes
-
+                T[(winner, cand)] *= (
+                    Decimal(((1 - winners[winner]["swl"][cand]) / 0.5)) ** votes
+                )
     return T
 
 
 def bravo_sample_sizes(
-    risk_limit: float,
-    p_w: float,
-    p_r: float,
+    risk_limit: Decimal,
+    p_w: Decimal,
+    p_r: Decimal,
     sample_w: int,
     sample_r: int,
     p_completion: float,
@@ -147,9 +160,9 @@ def bravo_sample_sizes(
     p_r2 = 1 - p_w2
 
     # set up the basic BRAVO math
-    plus = math.log(p_w2 / 0.5)
-    minus = math.log(p_r2 / 0.5)
-    threshold = math.log(1 / risk_limit) - (sample_w * plus + sample_r * minus)
+    plus = (p_w2 / Decimal(0.5)).ln()
+    minus = (p_r2 / Decimal(0.5)).ln()
+    threshold = (Decimal(1) / risk_limit).ln() - (sample_w * plus + sample_r * minus)
 
     # crude condition trapping:
     if threshold <= 0:
@@ -175,7 +188,7 @@ def bravo_sample_sizes(
 
     # The three coefficients of the quadratic:
     q_a = g ** 2
-    q_b = -(z ** 2 * d + 2 * f * g)
+    q_b = -(Decimal(z) ** Decimal(2) * d + 2 * f * g)
     q_c = f ** 2
 
     # Apply the quadratic formula.
@@ -185,12 +198,12 @@ def bravo_sample_sizes(
     # max here handles cases where, due to rounding error,
     # the base (content) of the radical is trivially
     # negative for p_completion very close to 0.5.
-    radical = math.sqrt(max(0, q_b ** 2 - 4 * q_a * q_c))
+    radical = math.sqrt((q_b ** 2 - 4 * q_a * q_c).max(0))
 
     if p_completion > 0.5:
-        size = math.floor((-q_b + radical) / (2 * q_a))
+        size = math.floor((-q_b + Decimal(radical)) / (2 * q_a))
     else:
-        size = math.floor((-q_b - radical) / (2 * q_a))
+        size = math.floor((-q_b - Decimal(radical)) / (2 * q_a))
 
     # This is a reasonable estimate, but is not guaranteed.
     # Get a guarantee. (Perhaps contrary to intuition, using
@@ -198,8 +211,8 @@ def bravo_sample_sizes(
     # larger sample.)
     searching = True
     while searching:
-        x_c = stats.binom.ppf(1.0 - p_completion, size, p_w2)
-        test_stat = x_c * plus + (size - x_c) * minus
+        x_c = stats.binom.ppf(1.0 - p_completion, size, float(p_w2))
+        test_stat = Decimal(x_c) * plus + Decimal(size - x_c) * minus
         if test_stat > threshold:
             searching = False
         else:
@@ -214,7 +227,12 @@ def bravo_sample_sizes(
 
 
 def expected_prob(
-    risk_limit: float, p_w: float, p_r: float, sample_w: int, sample_r: int, asn: int
+    risk_limit: Decimal,
+    p_w: Decimal,
+    p_r: Decimal,
+    sample_w: int,
+    sample_r: int,
+    asn: int,
 ) -> float:
 
     """
@@ -240,12 +258,12 @@ def expected_prob(
     # calculate the "two-way" share of p_w
     p_wr = p_w + p_r
     p_w2 = p_w / p_wr
-    p_r2 = 1 - p_w2
+    p_r2 = Decimal(1) - p_w2
 
     # set up the basic BRAVO math
-    plus = math.log(p_w2 / 0.5)
-    minus = math.log(p_r2 / 0.5)
-    threshold = math.log(1 / risk_limit) - (sample_w * plus + sample_r * minus)
+    plus = (p_w2 / Decimal(0.5)).ln()
+    minus = (p_r2 / Decimal(0.5)).ln()
+    threshold = (Decimal(1) / risk_limit).ln() - (sample_w * plus + sample_r * minus)
 
     # crude condition trapping:
     if threshold <= 0:
@@ -264,10 +282,10 @@ def expected_prob(
 
     R_x = (threshold - minus * n) / (plus - minus)
 
-    z = (R_x - n * p_w2) / math.sqrt(n * p_w2 * p_r2)
+    z = (R_x - n * p_w2) / (n * p_w2 * p_r2).sqrt()
 
     # Invert the PPF used to compute z from the sample prob
-    return round(float(stats.norm.cdf(-z)), 2)
+    return round(float(stats.norm.cdf(float(-z))), 2)
 
 
 class SampleSizeOption(TypedDict):
@@ -277,7 +295,7 @@ class SampleSizeOption(TypedDict):
 
 
 def get_sample_size(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
+    risk_limit: Decimal, contest: Contest, sample_results: Dict[str, int]
 ) -> Dict[str, SampleSizeOption]:
     """
     Computes initial sample size parameterized by likelihood that the
@@ -317,8 +335,8 @@ def get_sample_size(
 
     asn = get_expected_sample_sizes(risk_limit, contest, sample_results)
 
-    p_w = 10.0 ** 7
-    p_l = 0.0
+    p_w = Decimal("inf")
+    p_l = Decimal(0.0)
     best_loser = ""
     worse_winner = ""
 
@@ -330,12 +348,12 @@ def get_sample_size(
     # Get smallest p_w - p_l
     for winner in margin["winners"]:
         if margin["winners"][winner]["p_w"] < p_w:
-            p_w = margin["winners"][winner]["p_w"]
+            p_w = Decimal(margin["winners"][winner]["p_w"])
             worse_winner = winner
 
     for loser in margin["losers"]:
         if margin["losers"][loser]["p_l"] > p_l:
-            p_l = margin["losers"][loser]["p_l"]
+            p_l = Decimal(margin["losers"][loser]["p_l"])
             best_loser = loser
 
     # If we're in a single-candidate race, set sample to 0
@@ -388,8 +406,8 @@ def get_sample_size(
 
 
 def compute_risk(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
-) -> Tuple[Dict[Tuple[str, str], float], bool]:
+    risk_limit: Decimal, contest: Contest, sample_results: Dict[str, int]
+) -> Tuple[Dict[Tuple[str, str], Decimal], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 

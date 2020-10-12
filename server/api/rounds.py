@@ -1,5 +1,6 @@
 import uuid
 from collections import defaultdict
+from decimal import Decimal
 from typing import Optional, NamedTuple, List, Tuple, Dict, cast as typing_cast
 from datetime import datetime
 from flask import jsonify, request
@@ -306,7 +307,7 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS
 def calculate_risk_measurements(election: Election, round: Round):
     if not election.risk_limit:  # Shouldn't happen, we need this for typechecking
         raise Exception("Risk limit not defined")  # pragma: no cover
-    risk_limit = float(election.risk_limit) / 100
+    risk_limit = Decimal(election.risk_limit) / Decimal(100)
 
     for round_contest in round.round_contests:
         contest = round_contest.contest
@@ -334,7 +335,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 sampled_ballot_interpretations_to_cvrs(contest),
             )
 
-        round_contest.end_p_value = p_value
+        round_contest.end_p_value = float(p_value)
         round_contest.is_complete = is_complete
 
 

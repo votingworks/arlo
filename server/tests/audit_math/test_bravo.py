@@ -1,12 +1,13 @@
 # pylint: disable=invalid-name
 import math
+from decimal import Decimal
 import pytest
 
 from ...audit_math import bravo
 from ...audit_math.sampler_contest import Contest
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
-RISK_LIMIT = 0.1
+RISK_LIMIT = Decimal(0.1)
 
 
 @pytest.fixture
@@ -90,8 +91,8 @@ def test_bravo_sample_sizes():
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
             risk_limit=RISK_LIMIT,
-            p_w=0.4,
-            p_r=0.32,
+            p_w=Decimal(0.4),
+            p_r=Decimal(0.32),
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.9,
@@ -108,8 +109,8 @@ def test_bravo_sample_sizes():
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
             risk_limit=RISK_LIMIT,
-            p_w=0.36,
-            p_r=0.32,
+            p_w=Decimal(0.36),
+            p_r=Decimal(0.32),
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.9,
@@ -121,13 +122,13 @@ def test_bravo_sample_sizes():
         computed_size1, expected_size1
     )
 
-    expected_size1 = 2475
+    expected_size1 = 2476
 
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
             risk_limit=RISK_LIMIT,
-            p_w=0.36,
-            p_r=0.32,
+            p_w=Decimal(0.36),
+            p_r=Decimal(0.32),
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.6,
@@ -144,8 +145,8 @@ def test_bravo_sample_sizes():
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
             risk_limit=RISK_LIMIT,
-            p_w=0.52,
-            p_r=0.47,
+            p_w=Decimal(0.52),
+            p_r=Decimal(0.47),
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.9,
@@ -167,8 +168,8 @@ def test_bravo_sample_sizes_round1_finish():
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
             RISK_LIMIT,
-            p_w=0.52,
-            p_r=0.47,
+            p_w=Decimal(0.52),
+            p_r=Decimal(0.47),
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.9,
@@ -189,8 +190,8 @@ def test_bravo_sample_sizes_round1_incomplete():
     computed_size1 = math.ceil(
         bravo.bravo_sample_sizes(
             RISK_LIMIT,
-            p_w=0.52,
-            p_r=0.47,
+            p_w=Decimal(0.52),
+            p_r=Decimal(0.47),
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             p_completion=0.9,
@@ -260,8 +261,8 @@ def test_bravo_expected_prob():
     computed_prob1 = round(
         bravo.expected_prob(
             RISK_LIMIT,
-            p_w=0.6,
-            p_r=0.4,
+            p_w=Decimal(0.6),
+            p_r=Decimal(0.4),
             sample_w=r0_sample_win,
             sample_r=r0_sample_rup,
             asn=119,
@@ -278,18 +279,40 @@ def test_bravo_expected_prob():
 def test_compute_risk(contests):
     # Test computing sample
     expected_Ts = {
-        "test1": {("cand1", "cand2"): 0.07},
-        "test2": {("cand1", "cand2"): 10.38, ("cand1", "cand3"): 0,},
-        "test3": {("cand1", ""): 1},
-        "test4": {("cand1", ""): 1},
-        "test5": {("cand1", "cand2"): 1},
-        "test6": {("cand1", "cand2"): 0.08, ("cand1", "cand3"): 0.08,},
-        "test7": {("cand1", "cand3"): 0.01, ("cand2", "cand3"): 0.04,},
-        "test8": {("cand1", "cand3"): 0.0, ("cand2", "cand3"): 0.22,},
-        "test9": {("cand1", ""): 1, ("cand2", ""): 1,},
-        "test10": {("cand1", "cand3"): 0, ("cand2", "cand3"): 0.01,},
-        "test11": {("cand1", "cand2"): 1},
-        "test12": {("cand1", "cand2"): 0.07, ("cand1", "cand3"): 0,},
+        "test1": {("cand1", "cand2"): Decimal(0.0714)},
+        "test2": {
+            ("cand1", "cand2"): Decimal(10.3814),
+            ("cand1", "cand3"): Decimal(0.0007),
+        },
+        "test3": {("cand1", ""): Decimal(1)},
+        "test4": {("cand1", ""): Decimal(1)},
+        "test5": {("cand1", "cand2"): Decimal(1)},
+        "test6": {
+            ("cand1", "cand2"): Decimal(0.08925),
+            ("cand1", "cand3"): Decimal(0.08925),
+        },
+        "test7": {
+            ("cand1", "cand3"): Decimal(0.00535),
+            ("cand2", "cand3"): Decimal(0.0434),
+        },
+        "test8": {
+            ("cand1", "cand3"): Decimal(0.0002),
+            ("cand2", "cand3"): Decimal(0.22176),
+        },
+        "test9": {("cand1", ""): Decimal(1), ("cand2", ""): Decimal(1),},
+        "test10": {
+            ("cand1", "cand3"): Decimal(0),
+            ("cand2", "cand3"): Decimal(0.00534),
+        },
+        "test11": {("cand1", "cand2"): Decimal(1)},
+        "test12": {
+            ("cand1", "cand2"): Decimal(0.07140),
+            ("cand1", "cand3"): Decimal(0),
+        },
+        "test_small_third_candidate": {
+            ("cand1", "cand2"): Decimal(0.000561),
+            ("cand1", "cand3"): Decimal(0),
+        },
     }
 
     expected_decisions = {
@@ -305,16 +328,19 @@ def test_compute_risk(contests):
         "test10": True,
         "test11": False,
         "test12": True,
+        "test_small_third_candidate": True,
     }
 
     for contest in contests.values():
         sample = round1_sample_results[contest.name]
         T, decision = bravo.compute_risk(RISK_LIMIT, contest, sample)
         expected_T = expected_Ts[contest.name]
+
+        print(T)
         for pair in expected_T:
             diff = T[pair] - expected_T[pair]
             assert (
-                abs(diff) < 0.01
+                abs(diff) < 0.0001
             ), "Risk compute for {} failed! Expected {}, got {}".format(
                 contest.name, expected_Ts[contest.name][pair], T[pair]
             )
@@ -342,6 +368,10 @@ def test_compute_risk_empty(contests):
         "test10": {("cand1", "cand3"): 1, ("cand2", "cand3"): 1,},
         "test11": {("cand1", "cand2"): 1,},
         "test12": {("cand1", "cand2"): 1, ("cand1", "cand3"): 1,},
+        "test_small_third_candidate": {
+            ("cand1", "cand2"): Decimal(1),
+            ("cand1", "cand3"): Decimal(1),
+        },
     }
 
     expected_decisions = {
@@ -357,6 +387,7 @@ def test_compute_risk_empty(contests):
         "test10": False,
         "test11": False,
         "test12": False,
+        "test_small_third_candidate": False,
     }
 
     for contest in contests.values():
@@ -458,6 +489,14 @@ bravo_contests = {
         "votesAllowed": 1,
         "numWinners": 1,
     },
+    "test_small_third_candidate": {
+        "cand1": 10000,
+        "cand2": 9000,
+        "cand3": 200,
+        "ballots": 20000,
+        "votesAllowed": 1,
+        "numWinners": 1,
+    },
 }
 
 # Useful test data
@@ -474,6 +513,7 @@ round0_sample_results = {
     "test10": {"cand1": 0, "cand2": 0, "cand3": 0},
     "test11": {"cand1": 0, "cand2": 0},
     "test12": {"cand1": 0, "cand2": 0, "cand3": 0},
+    "test_small_third_candidate": {"cand1": 0, "cand2": 0, "cand3": 0},
 }
 
 round1_sample_results = {
@@ -489,6 +529,7 @@ round1_sample_results = {
     "test10": {"cand1": 60, "cand2": 30, "cand3": 10},
     "test11": {"cand1": 0, "cand2": 0},
     "test12": {"cand1": 72, "cand2": 47, "cand3": 0},
+    "test_small_third_candidate": {"cand1": 1200, "cand2": 1000, "cand3": 10},
 }
 
 true_sample_sizes = {
@@ -538,5 +579,11 @@ true_sample_sizes = {
         "0.7": {"type": None, "size": 184, "prob": 0.7},
         "0.8": {"type": None, "size": 244, "prob": 0.8},
         "0.9": {"type": None, "size": 351, "prob": 0.9},
+    },
+    "test_small_third_candidate": {
+        "asn": {"type": "ASN", "size": 1769, "prob": 0.5},
+        "0.7": {"type": None, "size": 2837, "prob": 0.7},
+        "0.8": {"type": None, "size": 3760, "prob": 0.8},
+        "0.9": {"type": None, "size": 5426, "prob": 0.9},
     },
 }

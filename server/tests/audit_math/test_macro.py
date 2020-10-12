@@ -1,10 +1,11 @@
+from decimal import Decimal
 import pytest
 
 from ...audit_math import macro
 from ...audit_math.sampler_contest import Contest
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
-RISK_LIMIT = 0.25
+RISK_LIMIT = Decimal(0.25)
 
 macro_contests = {
     "Contest A": {
@@ -104,24 +105,24 @@ def test_max_error(contests, batches):
     # this is kind of a hacky way to do this but ¯\_(ツ)_/¯
     expected_ups = {"Contest A": {}, "Contest B": {}, "Contest C": {}}
     for i in range(200):
-        expected_ups["Contest A"]["Batch {}".format(i)] = 0.0700
-        expected_ups["Contest A"]["Batch {} AV".format(i)] = 0.035
-        expected_ups["Contest B"]["Batch {}".format(i)] = 0
-        expected_ups["Contest B"]["Batch {} AV".format(i)] = 0
-        expected_ups["Contest C"]["Batch {}".format(i)] = 0
-        expected_ups["Contest C"]["Batch {} AV".format(i)] = 0
+        expected_ups["Contest A"]["Batch {}".format(i)] = Decimal(0.0700)
+        expected_ups["Contest A"]["Batch {} AV".format(i)] = Decimal(0.035)
+        expected_ups["Contest B"]["Batch {}".format(i)] = Decimal(0)
+        expected_ups["Contest B"]["Batch {} AV".format(i)] = Decimal(0)
+        expected_ups["Contest C"]["Batch {}".format(i)] = Decimal(0)
+        expected_ups["Contest C"]["Batch {} AV".format(i)] = Decimal(0)
 
     for i in range(100):
-        expected_ups["Contest B"]["Batch {}".format(i)] = 0.0733
-        expected_ups["Contest B"]["Batch {} AV".format(i)] = 0.0367
+        expected_ups["Contest B"]["Batch {}".format(i)] = Decimal(0.0733)
+        expected_ups["Contest B"]["Batch {} AV".format(i)] = Decimal(0.0367)
 
     for i in range(30):
-        expected_ups["Contest C"]["Batch {}".format(i)] = 0.0852
-        expected_ups["Contest C"]["Batch {} AV".format(i)] = 0.0426
+        expected_ups["Contest C"]["Batch {}".format(i)] = Decimal(0.0852)
+        expected_ups["Contest C"]["Batch {} AV".format(i)] = Decimal(0.0426)
 
     for i in range(100, 130):
-        expected_ups["Contest C"]["Batch {}".format(i)] = 0.0852
-        expected_ups["Contest C"]["Batch {} AV".format(i)] = 0.0426
+        expected_ups["Contest C"]["Batch {}".format(i)] = Decimal(0.0852)
+        expected_ups["Contest C"]["Batch {} AV".format(i)] = Decimal(0.0426)
 
     for contest in contests:
         for batch in batches:
@@ -224,17 +225,22 @@ def test_compute_risk(contests, batches):
             "Contest A": {"winner": 190, "loser": 190,},
             "Contest C": {"winner": 200, "loser": 140,},
         }
+    expected_ps = {
+        "Contest A": Decimal(0.242946),
+        "Contest B": Decimal(0.239492),
+        "Contest C": Decimal(0.247185),
+    }
 
     for contest in contests:
         computed_p, result = macro.compute_risk(
             RISK_LIMIT, contests[contest], batches, sample
         )
 
-        expected_p = 0.247688222
+        expected_p = expected_ps[contest]
 
         delta = abs(expected_p - computed_p)
 
-        assert delta < 10 ** -2, "Incorrect p-value: Got {}, expected {}".format(
+        assert delta < 10 ** -4, "Incorrect p-value: Got {}, expected {}".format(
             computed_p, expected_p
         )
 

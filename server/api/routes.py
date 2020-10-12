@@ -1,4 +1,5 @@
 import datetime, csv, io, json, uuid
+from decimal import Decimal
 from typing import Dict, List, Tuple
 
 from flask import jsonify, request
@@ -53,7 +54,7 @@ def compute_sample_sizes(round_contest):
 
     for contest in election.contests:
         raw_sample_size_options = bravo.get_sample_size(
-            election.risk_limit / 100,
+            Decimal(election.risk_limit) / Decimal(100),
             sampler_contest.from_db_contest(contest),
             cumulative_contest_results(contest),
         )
@@ -109,7 +110,7 @@ def check_round(election, jurisdiction_id, round_id):
     contest = next(c for c in election.contests if c.id == round_contest.contest_id)
 
     risk, is_complete = bravo.compute_risk(
-        election.risk_limit / 100,
+        Decimal(election.risk_limit) / Decimal(100),
         sampler_contest.from_db_contest(contest),
         cumulative_contest_results(contest),
     )

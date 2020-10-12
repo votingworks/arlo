@@ -1,48 +1,55 @@
 # pylint: disable=invalid-name
 import math
 from typing import Dict, Tuple, Union
+from decimal import Decimal, ROUND_CEILING
 
 from .sampler_contest import Contest
 
-l: float = 0.5
-gamma: float = 1.03905  # This gamma is used in Stark's tool, AGI, and CORLA
+l: Decimal = Decimal(0.5)
+gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA)
 
 # This sets the expected number of one-vote misstatements at 1 in 1000
-o1: float = 0.001
-u1: float = 0.001
+o1: Decimal = Decimal(0.001)
+u1: Decimal = Decimal(0.001)
 
 # This sets the expected two-vote misstatements at 1 in 10000
-o2: float = 0.0001
-u2: float = 0.0001
+o2: Decimal = Decimal(0.0001)
+u2: Decimal = Decimal(0.0001)
 
 
 def nMin(
-    risk_limit: float, contest: Contest, o1: float, o2: float, u1: float, u2: float
-) -> float:
+    risk_limit: Decimal,
+    contest: Contest,
+    o1: Decimal,
+    o2: Decimal,
+    u1: Decimal,
+    u2: Decimal,
+) -> Decimal:
     """
     Computes a sample size parameterized by expected under and overstatements
     and the margin.
     """
-    return max(
-        o1 + o2 + u1 + u2,
+    return (o1 + o2 + u1 + u2).max(
         math.ceil(
             -2
             * gamma
             * (
-                math.log(risk_limit)
-                + o1 * math.log(1 - 1 / (2 * gamma))
-                + o2 * math.log(1 - 1 / gamma)
-                + u1 * math.log(1 + 1 / (2 * gamma))
-                + u2 * math.log(1 + 1 / gamma)
+                risk_limit.ln()
+                + o1 * (1 - 1 / (2 * gamma)).ln()
+                + o2 * (1 - 1 / gamma).ln()
+                + u1 * (1 + 1 / (2 * gamma)).ln()
+                + u2 * (1 + 1 / gamma).ln()
             )
-            / contest.diluted_margin
+            / Decimal(contest.diluted_margin)
         ),
     )
 
 
 def get_sample_sizes(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, Union[int, float]]
-) -> float:
+    risk_limit: Decimal,
+    contest: Contest,
+    sample_results: Dict[str, Union[int, Decimal]],
+) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
     initial sample will confirm the election result, assuming no
@@ -71,34 +78,34 @@ def get_sample_sizes(
     num_sampled = sample_results["sample_size"]
 
     if num_sampled:
-        r1 = obs_o1 / num_sampled
-        r2 = obs_o2 / num_sampled
-        s1 = obs_u1 / num_sampled
-        s2 = obs_u2 / num_sampled
+        r1 = Decimal(obs_o1 / num_sampled)
+        r2 = Decimal(obs_o2 / num_sampled)
+        s1 = Decimal(obs_u1 / num_sampled)
+        s2 = Decimal(obs_u2 / num_sampled)
     else:
-        r1 = o1
-        r2 = o2
-        s1 = u1
-        s2 = u2
+        r1 = Decimal(o1)
+        r2 = Decimal(o2)
+        s1 = Decimal(u1)
+        s2 = Decimal(u2)
 
     denom = (
-        math.log(1 - contest.diluted_margin / (2 * gamma))
-        - r1 * math.log(1 - 1 / (2 * gamma))
-        - r2 * math.log(1 - 1 / gamma)
-        - s1 * math.log(1 + 1 / (2 * gamma))
-        - s2 * math.log(1 + 1 / gamma)
+        (1 - Decimal(contest.diluted_margin) / (2 * gamma)).ln()
+        - r1 * (1 - 1 / (2 * gamma)).ln()
+        - r2 * (1 - 1 / gamma).ln()
+        - s1 * (1 + 1 / (2 * gamma)).ln()
+        - s2 * (1 + 1 / gamma).ln()
     )
 
     if denom >= 0:
         return contest.ballots
 
-    n0 = math.ceil(math.log(risk_limit) / denom)
+    n0 = (risk_limit.ln() / denom).quantize(Decimal(1), rounding=ROUND_CEILING)
 
     # Round up one-vote differences.
-    r1 = math.ceil(r1 * n0)
-    s1 = math.ceil(s1 * n0)
+    r1 = (r1 * n0).quantize(Decimal(1.0), rounding=ROUND_CEILING)
+    s1 = (s1 * n0).quantize(Decimal(1.0), rounding=ROUND_CEILING)
 
-    return nMin(risk_limit, contest, r1, r2, s1, s2)
+    return int(nMin(risk_limit, contest, r1, r2, s1, s2))
 
 
 # { ballot_id: { contest_id: { choice_id: 0 | 1 }}}
@@ -106,8 +113,8 @@ CVRS = Dict[str, Dict[str, Dict[str, int]]]
 
 
 def compute_risk(
-    risk_limit: float, contest: Contest, cvrs: CVRS, sample_cvr: CVRS,
-) -> Tuple[float, bool]:
+    risk_limit: Decimal, contest: Contest, cvrs: CVRS, sample_cvr: CVRS,
+) -> Tuple[Decimal, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 
@@ -140,15 +147,15 @@ def compute_risk(
                           result is correct based on the sample, for each winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
-    p = 1.0
+    p = Decimal(1.0)
 
-    V = contest.diluted_margin * len(cvrs)
+    V = Decimal(contest.diluted_margin * len(cvrs))
 
-    U = 2 * gamma / contest.diluted_margin
+    U = 2 * gamma / Decimal(contest.diluted_margin)
 
     result = False
     for ballot in sample_cvr:
-        e_r = 0.0
+        e_r = Decimal(0.0)
 
         if contest.name not in sample_cvr[ballot]:
             continue
@@ -160,9 +167,9 @@ def compute_risk(
                 v_l = cvrs[ballot][contest.name][loser]
                 a_l = sample_cvr[ballot][contest.name][loser]
 
-                V_wl = contest.candidates[winner] - contest.candidates[loser]
+                V_wl = Decimal(contest.candidates[winner] - contest.candidates[loser])
 
-                e = ((v_w - a_w) - (v_l - a_l)) / V_wl
+                e = Decimal((v_w - a_w) - (v_l - a_l)) / V_wl
                 if e > e_r:
                     e_r = e
 
