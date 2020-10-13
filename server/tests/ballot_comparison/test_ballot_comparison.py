@@ -53,7 +53,7 @@ def test_set_contest_metadata_from_cvrs(
     )
 
 
-def test_ballot_comparison_round_1(
+def test_ballot_comparison_two_rounds(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
@@ -141,49 +141,62 @@ def test_ballot_comparison_round_1(
         assert_ok(rv)
 
     # Audit boards audit all the ballots
-    vote_ratio = 0.5
-    round = Round.query.get(round_1_id)
-    for contest_id in [target_contest_id, contests[1]["id"]]:
-        contest = Contest.query.get(contest_id)
-        ballot_draws = (
-            SampledBallotDraw.query.filter_by(round_id=round.id)
-            .join(SampledBallot)
-            # There are a few CVR rows that are empty for our targeted contest
-            # - the audit boards shouldn't record an interpretation for those
-            # ballots, since it means the contest wasn't on that ballot. So we
-            # un-audit those ballots.
-            .filter(
-                SampledBallot.id.notin_(
-                    SampledBallot.query.join(Batch)
-                    .filter_by(name="2 - 2")
-                    .filter(SampledBallot.ballot_position.in_([4, 5, 6]))
-                    .with_entities(SampledBallot.id)
-                    .subquery()
+    def audit_all_ballots(round_id: str, vote_ratio: float):
+        round = Round.query.get(round_id)
+        for contest_id in [target_contest_id, contests[1]["id"]]:
+            contest = Contest.query.get(contest_id)
+            ballot_draws = (
+                SampledBallotDraw.query.filter_by(round_id=round.id)
+                .join(SampledBallot)
+                .join(Batch)
+                .order_by(Batch.name, SampledBallot.ballot_position)
+                .all()
+            )
+            winner_votes = int(vote_ratio * len(ballot_draws))
+            # There are a few CVR rows that are empty for our targeted contest.
+            # The audit boards shouldn't record an interpretation for those
+            # ballots, since it means the contest wasn't on that ballot.
+            has_contest = lambda draw: not (
+                draw.sampled_ballot.batch.name == "2 - 2"
+                and draw.sampled_ballot.ballot_position in [4, 5, 6]
+            )
+            draws_with_contest = [d for d in ballot_draws if has_contest(d)]
+            draws_without_contest = [d for d in ballot_draws if not has_contest(d)]
+            for ballot_draw in draws_with_contest[:winner_votes]:
+                audit_ballot(
+                    ballot_draw.sampled_ballot,
+                    contest.id,
+                    Interpretation.VOTE,
+                    [contest.choices[0]],
                 )
-            )
-            .join(Batch)
-            .order_by(Batch.name, SampledBallot.ballot_position)
-            .all()
-        )
-        winner_votes = int(vote_ratio * len(ballot_draws))
-        for ballot_draw in ballot_draws[:winner_votes]:
-            audit_ballot(
-                ballot_draw.sampled_ballot,
-                contest.id,
-                Interpretation.VOTE,
-                [contest.choices[0]],
-            )
-        for ballot_draw in ballot_draws[winner_votes:]:
-            audit_ballot(
-                ballot_draw.sampled_ballot,
-                contest.id,
-                Interpretation.VOTE,
-                [contest.choices[1]],
-            )
-    end_round(round.election, round)
-    db_session.commit()
+            for ballot_draw in draws_with_contest[winner_votes:]:
+                audit_ballot(
+                    ballot_draw.sampled_ballot,
+                    contest.id,
+                    Interpretation.VOTE,
+                    [contest.choices[1]],
+                )
+            for ballot_draw in draws_without_contest:
+                ballot_draw.sampled_ballot.status = BallotStatus.AUDITED
+
+        end_round(round.election, round)
+        db_session.commit()
+
+    audit_all_ballots(round_1_id, 0.4)
 
     # Check the audit report
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+
+    # Start a second round
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+
+    audit_all_ballots(round_2_id, 0.9)
+
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)

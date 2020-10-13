@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
@@ -8,6 +8,7 @@ from ..auth import restrict_access, UserType
 from ..audit_math import bravo, macro, supersimple, sampler_contest
 from . import rounds  # pylint: disable=cyclic-import
 from .cvrs import set_contest_metadata_from_cvrs
+from ..util.group_by import group_by
 
 
 # Because the /sample-sizes endpoint is only used for the audit setup flow,
@@ -64,18 +65,26 @@ def sample_size_options(
             assert election.audit_type == AuditType.BALLOT_COMPARISON
 
             set_contest_metadata_from_cvrs(contest)
-            # TODO compute sample_results
-            ballot_comparison_sample_results: Dict[str, Union[int, float]] = {
-                "sample_size": 0,
-                "1-under": 0,
-                "1-over": 0,
-                "2-under": 0,
-                "2-over": 0,
+            contest_for_sampler = sampler_contest.from_db_contest(contest)
+
+            discrepancies = supersimple.compute_discrepancies(
+                contest_for_sampler,
+                rounds.cvrs_for_contest(contest),
+                rounds.sampled_ballot_interpretations_to_cvrs(contest),
+            )
+            discrepancy_groups = group_by(
+                discrepancies.values(), lambda d: d["counted_as"]
+            )
+            discrepancy_counts = {
+                "sample_size": len(discrepancies),  # TODO is this the right value?
+                "1-under": len(discrepancy_groups.get(-1, [])),
+                "1-over": len(discrepancy_groups.get(1, [])),
+                "2-under": len(discrepancy_groups.get(-2, [])),
+                "2-over": len(discrepancy_groups.get(2, [])),
             }
+
             sample_size = supersimple.get_sample_sizes(
-                risk_limit,
-                sampler_contest.from_db_contest(contest),
-                ballot_comparison_sample_results,
+                risk_limit, contest_for_sampler, discrepancy_counts
             )
             return {
                 "supersimple": {"key": "supersimple", "size": sample_size, "prob": None}

@@ -657,17 +657,16 @@ def create_round(election: Election):
     # For round 1, use the given sample size for each contest.
     if json_round["roundNum"] == 1:
         sample_sizes = json_round["sampleSizes"]
-    # In later rounds, use:
-    # - the 90% probability sample size for ballot polling audits
-    # - the macro sample size for batch comparison audits
+    # In later rounds, select a sample size automatically.
     else:
         sample_size_options = sample_sizes_module.sample_size_options(election)
+        sample_size_key = {
+            AuditType.BALLOT_POLLING: "0.9",
+            AuditType.BATCH_COMPARISON: "macro",
+            AuditType.BALLOT_COMPARISON: "supersimple",
+        }[AuditType(election.audit_type)]
         sample_sizes = {
-            contest_id: (
-                options["0.9"]["size"]
-                if election.audit_type == AuditType.BALLOT_POLLING
-                else options["macro"]["size"]
-            )
+            contest_id: options[sample_size_key]["size"]
             for contest_id, options in sample_size_options.items()
         }
 
