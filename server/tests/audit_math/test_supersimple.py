@@ -26,7 +26,7 @@ def cvrs():
 
         if i < 18000:
             cvr[i]["Contest C"] = {"winner": 1, "loser": 0}
-        elif 18000 < i < 30600:
+        elif 18000 < i < 36000:
             cvr[i]["Contest C"] = {"winner": 0, "loser": 1}
 
         if i < 8000:
@@ -153,6 +153,7 @@ def test_compute_risk(contests, cvrs):
             risk_limit, contests[contest], to_sample
         )
 
+        # No discrepancies
         for i in range(sample_size):
             sample_cvr[i] = {
                 "Contest A": {"winner": 1, "loser": 0},
@@ -162,10 +163,18 @@ def test_compute_risk(contests, cvrs):
                 "Contest E": {"winner": 1, "loser": 0},
             }
 
-        _, finished = supersimple.compute_risk(
+        p_value, finished = supersimple.compute_risk(
             risk_limit, contests[contest], cvrs, sample_cvr
         )
 
+        expected_p = expected_p_values["no_discrepancies"][contest]
+        diff = abs(p_value - expected_p)
+
+        assert (
+            diff < 0.001
+        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
+            expected_p, p_value, contest
+        )
         assert finished, "Audit should have finished but didn't"
 
         to_sample = {
@@ -192,10 +201,22 @@ def test_compute_risk(contests, cvrs):
             "Contest E": {"winner": 0, "loser": 0},
         }
 
-        _, finished = supersimple.compute_risk(
+        p_value, finished = supersimple.compute_risk(
             risk_limit, contests[contest], cvrs, sample_cvr
         )
-        assert not finished, "Audit shouldn't have finished but did!"
+
+        expected_p = expected_p_values["one_vote_over"][contest]
+        diff = abs(p_value - expected_p)
+
+        assert (
+            diff < 0.001
+        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
+            expected_p, p_value, contest
+        )
+        if contest == "Contest E":
+            assert finished, "Audit should have finished but didn't"
+        else:
+            assert not finished, "Audit shouldn't have finished but did!"
 
         to_sample = {
             "sample_size": sample_size,
@@ -223,8 +244,16 @@ def test_compute_risk(contests, cvrs):
             "Contest E": {"winner": 0, "loser": 1},
         }
 
-        _, finished = supersimple.compute_risk(
+        p_value, finished = supersimple.compute_risk(
             risk_limit, contests[contest], cvrs, sample_cvr
+        )
+        expected_p = expected_p_values["two_vote_over"][contest]
+        diff = abs(p_value - expected_p)
+
+        assert (
+            diff < 0.001
+        ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
+            expected_p, p_value, contest
         )
         assert not finished, "Audit shouldn't have finished but did!"
 
@@ -321,5 +350,29 @@ ss_contests = {
         "ballots": 10000,
         "numWinners": 1,
         "votesAllowed": 1,
+    },
+}
+
+expected_p_values = {
+    "no_discrepancies": {
+        "Contest A": 0.06507,
+        "Contest B": 0.06973,
+        "Contest C": 0.06740,
+        "Contest D": 0.07048,
+        "Contest E": 0.01950,
+    },
+    "one_vote_over": {
+        "Contest A": 0.12534,
+        "Contest B": 0.13441,
+        "Contest C": 0.12992,
+        "Contest D": 0.13585,
+        "Contest E": 0.03758,
+    },
+    "two_vote_over": {
+        "Contest A": 1.73150,
+        "Contest B": 1.85538,
+        "Contest C": 1.79346,
+        "Contest D": 1.87524,
+        "Contest E": 0.51877,
     },
 }

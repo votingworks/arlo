@@ -229,7 +229,8 @@ def compute_risk(
     """
     p = 1.0
 
-    V = contest.diluted_margin * len(cvrs)
+    N = contest.ballots
+    V = contest.diluted_margin * N
 
     U = 2 * gamma / contest.diluted_margin
 
@@ -237,7 +238,7 @@ def compute_risk(
 
     discrepancies = compute_discrepancies(contest, cvrs, sample_cvr)
 
-    for ballot in discrepancies:
+    for ballot in sample_cvr:
         e_r = discrepancies[ballot]["weighted_error"]
 
         denom = (2 * gamma) / V
