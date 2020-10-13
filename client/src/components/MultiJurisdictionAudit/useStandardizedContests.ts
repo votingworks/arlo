@@ -1,36 +1,31 @@
 import { useEffect, useState } from 'react'
+import uuidv4 from 'uuidv4'
 import { api } from '../utilities'
 
-const dummyStandardizedContests: IStandardizedContest[] = [
-  {
-    name: 'Contest One',
-    jurisdictionIds: ['one', 'two'],
-  },
-  {
-    name: 'Contest Two',
-    jurisdictionIds: [],
-  },
-  {
-    name: 'Contest Three',
-    jurisdictionIds: ['one', 'three', 'four'],
-  },
-]
-
 export interface IStandardizedContest {
+  id: string
   name: string
   jurisdictionIds: string[]
 }
 
-// adding in dummy data until backend works
+const uuidify = ({
+  id,
+  name,
+  jurisdictionIds,
+}: IStandardizedContest): IStandardizedContest => ({
+  id: id || uuidv4(),
+  name,
+  jurisdictionIds,
+})
+
 const getStandardizedContests = async (
   electionId: string
 ): Promise<IStandardizedContest[] | null> => {
   const response = await api<IStandardizedContest[]>(
     `/election/${electionId}/standardized-contests`
   )
-  return response
-    ? [...response, ...dummyStandardizedContests]
-    : dummyStandardizedContests
+  if (!response) return null
+  return response.map(c => uuidify(c))
 }
 
 const useStandardizedContests = (

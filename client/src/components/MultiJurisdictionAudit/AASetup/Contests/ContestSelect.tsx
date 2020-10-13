@@ -38,12 +38,12 @@ const ContestSelect: React.FC<IProps> = ({
   const [filter, setFilter] = useState('')
   const jurisdictions = useJurisdictions(electionId)
 
-  if (!contests || !jurisdictions) return null // Still loading
+  if (!contests || !jurisdictions.length) return null // Still loading
 
   const submit = async (values: { contests: IStandardizedContestField[] }) => {
     const selectedContests: IStandardizedContest[] = values.contests.reduce(
-      (a: IStandardizedContest[], { checked, name, jurisdictionIds }) => {
-        if (checked) return [...a, { name, jurisdictionIds }]
+      (a: IStandardizedContest[], { id, checked, name, jurisdictionIds }) => {
+        if (checked) return [...a, { id, name, jurisdictionIds }]
         return a
       },
       []
@@ -107,6 +107,7 @@ const ContestSelect: React.FC<IProps> = ({
     },
   ]
 
+  console.log(jurisdictions.map(j => j.id), contests)
   return (
     <Formik
       initialValues={{
