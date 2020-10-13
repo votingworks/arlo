@@ -11,7 +11,6 @@ import FormSection, {
   FormSectionDescription,
 } from '../../Atoms/Form/FormSection'
 import { IFileInfo } from '../useJurisdictions'
-import { IFilePurpose } from '../useCSV'
 
 export const Select = styled(HTMLSelect)`
   margin-top: 5px;
@@ -25,7 +24,9 @@ interface IProps {
   csvFile: IFileInfo
   uploadCSVFile: (csv: File) => Promise<boolean>
   deleteCSVFile: () => Promise<boolean>
-  filePurpose: IFilePurpose
+  title: string
+  description: string
+  sampleFileLink: string
   enabled: boolean
 }
 
@@ -40,7 +41,9 @@ const CSVFileForm = ({
   csvFile,
   uploadCSVFile,
   deleteCSVFile,
-  filePurpose,
+  title,
+  description,
+  sampleFileLink,
   enabled,
 }: IProps) => {
   const { file, processing } = csvFile
@@ -67,61 +70,25 @@ const CSVFileForm = ({
       }: FormikProps<IValues>) => (
         <form>
           <FormWrapper>
-            {filePurpose === 'ballot-manifest' && (
-              <FormSection>
-                <H4>Ballot Manifest</H4>
-                <FormSectionDescription>
-                  Click &quot;Browse&quot; to choose the appropriate Ballot
-                  Manifest file from your computer. This file should be a
-                  comma-separated list of all the ballot boxes/containers used
-                  to store ballots for this particular election, plus a count of
-                  how many ballot cards (individual pieces of paper) are stored
-                  in each container.
-                  <br />
-                  <br />
-                  <a
-                    href="/sample_ballot_manifest.csv"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    (Click here to view a sample file in the correct format.)
-                  </a>
-                </FormSectionDescription>
-              </FormSection>
-            )}
-            {filePurpose === 'batch-tallies' && (
-              <FormSection>
-                <H4>Candidate Totals by Batch</H4>
-                <FormSectionDescription>
-                  Click &quot;Browse&quot; to choose the appropriate Candidate
-                  Totals by Batch file from your computer. This file should be a
-                  comma-separated list of all the ballot boxes/containers used
-                  to store ballots for this particular election, plus a count of
-                  how many votes were counted for each candidate in each of
-                  those containers.
-                  <br />
-                  <br />
-                  <a
-                    href="/sample_candidate_totals_by_batch.csv"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    (Click here to view a sample file in the correct format.)
-                  </a>
-                </FormSectionDescription>
-              </FormSection>
-            )}
-            {filePurpose === 'cvrs' && (
-              <FormSection>
-                <H4>Cast Vote Records</H4>
-                <FormSectionDescription>
-                  Click &quot;Browse&quot; to choose the appropriate Cast Vote
-                  Records (CVR) file from your computer. This file should be a
-                  comma-separated list of all the ballots counted by your
-                  tabulator, in order.
-                </FormSectionDescription>
-              </FormSection>
-            )}
+            <FormSection>
+              <H4>{title}</H4>
+              <FormSectionDescription>
+                {description}
+                {sampleFileLink && (
+                  <>
+                    <br />
+                    <br />
+                    <a
+                      href={sampleFileLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      (Click here to view a sample file in the correct format.)
+                    </a>
+                  </>
+                )}
+              </FormSectionDescription>
+            </FormSection>
             <FormSection>
               {isEditing ? (
                 <>
