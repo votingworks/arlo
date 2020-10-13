@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../../../utilities'
 import { IFileInfo } from '../../useJurisdictions'
 
-const loadContestFile = async (
+const loadStandardizedContestFile = async (
   electionId: string
 ): Promise<IFileInfo | null> => {
   const response = await api<IFileInfo>(
@@ -12,7 +12,7 @@ const loadContestFile = async (
   return response
 }
 
-const putContestFileFile = async (
+const putStandardizedContestFile = async (
   electionId: string,
   csv: File
 ): Promise<boolean> => {
@@ -28,15 +28,18 @@ const putContestFileFile = async (
   return !!response
 }
 
-const useContestFile = (
+const useStandardizedContestFile = (
   electionId: string
 ): [IFileInfo | null, (csv: File) => Promise<boolean>] => {
-  const [jurisdictionFile, setContestFile] = useState<IFileInfo | null>(null)
+  const [
+    jurisdictionFile,
+    setStandardizedContestFile,
+  ] = useState<IFileInfo | null>(null)
 
-  const uploadContestFile = async (csv: File): Promise<boolean> => {
+  const uploadStandardizedContestFile = async (csv: File): Promise<boolean> => {
     // TODO poll for result of upload
-    if (await putContestFileFile(electionId, csv)) {
-      setContestFile(await loadContestFile(electionId))
+    if (await putStandardizedContestFile(electionId, csv)) {
+      setStandardizedContestFile(await loadStandardizedContestFile(electionId))
       return true
     }
     return false
@@ -44,11 +47,11 @@ const useContestFile = (
 
   useEffect(() => {
     ;(async () => {
-      setContestFile(await loadContestFile(electionId))
+      setStandardizedContestFile(await loadStandardizedContestFile(electionId))
     })()
   }, [electionId])
 
-  return [jurisdictionFile, uploadContestFile]
+  return [jurisdictionFile, uploadStandardizedContestFile]
 }
 
-export default useContestFile
+export default useStandardizedContestFile

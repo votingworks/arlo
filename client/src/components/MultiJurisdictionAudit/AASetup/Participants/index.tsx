@@ -18,7 +18,7 @@ import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useAuditSettings from '../../useAuditSettings'
 import useJurisdictionFile from './useJurisdictionFile'
 import { IFileInfo } from '../../useJurisdictions'
-import useContestFile from './useContestFile'
+import useStandardizedContestFile from './useStandardizedContestFile'
 import { IAuditSettings } from '../../../../types'
 
 export const Select = styled(HTMLSelect)`
@@ -175,7 +175,9 @@ const ContestFileForm = ({
   contestFileStatus: IFileSubmitStatus
   setContestFileStatus: (status: IFileSubmitStatus) => void
 }) => {
-  const [contestFile, uploadContestFile] = useContestFile(electionId)
+  const [contestFile, uploadContestFile] = useStandardizedContestFile(
+    electionId
+  )
   const text =
     'Click "Browse" to choose the appropriate file from your computer. This file should be a comma-separated list of all the contests on the ballot, the vote choices available in each, and the jurisdiction(s) where each contest appeared on the ballot.'
   const sampleFileLink = '/sample_standardized_contests.csv'
