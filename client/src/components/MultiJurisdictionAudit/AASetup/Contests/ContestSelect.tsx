@@ -11,7 +11,7 @@ import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useStandardizedContests, {
   IStandardizedContest,
 } from '../../useStandardizedContests'
-// import useJurisdictions from '../../useJurisdictions'
+import useJurisdictions from '../../useJurisdictions'
 import { IAuditSettings } from '../../../../types'
 import { Table, FilterInput } from '../../../Atoms/Table'
 
@@ -32,20 +32,13 @@ const ContestSelect: React.FC<IProps> = ({
   nextStage,
   prevStage,
   //   locked,
-  auditType,
 }) => {
   const { electionId } = useParams<{ electionId: string }>()
   const [contests, updateContests] = useStandardizedContests(electionId)
   const [filter, setFilter] = useState('')
-  //   const jurisdictions = useJurisdictions(electionId)
+  const jurisdictions = useJurisdictions(electionId)
 
-  if (!contests) return null // Still loading
-
-  const isBatch = auditType === 'BATCH_COMPARISON'
-  // const isBallotComparison = auditType === 'BALLOT_COMPARISON'
-
-  /* istanbul ignore next */
-  if (isBatch && !isTargeted && nextStage.activate) nextStage.activate() // skip to next stage if on opportunistic contests screen and during a batch audit (until batch audits support multiple contests)
+  if (!contests || !jurisdictions) return null // Still loading
 
   const submit = async (values: { contests: IStandardizedContestField[] }) => {
     const selectedContests: IStandardizedContest[] = values.contests.reduce(
@@ -105,7 +98,12 @@ const ContestSelect: React.FC<IProps> = ({
     },
     {
       Header: 'Jurisdiction(s)',
-      accessor: row => row.jurisdictionIds.join(' - '),
+      accessor: row =>
+        row.jurisdictionIds.length === jurisdictions.length
+          ? 'All'
+          : row.jurisdictionIds
+              .map(id => jurisdictions.find(j => j.id === id)!.name)
+              .join(' - '),
     },
   ]
 
