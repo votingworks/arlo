@@ -204,61 +204,38 @@ def test_jurisdictions_status_round_1_no_audit_boards(
     client: FlaskClient,
     election_id: str,
     round_1_id: str,  # pylint: disable=unused-argument
+    snapshot,
 ):
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
-    assert jurisdictions[0]["currentRoundStatus"] == {
-        "status": "NOT_STARTED",
-        "numSamples": J1_SAMPLES_ROUND_1,
-        "numSamplesAudited": 0,
-        "numUnique": J1_BALLOTS_ROUND_1,
-        "numUniqueAudited": 0,
-    }
-    assert jurisdictions[1]["currentRoundStatus"] == {
-        "status": "NOT_STARTED",
-        "numSamples": SAMPLE_SIZE_ROUND_1 - J1_SAMPLES_ROUND_1,
-        "numSamplesAudited": 0,
-        "numUnique": BALLOTS_ROUND_1 - J1_BALLOTS_ROUND_1,
-        "numUniqueAudited": 0,
-    }
-    assert jurisdictions[2]["currentRoundStatus"] == {
-        "status": "COMPLETE",
-        "numSamples": 0,
-        "numSamplesAudited": 0,
-        "numUnique": 0,
-        "numUniqueAudited": 0,
-    }
+    snapshot.assert_match(
+        [
+            {
+                "name": jurisdiction["name"],
+                "currentRoundStatus": jurisdiction["currentRoundStatus"],
+            }
+            for jurisdiction in jurisdictions
+        ]
+    )
 
 
 def test_jurisdictions_status_round_1_with_audit_boards(
-    client: FlaskClient, election_id: str, audit_board_round_1_ids: List[str],
+    client: FlaskClient, election_id: str, audit_board_round_1_ids: List[str], snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
-    assert jurisdictions[0]["currentRoundStatus"] == {
-        "status": "IN_PROGRESS",
-        "numSamples": J1_SAMPLES_ROUND_1,
-        "numSamplesAudited": 0,
-        "numUnique": J1_BALLOTS_ROUND_1,
-        "numUniqueAudited": 0,
-    }
-    assert jurisdictions[1]["currentRoundStatus"] == {
-        "status": "NOT_STARTED",
-        "numSamples": SAMPLE_SIZE_ROUND_1 - J1_SAMPLES_ROUND_1,
-        "numSamplesAudited": 0,
-        "numUnique": BALLOTS_ROUND_1 - J1_BALLOTS_ROUND_1,
-        "numUniqueAudited": 0,
-    }
-    assert jurisdictions[2]["currentRoundStatus"] == {
-        "status": "COMPLETE",
-        "numSamples": 0,
-        "numSamplesAudited": 0,
-        "numUnique": 0,
-        "numUniqueAudited": 0,
-    }
+    snapshot.assert_match(
+        [
+            {
+                "name": jurisdiction["name"],
+                "currentRoundStatus": jurisdiction["currentRoundStatus"],
+            }
+            for jurisdiction in jurisdictions
+        ]
+    )
 
     # Simulate one audit board auditing all its ballots and signing off
     audit_board_1 = AuditBoard.query.get(audit_board_round_1_ids[0])
@@ -270,13 +247,7 @@ def test_jurisdictions_status_round_1_with_audit_boards(
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
-    assert jurisdictions[0]["currentRoundStatus"] == {
-        "status": "IN_PROGRESS",
-        "numSamples": J1_SAMPLES_ROUND_1,
-        "numSamplesAudited": AB1_SAMPLES_ROUND_1,
-        "numUnique": J1_BALLOTS_ROUND_1,
-        "numUniqueAudited": AB1_BALLOTS_ROUND_1,
-    }
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
 
     # Simulate the other audit board auditing all its ballots and signing off
     audit_board_2 = AuditBoard.query.get(audit_board_round_1_ids[1])
@@ -288,13 +259,7 @@ def test_jurisdictions_status_round_1_with_audit_boards(
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
-    assert jurisdictions[0]["currentRoundStatus"] == {
-        "status": "COMPLETE",
-        "numSamples": J1_SAMPLES_ROUND_1,
-        "numSamplesAudited": J1_SAMPLES_ROUND_1,
-        "numUnique": J1_BALLOTS_ROUND_1,
-        "numUniqueAudited": J1_BALLOTS_ROUND_1,
-    }
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
 
 
 def test_jurisdictions_status_round_1_with_audit_boards_without_ballots(
@@ -329,6 +294,7 @@ def test_jurisdictions_round_status_offline(
     contest_ids: List[str],
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
+    snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     # Change the settings to offline
@@ -342,10 +308,17 @@ def test_jurisdictions_round_status_offline(
     rv = put_json(client, f"/api/election/{election_id}/settings", settings)
     assert_ok(rv)
 
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_ids[0]: SAMPLE_SIZE_ROUND_1}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_ids[0]: sample_size_options[contest_ids[0]][0]["size"]
+            },
+        },
     )
     assert_ok(rv)
 
@@ -355,13 +328,7 @@ def test_jurisdictions_round_status_offline(
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
-    assert jurisdictions[0]["currentRoundStatus"] == {
-        "status": "NOT_STARTED",
-        "numSamples": J1_SAMPLES_ROUND_1,
-        "numSamplesAudited": 0,
-        "numUnique": J1_BALLOTS_ROUND_1,
-        "numUniqueAudited": 0,
-    }
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
@@ -376,13 +343,7 @@ def test_jurisdictions_round_status_offline(
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
-    assert jurisdictions[0]["currentRoundStatus"] == {
-        "status": "IN_PROGRESS",
-        "numSamples": J1_SAMPLES_ROUND_1,
-        "numSamplesAudited": 0,
-        "numUnique": J1_BALLOTS_ROUND_1,
-        "numUniqueAudited": 0,
-    }
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
 
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
@@ -409,10 +370,4 @@ def test_jurisdictions_round_status_offline(
     rv = client.get(f"/api/election/{election_id}/jurisdiction")
     jurisdictions = json.loads(rv.data)["jurisdictions"]
 
-    assert jurisdictions[0]["currentRoundStatus"] == {
-        "status": "COMPLETE",
-        "numSamples": J1_SAMPLES_ROUND_1,
-        "numSamplesAudited": J1_SAMPLES_ROUND_1,
-        "numUnique": J1_BALLOTS_ROUND_1,
-        "numUniqueAudited": J1_BALLOTS_ROUND_1,
-    }
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])

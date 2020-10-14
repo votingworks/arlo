@@ -307,3 +307,17 @@ snapshots[
 3,118,,,0.388189334199859480,N,Audit Board #3
 3,122,,,0.309353622615295679,N,Audit Board #3
 """
+
+snapshots["test_ja_ballots_round_1 1"] = 75
+
+snapshots["test_ja_ballots_before_audit_boards_set_up 1"] = 75
+
+snapshots["test_ja_ballots_round_2 1"] = 216
+
+snapshots["test_ab_list_ballot_round_1 1"] = 50
+
+snapshots["test_ab_list_ballot_round_1 2"] = 25
+
+snapshots["test_ab_list_ballots_round_2 1"] = 137
+
+snapshots["test_ab_list_ballots_round_2 2"] = 21

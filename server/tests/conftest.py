@@ -196,10 +196,17 @@ def round_1_id(
     manifests,  # pylint: disable=unused-argument
 ) -> str:
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_ids[0]: SAMPLE_SIZE_ROUND_1}},
+        {
+            "roundNum": 1,
+            "sampleSizes": {
+                contest_ids[0]: sample_size_options[contest_ids[0]][0]["size"]
+            },
+        },
     )
     assert_ok(rv)
     rv = client.get(f"/api/election/{election_id}/round",)

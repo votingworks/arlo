@@ -144,6 +144,7 @@ def test_contests_round_status(
     json_contests: List[JSONDict],
     election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
+    snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = put_json(client, f"/api/election/{election_id}/contest", json_contests)
@@ -154,28 +155,30 @@ def test_contests_round_status(
     for contest in contests:
         assert contest["currentRoundStatus"] is None
 
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    sample_size = sample_size_options[contests[0]["id"]][0]["size"]
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contests[0]["id"]: SAMPLE_SIZE_ROUND_1}},
+        {"roundNum": 1, "sampleSizes": {contests[0]["id"]: sample_size},},
     )
     assert_ok(rv)
 
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
-
-    assert contests[0]["currentRoundStatus"] == {
-        "isRiskLimitMet": None,
-        "numBallotsSampled": SAMPLE_SIZE_ROUND_1,
-    }
-    assert contests[1]["currentRoundStatus"] == {
-        "isRiskLimitMet": None,
-        "numBallotsSampled": 0,
-    }
-    assert contests[2]["currentRoundStatus"] == {
-        "isRiskLimitMet": None,
-        "numBallotsSampled": 81,
-    }
+    snapshot.assert_match(
+        [
+            {
+                "name": contest["name"],
+                "currentRoundStatus": contest["currentRoundStatus"],
+            }
+            for contest in contests
+        ]
+    )
+    assert contests[0]["currentRoundStatus"]["isRiskLimitMet"] is None
+    assert contests[1]["currentRoundStatus"]["isRiskLimitMet"] is None
+    assert contests[2]["currentRoundStatus"]["isRiskLimitMet"] is None
 
     # Fake that one opportunistic contest met its risk limit, but the targeted
     # contest did not
@@ -192,18 +195,9 @@ def test_contests_round_status(
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
 
-    assert contests[0]["currentRoundStatus"] == {
-        "isRiskLimitMet": False,
-        "numBallotsSampled": SAMPLE_SIZE_ROUND_1,
-    }
-    assert contests[1]["currentRoundStatus"] == {
-        "isRiskLimitMet": True,
-        "numBallotsSampled": 0,
-    }
-    assert contests[2]["currentRoundStatus"] == {
-        "isRiskLimitMet": None,
-        "numBallotsSampled": 81,
-    }
+    assert contests[0]["currentRoundStatus"]["isRiskLimitMet"] is False
+    assert contests[1]["currentRoundStatus"]["isRiskLimitMet"] is True
+    assert contests[2]["currentRoundStatus"]["isRiskLimitMet"] is None
 
 
 def test_update_contests_after_audit_starts(

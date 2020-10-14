@@ -27,13 +27,18 @@ def test_rounds_create_one(
     election_id: str,
     jurisdiction_ids: List[str],
     contest_ids: List[str],
+    election_settings,  # pylint: disable=unused-argument
     manifests,  # pylint: disable=unused-argument
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    print(json.loads(rv.data))
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    sample_size = sample_size_options[contest_ids[0]][0]["size"]
     rv = post_json(
         client,
         f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {contest_ids[0]: SAMPLE_SIZE_ROUND_1}},
+        {"roundNum": 1, "sampleSizes": {contest_ids[0]: sample_size},},
     )
     assert_ok(rv)
 
@@ -71,7 +76,7 @@ def test_rounds_create_one(
     ballot_draws = SampledBallotDraw.query.filter_by(
         round_id=rounds["rounds"][0]["id"]
     ).all()
-    assert len(ballot_draws) == SAMPLE_SIZE_ROUND_1
+    assert len(ballot_draws) == sample_size
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
     sampled_jurisdictions = {
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
@@ -85,6 +90,7 @@ def test_rounds_create_two(
     jurisdiction_ids: List[str],
     contest_ids: List[str],
     round_1_id: str,
+    snapshot,
 ):
     run_audit_round(round_1_id, contest_ids[0], 0.5)
 
@@ -124,7 +130,7 @@ def test_rounds_create_two(
         round_id=rounds["rounds"][1]["id"]
     ).all()
     # Check that we automatically select the 90% prob sample size
-    assert len(ballot_draws) == 539
+    snapshot.assert_match(len(ballot_draws))
     # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
     sampled_jurisdictions = {
         draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
