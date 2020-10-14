@@ -1,4 +1,5 @@
 from typing import Dict
+from collections import Counter
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
@@ -8,7 +9,6 @@ from ..auth import restrict_access, UserType
 from ..audit_math import bravo, macro, supersimple, sampler_contest
 from . import rounds  # pylint: disable=cyclic-import
 from .cvrs import set_contest_metadata_from_cvrs
-from ..util.group_by import group_by
 
 
 # Because the /sample-sizes endpoint is only used for the audit setup flow,
@@ -77,15 +77,15 @@ def sample_size_options(
                 rounds.cvrs_for_contest(contest),
                 rounds.sampled_ballot_interpretations_to_cvrs(contest),
             )
-            discrepancy_groups = group_by(
-                discrepancies.values(), lambda d: d["counted_as"]
+            discrepancy_counter = Counter(
+                d["counted_as"] for d in discrepancies.values()
             )
             discrepancy_counts = {
                 "sample_size": num_previous_samples,
-                "1-under": len(discrepancy_groups.get(-1, [])),
-                "1-over": len(discrepancy_groups.get(1, [])),
-                "2-under": len(discrepancy_groups.get(-2, [])),
-                "2-over": len(discrepancy_groups.get(2, [])),
+                "1-under": discrepancy_counter[-1],
+                "1-over": discrepancy_counter[1],
+                "2-under": discrepancy_counter[-2],
+                "2-over": discrepancy_counter[2],
             }
 
             sample_size = supersimple.get_sample_sizes(
