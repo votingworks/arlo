@@ -107,7 +107,6 @@ const ContestSelect: React.FC<IProps> = ({
     },
   ]
 
-  console.log(jurisdictions.map(j => j.id), contests)
   return (
     <Formik
       initialValues={{
@@ -126,9 +125,10 @@ const ContestSelect: React.FC<IProps> = ({
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
           >
             <p>
-              Choose which contests to target for audit by checking the
-              checkboxes below. To filter the contest list, use the search box
-              at the top.
+              Choose which contests to{' '}
+              {isTargeted ? 'target for audit' : 'audit opportunistically'} by
+              checking the checkboxes below. To filter the contest list, use the
+              search box at the top.
             </p>
             <FilterInput
               placeholder="Filter by contest or jurisdiction name..."
