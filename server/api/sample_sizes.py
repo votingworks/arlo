@@ -67,6 +67,11 @@ def sample_size_options(
             set_contest_metadata_from_cvrs(contest)
             contest_for_sampler = sampler_contest.from_db_contest(contest)
 
+            num_previous_samples = (
+                SampledBallotDraw.query.join(Round)
+                .filter_by(election_id=election.id)
+                .count()
+            )
             discrepancies = supersimple.compute_discrepancies(
                 contest_for_sampler,
                 rounds.cvrs_for_contest(contest),
@@ -76,7 +81,7 @@ def sample_size_options(
                 discrepancies.values(), lambda d: d["counted_as"]
             )
             discrepancy_counts = {
-                "sample_size": len(discrepancies),  # TODO is this the right value?
+                "sample_size": num_previous_samples,
                 "1-under": len(discrepancy_groups.get(-1, [])),
                 "1-over": len(discrepancy_groups.get(1, [])),
                 "2-under": len(discrepancy_groups.get(-2, [])),
