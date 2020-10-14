@@ -23,10 +23,6 @@ interface IProps {
   auditType: IAuditSettings['auditType']
 }
 
-interface IStandardizedContestField extends IStandardizedContest {
-  checked: boolean
-}
-
 const ContestSelect: React.FC<IProps> = ({
   isTargeted,
   nextStage,
@@ -40,15 +36,10 @@ const ContestSelect: React.FC<IProps> = ({
 
   if (!contests || !jurisdictions.length) return null // Still loading
 
-  const submit = async (values: { contests: IStandardizedContestField[] }) => {
-    const selectedContests: IStandardizedContest[] = values.contests.reduce(
-      (a: IStandardizedContest[], { id, checked, name, jurisdictionIds }) => {
-        if (checked) return [...a, { id, name, jurisdictionIds }]
-        return a
-      },
-      []
+  const submit = async (values: { contests: IStandardizedContest[] }) => {
+    const response = await updateContests(
+      contests.map(c => ({ ...c, isTargeted }))
     )
-    const response = await updateContests(selectedContests)
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
@@ -57,20 +48,20 @@ const ContestSelect: React.FC<IProps> = ({
     else throw new Error('Wrong menuItems passed in: activate() is missing')
   }
 
-  const formContests: IStandardizedContestField[] = contests.map(c => ({
-    ...c,
-    checked: false,
-  }))
+  // const formContests: IStandardizedContestField[] = contests.map(c => ({
+  //   ...c,
+  //   checked: false,
+  // }))
 
   // TODO filter by jurisdiction names as well
-  const filteredContests = formContests.filter(({ name }) =>
+  const filteredContests = contests.filter(({ name }) =>
     name.toLowerCase().includes(filter.toLowerCase())
   )
 
   const columns = (
-    values: { contests: IStandardizedContestField[] },
+    values: { contests: IStandardizedContest[] },
     setFieldValue: FormikProps<{
-      contests: IStandardizedContestField[]
+      contests: IStandardizedContest[]
     }>['setFieldValue']
   ): Column<IStandardizedContest>[] => [
     {
@@ -110,7 +101,7 @@ const ContestSelect: React.FC<IProps> = ({
   return (
     <Formik
       initialValues={{
-        contests: formContests,
+        contests,
       }}
       enableReinitialize
       onSubmit={submit}
@@ -119,7 +110,7 @@ const ContestSelect: React.FC<IProps> = ({
         values,
         handleSubmit,
         setFieldValue,
-      }: FormikProps<{ contests: IStandardizedContestField[] }>) => (
+      }: FormikProps<{ contests: IStandardizedContest[] }>) => (
         <form>
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}

@@ -1,67 +1,113 @@
 import { useEffect, useState } from 'react'
 import uuidv4 from 'uuidv4'
-import { api } from '../utilities'
+import { api, areArraysEqualSets } from '../utilities'
+import { IContest } from '../../types'
 
 export interface IStandardizedContest {
-  id: string
   name: string
   jurisdictionIds: string[]
 }
 
-const uuidify = ({
-  id,
-  name,
-  jurisdictionIds,
-}: IStandardizedContest): IStandardizedContest => ({
-  id: id || uuidv4(),
-  name,
-  jurisdictionIds,
-})
+export interface IStandardizedContestOption extends IStandardizedContest {
+  id: string
+  checked: boolean
+}
+
+export interface ISelectedStandardizedContest
+  extends IStandardizedContestOption {
+  isTargeted: boolean
+}
+
+type ISubmitContest = Pick<
+  ISelectedStandardizedContest,
+  'id' | 'name' | 'isTargeted' | 'jurisdictionIds'
+>
 
 const getStandardizedContests = async (
   electionId: string
-): Promise<IStandardizedContest[] | null> => {
-  const response = await api<IStandardizedContest[]>(
-    `/election/${electionId}/standardized-contests`
+): Promise<IStandardizedContest[] | null> =>
+  api<IStandardizedContest[]>(`/election/${electionId}/standardized-contests`)
+
+const getContests = async (electionId: string): Promise<IContest[] | null> => {
+  const response = await api<{ contests: IContest[] }>(
+    `/election/${electionId}/contest`
   )
   if (!response) return null
-  return response.map(c => uuidify(c))
+  return response.contests
 }
 
 const useStandardizedContests = (
   electionId: string,
   refreshId?: string
 ): [
-  IStandardizedContest[] | null,
-  (arg0: IStandardizedContest[]) => Promise<boolean>
+  IStandardizedContestOption[] | null,
+  (arg0: ISelectedStandardizedContest[]) => Promise<boolean>
 ] => {
-  const [standardizedContests, setContests] = useState<
-    IStandardizedContest[] | null
+  const [standardizedContests, setStandardizedContests] = useState<
+    IStandardizedContestOption[] | null
   >(null)
+  const [contests, setContests] = useState<IContest[] | null>(null)
 
-  const updateStandardizedContests = async (
-    newContests: IStandardizedContest[]
+  const updateContests = async (
+    newContests: ISelectedStandardizedContest[]
   ): Promise<boolean> => {
+    if (!standardizedContests || !contests) return false
+
+    const newStandardizedContests: IStandardizedContestOption[] = []
+    const mergedContests: ISubmitContest[] = newContests.reduce(
+      (
+        a: ISubmitContest[],
+        {
+          id,
+          name,
+          isTargeted,
+          jurisdictionIds,
+          checked,
+        }: ISelectedStandardizedContest
+      ) => {
+        newStandardizedContests.push({ id, name, jurisdictionIds, checked })
+        const matchedContest = contests.find(c => c.id === id)
+        if (matchedContest && !checked) return a
+        return [...a, { id, name, isTargeted, jurisdictionIds }]
+      },
+      []
+    )
+
     const response = await api(`/election/${electionId}/contest`, {
       method: 'PUT',
-      // stringify and numberify the contests (all number values are handled as strings clientside, but are required as numbers serverside)
-      body: JSON.stringify(newContests),
+      body: JSON.stringify(mergedContests),
       headers: {
         'Content-Type': 'application/json',
       },
     })
     if (!response) return false
-    setContests(newContests)
+    setStandardizedContests(newStandardizedContests)
     return true
   }
 
   useEffect(() => {
     ;(async () => {
-      const newContests = await getStandardizedContests(electionId)
+      const newContests = await getContests(electionId)
+      const newStandardizedContests = await getStandardizedContests(electionId)
+      if (!newContests || !newStandardizedContests) return
+      setStandardizedContests(
+        newStandardizedContests.map(sc => {
+          const selectedContest = newContests.find(
+            c =>
+              c.name === sc.name &&
+              areArraysEqualSets(c.jurisdictionIds, sc.jurisdictionIds)
+          )
+          return {
+            ...sc,
+            id: selectedContest ? selectedContest.id : uuidv4(),
+            checked: !!selectedContest,
+          }
+        })
+      )
       setContests(newContests)
     })()
   }, [electionId, refreshId])
-  return [standardizedContests, updateStandardizedContests]
+  return [standardizedContests, updateContests]
 }
 
 export default useStandardizedContests

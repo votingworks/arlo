@@ -42,7 +42,6 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
     null
   )
   useEffect(() => {
-    console.log(jurisdictionFileStatus, contestFileStatus)
     // if in inital state just advance
     if (jurisdictionFileStatus === null && contestFileStatus === null) return
     // if one has failed, reset it and don't advance
