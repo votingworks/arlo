@@ -11,15 +11,11 @@ export interface IStandardizedContest {
 export interface IStandardizedContestOption extends IStandardizedContest {
   id: string
   checked: boolean
-}
-
-export interface ISelectedStandardizedContest
-  extends IStandardizedContestOption {
   isTargeted: boolean
 }
 
 type ISubmitContest = Pick<
-  ISelectedStandardizedContest,
+  IStandardizedContestOption,
   'id' | 'name' | 'isTargeted' | 'jurisdictionIds'
 >
 
@@ -38,10 +34,11 @@ const getContests = async (electionId: string): Promise<IContest[] | null> => {
 
 const useStandardizedContests = (
   electionId: string,
+  targetedView: boolean,
   refreshId?: string
 ): [
   IStandardizedContestOption[] | null,
-  (arg0: ISelectedStandardizedContest[]) => Promise<boolean>
+  (arg0: IStandardizedContestOption[]) => Promise<boolean>
 ] => {
   const [standardizedContests, setStandardizedContests] = useState<
     IStandardizedContestOption[] | null
@@ -49,11 +46,10 @@ const useStandardizedContests = (
   const [contests, setContests] = useState<IContest[] | null>(null)
 
   const updateContests = async (
-    newContests: ISelectedStandardizedContest[]
+    newContests: IStandardizedContestOption[]
   ): Promise<boolean> => {
     if (!standardizedContests || !contests) return false
 
-    const newStandardizedContests: IStandardizedContestOption[] = []
     const mergedContests: ISubmitContest[] = newContests.reduce(
       (
         a: ISubmitContest[],
@@ -63,12 +59,11 @@ const useStandardizedContests = (
           isTargeted,
           jurisdictionIds,
           checked,
-        }: ISelectedStandardizedContest
+        }: IStandardizedContestOption
       ) => {
-        newStandardizedContests.push({ id, name, jurisdictionIds, checked })
-        const matchedContest = contests.find(c => c.id === id)
-        if (matchedContest && !checked) return a
-        return [...a, { id, name, isTargeted, jurisdictionIds }]
+        if (isTargeted !== targetedView || checked)
+          return [...a, { id, name, isTargeted, jurisdictionIds }]
+        return a
       },
       []
     )
@@ -81,7 +76,7 @@ const useStandardizedContests = (
       },
     })
     if (!response) return false
-    setStandardizedContests(newStandardizedContests)
+    setStandardizedContests(newContests)
     return true
   }
 
@@ -100,6 +95,9 @@ const useStandardizedContests = (
           return {
             ...sc,
             id: selectedContest ? selectedContest.id : uuidv4(),
+            isTargeted: selectedContest
+              ? selectedContest.isTargeted
+              : targetedView,
             checked: !!selectedContest,
           }
         })

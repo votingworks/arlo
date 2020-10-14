@@ -10,6 +10,7 @@ import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import useStandardizedContests, {
   IStandardizedContest,
+  IStandardizedContestOption,
 } from '../../useStandardizedContests'
 import useJurisdictions from '../../useJurisdictions'
 import { IAuditSettings } from '../../../../types'
@@ -30,16 +31,21 @@ const ContestSelect: React.FC<IProps> = ({
   //   locked,
 }) => {
   const { electionId } = useParams<{ electionId: string }>()
-  const [contests, updateContests] = useStandardizedContests(electionId)
+  const [standardizedContests, updateContests] = useStandardizedContests(
+    electionId,
+    isTargeted
+  )
   const [filter, setFilter] = useState('')
   const jurisdictions = useJurisdictions(electionId)
 
-  if (!contests || !jurisdictions.length) return null // Still loading
+  if (!standardizedContests || !jurisdictions.length) return null // Still loading
 
-  const submit = async (values: { contests: IStandardizedContest[] }) => {
-    const response = await updateContests(
-      contests.map(c => ({ ...c, isTargeted }))
-    )
+  const submit = async ({
+    contests,
+  }: {
+    contests: IStandardizedContestOption[]
+  }) => {
+    const response = await updateContests(contests)
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
@@ -48,13 +54,8 @@ const ContestSelect: React.FC<IProps> = ({
     else throw new Error('Wrong menuItems passed in: activate() is missing')
   }
 
-  // const formContests: IStandardizedContestField[] = contests.map(c => ({
-  //   ...c,
-  //   checked: false,
-  // }))
-
   // TODO filter by jurisdiction names as well
-  const filteredContests = contests.filter(({ name }) =>
+  const filteredContests = standardizedContests.filter(({ name }) =>
     name.toLowerCase().includes(filter.toLowerCase())
   )
 
@@ -80,6 +81,7 @@ const ContestSelect: React.FC<IProps> = ({
           }: React.ChangeEvent<HTMLInputElement>) =>
             setFieldValue(`contests[${index}]`, { ...contest, checked })
           }
+          disabled={standardizedContests[index].isTargeted !== isTargeted}
         />
       ),
     },
@@ -101,7 +103,7 @@ const ContestSelect: React.FC<IProps> = ({
   return (
     <Formik
       initialValues={{
-        contests,
+        contests: standardizedContests,
       }}
       enableReinitialize
       onSubmit={submit}
