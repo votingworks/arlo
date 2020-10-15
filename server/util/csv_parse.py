@@ -1,6 +1,6 @@
 # pylint: disable=stop-iteration-return
 from enum import Enum
-from typing import List, Iterator, Dict, Any, NamedTuple, Set
+from typing import List, Iterator, Dict, Any, NamedTuple, Tuple
 import csv as py_csv
 import io, re, locale, chardet
 from werkzeug.exceptions import BadRequest
@@ -42,15 +42,16 @@ def parse_csv(csv_string: str, columns: List[CSVColumnType]) -> CSVDictIterator:
     csv = strip_whitespace(csv)
     csv = reject_no_rows(csv)
     csv = skip_empty_trailing_columns(csv)
-    csv = validate_headers(csv, columns)
-    csv = reject_empty_cells(csv, columns)
-    csv = reject_total_rows(csv)
-    csv = validate_and_parse_values(csv, columns)
-    csv = reject_duplicate_values(csv, columns)
+    csv = validate_and_normalize_headers(csv, columns)
+    dict_csv = convert_rows_to_dicts(csv)
+    dict_csv = reject_empty_cells(dict_csv)
+    dict_csv = reject_total_rows(dict_csv)
+    dict_csv = validate_and_parse_values(dict_csv, columns)
+    dict_csv = reject_duplicate_values(dict_csv, columns)
     # Filter out empty rows last so we can get accurate row numbers in all the
     # other checkers
-    csv = skip_empty_rows(csv)
-    return convert_rows_to_dicts(csv, columns)
+    dict_csv = skip_empty_rows(dict_csv)
+    return dict_csv
 
 
 def validate_is_csv(csv: str):
@@ -118,84 +119,73 @@ def skip_empty_trailing_columns(csv: CSVIterator) -> CSVIterator:
             yield row[0:-empty_trailing_header_count]
 
 
-def validate_headers(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterator:
+def validate_and_normalize_headers(
+    csv: CSVIterator, columns: List[CSVColumnType]
+) -> CSVIterator:
     headers = next(csv)
-    lowercase_headers = [header.lower() for header in headers]
 
-    allowed_headers = [c.name for c in columns]
-    required_headers = [c.name for c in columns if c.required]
-
-    missing_headers = [
-        required_header
-        for required_header in required_headers
-        if required_header.lower() not in lowercase_headers
+    normalized_headers = [
+        next((c.name for c in columns if c.name.lower() == header.lower()), header)
+        for header in headers
     ]
+
+    if len(set(normalized_headers)) != len(normalized_headers):
+        raise CSVParseError("Column headers must be unique.")
+
+    allowed_headers = {c.name for c in columns}
+    required_headers = {c.name for c in columns if c.required}
+
+    missing_headers = required_headers - set(normalized_headers)
     if len(missing_headers) > 0:
         raise CSVParseError(
             f"Missing required {pluralize('column', len(missing_headers))}:"
-            f" {', '.join(missing_headers)}."
+            f" {', '.join(sorted(missing_headers))}."
         )
 
-    lowercase_allowed_headers = [h.lower() for h in allowed_headers]
-    unexpected_headers = [
-        header for header in headers if header.lower() not in lowercase_allowed_headers
-    ]
+    unexpected_headers = set(normalized_headers) - allowed_headers
     if len(unexpected_headers) > 0:
         raise CSVParseError(
-            f"Found unexpected columns. Allowed columns: {', '.join(allowed_headers)}."
+            f"Found unexpected columns. Allowed columns: {', '.join(sorted(allowed_headers))}."
         )
 
-    ordered_headers = [h for h in allowed_headers if h.lower() in lowercase_headers]
-    lowercase_ordered_headers = [h.lower() for h in ordered_headers]
-    if lowercase_ordered_headers != lowercase_headers:
-        raise CSVParseError(
-            f"Columns out of order. Expected order: {', '.join(ordered_headers)}."
-        )
-
-    yield headers
+    yield normalized_headers
     yield from csv
 
 
-def is_empty_row(row: List[str]):
-    return len(row) == 0 or all(value == "" for value in row)
+def is_empty_row(row: Dict[str, Any]) -> bool:
+    return all(value == "" for value in row.values())
 
 
-def skip_empty_rows(csv: CSVIterator) -> CSVIterator:
+def skip_empty_rows(csv: CSVDictIterator) -> CSVDictIterator:
     for row in csv:
         if not is_empty_row(row):
             yield row
 
 
-def reject_empty_cells(csv: CSVIterator, columns: List[CSVColumnType]) -> CSVIterator:
-    headers = next(csv)
-    yield headers
-
+def reject_empty_cells(csv: CSVDictIterator) -> CSVDictIterator:
     for r, row in enumerate(csv):  # pylint: disable=invalid-name
-        # Don't check empty rows, we filter them out elsewhere
+        # Skip empty rows, we filter them out later
         if is_empty_row(row):
+            yield row
             continue
-        if len(row) != len(headers):
-            raise CSVParseError(
-                f"Wrong number of cells in row {r+2}."
-                f" Expected {len(headers)} {pluralize('cell', len(headers))},"
-                f" got {len(row)} {pluralize('cell', len(row))}."
-            )
-        for c, value in enumerate(row):  # pylint: disable=invalid-name
-            if columns[c].required and value == "":
+
+        for header, value in row.items():  # pylint: disable=invalid-name
+            if value == "":
                 raise CSVParseError(
                     "All cells must have values."
-                    f" Got empty cell at column {headers[c]}, row {r+2}."
+                    f" Got empty cell at column {header}, row {r+2}."
                 )
         yield row
 
 
 def validate_and_parse_values(
-    csv: CSVIterator, columns: List[CSVColumnType]
-) -> CSVIterator:
-    yield next(csv)  # Skip the headers
+    csv: CSVDictIterator, columns: List[CSVColumnType]
+) -> CSVDictIterator:
+    columns_by_header = {column.name: column for column in columns}
 
-    def parse_and_validate_value(column, value, r):  # pylint: disable=invalid-name
-        where = f"column {column.name}, row {r+2}"
+    def parse_and_validate_value(header, value, r):  # pylint: disable=invalid-name
+        where = f"column {header}, row {r+2}"
+        column = columns_by_header[header]
 
         if column.value_type is CSVValueType.NUMBER:
             try:
@@ -213,48 +203,75 @@ def validate_and_parse_values(
         return value
 
     for r, row in enumerate(csv):  # pylint: disable=invalid-name
-        yield [
-            parse_and_validate_value(column, value, r)
-            for column, value in zip(columns, row)
-        ]
+        # Skip empty rows, we filter them out later
+        if is_empty_row(row):
+            yield row
+            continue
+
+        yield {
+            header: parse_and_validate_value(header, value, r)
+            for header, value in row.items()
+        }
+
+
+def format_tuple(tup: Tuple) -> str:
+    return str(tup[0]) if len(tup) == 1 else str(tup)
 
 
 def reject_duplicate_values(
-    csv: CSVIterator, columns: List[CSVColumnType]
-) -> CSVIterator:
-    yield next(csv)  # Skip the headers
+    csv: CSVDictIterator, columns: List[CSVColumnType]
+) -> CSVDictIterator:
+    # For our purposes, we want all the columns with unique=True to be used as
+    # one composite unique key for the rows.
+    unique_columns = tuple(sorted(column.name for column in columns if column.unique))
+    if len(unique_columns) == 0:
+        yield from csv
+        return
 
-    seen: Dict[str, Set[str]] = {column.name: set() for column in columns}
+    seen = set()
     for row in csv:
-        for column, value in zip(columns, row):
-            if column.unique and value in seen[column.name]:
-                raise CSVParseError(
-                    f"Values in column {column.name} must be unique."
-                    + f" Found duplicate value: {value}."
-                )
-            else:
-                seen[column.name].add(value)
+        # Skip empty rows, we filter them out later
+        if is_empty_row(row):
+            yield row
+            continue
+
+        row_key = tuple(row[column] for column in unique_columns)
+        if row_key in seen:
+            raise CSVParseError(
+                f"Each row must be uniquely identified by {format_tuple(unique_columns)}."
+                + f" Found duplicate: {format_tuple(row_key)}."
+            )
+        else:
+            seen.add(row_key)
 
         yield row
 
 
-def reject_total_rows(csv: CSVIterator) -> CSVIterator:
-    yield next(csv)  # Skip the headers
-
+def reject_total_rows(csv: CSVDictIterator) -> CSVDictIterator:
     for r, row in enumerate(csv):  # pylint: disable=invalid-name
-        for value in row:
+        for value in row.values():
             if value.lower() in ["total", "totals"]:
                 raise CSVParseError(f"Remove total row (row {r+2})")
 
         yield row
 
 
-def convert_rows_to_dicts(
-    csv: CSVIterator, columns: List[CSVColumnType]
-) -> CSVDictIterator:
-    next(csv)  # Skip headers
-    headers = [c.name for c in columns]
-    return (dict(zip(headers, row)) for row in csv)
+def convert_rows_to_dicts(csv: CSVIterator) -> CSVDictIterator:
+    headers = next(csv)
+
+    for r, row in enumerate(csv):  # pylint: disable=invalid-name
+        # Normalize empty rows to make sure we can turn them into dicts.
+        # We'll filter them out later.
+        if len(row) == 0:
+            row = ["" for _ in headers]
+        if len(row) != len(headers):
+            raise CSVParseError(
+                f"Wrong number of cells in row {r+2}."
+                f" Expected {len(headers)} {pluralize('cell', len(headers))},"
+                f" got {len(row)} {pluralize('cell', len(row))}."
+            )
+
+        yield dict(zip(headers, row))
 
 
 def pluralize(word: str, num: int) -> str:

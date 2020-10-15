@@ -1,15 +1,26 @@
 from typing import Union, List
 import os, io, pytest
 from werkzeug.exceptions import BadRequest
-from ...api.ballot_manifest import BALLOT_MANIFEST_COLUMNS
 from ...util.jurisdiction_bulk_update import JURISDICTIONS_COLUMNS
 from ...util.csv_parse import (
     parse_csv,
     decode_csv_file,
     CSVParseError,
     CSVColumnType,
+    CSVValueType,
 )
 
+BALLOT_MANIFEST_COLUMNS = [
+    CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
+    CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
+    CSVColumnType("Tabulator", CSVValueType.TEXT, required=False),
+]
+
+BALLOT_MANIFEST_COLUMNS_COMPOSITE_KEY = [
+    CSVColumnType("Batch Name", CSVValueType.TEXT, unique=True),
+    CSVColumnType("Number of Ballots", CSVValueType.NUMBER),
+    CSVColumnType("Tabulator", CSVValueType.TEXT, unique=True),
+]
 
 # Happy path
 def test_parse_csv_happy_path():
@@ -43,6 +54,20 @@ def test_parse_csv_optional_columns():
             "box 2,100000,2"
         ),
         BALLOT_MANIFEST_COLUMNS,
+    )
+    assert len(list(parsed)) == 4
+
+
+def test_parse_csv_composite_unique_key():
+    parsed = parse_csv(
+        (
+            "Batch Name,Number of Ballots,Tabulator\n"
+            "Batch A,20,1\n"
+            "B,4,2\n"
+            "c1111111,100,1\n"
+            "box 2,100000,2"
+        ),
+        BALLOT_MANIFEST_COLUMNS_COMPOSITE_KEY,
     )
     assert len(list(parsed)) == 4
 
@@ -83,15 +108,15 @@ def test_parse_csv_missing_header():
     )
 
 
-def test_parse_csv_headers_out_of_order():
+def test_parse_csv_duplicate_header():
     with pytest.raises(CSVParseError) as error:
         list(
-            parse_csv(("Number of Ballots,Batch Name\n" "1,2"), BALLOT_MANIFEST_COLUMNS)
+            parse_csv(
+                ("Batch Name,Batch Name,Number of Ballots\n" "1,1,2"),
+                BALLOT_MANIFEST_COLUMNS,
+            )
         )
-    assert (
-        str(error.value)
-        == "Columns out of order. Expected order: Batch Name, Number of Ballots."
-    )
+    assert str(error.value) == "Column headers must be unique."
 
 
 def test_parse_csv_bad_number():
@@ -145,6 +170,19 @@ def test_parse_csv_empty_cell_in_column():
         == "All cells must have values. Got empty cell at column Number of Ballots, row 2."
     )
 
+    # If a non-required column is present, then all its cells must have values too
+    with pytest.raises(CSVParseError) as error:
+        list(
+            parse_csv(
+                ("Batch Name,Number of Ballots,Tabulator\n" "1,2,"),
+                BALLOT_MANIFEST_COLUMNS,
+            )
+        )
+    assert (
+        str(error.value)
+        == "All cells must have values. Got empty cell at column Tabulator, row 2."
+    )
+
 
 def test_parse_csv_missing_cell_in_row():
     with pytest.raises(CSVParseError) as error:
@@ -178,7 +216,7 @@ def test_parse_csv_extra_column():
         )
     assert (
         str(error.value)
-        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Storage Location, Tabulator."
+        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator."
     )
 
     with pytest.raises(CSVParseError) as error:
@@ -190,7 +228,7 @@ def test_parse_csv_extra_column():
         )
     assert (
         str(error.value)
-        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Storage Location, Tabulator."
+        == "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator."
     )
 
 
@@ -232,7 +270,21 @@ def test_parse_csv_duplicate_value_in_unique_column():
         )
     assert (
         str(error.value)
-        == "Values in column Batch Name must be unique. Found duplicate value: 1."
+        == "Each row must be uniquely identified by Batch Name. Found duplicate: 1."
+    )
+
+
+def test_parse_csv_duplicate_value_with_composite_unique_columns():
+    with pytest.raises(CSVParseError) as error:
+        list(
+            parse_csv(
+                ("Tabulator,Batch Name,Number of Ballots\n" "1,2,4\n" "1,2,3"),
+                BALLOT_MANIFEST_COLUMNS_COMPOSITE_KEY,
+            )
+        )
+    assert (
+        str(error.value)
+        == "Each row must be uniquely identified by ('Batch Name', 'Tabulator'). Found duplicate: ('2', '1')."
     )
 
 
@@ -361,6 +413,23 @@ def test_parse_csv_empty_row():
     assert len(parsed) == 1
 
 
+def test_parse_csv_headers_out_of_order():
+    parsed = list(
+        parse_csv(("Number of Ballots,Batch Name\n" "1,2"), BALLOT_MANIFEST_COLUMNS)
+    )
+    assert parsed == [{"Batch Name": "2", "Number of Ballots": 1}]
+
+
+def test_parse_csv_headers_out_of_order_with_optional_column():
+    parsed = list(
+        parse_csv(
+            ("Tabulator,Number of Ballots,Batch Name\n" "A,1,2"),
+            BALLOT_MANIFEST_COLUMNS,
+        )
+    )
+    assert parsed == [{"Batch Name": "2", "Number of Ballots": 1, "Tabulator": "A"}]
+
+
 def test_parse_csv_empty_trailing_columns():
     parsed = list(
         parse_csv(
@@ -382,7 +451,7 @@ Bliss Twp,,,199
 Carp Lake Twp,,,214
 Center Twp,,,180
 """,
-        "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Storage Location, Tabulator.",
+        "Found unexpected columns. Allowed columns: Batch Name, Number of Ballots, Tabulator.",
         BALLOT_MANIFEST_COLUMNS,
     ),
     (
@@ -408,7 +477,7 @@ Center Twp,,,180
 "City of Whitehall, Precinct 1",495
 "City of Whitehall, Precinct 1",813
 """,
-        "Values in column Batch Name must be unique. Found duplicate value: Whitehall Township, Precinct 1.",
+        "Each row must be uniquely identified by Batch Name. Found duplicate: Whitehall Township, Precinct 1.",
         BALLOT_MANIFEST_COLUMNS,
     ),
     (
