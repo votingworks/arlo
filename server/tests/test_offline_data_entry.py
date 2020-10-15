@@ -221,7 +221,7 @@ def test_offline_results_invalid(
                 contest.id: {choice.id: 100 for choice in contest.choices}
                 for contest in contests
             },
-            "Total results for contest Contest 1 should not exceed 81 - the number of sampled ballots (81) times the number of votes allowed (1).",
+            "Total results for contest Contest 1 should not exceed 80 - the number of sampled ballots (80) times the number of votes allowed (1).",
         ),
     ]
 

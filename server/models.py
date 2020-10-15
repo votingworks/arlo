@@ -224,10 +224,10 @@ class Batch(BaseModel):
     )
     jurisdiction = relationship("Jurisdiction", back_populates="batches")
 
+    container = Column(String(200))
+    tabulator = Column(String(200))
     name = Column(String(200), nullable=False)
     num_ballots = Column(Integer, nullable=False)
-    storage_location = Column(String(200))
-    tabulator = Column(String(200))
 
     # For ballot polling audits, a batch is associated with a group of ballots
     # sampled from this batch
@@ -251,7 +251,7 @@ class Batch(BaseModel):
         "BatchResult", uselist=True, cascade="all, delete-orphan", passive_deletes=True,
     )
 
-    __table_args__ = (UniqueConstraint("jurisdiction_id", "name"),)
+    __table_args__ = (UniqueConstraint("jurisdiction_id", "tabulator", "name"),)
 
 
 class Contest(BaseModel):

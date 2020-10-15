@@ -30,11 +30,11 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         data={
             "manifest": (
                 io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"1 - 1,3\n"
-                    b"1 - 2,3\n"
-                    b"2 - 1,3\n"
-                    b"2 - 2,6"
+                    b"Tabulator,Batch Name,Number of Ballots\n"
+                    b"1,1,3\n"
+                    b"1,2,3\n"
+                    b"2,1,3\n"
+                    b"2,2,6"
                 ),
                 "manifest.csv",
             )
@@ -46,11 +46,11 @@ def manifests(client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
         data={
             "manifest": (
                 io.BytesIO(
-                    b"Batch Name,Number of Ballots\n"
-                    b"1 - 1,3\n"
-                    b"1 - 2,3\n"
-                    b"2 - 1,3\n"
-                    b"2 - 2,6"
+                    b"Tabulator,Batch Name,Number of Ballots\n"
+                    b"1,1,3\n"
+                    b"1,2,3\n"
+                    b"2,1,3\n"
+                    b"2,2,6"
                 ),
                 "manifest.csv",
             )

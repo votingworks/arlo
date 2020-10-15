@@ -148,7 +148,6 @@ def test_ballot_comparison_two_rounds(
         round = Round.query.get(round_id)
         for contest_id in [target_contest_id, contests[1]["id"]]:
             contest = Contest.query.get(contest_id)
-            print(contest.__dict__)
             ballots_and_cvrs = (
                 SampledBallot.query.join(SampledBallotDraw)
                 .filter_by(round_id=round.id)

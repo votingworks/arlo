@@ -99,11 +99,9 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             # Will be counted below
             contests_metadata[contest_name]["total_ballots_cast"] = 0
 
-        batch_name_to_id = dict(
-            Batch.query.filter_by(jurisdiction_id=jurisdiction.id).values(
-                Batch.name, Batch.id
-            )
-        )
+        batch_key_to_id = {
+            (batch.tabulator, batch.name): batch.id for batch in jurisdiction.batches
+        }
 
         # Parse ballot rows and store them as CvrBallots. Since we may have
         # millions of rows, we write this data into a tempfile and load it into
@@ -125,7 +123,7 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                     _ballot_type,
                     *interpretations,
                 ] = row
-                db_batch_id = batch_name_to_id[f"{tabulator_number} - {batch_id}"]
+                db_batch_id = batch_key_to_id[(tabulator_number, batch_id)]
                 ballots_csv.writerow(
                     [
                         db_batch_id,

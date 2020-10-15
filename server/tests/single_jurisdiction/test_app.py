@@ -249,7 +249,7 @@ def setup_whole_audit(client, election_id, name, risk_limit, random_seed, online
     lines = rv.data.decode("utf-8").splitlines()
     assert (
         lines[0]
-        == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board"
+        == "Batch Name,Ballot Number,Container,Tabulator,Ticket Numbers,Already Audited,Audit Board"
     )
     assert len(lines) > 5
     assert "attachment" in rv.headers["content-disposition"]
@@ -438,7 +438,7 @@ def setup_whole_multi_winner_audit(client, election_id, name, risk_limit, random
     lines = rv.data.decode("utf-8").split("\r\n")
     assert (
         lines[0]
-        == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board"
+        == "Batch Name,Ballot Number,Container,Tabulator,Ticket Numbers,Already Audited,Audit Board"
     )
     assert len(lines) > 5
     assert "attachment" in rv.headers["content-disposition"]
@@ -673,7 +673,7 @@ def test_small_election(client, election_id):
     lines = rv.data.decode("utf-8").splitlines()
     assert (
         lines[0]
-        == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board"
+        == "Batch Name,Ballot Number,Container,Tabulator,Ticket Numbers,Already Audited,Audit Board"
     )
     assert "attachment" in rv.headers["Content-Disposition"]
 
@@ -984,7 +984,7 @@ def test_multi_winner_election(client, election_id):
     lines = rv.data.decode("utf-8").split("\r\n")
     assert (
         lines[0]
-        == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board"
+        == "Batch Name,Ballot Number,Container,Tabulator,Ticket Numbers,Already Audited,Audit Board"
     )
     assert "attachment" in rv.headers["Content-Disposition"]
 
@@ -1287,7 +1287,7 @@ EXPECTED_ALREADY_AUDITED_BALLOTS = [
     ("483", "12"),
 ]
 
-EXPECTED_RETRIEVAL_LIST = """Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board
+EXPECTED_RETRIEVAL_LIST = """Batch Name,Ballot Number,Container,Tabulator,Ticket Numbers,Already Audited,Audit Board
 3,3,,,0.061537690996662214,N,Audit Board #1
 3,30,,,0.029862723925803684,N,Audit Board #1
 3,32,,,0.063033033371807185,N,Audit Board #1

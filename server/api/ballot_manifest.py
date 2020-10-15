@@ -16,17 +16,10 @@ from ..util.process_file import (
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file, parse_csv, CSVValueType, CSVColumnType
 
+CONTAINER = "Container"
+TABULATOR = "Tabulator"
 BATCH_NAME = "Batch Name"
 NUMBER_OF_BALLOTS = "Number of Ballots"
-STORAGE_LOCATION = "Storage Location"
-TABULATOR = "Tabulator"
-
-BALLOT_MANIFEST_COLUMNS = [
-    CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True),
-    CSVColumnType(NUMBER_OF_BALLOTS, CSVValueType.NUMBER),
-    CSVColumnType(STORAGE_LOCATION, CSVValueType.TEXT, required=False),
-    CSVColumnType(TABULATOR, CSVValueType.TEXT, required=False),
-]
 
 
 def process_ballot_manifest_file(
@@ -35,9 +28,23 @@ def process_ballot_manifest_file(
     assert jurisdiction.manifest_file_id == file.id
 
     def process():
-        manifest_csv = parse_csv(
-            jurisdiction.manifest_file.contents, BALLOT_MANIFEST_COLUMNS
-        )
+        # In ballot comparison audits, each batch is uniquely identified by
+        # (tabulator, batch name). For other types of audits, the batch name is
+        # unique.
+        use_tabulator = jurisdiction.election.audit_type == AuditType.BALLOT_COMPARISON
+        columns = [
+            CSVColumnType(CONTAINER, CSVValueType.TEXT, required=False),
+            CSVColumnType(
+                TABULATOR,
+                CSVValueType.TEXT,
+                required=use_tabulator,
+                unique=use_tabulator,
+            ),
+            CSVColumnType(BATCH_NAME, CSVValueType.TEXT, unique=True),
+            CSVColumnType(NUMBER_OF_BALLOTS, CSVValueType.NUMBER),
+        ]
+
+        manifest_csv = parse_csv(jurisdiction.manifest_file.contents, columns)
 
         num_batches = 0
         num_ballots = 0
@@ -47,8 +54,8 @@ def process_ballot_manifest_file(
                 name=row[BATCH_NAME],
                 jurisdiction_id=jurisdiction.id,
                 num_ballots=row[NUMBER_OF_BALLOTS],
-                storage_location=row.get(STORAGE_LOCATION) or None,
-                tabulator=row.get(TABULATOR) or None,
+                container=row.get(CONTAINER, None),
+                tabulator=row.get(TABULATOR, None),
             )
             session.add(batch)
             num_batches += 1

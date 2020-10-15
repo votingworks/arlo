@@ -7,26 +7,6 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots["test_batch_comparison_sample_size 1"] = [
-    {"key": "macro", "prob": None, "size": 6}
-]
-
-snapshots["test_batch_comparison_round_1 1"] = {
-    "numSamples": 14,
-    "numSamplesAudited": 0,
-    "numUnique": 5,
-    "numUniqueAudited": 0,
-    "status": "NOT_STARTED",
-}
-
-snapshots["test_batch_comparison_round_1 2"] = {
-    "numSamples": 6,
-    "numSamplesAudited": 0,
-    "numUnique": 3,
-    "numUniqueAudited": 0,
-    "status": "NOT_STARTED",
-}
-
 snapshots["test_batch_comparison_round_2 1"] = {
     "numSamples": 4,
     "numSamplesAudited": 4,
@@ -77,7 +57,7 @@ snapshots["test_batch_comparison_round_2 6"] = {
 
 snapshots[
     "test_batch_comparison_round_2 7"
-] = """Batch Name,Storage Location,Tabulator,Audit Board
+] = """Batch Name,Container,Tabulator,Audit Board
 Batch 2,,,Audit Board #1
 Batch 4,,,Audit Board #2
 """
@@ -121,3 +101,23 @@ J1,Batch 3,"Round 1: 0.023650366, 0.122600189, 0.150810694",Yes,candidate 1: 400
 J1,Batch 2,Round 2: 0.203857756,No,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
 J1,Batch 4,Round 2: 0.169018243,No,candidate 1: 0; candidate 2: 0; candidate 3: 0\r
 """
+
+snapshots["test_batch_comparison_sample_size 1"] = [
+    {"key": "macro", "prob": None, "size": 6}
+]
+
+snapshots["test_batch_comparison_round_1 1"] = {
+    "numSamples": 14,
+    "numSamplesAudited": 0,
+    "numUnique": 5,
+    "numUniqueAudited": 0,
+    "status": "NOT_STARTED",
+}
+
+snapshots["test_batch_comparison_round_1 2"] = {
+    "numSamples": 6,
+    "numSamplesAudited": 0,
+    "numUnique": 3,
+    "numUniqueAudited": 0,
+    "status": "NOT_STARTED",
+}

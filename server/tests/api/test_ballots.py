@@ -7,6 +7,9 @@ from ...auth import UserType
 from ...models import *  # pylint: disable=wildcard-import
 from ...util.jsonschema import JSONDict
 
+BALLOT_1_BATCH_NAME = "4"
+BALLOT_1_POSITION = 3
+
 
 def test_ja_ballots_bad_round_id(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str],
@@ -39,8 +42,13 @@ def test_ja_ballots_round_1(
         {
             "id": assert_is_id,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
-            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "position": 8,
+            "batch": {
+                "id": assert_is_id,
+                "name": BALLOT_1_BATCH_NAME,
+                "tabulator": None,
+                "container": None,
+            },
+            "position": BALLOT_1_POSITION,
             "status": "NOT_AUDITED",
             "interpretations": [],
         },
@@ -87,8 +95,13 @@ def test_ja_ballots_round_1(
         {
             "id": assert_is_id,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
-            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "position": 8,
+            "batch": {
+                "id": assert_is_id,
+                "name": BALLOT_1_BATCH_NAME,
+                "tabulator": None,
+                "container": None,
+            },
+            "position": BALLOT_1_POSITION,
             "status": "AUDITED",
             "interpretations": [
                 {
@@ -121,8 +134,13 @@ def test_ja_ballots_before_audit_boards_set_up(
         {
             "id": assert_is_id,
             "auditBoard": None,
-            "batch": {"id": assert_is_id, "name": "1", "tabulator": None},
-            "position": 12,
+            "batch": {
+                "id": assert_is_id,
+                "name": "1",
+                "tabulator": None,
+                "container": None,
+            },
+            "position": BALLOT_1_POSITION,
             "status": "NOT_AUDITED",
             "interpretations": [],
         },
@@ -149,15 +167,27 @@ def test_ja_ballots_round_2(
         {
             "id": assert_is_id,
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
-            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "position": 3,
-            "status": "NOT_AUDITED",
-            "interpretations": [],
+            "batch": {
+                "id": assert_is_id,
+                "name": BALLOT_1_BATCH_NAME,
+                "tabulator": None,
+                "container": None,
+            },
+            "position": BALLOT_1_POSITION,
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "choiceIds": [assert_is_id],
+                    "comment": None,
+                    "contestId": assert_is_id,
+                    "interpretation": "VOTE",
+                }
+            ],
         },
     )
 
     previously_audited_ballots = [b for b in ballots if b["status"] == "AUDITED"]
-    assert len(previously_audited_ballots) == 29
+    snapshot.assert_match(len(previously_audited_ballots))
 
 
 def test_ab_list_ballot_round_1(
@@ -180,8 +210,13 @@ def test_ab_list_ballot_round_1(
         ballots[0],
         {
             "id": assert_is_id,
-            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "position": 8,
+            "batch": {
+                "id": assert_is_id,
+                "name": BALLOT_1_BATCH_NAME,
+                "tabulator": None,
+                "container": None,
+            },
+            "position": BALLOT_1_POSITION,
             "status": "NOT_AUDITED",
             "interpretations": [],
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
@@ -221,8 +256,13 @@ def test_ab_list_ballot_round_1(
         ballots[0],
         {
             "id": assert_is_id,
-            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "position": 8,
+            "batch": {
+                "id": assert_is_id,
+                "name": BALLOT_1_BATCH_NAME,
+                "tabulator": None,
+                "container": None,
+            },
+            "position": BALLOT_1_POSITION,
             "status": "AUDITED",
             "interpretations": [
                 {
@@ -264,10 +304,22 @@ def test_ab_list_ballots_round_2(
         ballots[0],
         {
             "id": assert_is_id,
-            "batch": {"id": assert_is_id, "name": "4", "tabulator": None},
-            "position": 3,
-            "status": "NOT_AUDITED",
-            "interpretations": [],
+            "batch": {
+                "id": assert_is_id,
+                "name": BALLOT_1_BATCH_NAME,
+                "tabulator": None,
+                "container": None,
+            },
+            "position": BALLOT_1_POSITION,
+            "status": "AUDITED",
+            "interpretations": [
+                {
+                    "choiceIds": [assert_is_id],
+                    "comment": None,
+                    "contestId": assert_is_id,
+                    "interpretation": "VOTE",
+                }
+            ],
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
         },
     )
@@ -758,7 +810,7 @@ def test_ja_ballot_retrieval_list_before_audit_boards_set_up(
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     assert (
         retrieval_list
-        == "Batch Name,Ballot Number,Storage Location,Tabulator,Ticket Numbers,Already Audited,Audit Board\n"
+        == "Batch Name,Ballot Number,Container,Tabulator,Ticket Numbers,Already Audited,Audit Board\n"
     )
 
 

@@ -87,10 +87,7 @@ def test_ballot_manifest_replace(
         data={
             "manifest": (
                 io.BytesIO(
-                    b"Batch Name,Number of Ballots,Storage Location,Tabulator\n"
-                    b"1,23,Bin 2,Tabulator 1\n"
-                    b"12,100,Bin 3,Tabulator 2\n"
-                    b"6,0,,\n"
+                    b"Batch Name,Number of Ballots\n" b"1,23\n" b"12,100\n" b"6,0,,\n"
                 ),
                 "manifest.csv",
             )
@@ -106,11 +103,7 @@ def test_ballot_manifest_replace(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots,Storage Location,Tabulator\n"
-                    b"1,23,Bin 2,Tabulator 1\n"
-                    b"12,6,Bin 6,Tabulator 2\n"
-                ),
+                io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n" b"12,6\n"),
                 "manifest.csv",
             )
         },
@@ -130,12 +123,8 @@ def test_ballot_manifest_replace(
     assert len(jurisdiction.batches) == 2
     assert jurisdiction.batches[0].name == "1"
     assert jurisdiction.batches[0].num_ballots == 23
-    assert jurisdiction.batches[0].storage_location == "Bin 2"
-    assert jurisdiction.batches[0].tabulator == "Tabulator 1"
     assert jurisdiction.batches[1].name == "12"
     assert jurisdiction.batches[1].num_ballots == 6
-    assert jurisdiction.batches[1].storage_location == "Bin 6"
-    assert jurisdiction.batches[1].tabulator == "Tabulator 2"
 
 
 def test_ballot_manifest_clear(
@@ -146,10 +135,7 @@ def test_ballot_manifest_clear(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots,Storage Location,Tabulator\n"
-                    b"1,23,Bin 2,Tabulator 1\n"
-                ),
+                io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,23\n"),
                 "manifest.csv",
             )
         },
@@ -230,7 +216,7 @@ def test_ballot_manifest_upload_missing_field(
     client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
 ):
     for missing_field in ["Batch Name", "Number of Ballots"]:
-        headers = ["Batch Name", "Number of Ballots", "Storage Location", "Tabulator"]
+        headers = ["Batch Name", "Number of Ballots", "Container", "Tabulator"]
         header_row = ",".join(h for h in headers if h != missing_field)
 
         set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
@@ -272,10 +258,7 @@ def test_ballot_manifest_upload_invalid_num_ballots(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/ballot-manifest",
         data={
             "manifest": (
-                io.BytesIO(
-                    b"Batch Name,Number of Ballots,Storage Location,Tabulator\n"
-                    b"1,not a number,Bin 2,Tabulator 1\n"
-                ),
+                io.BytesIO(b"Batch Name,Number of Ballots\n" b"1,not a number\n"),
                 "manifest.csv",
             )
         },
@@ -310,10 +293,7 @@ def test_ballot_manifest_upload_duplicate_batch_name(
         data={
             "manifest": (
                 io.BytesIO(
-                    b"Batch Name,Number of Ballots,Storage Location,Tabulator\n"
-                    b"12,23,Bin 2,Tabulator 1\n"
-                    b"12,100,Bin 3,Tabulator 2\n"
-                    b"6,0,,\n"
+                    b"Batch Name,Number of Ballots\n" b"12,23\n" b"12,100\n" b"6,0\n"
                 ),
                 "manifest.csv",
             )
