@@ -259,7 +259,7 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS
         if interpretation == Interpretation.VOTE:
             return 1
         elif interpretation == Interpretation.BLANK:
-            return 0  # TODO make this a vote for the loser?
+            return 0
         else:
             assert interpretation == Interpretation.CANT_AGREE
             return 0  # TODO make this a vote for the loser?
