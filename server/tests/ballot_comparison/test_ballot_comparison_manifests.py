@@ -225,6 +225,11 @@ def test_ballot_comparison_container_manifest(
             len(audit_board_ids) == 1
         ), "Different audit boards assigned ballots from the same tabulator+name"
 
+    # Check that Container is included in the audit report
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+
 
 def test_ballot_comparison_manifest_missing_tabulator(
     client: FlaskClient,

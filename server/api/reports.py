@@ -262,9 +262,17 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         .join(Batch)
         .join(Jurisdiction)
         .filter_by(election_id=election.id)
+        .outerjoin(
+            CvrBallot,
+            and_(
+                CvrBallot.batch_id == SampledBallot.batch_id,
+                CvrBallot.ballot_position == SampledBallot.ballot_position,
+            ),
+        )
         .order_by(
             Round.round_num,
             Jurisdiction.name,
+            Batch.container,
             Batch.tabulator,
             Batch.name,
             SampledBallot.ballot_position,
@@ -272,7 +280,9 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     )
     if jurisdiction:
         ballots_query = ballots_query.filter(Jurisdiction.id == jurisdiction.id)
-    ballots = list(ballots_query.all())
+    ballots = list(
+        ballots_query.with_entities(SampledBallot, CvrBallot.imprinted_id).all()
+    )
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
 
@@ -280,29 +290,36 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         contest for contest in election.contests if contest.is_targeted
     ]
 
-    use_tabulator = ballots[0].batch.tabulator is not None
+    show_tabulator = ballots[0][0].batch.tabulator is not None
+    show_container = ballots[0][0].batch.container is not None
+    show_imprinted_id = ballots[0][1] is not None
 
     rows.append(
         ["Jurisdiction Name"]
-        + (["Tabulator"] if use_tabulator else [])
+        + (["Container"] if show_container else [])
+        + (["Tabulator"] if show_container else [])
         + ["Batch Name", "Ballot Position"]
+        + (["Imprinted ID"] if show_container else [])
         + [f"Ticket Numbers: {contest.name}" for contest in targeted_contests]
+        + ["Audited?"]
         + (
-            ["Audited?"]
-            + [f"Audit Result: {contest.name}" for contest in election.contests]
+            [f"Audit Result: {contest.name}" for contest in election.contests]
             if election.online
             else []
         )
     )
-    for ballot in ballots:
+
+    for ballot, imprinted_id in ballots:
         rows.append(
             [ballot.batch.jurisdiction.name]
-            + ([ballot.batch.tabulator] if use_tabulator else [])
-            + [ballot.batch.name, ballot.ballot_position,]
+            + ([ballot.batch.container] if show_container else [])
+            + ([ballot.batch.tabulator] if show_tabulator else [])
+            + [ballot.batch.name, ballot.ballot_position]
+            + ([imprinted_id] if show_imprinted_id else [])
             + pretty_ballot_ticket_numbers(ballot, round_id_to_num, targeted_contests)
+            + [ballot.status]
             + (
-                [ballot.status]
-                + pretty_ballot_interpretations(
+                pretty_ballot_interpretations(
                     list(ballot.interpretations), list(election.contests)
                 )
                 if election.online
