@@ -174,8 +174,18 @@ def test_ballot_comparison_two_rounds(
                 ballot.status = BallotStatus.AUDITED
                 choice_1 = int(choice_1_str) if choice_1_str else None
                 choice_2 = int(choice_2_str) if choice_2_str else None
-                if not (choice_1 or choice_2) or i < num_wrong:
+                if not (choice_1 or choice_2):
                     continue
+                if i < num_wrong:
+                    ballot.interpretations = list(ballot.interpretations) + [
+                        BallotInterpretation(
+                            ballot_id=ballot.id,
+                            contest_id=contest.id,
+                            interpretation=Interpretation.BLANK,
+                            selected_choices=[],
+                            is_overvote=False,
+                        )
+                    ]
                 if not any(
                     i for i in ballot.interpretations if i.contest_id == contest_id
                 ):
@@ -193,7 +203,7 @@ def test_ballot_comparison_two_rounds(
         end_round(round.election, round)
         db_session.commit()
 
-    audit_all_ballots(round_1_id, 2)
+    audit_all_ballots(round_1_id, 6)
 
     # Check the audit report
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
