@@ -78,9 +78,7 @@ def test_find_no_discrepancies(contests, cvrs):
             contests[contest], cvrs, sample_cvr
         )
 
-        assert discrepancies[0]["counted_as"] == 0
-        assert discrepancies[0]["weighted_error"] == 0
-        assert discrepancies[0]["cvr"] == discrepancies[0]["sample_cvr"]
+        assert not discrepancies
 
 
 def test_find_one_discrepancy(contests, cvrs):
@@ -104,16 +102,11 @@ def test_find_one_discrepancy(contests, cvrs):
             assert discrepancies[0]["counted_as"] == 1
             assert discrepancies[0]["weighted_error"] == 1 / 20000
             assert (
-                discrepancies[0]["cvr"][contest]
-                != discrepancies[0]["sample_cvr"][contest]
+                discrepancies[0]["discrepancy_cvr"]["reported_as"][contest]
+                != discrepancies[0]["discrepancy_cvr"]["audited_as"][contest]
             )
         else:
-            assert discrepancies[0]["counted_as"] == 0
-            assert discrepancies[0]["weighted_error"] == 0
-            assert (
-                discrepancies[0]["cvr"][contest]
-                == discrepancies[0]["sample_cvr"][contest]
-            )
+            assert not discrepancies
 
 
 def test_get_sample_sizes(contests):
