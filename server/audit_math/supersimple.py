@@ -23,7 +23,7 @@ CVR = Dict[str, Dict[str, int]]
 class Discrepancy(TypedDict):
     counted_as: int
     weighted_error: float
-    discrepancy_cvr: CVR
+    discrepancy_cvr: CVRS
 
 
 def nMin(
