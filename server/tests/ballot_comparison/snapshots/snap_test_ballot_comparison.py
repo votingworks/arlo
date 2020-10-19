@@ -7,33 +7,26 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['test_ballot_comparison_round_1 1'] = {
-    'key': 'supersimple',
-    'prob': None,
-    'size': 11
+snapshots["test_ballot_comparison_round_1 1"] = {
+    "key": "supersimple",
+    "prob": None,
+    "size": 11,
 }
 
-snapshots['test_set_contest_metadata_from_cvrs 1'] = {
-    'choices': [
-        {
-            'name': 'Choice 2-1',
-            'num_votes': 30
-        },
-        {
-            'name': 'Choice 2-2',
-            'num_votes': 14
-        },
-        {
-            'name': 'Choice 2-3',
-            'num_votes': 16
-        }
+snapshots["test_set_contest_metadata_from_cvrs 1"] = {
+    "choices": [
+        {"name": "Choice 2-1", "num_votes": 30},
+        {"name": "Choice 2-2", "num_votes": 14},
+        {"name": "Choice 2-3", "num_votes": 16},
     ],
-    'num_winners': 1,
-    'total_ballots_cast': 30,
-    'votes_allowed': 2
+    "num_winners": 1,
+    "total_ballots_cast": 30,
+    "votes_allowed": 2,
 }
 
-snapshots['test_ballot_comparison_round_1 2'] = '''######## ELECTION INFO ########\r
+snapshots[
+    "test_ballot_comparison_round_1 2"
+] = """######## ELECTION INFO ########\r
 Election Name,State\r
 Test Election,CA\r
 \r
@@ -63,4 +56,4 @@ J2,1 - 1,3,Round 1: 0.145351404354762545,AUDITED,Choice 1-1,Choice 2-1\r
 J2,1 - 2,1,Round 1: 0.261383583608008902,AUDITED,Choice 1-1,Choice 2-1\r
 J2,2 - 2,3,Round 1: 0.394565893682896974,AUDITED,Choice 1-2,Choice 2-2\r
 J2,2 - 2,4,Round 1: 0.267753678346758280,NOT_AUDITED,,\r
-'''
+"""
