@@ -104,6 +104,13 @@ const JurisdictionDetail = ({
             downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/batch-tallies/csv`}
           />
         )}
+        {jurisdiction.cvrs && (
+          <FileStatusCard
+            title="Cast Vote Records (CVR)"
+            fileInfo={jurisdiction.cvrs}
+            downloadUrl={`/api/election/${electionId}/jurisdiction/${jurisdiction.id}/cvrs/csv`}
+          />
+        )}
       </Section>
       {round && (
         <RoundStatusSection
