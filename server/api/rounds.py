@@ -333,7 +333,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 sampled_ballot_interpretations_to_cvrs(contest),
             )
 
-        round_contest.end_p_value = float(p_value)
+        round_contest.end_p_value = p_value
         round_contest.is_complete = is_complete
 
 
