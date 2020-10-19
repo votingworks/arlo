@@ -188,7 +188,7 @@ def bravo_sample_sizes(
 
     # The three coefficients of the quadratic:
     q_a = g ** 2
-    q_b = -(Decimal(z) ** Decimal(2) * d + 2 * f * g)
+    q_b = -(Decimal(z) ** 2 * d + 2 * f * g)
     q_c = f ** 2
 
     # Apply the quadratic formula.
