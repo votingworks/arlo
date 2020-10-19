@@ -103,9 +103,9 @@ def test_cvr_upload(
     assert rv.headers["Content-Disposition"] == 'attachment; filename="cvrs.csv"'
     assert rv.data == TEST_CVRS.encode()
 
-    # TODO
-    # - copy all the tests from test_batch_tallies.py
-    # - test a bunch of CVR parse errors
+
+# TODO
+# - test a bunch of CVR parse errors
 
 
 COUNTING_GROUP_CVR = """Test Audit CVR Upload,5.2.16.1,,,,,,,,,,
@@ -181,3 +181,245 @@ def test_cvrs_counting_group(
     snapshot.assert_match(
         Jurisdiction.query.get(jurisdiction_ids[0]).cvr_contests_metadata
     )
+
+
+def test_cvrs_replace(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+    )
+    assert_ok(rv)
+
+    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
+
+    bgcompute_update_cvr_file()
+
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={
+            "cvrs": (
+                io.BytesIO("\n".join(TEST_CVRS.splitlines()[:-2]).encode()),
+                "cvrs.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    # The old file should have been deleted
+    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    assert File.query.get(file_id) is None
+    assert jurisdiction.cvr_file_id != file_id
+
+    bgcompute_update_cvr_file()
+
+    cvr_ballots = (
+        CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
+    )
+    assert len(cvr_ballots) == 15 - 2
+
+
+def test_cvrs_clear(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": (io.BytesIO(TEST_CVRS.encode()), "cvrs.csv",)},
+    )
+    assert_ok(rv)
+
+    file_id = Jurisdiction.query.get(jurisdiction_ids[0]).cvr_file_id
+
+    bgcompute_update_cvr_file()
+
+    rv = client.delete(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    assert json.loads(rv.data) == {"file": None, "processing": None}
+
+    jurisdiction = Jurisdiction.query.get(jurisdiction_ids[0])
+    assert jurisdiction.cvr_file_id is None
+    assert File.query.get(file_id) is None
+    assert jurisdiction.cvr_contests_metadata is None
+    cvr_ballots = (
+        CvrBallot.query.join(Batch).filter_by(jurisdiction_id=jurisdiction_ids[0]).all()
+    )
+    assert len(cvr_ballots) == 0
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs/csv"
+    )
+    assert rv.status_code == 404
+
+
+def test_cvrs_upload_missing_file(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs", data={},
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing required file parameter 'cvrs'",
+            }
+        ]
+    }
+
+
+def test_cvrs_upload_bad_csv(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    manifests,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = client.put(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+        data={"cvrs": (io.BytesIO(b"not a CSV file"), "random.txt")},
+    )
+    assert_ok(rv)
+
+    bgcompute_update_cvr_file()
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs"
+    )
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {"name": "random.txt", "uploadedAt": assert_is_date,},
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Could not parse CVR file",
+            },
+        },
+    )
+
+
+# def test_cvrs_ballot_polling(
+#     client: FlaskClient,
+#     election_id: str,
+#     jurisdiction_ids: List[str],
+#     contest_ids: List[str],  # pylint: disable=unused-argument
+#     manifests,  # pylint: disable=unused-argument
+# ):
+#     # Hackily change the audit type
+#     election = Election.query.get(election_id)
+#     election.audit_type = AuditType.BALLOT_POLLING
+#     db_session.add(election)
+#     db_session.commit()
+
+#     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+#     rv = client.put(
+#         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+#         data={
+#             "cvrs": (
+#                 io.BytesIO(
+#                     b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+#                     b"Batch 1,300,10,100\n"
+#                     b"Batch 2,2,20,200\n"
+#                     b"Batch 3,3,30,300\n"
+#                 ),
+#                 "cvrs.csv",
+#             )
+#         },
+#     )
+#     assert rv.status_code == 409
+#     assert json.loads(rv.data) == {
+#         "errors": [
+#             {
+#                 "errorType": "Conflict",
+#                 "message": "Can only upload batch tallies file for batch comparison audits.",
+#             }
+#         ]
+#     }
+
+
+# def test_cvrs_bad_jurisdiction(
+#     client: FlaskClient,
+#     election_id: str,
+#     jurisdiction_ids: List[str],
+#     contest_ids: List[str],  # pylint: disable=unused-argument
+#     manifests,  # pylint: disable=unused-argument
+# ):
+#     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "j3@example.com")
+#     rv = client.put(
+#         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[2]}/cvrs",
+#         data={
+#             "cvrs": (
+#                 io.BytesIO(
+#                     b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+#                     b"Batch 1,300,10,100\n"
+#                     b"Batch 2,2,20,200\n"
+#                     b"Batch 3,3,30,300\n"
+#                 ),
+#                 "cvrs.csv",
+#             )
+#         },
+#     )
+#     assert rv.status_code == 409
+#     assert json.loads(rv.data) == {
+#         "errors": [
+#             {
+#                 "errorType": "Conflict",
+#                 "message": "Jurisdiction does not have any contests assigned",
+#             }
+#         ]
+#     }
+
+
+# def test_cvrs_before_manifests(
+#     client: FlaskClient,
+#     election_id: str,
+#     jurisdiction_ids: List[str],
+#     contest_ids: List[str],  # pylint: disable=unused-argument
+# ):
+#     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+#     rv = client.put(
+#         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/cvrs",
+#         data={
+#             "cvrs": (
+#                 io.BytesIO(
+#                     b"Batch Name,candidate 1,candidate 2,candidate 3\n"
+#                     b"Batch 1,300,10,100\n"
+#                     b"Batch 2,2,20,200\n"
+#                     b"Batch 3,3,30,300\n"
+#                 ),
+#                 "cvrs.csv",
+#             )
+#         },
+#     )
+#     assert rv.status_code == 409
+#     assert json.loads(rv.data) == {
+#         "errors": [
+#             {
+#                 "errorType": "Conflict",
+#                 "message": "Must upload ballot manifest before uploading batch tallies.",
+#             }
+#         ]
+#     }

@@ -59,6 +59,7 @@ def assign_sampled_ballots(
         .filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBallot.draws)
         .filter_by(round_id=round.id)
+        .order_by(Batch.tabulator, Batch.name)
         .options(contains_eager(SampledBallot.batch))
         .all()
     )

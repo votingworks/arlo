@@ -18,6 +18,7 @@ from ..util.process_file import (
     process_file,
     serialize_file,
     serialize_file_processing,
+    UserError,
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
@@ -163,15 +164,6 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             try:
                 cursor = connection.cursor()
                 cursor.execute("BEGIN")
-                cursor.execute(
-                    f"""
-                        DELETE FROM cvr_ballot
-                        WHERE batch_id IN (
-                            SELECT id FROM batch
-                            WHERE jurisdiction_id = '{jurisdiction.id}'
-                        )
-                        """
-                )
                 ballots_tempfile.seek(0)
                 cursor.copy_expert(
                     """
@@ -194,12 +186,19 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             finally:
                 connection.close()
 
-    process_file(session, file, process)
+    # Until we add validation/error handling to our CVR parsing, we'll just
+    # catch all errors and wrap them with a generic message.
+    def process_catch_exceptions():
+        try:
+            process()
+        except Exception as e:
+            raise Exception("Could not parse CVR file") from e
+
+    process_file(session, file, process_catch_exceptions)
 
 
 # Raises if invalid
-def validate_cvr_upload(request: Request):  # pragma: no cover
-    # TODO test
+def validate_cvr_upload(request: Request):
     if "cvrs" not in request.files:
         raise BadRequest("Missing required file parameter 'cvrs'")
 
@@ -216,12 +215,17 @@ def save_cvr_file(cvr, jurisdiction: Jurisdiction):
     )
 
 
-def clear_cvr_file(jurisdiction: Jurisdiction, delete_cvrs: bool = True):
+def clear_cvr_file(jurisdiction: Jurisdiction):
     if jurisdiction.cvr_file_id:
         File.query.filter_by(id=jurisdiction.cvr_file_id).delete()
-    if delete_cvrs:  # pragma: no cover
-        # TODO test
-        CvrBallot.query.filter_by(jurisdiction_id=jurisdiction.id).delete()
+        CvrBallot.query.filter(
+            CvrBallot.batch_id.in_(
+                Batch.query.filter_by(jurisdiction_id=jurisdiction.id)
+                .with_entities(Batch.id)
+                .subquery()
+            )
+        ).delete(synchronize_session=False)
+        jurisdiction.cvr_contests_metadata = None
 
 
 @api.route(
@@ -232,7 +236,7 @@ def upload_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
     validate_cvr_upload(request)
-    clear_cvr_file(jurisdiction, delete_cvrs=False)
+    clear_cvr_file(jurisdiction)
     save_cvr_file(request.files["cvrs"], jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
@@ -271,8 +275,7 @@ def download_cvr_file(
 @restrict_access([UserType.JURISDICTION_ADMIN])
 def clear_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-):  # pragma: no cover
-    # TODO test
+):
     clear_cvr_file(jurisdiction)
     db_session.commit()
     return jsonify(status="ok")
