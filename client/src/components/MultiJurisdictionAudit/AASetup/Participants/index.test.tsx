@@ -47,7 +47,7 @@ auditSettingsMock.mockReturnValue([
 const formData: FormData = new FormData()
 formData.append('jurisdictions', jurisdictionFile, jurisdictionFile.name)
 
-const { nextStage } = relativeStages('Participants')
+const { nextStage } = relativeStages('participants')
 
 const fillAndSubmit = async () => {
   render(

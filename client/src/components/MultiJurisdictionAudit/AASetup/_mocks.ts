@@ -1,5 +1,5 @@
 import { ElementType } from '../../../types'
-import { setupStages } from './index'
+import { setupStages, stageTitles } from './index'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 
 const relativeStages = (
@@ -10,22 +10,25 @@ const relativeStages = (
   nextStage: ISidebarMenuItem
   menuItems: ISidebarMenuItem[]
 } => {
-  const prevTitle = setupStages[setupStages.indexOf(stage) - 1]
+  const prevId = setupStages[setupStages.indexOf(stage) - 1]
   const prevStage: ISidebarMenuItem = {
-    title: prevTitle,
+    id: prevId,
+    title: stageTitles[prevId],
     active: false,
     activate: jest.fn(),
     state,
   }
-  const nextTitle = setupStages[setupStages.indexOf(stage) + 1]
+  const nextId = setupStages[setupStages.indexOf(stage) + 1]
   const nextStage: ISidebarMenuItem = {
-    title: nextTitle,
+    id: nextId,
+    title: stageTitles[nextId],
     active: false,
     activate: jest.fn(),
     state,
   }
   const menuItems = setupStages.map((s: ElementType<typeof setupStages>) => ({
-    title: s,
+    id: s,
+    title: stageTitles[s],
     active: s === stage,
     activate: jest.fn(),
     state,

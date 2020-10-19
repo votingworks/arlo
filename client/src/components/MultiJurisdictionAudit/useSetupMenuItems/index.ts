@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { toast } from 'react-toastify'
 import uuidv4 from 'uuidv4'
-import { setupStages } from '../AASetup'
+import { setupStages, stageTitles } from '../AASetup'
 import { ElementType } from '../../../types'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 import getJurisdictionFileStatus, {
@@ -13,23 +13,24 @@ import getRoundStatus from './getRoundStatus'
 function useSetupMenuItems(
   stage: ElementType<typeof setupStages>,
   setStage: (s: ElementType<typeof setupStages>) => void,
-  electionId: string
-): [ISidebarMenuItem[], () => void, string] {
-  const [refreshId, setRefreshId] = useState(uuidv4())
+  electionId: string,
+  isBallotComparison: boolean,
+  setRefreshId: (arg0: string) => void
+): [ISidebarMenuItem[], () => void] {
   const [participants, setParticipants] = useState<ISidebarMenuItem['state']>(
     'live'
   )
   const [targetContests, setTargetContests] = useState<
     ISidebarMenuItem['state']
-  >('live')
+  >('locked')
   const [opportunisticContests, setOpportunisticContests] = useState<
     ISidebarMenuItem['state']
-  >('live')
+  >('locked')
   const [auditSettings, setAuditSettings] = useState<ISidebarMenuItem['state']>(
-    'live'
+    'locked'
   )
   const [reviewLaunch, setReviewLaunch] = useState<ISidebarMenuItem['state']>(
-    'live'
+    'locked'
   )
   const setContests = useCallback(
     (s: ISidebarMenuItem['state']) => {
@@ -64,7 +65,7 @@ function useSetupMenuItems(
       }
       const complete = () => {
         setContests('live')
-        setStage('Target Contests')
+        setStage('target-contests')
         setRefreshId(uuidv4())
       }
       poll(condition, complete, (err: Error) => {
@@ -78,7 +79,7 @@ function useSetupMenuItems(
   const lockAllIfRounds = useCallback(async () => {
     const roundsExist = await getRoundStatus(electionId)
     if (roundsExist) {
-      setStage('Review & Launch')
+      setStage('review')
       setParticipants('locked')
       setContests('locked')
       setAuditSettings('locked')
@@ -114,16 +115,15 @@ function useSetupMenuItems(
       setupStages.map((s: ElementType<typeof setupStages>) => {
         const state = (() => {
           switch (s) {
-            case 'Participants':
-            case 'Participants & Contests':
+            case 'participants':
               return participants
-            case 'Target Contests':
+            case 'target-contests':
               return targetContests
-            case 'Opportunistic Contests':
+            case 'opportunistic-contests':
               return opportunisticContests
-            case 'Audit Settings':
+            case 'settings':
               return auditSettings
-            case 'Review & Launch':
+            case 'review':
               return reviewLaunch
             /* istanbul ignore next */
             default:
@@ -131,7 +131,11 @@ function useSetupMenuItems(
           }
         })()
         return {
-          title: s,
+          id: s,
+          title:
+            isBallotComparison && s === 'participants'
+              ? 'Participants & Contests'
+              : stageTitles[s],
           active: s === stage,
           activate: (_, force = false) => {
             refresh()
@@ -143,7 +147,7 @@ function useSetupMenuItems(
               }
               setStage(s)
             } else if (reviewLaunch === 'locked') {
-              setStage('Review & Launch')
+              setStage('review')
             }
           },
           state,
@@ -160,7 +164,7 @@ function useSetupMenuItems(
       refresh,
     ]
   )
-  return [menuItems, refresh, refreshId]
+  return [menuItems, refresh]
 }
 
 export default useSetupMenuItems

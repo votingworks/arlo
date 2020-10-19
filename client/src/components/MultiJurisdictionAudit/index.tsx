@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import uuidv4 from 'uuidv4'
 import { Tag } from '@blueprintjs/core'
 import { ElementType } from '../../types'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
@@ -37,20 +38,25 @@ interface IParams {
 
 export const AuditAdminView: React.FC = () => {
   const { electionId, view } = useParams<IParams>()
-
-  const [stage, setStage] = useState<ElementType<typeof setupStages>>(
-    'Participants'
-  )
-  const [menuItems, refresh, refreshId] = useSetupMenuItems(
-    stage,
-    setStage,
-    electionId
-  )
+  const [refreshId, setRefreshId] = useState(uuidv4())
 
   const rounds = useRoundsAuditAdmin(electionId, refreshId)
   const jurisdictions = useJurisdictions(electionId, refreshId)
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
+
+  const isBallotComparison =
+    auditSettings && auditSettings.auditType === 'BALLOT_COMPARISON'
+  const [stage, setStage] = useState<ElementType<typeof setupStages>>(
+    'participants'
+  )
+  const [menuItems, refresh] = useSetupMenuItems(
+    stage,
+    setStage,
+    electionId,
+    !!isBallotComparison,
+    setRefreshId
+  )
 
   useEffect(refresh, [refresh])
 
@@ -58,22 +64,14 @@ export const AuditAdminView: React.FC = () => {
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
-  const isBallotComparison = auditSettings.auditType === 'BALLOT_COMPARISON'
-  const filteredMenuItems = menuItems.filter(({ title }) => {
-    switch (title as ElementType<typeof setupStages>) {
-      case 'Opportunistic Contests':
+  const filteredMenuItems = menuItems.filter(({ id }) => {
+    switch (id as ElementType<typeof setupStages>) {
+      case 'opportunistic-contests':
         return !isBatch
-      case 'Participants':
-        return !isBallotComparison
-      case 'Participants & Contests':
-        return !!isBallotComparison
       default:
         return true
     }
   })
-
-  if (isBallotComparison && stage === 'Participants')
-    setStage('Participants & Contests')
 
   switch (view) {
     case 'setup':
@@ -114,6 +112,7 @@ export const AuditAdminView: React.FC = () => {
               title="Audit Progress"
               menuItems={[
                 {
+                  id: 'jurisdictions',
                   title: 'Jurisdictions',
                   active: true,
                   state: 'live',

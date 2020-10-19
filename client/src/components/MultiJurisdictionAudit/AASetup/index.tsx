@@ -8,13 +8,20 @@ import Review from './Review'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 
 export const setupStages = [
-  'Participants',
-  'Participants & Contests',
-  'Target Contests',
-  'Opportunistic Contests',
-  'Audit Settings',
-  'Review & Launch',
+  'participants',
+  'target-contests',
+  'opportunistic-contests',
+  'settings',
+  'review',
 ] as const
+
+export const stageTitles: { [keys in typeof setupStages[number]]: string } = {
+  participants: 'Participants',
+  'target-contests': 'Target Contests',
+  'opportunistic-contests': 'Opportunistic Contests',
+  settings: 'Audit Settings',
+  review: 'Review & Launch',
+}
 
 interface IProps {
   stage: ElementType<typeof setupStages>
@@ -29,14 +36,13 @@ const AASetup: React.FC<IProps> = ({
   refresh,
   auditType,
 }) => {
-  const activeStage = menuItems.find(m => m.title === stage)
+  const activeStage = menuItems.find(m => m.id === stage)
   const nextStage: ISidebarMenuItem | undefined =
     menuItems[menuItems.indexOf(activeStage!) + 1]
   const prevStage: ISidebarMenuItem | undefined =
     menuItems[menuItems.indexOf(activeStage!) - 1]
   switch (stage) {
-    case 'Participants':
-    case 'Participants & Contests':
+    case 'participants':
       // prevStage === undefined, so don't send it
       return (
         <Participants
@@ -44,7 +50,7 @@ const AASetup: React.FC<IProps> = ({
           locked={activeStage!.state === 'locked'}
         />
       )
-    case 'Target Contests':
+    case 'target-contests':
       return (
         <Contests
           isTargeted
@@ -55,7 +61,7 @@ const AASetup: React.FC<IProps> = ({
           auditType={auditType}
         />
       )
-    case 'Opportunistic Contests':
+    case 'opportunistic-contests':
       return (
         <Contests
           isTargeted={false}
@@ -66,7 +72,7 @@ const AASetup: React.FC<IProps> = ({
           auditType={auditType}
         />
       )
-    case 'Audit Settings':
+    case 'settings':
       return (
         <Settings
           nextStage={nextStage!}
@@ -74,7 +80,7 @@ const AASetup: React.FC<IProps> = ({
           locked={activeStage!.state === 'locked'}
         />
       )
-    case 'Review & Launch':
+    case 'review':
       // nextStage === undefined, so don't send it
       return (
         <Review

@@ -48,7 +48,9 @@ describe('useSetupMenuItems', () => {
       result: {
         current: [menuItems],
       },
-    } = renderHook(() => useSetupMenuItems('Participants', jest.fn(), '1'))
+    } = renderHook(() =>
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
+    )
     expect(menuItems).toBeTruthy()
   })
 
@@ -58,7 +60,9 @@ describe('useSetupMenuItems', () => {
         current: [, refresh],
       },
       waitForNextUpdate,
-    } = renderHook(() => useSetupMenuItems('Participants', jest.fn(), '1'))
+    } = renderHook(() =>
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
+    )
     act(() => refresh())
     await waitForNextUpdate()
     expect(apiMock).toHaveBeenCalledTimes(2)
@@ -77,7 +81,7 @@ describe('useSetupMenuItems', () => {
       )
     )
     const { result, waitForNextUpdate } = renderHook(() =>
-      useSetupMenuItems('Participants', jest.fn(), '1')
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
@@ -100,7 +104,7 @@ describe('useSetupMenuItems', () => {
       )
     )
     const { result, waitForNextUpdate } = renderHook(() =>
-      useSetupMenuItems('Participants', jest.fn(), '1')
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
@@ -124,7 +128,7 @@ describe('useSetupMenuItems', () => {
       )
     )
     const { result, waitForNextUpdate } = renderHook(() =>
-      useSetupMenuItems('Participants', jest.fn(), '1')
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
@@ -148,7 +152,7 @@ describe('useSetupMenuItems', () => {
       )
     )
     const { result, waitForNextUpdate } = renderHook(() =>
-      useSetupMenuItems('Participants', jest.fn(), '1')
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
@@ -187,7 +191,7 @@ describe('useSetupMenuItems', () => {
         )
       )
     const { result, waitForNextUpdate } = renderHook(() =>
-      useSetupMenuItems('Participants', jest.fn(), '1')
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
@@ -226,7 +230,7 @@ describe('useSetupMenuItems', () => {
         )
       )
     const { result, waitForNextUpdate } = renderHook(() =>
-      useSetupMenuItems('Participants', jest.fn(), '1')
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
@@ -250,7 +254,7 @@ describe('useSetupMenuItems', () => {
       )
     )
     const { result, waitForNextUpdate } = renderHook(() =>
-      useSetupMenuItems('Participants', jest.fn(), '1')
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
@@ -274,7 +278,7 @@ describe('useSetupMenuItems', () => {
       )
     )
     const { result, waitForNextUpdate } = renderHook(() =>
-      useSetupMenuItems('Participants', jest.fn(), '1')
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
     )
     act(() => result.current[1]())
     await waitForNextUpdate()
@@ -309,7 +313,7 @@ describe('useSetupMenuItems', () => {
       )
     )
     const { result, waitForNextUpdate } = renderHook(() =>
-      useSetupMenuItems('Participants', jest.fn(), '1')
+      useSetupMenuItems('participants', jest.fn(), '1', false, jest.fn())
     )
     act(() => result.current[1]())
     await waitForNextUpdate()

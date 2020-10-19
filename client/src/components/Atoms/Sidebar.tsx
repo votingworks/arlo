@@ -13,6 +13,7 @@ const Wrapper = styled.div`
 `
 
 export interface ISidebarMenuItem {
+  id: string
   activate?: (e?: unknown | null, force?: boolean) => void
   title: string
   active: boolean
@@ -40,7 +41,7 @@ const Sidebar = ({ menuItems, title }: IProps) => (
         }
         if (item.activate) itemProps.onClick = item.activate
         return (
-          <React.Fragment key={item.title}>
+          <React.Fragment key={item.id}>
             {i > 0 && <Menu.Divider />}
             <Menu.Item {...itemProps} />
           </React.Fragment>

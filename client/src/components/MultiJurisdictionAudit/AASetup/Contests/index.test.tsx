@@ -61,7 +61,7 @@ routeMock.mockReturnValue({
   view: 'setup',
 })
 
-const { nextStage, prevStage } = relativeStages('Target Contests')
+const { nextStage, prevStage } = relativeStages('target-contests')
 
 function typeInto(input: Element, value: string): void {
   // TODO: do more, like `focusIn`, `focusOut`, `input`, etc?
@@ -95,10 +95,10 @@ describe('Audit Setup > Contests', () => {
         auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
-    await findByText('Target Contests')
+    await findByText('target-contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -111,7 +111,7 @@ describe('Audit Setup > Contests', () => {
         auditType="BALLOT_POLLING"
         locked={false}
         isTargeted={false}
-        {...relativeStages('Opportunistic Contests')}
+        {...relativeStages('opportunistic-contests')}
       />
     )
     await findByText('Opportunistic Contests')
@@ -127,10 +127,10 @@ describe('Audit Setup > Contests', () => {
         auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
-    await findByText('Target Contests')
+    await findByText('target-contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -143,7 +143,7 @@ describe('Audit Setup > Contests', () => {
         auditType="BALLOT_POLLING"
         locked={false}
         isTargeted={false}
-        {...relativeStages('Opportunistic Contests')}
+        {...relativeStages('opportunistic-contests')}
       />
     )
     await findByText('Opportunistic Contests')
@@ -156,7 +156,7 @@ describe('Audit Setup > Contests', () => {
         auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
 
@@ -191,7 +191,7 @@ describe('Audit Setup > Contests', () => {
         auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
 
@@ -226,7 +226,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
-    await findByText('Target Contests')
+    await findByText('target-contests')
     contestsInputMocks.inputs.forEach(inputData => {
       const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',
@@ -269,7 +269,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
-    await findByText('Target Contests')
+    await findByText('target-contests')
     await utilities.asyncForEach(
       contestsInputMocks.errorInputs,
       async (inputData: { key: string; value: string; error: string }) => {
@@ -303,7 +303,7 @@ describe('Audit Setup > Contests', () => {
         auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
 
@@ -348,7 +348,7 @@ describe('Audit Setup > Contests', () => {
         auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
 
@@ -395,7 +395,7 @@ describe('Audit Setup > Contests', () => {
         auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
     await waitFor(() => {
@@ -470,7 +470,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
-    await findByText('Target Contests')
+    await findByText('target-contests')
     contestsInputMocks.inputs.forEach(inputData => {
       const input = getAllByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',
@@ -513,7 +513,7 @@ describe('Audit Setup > Contests', () => {
         auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
     const dropDown = await findByText('Select Jurisdictions')
