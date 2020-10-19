@@ -6,7 +6,8 @@ from ...audit_math import supersimple
 from ...audit_math.sampler_contest import Contest
 
 seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
-risk_limit = Decimal(0.1)
+risk_limit = 10
+alpha = Decimal(risk_limit) / 100
 
 
 @pytest.fixture
@@ -63,11 +64,11 @@ def test_compute_diluted_margin(contests):
 
 def test_get_sample_sizes(contests):
     sample_results = {
-        "sample_size": Decimal(0),
-        "1-under": Decimal(0),
-        "1-over": Decimal(0),
-        "2-under": Decimal(0),
-        "2-over": Decimal(0),
+        "sample_size": 0,
+        "1-under": 0,
+        "1-over": 0,
+        "2-under": 0,
+        "2-over": 0,
     }
 
     for contest in contests:
@@ -87,11 +88,11 @@ def test_compute_risk(contests, cvrs):
 
     for contest in contests:
         to_sample = {
-            "sample_size": Decimal(0),
-            "1-under": Decimal(0),
-            "1-over": Decimal(0),
-            "2-under": Decimal(0),
-            "2-over": Decimal(0),
+            "sample_size": 0,
+            "1-under": 0,
+            "1-over": 0,
+            "2-under": 0,
+            "2-over": 0,
         }
         sample_cvr = {}
         sample_size = supersimple.get_sample_sizes(
@@ -114,11 +115,11 @@ def test_compute_risk(contests, cvrs):
         assert finished, "Audit should have finished but didn't"
 
         to_sample = {
-            "sample_size": Decimal(sample_size),
-            "1-under": Decimal(0),
-            "1-over": Decimal(0),
-            "2-under": Decimal(0),
-            "2-over": Decimal(0),
+            "sample_size": sample_size,
+            "1-under": 0,
+            "1-over": 0,
+            "2-under": 0,
+            "2-over": 0,
         }
 
         next_sample_size = supersimple.get_sample_sizes(
@@ -143,11 +144,11 @@ def test_compute_risk(contests, cvrs):
         assert not finished, "Audit shouldn't have finished but did!"
 
         to_sample = {
-            "sample_size": Decimal(sample_size),
-            "1-under": Decimal(0),
-            "1-over": Decimal(1),
-            "2-under": Decimal(0),
-            "2-over": Decimal(0),
+            "sample_size": sample_size,
+            "1-under": 0,
+            "1-over": 1,
+            "2-under": 0,
+            "2-over": 0,
         }
 
         next_sample_size = supersimple.get_sample_sizes(
@@ -174,11 +175,11 @@ def test_compute_risk(contests, cvrs):
         assert not finished, "Audit shouldn't have finished but did!"
 
         to_sample = {
-            "sample_size": Decimal(sample_size),
-            "1-under": Decimal(0),
-            "1-over": Decimal(0),
-            "2-under": Decimal(0),
-            "2-over": Decimal(1),
+            "sample_size": sample_size,
+            "1-under": 0,
+            "1-over": 0,
+            "2-under": 0,
+            "2-over": 1,
         }
 
         next_sample_size = supersimple.get_sample_sizes(

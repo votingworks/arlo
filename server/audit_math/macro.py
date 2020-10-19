@@ -151,7 +151,7 @@ def compute_U(
 
 
 def get_sample_sizes(
-    risk_limit: Decimal,
+    risk_limit: int,
     contest: Contest,
     reported_results: Dict[Any, Dict[str, Dict[str, int]]],
     sample_results: Dict[Any, Dict[str, Dict[str, int]]],
@@ -192,7 +192,8 @@ def get_sample_sizes(
                     ...
                 }
     """
-    assert risk_limit < 1, "The risk-limit must be less than one!"
+    alpha = Decimal(risk_limit) / 100
+    assert alpha < 1, "The risk-limit must be less than one!"
 
     # Computing U with the max error for already sampled batches knocked out
     # to try to provide a sense of "how close" the audit is to finishing.
@@ -202,18 +203,18 @@ def get_sample_sizes(
         return 1
 
     return int(
-        (risk_limit.ln() / (Decimal(1) - (Decimal(1) / U)).ln()).quantize(
+        (alpha.ln() / (Decimal(1) - (Decimal(1) / U)).ln()).quantize(
             Decimal(1), rounding=ROUND_CEILING
         )
     )
 
 
 def compute_risk(
-    risk_limit: Decimal,
+    risk_limit: int,
     contest: Contest,
     reported_results: Dict[Any, Dict[str, Dict[str, int]]],
     sample_results: Dict[Any, Dict[str, Dict[str, int]]],
-) -> Tuple[Decimal, bool]:
+) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 
@@ -242,7 +243,8 @@ def compute_risk(
                           winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
-    assert risk_limit < 1, "The risk-limit must be less than one!"
+    alpha = Decimal(risk_limit) / 100
+    assert alpha < 1, "The risk-limit must be less than one!"
 
     p = Decimal(1.0)
 
@@ -258,7 +260,7 @@ def compute_risk(
 
         p *= (1 - 1 / U) / (1 - taint)
 
-        if p < risk_limit:
-            return p, True
+        if p < alpha:
+            return float(p), True
 
-    return p, p < risk_limit
+    return float(p), p < alpha

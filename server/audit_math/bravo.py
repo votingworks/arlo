@@ -16,13 +16,13 @@ from .sampler_contest import Contest
 
 
 def get_expected_sample_sizes(
-    risk_limit: Decimal, contest: Contest, sample_results: Dict[str, int]
+    alpha: Decimal, contest: Contest, sample_results: Dict[str, int]
 ) -> int:
     """
     Returns the expected sample size for a BRAVO audit of <contest>
 
     Input:
-        risk_limit      - the risk-limit for this audit
+        alpha           - the risk-limit for this audit
         contest         - the contest to get the sample size for
         sample_results  - mapping of candidates to votes in the (cumulative)
                           sample:
@@ -65,7 +65,7 @@ def get_expected_sample_sizes(
 
         T = min(get_test_statistics(contest.margins, sample_results).values())
 
-        weighted_alpha = (Decimal(1.0) / risk_limit) / T
+        weighted_alpha = (Decimal(1.0) / alpha) / T
         return int(
             (
                 (weighted_alpha.ln() + (z_w / Decimal(2))) / (p_w * z_w + p_l * z_l)
@@ -128,7 +128,7 @@ def get_test_statistics(
 
 
 def bravo_sample_sizes(
-    risk_limit: Decimal,
+    alpha: Decimal,
     p_w: Decimal,
     p_r: Decimal,
     sample_w: int,
@@ -140,7 +140,7 @@ def bravo_sample_sizes(
     outcome is correct. Written by Mark Lindeman.
 
     Inputs:
-        risk_limit      - the risk-limit for this audit
+        alpha           - the risk-limit for this audit
         p_w             - the fraction of vote share for the winner
         p_r             - the fraction of vote share for the loser
         sample_w        - the number of votes for the winner that have already
@@ -162,7 +162,7 @@ def bravo_sample_sizes(
     # set up the basic BRAVO math
     plus = (p_w2 / Decimal(0.5)).ln()
     minus = (p_r2 / Decimal(0.5)).ln()
-    threshold = (Decimal(1) / risk_limit).ln() - (sample_w * plus + sample_r * minus)
+    threshold = (1 / alpha).ln() - (sample_w * plus + sample_r * minus)
 
     # crude condition trapping:
     if threshold <= 0:
@@ -227,12 +227,7 @@ def bravo_sample_sizes(
 
 
 def expected_prob(
-    risk_limit: Decimal,
-    p_w: Decimal,
-    p_r: Decimal,
-    sample_w: int,
-    sample_r: int,
-    asn: int,
+    alpha: Decimal, p_w: Decimal, p_r: Decimal, sample_w: int, sample_r: int, asn: int,
 ) -> float:
 
     """
@@ -240,7 +235,7 @@ def expected_prob(
     the election outcome is correct. Adapted from Mark Lindeman.
 
     Inputs:
-        risk_limit      - the risk-limit for this audit
+        alpha           - the risk-limit for this audit
         p_w             - the fraction of vote share for the winner
         p_r             - the fraction of vote share for the loser
         sample_w        - the number of votes for the winner that have already
@@ -263,7 +258,7 @@ def expected_prob(
     # set up the basic BRAVO math
     plus = (p_w2 / Decimal(0.5)).ln()
     minus = (p_r2 / Decimal(0.5)).ln()
-    threshold = (Decimal(1) / risk_limit).ln() - (sample_w * plus + sample_r * minus)
+    threshold = (1 / alpha).ln() - (sample_w * plus + sample_r * minus)
 
     # crude condition trapping:
     if threshold <= 0:
@@ -295,7 +290,7 @@ class SampleSizeOption(TypedDict):
 
 
 def get_sample_size(
-    risk_limit: Decimal, contest: Contest, sample_results: Dict[str, int]
+    risk_limit: int, contest: Contest, sample_results: Dict[str, int]
 ) -> Dict[str, SampleSizeOption]:
     """
     Computes initial sample size parameterized by likelihood that the
@@ -327,13 +322,14 @@ def get_sample_size(
 
                 }
     """
-    assert risk_limit < 1, "The risk-limit must be less than one!"
+    alpha = Decimal(risk_limit) / 100
+    assert alpha < 1, "The risk-limit must be less than one!"
 
     quants = [0.7, 0.8, 0.9]
 
     samples: Dict = {}
 
-    asn = get_expected_sample_sizes(risk_limit, contest, sample_results)
+    asn = get_expected_sample_sizes(alpha, contest, sample_results)
 
     p_w = Decimal("inf")
     p_l = Decimal(0.0)
@@ -395,19 +391,19 @@ def get_sample_size(
     samples["asn"] = {
         "type": "ASN",
         "size": asn,
-        "prob": expected_prob(risk_limit, p_w, p_l, sample_w, sample_l, asn),
+        "prob": expected_prob(alpha, p_w, p_l, sample_w, sample_l, asn),
     }
 
     for quant in quants:
-        size = bravo_sample_sizes(risk_limit, p_w, p_l, sample_w, sample_l, quant)
+        size = bravo_sample_sizes(alpha, p_w, p_l, sample_w, sample_l, quant)
         samples[str(quant)] = {"type": None, "size": size, "prob": quant}
 
     return samples
 
 
 def compute_risk(
-    risk_limit: Decimal, contest: Contest, sample_results: Dict[str, int]
-) -> Tuple[Dict[Tuple[str, str], Decimal], bool]:
+    risk_limit: int, contest: Contest, sample_results: Dict[str, int]
+) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 
@@ -428,14 +424,15 @@ def compute_risk(
                           winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
-    assert risk_limit < 1, "The risk-limit must be less than one!"
+    alpha = Decimal(risk_limit) / 100
+    assert alpha < 1, "The risk-limit must be less than one!"
 
     T = get_test_statistics(contest.margins, sample_results)
 
     measurements = {}
     finished = True
     for pair in T:
-        measurements[pair] = 1 / T[pair]
-        if measurements[pair] > risk_limit:
+        if 1 / T[pair] > alpha:
             finished = False
+        measurements[pair] = float(1 / T[pair])
     return measurements, finished

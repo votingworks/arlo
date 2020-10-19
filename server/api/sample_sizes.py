@@ -1,5 +1,4 @@
-from typing import Dict, Union
-from decimal import Decimal
+from typing import Dict
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
@@ -22,7 +21,6 @@ def sample_size_options(
         raise BadRequest("Cannot compute sample sizes until contests are set")
     if not election.risk_limit:
         raise BadRequest("Cannot compute sample sizes until risk limit is set")
-    risk_limit = Decimal(election.risk_limit) / Decimal(100)
 
     def sample_sizes_for_contest(contest: Contest):
         if election.audit_type == AuditType.BALLOT_POLLING:
@@ -33,7 +31,7 @@ def sample_size_options(
             )
 
             sample_size_options = bravo.get_sample_size(
-                risk_limit,
+                election.risk_limit,  # type: ignore
                 sampler_contest.from_db_contest(contest),
                 cumulative_results,
             )
@@ -54,7 +52,7 @@ def sample_size_options(
                     for batch_key, batch_results in sample_results.items()
                 }
             sample_size = macro.get_sample_sizes(
-                risk_limit,
+                election.risk_limit,  # type: ignore
                 sampler_contest.from_db_contest(contest),
                 rounds.batch_tallies(election),
                 sample_results,
@@ -66,15 +64,15 @@ def sample_size_options(
 
             set_contest_metadata_from_cvrs(contest)
             # TODO compute sample_results
-            ballot_comparison_sample_results: Dict[str, Union[int, Decimal]] = {
-                "sample_size": Decimal(0),
-                "1-under": Decimal(0),
-                "1-over": Decimal(0),
-                "2-under": Decimal(0),
-                "2-over": Decimal(0),
+            ballot_comparison_sample_results: Dict[str, int] = {
+                "sample_size": 0,
+                "1-under": 0,
+                "1-over": 0,
+                "2-under": 0,
+                "2-over": 0,
             }
             sample_size = supersimple.get_sample_sizes(
-                risk_limit,
+                election.risk_limit,  # type: ignore
                 sampler_contest.from_db_contest(contest),
                 ballot_comparison_sample_results,
             )

@@ -5,7 +5,8 @@ from ...audit_math import macro
 from ...audit_math.sampler_contest import Contest
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
-RISK_LIMIT = Decimal(0.25)
+RISK_LIMIT = 25
+ALPHA = Decimal(RISK_LIMIT) / 100
 
 macro_contests = {
     "Contest A": {
@@ -226,9 +227,9 @@ def test_compute_risk(contests, batches):
             "Contest C": {"winner": 200, "loser": 140,},
         }
     expected_ps = {
-        "Contest A": Decimal(0.242946),
-        "Contest B": Decimal(0.239492),
-        "Contest C": Decimal(0.247185),
+        "Contest A": 0.242946,
+        "Contest B": 0.239492,
+        "Contest C": 0.247185,
     }
 
     for contest in contests:
