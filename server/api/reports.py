@@ -199,7 +199,7 @@ def audit_settings_rows(election: Election):
 
 
 def audit_board_rows(election: Election):
-    if not (election.audit_type == AuditType.BALLOT_POLLING and election.online):
+    if not election.online:
         return None
     rows = [
         heading("AUDIT BOARDS"),
@@ -473,9 +473,9 @@ def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdictio
     report = csv.writer(csv_io)
 
     report.writerows(
-        sampled_ballot_rows(election, jurisdiction)
-        if election.audit_type == AuditType.BALLOT_POLLING
-        else sampled_batch_rows(election, jurisdiction)
+        sampled_batch_rows(election, jurisdiction)
+        if election.audit_type == AuditType.BATCH_COMPARISON
+        else sampled_ballot_rows(election, jurisdiction),
     )
 
     return csv_response(
