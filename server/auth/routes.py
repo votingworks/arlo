@@ -1,6 +1,5 @@
 from urllib.parse import urljoin
 from flask import redirect, jsonify, request
-from werkzeug.exceptions import Unauthorized
 from authlib.integrations.flask_client import OAuth
 
 from . import auth
@@ -111,7 +110,10 @@ def auth_me():
             signedOffAt=isoformat(audit_board.signed_off_at),
         )
     else:
-        return Unauthorized()
+        # sticking to JSON when not logged in, because same data type,
+        # sending a null object because there is no user logged in.
+        # Considered an empty object, but that seemed inconsistent.
+        return jsonify(None)
 
 
 @auth.route("/auth/logout")

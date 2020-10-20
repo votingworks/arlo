@@ -309,7 +309,8 @@ def test_auth_me_audit_board(
 def test_auth_me_not_logged_in(client: FlaskClient):
     clear_logged_in_user(client)
     rv = client.get("/api/me")
-    assert rv.status_code == 401
+    assert rv.status_code == 200
+    assert json.loads(rv.data) is None
 
 
 # Tests for route decorators. We have added special routes to test the
