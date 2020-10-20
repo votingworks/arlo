@@ -197,7 +197,9 @@ const Progress: React.FC<IProps> = ({
         <Switch
           checked={isShowingUnique}
           label={`Count unique sampled ${
-            auditSettings.auditType === 'BALLOT_POLLING' ? 'ballots' : 'batches'
+            auditSettings.auditType === 'BATCH_COMPARISON'
+              ? 'batches'
+              : 'ballots'
           }`}
           onChange={() => setIsShowingUnique(!isShowingUnique)}
         />
