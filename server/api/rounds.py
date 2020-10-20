@@ -255,12 +255,9 @@ def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
 
 
 def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS:
-    interpretations_query = (
-        SampledBallot.query.join(BallotInterpretation)
-        .filter_by(contest_id=contest.id)
-        .outerjoin(BallotInterpretation.selected_choices)
-    )
-
+    interpretations_query = BallotInterpretation.query.filter_by(
+        contest_id=contest.id
+    ).outerjoin(BallotInterpretation.selected_choices)
     # For targeted contests, use the ticket number to key the ballots so that
     # we count all sample draws
     if contest.is_targeted:
@@ -270,30 +267,25 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS
                 BallotInterpretation.ballot_id == SampledBallotDraw.ballot_id,
             )
             .filter(SampledBallotDraw.contest_id == contest.id)
-            .with_entities(SampledBallotDraw.ticket_number, BallotInterpretation,)
+            .with_entities(SampledBallotDraw.ticket_number, BallotInterpretation)
             .all()
         )
     # For opportunistic contests, use the ballot id to key the ballots so that
     # we only count unique ballots
     else:
         interpretations = interpretations_query.with_entities(
-            BallotInterpretation.ballot_id, BallotInterpretation,
+            BallotInterpretation.ballot_id, BallotInterpretation
         ).all()
 
-    cvrs: supersimple.CVRS = defaultdict(
-        lambda: {contest.id: {choice.id: 0 for choice in contest.choices}}
-    )
-
+    cvrs = {}
     for ballot_key, interpretation in interpretations:
-        for choice_id in cvrs[ballot_key][contest.id]:
-            cvr_value = 0
-            if interpretation.interpretation == Interpretation.VOTE:
-                if any(c for c in interpretation.selected_choices if c.id == choice_id):
-                    cvr_value = 1
-            # TODO when interpretation is CANT_AGREE, make it a vote for the loser?
-            cvrs[ballot_key][contest.id][choice_id] = cvr_value
+        cvrs[ballot_key] = {contest.id: {choice.id: 0 for choice in contest.choices}}
+        # TODO maybe make Interpretation.CANT_AGREE a vote for the loser?
+        if interpretation.interpretation == Interpretation.VOTE:
+            for choice in interpretation.selected_choices:
+                cvrs[ballot_key][contest.id][choice.id] = 1
 
-    return dict(cvrs)
+    return cvrs
 
 
 def calculate_risk_measurements(election: Election, round: Round):
