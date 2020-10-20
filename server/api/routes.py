@@ -423,7 +423,6 @@ def audit_status(election):
                         "id": batch.id,
                         "name": batch.name,
                         "numBallots": batch.num_ballots,
-                        "storageLocation": batch.storage_location,
                         "tabulator": batch.tabulator,
                     }
                     for batch in j.batches

@@ -265,21 +265,27 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         .order_by(
             Round.round_num,
             Jurisdiction.name,
+            Batch.tabulator,
             Batch.name,
             SampledBallot.ballot_position,
         )
     )
     if jurisdiction:
         ballots_query = ballots_query.filter(Jurisdiction.id == jurisdiction.id)
-    ballots = ballots_query.all()
+    ballots = list(ballots_query.all())
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
 
     targeted_contests = [
         contest for contest in election.contests if contest.is_targeted
     ]
+
+    use_tabulator = ballots[0].batch.tabulator is not None
+
     rows.append(
-        ["Jurisdiction Name", "Batch Name", "Ballot Position"]
+        ["Jurisdiction Name"]
+        + (["Tabulator"] if use_tabulator else [])
+        + ["Batch Name", "Ballot Position"]
         + [f"Ticket Numbers: {contest.name}" for contest in targeted_contests]
         + (
             ["Audited?"]
@@ -290,7 +296,9 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     )
     for ballot in ballots:
         rows.append(
-            [ballot.batch.jurisdiction.name, ballot.batch.name, ballot.ballot_position,]
+            [ballot.batch.jurisdiction.name]
+            + ([ballot.batch.tabulator] if use_tabulator else [])
+            + [ballot.batch.name, ballot.ballot_position,]
             + pretty_ballot_ticket_numbers(ballot, round_id_to_num, targeted_contests)
             + (
                 [ballot.status]

@@ -49,13 +49,13 @@ def round_status_by_jurisdiction(
 ) -> Dict[str, Optional[JSONDict]]:
     if not round:
         return {j.id: None for j in election.jurisdictions}
-    if election.audit_type == AuditType.BALLOT_POLLING:
-        return ballot_polling_round_status(election, round)
+    if election.audit_type == AuditType.BATCH_COMPARISON:
+        return batch_round_status(election, round)
     else:
-        return batch_comparison_round_status(election, round)
+        return ballot_round_status(election, round)
 
 
-def ballot_polling_round_status(
+def ballot_round_status(
     election: Election, round: Round
 ) -> Dict[str, Optional[JSONDict]]:
     audit_boards_set_up = dict(
@@ -196,7 +196,7 @@ def ballot_polling_round_status(
     }
 
 
-def batch_comparison_round_status(
+def batch_round_status(
     election: Election, round: Round
 ) -> Dict[str, Optional[JSONDict]]:
     jurisdictions_with_audit_boards = set(

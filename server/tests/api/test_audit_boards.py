@@ -734,9 +734,9 @@ def test_count_audited_votes(
         .all()
     )
 
-    targeted_choice_1_votes = 20
-    targeted_choice_2_votes = 30
-    overvotes = 10
+    targeted_choice_1_votes = 10
+    targeted_choice_2_votes = 20
+    overvotes = 5
 
     # Make sure audit at least one ballot that was sampled multiple times
     # to ensure our test is testing the difference between counting votes for

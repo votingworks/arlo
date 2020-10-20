@@ -10,9 +10,9 @@ snapshots = Snapshot()
 snapshots["test_jurisdictions_status_round_1_no_audit_boards 1"] = [
     {
         "currentRoundStatus": {
-            "numSamples": 81,
+            "numSamples": 80,
             "numSamplesAudited": 0,
-            "numUnique": 75,
+            "numUnique": 76,
             "numUniqueAudited": 0,
             "status": "NOT_STARTED",
         },
@@ -20,9 +20,9 @@ snapshots["test_jurisdictions_status_round_1_no_audit_boards 1"] = [
     },
     {
         "currentRoundStatus": {
-            "numSamples": 38,
+            "numSamples": 39,
             "numSamplesAudited": 0,
-            "numUnique": 35,
+            "numUnique": 36,
             "numUniqueAudited": 0,
             "status": "NOT_STARTED",
         },
@@ -43,9 +43,9 @@ snapshots["test_jurisdictions_status_round_1_no_audit_boards 1"] = [
 snapshots["test_jurisdictions_status_round_1_with_audit_boards 1"] = [
     {
         "currentRoundStatus": {
-            "numSamples": 81,
+            "numSamples": 80,
             "numSamplesAudited": 0,
-            "numUnique": 75,
+            "numUnique": 76,
             "numUniqueAudited": 0,
             "status": "IN_PROGRESS",
         },
@@ -53,9 +53,9 @@ snapshots["test_jurisdictions_status_round_1_with_audit_boards 1"] = [
     },
     {
         "currentRoundStatus": {
-            "numSamples": 38,
+            "numSamples": 39,
             "numSamplesAudited": 0,
-            "numUnique": 35,
+            "numUnique": 36,
             "numUniqueAudited": 0,
             "status": "NOT_STARTED",
         },
@@ -74,41 +74,41 @@ snapshots["test_jurisdictions_status_round_1_with_audit_boards 1"] = [
 ]
 
 snapshots["test_jurisdictions_status_round_1_with_audit_boards 2"] = {
-    "numSamples": 81,
-    "numSamplesAudited": 54,
-    "numUnique": 75,
-    "numUniqueAudited": 50,
+    "numSamples": 80,
+    "numSamplesAudited": 49,
+    "numUnique": 76,
+    "numUniqueAudited": 46,
     "status": "IN_PROGRESS",
 }
 
 snapshots["test_jurisdictions_status_round_1_with_audit_boards 3"] = {
-    "numSamples": 81,
-    "numSamplesAudited": 81,
-    "numUnique": 75,
-    "numUniqueAudited": 75,
+    "numSamples": 80,
+    "numSamplesAudited": 80,
+    "numUnique": 76,
+    "numUniqueAudited": 76,
     "status": "COMPLETE",
 }
 
 snapshots["test_jurisdictions_round_status_offline 1"] = {
-    "numSamples": 81,
+    "numSamples": 80,
     "numSamplesAudited": 0,
-    "numUnique": 75,
+    "numUnique": 76,
     "numUniqueAudited": 0,
     "status": "NOT_STARTED",
 }
 
 snapshots["test_jurisdictions_round_status_offline 2"] = {
-    "numSamples": 81,
+    "numSamples": 80,
     "numSamplesAudited": 0,
-    "numUnique": 75,
+    "numUnique": 76,
     "numUniqueAudited": 0,
     "status": "IN_PROGRESS",
 }
 
 snapshots["test_jurisdictions_round_status_offline 3"] = {
-    "numSamples": 81,
-    "numSamplesAudited": 81,
-    "numUnique": 75,
-    "numUniqueAudited": 75,
+    "numSamples": 80,
+    "numSamplesAudited": 80,
+    "numUnique": 76,
+    "numUniqueAudited": 76,
     "status": "COMPLETE",
 }

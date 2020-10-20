@@ -34,7 +34,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
         .values(
             Batch.name,
             SampledBallot.ballot_position,
-            Batch.storage_location,
+            Batch.container,
             Batch.tabulator,
             func.string_agg(
                 SampledBallotDraw.ticket_number,
@@ -52,7 +52,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
         [
             "Batch Name",
             "Ballot Number",
-            "Storage Location",
+            "Container",
             "Tabulator",
             "Ticket Numbers",
             "Already Audited",
@@ -64,7 +64,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
         (
             batch_name,
             position,
-            storage_location,
+            container,
             tabulator,
             ticket_numbers,
             audit_board_name,
@@ -74,7 +74,7 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
             [
                 batch_name,
                 position,
-                storage_location,
+                container,
                 tabulator,
                 ticket_numbers,
                 previously_audited,
@@ -134,7 +134,12 @@ def serialize_ballot(ballot: SampledBallot) -> JSONDict:
             serialize_interpretation(i) for i in ballot.interpretations
         ],
         "position": ballot.ballot_position,
-        "batch": {"id": batch.id, "name": batch.name, "tabulator": batch.tabulator,},
+        "batch": {
+            "id": batch.id,
+            "name": batch.name,
+            "tabulator": batch.tabulator,
+            "container": batch.container,
+        },
         "auditBoard": audit_board and {"id": audit_board.id, "name": audit_board.name,},
     }
 

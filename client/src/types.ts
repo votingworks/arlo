@@ -99,7 +99,6 @@ export interface IBatch {
   id: string
   name: string
   numBallots: number
-  storageLocation: null | string
   tabulator: null | string
 }
 

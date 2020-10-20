@@ -41,11 +41,11 @@ def get_batch_retrieval_list(
         .join(AuditBoard)
         .group_by(AuditBoard.id, Batch.id)
         .order_by(AuditBoard.name, Batch.name)
-        .values(Batch.name, Batch.storage_location, Batch.tabulator, AuditBoard.name,)
+        .values(Batch.name, Batch.container, Batch.tabulator, AuditBoard.name,)
     )
-    retrieval_list_rows = [
-        ["Batch Name", "Storage Location", "Tabulator", "Audit Board",]
-    ] + [list(batch_tuple) for batch_tuple in batches]
+    retrieval_list_rows = [["Batch Name", "Container", "Tabulator", "Audit Board",]] + [
+        list(batch_tuple) for batch_tuple in batches
+    ]
 
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)

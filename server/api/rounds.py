@@ -256,13 +256,13 @@ def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
 
 def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS:
     def interpretation_to_cvr_value(interpretation: Interpretation) -> int:
-        if interpretation == Interpretation.BLANK:
-            return 0
-        elif interpretation == Interpretation.VOTE:
+        if interpretation == Interpretation.VOTE:
             return 1
+        elif interpretation == Interpretation.BLANK:
+            return 0
         else:
             assert interpretation == Interpretation.CANT_AGREE
-            return 0  # TODO what to do here?
+            return 0  # TODO make this a vote for the loser?
 
     interpretations_query = BallotInterpretation.query.filter_by(
         contest_id=contest.id
@@ -486,11 +486,11 @@ def sample_ballots(
         # manifests from every jurisdiction in the contest's universe.
         # Audits must be deterministic and repeatable for the same real world
         # inputs. So the sampler expects the same input for the same real world
-        # data. Thus, we use the jurisdiction and batch names (deterministic real
-        # world ids) instead of the jurisdiction and batch ids (non-deterministic
-        # uuids that we generate for each audit).
+        # data. Thus, we use the jurisdiction name and batch keys
+        # (deterministic real world ids) instead of the jurisdiction and batch
+        # ids (non-deterministic uuids that we generate for each audit).
         manifest = {
-            (jurisdiction.name, batch.name): batch.num_ballots
+            (jurisdiction.name, batch.tabulator, batch.name): batch.num_ballots
             for jurisdiction in contest.jurisdictions
             for batch in jurisdiction.batches
         }
@@ -524,11 +524,12 @@ def sample_ballots(
     batches = (
         Batch.query.join(Jurisdiction)
         .filter_by(election_id=election.id)
-        .values(Jurisdiction.name, Batch.name, Batch.id)
+        .with_entities(Jurisdiction.name, Batch)
+        .all()
     )
     batch_key_to_id = {
-        (jurisdiction_name, batch_name): batch_id
-        for jurisdiction_name, batch_name, batch_id in batches
+        (jurisdiction_name, batch.tabulator, batch.name): batch.id
+        for (jurisdiction_name, batch) in batches
     }
 
     # Record which ballots are sampled in the db.

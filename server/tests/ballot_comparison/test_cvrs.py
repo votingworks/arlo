@@ -86,6 +86,7 @@ def test_cvr_upload(
         [
             dict(
                 batch_name=cvr.batch.name,
+                tabulator=cvr.batch.tabulator,
                 ballot_position=cvr.ballot_position,
                 imprinted_id=cvr.imprinted_id,
                 interpretations=cvr.interpretations,

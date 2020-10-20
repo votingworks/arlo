@@ -17,7 +17,7 @@ snapshots["test_contests_round_status 1"] = [
         "name": "Contest 2",
     },
     {
-        "currentRoundStatus": {"isRiskLimitMet": None, "numBallotsSampled": 240},
+        "currentRoundStatus": {"isRiskLimitMet": None, "numBallotsSampled": 234},
         "name": "Contest 3",
     },
 ]

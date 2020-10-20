@@ -59,25 +59,30 @@ def assign_sampled_ballots(
         .filter_by(jurisdiction_id=jurisdiction.id)
         .join(SampledBallot.draws)
         .filter_by(round_id=round.id)
-        .order_by(Batch.name)  # group_by prefers a sorted list
         .options(contains_eager(SampledBallot.batch))
         .all()
     )
-    ballots_by_batch = group_by(sampled_ballots, key=lambda sb: sb.batch.name)
+
+    # If containers were provided, bucket by container, otherwise bucket by
+    # batch (identified by tabulator+name)
+    def get_batch_key(batch: Batch):
+        return batch.container if batch.container else (batch.tabulator, batch.name)
+
+    ballots_by_batch = group_by(sampled_ballots, key=lambda sb: get_batch_key(sb.batch))
 
     # Divvy up batches of ballots between the audit boards.
     # Note: BalancedBucketList doesn't care which buckets have which batches to
     # start, so we add all the batches to the first bucket before balancing.
     buckets = [Bucket(audit_board.id) for audit_board in audit_boards]
-    for batch_name, sampled_ballots in ballots_by_batch.items():
-        buckets[0].add_batch(batch_name, len(sampled_ballots))
+    for batch_key, sampled_ballots in ballots_by_batch.items():
+        buckets[0].add_batch(batch_key, len(sampled_ballots))
     balanced_buckets = BalancedBucketList(buckets)
 
     for bucket in balanced_buckets.buckets:
         ballots_in_bucket = [
             ballot
-            for batch_name in bucket.batches
-            for ballot in ballots_by_batch[batch_name]
+            for batch_key in bucket.batches
+            for ballot in ballots_by_batch[batch_key]
         ]
         for ballot in ballots_in_bucket:
             ballot.audit_board_id = bucket.name
@@ -121,10 +126,10 @@ def create_audit_boards(election: Election, jurisdiction: Jurisdiction, round: R
     ]
     db_session.add_all(audit_boards)
 
-    if election.audit_type == AuditType.BALLOT_POLLING:
-        assign_sampled_ballots(jurisdiction, round, audit_boards)
-    else:
+    if election.audit_type == AuditType.BATCH_COMPARISON:
         assign_sampled_batches(jurisdiction, round, audit_boards)
+    else:
+        assign_sampled_ballots(jurisdiction, round, audit_boards)
 
     db_session.commit()
 
