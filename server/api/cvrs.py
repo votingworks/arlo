@@ -25,6 +25,10 @@ from ..util.jsonschema import JSONDict
 
 
 def set_contest_metadata_from_cvrs(contest: Contest):
+    # Only set the contest metadata if it hasn't been set already
+    if contest.total_ballots_cast is not None:
+        return
+
     contest.num_winners = 1  # TODO how do we get this from the CVRs?
     contest.total_ballots_cast = 0
 

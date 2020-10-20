@@ -53,7 +53,7 @@ def test_set_contest_metadata_from_cvrs(
     )
 
 
-def test_ballot_comparison_round_1(
+def test_ballot_comparison_two_rounds(
     client: FlaskClient,
     election_id: str,
     jurisdiction_ids: List[str],  # pylint: disable=unused-argument
@@ -140,50 +140,69 @@ def test_ballot_comparison_round_1(
         )
         assert_ok(rv)
 
-    # Audit boards audit all the ballots
-    vote_ratio = 0.5
-    round = Round.query.get(round_1_id)
-    for contest_id in [target_contest_id, contests[1]["id"]]:
-        contest = Contest.query.get(contest_id)
-        ballot_draws = (
-            SampledBallotDraw.query.filter_by(round_id=round.id)
-            .join(SampledBallot)
-            # There are a few CVR rows that are empty for our targeted contest
-            # - the audit boards shouldn't record an interpretation for those
-            # ballots, since it means the contest wasn't on that ballot. So we
-            # un-audit those ballots.
-            .filter(
-                SampledBallot.id.notin_(
-                    SampledBallot.query.join(Batch)
-                    .filter_by(name="2 - 2")
-                    .filter(SampledBallot.ballot_position.in_([4, 5, 6]))
-                    .with_entities(SampledBallot.id)
-                    .subquery()
+    # Audit boards audit all the ballots.
+    # Our goal is to mostly make the audit board interpretations match the CVRs
+    # for the target contest, messing up just a couple in order to trigger a
+    # second round.
+    def audit_all_ballots(round_id: str, num_wrong: int):
+        round = Round.query.get(round_id)
+        for contest_id in [target_contest_id, contests[1]["id"]]:
+            contest = Contest.query.get(contest_id)
+            print(contest.__dict__)
+            ballots_and_cvrs = (
+                SampledBallot.query.join(SampledBallotDraw)
+                .filter_by(round_id=round.id)
+                .join(Batch)
+                .join(
+                    CvrBallot,
+                    and_(
+                        CvrBallot.batch_id == SampledBallot.batch_id,
+                        CvrBallot.ballot_position == SampledBallot.ballot_position,
+                    ),
                 )
+                .order_by(Batch.name, SampledBallot.ballot_position)
+                .with_entities(SampledBallot, CvrBallot)
+                .all()
             )
-            .join(Batch)
-            .order_by(Batch.name, SampledBallot.ballot_position)
-            .all()
-        )
-        winner_votes = int(vote_ratio * len(ballot_draws))
-        for ballot_draw in ballot_draws[:winner_votes]:
-            audit_ballot(
-                ballot_draw.sampled_ballot,
-                contest.id,
-                Interpretation.VOTE,
-                [contest.choices[0]],
-            )
-        for ballot_draw in ballot_draws[winner_votes:]:
-            audit_ballot(
-                ballot_draw.sampled_ballot,
-                contest.id,
-                Interpretation.VOTE,
-                [contest.choices[1]],
-            )
-    end_round(round.election, round)
-    db_session.commit()
+            for i, (ballot, cvr) in enumerate(ballots_and_cvrs):
+                choice_1_str, choice_2_str, *_ = cvr.interpretations.split(",")
+                ballot.status = BallotStatus.AUDITED
+                choice_1 = int(choice_1_str) if choice_1_str else None
+                choice_2 = int(choice_2_str) if choice_2_str else None
+                if not (choice_1 or choice_2) or i < num_wrong:
+                    continue
+                if not any(
+                    i for i in ballot.interpretations if i.contest_id == contest_id
+                ):
+                    ballot.interpretations = list(ballot.interpretations) + [
+                        BallotInterpretation(
+                            ballot_id=ballot.id,
+                            contest_id=contest.id,
+                            interpretation=Interpretation.VOTE,
+                            selected_choices=([contest.choices[0]] if choice_1 else [])
+                            + ([contest.choices[1]] if choice_2 else []),
+                            is_overvote=bool(choice_1 and choice_2),
+                        )
+                    ]
+
+        end_round(round.election, round)
+        db_session.commit()
+
+    audit_all_ballots(round_1_id, 2)
 
     # Check the audit report
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert_match_report(rv.data, snapshot)
+
+    # Start a second round
+    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_2_id = json.loads(rv.data)["rounds"][1]["id"]
+
+    audit_all_ballots(round_2_id, 0)
+
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)

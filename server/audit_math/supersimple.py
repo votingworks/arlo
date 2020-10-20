@@ -1,6 +1,6 @@
 # pylint: disable=invalid-name
 import math
-from typing import Dict, Tuple, Union, TypedDict
+from typing import Dict, Tuple, TypedDict
 
 from .sampler_contest import Contest
 
@@ -152,7 +152,7 @@ def compute_discrepancies(
 
 
 def get_sample_sizes(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, Union[int, float]]
+    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
 ) -> float:
     """
     Computes initial sample sizes parameterized by likelihood that the

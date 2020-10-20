@@ -1,4 +1,5 @@
-from typing import Dict, Union
+from typing import Dict
+from collections import Counter
 from flask import jsonify
 from werkzeug.exceptions import BadRequest
 
@@ -64,18 +65,31 @@ def sample_size_options(
             assert election.audit_type == AuditType.BALLOT_COMPARISON
 
             set_contest_metadata_from_cvrs(contest)
-            # TODO compute sample_results
-            ballot_comparison_sample_results: Dict[str, Union[int, float]] = {
-                "sample_size": 0,
-                "1-under": 0,
-                "1-over": 0,
-                "2-under": 0,
-                "2-over": 0,
+            contest_for_sampler = sampler_contest.from_db_contest(contest)
+
+            num_previous_samples = (
+                SampledBallotDraw.query.join(Round)
+                .filter_by(election_id=election.id)
+                .count()
+            )
+            discrepancies = supersimple.compute_discrepancies(
+                contest_for_sampler,
+                rounds.cvrs_for_contest(contest),
+                rounds.sampled_ballot_interpretations_to_cvrs(contest),
+            )
+            discrepancy_counter = Counter(
+                d["counted_as"] for d in discrepancies.values()
+            )
+            discrepancy_counts = {
+                "sample_size": num_previous_samples,
+                "1-under": discrepancy_counter[-1],
+                "1-over": discrepancy_counter[1],
+                "2-under": discrepancy_counter[-2],
+                "2-over": discrepancy_counter[2],
             }
+
             sample_size = supersimple.get_sample_sizes(
-                risk_limit,
-                sampler_contest.from_db_contest(contest),
-                ballot_comparison_sample_results,
+                risk_limit, contest_for_sampler, discrepancy_counts
             )
             return {
                 "supersimple": {"key": "supersimple", "size": sample_size, "prob": None}
