@@ -15,17 +15,6 @@ from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..api.audit_boards import end_round
 
-SAMPLE_SIZE_ROUND_1 = 119  # Bravo sample size
-BALLOTS_ROUND_1 = 110
-J1_SAMPLES_ROUND_1 = 81
-J1_BALLOTS_ROUND_1 = 75
-J1_SAMPLES_ROUND_2 = 257  # 90% probability sample size
-J1_BALLOTS_ROUND_2 = 216
-AB1_SAMPLES_ROUND_1 = 54
-AB1_BALLOTS_ROUND_1 = 50
-AB2_BALLOTS_ROUND_1 = 25
-AB1_BALLOTS_ROUND_2 = 137
-AB2_BALLOTS_ROUND_2 = 43
 
 DEFAULT_AA_EMAIL = "admin@example.com"
 DEFAULT_JA_EMAIL = "jurisdiction.admin@example.com"

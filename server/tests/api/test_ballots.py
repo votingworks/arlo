@@ -25,6 +25,7 @@ def test_ja_ballots_round_1(
     contest_ids: str,
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
@@ -32,7 +33,7 @@ def test_ja_ballots_round_1(
     )
     ballots = json.loads(rv.data)["ballots"]
 
-    assert len(ballots) == J1_BALLOTS_ROUND_1
+    snapshot.assert_match(len(ballots))
     compare_json(
         ballots[0],
         {
@@ -102,14 +103,18 @@ def test_ja_ballots_round_1(
 
 
 def test_ja_ballots_before_audit_boards_set_up(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
-    assert len(ballots) == J1_BALLOTS_ROUND_1
+    snapshot.assert_match(len(ballots))
 
     compare_json(
         ballots[0],
@@ -130,6 +135,7 @@ def test_ja_ballots_round_2(
     jurisdiction_ids: List[str],
     round_2_id: str,
     audit_board_round_2_ids: List[str],  # pylint: disable=unused-argument
+    snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = client.get(
@@ -137,7 +143,7 @@ def test_ja_ballots_round_2(
     )
     ballots = json.loads(rv.data)["ballots"]
 
-    assert len(ballots) == J1_BALLOTS_ROUND_2
+    snapshot.assert_match(len(ballots))
     compare_json(
         ballots[0],
         {
@@ -161,13 +167,14 @@ def test_ab_list_ballot_round_1(
     contest_ids: str,
     round_1_id: str,
     audit_board_round_1_ids: List[str],  # pylint: disable=unused-argument
+    snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_1_ids[0])
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[0]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
-    assert len(ballots) == AB1_BALLOTS_ROUND_1
+    snapshot.assert_match(len(ballots))
 
     compare_json(
         ballots[0],
@@ -235,7 +242,7 @@ def test_ab_list_ballot_round_1(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board_round_1_ids[1]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
-    assert len(ballots) == AB2_BALLOTS_ROUND_1
+    snapshot.assert_match(len(ballots))
 
 
 def test_ab_list_ballots_round_2(
@@ -244,13 +251,14 @@ def test_ab_list_ballots_round_2(
     jurisdiction_ids: List[str],
     round_2_id: str,
     audit_board_round_2_ids: List[str],  # pylint: disable=unused-argument
+    snapshot,
 ):
     set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board_round_2_ids[0])
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board/{audit_board_round_2_ids[0]}/ballots"
     )
     ballots = json.loads(rv.data)["ballots"]
-    assert len(ballots) == AB1_BALLOTS_ROUND_2
+    snapshot.assert_match(len(ballots))
 
     compare_json(
         ballots[0],
@@ -265,7 +273,7 @@ def test_ab_list_ballots_round_2(
     )
 
     previously_audited_ballots = [b for b in ballots if b["status"] == "AUDITED"]
-    assert len(previously_audited_ballots) == 21
+    snapshot.assert_match(len(previously_audited_ballots))
 
 
 def test_ab_audit_ballot_not_found(
@@ -773,7 +781,6 @@ def test_ja_ballot_retrieval_list_round_1(
     )
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
-    assert len(retrieval_list.splitlines()) == J1_BALLOTS_ROUND_1 + 1
     snapshot.assert_match(retrieval_list)
 
 
@@ -796,5 +803,4 @@ def test_ja_ballot_retrieval_list_round_2(
     )
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
-    assert len(retrieval_list.splitlines()) == J1_BALLOTS_ROUND_2 + 1
     snapshot.assert_match(retrieval_list)

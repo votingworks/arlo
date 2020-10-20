@@ -12,35 +12,16 @@ from ...util.jsonschema import JSONDict
 
 
 def assert_ballots_got_assigned_correctly(
-    jurisdiction_id: str,
-    round_id: str,
-    expected_num_audit_boards: int,
-    expected_num_samples: int,
+    audit_boards: List[AuditBoard], ballot_draws: List[SampledBallotDraw],
 ):
-    # We got the right number of audit boards
-    audit_boards = AuditBoard.query.filter_by(
-        jurisdiction_id=jurisdiction_id, round_id=round_id
-    ).all()
-    assert len(audit_boards) == expected_num_audit_boards
-
-    # We got the right number of sampled ballots
-    ballot_draws = (
-        SampledBallotDraw.query.filter_by(round_id=round_id)
-        .join(SampledBallot)
-        .join(Batch)
-        .filter_by(jurisdiction_id=jurisdiction_id)
-        .all()
-    )
-    assert len(ballot_draws) == expected_num_samples
-
     # All the ballots got assigned
-    assert sum(len(ab.sampled_ballots) for ab in audit_boards) == len(
+    assert sum(len(list(ab.sampled_ballots)) for ab in audit_boards) == len(
         set(bd.ballot_id for bd in ballot_draws)
     )
 
     # Every audit board got some ballots
     for audit_board in audit_boards:
-        assert len(audit_board.sampled_ballots) > 0
+        assert len(list(audit_board.sampled_ballots)) > 0
 
     # All the ballots from each batch got assigned to the same audit board
     audit_boards_by_batch = defaultdict(set)
@@ -65,7 +46,11 @@ def test_audit_boards_list_empty(
 
 
 def test_audit_boards_create_one(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
@@ -74,12 +59,22 @@ def test_audit_boards_create_one(
         [{"name": "Audit Board #1"}],
     )
     assert_ok(rv)
-    assert_ballots_got_assigned_correctly(
-        jurisdiction_ids[0],
-        round_1_id,
-        expected_num_audit_boards=1,
-        expected_num_samples=J1_SAMPLES_ROUND_1,
+
+    audit_boards = AuditBoard.query.filter_by(
+        jurisdiction_id=jurisdiction_ids[0], round_id=round_1_id
+    ).all()
+    assert len(audit_boards) == 1
+
+    ballot_draws = (
+        SampledBallotDraw.query.filter_by(round_id=round_1_id)
+        .join(SampledBallot)
+        .join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .all()
     )
+    snapshot.assert_match(len(ballot_draws))
+
+    assert_ballots_got_assigned_correctly(audit_boards, ballot_draws)
 
 
 def test_audit_boards_list_one(
@@ -88,6 +83,7 @@ def test_audit_boards_list_one(
     jurisdiction_ids: List[str],
     contest_ids: List[str],
     round_1_id: str,
+    snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
@@ -100,27 +96,20 @@ def test_audit_boards_list_one(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
-    audit_boards = json.loads(rv.data)
-    compare_json(
-        audit_boards,
-        {
-            "auditBoards": [
-                {
-                    "id": assert_is_id,
-                    "name": "Audit Board #1",
-                    "passphrase": assert_is_passphrase,
-                    "signedOffAt": None,
-                    "currentRoundStatus": {
-                        "numSampledBallots": J1_BALLOTS_ROUND_1,
-                        "numAuditedBallots": 0,
-                    },
-                }
-            ]
-        },
+    audit_boards = json.loads(rv.data)["auditBoards"]
+    snapshot.assert_match(
+        [
+            {
+                "name": audit_board["name"],
+                "currentRoundStatus": audit_board["currentRoundStatus"],
+            }
+            for audit_board in audit_boards
+        ]
     )
+    assert audit_boards[0]["signedOffAt"] is None
 
     # Fake auditing some ballots
-    audit_board = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
+    audit_board = AuditBoard.query.get(audit_boards[0]["id"])
     for ballot in audit_board.sampled_ballots[:10]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     db_session.commit()
@@ -128,27 +117,20 @@ def test_audit_boards_list_one(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
-    audit_boards = json.loads(rv.data)
-    compare_json(
-        audit_boards,
-        {
-            "auditBoards": [
-                {
-                    "id": assert_is_id,
-                    "name": "Audit Board #1",
-                    "passphrase": assert_is_passphrase,
-                    "signedOffAt": None,
-                    "currentRoundStatus": {
-                        "numSampledBallots": J1_BALLOTS_ROUND_1,
-                        "numAuditedBallots": 10,
-                    },
-                }
-            ]
-        },
+    audit_boards = json.loads(rv.data)["auditBoards"]
+    snapshot.assert_match(
+        [
+            {
+                "name": audit_board["name"],
+                "currentRoundStatus": audit_board["currentRoundStatus"],
+            }
+            for audit_board in audit_boards
+        ]
     )
+    assert audit_boards[0]["signedOffAt"] is None
 
     # Finish auditing ballots and sign off
-    audit_board = AuditBoard.query.get(audit_boards["auditBoards"][0]["id"])
+    audit_board = AuditBoard.query.get(audit_boards[0]["id"])
     for ballot in audit_board.sampled_ballots[10:]:
         audit_ballot(ballot, contest_ids[0], Interpretation.BLANK)
     audit_board.signed_off_at = datetime.utcnow()
@@ -157,28 +139,26 @@ def test_audit_boards_list_one(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
-    audit_boards = json.loads(rv.data)
-    compare_json(
-        audit_boards,
-        {
-            "auditBoards": [
-                {
-                    "id": assert_is_id,
-                    "name": "Audit Board #1",
-                    "passphrase": assert_is_passphrase,
-                    "signedOffAt": assert_is_date,
-                    "currentRoundStatus": {
-                        "numSampledBallots": J1_BALLOTS_ROUND_1,
-                        "numAuditedBallots": J1_BALLOTS_ROUND_1,
-                    },
-                }
-            ]
-        },
+    audit_boards = json.loads(rv.data)["auditBoards"]
+
+    snapshot.assert_match(
+        [
+            {
+                "name": audit_board["name"],
+                "currentRoundStatus": audit_board["currentRoundStatus"],
+            }
+            for audit_board in audit_boards
+        ]
     )
+    assert_is_date(audit_boards[0]["signedOffAt"])
 
 
 def test_audit_boards_create_two(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_1_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_1_id: str,
+    snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
@@ -187,12 +167,22 @@ def test_audit_boards_create_two(
         [{"name": "Audit Board #1"}, {"name": "Audit Board #2"}],
     )
     assert_ok(rv)
-    assert_ballots_got_assigned_correctly(
-        jurisdiction_ids[0],
-        round_1_id,
-        expected_num_audit_boards=2,
-        expected_num_samples=J1_SAMPLES_ROUND_1,
+
+    audit_boards = AuditBoard.query.filter_by(
+        jurisdiction_id=jurisdiction_ids[0], round_id=round_1_id
+    ).all()
+    assert len(audit_boards) == 2
+
+    ballot_draws = (
+        SampledBallotDraw.query.filter_by(round_id=round_1_id)
+        .join(SampledBallot)
+        .join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .all()
     )
+    snapshot.assert_match(len(ballot_draws))
+
+    assert_ballots_got_assigned_correctly(audit_boards, ballot_draws)
 
 
 def test_audit_boards_list_two(
@@ -201,6 +191,7 @@ def test_audit_boards_list_two(
     jurisdiction_ids: List[str],
     contest_ids: List[str],
     round_1_id: str,
+    snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
@@ -215,31 +206,17 @@ def test_audit_boards_list_two(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
-    compare_json(
-        audit_boards,
+    snapshot.assert_match(
         [
             {
-                "id": assert_is_id,
-                "name": "Audit Board #1",
-                "signedOffAt": None,
-                "passphrase": assert_is_passphrase,
-                "currentRoundStatus": {
-                    "numSampledBallots": AB1_BALLOTS_ROUND_1,
-                    "numAuditedBallots": 0,
-                },
-            },
-            {
-                "id": assert_is_id,
-                "name": "Audit Board #2",
-                "passphrase": assert_is_passphrase,
-                "signedOffAt": None,
-                "currentRoundStatus": {
-                    "numSampledBallots": J1_BALLOTS_ROUND_1 - AB1_BALLOTS_ROUND_1,
-                    "numAuditedBallots": 0,
-                },
-            },
-        ],
+                "name": audit_board["name"],
+                "currentRoundStatus": audit_board["currentRoundStatus"],
+            }
+            for audit_board in audit_boards
+        ]
     )
+    assert audit_boards[0]["signedOffAt"] is None
+    assert audit_boards[1]["signedOffAt"] is None
 
     # Fake auditing some ballots
     audit_board_1 = AuditBoard.query.get(audit_boards[0]["id"])
@@ -255,14 +232,17 @@ def test_audit_boards_list_two(
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
 
-    assert audit_boards[0]["currentRoundStatus"] == {
-        "numSampledBallots": AB1_BALLOTS_ROUND_1,
-        "numAuditedBallots": 10,
-    }
-    assert audit_boards[1]["currentRoundStatus"] == {
-        "numSampledBallots": J1_BALLOTS_ROUND_1 - AB1_BALLOTS_ROUND_1,
-        "numAuditedBallots": 20,
-    }
+    snapshot.assert_match(
+        [
+            {
+                "name": audit_board["name"],
+                "currentRoundStatus": audit_board["currentRoundStatus"],
+            }
+            for audit_board in audit_boards
+        ]
+    )
+    assert audit_boards[0]["signedOffAt"] is None
+    assert audit_boards[1]["signedOffAt"] is None
 
     # Finish auditing ballots and sign off
     audit_board_1 = AuditBoard.query.get(audit_boards[0]["id"])
@@ -276,20 +256,25 @@ def test_audit_boards_list_two(
     )
     audit_boards = json.loads(rv.data)["auditBoards"]
 
+    snapshot.assert_match(
+        [
+            {
+                "name": audit_board["name"],
+                "currentRoundStatus": audit_board["currentRoundStatus"],
+            }
+            for audit_board in audit_boards
+        ]
+    )
     assert_is_date(audit_boards[0]["signedOffAt"])
-    assert audit_boards[0]["currentRoundStatus"] == {
-        "numSampledBallots": AB1_BALLOTS_ROUND_1,
-        "numAuditedBallots": AB1_BALLOTS_ROUND_1,
-    }
     assert audit_boards[1]["signedOffAt"] is None
-    assert audit_boards[1]["currentRoundStatus"] == {
-        "numSampledBallots": J1_BALLOTS_ROUND_1 - AB1_BALLOTS_ROUND_1,
-        "numAuditedBallots": 20,
-    }
 
 
 def test_audit_boards_create_round_2(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str], round_2_id: str,
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],
+    round_2_id: str,
+    snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
@@ -303,12 +288,21 @@ def test_audit_boards_create_round_2(
     )
     assert_ok(rv)
 
-    assert_ballots_got_assigned_correctly(
-        jurisdiction_ids[0],
-        round_2_id,
-        expected_num_audit_boards=3,
-        expected_num_samples=J1_SAMPLES_ROUND_2,
+    audit_boards = AuditBoard.query.filter_by(
+        jurisdiction_id=jurisdiction_ids[0], round_id=round_2_id
+    ).all()
+    assert len(audit_boards) == 3
+
+    ballot_draws = (
+        SampledBallotDraw.query.filter_by(round_id=round_2_id)
+        .join(SampledBallot)
+        .join(Batch)
+        .filter_by(jurisdiction_id=jurisdiction_ids[0])
+        .all()
     )
+    snapshot.assert_match(len(ballot_draws))
+
+    assert_ballots_got_assigned_correctly(audit_boards, ballot_draws)
 
 
 def test_audit_boards_list_round_2(
@@ -317,6 +311,7 @@ def test_audit_boards_list_round_2(
     jurisdiction_ids: List[str],
     round_1_id: str,
     round_2_id: str,
+    snapshot,
 ):
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
@@ -334,47 +329,19 @@ def test_audit_boards_list_round_2(
     rv = client.get(
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/audit-board",
     )
-    audit_boards = json.loads(rv.data)
-    compare_json(
-        audit_boards,
-        {
-            "auditBoards": [
-                {
-                    "id": assert_is_id,
-                    "name": "Audit Board #1",
-                    "passphrase": assert_is_passphrase,
-                    "signedOffAt": None,
-                    "currentRoundStatus": {
-                        "numSampledBallots": AB1_BALLOTS_ROUND_2,
-                        # Some ballots got audited in round 1 and sampled again in round 2
-                        "numAuditedBallots": 21,
-                    },
-                },
-                {
-                    "id": assert_is_id,
-                    "name": "Audit Board #2",
-                    "passphrase": assert_is_passphrase,
-                    "signedOffAt": None,
-                    "currentRoundStatus": {
-                        "numSampledBallots": AB2_BALLOTS_ROUND_2,
-                        "numAuditedBallots": 5,
-                    },
-                },
-                {
-                    "id": assert_is_id,
-                    "name": "Audit Board #3",
-                    "passphrase": assert_is_passphrase,
-                    "signedOffAt": None,
-                    "currentRoundStatus": {
-                        "numSampledBallots": J1_BALLOTS_ROUND_2
-                        - AB1_BALLOTS_ROUND_2
-                        - AB2_BALLOTS_ROUND_2,
-                        "numAuditedBallots": 3,
-                    },
-                },
-            ]
-        },
+    audit_boards = json.loads(rv.data)["auditBoards"]
+    snapshot.assert_match(
+        [
+            {
+                "name": audit_board["name"],
+                "currentRoundStatus": audit_board["currentRoundStatus"],
+            }
+            for audit_board in audit_boards
+        ]
     )
+    assert audit_boards[0]["signedOffAt"] is None
+    assert audit_boards[1]["signedOffAt"] is None
+    assert audit_boards[2]["signedOffAt"] is None
 
     # Can still access round 1 audit boards
     rv = client.get(
