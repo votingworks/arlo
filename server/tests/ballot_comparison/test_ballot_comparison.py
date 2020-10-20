@@ -165,7 +165,7 @@ def test_ballot_comparison_two_rounds(
                         CvrBallot.ballot_position == SampledBallot.ballot_position,
                     ),
                 )
-                .order_by(Batch.name, SampledBallot.ballot_position)
+                .order_by(Batch.tabulator, Batch.name, SampledBallot.ballot_position)
                 .with_entities(SampledBallot, CvrBallot)
                 .all()
             )

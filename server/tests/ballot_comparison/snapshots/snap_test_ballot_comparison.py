@@ -57,12 +57,12 @@ Test Audit test_ballot_comparison_two_rounds,BALLOT_COMPARISON,10%,1234567890,Ye
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,22,No,0.1462185909,DATETIME,DATETIME,Choice 1-1: 10; Choice 1-2: 4\r
+1,Contest 1,Targeted,22,No,0.1131539208,DATETIME,DATETIME,Choice 1-1: 10; Choice 1-2: 6\r
 1,Contest 2,Opportunistic,,No,0.3262537939,DATETIME,DATETIME,Choice 2-1: 8; Choice 2-2: 4; Choice 2-3: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,Audit Result: Contest 2\r
-J1,1,1,1,Round 1: 0.204858337714175386,AUDITED,Choice 1-2,Choice 2-2\r
+J1,1,1,1,Round 1: 0.204858337714175386,AUDITED,,\r
 J1,1,1,3,Round 1: 0.039137057734807602,AUDITED,Choice 1-2,Choice 2-2\r
 J1,1,2,1,Round 1: 0.400356648159839639,AUDITED,Choice 1-1,Choice 2-1\r
 J1,2,1,1,Round 1: 0.253310599579579128,AUDITED,Choice 1-2,Choice 2-2\r
@@ -75,7 +75,7 @@ J2,1,1,2,"Round 1: 0.102247232087275935, 0.391113953393971944",AUDITED,Choice 1-
 J2,1,1,3,Round 1: 0.273102683954282677,AUDITED,Choice 1-2,Choice 2-2\r
 J2,1,2,1,Round 1: 0.140167565493923455,AUDITED,Choice 1-1,Choice 2-1\r
 J2,1,2,3,Round 1: 0.359826480324232628,AUDITED,Choice 1-1,Choice 2-1\r
-J2,2,1,1,"Round 1: 0.093047161560174517, 0.373730886719570665, 0.441070345112650098",AUDITED,,\r
+J2,2,1,1,"Round 1: 0.093047161560174517, 0.373730886719570665, 0.441070345112650098",AUDITED,Choice 1-2,Choice 2-2\r
 J2,2,1,2,Round 1: 0.089733987461263823,AUDITED,Choice 1-1,Choice 2-1\r
 J2,2,2,2,Round 1: 0.425418515815626443,AUDITED,"OVERVOTE; Choice 1-1, Choice 1-2","OVERVOTE; Choice 2-1, Choice 2-2"\r
 J2,2,2,6,Round 1: 0.293871936182799706,AUDITED,,\r
@@ -98,10 +98,10 @@ Test Audit test_ballot_comparison_two_rounds,BALLOT_COMPARISON,10%,1234567890,Ye
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
-1,Contest 1,Targeted,22,No,0.1462185909,DATETIME,DATETIME,Choice 1-1: 10; Choice 1-2: 4\r
+1,Contest 1,Targeted,22,No,0.1131539208,DATETIME,DATETIME,Choice 1-1: 10; Choice 1-2: 6\r
 1,Contest 2,Opportunistic,,No,0.3262537939,DATETIME,DATETIME,Choice 2-1: 8; Choice 2-2: 4; Choice 2-3: 0\r
-2,Contest 1,Targeted,20,Yes,0.0165452069,DATETIME,DATETIME,Choice 1-1: 5; Choice 1-2: 10\r
-2,Contest 2,Opportunistic,,No,0.4277811156,DATETIME,DATETIME,Choice 2-1: 3; Choice 2-2: 5; Choice 2-3: 0\r
+2,Contest 1,Targeted,20,Yes,0.0112634833,DATETIME,DATETIME,Choice 1-1: 5; Choice 1-2: 10\r
+2,Contest 2,Opportunistic,,No,0.5729704506,DATETIME,DATETIME,Choice 2-1: 3; Choice 2-2: 5; Choice 2-3: 0\r
 \r
 ######## SAMPLED BALLOTS ########\r
 Jurisdiction Name,Tabulator,Batch Name,Ballot Position,Ticket Numbers: Contest 1,Audited?,Audit Result: Contest 1,Audit Result: Contest 2\r
@@ -118,7 +118,7 @@ J2,1,1,2,"Round 1: 0.102247232087275935, 0.391113953393971944",AUDITED,Choice 1-
 J2,1,1,3,Round 1: 0.273102683954282677,AUDITED,Choice 1-2,Choice 2-2\r
 J2,1,2,1,Round 1: 0.140167565493923455,AUDITED,Choice 1-1,Choice 2-1\r
 J2,1,2,3,"Round 1: 0.359826480324232628, Round 2: 0.506025545507775003, 0.520300296510202348, 0.539293040443164915",AUDITED,Choice 1-1,Choice 2-1\r
-J2,2,1,1,"Round 1: 0.093047161560174517, 0.373730886719570665, 0.441070345112650098",AUDITED,,\r
+J2,2,1,1,"Round 1: 0.093047161560174517, 0.373730886719570665, 0.441070345112650098",AUDITED,Choice 1-2,Choice 2-2\r
 J2,2,1,2,Round 1: 0.089733987461263823,AUDITED,Choice 1-1,Choice 2-1\r
 J2,2,2,2,Round 1: 0.425418515815626443,AUDITED,"OVERVOTE; Choice 1-1, Choice 1-2","OVERVOTE; Choice 2-1, Choice 2-2"\r
 J2,2,2,6,Round 1: 0.293871936182799706,AUDITED,,\r
