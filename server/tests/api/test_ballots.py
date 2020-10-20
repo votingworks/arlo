@@ -810,7 +810,7 @@ def test_ja_ballot_retrieval_list_before_audit_boards_set_up(
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     assert (
         retrieval_list
-        == "Batch Name,Ballot Number,Container,Tabulator,Ticket Numbers,Already Audited,Audit Board\n"
+        == "Batch Name,Ballot Number,Ticket Numbers,Already Audited,Audit Board\n"
     )
 
 
@@ -834,6 +834,10 @@ def test_ja_ballot_retrieval_list_round_1(
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     snapshot.assert_match(retrieval_list)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
+    )
+    assert len(json.loads(rv.data)["ballots"]) == len(retrieval_list.splitlines()) - 1
 
 
 def test_ja_ballot_retrieval_list_round_2(
@@ -856,3 +860,7 @@ def test_ja_ballot_retrieval_list_round_2(
 
     retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
     snapshot.assert_match(retrieval_list)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_2_id}/ballots"
+    )
+    assert len(json.loads(rv.data)["ballots"]) == len(retrieval_list.splitlines()) - 1

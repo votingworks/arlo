@@ -211,3 +211,87 @@ def test_ballot_comparison_two_rounds(
 
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+
+def test_ballot_comparison_cvr_metadata(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    cvrs,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    # AA creates contests
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 1",
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            },
+        ],
+    )
+    assert_ok(rv)
+
+    # AA selects a sample size and launches the audit
+    rv = client.get(f"/api/election/{election_id}/contest")
+    contests = json.loads(rv.data)["contests"]
+    target_contest_id = contests[0]["id"]
+
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    assert len(sample_size_options) == 1
+    sample_size = sample_size_options[target_contest_id][0]
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/round",
+        {"roundNum": 1, "sampleSizes": {target_contest_id: sample_size["size"]}},
+    )
+    assert_ok(rv)
+
+    rv = client.get(f"/api/election/{election_id}/round",)
+    round_1_id = json.loads(rv.data)["rounds"][0]["id"]
+
+    # JA creates audit boards
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board",
+        [{"name": "Audit Board #1"},],
+    )
+    assert_ok(rv)
+
+    # Check that the CVR metadata is included in the ballot retrieval list
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots/retrieval-list"
+    )
+    retrieval_list = rv.data.decode("utf-8").replace("\r\n", "\n")
+    snapshot.assert_match(retrieval_list)
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/ballots"
+    )
+    assert len(json.loads(rv.data)["ballots"]) == len(retrieval_list.splitlines()) - 1
+
+    # Check that the CVR metadata is included with each ballot for audit boards
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board"
+    )
+    audit_board = json.loads(rv.data)["auditBoards"][0]
+
+    set_logged_in_user(client, UserType.AUDIT_BOARD, audit_board["id"])
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_1_id}/audit-board/{audit_board['id']}/ballots"
+    )
+    ballots = json.loads(rv.data)["ballots"]
+
+    assert ballots[0]["batch"]["name"] == "BATCH1"
+    assert ballots[0]["batch"]["tabulator"] == "TABULATOR1"
+    assert ballots[0]["position"] == 1
+    assert ballots[0]["imprintedId"] == "1-1-1"

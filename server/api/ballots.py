@@ -20,22 +20,36 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
         .join(SampledBallot)
         .join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
-        .values(Batch.name, SampledBallot.ballot_position)
+        .values(Batch.tabulator, Batch.name, SampledBallot.ballot_position)
     )
 
-    ballots = (
+    ballots = list(
         SampledBallotDraw.query.filter_by(round_id=round.id)
         .join(SampledBallot)
         .join(Batch)
         .filter_by(jurisdiction_id=jurisdiction.id)
+        .outerjoin(
+            CvrBallot,
+            and_(
+                CvrBallot.batch_id == SampledBallot.batch_id,
+                CvrBallot.ballot_position == SampledBallot.ballot_position,
+            ),
+        )
         .join(SampledBallot.audit_board)
-        .group_by(AuditBoard.id, SampledBallot.id, Batch.id)
-        .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position)
-        .values(
-            Batch.name,
-            SampledBallot.ballot_position,
+        .group_by(AuditBoard.id, SampledBallot.id, Batch.id, CvrBallot.imprinted_id)
+        .order_by(
+            AuditBoard.name,
             Batch.container,
             Batch.tabulator,
+            Batch.name,
+            SampledBallot.ballot_position,
+        )
+        .values(
+            Batch.container,
+            Batch.tabulator,
+            Batch.name,
+            SampledBallot.ballot_position,
+            CvrBallot.imprinted_id,
             func.string_agg(
                 SampledBallotDraw.ticket_number,
                 aggregate_order_by(
@@ -46,40 +60,51 @@ def ballot_retrieval_list(jurisdiction: Jurisdiction, round: Round) -> str:
         )
     )
 
+    show_imprinted_id = jurisdiction.election.audit_type == AuditType.BALLOT_COMPARISON
+    show_container = len(ballots) > 0 and ballots[0][0] is not None
+    show_tabulator = len(ballots) > 0 and ballots[0][1] is not None
+
     csv_io = io.StringIO()
     retrieval_list_writer = csv.writer(csv_io)
+    columns_to_show = [
+        ("Container", show_container),
+        ("Tabulator", show_tabulator),
+        ("Batch Name", True),
+        ("Ballot Number", True),
+        ("Imprinted ID", show_imprinted_id),
+        ("Ticket Numbers", True),
+        ("Already Audited", True),
+        ("Audit Board", True),
+    ]
     retrieval_list_writer.writerow(
-        [
-            "Batch Name",
-            "Ballot Number",
-            "Container",
-            "Tabulator",
-            "Ticket Numbers",
-            "Already Audited",
-            "Audit Board",
-        ]
+        [header for header, should_show in columns_to_show if should_show]
     )
 
     for ballot in ballots:
         (
-            batch_name,
-            position,
             container,
             tabulator,
+            batch_name,
+            position,
+            imprinted_id,
             ticket_numbers,
             audit_board_name,
         ) = ballot
-        previously_audited = "Y" if (batch_name, position) in previous_ballots else "N"
+        previously_audited = (
+            "Y" if (tabulator, batch_name, position) in previous_ballots else "N"
+        )
+        values_to_show = [
+            (container, show_container),
+            (tabulator, show_tabulator),
+            (batch_name, True),
+            (position, True),
+            (imprinted_id, show_imprinted_id),
+            (ticket_numbers, True),
+            (previously_audited, True),
+            (audit_board_name, True),
+        ]
         retrieval_list_writer.writerow(
-            [
-                batch_name,
-                position,
-                container,
-                tabulator,
-                ticket_numbers,
-                previously_audited,
-                audit_board_name,
-            ]
+            [value for value, should_show in values_to_show if should_show]
         )
 
     return csv_io.getvalue()
@@ -124,10 +149,10 @@ def serialize_interpretation(interpretation: BallotInterpretation) -> JSONDict:
     }
 
 
-def serialize_ballot(ballot: SampledBallot) -> JSONDict:
+def serialize_ballot(ballot: SampledBallot, election: Election) -> JSONDict:
     batch = ballot.batch
     audit_board = ballot.audit_board
-    return {
+    json_ballot = {
         "id": ballot.id,
         "status": ballot.status,
         "interpretations": [
@@ -142,6 +167,10 @@ def serialize_ballot(ballot: SampledBallot) -> JSONDict:
         },
         "auditBoard": audit_board and {"id": audit_board.id, "name": audit_board.name,},
     }
+    if election.audit_type == AuditType.BALLOT_COMPARISON:
+        cvr = CvrBallot.query.get((batch.id, ballot.ballot_position))
+        json_ballot["imprintedId"] = cvr.imprinted_id
+    return json_ballot
 
 
 @api.route(
@@ -160,14 +189,16 @@ def list_ballots_for_jurisdiction(
         .join(SampledBallotDraw)
         .filter_by(round_id=round.id)
         .outerjoin(SampledBallot.audit_board)
-        .order_by(AuditBoard.name, Batch.name, SampledBallot.ballot_position)
+        .order_by(
+            AuditBoard.name, Batch.tabulator, Batch.name, SampledBallot.ballot_position
+        )
         .options(
             contains_eager(SampledBallot.batch),
             contains_eager(SampledBallot.audit_board),
         )
         .all()
     )
-    json_ballots = [serialize_ballot(b) for b in ballots]
+    json_ballots = [serialize_ballot(b, election) for b in ballots]
     return jsonify({"ballots": json_ballots})
 
 
@@ -177,7 +208,7 @@ def list_ballots_for_jurisdiction(
 )
 @restrict_access([UserType.AUDIT_BOARD])
 def list_ballots_for_audit_board(
-    election: Election,  # pylint: disable=unused-argument
+    election: Election,
     jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
     round: Round,  # pylint: disable=unused-argument
     audit_board: AuditBoard,
@@ -185,11 +216,11 @@ def list_ballots_for_audit_board(
     ballots = (
         SampledBallot.query.filter_by(audit_board_id=audit_board.id)
         .join(Batch)
-        .order_by(Batch.name, SampledBallot.ballot_position)
+        .order_by(Batch.tabulator, Batch.name, SampledBallot.ballot_position)
         .options(contains_eager(SampledBallot.batch))
         .all()
     )
-    json_ballots = [serialize_ballot(b) for b in ballots]
+    json_ballots = [serialize_ballot(b, election) for b in ballots]
     return jsonify({"ballots": json_ballots})
 
 
