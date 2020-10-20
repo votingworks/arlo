@@ -104,7 +104,7 @@ const useStandardizedContests = (
       )
       setContests(newContests)
     })()
-  }, [electionId, refreshId])
+  }, [electionId, refreshId, targetedView])
   return [standardizedContests, updateContests]
 }
 

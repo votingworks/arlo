@@ -9,6 +9,7 @@ import getJurisdictionFileStatus, {
 } from './getJurisdictionFileStatus'
 import { poll } from '../../utilities'
 import getRoundStatus from './getRoundStatus'
+import getContestFileStatus from './getContestFileStatus'
 
 function useSetupMenuItems(
   stage: ElementType<typeof setupStages>,
@@ -40,26 +41,49 @@ function useSetupMenuItems(
     [setTargetContests, setOpportunisticContests]
   )
 
-  const setOrPollParticipantsFile = useCallback(async () => {
-    // issue with ballot polling now?
-    const processing = await getJurisdictionFileStatus(electionId)
-    const jurisdictionStatus = processing
-      ? processing.status
+  const setOrPollFiles = useCallback(async () => {
+    const jurisdictionProcessing = await getJurisdictionFileStatus(electionId)
+    const jurisdictionStatus = jurisdictionProcessing
+      ? jurisdictionProcessing.status
       : FileProcessingStatus.Blank
+    let contestFileStatus: FileProcessingStatus = FileProcessingStatus.Processed // pretend it's processed by default
+    if (isBallotComparison) {
+      const contestFileProcessing = await getContestFileStatus(electionId)
+      contestFileStatus = contestFileProcessing
+        ? contestFileProcessing.status
+        : FileProcessingStatus.Blank
+    }
     if (
       jurisdictionStatus === FileProcessingStatus.Errored ||
-      jurisdictionStatus === FileProcessingStatus.Blank
+      jurisdictionStatus === FileProcessingStatus.Blank ||
+      contestFileStatus === FileProcessingStatus.Errored ||
+      contestFileStatus === FileProcessingStatus.Blank
     ) {
       setContests('locked')
-    } else if (jurisdictionStatus === FileProcessingStatus.Processed) {
+    } else if (
+      jurisdictionStatus === FileProcessingStatus.Processed &&
+      contestFileStatus === FileProcessingStatus.Processed
+    ) {
       setContests('live')
     } else {
       setContests('processing')
       const condition = async () => {
-        const fileProcessing = await getJurisdictionFileStatus(electionId)
-        const { status } = fileProcessing!
-        if (status === FileProcessingStatus.Processed) return true
-        if (status === FileProcessingStatus.Errored)
+        const jProcessing = await getJurisdictionFileStatus(electionId)
+        const { status: jStatus } = jProcessing!
+        let cStatus = FileProcessingStatus.Processed
+        if (isBallotComparison) {
+          const cProcessing = await getContestFileStatus(electionId)
+          cStatus = cProcessing!.status
+        }
+        if (
+          jStatus === FileProcessingStatus.Processed &&
+          cStatus === FileProcessingStatus.Processed
+        )
+          return true
+        if (
+          jStatus === FileProcessingStatus.Errored ||
+          cStatus === FileProcessingStatus.Errored
+        )
           throw new Error('File processing error') // TODO test coverage isn't reaching this line
         return false
       }
@@ -69,12 +93,13 @@ function useSetupMenuItems(
         setRefreshId(uuidv4())
       }
       poll(condition, complete, (err: Error) => {
-        toast.error(err.message)
+        setContests('locked')
+        toast.error(err.message) // we need to toast the error from the server here instead 'File processing error'
         // eslint-disable-next-line no-console
         console.error(err.message)
       })
     }
-  }, [electionId, setContests, setStage])
+  }, [electionId, setContests, setStage, isBallotComparison, setRefreshId])
 
   const lockAllIfRounds = useCallback(async () => {
     const roundsExist = await getRoundStatus(electionId)
@@ -96,14 +121,14 @@ function useSetupMenuItems(
 
   const refresh = useCallback(() => {
     setParticipants('live')
-    setOrPollParticipantsFile()
+    setOrPollFiles()
     setAuditSettings('live')
     setReviewLaunch('live')
     lockAllIfRounds()
     setRefreshId(uuidv4())
   }, [
     setParticipants,
-    setOrPollParticipantsFile,
+    setOrPollFiles,
     setAuditSettings,
     setReviewLaunch,
     lockAllIfRounds,

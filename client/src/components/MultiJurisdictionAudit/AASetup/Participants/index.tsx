@@ -212,7 +212,8 @@ const FileForm = ({
   const onSubmit = async (values: { csv: File | null }) => {
     /* istanbul ignore else */
     if (values.csv) {
-      if (await uploadFile(values.csv)) {
+      const success = await uploadFile(values.csv)
+      if (success) {
         setIsEditing(false)
         setFileStatus('success')
       } else {
@@ -245,7 +246,7 @@ const FileForm = ({
       if (!isSubmitting && touched.csv) {
         handleSubmit()
       } else {
-        setFileStatus('success') // clear for advancing to next stage
+        setFileStatus(null) // clear for advancing to next stage
       }
     }
   }, [fileStatus, isSubmitting, handleSubmit, setFileStatus, touched.csv])

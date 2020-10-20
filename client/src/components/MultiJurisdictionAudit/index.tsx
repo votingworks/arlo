@@ -58,7 +58,7 @@ export const AuditAdminView: React.FC = () => {
     setRefreshId
   )
 
-  useEffect(refresh, [refresh])
+  useEffect(refresh, [refresh, isBallotComparison])
 
   if (!contests || !rounds || !auditSettings) return null // Still loading
 
