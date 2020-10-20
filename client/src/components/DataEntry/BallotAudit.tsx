@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Formik, FormikProps, Field, Form } from 'formik'
+import { Formik, FormikProps, Field } from 'formik'
 import { H4, H3, Button } from '@blueprintjs/core'
 import { BallotRow, ContestCard, ProgressActions, FlushDivider } from './Atoms'
 import FormButton from '../Atoms/Form/FormButton'
@@ -53,7 +53,7 @@ const BallotAudit: React.FC<IProps> = ({
             setFieldValue,
           }: FormikProps<{ interpretations: IBallotInterpretation[] }>) => {
             return (
-              <Form>
+              <form>
                 {contests.map((contest, i) => (
                   <BallotAuditContest
                     key={contest.id}
@@ -76,7 +76,7 @@ const BallotAudit: React.FC<IProps> = ({
                     Back
                   </Button>
                 </ProgressActions>
-              </Form>
+              </form>
             )
           }}
         />

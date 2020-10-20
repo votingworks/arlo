@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
+import { Formik, FormikProps, Field, ErrorMessage } from 'formik'
 import { RadioGroup, Radio, Spinner } from '@blueprintjs/core'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
@@ -65,7 +65,7 @@ const Settings: React.FC<IProps> = ({
       enableReinitialize
     >
       {({ handleSubmit, setFieldValue, values }: FormikProps<IValues>) => (
-        <Form data-testid="form-one">
+        <form data-testid="form-one">
           <FormWrapper title="Audit Settings">
             <FormSection>
               {/* eslint-disable jsx-a11y/label-has-associated-control */}
@@ -152,7 +152,7 @@ const Settings: React.FC<IProps> = ({
               </FormButton>
             </FormButtonBar>
           )}
-        </Form>
+        </form>
       )}
     </Formik>
   )

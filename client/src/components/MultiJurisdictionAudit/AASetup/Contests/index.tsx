@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { Formik, FormikProps, Form, Field, FieldArray } from 'formik'
+import { Formik, FormikProps, Field, FieldArray } from 'formik'
 import { Spinner } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormSection, {
@@ -97,7 +97,7 @@ const Contests: React.FC<IProps> = ({
         handleSubmit,
         setFieldValue,
       }: FormikProps<{ contests: IContest[] }>) => (
-        <Form data-testid="form-one">
+        <form data-testid="form-one">
           <FormWrapper
             title={isTargeted ? 'Target Contests' : 'Opportunistic Contests'}
           >
@@ -292,7 +292,7 @@ const Contests: React.FC<IProps> = ({
               </FormButton>
             </FormButtonBar>
           )}
-        </Form>
+        </form>
       )}
     </Formik>
   )

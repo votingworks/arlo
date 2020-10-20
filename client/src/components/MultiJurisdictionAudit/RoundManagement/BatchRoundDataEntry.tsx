@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { H5 } from '@blueprintjs/core'
-import { Field, Formik, Form, FormikProps } from 'formik'
+import { Field, Formik, FormikProps } from 'formik'
 import styled from 'styled-components'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
 import Card from '../../Atoms/SpacedCard'
@@ -56,7 +56,7 @@ const BatchRoundDataEntry = ({ round }: IProps) => {
   return (
     <Formik initialValues={{ results }} enableReinitialize onSubmit={submit}>
       {({ handleSubmit }: FormikProps<IValues>) => (
-        <Form>
+        <form>
           <p>
             When you have examined all the ballots assigned to you, enter the
             number of votes recorded for each candidate/choice from the audited
@@ -96,7 +96,7 @@ const BatchRoundDataEntry = ({ round }: IProps) => {
               ? `Already Submitted Data for Round ${round.roundNum}`
               : `Submit Data for Round ${round.roundNum}`}
           </BottomButton>
-        </Form>
+        </form>
       )}
     </Formik>
   )

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react'
-import { Formik, FormikProps, Form, Field, ErrorMessage } from 'formik'
+import { Formik, FormikProps, Field, ErrorMessage } from 'formik'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
@@ -75,7 +75,7 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
         errors,
         handleBlur,
       }: FormikProps<IValues>) => (
-        <Form data-testid="form-one">
+        <form data-testid="form-one">
           <FormWrapper title="Participants">
             <label htmlFor="state">
               Choose your state from the options below
@@ -156,7 +156,7 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
               </FormButton>
             </FormButtonBar>
           )}
-        </Form>
+        </form>
       )}
     </Formik>
   )

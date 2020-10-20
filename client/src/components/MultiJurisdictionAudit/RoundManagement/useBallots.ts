@@ -11,6 +11,7 @@ export interface IBallot {
   position: number
   batch: { id: string; name: string; tabulator: string | null }
   auditBoard?: Pick<IAuditBoard, 'id' | 'name'>
+  imprintedId?: string
 }
 
 const getBallots = async (

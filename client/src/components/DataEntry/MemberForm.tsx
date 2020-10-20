@@ -1,6 +1,6 @@
 import React from 'react'
 import { H1, RadioGroup, Radio } from '@blueprintjs/core'
-import { Formik, FormikProps, Form, getIn } from 'formik'
+import { Formik, FormikProps, getIn } from 'formik'
 import FormSection from '../Atoms/Form/FormSection'
 import { IAuditBoardMember } from '../../types'
 import FormButton from '../Atoms/Form/FormButton'
@@ -50,7 +50,7 @@ const MemberForm: React.FC<IProps> = ({
           values,
           handleSubmit,
         }: FormikProps<[IAuditBoardMember, IAuditBoardMember]>) => (
-          <Form>
+          <form>
             {[0, 1].map(i => (
               <FormSection label="Audit Board Member" key={i}>
                 {/* eslint-disable jsx-a11y/label-has-associated-control */}
@@ -83,7 +83,7 @@ const MemberForm: React.FC<IProps> = ({
             >
               Next
             </FormButton>
-          </Form>
+          </form>
         )}
       />
     </div>
