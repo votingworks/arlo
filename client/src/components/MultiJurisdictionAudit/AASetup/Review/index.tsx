@@ -159,9 +159,13 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
             <tr>
               <td>Audit Type:</td>
               <td>
-                {auditType === 'BALLOT_POLLING'
-                  ? 'Ballot Polling'
-                  : 'Batch Comparison'}
+                {
+                  {
+                    BALLOT_POLLING: 'Ballot Polling',
+                    BATCH_COMPARISON: 'Batch Comparison',
+                    BALLOT_COMPARISON: 'Ballot Comparison',
+                  }[auditType]
+                }
               </td>
             </tr>
             <tr>
