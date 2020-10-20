@@ -47,35 +47,21 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const history = useHistory()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
-  const talliesUploadsCompleted =
-    !!jurisdictions.length &&
+  const shouldShowSampleSizes =
     !!contests &&
-    jurisdictions.every(
-      j =>
-        contests.every(contest => !contest.jurisdictionIds.includes(j.id)) || // don't worry about this jurisdiction if it's not in the contest universe
-        (j.batchTallies &&
-          j.batchTallies.processing &&
-          j.batchTallies.processing.status === FileProcessingStatus.PROCESSED)
-    )
-  const cvrsUploadsCompleted =
-    !!jurisdictions.length &&
-    !!contests &&
-    jurisdictions.every(
-      j =>
-        contests.every(contest => !contest.jurisdictionIds.includes(j.id)) || // don't worry about this jurisdiction if it's not in the contest universe
-        (j.cvrs &&
-          j.cvrs.processing &&
-          j.cvrs.processing.status === FileProcessingStatus.PROCESSED)
-    )
+    !!auditSettings &&
+    isSetupComplete(jurisdictions, contests, auditSettings)
   const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(
     electionId,
-    !!auditSettings &&
-      !!contests &&
-      !!contests.length &&
-      (auditSettings.auditType === 'BALLOT_POLLING' ||
-        talliesUploadsCompleted ||
-        cvrsUploadsCompleted) // only fetch sample sizes for ballot polling audits or if all tallies files are uploaded
+    shouldShowSampleSizes
   )
+
+  if (
+    !contests ||
+    !auditSettings ||
+    (shouldShowSampleSizes && !sampleSizeOptions)
+  )
+    return null // Still loading
 
   const submit = async () => {
     if (
@@ -91,8 +77,6 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       // TEST TODO when withMockFetch works with error handling
     }
   }
-
-  if (!contests || !auditSettings) return null // Still loading
 
   const {
     electionName,
@@ -123,12 +107,6 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
       ),
     }))
 
-  const completedBallotUploads = jurisdictions.filter(
-    j =>
-      j.ballotManifest.processing &&
-      j.ballotManifest.processing.status === FileProcessingStatus.PROCESSED
-  ).length
-
   const initialValues: IFormOptions = sampleSizeOptions
     ? Object.keys(sampleSizeOptions).reduce(
         (a, contestId) => ({
@@ -138,6 +116,18 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         {}
       )
     : {}
+
+  const participatingJurisdictions = contests
+    ? jurisdictions.filter(({ id }) =>
+        contests.some(c => c.jurisdictionIds.includes(id))
+      )
+    : []
+
+  const numManifestUploadsComplete = participatingJurisdictions.filter(
+    j =>
+      j.ballotManifest.processing &&
+      j.ballotManifest.processing.status === FileProcessingStatus.PROCESSED
+  ).length
 
   return (
     <div>
@@ -352,8 +342,11 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         isOpen={isConfirmDialogOpen}
         handleClose={() => setIsConfirmDialogOpen(false)}
         onLaunch={submit}
-        numJurisdictions={jurisdictions.length}
-        completedBallotUploads={completedBallotUploads}
+        message={
+          auditType === 'BALLOT_POLLING'
+            ? `${numManifestUploadsComplete} of ${participatingJurisdictions.length} jurisdictions have uploaded ballot manifests.`
+            : undefined
+        }
       />
     </div>
   )
