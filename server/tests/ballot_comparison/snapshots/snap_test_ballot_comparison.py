@@ -7,33 +7,26 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['test_set_contest_metadata_from_cvrs 1'] = {
-    'choices': [
-        {
-            'name': 'Choice 2-1',
-            'num_votes': 30
-        },
-        {
-            'name': 'Choice 2-2',
-            'num_votes': 14
-        },
-        {
-            'name': 'Choice 2-3',
-            'num_votes': 16
-        }
+snapshots["test_set_contest_metadata_from_cvrs 1"] = {
+    "choices": [
+        {"name": "Choice 2-1", "num_votes": 30},
+        {"name": "Choice 2-2", "num_votes": 14},
+        {"name": "Choice 2-3", "num_votes": 16},
     ],
-    'num_winners': 1,
-    'total_ballots_cast': 30,
-    'votes_allowed': 2
+    "num_winners": 1,
+    "total_ballots_cast": 30,
+    "votes_allowed": 2,
 }
 
-snapshots['test_ballot_comparison_two_rounds 1'] = {
-    'key': 'supersimple',
-    'prob': None,
-    'size': 22
+snapshots["test_ballot_comparison_two_rounds 1"] = {
+    "key": "supersimple",
+    "prob": None,
+    "size": 22,
 }
 
-snapshots['test_ballot_comparison_two_rounds 2'] = '''######## ELECTION INFO ########\r
+snapshots[
+    "test_ballot_comparison_two_rounds 2"
+] = """######## ELECTION INFO ########\r
 Election Name,State\r
 Test Election,CA\r
 \r
@@ -70,9 +63,11 @@ J2,2,1,1,"Round 1: 0.093047161560174517, 0.373730886719570665, 0.441070345112650
 J2,2,1,2,Round 1: 0.089733987461263823,AUDITED,Choice 1-1,Choice 2-1\r
 J2,2,2,2,Round 1: 0.425418515815626443,AUDITED,"OVERVOTE; Choice 1-1, Choice 1-2","OVERVOTE; Choice 2-1, Choice 2-2"\r
 J2,2,2,6,Round 1: 0.293871936182799706,AUDITED,,\r
-'''
+"""
 
-snapshots['test_ballot_comparison_two_rounds 3'] = '''######## ELECTION INFO ########\r
+snapshots[
+    "test_ballot_comparison_two_rounds 3"
+] = """######## ELECTION INFO ########\r
 Election Name,State\r
 Test Election,CA\r
 \r
@@ -117,4 +112,4 @@ J1,2,2,4,Round 2: 0.612659360179389854,AUDITED,,\r
 J1,2,2,5,Round 2: 0.502647713554707613,AUDITED,,\r
 J2,1,2,2,"Round 2: 0.607737852329141156, 0.704308803660011215",AUDITED,Choice 1-2,Choice 2-2\r
 J2,2,2,5,Round 2: 0.478039888546290679,AUDITED,,\r
-'''
+"""
