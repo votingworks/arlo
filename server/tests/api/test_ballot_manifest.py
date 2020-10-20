@@ -24,10 +24,7 @@ def test_ballot_manifest_upload(
         data={
             "manifest": (
                 io.BytesIO(
-                    b"Batch Name,Number of Ballots,Storage Location,Tabulator\n"
-                    b"1,23,Bin 2,Tabulator 1\n"
-                    b"12,100,Bin 3,Tabulator 2\n"
-                    b"6,0,,\n"
+                    b"Batch Name,Number of Ballots\n" b"1,23\n" b"12,100\n" b"6,0\n"
                 ),
                 "manifest.csv",
             )
@@ -75,16 +72,10 @@ def test_ballot_manifest_upload(
     assert len(jurisdiction.batches) == 3
     assert jurisdiction.batches[0].name == "1"
     assert jurisdiction.batches[0].num_ballots == 23
-    assert jurisdiction.batches[0].storage_location == "Bin 2"
-    assert jurisdiction.batches[0].tabulator == "Tabulator 1"
     assert jurisdiction.batches[1].name == "12"
     assert jurisdiction.batches[1].num_ballots == 100
-    assert jurisdiction.batches[1].storage_location == "Bin 3"
-    assert jurisdiction.batches[1].tabulator == "Tabulator 2"
     assert jurisdiction.batches[2].name == "6"
     assert jurisdiction.batches[2].num_ballots == 0
-    assert jurisdiction.batches[2].storage_location is None
-    assert jurisdiction.batches[2].tabulator is None
 
 
 def test_ballot_manifest_replace(
@@ -343,7 +334,7 @@ def test_ballot_manifest_upload_duplicate_batch_name(
                 "status": ProcessingStatus.ERRORED,
                 "startedAt": assert_is_date,
                 "completedAt": assert_is_date,
-                "error": "Values in column Batch Name must be unique. Found duplicate value: 12.",
+                "error": "Each row must be uniquely identified by Batch Name. Found duplicate: 12.",
             },
         },
     )

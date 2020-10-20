@@ -166,7 +166,7 @@ def test_duplicate_batch_name(client, election_id, jurisdiction_ids):
                         "status": "ERRORED",
                         "startedAt": assert_is_date,
                         "completedAt": assert_is_date,
-                        "error": "Values in column Batch Name must be unique. Found duplicate value: 1.",
+                        "error": "Each row must be uniquely identified by Batch Name. Found duplicate: 1.",
                     },
                     "numBallots": None,
                     "numBatches": None,
