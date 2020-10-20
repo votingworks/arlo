@@ -334,10 +334,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                 intent="primary"
                 disabled={
                   locked ||
-                  !isSetupComplete(jurisdictions, contests, auditSettings) ||
-                  (auditType === 'BATCH_COMPARISON' &&
-                    !talliesUploadsCompleted &&
-                    !cvrsUploadsCompleted)
+                  !isSetupComplete(jurisdictions, contests, auditSettings)
                 }
                 onClick={handleSubmit}
               >
