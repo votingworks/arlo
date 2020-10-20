@@ -130,6 +130,12 @@ def test_ballot_comparison_two_rounds(
     rv = client.get(f"/api/election/{election_id}/round",)
     round_1_id = json.loads(rv.data)["rounds"][0]["id"]
 
+    # Check jurisdiction status after starting the round
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    snapshot.assert_match(jurisdictions[0]["currentRoundStatus"])
+    snapshot.assert_match(jurisdictions[1]["currentRoundStatus"])
+
     # JAs create audit boards
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     for jurisdiction_id in target_contest["jurisdictionIds"]:
