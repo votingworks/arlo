@@ -13,7 +13,7 @@ export interface IBallot {
     id: string
     name: string
     tabulator: string | null
-    container?: string
+    container: string | null
   }
   auditBoard?: Pick<IAuditBoard, 'id' | 'name'>
   imprintedId?: string
