@@ -9,8 +9,14 @@ export interface IBallot {
   status: BallotStatus
   interpretations: IBallotInterpretation[]
   position: number
-  batch: { id: string; name: string; tabulator: string | null }
+  batch: {
+    id: string
+    name: string
+    tabulator: string | null
+    container: string | null
+  }
   auditBoard?: Pick<IAuditBoard, 'id' | 'name'>
+  imprintedId?: string
 }
 
 const getBallots = async (
