@@ -88,10 +88,44 @@ export const isSetupComplete = (
   jurisdictions: IJurisdiction[],
   contests: IContest[],
   auditSettings: IAuditSettings
-): boolean =>
-  jurisdictions.length > 0 &&
-  contests.some(c => c.isTargeted) &&
-  Object.values(auditSettings).every(v => v !== null)
+): boolean => {
+  if (jurisdictions.length === 0) return false
+
+  if (!contests.some(c => c.isTargeted)) return false
+
+  if (Object.values(auditSettings).some(v => v === null)) return false
+  const participatingJurisdictions = jurisdictions.filter(({ id }) =>
+    contests.some(c => c.jurisdictionIds.includes(id))
+  )
+
+  // In batch comparison audits, all jurisdictions must upload batch tallies
+  if (auditSettings.auditType === 'BATCH_COMPARISON') {
+    if (
+      !participatingJurisdictions.every(
+        ({ batchTallies }) =>
+          batchTallies &&
+          batchTallies.processing &&
+          batchTallies.processing.status === FileProcessingStatus.PROCESSED
+      )
+    )
+      return false
+  }
+
+  // In ballot comparison audits, all jurisdictions must upload CVRs
+  if (auditSettings.auditType === 'BALLOT_COMPARISON') {
+    if (
+      !participatingJurisdictions.every(
+        ({ cvrs }) =>
+          cvrs &&
+          cvrs.processing &&
+          cvrs.processing.status === FileProcessingStatus.PROCESSED
+      )
+    )
+      return false
+  }
+
+  return true
+}
 
 interface IAuditAdminProps {
   rounds: IRound[]
@@ -119,8 +153,14 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
     ]
     if (jurisdictions.length > 0) {
       const numUploaded = jurisdictions.filter(
-        ({ ballotManifest: { processing } }) =>
-          processing && processing.status === FileProcessingStatus.PROCESSED
+        ({ ballotManifest, batchTallies, cvrs }) => {
+          const files: IFileInfo['processing'][] = [ballotManifest.processing]
+          if (batchTallies) files.push(batchTallies.processing)
+          if (cvrs) files.push(cvrs.processing)
+          return files.every(
+            f => f && f.status === FileProcessingStatus.PROCESSED
+          )
+        }
       ).length
       details.push(
         `${numUploaded} of ${jurisdictions.length}` +
@@ -186,14 +226,20 @@ export const AuditAdminStatusBox: React.FC<IAuditAdminProps> = ({
 interface IJurisdictionAdminProps {
   rounds: IRound[]
   ballotManifest: IFileInfo
+  batchTallies: IFileInfo
+  cvrs: IFileInfo
   auditBoards: IAuditBoard[]
+  auditType: IAuditSettings['auditType']
   children?: ReactElement
 }
 
 export const JurisdictionAdminStatusBox = ({
   rounds,
   ballotManifest,
+  batchTallies,
+  cvrs,
   auditBoards,
+  auditType,
   children,
 }: IJurisdictionAdminProps) => {
   const { electionId, jurisdictionId } = useParams<{
@@ -203,19 +249,34 @@ export const JurisdictionAdminStatusBox = ({
 
   // Audit has not started
   if (rounds.length === 0) {
-    const { processing } = ballotManifest
+    const files: IFileInfo['processing'][] = [ballotManifest.processing]
+    if (auditType === 'BATCH_COMPARISON') files.push(batchTallies.processing)
+    if (auditType === 'BALLOT_COMPARISON') files.push(cvrs.processing)
+
+    const numComplete = files.filter(
+      f => f && f.status === FileProcessingStatus.PROCESSED
+    ).length
+
+    let details
+    // Special case when we have just a ballotManifest
+    if (files.length === 1) {
+      details =
+        numComplete === 1
+          ? [
+              'Ballot manifest uploaded.',
+              'Waiting for Audit Administrator to launch audit.',
+            ]
+          : ['Ballot manifest not uploaded.']
+    }
+    // When we have multiple files
+    else {
+      details = [`${numComplete}/${files.length} files uploaded.`]
+      if (numComplete === files.length)
+        details.push('Waiting for Audit Administrator to launch audit.')
+    }
+
     return (
-      <StatusBox
-        headline="The audit has not started."
-        details={
-          processing && processing.status === FileProcessingStatus.PROCESSED
-            ? [
-                'Ballot manifest uploaded.',
-                'Waiting for Audit Administrator to launch audit.',
-              ]
-            : ['Ballot manifest not uploaded.']
-        }
-      >
+      <StatusBox headline="The audit has not started." details={details}>
         {children}
       </StatusBox>
     )

@@ -231,6 +231,9 @@ describe('StatusBox', () => {
             rounds={[]}
             auditBoards={[]}
             ballotManifest={{ file: null, processing: null }}
+            batchTallies={{ file: null, processing: null }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BALLOT_POLLING"
           />
         </Router>
       )
@@ -248,6 +251,9 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
+            batchTallies={{ file: null, processing: null }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BALLOT_POLLING"
           />
         </Router>
       )
@@ -266,6 +272,9 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
+            batchTallies={{ file: null, processing: null }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BALLOT_POLLING"
           />
         </Router>
       )
@@ -283,6 +292,9 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
+            batchTallies={{ file: null, processing: null }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BALLOT_POLLING"
           />
         </Router>
       )
@@ -300,6 +312,9 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
+            batchTallies={{ file: null, processing: null }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BALLOT_POLLING"
           />
         </Router>
       )
@@ -318,6 +333,9 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
+            batchTallies={{ file: null, processing: null }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BALLOT_POLLING"
           />
         </Router>
       )
@@ -337,6 +355,9 @@ describe('StatusBox', () => {
               file: null,
               processing: fileProcessingMocks.processed,
             }}
+            batchTallies={{ file: null, processing: null }}
+            cvrs={{ file: null, processing: null }}
+            auditType="BALLOT_POLLING"
           />
         </Router>
       )
@@ -352,4 +373,6 @@ describe('StatusBox', () => {
       )
     })
   })
+
+  // TODO test BATCH_COMPARISON and BALLOT_COMPARISON audits
 })

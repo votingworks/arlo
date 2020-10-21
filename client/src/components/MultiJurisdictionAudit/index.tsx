@@ -184,7 +184,10 @@ export const JurisdictionAdminView: React.FC = () => {
         <JurisdictionAdminStatusBox
           rounds={rounds}
           ballotManifest={ballotManifest}
+          batchTallies={batchTallies}
+          cvrs={cvrs}
           auditBoards={auditBoards}
+          auditType={auditSettings.auditType}
         />
         <VerticalInner>
           <H2Title>Audit Source Data</H2Title>
@@ -249,7 +252,10 @@ export const JurisdictionAdminView: React.FC = () => {
       <JurisdictionAdminStatusBox
         rounds={rounds}
         ballotManifest={ballotManifest}
+        batchTallies={batchTallies}
+        cvrs={cvrs}
         auditBoards={auditBoards}
+        auditType={auditSettings.auditType}
       />
       <Inner>
         <RoundManagement
