@@ -185,6 +185,7 @@ function useSetupMenuItems(
       targetContests,
       opportunisticContests,
       auditSettings,
+      isBallotComparison,
       reviewLaunch,
       refresh,
     ]
