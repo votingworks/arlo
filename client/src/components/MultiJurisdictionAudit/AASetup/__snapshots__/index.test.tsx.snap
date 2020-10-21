@@ -90,7 +90,7 @@ exports[`Setup renders Audit Settings stage 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select sc-jzJRlG kYjAMg"
+            class="bp3-html-select sc-jKJlTe WCGaW"
           >
             <select
               data-testid="risk-limit"
@@ -335,7 +335,7 @@ exports[`Setup renders Audit Settings stage with locked next stage 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select bp3-disabled sc-jzJRlG kYjAMg"
+            class="bp3-html-select bp3-disabled sc-jKJlTe WCGaW"
           >
             <select
               data-testid="risk-limit"
@@ -581,7 +581,7 @@ exports[`Setup renders Audit Settings stage with processing next stage 1`] = `
         >
           Set the risk for the audit as a percentage (e.g. "5" = 5%)
           <div
-            class="bp3-html-select sc-jzJRlG kYjAMg"
+            class="bp3-html-select sc-jKJlTe WCGaW"
           >
             <select
               data-testid="risk-limit"
@@ -2918,7 +2918,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-eNQAEJ ijfeLW"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -2976,7 +2976,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-jKJlTe gDHTyY"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -2991,7 +2991,7 @@ exports[`Setup renders Review & Launch stage 1`] = `
         <tbody />
       </table>
       <table
-        class="sc-jKJlTe gDHTyY"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -3102,7 +3102,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-eNQAEJ ijfeLW"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -3160,7 +3160,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-jKJlTe gDHTyY"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -3175,7 +3175,7 @@ exports[`Setup renders Review & Launch stage with locked next stage 1`] = `
         <tbody />
       </table>
       <table
-        class="sc-jKJlTe gDHTyY"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -3286,7 +3286,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-eNQAEJ ijfeLW"
+        class="sc-hMqMXs kgAdZo"
       >
         <tbody>
           <tr>
@@ -3344,7 +3344,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-jKJlTe gDHTyY"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
@@ -3359,7 +3359,7 @@ exports[`Setup renders Review & Launch stage with processing next stage 1`] = `
         <tbody />
       </table>
       <table
-        class="sc-jKJlTe gDHTyY"
+        class="sc-eNQAEJ jcIdqs"
       >
         <thead>
           <tr>
