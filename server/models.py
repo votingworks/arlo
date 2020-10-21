@@ -45,7 +45,7 @@ class Election(BaseModel):
     random_seed = Column(String(100))
 
     # an election is "online" if every ballot is entered online, vs. offline in a tally sheet.
-    online = Column(Boolean, nullable=False, default=False)
+    online = Column(Boolean, nullable=False)
 
     # False for our old single-jurisdiction flow,
     # True for our new multi-jurisdiction flow
