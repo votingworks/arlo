@@ -11,8 +11,6 @@ snapshots["test_audit_boards_create_two 1"] = 80
 
 snapshots["test_audit_boards_create_one 1"] = 80
 
-snapshots["test_audit_boards_create_round_2 1"] = 248
-
 snapshots["test_audit_boards_list_one 1"] = [
     {
         "currentRoundStatus": {"numAuditedBallots": 0, "numSampledBallots": 76},
@@ -66,6 +64,8 @@ snapshots["test_audit_boards_list_two 3"] = [
         "name": "Audit Board #2",
     },
 ]
+
+snapshots["test_audit_boards_create_round_2 1"] = 248
 
 snapshots["test_audit_boards_list_round_2 1"] = [
     {
