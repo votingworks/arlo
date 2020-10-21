@@ -174,14 +174,14 @@ describe('Audit Setup > Review & Launch', () => {
     })
   })
 
-  it('renders full state with jurisdictions on opportunistic contest', async () => {
+  it('renders full state with jurisdictions with targeted and opportunistic contests', async () => {
     const expectedCalls = [
       apiCalls.getSettings(settingsMock.full),
       apiCalls.getJurisdictions({
         jurisdictions: jurisdictionMocks.allManifests,
       }),
       apiCalls.getJurisdictionFile,
-      apiCalls.getContests(contestMocks.filledOpportunisticWithJurisdictionId),
+      apiCalls.getContests(contestMocks.filledTargetedAndOpportunistic),
       apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
@@ -197,7 +197,6 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictions({ jurisdictions: [] }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledTargetedWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()
@@ -212,7 +211,6 @@ describe('Audit Setup > Review & Launch', () => {
       apiCalls.getJurisdictions({ jurisdictions: [] }),
       apiCalls.getJurisdictionFile,
       apiCalls.getContests(contestMocks.filledOpportunisticWithJurisdictionId),
-      apiCalls.getSampleSizeOptions,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { container } = renderView()

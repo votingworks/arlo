@@ -1,13 +1,7 @@
 import { IContest } from '../../../../types'
 
 export const contestMocks: {
-  [key in
-    | 'emptyTargeted'
-    | 'emptyOpportunistic'
-    | 'filledTargeted'
-    | 'filledOpportunistic'
-    | 'filledTargetedWithJurisdictionId'
-    | 'filledOpportunisticWithJurisdictionId']: { contests: IContest[] }
+  [key: string]: { contests: IContest[] }
 } = {
   emptyTargeted: {
     contests: [
@@ -139,6 +133,52 @@ export const contestMocks: {
       {
         id: 'contest-id',
         name: 'Contest Name',
+        isTargeted: false,
+        totalBallotsCast: '30',
+        numWinners: '1',
+        votesAllowed: '1',
+        jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
+        choices: [
+          {
+            id: 'choice-id-3',
+            name: 'Choice Three',
+            numVotes: '10',
+          },
+          {
+            id: 'choice-id-4',
+            name: 'Choice Four',
+            numVotes: '20',
+          },
+        ],
+      },
+    ],
+  },
+  filledTargetedAndOpportunistic: {
+    contests: [
+      {
+        id: 'contest-id',
+        name: 'Contest 1',
+        isTargeted: true,
+        totalBallotsCast: '30',
+        numWinners: '1',
+        votesAllowed: '1',
+        jurisdictionIds: ['jurisdiction-id-1', 'jurisdiction-id-2'],
+        choices: [
+          {
+            id: 'choice-id-1',
+            name: 'Choice One',
+            numVotes: '10',
+          },
+          {
+            id: 'choice-id-2',
+            name: 'Choice Two',
+            numVotes: '20',
+          },
+        ],
+      },
+      {
+        id: 'contest-id',
+        name: 'Contest 2',
         isTargeted: false,
         totalBallotsCast: '30',
         numWinners: '1',
