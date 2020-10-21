@@ -66,8 +66,12 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
 
         # Parse out all the initial metadata
         _election_name = next(cvrs)[0]
-        contest_headers = next(cvrs)[7:]
-        contest_choices = next(cvrs)[7:]
+        contest_row = next(cvrs)
+        first_contest_column = next(
+            c for c, value in enumerate(contest_row) if value != ""
+        )
+        contest_headers = contest_row[first_contest_column:]
+        contest_choices = next(cvrs)[first_contest_column:]
         _headers_and_affiliations = next(cvrs)
 
         # Contest headers look like this: "Presidential Primary (Vote For=1)"
@@ -119,10 +123,9 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                     batch_id,
                     record_id,
                     imprinted_id,
-                    _precinct_portion,
-                    _ballot_type,
-                    *interpretations,
-                ] = row
+                    *_,  # CountingGroup (maybe), PrecintPortion, BallotType
+                ] = row[:first_contest_column]
+                interpretations = row[first_contest_column:]
                 db_batch_id = batch_key_to_id[(tabulator_number, batch_id)]
                 ballots_csv.writerow(
                     [
