@@ -42,7 +42,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-jKJlTe bkTFhC"
+        class="sc-eNQAEJ ijfeLW"
       >
         <tbody>
           <tr>
@@ -100,7 +100,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -115,7 +115,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
         <tbody />
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -230,7 +230,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-jKJlTe bkTFhC"
+        class="sc-eNQAEJ ijfeLW"
       >
         <tbody>
           <tr>
@@ -288,7 +288,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -312,7 +312,7 @@ exports[`Audit Setup > Review & Launch renders despite missing jurisdictions on 
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -506,7 +506,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-jKJlTe bkTFhC"
+        class="sc-eNQAEJ ijfeLW"
       >
         <tbody>
           <tr>
@@ -564,7 +564,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -588,7 +588,7 @@ exports[`Audit Setup > Review & Launch renders empty state 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -780,7 +780,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-jKJlTe bkTFhC"
+        class="sc-eNQAEJ ijfeLW"
       >
         <tbody>
           <tr>
@@ -838,7 +838,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -862,7 +862,7 @@ exports[`Audit Setup > Review & Launch renders full state 1`] = `
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -1054,7 +1054,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-jKJlTe bkTFhC"
+        class="sc-eNQAEJ ijfeLW"
       >
         <tbody>
           <tr>
@@ -1112,7 +1112,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -1136,7 +1136,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -1328,7 +1328,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-jKJlTe bkTFhC"
+        class="sc-eNQAEJ ijfeLW"
       >
         <tbody>
           <tr>
@@ -1386,7 +1386,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -1410,7 +1410,7 @@ exports[`Audit Setup > Review & Launch renders full state with batch comparison 
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -1516,7 +1516,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-jKJlTe bkTFhC"
+        class="sc-eNQAEJ ijfeLW"
       >
         <tbody>
           <tr>
@@ -1574,7 +1574,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -1589,7 +1589,7 @@ exports[`Audit Setup > Review & Launch renders full state with jurisdictions on 
         <tbody />
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -1704,7 +1704,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
       class="bp3-card bp3-elevation-2 sc-dxgOiQ jDdoJq"
     >
       <table
-        class="sc-jKJlTe bkTFhC"
+        class="sc-eNQAEJ ijfeLW"
       >
         <tbody>
           <tr>
@@ -1762,7 +1762,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>
@@ -1786,7 +1786,7 @@ exports[`Audit Setup > Review & Launch renders full state with offline setting 1
         </tbody>
       </table>
       <table
-        class="sc-ckVGcZ qPOwv"
+        class="sc-jKJlTe gDHTyY"
       >
         <thead>
           <tr>

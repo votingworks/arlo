@@ -98,7 +98,7 @@ describe('Audit Setup > Contests', () => {
         {...relativeStages('target-contests')}
       />
     )
-    await findByText('target-contests')
+    await findByText('Target Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -130,7 +130,7 @@ describe('Audit Setup > Contests', () => {
         {...relativeStages('target-contests')}
       />
     )
-    await findByText('target-contests')
+    await findByText('Target Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -226,7 +226,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
-    await findByText('target-contests')
+    await findByText('Target Contests')
     contestsInputMocks.inputs.forEach(inputData => {
       const input = getByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',
@@ -269,7 +269,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
-    await findByText('target-contests')
+    await findByText('Target Contests')
     await utilities.asyncForEach(
       contestsInputMocks.errorInputs,
       async (inputData: { key: string; value: string; error: string }) => {
@@ -470,7 +470,7 @@ describe('Audit Setup > Contests', () => {
       />
     )
 
-    await findByText('target-contests')
+    await findByText('Target Contests')
     contestsInputMocks.inputs.forEach(inputData => {
       const input = getAllByLabelText(new RegExp(regexpEscape(inputData.key)), {
         selector: 'input',

@@ -175,7 +175,8 @@ export const contestsInputMocks = {
     {
       key: 'Total Ballots for Contest',
       value: '',
-      error: 'Must be a number',
+      error:
+        'Must be greater than or equal to the sum of votes for each candidate/choice',
     },
     {
       key: 'Total Ballots for Contest',
@@ -185,8 +186,7 @@ export const contestsInputMocks = {
     {
       key: 'Total Ballots for Contest',
       value: '-1',
-      error:
-        'Must be greater than or equal to the sum of votes for each candidate/choice',
+      error: 'Must be a positive number',
     },
     {
       key: 'Total Ballots for Contest',
@@ -198,7 +198,7 @@ export const contestsInputMocks = {
     {
       key: 'Votes for Candidate/Choice 1',
       value: '',
-      error: 'Must be a number',
+      error: 'Required',
     },
     {
       key: 'Votes for Candidate/Choice 1',
@@ -218,7 +218,7 @@ export const contestsInputMocks = {
     {
       key: 'Votes for Candidate/Choice 2',
       value: '',
-      error: 'Must be a number',
+      error: 'Required',
     },
     {
       key: 'Votes for Candidate/Choice 2',
