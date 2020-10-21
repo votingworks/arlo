@@ -435,11 +435,11 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                     class="bp3-table-column-headers bp3-table-selection-enabled"
                   >
                     <div
-                      style="width: 600px;"
+                      style="width: 750px;"
                     >
                       <div
                         class="bp3-table-thead bp3-table-column-header-tr"
-                        style="transform: translateX(0px); width: 600px;"
+                        style="transform: translateX(0px); width: 750px;"
                       >
                         <div
                           class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -447,7 +447,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Batch"
+                            title="Container"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -455,7 +455,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Batch
+                                Container
                               </div>
                             </div>
                           </div>
@@ -472,35 +472,6 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                         </div>
                         <div
                           class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Ballot Position"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Ballot Position
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                          <div
-                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                          >
-                            <div
-                              class="bp3-table-resize-handle"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
@@ -529,12 +500,12 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                           </div>
                         </div>
                         <div
-                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Status"
+                            title="Batch"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -542,7 +513,36 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Status
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
                               </div>
                             </div>
                           </div>
@@ -563,7 +563,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 1080px; width: 600px;"
+                  style="height: 1080px; width: 750px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -571,7 +571,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: 1080px; width: 600px;"
+                        style="height: 1080px; width: 750px;"
                       >
                         <div
                           class="bp3-table-body-cells"
@@ -781,11 +781,11 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                     class="bp3-table-column-headers bp3-table-selection-enabled"
                   >
                     <div
-                      style="width: 600px;"
+                      style="width: 750px;"
                     >
                       <div
                         class="bp3-table-thead bp3-table-column-header-tr"
-                        style="transform: translateX(0px); width: 600px;"
+                        style="transform: translateX(0px); width: 750px;"
                       >
                         <div
                           class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -793,7 +793,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Batch"
+                            title="Container"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -801,7 +801,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Batch
+                                Container
                               </div>
                             </div>
                           </div>
@@ -818,35 +818,6 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                         </div>
                         <div
                           class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Ballot Position"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Ballot Position
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                          <div
-                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                          >
-                            <div
-                              class="bp3-table-resize-handle"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
@@ -875,12 +846,12 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                           </div>
                         </div>
                         <div
-                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Status"
+                            title="Batch"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -888,7 +859,36 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Status
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
                               </div>
                             </div>
                           </div>
@@ -909,7 +909,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 1080px; width: 600px;"
+                  style="height: 1080px; width: 750px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -917,7 +917,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="width: 600px;"
+                        style="width: 750px;"
                       >
                         <div
                           class="bp3-table-body-cells"
@@ -1035,11 +1035,11 @@ exports[`DataEntry ballot interaction renders board table with large container s
                     class="bp3-table-column-headers bp3-table-selection-enabled"
                   >
                     <div
-                      style="width: 600px;"
+                      style="width: 750px;"
                     >
                       <div
                         class="bp3-table-thead bp3-table-column-header-tr"
-                        style="transform: translateX(0px); width: 600px;"
+                        style="transform: translateX(0px); width: 750px;"
                       >
                         <div
                           class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -1047,7 +1047,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Batch"
+                            title="Container"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -1055,7 +1055,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Batch
+                                Container
                               </div>
                             </div>
                           </div>
@@ -1072,35 +1072,6 @@ exports[`DataEntry ballot interaction renders board table with large container s
                         </div>
                         <div
                           class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Ballot Position"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Ballot Position
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                          <div
-                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                          >
-                            <div
-                              class="bp3-table-resize-handle"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
@@ -1129,12 +1100,12 @@ exports[`DataEntry ballot interaction renders board table with large container s
                           </div>
                         </div>
                         <div
-                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Status"
+                            title="Batch"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -1142,7 +1113,36 @@ exports[`DataEntry ballot interaction renders board table with large container s
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Status
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
                               </div>
                             </div>
                           </div>
@@ -1163,7 +1163,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 1080px; width: 600px;"
+                  style="height: 1080px; width: 750px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -1171,7 +1171,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: 1080px; width: 600px;"
+                        style="height: 1080px; width: 750px;"
                       >
                         <div
                           class="bp3-table-body-cells"
@@ -1381,11 +1381,11 @@ exports[`DataEntry ballot interaction renders board table with large container s
                     class="bp3-table-column-headers bp3-table-selection-enabled"
                   >
                     <div
-                      style="width: 600px;"
+                      style="width: 750px;"
                     >
                       <div
                         class="bp3-table-thead bp3-table-column-header-tr"
-                        style="transform: translateX(0px); width: 600px;"
+                        style="transform: translateX(0px); width: 750px;"
                       >
                         <div
                           class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -1393,7 +1393,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Batch"
+                            title="Container"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -1401,7 +1401,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Batch
+                                Container
                               </div>
                             </div>
                           </div>
@@ -1418,35 +1418,6 @@ exports[`DataEntry ballot interaction renders board table with large container s
                         </div>
                         <div
                           class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Ballot Position"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Ballot Position
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                          <div
-                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                          >
-                            <div
-                              class="bp3-table-resize-handle"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
@@ -1475,12 +1446,12 @@ exports[`DataEntry ballot interaction renders board table with large container s
                           </div>
                         </div>
                         <div
-                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Status"
+                            title="Batch"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -1488,7 +1459,36 @@ exports[`DataEntry ballot interaction renders board table with large container s
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Status
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
                               </div>
                             </div>
                           </div>
@@ -1509,7 +1509,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 1080px; width: 600px;"
+                  style="height: 1080px; width: 750px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -1517,7 +1517,7 @@ exports[`DataEntry ballot interaction renders board table with large container s
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="width: 600px;"
+                        style="width: 750px;"
                       >
                         <div
                           class="bp3-table-body-cells"
@@ -1635,11 +1635,11 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                     class="bp3-table-column-headers"
                   >
                     <div
-                      style="width: 320px;"
+                      style="width: 400px;"
                     >
                       <div
                         class="bp3-table-thead bp3-table-column-header-tr"
-                        style="transform: translateX(0px); width: 320px;"
+                        style="transform: translateX(0px); width: 400px;"
                       >
                         <div
                           class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -1647,7 +1647,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Batch"
+                            title="Container"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -1655,7 +1655,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Batch
+                                Container
                               </div>
                             </div>
                           </div>
@@ -1672,35 +1672,6 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                         </div>
                         <div
                           class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Ballot Position"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Ballot Position
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                          <div
-                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                          >
-                            <div
-                              class="bp3-table-resize-handle"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 80px; min-width: 0px; width: 80px;"
                         >
                           <div
@@ -1729,12 +1700,12 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                           </div>
                         </div>
                         <div
-                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 80px; min-width: 0px; width: 80px;"
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Status"
+                            title="Batch"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -1742,7 +1713,36 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Status
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
                               </div>
                             </div>
                           </div>
@@ -1763,7 +1763,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 0px; width: 320px;"
+                  style="height: 0px; width: 400px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -1771,7 +1771,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: 0px; width: 320px;"
+                        style="height: 0px; width: 400px;"
                       >
                         <div
                           class="bp3-table-body-cells"
@@ -1796,11 +1796,11 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                     class="bp3-table-column-headers"
                   >
                     <div
-                      style="width: 320px;"
+                      style="width: 400px;"
                     >
                       <div
                         class="bp3-table-thead bp3-table-column-header-tr"
-                        style="transform: translateX(0px); width: 320px;"
+                        style="transform: translateX(0px); width: 400px;"
                       >
                         <div
                           class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -1808,7 +1808,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Batch"
+                            title="Container"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -1816,7 +1816,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Batch
+                                Container
                               </div>
                             </div>
                           </div>
@@ -1833,35 +1833,6 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                         </div>
                         <div
                           class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Ballot Position"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Ballot Position
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                          <div
-                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                          >
-                            <div
-                              class="bp3-table-resize-handle"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 80px; min-width: 0px; width: 80px;"
                         >
                           <div
@@ -1890,12 +1861,12 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                           </div>
                         </div>
                         <div
-                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 80px; min-width: 0px; width: 80px;"
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Status"
+                            title="Batch"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -1903,7 +1874,36 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Status
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 80px; min-width: 0px; width: 80px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
                               </div>
                             </div>
                           </div>
@@ -1924,7 +1924,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 0px; width: 320px;"
+                  style="height: 0px; width: 400px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -1932,7 +1932,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: -40px; width: 320px;"
+                        style="height: -40px; width: 400px;"
                       >
                         <div
                           class="bp3-table-body-cells"
@@ -2050,11 +2050,11 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                     class="bp3-table-column-headers bp3-table-selection-enabled"
                   >
                     <div
-                      style="width: 600px;"
+                      style="width: 750px;"
                     >
                       <div
                         class="bp3-table-thead bp3-table-column-header-tr"
-                        style="transform: translateX(0px); width: 600px;"
+                        style="transform: translateX(0px); width: 750px;"
                       >
                         <div
                           class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -2062,7 +2062,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Batch"
+                            title="Container"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -2070,7 +2070,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Batch
+                                Container
                               </div>
                             </div>
                           </div>
@@ -2087,35 +2087,6 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                         </div>
                         <div
                           class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Ballot Position"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Ballot Position
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                          <div
-                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                          >
-                            <div
-                              class="bp3-table-resize-handle"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
@@ -2144,12 +2115,12 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                           </div>
                         </div>
                         <div
-                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Status"
+                            title="Batch"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -2157,7 +2128,36 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Status
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
                               </div>
                             </div>
                           </div>
@@ -2178,7 +2178,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 1080px; width: 600px;"
+                  style="height: 1080px; width: 750px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -2186,7 +2186,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="height: 1080px; width: 600px;"
+                        style="height: 1080px; width: 750px;"
                       >
                         <div
                           class="bp3-table-body-cells"
@@ -2396,11 +2396,11 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                     class="bp3-table-column-headers bp3-table-selection-enabled"
                   >
                     <div
-                      style="width: 600px;"
+                      style="width: 750px;"
                     >
                       <div
                         class="bp3-table-thead bp3-table-column-header-tr"
-                        style="transform: translateX(0px); width: 600px;"
+                        style="transform: translateX(0px); width: 750px;"
                       >
                         <div
                           class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -2408,7 +2408,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Batch"
+                            title="Container"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -2416,7 +2416,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Batch
+                                Container
                               </div>
                             </div>
                           </div>
@@ -2433,35 +2433,6 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                         </div>
                         <div
                           class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                        >
-                          <div
-                            class="bp3-table-column-name"
-                            title="Ballot Position"
-                          >
-                            <div
-                              class="bp3-table-column-name-text"
-                            >
-                              <div
-                                class="bp3-table-truncated-text"
-                              >
-                                Ballot Position
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            class="bp3-table-header-content"
-                          />
-                          <div
-                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                          >
-                            <div
-                              class="bp3-table-resize-handle"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
@@ -2490,12 +2461,12 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                           </div>
                         </div>
                         <div
-                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                           style="flex-basis: 150px; min-width: 0px; width: 150px;"
                         >
                           <div
                             class="bp3-table-column-name"
-                            title="Status"
+                            title="Batch"
                           >
                             <div
                               class="bp3-table-column-name-text"
@@ -2503,7 +2474,36 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                               <div
                                 class="bp3-table-truncated-text"
                               >
-                                Status
+                                Batch
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="bp3-table-header-content"
+                          />
+                          <div
+                            class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                          >
+                            <div
+                              class="bp3-table-resize-handle"
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                          style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                        >
+                          <div
+                            class="bp3-table-column-name"
+                            title="Ballot Position"
+                          >
+                            <div
+                              class="bp3-table-column-name-text"
+                            >
+                              <div
+                                class="bp3-table-truncated-text"
+                              >
+                                Ballot Position
                               </div>
                             </div>
                           </div>
@@ -2524,7 +2524,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                 </div>
                 <div
                   class="bp3-table-bottom-container"
-                  style="height: 1080px; width: 600px;"
+                  style="height: 1080px; width: 750px;"
                 >
                   <div
                     class="bp3-table-quadrant-body-container"
@@ -2532,7 +2532,7 @@ exports[`DataEntry member form submits and goes to ballot table 1`] = `
                     <div>
                       <div
                         class="bp3-table-body-virtual-client bp3-table-cell-client"
-                        style="width: 600px;"
+                        style="width: 750px;"
                       >
                         <div
                           class="bp3-table-body-cells"
