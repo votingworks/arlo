@@ -142,15 +142,15 @@ export const JAFileDownloadButtons = ({
             `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${
               round.id
             }/${
-              auditSettings.auditType === 'BALLOT_POLLING'
-                ? 'ballots'
-                : 'batches'
+              auditSettings.auditType === 'BATCH_COMPARISON'
+                ? 'batches'
+                : 'ballots'
             }/retrieval-list`
           )
       }
     >
       Download Aggregated{' '}
-      {auditSettings.auditType === 'BALLOT_POLLING' ? 'Ballot' : 'Batch'}{' '}
+      {auditSettings.auditType === 'BATCH_COMPARISON' ? 'Batch' : 'Ballot'}{' '}
       Retrieval List
     </Button>
     <Button
