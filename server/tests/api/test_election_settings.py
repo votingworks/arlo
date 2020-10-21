@@ -10,7 +10,7 @@ def test_settings_get_empty(client: FlaskClient, election_id: str):
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
         "electionName": None,
-        "online": False,
+        "online": True,
         "randomSeed": None,
         "riskLimit": None,
         "state": None,
@@ -29,7 +29,7 @@ def test_jurisdiction_settings_get_empty(
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
         "electionName": None,
-        "online": False,
+        "online": True,
         "randomSeed": None,
         "riskLimit": None,
         "state": None,
@@ -45,7 +45,7 @@ def test_update_election(
 
     election = json.loads(rv.data)
     election["electionName"] = "An Updated Name"
-    election["online"] = True
+    election["online"] = False
     election["randomSeed"] = "a new random seed"
     election["riskLimit"] = 15
     election["state"] = USState.Mississippi
@@ -55,7 +55,7 @@ def test_update_election(
 
     expected_settings = {
         "electionName": "An Updated Name",
-        "online": True,
+        "online": False,
         "randomSeed": "a new random seed",
         "riskLimit": 15,
         "state": "MS",
