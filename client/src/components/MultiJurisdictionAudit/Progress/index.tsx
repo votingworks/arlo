@@ -76,6 +76,7 @@ const Progress: React.FC<IProps> = ({
           currentRoundStatus,
           ballotManifest,
           batchTallies,
+          cvrs,
         } = jurisdiction
 
         const Status = (props: Omit<ITagProps, 'minimal'>) => (
@@ -89,6 +90,7 @@ const Progress: React.FC<IProps> = ({
         if (!currentRoundStatus) {
           const files: IFileInfo['processing'][] = [ballotManifest.processing]
           if (batchTallies) files.push(batchTallies.processing)
+          if (cvrs) files.push(cvrs.processing)
 
           const numComplete = files.filter(
             f => f && f.status === FileProcessingStatus.PROCESSED
@@ -131,10 +133,11 @@ const Progress: React.FC<IProps> = ({
         }[currentRoundStatus.status]
       },
       sortType: sortByRank(
-        ({ currentRoundStatus, ballotManifest, batchTallies }) => {
+        ({ currentRoundStatus, ballotManifest, batchTallies, cvrs }) => {
           if (!currentRoundStatus) {
             const files: IFileInfo['processing'][] = [ballotManifest.processing]
             if (batchTallies) files.push(batchTallies.processing)
+            if (cvrs) files.push(cvrs.processing)
 
             const numComplete = files.filter(
               f => f && f.status === FileProcessingStatus.PROCESSED
@@ -194,7 +197,9 @@ const Progress: React.FC<IProps> = ({
         <Switch
           checked={isShowingUnique}
           label={`Count unique sampled ${
-            auditSettings.auditType === 'BALLOT_POLLING' ? 'ballots' : 'batches'
+            auditSettings.auditType === 'BATCH_COMPARISON'
+              ? 'batches'
+              : 'ballots'
           }`}
           onChange={() => setIsShowingUnique(!isShowingUnique)}
         />
