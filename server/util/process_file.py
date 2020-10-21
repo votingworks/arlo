@@ -41,6 +41,8 @@ def process_file(session: Session, file: File, callback: Callable[[], None]) -> 
         session.rollback()
         file.processing_started_at = processing_started_at
         file.processing_completed_at = datetime.datetime.utcnow()
+        # Some errors stringify nicely, some don't (e.g. StopIteration) so we
+        # have to format them.
         file.processing_error = str(error) or str(
             traceback.format_exception(error.__class__, error, error.__traceback__)
         )
