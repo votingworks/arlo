@@ -12,7 +12,7 @@ const loadJurisdictionFile = async (
   return response
 }
 
-const putJurisdictionFileFile = async (
+const putJurisdictionFile = async (
   electionId: string,
   csv: File
 ): Promise<boolean> => {
@@ -34,7 +34,7 @@ const useJurisdictionFile = (
 
   const uploadJurisdictionFile = async (csv: File): Promise<boolean> => {
     // TODO poll for result of upload
-    if (await putJurisdictionFileFile(electionId, csv)) {
+    if (await putJurisdictionFile(electionId, csv)) {
       setJurisdictionFile(await loadJurisdictionFile(electionId))
       return true
     }

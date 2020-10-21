@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
-import { ElementType } from '../../../types'
+import { ElementType, IAuditSettings } from '../../../types'
 import Participants from './Participants'
 import Contests from './Contests'
 import Settings from './Settings'
@@ -8,28 +8,41 @@ import Review from './Review'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 
 export const setupStages = [
-  'Participants',
-  'Target Contests',
-  'Opportunistic Contests',
-  'Audit Settings',
-  'Review & Launch',
+  'participants',
+  'target-contests',
+  'opportunistic-contests',
+  'settings',
+  'review',
 ] as const
+
+export const stageTitles: { [keys in typeof setupStages[number]]: string } = {
+  participants: 'Participants',
+  'target-contests': 'Target Contests',
+  'opportunistic-contests': 'Opportunistic Contests',
+  settings: 'Audit Settings',
+  review: 'Review & Launch',
+}
 
 interface IProps {
   stage: ElementType<typeof setupStages>
   menuItems: ISidebarMenuItem[]
   refresh: () => void
-  isBatch?: boolean // TODO support multiple contests in batch comparison audits
+  auditType: IAuditSettings['auditType']
 }
 
-const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
-  const activeStage = menuItems.find(m => m.title === stage)
+const AASetup: React.FC<IProps> = ({
+  stage,
+  menuItems,
+  refresh,
+  auditType,
+}) => {
+  const activeStage = menuItems.find(m => m.id === stage)
   const nextStage: ISidebarMenuItem | undefined =
     menuItems[menuItems.indexOf(activeStage!) + 1]
   const prevStage: ISidebarMenuItem | undefined =
     menuItems[menuItems.indexOf(activeStage!) - 1]
   switch (stage) {
-    case 'Participants':
+    case 'participants':
       // prevStage === undefined, so don't send it
       return (
         <Participants
@@ -37,7 +50,7 @@ const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
           locked={activeStage!.state === 'locked'}
         />
       )
-    case 'Target Contests':
+    case 'target-contests':
       return (
         <Contests
           isTargeted
@@ -45,10 +58,10 @@ const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
           nextStage={nextStage!}
           prevStage={prevStage!}
           locked={activeStage!.state === 'locked'}
-          isBatch={isBatch}
+          auditType={auditType}
         />
       )
-    case 'Opportunistic Contests':
+    case 'opportunistic-contests':
       return (
         <Contests
           isTargeted={false}
@@ -56,10 +69,10 @@ const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
           nextStage={nextStage!}
           prevStage={prevStage!}
           locked={activeStage!.state === 'locked'}
-          isBatch={isBatch}
+          auditType={auditType}
         />
       )
-    case 'Audit Settings':
+    case 'settings':
       return (
         <Settings
           nextStage={nextStage!}
@@ -67,7 +80,7 @@ const AASetup: React.FC<IProps> = ({ stage, menuItems, refresh, isBatch }) => {
           locked={activeStage!.state === 'locked'}
         />
       )
-    case 'Review & Launch':
+    case 'review':
       // nextStage === undefined, so don't send it
       return (
         <Review

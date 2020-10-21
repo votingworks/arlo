@@ -1,14 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
-import {
-  Formik,
-  FormikProps,
-  Form,
-  Field,
-  FieldArray,
-  ErrorMessage,
-} from 'formik'
+import { Formik, FormikProps, Field, FieldArray, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import uuidv4 from 'uuidv4'
 import {
@@ -276,7 +269,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
           handleSubmit,
           setFieldValue,
         }: FormikProps<IEstimateSampleSizeValues>) => (
-          <Form data-testid="form-one">
+          <form data-testid="form-one">
             <FormWrapper title="Administer an Audit">
               <FormSection>
                 {/* eslint-disable jsx-a11y/label-has-associated-control */}
@@ -513,7 +506,7 @@ const EstimateSampleSize: React.FC<IProps> = ({
                 </FormButton>
               </FormButtonBar>
             )}
-          </Form>
+          </form>
         )}
       </Formik>
     </>

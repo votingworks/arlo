@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useParams, useHistory, Link } from 'react-router-dom'
 import { H4, Callout, RadioGroup, Radio } from '@blueprintjs/core'
-import { Formik, FormikProps, Form, getIn, Field } from 'formik'
+import { Formik, FormikProps, getIn, Field } from 'formik'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
@@ -57,10 +57,24 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
           j.batchTallies.processing &&
           j.batchTallies.processing.status === FileProcessingStatus.PROCESSED)
     )
+  const cvrsUploadsCompleted =
+    !!jurisdictions.length &&
+    !!contests &&
+    jurisdictions.every(
+      j =>
+        contests.every(contest => !contest.jurisdictionIds.includes(j.id)) || // don't worry about this jurisdiction if it's not in the contest universe
+        (j.cvrs &&
+          j.cvrs.processing &&
+          j.cvrs.processing.status === FileProcessingStatus.PROCESSED)
+    )
   const [sampleSizeOptions, uploadSampleSizes] = useSampleSizes(
     electionId,
     !!auditSettings &&
-      (auditSettings.auditType === 'BALLOT_POLLING' || talliesUploadsCompleted) // only fetch sample sizes for ballot polling audits or if all tallies files are uploaded
+      !!contests &&
+      !!contests.length &&
+      (auditSettings.auditType === 'BALLOT_POLLING' ||
+        talliesUploadsCompleted ||
+        cvrsUploadsCompleted) // only fetch sample sizes for ballot polling audits or if all tallies files are uploaded
   )
 
   const submit = async () => {
@@ -230,7 +244,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
         }: FormikProps<{
           sampleSizes: { [key: string]: IStringSampleSizeOption }
         }>) => (
-          <Form data-testid="sample-size-form">
+          <form data-testid="sample-size-form">
             {sampleSizeOptions ? (
               <FormSection>
                 <FormSectionDescription>
@@ -321,14 +335,16 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
                 disabled={
                   locked ||
                   !isSetupComplete(jurisdictions, contests, auditSettings) ||
-                  (auditType === 'BATCH_COMPARISON' && !talliesUploadsCompleted)
+                  (auditType === 'BATCH_COMPARISON' &&
+                    !talliesUploadsCompleted &&
+                    !cvrsUploadsCompleted)
                 }
                 onClick={handleSubmit}
               >
                 Launch Audit
               </FormButton>
             </FormButtonBar>
-          </Form>
+          </form>
         )}
       </Formik>
       <ConfirmLaunch

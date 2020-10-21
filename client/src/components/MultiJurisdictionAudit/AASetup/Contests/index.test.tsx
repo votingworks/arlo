@@ -61,7 +61,7 @@ routeMock.mockReturnValue({
   view: 'setup',
 })
 
-const { nextStage, prevStage } = relativeStages('Target Contests')
+const { nextStage, prevStage } = relativeStages('target-contests')
 
 function typeInto(input: Element, value: string): void {
   // TODO: do more, like `focusIn`, `focusOut`, `input`, etc?
@@ -92,9 +92,10 @@ describe('Audit Setup > Contests', () => {
   it('renders empty targeted state correctly', async () => {
     const { container, findByText } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
     await findByText('Target Contests')
@@ -107,9 +108,10 @@ describe('Audit Setup > Contests', () => {
     )
     const { container, findByText } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted={false}
-        {...relativeStages('Opportunistic Contests')}
+        {...relativeStages('opportunistic-contests')}
       />
     )
     await findByText('Opportunistic Contests')
@@ -122,9 +124,10 @@ describe('Audit Setup > Contests', () => {
     )
     const { container, findByText } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
     await findByText('Target Contests')
@@ -137,9 +140,10 @@ describe('Audit Setup > Contests', () => {
     )
     const { container, findByText } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted={false}
-        {...relativeStages('Opportunistic Contests')}
+        {...relativeStages('opportunistic-contests')}
       />
     )
     await findByText('Opportunistic Contests')
@@ -149,9 +153,10 @@ describe('Audit Setup > Contests', () => {
   it('adds and removes contests', async () => {
     const { getByText, getAllByText, queryByText } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
 
@@ -183,9 +188,10 @@ describe('Audit Setup > Contests', () => {
     )
     const { findByText, getByText, getAllByText, queryAllByText } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
 
@@ -212,6 +218,7 @@ describe('Audit Setup > Contests', () => {
     )
     const { findByText, getByLabelText, getByText } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
         nextStage={nextStage}
@@ -254,6 +261,7 @@ describe('Audit Setup > Contests', () => {
   it('displays errors', async () => {
     const { getByLabelText, getByTestId, getByText, findByText } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
         nextStage={nextStage}
@@ -292,9 +300,10 @@ describe('Audit Setup > Contests', () => {
   it('displays an error when the total votes are greater than the allowed votes and more than one vote is allowed per contest', async () => {
     const { getByLabelText, findByLabelText, getByTestId } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
 
@@ -336,9 +345,10 @@ describe('Audit Setup > Contests', () => {
   it('displays no error when the total votes are greater than the ballot count, but less than the total allowed votes for a contest', async () => {
     const { findByLabelText, getByLabelText, queryByTestId } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
 
@@ -382,9 +392,10 @@ describe('Audit Setup > Contests', () => {
     )
     const { container } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
     await waitFor(() => {
@@ -409,6 +420,7 @@ describe('Audit Setup > Contests', () => {
       )
     const { getByLabelText, getByText, container } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
         nextStage={nextStage}
@@ -450,6 +462,7 @@ describe('Audit Setup > Contests', () => {
       )
     const { getAllByLabelText, getAllByText, findByText } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
         nextStage={nextStage}
@@ -497,9 +510,10 @@ describe('Audit Setup > Contests', () => {
     )
     const { getByText, findByText, findByLabelText } = render(
       <Contests
+        auditType="BALLOT_POLLING"
         locked={false}
         isTargeted
-        {...relativeStages('Target Contests')}
+        {...relativeStages('target-contests')}
       />
     )
     const dropDown = await findByText('Select Jurisdictions')

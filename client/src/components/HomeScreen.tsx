@@ -287,6 +287,7 @@ const CreateAudit: React.FC = () => {
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
+                <Radio value="BALLOT_COMPARISON">Ballot Comparison</Radio>
               </RadioGroup>
             </label>
           </FormSection>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Formik, Form } from 'formik'
+import { Formik } from 'formik'
 import { H1 } from '@blueprintjs/core'
 import FormSection from '../Atoms/Form/FormSection'
 import { LabelText, NameField } from './Atoms'
@@ -28,8 +28,9 @@ const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
       <Formik
         initialValues={auditBoard.members.map(() => '')}
         onSubmit={submitSignoff}
-        render={({ values, handleSubmit }) => (
-          <Form>
+      >
+        {({ values, handleSubmit }) => (
+          <form>
             {auditBoard.members.map((member, i) => (
               <FormSection
                 key={member.name}
@@ -47,9 +48,9 @@ const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
             >
               Sign Off
             </FormButton>
-          </Form>
+          </form>
         )}
-      />
+      </Formik>
     </div>
   )
 }

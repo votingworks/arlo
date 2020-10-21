@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react'
-import { Formik, FormikProps, Form } from 'formik'
+import { Formik, FormikProps } from 'formik'
 import styled from 'styled-components'
 import { HTMLSelect, FileInput, H4 } from '@blueprintjs/core'
 import FormWrapper from '../../Atoms/Form/FormWrapper'
@@ -24,7 +24,9 @@ interface IProps {
   csvFile: IFileInfo
   uploadCSVFile: (csv: File) => Promise<boolean>
   deleteCSVFile: () => Promise<boolean>
-  filePurpose: 'ballot-manifest' | 'batch-tallies'
+  title: string
+  description: string
+  sampleFileLink: string
   enabled: boolean
 }
 
@@ -39,7 +41,9 @@ const CSVFileForm = ({
   csvFile,
   uploadCSVFile,
   deleteCSVFile,
-  filePurpose,
+  title,
+  description,
+  sampleFileLink,
   enabled,
 }: IProps) => {
   const { file, processing } = csvFile
@@ -64,51 +68,27 @@ const CSVFileForm = ({
         errors,
         handleBlur,
       }: FormikProps<IValues>) => (
-        <Form>
+        <form>
           <FormWrapper>
-            {filePurpose === 'ballot-manifest' ? (
-              <FormSection>
-                <H4>Ballot Manifest</H4>
-                <FormSectionDescription>
-                  Click &quot;Browse&quot; to choose the appropriate Ballot
-                  Manifest file from your computer. This file should be a
-                  comma-separated list of all the ballot boxes/containers used
-                  to store ballots for this particular election, plus a count of
-                  how many ballot cards (individual pieces of paper) are stored
-                  in each container.
-                  <br />
-                  <br />
-                  <a
-                    href="/sample_ballot_manifest.csv"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    (Click here to view a sample file in the correct format.)
-                  </a>
-                </FormSectionDescription>
-              </FormSection>
-            ) : (
-              <FormSection>
-                <H4>Candidate Totals by Batch</H4>
-                <FormSectionDescription>
-                  Click &quot;Browse&quot; to choose the appropriate Candidate
-                  Totals by Batch file from your computer. This file should be a
-                  comma-separated list of all the ballot boxes/containers used
-                  to store ballots for this particular election, plus a count of
-                  how many votes were counted for each candidate in each of
-                  those containers.
-                  <br />
-                  <br />
-                  <a
-                    href="/sample_candidate_totals_by_batch.csv"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    (Click here to view a sample file in the correct format.)
-                  </a>
-                </FormSectionDescription>
-              </FormSection>
-            )}
+            <FormSection>
+              <H4>{title}</H4>
+              <FormSectionDescription>
+                {description}
+                {sampleFileLink && (
+                  <>
+                    <br />
+                    <br />
+                    <a
+                      href={sampleFileLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      (Click here to view a sample file in the correct format.)
+                    </a>
+                  </>
+                )}
+              </FormSectionDescription>
+            </FormSection>
             <FormSection>
               {isEditing ? (
                 <>
@@ -177,7 +157,7 @@ const CSVFileForm = ({
               )}
             </div>
           </FormWrapper>
-        </Form>
+        </form>
       )}
     </Formik>
   )

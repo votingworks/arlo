@@ -29,7 +29,7 @@ auditSettingsMock.mockReturnValue([
   async () => true,
 ])
 
-const { nextStage, prevStage } = relativeStages('Audit Settings')
+const { nextStage, prevStage } = relativeStages('settings')
 
 describe('Setup > BALLOT_POLLING Settings', () => {
   it('handles failure to update settings', async () => {

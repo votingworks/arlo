@@ -67,7 +67,7 @@ routeMock.mockReturnValue({
   view: 'setup',
 })
 
-const { prevStage } = relativeStages('Review & Launch')
+const { prevStage } = relativeStages('review')
 
 const refreshMock = jest.fn()
 

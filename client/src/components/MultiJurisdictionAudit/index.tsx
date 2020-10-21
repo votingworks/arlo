@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Redirect, useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import uuidv4 from 'uuidv4'
 import { Tag } from '@blueprintjs/core'
 import { ElementType } from '../../types'
 import { Wrapper, Inner } from '../Atoms/Wrapper'
@@ -15,7 +16,7 @@ import {
   JurisdictionAdminStatusBox,
   isSetupComplete,
 } from './StatusBox'
-import { useBallotManifest, useBatchTallies } from './useCSV'
+import { useBallotManifest, useBatchTallies, useCVRS } from './useCSV'
 import useAuditBoards from './useAuditBoards'
 import useAuditSettings from './useAuditSettings'
 import useJurisdictions, { FileProcessingStatus } from './useJurisdictions'
@@ -37,30 +38,40 @@ interface IParams {
 
 export const AuditAdminView: React.FC = () => {
   const { electionId, view } = useParams<IParams>()
-
-  const [stage, setStage] = useState<ElementType<typeof setupStages>>(
-    'Participants'
-  )
-  const [menuItems, refresh, refreshId] = useSetupMenuItems(
-    stage,
-    setStage,
-    electionId
-  )
+  const [refreshId, setRefreshId] = useState(uuidv4())
 
   const rounds = useRoundsAuditAdmin(electionId, refreshId)
   const jurisdictions = useJurisdictions(electionId, refreshId)
   const [contests] = useContests(electionId, refreshId)
   const [auditSettings] = useAuditSettings(electionId, refreshId)
 
-  useEffect(refresh, [refresh])
+  const isBallotComparison =
+    auditSettings && auditSettings.auditType === 'BALLOT_COMPARISON'
+  const [stage, setStage] = useState<ElementType<typeof setupStages>>(
+    'participants'
+  )
+  const [menuItems, refresh] = useSetupMenuItems(
+    stage,
+    setStage,
+    electionId,
+    !!isBallotComparison,
+    setRefreshId
+  )
+
+  useEffect(refresh, [refresh, isBallotComparison])
 
   if (!contests || !rounds || !auditSettings) return null // Still loading
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
-  const singleContestMenuItems = menuItems.filter(
-    i => i.title !== 'Opportunistic Contests'
-  )
+  const filteredMenuItems = menuItems.filter(({ id }) => {
+    switch (id as ElementType<typeof setupStages>) {
+      case 'opportunistic-contests':
+        return !isBatch
+      default:
+        return true
+    }
+  })
 
   switch (view) {
     case 'setup':
@@ -75,15 +86,12 @@ export const AuditAdminView: React.FC = () => {
             <RefreshTag refresh={refresh} />
           </AuditAdminStatusBox>
           <Inner>
-            <Sidebar
-              title="Audit Setup"
-              menuItems={isBatch ? singleContestMenuItems : menuItems}
-            />
+            <Sidebar title="Audit Setup" menuItems={filteredMenuItems} />
             <Setup
               stage={stage}
               refresh={refresh}
               menuItems={menuItems}
-              isBatch={isBatch}
+              auditType={auditSettings.auditType}
             />
           </Inner>
         </Wrapper>
@@ -104,6 +112,7 @@ export const AuditAdminView: React.FC = () => {
               title="Audit Progress"
               menuItems={[
                 {
+                  id: 'jurisdictions',
                   title: 'Jurisdictions',
                   active: true,
                   state: 'live',
@@ -152,6 +161,7 @@ export const JurisdictionAdminView: React.FC = () => {
     uploadBatchTallies,
     deleteBatchTallies,
   ] = useBatchTallies(electionId, jurisdictionId)
+  const [cvrs, uploadCVRS, deleteCVRS] = useCVRS(electionId, jurisdictionId)
   const [auditBoards, createAuditBoards] = useAuditBoards(
     electionId,
     jurisdictionId,
@@ -162,6 +172,7 @@ export const JurisdictionAdminView: React.FC = () => {
     !rounds ||
     !ballotManifest ||
     !batchTallies ||
+    !cvrs ||
     !auditBoards ||
     !auditSettings
   )
@@ -181,7 +192,14 @@ export const JurisdictionAdminView: React.FC = () => {
             csvFile={ballotManifest}
             uploadCSVFile={uploadBallotManifest}
             deleteCSVFile={deleteBallotManifest}
-            filePurpose="ballot-manifest"
+            title="Ballot Manifest"
+            description='Click "Browse" to choose the appropriate Ballot
+                  Manifest file from your computer. This file should be a
+                  comma-separated list of all the ballot boxes/containers used
+                  to store ballots for this particular election, plus a count of
+                  how many ballot cards (individual pieces of paper) are stored
+                  in each container.'
+            sampleFileLink="/sample_ballot_manifest.csv"
             enabled
           />
           {auditSettings.auditType === 'BATCH_COMPARISON' && (
@@ -194,7 +212,32 @@ export const JurisdictionAdminView: React.FC = () => {
               }
               uploadCSVFile={uploadBatchTallies}
               deleteCSVFile={deleteBatchTallies}
-              filePurpose="batch-tallies"
+              title="Candidate Totals by Batch"
+              description='Click "Browse" to choose the appropriate Candidate
+                  Totals by Batch file from your computer. This file should be a
+                  comma-separated list of all the ballot boxes/containers used
+                  to store ballots for this particular election, plus a count of
+                  how many votes were counted for each candidate in each of
+                  those containers.'
+              sampleFileLink="/sample_candidate_totals_by_batch.csv"
+            />
+          )}
+          {auditSettings.auditType === 'BALLOT_COMPARISON' && (
+            <CSVFile
+              csvFile={cvrs}
+              enabled={
+                !!ballotManifest.processing &&
+                ballotManifest.processing.status ===
+                  FileProcessingStatus.PROCESSED
+              }
+              uploadCSVFile={uploadCVRS}
+              deleteCSVFile={deleteCVRS}
+              title="Cast Vote Records"
+              description='Click "Browse" to choose the appropriate Cast Vote
+                  Records (CVR) file from your computer. This file should be a
+                  comma-separated list of all the ballots counted by your
+                  tabulator, in order.'
+              sampleFileLink=""
             />
           )}
         </VerticalInner>

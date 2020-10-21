@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { toast } from 'react-toastify'
 import uuidv4 from 'uuidv4'
-import { setupStages } from '../AASetup'
+import { setupStages, stageTitles } from '../AASetup'
 import { ElementType } from '../../../types'
 import { ISidebarMenuItem } from '../../Atoms/Sidebar'
 import getJurisdictionFileStatus, {
@@ -9,27 +9,29 @@ import getJurisdictionFileStatus, {
 } from './getJurisdictionFileStatus'
 import { poll } from '../../utilities'
 import getRoundStatus from './getRoundStatus'
+import getContestFileStatus from './getContestFileStatus'
 
 function useSetupMenuItems(
   stage: ElementType<typeof setupStages>,
   setStage: (s: ElementType<typeof setupStages>) => void,
-  electionId: string
-): [ISidebarMenuItem[], () => void, string] {
-  const [refreshId, setRefreshId] = useState(uuidv4())
+  electionId: string,
+  isBallotComparison: boolean,
+  setRefreshId: (arg0: string) => void
+): [ISidebarMenuItem[], () => void] {
   const [participants, setParticipants] = useState<ISidebarMenuItem['state']>(
     'live'
   )
   const [targetContests, setTargetContests] = useState<
     ISidebarMenuItem['state']
-  >('live')
+  >('locked')
   const [opportunisticContests, setOpportunisticContests] = useState<
     ISidebarMenuItem['state']
-  >('live')
+  >('locked')
   const [auditSettings, setAuditSettings] = useState<ISidebarMenuItem['state']>(
-    'live'
+    'locked'
   )
   const [reviewLaunch, setReviewLaunch] = useState<ISidebarMenuItem['state']>(
-    'live'
+    'locked'
   )
   const setContests = useCallback(
     (s: ISidebarMenuItem['state']) => {
@@ -39,45 +41,70 @@ function useSetupMenuItems(
     [setTargetContests, setOpportunisticContests]
   )
 
-  const setOrPollParticipantsFile = useCallback(async () => {
-    const processing = await getJurisdictionFileStatus(electionId)
-    const jurisdictionStatus = processing
-      ? processing.status
+  const setOrPollFiles = useCallback(async () => {
+    const jurisdictionProcessing = await getJurisdictionFileStatus(electionId)
+    const jurisdictionStatus = jurisdictionProcessing
+      ? jurisdictionProcessing.status
       : FileProcessingStatus.Blank
+    let contestFileStatus: FileProcessingStatus = FileProcessingStatus.Processed // pretend it's processed by default
+    if (isBallotComparison) {
+      const contestFileProcessing = await getContestFileStatus(electionId)
+      contestFileStatus = contestFileProcessing
+        ? contestFileProcessing.status
+        : FileProcessingStatus.Blank
+    }
     if (
       jurisdictionStatus === FileProcessingStatus.Errored ||
-      jurisdictionStatus === FileProcessingStatus.Blank
+      jurisdictionStatus === FileProcessingStatus.Blank ||
+      contestFileStatus === FileProcessingStatus.Errored ||
+      contestFileStatus === FileProcessingStatus.Blank
     ) {
       setContests('locked')
-    } else if (jurisdictionStatus === FileProcessingStatus.Processed) {
+    } else if (
+      jurisdictionStatus === FileProcessingStatus.Processed &&
+      contestFileStatus === FileProcessingStatus.Processed
+    ) {
       setContests('live')
     } else {
       setContests('processing')
       const condition = async () => {
-        const fileProcessing = await getJurisdictionFileStatus(electionId)
-        const { status } = fileProcessing!
-        if (status === FileProcessingStatus.Processed) return true
-        if (status === FileProcessingStatus.Errored)
+        const jProcessing = await getJurisdictionFileStatus(electionId)
+        const { status: jStatus } = jProcessing!
+        let cStatus = FileProcessingStatus.Processed
+        if (isBallotComparison) {
+          const cProcessing = await getContestFileStatus(electionId)
+          cStatus = cProcessing!.status
+        }
+        if (
+          jStatus === FileProcessingStatus.Processed &&
+          cStatus === FileProcessingStatus.Processed
+        )
+          return true
+        if (
+          jStatus === FileProcessingStatus.Errored ||
+          cStatus === FileProcessingStatus.Errored
+        )
           throw new Error('File processing error') // TODO test coverage isn't reaching this line
         return false
       }
       const complete = () => {
         setContests('live')
-        setStage('Target Contests')
+        setStage('target-contests')
         setRefreshId(uuidv4())
       }
       poll(condition, complete, (err: Error) => {
-        toast.error(err.message)
+        setContests('locked')
+        toast.error(err.message) // we need to toast the error from the server here instead 'File processing error'
         // eslint-disable-next-line no-console
         console.error(err.message)
       })
     }
-  }, [electionId, setContests, setStage])
+  }, [electionId, setContests, setStage, isBallotComparison, setRefreshId])
 
   const lockAllIfRounds = useCallback(async () => {
     const roundsExist = await getRoundStatus(electionId)
     if (roundsExist) {
-      setStage('Review & Launch')
+      setStage('review')
       setParticipants('locked')
       setContests('locked')
       setAuditSettings('locked')
@@ -94,14 +121,14 @@ function useSetupMenuItems(
 
   const refresh = useCallback(() => {
     setParticipants('live')
-    setOrPollParticipantsFile()
+    setOrPollFiles()
     setAuditSettings('live')
     setReviewLaunch('live')
     lockAllIfRounds()
     setRefreshId(uuidv4())
   }, [
     setParticipants,
-    setOrPollParticipantsFile,
+    setOrPollFiles,
     setAuditSettings,
     setReviewLaunch,
     lockAllIfRounds,
@@ -113,15 +140,15 @@ function useSetupMenuItems(
       setupStages.map((s: ElementType<typeof setupStages>) => {
         const state = (() => {
           switch (s) {
-            case 'Participants':
+            case 'participants':
               return participants
-            case 'Target Contests':
+            case 'target-contests':
               return targetContests
-            case 'Opportunistic Contests':
+            case 'opportunistic-contests':
               return opportunisticContests
-            case 'Audit Settings':
+            case 'settings':
               return auditSettings
-            case 'Review & Launch':
+            case 'review':
               return reviewLaunch
             /* istanbul ignore next */
             default:
@@ -129,7 +156,11 @@ function useSetupMenuItems(
           }
         })()
         return {
-          title: s,
+          id: s,
+          title:
+            isBallotComparison && s === 'participants'
+              ? 'Participants & Contests'
+              : stageTitles[s],
           active: s === stage,
           activate: (_, force = false) => {
             refresh()
@@ -141,7 +172,7 @@ function useSetupMenuItems(
               }
               setStage(s)
             } else if (reviewLaunch === 'locked') {
-              setStage('Review & Launch')
+              setStage('review')
             }
           },
           state,
@@ -154,11 +185,12 @@ function useSetupMenuItems(
       targetContests,
       opportunisticContests,
       auditSettings,
+      isBallotComparison,
       reviewLaunch,
       refresh,
     ]
   )
-  return [menuItems, refresh, refreshId]
+  return [menuItems, refresh]
 }
 
 export default useSetupMenuItems

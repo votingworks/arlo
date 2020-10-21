@@ -273,7 +273,8 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
       onSubmit={handlePost}
       enableReinitialize
       validateOnChange={false}
-      render={({
+    >
+      {({
         handleBlur,
         handleSubmit,
         values,
@@ -348,9 +349,8 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                   ))}
                 </FormSection>
               )}
-            <FieldArray
-              name="auditNames"
-              render={(utils: ArrayHelpers) => {
+            <FieldArray name="auditNames">
+              {(utils: ArrayHelpers) => {
                 const changeBoards = (n: number) => {
                   let num = values.auditNames.length
                   setFieldValue('auditBoards', n)
@@ -407,7 +407,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
                   </FormSection>
                 )
               }}
-            />
+            </FieldArray>
             <FormSection label="Ballot Manifest">
               {manifestUploaded && audit.jurisdictions[0].ballotManifest ? ( // duplicating effect of manifestUploaded for TS
                 <React.Fragment>
@@ -467,7 +467,7 @@ const SelectBallotsToAudit: React.FC<IProps> = ({
           )}
         </form>
       )}
-    />
+    </Formik>
   )
 }
 

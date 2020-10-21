@@ -37,6 +37,7 @@ export interface IJurisdiction {
   name: string
   ballotManifest: IBallotManifestInfo
   batchTallies?: IFileInfo
+  cvrs?: IFileInfo
   currentRoundStatus: {
     status: JurisdictionRoundStatus
     numSamples: number
