@@ -101,7 +101,13 @@ const Ballot: React.FC<IProps> = ({
       <BallotRow>
         <div className="ballot-side">
           <H4>Current ballot:</H4>
-          <div>Tabulator: {ballot.batch.tabulator}</div>
+          {ballot.batch.tabulator && (
+            <div>Tabulator: {ballot.batch.tabulator}</div>
+          )}
+          {ballot.batch.container && (
+            <div>Container: {ballot.batch.container}</div>
+          )}
+          {ballot.imprintedId && <div>Imprinted ID: {ballot.imprintedId}</div>}
           <div>Batch: {ballot.batch.name}</div>
           <div>Record/Position: {ballot.position}</div>
         </div>
