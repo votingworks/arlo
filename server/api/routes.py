@@ -266,7 +266,7 @@ def election_new():
     validate_new_election(election, organization_id)
 
     online = {
-        AuditType.BALLOT_POLLING: False,
+        AuditType.BALLOT_POLLING: True,
         AuditType.BATCH_COMPARISON: False,
         AuditType.BALLOT_COMPARISON: True,
     }[election["auditType"]]
