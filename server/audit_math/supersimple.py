@@ -114,17 +114,23 @@ def compute_discrepancies(
         e_r = 0.0
         e_int = 0
 
-        if contest.name not in sample_cvr[ballot]:
-            continue
-
         found = False
         for winner in contest.winners:
             for loser in contest.losers:
-                v_w = cvrs[ballot][contest.name][winner]
-                a_w = sample_cvr[ballot][contest.name][winner]
 
-                v_l = cvrs[ballot][contest.name][loser]
-                a_l = sample_cvr[ballot][contest.name][loser]
+                if contest.name in cvrs[ballot]:
+                    v_w = cvrs[ballot][contest.name][winner]
+                    v_l = cvrs[ballot][contest.name][loser]
+                else:
+                    v_w = 0
+                    v_l = 0
+
+                if contest.name in sample_cvr[ballot]:
+                    a_w = sample_cvr[ballot][contest.name][winner]
+                    a_l = sample_cvr[ballot][contest.name][loser]
+                else:
+                    a_w = 0
+                    a_l = 0
 
                 V_wl = contest.candidates[winner] - contest.candidates[loser]
 

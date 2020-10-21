@@ -109,6 +109,48 @@ def test_find_one_discrepancy(contests, cvrs):
             assert not discrepancies
 
 
+def test_race_not_in_cvr_discrepancy(contests, cvrs):
+
+    sample_cvr = {
+        0: {
+            "Contest F": {
+                "winner": 0,
+                "loser": 1,
+            },  # The audit board found a race not in the CVR
+        }
+    }
+
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest F"], cvrs, sample_cvr
+    )
+
+    assert discrepancies
+    assert discrepancies[0]["counted_as"] == 1
+    assert discrepancies[0]["weighted_error"] == 1 / 6
+    assert "Contest F" not in discrepancies[0]["discrepancy_cvr"]["reported_as"]
+
+
+def test_race_not_in_sample_discrepancy(contests, cvrs):
+
+    sample_cvr = {
+        0: {
+            "Contest A": {"winner": 0, "loser": 0},
+            "Contest B": {"winner": 1, "loser": 0},
+            "Contest C": {"winner": 1, "loser": 0},
+            "Contest E": {"winner": 1, "loser": 0},
+        }
+    }
+
+    discrepancies = supersimple.compute_discrepancies(
+        contests["Contest D"], cvrs, sample_cvr
+    )
+
+    assert discrepancies
+    assert discrepancies[0]["counted_as"] == 1
+    assert discrepancies[0]["weighted_error"] == 1 / 2000
+    assert "Contest D" not in discrepancies[0]["discrepancy_cvr"]["audited_as"]
+
+
 def test_get_sample_sizes(contests):
     sample_results = {
         "sample_size": 0,
@@ -206,7 +248,7 @@ def test_compute_risk(contests, cvrs):
         ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
             expected_p, p_value, contest
         )
-        if contest == "Contest E":
+        if contest in ["Contest E", "Contest F"]:
             assert finished, "Audit should have finished but didn't"
         else:
             assert not finished, "Audit shouldn't have finished but did!"
@@ -248,7 +290,11 @@ def test_compute_risk(contests, cvrs):
         ), "Incorrect p-value. Expected {}, got {} in contest {}".format(
             expected_p, p_value, contest
         )
-        assert not finished, "Audit shouldn't have finished but did!"
+
+        if contest in ["Contest F"]:
+            assert finished, "Audit should have finished but didn't"
+        else:
+            assert not finished, "Audit shouldn't have finished but did!"
 
         to_sample = {
             "sample_size": sample_size,
@@ -282,6 +328,7 @@ true_sample_sizes = {
     "Contest C": 36,
     "Contest D": 40,
     "Contest E": 6,
+    "Contest F": 14,
 }
 
 no_next_sample = {
@@ -290,6 +337,7 @@ no_next_sample = {
     "Contest C": 32,
     "Contest D": 36,
     "Contest E": 5,
+    "Contest F": 12,
 }
 
 o1_next_sample = {
@@ -298,6 +346,7 @@ o1_next_sample = {
     "Contest C": 51,
     "Contest D": 57,
     "Contest E": 7,
+    "Contest F": 16,
 }
 
 o2_next_sample = {
@@ -306,6 +355,7 @@ o2_next_sample = {
     "Contest C": 36000,
     "Contest D": 15000,
     "Contest E": 6,
+    "Contest F": 15,
 }
 
 ss_contests = {
@@ -344,6 +394,13 @@ ss_contests = {
         "numWinners": 1,
         "votesAllowed": 1,
     },
+    "Contest F": {
+        "winner": 10,
+        "loser": 4,
+        "ballots": 15,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    },
 }
 
 expected_p_values = {
@@ -353,6 +410,7 @@ expected_p_values = {
         "Contest C": 0.06740,
         "Contest D": 0.07048,
         "Contest E": 0.01950,
+        "Contest F": 0.05013,
     },
     "one_vote_over": {
         "Contest A": 0.12534,
@@ -360,6 +418,7 @@ expected_p_values = {
         "Contest C": 0.12992,
         "Contest D": 0.13585,
         "Contest E": 0.03758,
+        "Contest F": 0.05013,
     },
     "two_vote_over": {
         "Contest A": 1.73150,
@@ -367,5 +426,6 @@ expected_p_values = {
         "Contest C": 1.79346,
         "Contest D": 1.87524,
         "Contest E": 0.51877,
+        "Contest F": 0.05013,
     },
 }
