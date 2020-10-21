@@ -11,6 +11,8 @@ from ..util.csv_download import (
 )
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
+from ..audit_math import supersimple, sampler_contest
+from ..api.rounds import cvrs_for_contest, sampled_ballot_interpretations_to_cvrs
 
 
 def pretty_affiliation(affiliation: Optional[str]) -> str:
@@ -72,28 +74,57 @@ def pretty_batch_ticket_numbers(batch: Batch, round_id_to_num: Dict[str, int]) -
     return ", ".join(ticket_numbers)
 
 
-def pretty_ballot_interpretations(
-    interpretations: List[BallotInterpretation], contests: List[Contest],
-) -> List[str]:
-    columns = []
-    for contest in contests:
-        interpretation = next(
-            (i for i in interpretations if i.contest_id == contest.id), None,
-        )
-        if interpretation:
-            choices = (
-                ", ".join(choice.name for choice in interpretation.selected_choices)
-                if interpretation.interpretation == Interpretation.VOTE
-                else interpretation.interpretation
-            )
-            overvote = "OVERVOTE; " if interpretation.is_overvote else ""
-            comment = (
-                f"; COMMENT: {interpretation.comment}" if interpretation.comment else ""
-            )
-            columns.append(overvote + choices + comment)
-        else:
-            columns.append("")
-    return columns
+def pretty_ballot_interpretation(
+    interpretations: List[BallotInterpretation], contest: Contest,
+) -> str:
+    interpretation = next(
+        (i for i in interpretations if i.contest_id == contest.id), None,
+    )
+    if not interpretation:
+        return ""
+
+    choices = (
+        ", ".join(choice.name for choice in interpretation.selected_choices)
+        if interpretation.interpretation == Interpretation.VOTE
+        else interpretation.interpretation
+    )
+    overvote = "OVERVOTE; " if interpretation.is_overvote else ""
+    comment = f"; COMMENT: {interpretation.comment}" if interpretation.comment else ""
+    return overvote + choices + comment
+
+
+def pretty_cvr_interpretation(
+    ballot: SampledBallot, contest: Contest, contest_cvrs: supersimple.CVRS
+) -> str:
+    ballot_key = (
+        list(ballot.draws)[0].ticket_number if contest.is_targeted else ballot.id
+    )
+    cvrs_by_choice = contest_cvrs[ballot_key].get(contest.id)
+
+    # If CVR was empty for this contest for this ballot, skip it
+    if not cvrs_by_choice:
+        return ""
+
+    choice_id_to_name = {choice.id: choice.name for choice in contest.choices}
+    return ", ".join(
+        choice_id_to_name[choice_id]
+        for choice_id, interpretation in cvrs_by_choice.items()
+        if interpretation == 1
+    )
+
+
+def pretty_discrepancy(
+    ballot: SampledBallot,
+    contest: Contest,
+    contest_discrepancies: Dict[str, supersimple.Discrepancy],
+) -> str:
+    ballot_key = (
+        list(ballot.draws)[0].ticket_number if contest.is_targeted else ballot.id
+    )
+    if ballot_key in contest_discrepancies:
+        return str(contest_discrepancies[ballot_key]["counted_as"])
+    else:
+        return ""
 
 
 def pretty_batch_results(batch: Batch, contest: Contest) -> str:
@@ -168,7 +199,7 @@ def audit_settings_rows(election: Election):
 
 
 def audit_board_rows(election: Election):
-    if not (election.audit_type == AuditType.BALLOT_POLLING and election.online):
+    if not election.online:
         return None
     rows = [
         heading("AUDIT BOARDS"),
@@ -262,9 +293,17 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         .join(Batch)
         .join(Jurisdiction)
         .filter_by(election_id=election.id)
+        .outerjoin(
+            CvrBallot,
+            and_(
+                CvrBallot.batch_id == SampledBallot.batch_id,
+                CvrBallot.ballot_position == SampledBallot.ballot_position,
+            ),
+        )
         .order_by(
             Round.round_num,
             Jurisdiction.name,
+            Batch.container,
             Batch.tabulator,
             Batch.name,
             SampledBallot.ballot_position,
@@ -272,7 +311,9 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
     )
     if jurisdiction:
         ballots_query = ballots_query.filter(Jurisdiction.id == jurisdiction.id)
-    ballots = list(ballots_query.all())
+    ballots = list(
+        ballots_query.with_entities(SampledBallot, CvrBallot.imprinted_id).all()
+    )
 
     round_id_to_num = {round.id: round.round_num for round in election.rounds}
 
@@ -280,34 +321,70 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         contest for contest in election.contests if contest.is_targeted
     ]
 
-    use_tabulator = ballots[0].batch.tabulator is not None
+    show_tabulator = ballots[0][0].batch.tabulator is not None
+    show_container = ballots[0][0].batch.container is not None
+    show_imprinted_id = ballots[0][1] is not None
+    show_cvrs = election.audit_type == AuditType.BALLOT_COMPARISON
+
+    result_columns = []
+    if election.online:
+        for contest in election.contests:
+            result_columns.append(f"Audit Result: {contest.name}")
+            if show_cvrs:
+                result_columns.append(f"CVR Result: {contest.name}")
+                result_columns.append(f"Discrepancy: {contest.name}")
 
     rows.append(
         ["Jurisdiction Name"]
-        + (["Tabulator"] if use_tabulator else [])
+        + (["Container"] if show_container else [])
+        + (["Tabulator"] if show_tabulator else [])
         + ["Batch Name", "Ballot Position"]
+        + (["Imprinted ID"] if show_imprinted_id else [])
         + [f"Ticket Numbers: {contest.name}" for contest in targeted_contests]
-        + (
-            ["Audited?"]
-            + [f"Audit Result: {contest.name}" for contest in election.contests]
-            if election.online
-            else []
-        )
+        + (["Audited?"] if election.online else [])
+        + result_columns
     )
-    for ballot in ballots:
+
+    if show_cvrs:
+        cvrs_by_contest = {
+            contest.id: cvrs_for_contest(contest) for contest in election.contests
+        }
+        discrepancies_by_contest = {
+            contest.id: supersimple.compute_discrepancies(
+                sampler_contest.from_db_contest(contest),
+                cvrs_by_contest[contest.id],
+                sampled_ballot_interpretations_to_cvrs(contest),
+            )
+            for contest in election.contests
+        }
+
+    for ballot, imprinted_id in ballots:
+        result_values = []
+        if election.online:
+            for contest in election.contests:
+                result_values.append(
+                    pretty_ballot_interpretation(list(ballot.interpretations), contest)
+                )
+                if show_cvrs:
+                    cvr_interpretation = pretty_cvr_interpretation(
+                        ballot, contest, cvrs_by_contest[contest.id]
+                    )
+                    result_values.append(cvr_interpretation)
+                    result_values.append(
+                        pretty_discrepancy(
+                            ballot, contest, discrepancies_by_contest[contest.id]
+                        )
+                    )
+
         rows.append(
             [ballot.batch.jurisdiction.name]
-            + ([ballot.batch.tabulator] if use_tabulator else [])
-            + [ballot.batch.name, ballot.ballot_position,]
+            + ([ballot.batch.container] if show_container else [])
+            + ([ballot.batch.tabulator] if show_tabulator else [])
+            + [ballot.batch.name, ballot.ballot_position]
+            + ([imprinted_id] if show_imprinted_id else [])
             + pretty_ballot_ticket_numbers(ballot, round_id_to_num, targeted_contests)
-            + (
-                [ballot.status]
-                + pretty_ballot_interpretations(
-                    list(ballot.interpretations), list(election.contests)
-                )
-                if election.online
-                else []
-            )
+            + ([ballot.status] if election.online else [])
+            + result_values
         )
     return rows
 
@@ -396,9 +473,9 @@ def jursdiction_admin_audit_report(election: Election, jurisdiction: Jurisdictio
     report = csv.writer(csv_io)
 
     report.writerows(
-        sampled_ballot_rows(election, jurisdiction)
-        if election.audit_type == AuditType.BALLOT_POLLING
-        else sampled_batch_rows(election, jurisdiction)
+        sampled_batch_rows(election, jurisdiction)
+        if election.audit_type == AuditType.BATCH_COMPARISON
+        else sampled_ballot_rows(election, jurisdiction),
     )
 
     return csv_response(
