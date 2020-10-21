@@ -131,6 +131,15 @@ Contest 1,Targeted,1,1,360,Choice 1-1: 160; Choice 1-2: 160\r
 Audit Name,Audit Type,Risk Limit,Random Seed,Online Data Entry?\r
 Test Audit test_ballot_comparison_container_manifest,BALLOT_COMPARISON,10%,1234567890,Yes\r
 \r
+######## AUDIT BOARDS ########\r
+Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r
+J1,Audit Board #1,,,,\r
+J1,Audit Board #2,,,,\r
+J1,Audit Board #3,,,,\r
+J2,Audit Board #1,,,,\r
+J2,Audit Board #2,,,,\r
+J2,Audit Board #3,,,,\r
+\r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
 1,Contest 1,Targeted,360,No,,DATETIME,,Choice 1-1: 0; Choice 1-2: 0\r
