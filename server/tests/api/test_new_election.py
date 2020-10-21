@@ -77,7 +77,7 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
     response = json.loads(rv.data)
     election_id = response.get("electionId", None)
     assert election_id, response
-    assert Election.query.get(election_id).online is False
+    assert Election.query.get(election_id).online is True
 
     rv = client.get(f"/api/election/{election_id}/audit/status")
 
