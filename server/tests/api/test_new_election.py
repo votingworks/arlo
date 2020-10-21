@@ -77,6 +77,7 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
     response = json.loads(rv.data)
     election_id = response.get("electionId", None)
     assert election_id, response
+    assert Election.query.get(election_id).online is False
 
     rv = client.get(f"/api/election/{election_id}/audit/status")
 
@@ -97,7 +98,8 @@ def test_new_batch_comparison_audit(client: FlaskClient, org_id: str):
         },
     )
     assert rv.status_code == 200
-    assert "electionId" in json.loads(rv.data)
+    election_id = json.loads(rv.data)["electionId"]
+    assert Election.query.get(election_id).online is False
 
 
 def test_new_ballot_comparison_audit(client: FlaskClient, org_id: str):
@@ -114,7 +116,10 @@ def test_new_ballot_comparison_audit(client: FlaskClient, org_id: str):
         },
     )
     assert rv.status_code == 200
-    assert "electionId" in json.loads(rv.data)
+    election_id = json.loads(rv.data)["electionId"]
+    assert election_id
+
+    assert Election.query.get(election_id).online is True
 
 
 def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):

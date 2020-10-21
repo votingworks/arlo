@@ -265,12 +265,19 @@ def election_new():
 
     validate_new_election(election, organization_id)
 
+    online = {
+        AuditType.BALLOT_POLLING: False,
+        AuditType.BATCH_COMPARISON: False,
+        AuditType.BALLOT_COMPARISON: True,
+    }[election["auditType"]]
+
     election = Election(
         id=str(uuid.uuid4()),
         audit_name=election["auditName"],
         audit_type=election["auditType"],
         organization_id=organization_id,
         is_multi_jurisdiction=election["isMultiJurisdiction"],
+        online=online,
     )
 
     check_access([UserType.AUDIT_ADMIN], election)
@@ -936,6 +943,7 @@ def audit_reset(election):
         audit_type=election.audit_type,
         organization_id=election.organization_id,
         is_multi_jurisdiction=election.is_multi_jurisdiction,
+        online=election.online,
     )
     db_session.add(election)
     db_session.commit()
