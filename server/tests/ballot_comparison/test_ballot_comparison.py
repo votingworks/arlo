@@ -53,6 +53,44 @@ def test_set_contest_metadata_from_cvrs(
     )
 
 
+def test_require_cvr_uploads(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+    manifests,  # pylint: disable=unused-argument
+    election_settings,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+
+    # AA creates contests
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/contest",
+        [
+            {
+                "id": str(uuid.uuid4()),
+                "name": "Contest 1",
+                "jurisdictionIds": jurisdiction_ids[:2],
+                "isTargeted": True,
+            },
+        ],
+    )
+    assert_ok(rv)
+
+    # AA tries to select a sample size - should get an error because CVRs have
+    # to be uploaded first
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Some jurisdictions haven't uploaded their CVRs yet.",
+            }
+        ]
+    }
+
+
 def test_ballot_comparison_two_rounds(
     client: FlaskClient,
     election_id: str,

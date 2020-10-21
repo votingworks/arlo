@@ -18,7 +18,6 @@ from ..util.process_file import (
     process_file,
     serialize_file,
     serialize_file_processing,
-    UserError,
 )
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
@@ -37,9 +36,10 @@ def set_contest_metadata_from_cvrs(contest: Contest):
         cvr_contests_metadata = typing.cast(
             JSONDict, jurisdiction.cvr_contests_metadata
         )
-        contest_metadata = cvr_contests_metadata[contest.name]
-        if contest_metadata is None:
+        if not cvr_contests_metadata or contest.name not in cvr_contests_metadata:
             raise Conflict("Some jurisdictions haven't uploaded their CVRs yet.")
+
+        contest_metadata = cvr_contests_metadata[contest.name]
 
         if not contest.choices:
             contest.choices = [
@@ -191,14 +191,22 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
     def process_catch_exceptions():
         try:
             process()
-        except Exception as e:
-            raise Exception("Could not parse CVR file") from e
+        except Exception as exc:
+            raise Exception("Could not parse CVR file") from exc
 
     process_file(session, file, process_catch_exceptions)
 
 
 # Raises if invalid
-def validate_cvr_upload(request: Request):
+def validate_cvr_upload(
+    request: Request, election: Election, jurisdiction: Jurisdiction
+):
+    if election.audit_type != AuditType.BALLOT_COMPARISON:
+        raise Conflict("Can only upload CVR file for ballot comparison audits.")
+
+    if not jurisdiction.manifest_file_id:
+        raise Conflict("Must upload ballot manifest before uploading CVR file.")
+
     if "cvrs" not in request.files:
         raise BadRequest("Missing required file parameter 'cvrs'")
 
@@ -235,7 +243,7 @@ def clear_cvr_file(jurisdiction: Jurisdiction):
 def upload_cvrs(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
 ):
-    validate_cvr_upload(request)
+    validate_cvr_upload(request, election, jurisdiction)
     clear_cvr_file(jurisdiction)
     save_cvr_file(request.files["cvrs"], jurisdiction)
     db_session.commit()
@@ -261,8 +269,7 @@ def get_cvrs(
 @restrict_access([UserType.AUDIT_ADMIN])
 def download_cvr_file(
     election: Election, jurisdiction: Jurisdiction,  # pylint: disable=unused-argument
-):  # pragma: no cover
-    # TODO test
+):
     if not jurisdiction.cvr_file:
         return NotFound()
 
