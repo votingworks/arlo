@@ -28,7 +28,8 @@ const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
       <Formik
         initialValues={auditBoard.members.map(() => '')}
         onSubmit={submitSignoff}
-        render={({ values, handleSubmit }) => (
+      >
+        {({ values, handleSubmit }) => (
           <form>
             {auditBoard.members.map((member, i) => (
               <FormSection
@@ -49,7 +50,7 @@ const SignOff = ({ auditBoard, submitSignoff }: IProps) => {
             </FormButton>
           </form>
         )}
-      />
+      </Formik>
     </div>
   )
 }

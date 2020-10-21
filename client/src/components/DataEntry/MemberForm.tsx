@@ -45,7 +45,8 @@ const MemberForm: React.FC<IProps> = ({
               }))
           )
         }
-        render={({
+      >
+        {({
           setFieldValue,
           values,
           handleSubmit,
@@ -85,7 +86,7 @@ const MemberForm: React.FC<IProps> = ({
             </FormButton>
           </form>
         )}
-      />
+      </Formik>
     </div>
   )
 }

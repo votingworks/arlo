@@ -47,7 +47,8 @@ const BallotAudit: React.FC<IProps> = ({
             setInterpretations(values.interpretations)
             goReview()
           }}
-          render={({
+        >
+          {({
             handleSubmit,
             values,
             setFieldValue,
@@ -79,7 +80,7 @@ const BallotAudit: React.FC<IProps> = ({
               </form>
             )
           }}
-        />
+        </Formik>
       </div>
     </BallotRow>
   )

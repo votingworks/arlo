@@ -338,7 +338,8 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
         initialValues={roundValues}
         enableReinitialize
         validateOnChange={false}
-        render={({
+      >
+        {({
           values,
           handleSubmit,
         }: FormikProps<ICalculateRiskMeasurementValues>) => (
@@ -515,7 +516,7 @@ const CalculateRiskMeasurement: React.FC<IProps> = ({
             </FormWrapper>
           </form>
         )}
-      />
+      </Formik>
     )
   })
   return <>{roundForms}</>

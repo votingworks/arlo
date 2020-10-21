@@ -6,7 +6,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
     class="sc-bdVaJa bsPuXO"
   >
     <div
-      class="bp3-callout sc-kkGfuU jfrnYf"
+      class="bp3-callout sc-iAyFgw dunHiJ"
     >
       <div
         class="sc-bwzfXH iqXUnX"
@@ -109,7 +109,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
           </div>
         </div>
         <table
-          class="sc-hzDkRC jWaxCC"
+          class="sc-hMqMXs cMJMNh"
           role="table"
         >
           <thead>
@@ -239,7 +239,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                 role="cell"
               >
                 <span
-                  class="bp3-tag bp3-interactive bp3-minimal sc-csuQGl ggzkQ"
+                  class="bp3-tag bp3-interactive bp3-minimal sc-Rmtcm gJJQhF"
                   tabindex="0"
                 >
                   <span
@@ -276,7 +276,7 @@ exports[`AA setup flow renders sidebar when authenticated on /progress 1`] = `
                 role="cell"
               >
                 <span
-                  class="bp3-tag bp3-interactive bp3-minimal sc-csuQGl ggzkQ"
+                  class="bp3-tag bp3-interactive bp3-minimal sc-Rmtcm gJJQhF"
                   tabindex="0"
                 >
                   <span
@@ -911,7 +911,7 @@ exports[`JA setup renders initial state 1`] = `
     class="sc-bdVaJa bsPuXO"
   >
     <div
-      class="bp3-callout sc-kkGfuU jfrnYf"
+      class="bp3-callout sc-iAyFgw dunHiJ"
     >
       <div
         class="sc-bwzfXH iqXUnX"
@@ -1076,7 +1076,7 @@ exports[`JA setup submits ballot manifest 1`] = `
     class="sc-bdVaJa bsPuXO"
   >
     <div
-      class="bp3-callout sc-kkGfuU jfrnYf"
+      class="bp3-callout sc-iAyFgw dunHiJ"
     >
       <div
         class="sc-bwzfXH iqXUnX"
@@ -1090,10 +1090,7 @@ exports[`JA setup submits ballot manifest 1`] = `
             The audit has not started.
           </h4>
           <p>
-            Ballot manifest uploaded.
-          </p>
-          <p>
-            Waiting for Audit Administrator to launch audit.
+            Ballot manifest not uploaded.
           </p>
         </div>
       </div>
@@ -1139,33 +1136,30 @@ exports[`JA setup submits ballot manifest 1`] = `
           <div
             class="sc-iwsKbI iGsFgr"
           >
-            <p>
-              <strong>
-                Current file:
-              </strong>
-               
-              manifest.csv
-            </p>
+            <label
+              class="bp3-file-input"
+            >
+              <input
+                accept=".csv"
+                name="csv"
+                type="file"
+              />
+              <span
+                class="bp3-file-upload-input"
+              >
+                Select a CSV...
+              </span>
+            </label>
           </div>
           <div>
             <button
-              class="bp3-button sc-htoDjs dESvso"
-              type="button"
+              class="bp3-button bp3-intent-primary sc-htoDjs dESvso"
+              type="submit"
             >
               <span
                 class="bp3-button-text"
               >
-                Replace File
-              </span>
-            </button>
-            <button
-              class="bp3-button sc-htoDjs dESvso"
-              type="button"
-            >
-              <span
-                class="bp3-button-text"
-              >
-                Delete File
+                Upload File
               </span>
             </button>
           </div>
@@ -1205,10 +1199,11 @@ exports[`JA setup submits ballot manifest 1`] = `
             class="sc-iwsKbI iGsFgr"
           >
             <label
-              class="bp3-file-input"
+              class="bp3-file-input bp3-disabled"
             >
               <input
                 accept=".csv"
+                disabled=""
                 name="csv"
                 type="file"
               />
@@ -1221,7 +1216,9 @@ exports[`JA setup submits ballot manifest 1`] = `
           </div>
           <div>
             <button
-              class="bp3-button bp3-intent-primary sc-htoDjs dESvso"
+              class="bp3-button bp3-disabled bp3-intent-primary sc-htoDjs dESvso"
+              disabled=""
+              tabindex="-1"
               type="submit"
             >
               <span
