@@ -55,11 +55,12 @@ interface IProps {
   url: string
 }
 
-const KEYS: ('position' | 'tabulator' | 'batch' | 'status')[] = [
+const KEYS: ('position' | 'tabulator' | 'batch' | 'status' | 'container')[] = [
   'batch',
   'position',
   'tabulator',
   'status',
+  'container',
 ]
 
 const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
@@ -68,6 +69,12 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
     switch (KEYS[cI]) {
       case 'batch':
         return <Cell>{ballot.batch.name}</Cell>
+      case 'container':
+        return (
+          <Cell>
+            {ballot.batch.container === null ? 'N/A' : ballot.batch.container}
+          </Cell>
+        )
       case 'position':
         return <Cell>{ballot.position}</Cell>
       case 'status':
@@ -171,13 +178,14 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
         columnWidths={cols}
         enableRowHeader={false}
       >
+        <Column key="container" name="Container" cellRenderer={renderCell} />
+        <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="batch" name="Batch" cellRenderer={renderCell} />
         <Column
           key="position"
           name="Ballot Position"
           cellRenderer={renderCell}
         />
-        <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
         <Column key="status" name="Status" cellRenderer={renderCell} />
       </Table>
     </div>
