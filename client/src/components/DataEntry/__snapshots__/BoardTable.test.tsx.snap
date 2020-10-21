@@ -66,11 +66,11 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                 class="bp3-table-column-headers bp3-table-selection-enabled"
               >
                 <div
-                  style="width: 600px;"
+                  style="width: 750px;"
                 >
                   <div
                     class="bp3-table-thead bp3-table-column-header-tr"
-                    style="transform: translateX(0px); width: 600px;"
+                    style="transform: translateX(0px); width: 750px;"
                   >
                     <div
                       class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -78,7 +78,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                     >
                       <div
                         class="bp3-table-column-name"
-                        title="Batch"
+                        title="Container"
                       >
                         <div
                           class="bp3-table-column-name-text"
@@ -86,7 +86,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                           <div
                             class="bp3-table-truncated-text"
                           >
-                            Batch
+                            Container
                           </div>
                         </div>
                       </div>
@@ -103,35 +103,6 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                     </div>
                     <div
                       class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                      style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                    >
-                      <div
-                        class="bp3-table-column-name"
-                        title="Ballot Position"
-                      >
-                        <div
-                          class="bp3-table-column-name-text"
-                        >
-                          <div
-                            class="bp3-table-truncated-text"
-                          >
-                            Ballot Position
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header-content"
-                      />
-                      <div
-                        class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                      >
-                        <div
-                          class="bp3-table-resize-handle"
-                        />
-                      </div>
-                    </div>
-                    <div
-                      class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                       style="flex-basis: 150px; min-width: 0px; width: 150px;"
                     >
                       <div
@@ -160,12 +131,12 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                       </div>
                     </div>
                     <div
-                      class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                      class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                       style="flex-basis: 150px; min-width: 0px; width: 150px;"
                     >
                       <div
                         class="bp3-table-column-name"
-                        title="Status"
+                        title="Batch"
                       >
                         <div
                           class="bp3-table-column-name-text"
@@ -173,7 +144,36 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                           <div
                             class="bp3-table-truncated-text"
                           >
-                            Status
+                            Batch
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="bp3-table-header-content"
+                      />
+                      <div
+                        class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                      >
+                        <div
+                          class="bp3-table-resize-handle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                      style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                    >
+                      <div
+                        class="bp3-table-column-name"
+                        title="Ballot Position"
+                      >
+                        <div
+                          class="bp3-table-column-name-text"
+                        >
+                          <div
+                            class="bp3-table-truncated-text"
+                          >
+                            Ballot Position
                           </div>
                         </div>
                       </div>
@@ -194,7 +194,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
             </div>
             <div
               class="bp3-table-bottom-container"
-              style="height: 160px; width: 600px;"
+              style="height: 160px; width: 750px;"
             >
               <div
                 class="bp3-table-quadrant-body-container"
@@ -202,7 +202,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                 <div>
                   <div
                     class="bp3-table-body-virtual-client bp3-table-cell-client"
-                    style="height: 160px; width: 600px;"
+                    style="height: 160px; width: 750px;"
                   >
                     <div
                       class="bp3-table-body-cells"
@@ -420,11 +420,11 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                 class="bp3-table-column-headers bp3-table-selection-enabled"
               >
                 <div
-                  style="width: 600px;"
+                  style="width: 750px;"
                 >
                   <div
                     class="bp3-table-thead bp3-table-column-header-tr"
-                    style="transform: translateX(0px); width: 600px;"
+                    style="transform: translateX(0px); width: 750px;"
                   >
                     <div
                       class="bp3-table-header bp3-table-cell-col-0 bp3-table-column-header-cell"
@@ -432,7 +432,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                     >
                       <div
                         class="bp3-table-column-name"
-                        title="Batch"
+                        title="Container"
                       >
                         <div
                           class="bp3-table-column-name-text"
@@ -440,7 +440,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                           <div
                             class="bp3-table-truncated-text"
                           >
-                            Batch
+                            Container
                           </div>
                         </div>
                       </div>
@@ -457,35 +457,6 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                     </div>
                     <div
                       class="bp3-table-header bp3-table-cell-col-1 bp3-table-column-header-cell"
-                      style="flex-basis: 150px; min-width: 0px; width: 150px;"
-                    >
-                      <div
-                        class="bp3-table-column-name"
-                        title="Ballot Position"
-                      >
-                        <div
-                          class="bp3-table-column-name-text"
-                        >
-                          <div
-                            class="bp3-table-truncated-text"
-                          >
-                            Ballot Position
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="bp3-table-header-content"
-                      />
-                      <div
-                        class="bp3-table-resize-handle-target bp3-table-resize-vertical"
-                      >
-                        <div
-                          class="bp3-table-resize-handle"
-                        />
-                      </div>
-                    </div>
-                    <div
-                      class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                       style="flex-basis: 150px; min-width: 0px; width: 150px;"
                     >
                       <div
@@ -514,12 +485,12 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                       </div>
                     </div>
                     <div
-                      class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                      class="bp3-table-header bp3-table-cell-col-2 bp3-table-column-header-cell"
                       style="flex-basis: 150px; min-width: 0px; width: 150px;"
                     >
                       <div
                         class="bp3-table-column-name"
-                        title="Status"
+                        title="Batch"
                       >
                         <div
                           class="bp3-table-column-name-text"
@@ -527,7 +498,36 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                           <div
                             class="bp3-table-truncated-text"
                           >
-                            Status
+                            Batch
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="bp3-table-header-content"
+                      />
+                      <div
+                        class="bp3-table-resize-handle-target bp3-table-resize-vertical"
+                      >
+                        <div
+                          class="bp3-table-resize-handle"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="bp3-table-header bp3-table-last-in-row bp3-table-cell-col-3 bp3-table-column-header-cell"
+                      style="flex-basis: 150px; min-width: 0px; width: 150px;"
+                    >
+                      <div
+                        class="bp3-table-column-name"
+                        title="Ballot Position"
+                      >
+                        <div
+                          class="bp3-table-column-name-text"
+                        >
+                          <div
+                            class="bp3-table-truncated-text"
+                          >
+                            Ballot Position
                           </div>
                         </div>
                       </div>
@@ -548,7 +548,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
             </div>
             <div
               class="bp3-table-bottom-container"
-              style="height: 160px; width: 600px;"
+              style="height: 160px; width: 750px;"
             >
               <div
                 class="bp3-table-quadrant-body-container"
@@ -556,7 +556,7 @@ exports[`BoardTable enables the submit button when all ballots are done 1`] = `
                 <div>
                   <div
                     class="bp3-table-body-virtual-client bp3-table-cell-client"
-                    style="width: 600px;"
+                    style="width: 750px;"
                   >
                     <div
                       class="bp3-table-body-cells"
