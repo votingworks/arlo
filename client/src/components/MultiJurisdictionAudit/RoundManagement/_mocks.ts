@@ -1,8 +1,6 @@
 import { IBatch } from './useBatchResults'
 import { IRound } from '../useRoundsAuditAdmin'
-import { BallotStatus } from '../../../types'
-import { IBallot } from './useBallots'
-import { auditBoardMocks } from '../useSetupMenuItems/_mocks'
+import { BallotStatus, IBatchBallot } from '../../../types'
 
 export interface INullResultValues {
   [contestId: string]: {
@@ -143,4 +141,609 @@ export const batchesMocks: {
       },
     ],
   },
+}
+
+export const dummyBallots: { ballots: IBatchBallot[] } = {
+  ballots: [
+    {
+      batch: {
+        name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 313,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 313,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 313,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 313,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 313,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 313,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 313,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 313,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 19 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 2112,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+    {
+      batch: {
+        name: '0003-04-Precinct 29 (Jonesboro Fire Department)',
+        id: 'batch-id',
+        tabulator: '11',
+      },
+      position: 1789,
+      status: BallotStatus.AUDITED,
+      interpretations: [],
+      timesSampled: 1,
+      auditBoard: {
+        id: 'audit-board-1',
+        name: 'Audit Board #1',
+      },
+    },
+  ],
 }

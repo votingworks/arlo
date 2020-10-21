@@ -58,7 +58,7 @@ export enum BallotStatus {
   NOT_FOUND = 'NOT_FOUND',
 }
 
-export interface IBallot {
+export interface IBatchBallot {
   timesSampled: number
   auditBoard?: Pick<IAuditBoard, 'id' | 'name'>
   status: BallotStatus
