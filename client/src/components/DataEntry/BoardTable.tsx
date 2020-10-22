@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
 import { Table as BPTable, Column, Cell as BPCell } from '@blueprintjs/table'
 import { H1 } from '@blueprintjs/core'
@@ -124,7 +124,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
       <Column key="container" name="Container" cellRenderer={renderCell} />
     )
 
-  const columnWidths = (): (number | undefined)[] => {
+  const columnWidths = useCallback((): (number | undefined)[] => {
     const container = document.getElementsByClassName(
       'board-table-container'
     )[0]
@@ -134,13 +134,13 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
     /* istanbul ignore next */
     if (containerSize < 500) return Array(columns.length).fill(80)
     return Array(columns.length).fill(containerSize / columns.length)
-  }
+  }, [columns])
 
   const [cols, setCols] = useState(Array(columns.length).fill(undefined))
 
   useEffect(() => {
     setCols(columnWidths())
-  }, [ballots])
+  }, [ballots, columnWidths])
 
   const roundComplete = ballots.every(
     b => b.status !== BallotStatus.NOT_AUDITED
