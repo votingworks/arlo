@@ -143,7 +143,7 @@ def compute_discrepancies(
 
                 if not V_wl:
                     # In this case the error is undefined
-                    e_weighted = -1
+                    e_weighted = -1.0
                 else:
                     e_weighted = e / V_wl
 
@@ -290,7 +290,7 @@ def compute_risk(
         else:
             # If the contest is a tie, this step results in 1 - 1/(infinity)
             # divided by 1 - e_r/infinity, i.e. 1
-            p_b = 1
+            p_b = 1.0
 
         p *= p_b
 
