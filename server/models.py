@@ -32,6 +32,10 @@ class AuditType(str, enum.Enum):
     BALLOT_COMPARISON = "BALLOT_COMPARISON"
 
 
+class BallotPollingType(str, enum.Enum):
+    BRAVO = "BRAVO"
+
+
 # Election is a slight misnomer - this model represents an audit.
 class Election(BaseModel):
     id = Column(String(200), primary_key=True)

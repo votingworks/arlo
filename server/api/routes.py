@@ -24,7 +24,7 @@ from .ballot_manifest import (
 )
 from .audit_boards import serialize_members
 from .rounds import cumulative_contest_results
-from ..audit_math import bravo, sampler_contest, sampler
+from ..audit_math import ballot_polling, sampler_contest, sampler
 from ..util.binpacking import BalancedBucketList, Bucket
 from ..util.csv_parse import decode_csv_file
 from ..util.isoformat import isoformat
@@ -52,10 +52,11 @@ def compute_sample_sizes(round_contest):
     election = the_round.election
 
     for contest in election.contests:
-        raw_sample_size_options = bravo.get_sample_size(
+        raw_sample_size_options = ballot_polling.get_sample_size(
             election.risk_limit / 100,
             sampler_contest.from_db_contest(contest),
             cumulative_contest_results(contest),
+            "BRAVO",
         )
 
         sample_size_options = list(raw_sample_size_options.values())
@@ -108,10 +109,11 @@ def check_round(election, jurisdiction_id, round_id):
     round_contest = round.round_contests[0]
     contest = next(c for c in election.contests if c.id == round_contest.contest_id)
 
-    risk, is_complete = bravo.compute_risk(
+    risk, is_complete = ballot_polling.compute_risk(
         election.risk_limit / 100,
         sampler_contest.from_db_contest(contest),
         cumulative_contest_results(contest),
+        "BRAVO",
     )
 
     round.ended_at = datetime.datetime.utcnow()
