@@ -138,17 +138,19 @@ const ListAuditsAuditAdmin: React.FC = () => {
               You haven&apos;t created any audits yet for {organization.name}
             </p>
           ) : (
-            organization.elections.map(election => (
-              <AuditLink
-                key={election.id}
-                to={`/election/${election.id}`}
-                intent="primary"
-                large
-                fill
-              >
-                {election.auditName}
-              </AuditLink>
-            ))
+            organization.elections
+              .sort((a, b) => (a.auditName > b.auditName ? 1 : -1))
+              .map(election => (
+                <AuditLink
+                  key={election.id}
+                  to={`/election/${election.id}`}
+                  intent="primary"
+                  large
+                  fill
+                >
+                  {election.auditName}
+                </AuditLink>
+              ))
           )}
         </div>
       ))}
