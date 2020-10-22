@@ -57,6 +57,8 @@ def compute_error(
             a_lp = sampled_results[contest.name][loser]
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
+            if not V_wl:
+                return -1
 
             e_pwl = Decimal((v_wp - v_lp) - (a_wp - a_lp)) / Decimal(V_wl)
 
@@ -104,6 +106,9 @@ def compute_max_error(
             b_cp = batch_results[contest.name]["ballots"]
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
+
+            if not V_wl:
+                return -1
 
             u_pwl = Decimal((v_wp - v_lp) + b_cp) / Decimal(V_wl)
 
@@ -201,6 +206,9 @@ def get_sample_sizes(
 
     if not U:
         return 1
+    elif U < 0:
+        # This means we have a tie
+        return len(reported_results)
 
     retval = int(
         (alpha.ln() / ((1 - (1 / U))).ln()).quantize(Decimal(1), ROUND_CEILING)
@@ -245,6 +253,10 @@ def compute_risk(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
+    # We've done a full hand recount
+    if len(sample_results) == len(reported_results):
+        return 0, True
+
     p = Decimal(1.0)
 
     # Computing U without the sample preserves conservative-ness
@@ -257,7 +269,10 @@ def compute_risk(
 
         taint = e_p / u_p
 
-        p *= (1 - 1 / U) / (1 - taint)
+        if taint == 1:
+            p *= 1
+        else:
+            p *= (1 - 1 / U) / (1 - taint)
 
         if p <= alpha:
             return float(p), True
