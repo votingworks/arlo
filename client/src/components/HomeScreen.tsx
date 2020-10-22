@@ -130,7 +130,7 @@ const ListAuditsAuditAdmin: React.FC = () => {
 
   return (
     <ListAuditsWrapper>
-      {meta.organizations.map(organization => (
+      {sortBy(meta.organizations, o => o.name).map(organization => (
         <div key={organization.id}>
           <h2>Audits - {organization.name}</h2>
           {organization.elections.length === 0 ? (
@@ -138,19 +138,17 @@ const ListAuditsAuditAdmin: React.FC = () => {
               You haven&apos;t created any audits yet for {organization.name}
             </p>
           ) : (
-            organization.elections
-              .sort((a, b) => (a.auditName > b.auditName ? 1 : -1))
-              .map(election => (
-                <AuditLink
-                  key={election.id}
-                  to={`/election/${election.id}`}
-                  intent="primary"
-                  large
-                  fill
-                >
-                  {election.auditName}
-                </AuditLink>
-              ))
+            sortBy(organization.elections, e => e.auditName).map(election => (
+              <AuditLink
+                key={election.id}
+                to={`/election/${election.id}`}
+                intent="primary"
+                large
+                fill
+              >
+                {election.auditName}
+              </AuditLink>
+            ))
           )}
         </div>
       ))}
