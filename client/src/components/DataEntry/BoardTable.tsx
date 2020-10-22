@@ -109,19 +109,34 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
     }
   }
 
+  // Table component won't accept null as a child, so we have to do this to make columns conditional
+  const columns = [
+    <Column key="batch" name="Batch" cellRenderer={renderCell} />,
+    <Column key="position" name="Ballot Position" cellRenderer={renderCell} />,
+    <Column key="status" name="Status" cellRenderer={renderCell} />,
+  ]
+  if (ballots.length && ballots[0].batch.tabulator)
+    columns.unshift(
+      <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
+    )
+  if (ballots.length && ballots[0].batch.container)
+    columns.unshift(
+      <Column key="container" name="Container" cellRenderer={renderCell} />
+    )
+
   const columnWidths = (): (number | undefined)[] => {
     const container = document.getElementsByClassName(
       'board-table-container'
     )[0]
     /* istanbul ignore next */
-    if (!container) return Array(KEYS.length).fill(undefined)
+    if (!container) return Array(columns.length).fill(undefined)
     const containerSize = container.clientWidth
     /* istanbul ignore next */
-    if (containerSize < 500) return Array(KEYS.length).fill(80)
-    return Array(KEYS.length).fill(containerSize / KEYS.length)
+    if (containerSize < 500) return Array(columns.length).fill(80)
+    return Array(columns.length).fill(containerSize / columns.length)
   }
 
-  const [cols, setCols] = useState(Array(KEYS.length).fill(undefined))
+  const [cols, setCols] = useState(Array(columns.length).fill(undefined))
 
   useEffect(() => {
     setCols(columnWidths())
@@ -178,15 +193,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
         columnWidths={cols}
         enableRowHeader={false}
       >
-        <Column key="container" name="Container" cellRenderer={renderCell} />
-        <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
-        <Column key="batch" name="Batch" cellRenderer={renderCell} />
-        <Column
-          key="position"
-          name="Ballot Position"
-          cellRenderer={renderCell}
-        />
-        <Column key="status" name="Status" cellRenderer={renderCell} />
+        {columns}
       </Table>
     </div>
   )
