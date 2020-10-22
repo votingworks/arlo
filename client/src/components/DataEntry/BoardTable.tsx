@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import styled from 'styled-components'
 import { Table as BPTable, Column, Cell as BPCell } from '@blueprintjs/table'
 import { H1 } from '@blueprintjs/core'
@@ -64,65 +64,75 @@ const KEYS: ('position' | 'tabulator' | 'batch' | 'status' | 'container')[] = [
 ]
 
 const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
-  const renderCell = (rI: number, cI: number) => {
-    const ballot = ballots[rI]!
-    switch (KEYS[cI]) {
-      case 'batch':
-        return <Cell>{ballot.batch.name}</Cell>
-      case 'container':
-        return (
-          <Cell>
-            {ballot.batch.container === null ? 'N/A' : ballot.batch.container}
-          </Cell>
-        )
-      case 'position':
-        return <Cell>{ballot.position}</Cell>
-      case 'status':
-        return ballot.status !== BallotStatus.NOT_AUDITED ? (
-          <Cell>
-            <>
-              {ballot.status === BallotStatus.AUDITED ? (
-                <span>Audited</span>
-              ) : (
-                <span>Not Found</span>
-              )}
-              <Link
-                to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
-                className="bp3-button bp3-small"
-              >
-                Re-audit
-              </Link>
-            </>
-          </Cell>
-        ) : (
-          <Cell>Not Audited</Cell>
-        )
-      case 'tabulator':
-        return (
-          <Cell>
-            {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
-          </Cell>
-        )
-      /* istanbul ignore next */
-      default:
-        return <Cell>?</Cell>
-    }
-  }
+  const renderCell = useCallback(
+    (rI: number, cI: number) => {
+      const ballot = ballots[rI]!
+      switch (KEYS[cI]) {
+        case 'batch':
+          return <Cell>{ballot.batch.name}</Cell>
+        case 'container':
+          return (
+            <Cell>
+              {ballot.batch.container === null ? 'N/A' : ballot.batch.container}
+            </Cell>
+          )
+        case 'position':
+          return <Cell>{ballot.position}</Cell>
+        case 'status':
+          return ballot.status !== BallotStatus.NOT_AUDITED ? (
+            <Cell>
+              <>
+                {ballot.status === BallotStatus.AUDITED ? (
+                  <span>Audited</span>
+                ) : (
+                  <span>Not Found</span>
+                )}
+                <Link
+                  to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
+                  className="bp3-button bp3-small"
+                >
+                  Re-audit
+                </Link>
+              </>
+            </Cell>
+          ) : (
+            <Cell>Not Audited</Cell>
+          )
+        case 'tabulator':
+          return (
+            <Cell>
+              {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
+            </Cell>
+          )
+        /* istanbul ignore next */
+        default:
+          return <Cell>?</Cell>
+      }
+    },
+    [ballots]
+  )
 
   // Table component won't accept null as a child, so we have to do this to make columns conditional
-  const columns = [
-    <Column key="batch" name="Batch" cellRenderer={renderCell} />,
-    <Column key="position" name="Ballot Position" cellRenderer={renderCell} />,
-    <Column key="status" name="Status" cellRenderer={renderCell} />,
-  ]
-  if (ballots.length && ballots[0].batch.tabulator)
-    columns.unshift(
-      <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
-    )
-  if (ballots.length && ballots[0].batch.container)
-    columns.unshift(
-      <Column key="container" name="Container" cellRenderer={renderCell} />
-    )
+  const columns = useMemo(() => {
+    const c = [
+      <Column key="batch" name="Batch" cellRenderer={renderCell} />,
+      <Column
+        key="position"
+        name="Ballot Position"
+        cellRenderer={renderCell}
+      />,
+      <Column key="status" name="Status" cellRenderer={renderCell} />,
+    ]
+    if (ballots.length && ballots[0].batch.tabulator)
+      c.unshift(
+        <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
+      )
+    if (ballots.length && ballots[0].batch.container)
+      c.unshift(
+        <Column key="container" name="Container" cellRenderer={renderCell} />
+      )
+    return c
+  }, [ballots, renderCell])
 
   const columnWidths = useCallback((): (number | undefined)[] => {
     const container = document.getElementsByClassName(
