@@ -459,7 +459,7 @@ def compute_risk(
     # If we've done a full hand recount
     if sum(sample_results.values()) >= contest.ballots:
         for pair in T:
-            measurements[pair] = 0
+            measurements[pair] = 0.0
         return measurements, True
 
     finished = True
