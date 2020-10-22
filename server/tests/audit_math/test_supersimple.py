@@ -297,6 +297,55 @@ def test_compute_risk(contests, cvrs):
         )
 
 
+def test_tied_contest():
+    contest_data = {
+        "winner": 50000,
+        "loser": 50000,
+        "ballots": 100000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("Tied Contest", contest_data)
+
+    cvr = {}
+
+    for i in range(contest_data["ballots"]):
+        if i < contest_data["ballots"] / 2:
+            cvr[i] = {"Tied Contest": {"winner": 1, "loser": 0}}
+        else:
+            cvr[i] = {"Tied Contest": {"winner": 0, "loser": 1}}
+
+    sample_results = {
+        "sample_size": 0,
+        "1-under": 0,
+        "1-over": 0,
+        "2-under": 0,
+        "2-over": 0,
+    }
+
+    sample_size = supersimple.get_sample_sizes(risk_limit, contest, sample_results)
+
+    assert sample_size == contest_data["ballots"]
+
+    sample_cvr = {0: {"Tied Contest": {"winner": 1, "loser": 0}}}
+
+    # Ensure that anything short of a full recount doesn't finish
+    p, res = supersimple.compute_risk(risk_limit, contest, cvr, sample_cvr)
+
+    assert p > risk_limit
+    assert not res
+
+    # Do a full hand recount with no discrepancies
+    sample_cvr = cvr
+    sample_cvr[len(cvr) - 1]["Tied Contest"] = {"winner": 1, "loser": 0}
+
+    p, res = supersimple.compute_risk(risk_limit, contest, cvr, sample_cvr)
+
+    assert not p
+    assert res
+
+
 true_dms = {
     "Contest A": 0.2,
     "Contest B": 0.1,
