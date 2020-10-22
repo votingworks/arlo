@@ -8,8 +8,8 @@ import {
   batchesMocks,
   batchResultsMocks,
   INullResultValues,
-  dummyBallots,
 } from './_mocks'
+import { dummyBallots } from '../../DataEntry/_mocks'
 import {
   auditSettings,
   auditBoardMocks,

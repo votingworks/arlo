@@ -58,19 +58,6 @@ export enum BallotStatus {
   NOT_FOUND = 'NOT_FOUND',
 }
 
-export interface IBatchBallot {
-  timesSampled: number
-  auditBoard?: Pick<IAuditBoard, 'id' | 'name'>
-  status: BallotStatus
-  interpretations: IBallotInterpretation[]
-  position: number
-  batch: {
-    id: string
-    name: string
-    tabulator: string | null
-  }
-}
-
 export interface IAuditBoardMember {
   name: string
   affiliation: string | null
