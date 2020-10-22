@@ -9,7 +9,7 @@ import {
   batchResultsMocks,
   INullResultValues,
 } from './_mocks'
-import { dummyBallots } from '../../SingleJurisdictionAudit/_mocks'
+import { dummyBallots } from '../../DataEntry/_mocks'
 import {
   auditSettings,
   auditBoardMocks,

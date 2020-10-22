@@ -9,13 +9,11 @@ import {
   AuditAdminView,
   JurisdictionAdminView,
 } from './components/MultiJurisdictionAudit'
-import SingleJurisdictionAudit from './components/SingleJurisdictionAudit'
 import DataEntry from './components/DataEntry'
 import HomeScreen from './components/HomeScreen'
 import 'react-toastify/dist/ReactToastify.css'
 import AuthDataProvider, { AuthDataContext } from './components/UserContext'
 import { IUserMeta } from './types'
-import CreateSingleJurisdictionAudit from './CreateSingleJurisdictionAudit'
 
 const Main = styled.div`
   display: flex;
@@ -63,15 +61,6 @@ const App: React.FC = () => {
           <Route path="/" component={Header} />
           <Switch>
             <Route exact path="/" component={HomeScreen} />
-            <Route
-              exact
-              path="/audit"
-              component={CreateSingleJurisdictionAudit}
-            />
-            <Route
-              path="/audit/:electionId"
-              component={SingleJurisdictionAudit}
-            />
             <PrivateRoute
               userType="audit_board"
               path="/election/:electionId/audit-board/:auditBoardId"

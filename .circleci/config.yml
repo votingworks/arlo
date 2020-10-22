@@ -159,29 +159,6 @@ jobs:
           command: |
             make test-client
 
-  wdio:
-    executor: arlo
-    resource_class: xlarge
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - restore-yarn-cache
-      - restore-pip-cache
-      - install-chrome
-
-      - run:
-          name: install
-          command: |
-            make install
-
-      - create-data-model
-
-      - run:
-          name: wdio
-          command: |
-            yarn --cwd client test:wdio
-
   cypress:
     executor: arlo
     resource_class: xlarge
@@ -208,5 +185,4 @@ workflows:
       - preflight
       - build-and-test-server
       - build-and-test-client
-      - wdio
       - cypress

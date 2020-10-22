@@ -1,19 +1,23 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
+import styled from 'styled-components'
 import { Formik, FormikProps, Field, ErrorMessage } from 'formik'
-import { RadioGroup, Radio, Spinner } from '@blueprintjs/core'
+import { RadioGroup, Radio, Spinner, HTMLSelect } from '@blueprintjs/core'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
 import { ISidebarMenuItem } from '../../../Atoms/Sidebar'
 import { IValues } from './types'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormSection from '../../../Atoms/Form/FormSection'
-import { Select } from '../../../SingleJurisdictionAudit/EstimateSampleSize'
 import { generateOptions, ErrorLabel } from '../../../Atoms/Form/_helpers'
 import { parse as parseNumber } from '../../../../utils/number-schema'
 import FormField from '../../../Atoms/Form/FormField'
 import schema from './schema'
 import useAuditSettings from '../../useAuditSettings'
+
+const Select = styled(HTMLSelect)`
+  margin-left: 5px;
+`
 
 interface IProps {
   locked: boolean
