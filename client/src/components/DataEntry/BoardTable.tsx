@@ -109,7 +109,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
           return <Cell>?</Cell>
       }
     },
-    [ballots]
+    [ballots, url]
   )
 
   // Table component won't accept null as a child, so we have to do this to make columns conditional
