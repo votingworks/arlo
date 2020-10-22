@@ -115,4 +115,21 @@ def test_standardized_contests_bad_jurisdiction(
     assert json.loads(rv.data) is None
 
 
+def test_standardized_contests_missing_file(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+):
+    rv = client.put(f"/api/election/{election_id}/standardized-contests/file", data={},)
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Bad Request",
+                "message": "Missing required file parameter 'standardized-contests'",
+            }
+        ]
+    }
+
+
 # TODO - test more invalid cases

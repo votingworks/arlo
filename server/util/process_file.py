@@ -1,4 +1,5 @@
 import datetime
+import traceback
 from typing import Callable, Optional
 from sqlalchemy import update
 from sqlalchemy.orm.session import Session
@@ -40,7 +41,11 @@ def process_file(session: Session, file: File, callback: Callable[[], None]) -> 
         session.rollback()
         file.processing_started_at = processing_started_at
         file.processing_completed_at = datetime.datetime.utcnow()
-        file.processing_error = str(error)
+        # Some errors stringify nicely, some don't (e.g. StopIteration) so we
+        # have to format them.
+        file.processing_error = str(error) or str(
+            traceback.format_exception(error.__class__, error, error.__traceback__)
+        )
         session.add(file)
         session.commit()
         if not isinstance(error, UserError):
