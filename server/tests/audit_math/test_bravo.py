@@ -286,8 +286,8 @@ def test_compute_risk(contests):
         "test1": {("cand1", "cand2"): 0.07},
         "test2": {("cand1", "cand2"): 10.38, ("cand1", "cand3"): 0,},
         "test3": {("cand1", ""): 1},
-        "test4": {("cand1", ""): 1},
-        "test5": {("cand1", "cand2"): 1},
+        "test4": {("cand1", ""): 0},
+        "test5": {("cand1", "cand2"): 0},
         "test6": {("cand1", "cand2"): 0.08, ("cand1", "cand3"): 0.08,},
         "test7": {("cand1", "cand3"): 0.01, ("cand2", "cand3"): 0.04,},
         "test8": {("cand1", "cand3"): 0.0, ("cand2", "cand3"): 0.22,},
@@ -305,8 +305,8 @@ def test_compute_risk(contests):
         "test1": True,
         "test2": False,
         "test3": False,
-        "test4": False,
-        "test5": False,
+        "test4": True,
+        "test5": True,
         "test6": True,
         "test7": True,
         "test8": False,
@@ -389,6 +389,44 @@ def test_compute_risk_empty(contests):
         ), "Risk decision for {} failed! Expected {}, got{}".format(
             contest.name, expected_decision, decision
         )
+
+
+def test_tied_contest():
+    contest_data = {
+        "cand1": 500,
+        "cand2": 500,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("Tied Contest", contest_data)
+
+    sample_results = {}
+
+    sample_options = bravo.get_sample_size(RISK_LIMIT, contest, sample_results)
+
+    assert 0.7 not in sample_options
+    assert 0.8 not in sample_options
+    assert 0.9 not in sample_options
+    assert sample_options["asn"]["size"] == contest.ballots
+    assert sample_options["asn"]["prob"] == 1.0
+
+    computed_p, res = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
+
+    assert computed_p[("cand1", "cand2")] > RISK_LIMIT
+    assert not res
+
+    # Now do a full hand recount
+    sample_results = {
+        "cand1": 501,
+        "cand2": 499,
+    }
+
+    computed_p, res = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
+
+    assert not computed_p[("cand1", "cand2")]
+    assert res
 
 
 bravo_contests = {
