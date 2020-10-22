@@ -140,6 +140,13 @@ def compute_discrepancies(
                     # we found a discrepancy!
                     found = True
                 e_weighted = Decimal(e) / Decimal(V_wl)
+
+                if not V_wl:
+                    # In this case the error is undefined
+                    e_weighted = -1
+                else:
+                    e_weighted = e / V_wl
+
                 if e_weighted > e_r:
                     e_r = e_weighted
                     e_int = e
@@ -276,11 +283,22 @@ def compute_risk(
         else:
             e_r = Decimal(0)
 
-        denom = (2 * gamma) / V
-        p_b = (1 - 1 / U) / (1 - (e_r / denom))
+        if contest.diluted_margin:
+            U = 2 * gamma / contest.diluted_margin
+            denom = (2 * gamma) / V
+            p_b = (1 - 1 / U) / (1 - (e_r / denom))
+        else:
+            # If the contest is a tie, this step results in 1 - 1/(infinity)
+            # divided by 1 - e_r/infinity, i.e. 1
+            p_b = 1
+
         p *= p_b
 
     if 0 < p < alpha:
         result = True
+
+    if len(sample_cvr) >= N:
+        # We've done a full hand recount
+        return 0, True
 
     return float(p), result
