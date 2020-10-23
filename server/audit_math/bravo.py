@@ -7,8 +7,7 @@ Note that this library works for one contest at a time, as if each contest being
 targeted is being audited completely independently.
 """
 import math
-from typing import Dict, Tuple, Optional
-from typing_extensions import Literal, TypedDict
+from typing import Dict, Tuple
 from scipy import stats
 
 from .sampler_contest import Contest
@@ -270,15 +269,9 @@ def expected_prob(
     return round(float(stats.norm.cdf(-z)), 2)
 
 
-class SampleSizeOption(TypedDict):
-    type: Optional[Literal["ASN"]]
-    size: int
-    prob: Optional[float]
-
-
 def get_sample_size(
     risk_limit: float, contest: Contest, sample_results: Dict[str, int]
-) -> Dict[str, SampleSizeOption]:
+) -> Dict[str, "SampleSizeOption"]:  # type: ignore
     """
     Computes initial sample size parameterized by likelihood that the
     initial sample will confirm the election result, assuming no

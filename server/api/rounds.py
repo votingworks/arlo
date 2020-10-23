@@ -15,7 +15,7 @@ from . import sample_sizes as sample_sizes_module
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
 from ..util.jsonschema import JSONDict
-from ..audit_math import sampler, bravo, macro, supersimple, sampler_contest
+from ..audit_math import sampler, ballot_polling, macro, supersimple, sampler_contest
 from .cvrs import set_contest_metadata_from_cvrs
 
 
@@ -297,10 +297,11 @@ def calculate_risk_measurements(election: Election, round: Round):
         contest = round_contest.contest
 
         if election.audit_type == AuditType.BALLOT_POLLING:
-            p_values, is_complete = bravo.compute_risk(
+            p_values, is_complete = ballot_polling.compute_risk(
                 risk_limit,
                 sampler_contest.from_db_contest(contest),
                 cumulative_contest_results(contest),
+                "BRAVO",
             )
             p_value = max(p_values.values())
         elif election.audit_type == AuditType.BATCH_COMPARISON:

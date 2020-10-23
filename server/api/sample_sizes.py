@@ -6,7 +6,7 @@ from werkzeug.exceptions import BadRequest
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..auth import restrict_access, UserType
-from ..audit_math import bravo, macro, supersimple, sampler_contest
+from ..audit_math import ballot_polling, macro, supersimple, sampler_contest
 from . import rounds  # pylint: disable=cyclic-import
 from .cvrs import set_contest_metadata_from_cvrs
 
@@ -17,7 +17,7 @@ from .cvrs import set_contest_metadata_from_cvrs
 # round one specifically, even if the audit has progressed further.
 def sample_size_options(
     election: Election, round_one=False
-) -> Dict[str, Dict[str, bravo.SampleSizeOption]]:
+) -> Dict[str, Dict[str, ballot_polling.SampleSizeOption]]:
     if not election.contests:
         raise BadRequest("Cannot compute sample sizes until contests are set")
     if not election.risk_limit:
@@ -32,10 +32,11 @@ def sample_size_options(
                 else rounds.cumulative_contest_results(contest)
             )
 
-            sample_size_options = bravo.get_sample_size(
+            sample_size_options = ballot_polling.get_sample_size(
                 risk_limit,
                 sampler_contest.from_db_contest(contest),
                 cumulative_results,
+                BallotPollingType.BRAVO,
             )
             # Remove unnecessary "type" field from options, add "key" field
             return {
