@@ -10,7 +10,7 @@ MACRO was developed by Philip Stark (see
 https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1443314 for the
 publication).
 """
-import math
+from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, Any
 from .sampler_contest import Contest
 
@@ -19,7 +19,7 @@ def compute_error(
     batch_results: Dict[str, Dict[str, int]],
     sampled_results: Dict[str, Dict[str, int]],
     contest: Contest,
-) -> float:
+) -> Decimal:
     """
     Computes the error in this batch
 
@@ -42,11 +42,11 @@ def compute_error(
         the maximum across-contest relative overstatement for batch p
     """
 
-    error = 0.0
+    error = Decimal(0.0)
     margins = contest.margins
 
     if contest.name not in batch_results:
-        return 0.0
+        return Decimal(0.0)
 
     for winner in margins["winners"]:
         for loser in margins["losers"]:
@@ -58,7 +58,7 @@ def compute_error(
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
 
-            e_pwl = ((v_wp - v_lp) - (a_wp - a_lp)) / V_wl
+            e_pwl = Decimal((v_wp - v_lp) - (a_wp - a_lp)) / Decimal(V_wl)
 
             if e_pwl > error:
                 error = e_pwl
@@ -68,7 +68,7 @@ def compute_error(
 
 def compute_max_error(
     batch_results: Dict[str, Dict[str, int]], contest: Contest
-) -> float:
+) -> Decimal:
     """
     Computes the maximum possible error in this batch for this contest
 
@@ -89,11 +89,11 @@ def compute_max_error(
         the maximum possible overstatement for batch p
     """
 
-    error = 0.0
+    error = Decimal(0.0)
 
     # We only care about error in targeted contests
     if contest.name not in batch_results:
-        return 0.0
+        return Decimal(0.0)
 
     margins = contest.margins
     for winner in margins["winners"]:
@@ -105,7 +105,7 @@ def compute_max_error(
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
 
-            u_pwl = ((v_wp - v_lp) + b_cp) / V_wl
+            u_pwl = Decimal((v_wp - v_lp) + b_cp) / Decimal(V_wl)
 
             if u_pwl > error:
                 error = u_pwl
@@ -117,7 +117,7 @@ def compute_U(
     reported_results: Dict[str, Dict[str, Dict[str, int]]],
     sample_results: Dict[Any, Dict[str, Dict[str, int]]],
     contest: Contest,
-) -> float:
+) -> Decimal:
     """
     Computes U, the sum of the batch-wise relative overstatement limits,
     i.e. the maximum amount of possible overstatement in a given election.
@@ -140,7 +140,7 @@ def compute_U(
     Outputs:
         U - the sum of the maximum possible overstatement for each batch
     """
-    U = 0.0
+    U = Decimal(0.0)
     for batch in reported_results:
         if batch in sample_results:
             U += compute_error(reported_results[batch], sample_results[batch], contest)
@@ -151,11 +151,11 @@ def compute_U(
 
 
 def get_sample_sizes(
-    risk_limit: float,
+    risk_limit: int,
     contest: Contest,
     reported_results: Dict[Any, Dict[str, Dict[str, int]]],
     sample_results: Dict[Any, Dict[str, Dict[str, int]]],
-) -> float:
+) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
     initial sample will confirm the election result, assuming no
@@ -192,7 +192,8 @@ def get_sample_sizes(
                     ...
                 }
     """
-    assert risk_limit < 1, "The risk-limit must be less than one!"
+    alpha = Decimal(risk_limit) / 100
+    assert alpha < 1, "The risk-limit must be less than one!"
 
     # Computing U with the max error for already sampled batches knocked out
     # to try to provide a sense of "how close" the audit is to finishing.
@@ -201,11 +202,14 @@ def get_sample_sizes(
     if not U:
         return 1
 
-    return math.ceil(math.log(risk_limit) / (math.log(1 - (1 / U))))
+    retval = int(
+        (alpha.ln() / ((1 - (1 / U))).ln()).quantize(Decimal(1), ROUND_CEILING)
+    )
+    return retval
 
 
 def compute_risk(
-    risk_limit: float,
+    risk_limit: int,
     contest: Contest,
     reported_results: Dict[Any, Dict[str, Dict[str, int]]],
     sample_results: Dict[Any, Dict[str, Dict[str, int]]],
@@ -238,9 +242,10 @@ def compute_risk(
                           winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
-    assert risk_limit < 1, "The risk-limit must be less than one!"
+    alpha = Decimal(risk_limit) / 100
+    assert alpha < 1, "The risk-limit must be less than one!"
 
-    p = 1.0
+    p = Decimal(1.0)
 
     # Computing U without the sample preserves conservative-ness
     U = compute_U(reported_results, {}, contest)
@@ -254,7 +259,7 @@ def compute_risk(
 
         p *= (1 - 1 / U) / (1 - taint)
 
-        if p < risk_limit:
-            return p, True
+        if p <= alpha:
+            return float(p), True
 
-    return p, p < risk_limit
+    return float(p), p <= alpha

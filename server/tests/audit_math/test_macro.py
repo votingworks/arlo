@@ -1,10 +1,12 @@
+from decimal import Decimal
 import pytest
 
 from ...audit_math import macro
 from ...audit_math.sampler_contest import Contest
 
 SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
-RISK_LIMIT = 0.25
+RISK_LIMIT = 25
+ALPHA = 0.25
 
 macro_contests = {
     "Contest A": {
@@ -125,7 +127,7 @@ def test_max_error(contests, batches):
 
     for contest in contests:
         for batch in batches:
-            expected_up = expected_ups[contest][batch]
+            expected_up = Decimal(expected_ups[contest][batch])
             computed_up = macro.compute_max_error(batches[batch], contests[contest])
 
             delta = abs(computed_up - expected_up)

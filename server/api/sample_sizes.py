@@ -20,11 +20,11 @@ def sample_size_options(
 ) -> Dict[str, Dict[str, ballot_polling.SampleSizeOption]]:
     if not election.contests:
         raise BadRequest("Cannot compute sample sizes until contests are set")
-    if not election.risk_limit:
+    if election.risk_limit is None:
         raise BadRequest("Cannot compute sample sizes until risk limit is set")
-    risk_limit = float(election.risk_limit) / 100
 
     def sample_sizes_for_contest(contest: Contest):
+        assert election.risk_limit is not None
         if election.audit_type == AuditType.BALLOT_POLLING:
             cumulative_results = (
                 {choice.id: 0 for choice in contest.choices}
@@ -33,7 +33,7 @@ def sample_size_options(
             )
 
             sample_size_options = ballot_polling.get_sample_size(
-                risk_limit,
+                election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 cumulative_results,
                 BallotPollingType.BRAVO,
@@ -55,7 +55,7 @@ def sample_size_options(
                     for batch_key, batch_results in sample_results.items()
                 }
             sample_size = macro.get_sample_sizes(
-                risk_limit,
+                election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 rounds.batch_tallies(election),
                 sample_results,
@@ -90,7 +90,7 @@ def sample_size_options(
             }
 
             sample_size = supersimple.get_sample_sizes(
-                risk_limit, contest_for_sampler, discrepancy_counts
+                election.risk_limit, contest_for_sampler, discrepancy_counts
             )
             return {
                 "supersimple": {"key": "supersimple", "size": sample_size, "prob": None}

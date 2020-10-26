@@ -1,19 +1,20 @@
 # pylint: disable=invalid-name
 import math
+from decimal import Decimal, ROUND_CEILING
 from typing import Dict, Tuple, TypedDict
 
 from .sampler_contest import Contest
 
-l: float = 0.5
-gamma: float = 1.03905  # This gamma is used in Stark's tool, AGI, and CORLA
+l: Decimal = Decimal(0.5)
+gamma: Decimal = Decimal(1.03905)  # This gamma is used in Stark's tool, AGI, and CORLA
 
 # This sets the expected number of one-vote misstatements at 1 in 1000
-o1: float = 0.001
-u1: float = 0.001
+o1: Decimal = Decimal(0.001)
+u1: Decimal = Decimal(0.001)
 
 # This sets the expected two-vote misstatements at 1 in 10000
-o2: float = 0.0001
-u2: float = 0.0001
+o2: Decimal = Decimal(0.0001)
+u2: Decimal = Decimal(0.0001)
 
 # { ballot_id: { contest_id: { choice_id: 0 | 1 }}}
 CVRS = Dict[str, Dict[str, Dict[str, int]]]
@@ -22,30 +23,29 @@ CVR = Dict[str, Dict[str, int]]
 
 class Discrepancy(TypedDict):
     counted_as: int
-    weighted_error: float
+    weighted_error: Decimal
     discrepancy_cvr: CVRS
 
 
 def nMin(
-    risk_limit: float, contest: Contest, o1: float, o2: float, u1: float, u2: float
-) -> float:
+    alpha: Decimal, contest: Contest, o1: Decimal, o2: Decimal, u1: Decimal, u2: Decimal
+) -> Decimal:
     """
     Computes a sample size parameterized by expected under and overstatements
     and the margin.
     """
-    return max(
-        o1 + o2 + u1 + u2,
+    return (o1 + o2 + u1 + u2).max(
         math.ceil(
             -2
             * gamma
             * (
-                math.log(risk_limit)
-                + o1 * math.log(1 - 1 / (2 * gamma))
-                + o2 * math.log(1 - 1 / gamma)
-                + u1 * math.log(1 + 1 / (2 * gamma))
-                + u2 * math.log(1 + 1 / gamma)
+                alpha.ln()
+                + o1 * (1 - 1 / (2 * gamma)).ln()
+                + o2 * (1 - 1 / gamma).ln()
+                + u1 * (1 + 1 / (2 * gamma)).ln()
+                + u2 * (1 + 1 / gamma).ln()
             )
-            / contest.diluted_margin
+            / Decimal(contest.diluted_margin)
         ),
     )
 
@@ -111,7 +111,7 @@ def compute_discrepancies(
         # negative errors (i.e. errors that favor the winner. We can do that
         # by setting these to zero and evaluating whether an error is greater
         # than zero (i.e. positive).
-        e_r = 0.0
+        e_r = Decimal(0.0)
         e_int = 0
 
         found = False
@@ -139,7 +139,7 @@ def compute_discrepancies(
                 if e:
                     # we found a discrepancy!
                     found = True
-                e_weighted = e / V_wl
+                e_weighted = Decimal(e) / Decimal(V_wl)
                 if e_weighted > e_r:
                     e_r = e_weighted
                     e_int = e
@@ -158,8 +158,8 @@ def compute_discrepancies(
 
 
 def get_sample_sizes(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
-) -> float:
+    risk_limit: int, contest: Contest, sample_results: Dict[str, int]
+) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
     initial sample will confirm the election result, assuming no
@@ -180,12 +180,14 @@ def get_sample_sizes(
     Outputs:
         sample_size    - the sample size needed for this audit
     """
+    alpha = Decimal(risk_limit) / 100
+    assert alpha < 1
 
-    obs_o1 = sample_results["1-over"]
-    obs_u1 = sample_results["1-under"]
-    obs_o2 = sample_results["2-over"]
-    obs_u2 = sample_results["2-under"]
-    num_sampled = sample_results["sample_size"]
+    obs_o1 = Decimal(sample_results["1-over"])
+    obs_u1 = Decimal(sample_results["1-under"])
+    obs_o2 = Decimal(sample_results["2-over"])
+    obs_u2 = Decimal(sample_results["2-under"])
+    num_sampled = Decimal(sample_results["sample_size"])
 
     if num_sampled:
         r1 = obs_o1 / num_sampled
@@ -199,27 +201,27 @@ def get_sample_sizes(
         s2 = u2
 
     denom = (
-        math.log(1 - contest.diluted_margin / (2 * gamma))
-        - r1 * math.log(1 - 1 / (2 * gamma))
-        - r2 * math.log(1 - 1 / gamma)
-        - s1 * math.log(1 + 1 / (2 * gamma))
-        - s2 * math.log(1 + 1 / gamma)
+        (1 - Decimal(contest.diluted_margin) / (2 * gamma)).ln()
+        - r1 * (1 - 1 / (2 * gamma)).ln()
+        - r2 * (1 - 1 / gamma).ln()
+        - s1 * (1 + 1 / (2 * gamma)).ln()
+        - s2 * (1 + 1 / gamma).ln()
     )
 
     if denom >= 0:
         return contest.ballots
 
-    n0 = math.ceil(math.log(risk_limit) / denom)
+    n0 = math.ceil(alpha.ln() / denom)
 
     # Round up one-vote differences.
-    r1 = math.ceil(r1 * n0)
-    s1 = math.ceil(s1 * n0)
+    r1 = (r1 * n0).quantize(Decimal(1), ROUND_CEILING)
+    s1 = (s1 * n0).quantize(Decimal(1), ROUND_CEILING)
 
-    return nMin(risk_limit, contest, r1, r2, s1, s2)
+    return int(nMin(alpha, contest, r1, r2, s1, s2))
 
 
 def compute_risk(
-    risk_limit: float, contest: Contest, cvrs: CVRS, sample_cvr: CVRS,
+    risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: CVRS,
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -253,12 +255,15 @@ def compute_risk(
                           result is correct based on the sample, for each winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
-    p = 1.0
+    alpha = Decimal(risk_limit) / 100
+    assert alpha < 1
+
+    p = Decimal(1.0)
 
     N = contest.ballots
-    V = contest.diluted_margin * N
+    V = Decimal(contest.diluted_margin * N)
 
-    U = 2 * gamma / contest.diluted_margin
+    U = 2 * gamma / Decimal(contest.diluted_margin)
 
     result = False
 
@@ -268,13 +273,13 @@ def compute_risk(
         if ballot in discrepancies:
             e_r = discrepancies[ballot]["weighted_error"]
         else:
-            e_r = 0
+            e_r = Decimal(0)
 
         denom = (2 * gamma) / V
         p_b = (1 - 1 / U) / (1 - (e_r / denom))
         p *= p_b
 
-    if 0 < p < risk_limit:
+    if 0 < p < alpha:
         result = True
 
-    return p, result
+    return float(p), result

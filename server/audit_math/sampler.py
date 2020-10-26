@@ -1,6 +1,7 @@
 # pylint: disable=invalid-name
 # Handles generating sample sizes and taking samples
 from typing import cast, Any, Dict, List, Tuple
+from decimal import Decimal
 import consistent_sampler
 
 from . import macro
@@ -108,7 +109,7 @@ def draw_ppeb_sample(
 
     # Map each batch to its weighted probability of being picked
     batch_to_prob = {}
-    min_prob = 1.0
+    min_prob = Decimal(1.0)
     # Get u_ps
     for batch in batch_results:
         error = macro.compute_max_error(batch_results[batch], contest)

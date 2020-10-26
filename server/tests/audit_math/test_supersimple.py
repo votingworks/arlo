@@ -1,11 +1,13 @@
 # pylint: disable=invalid-name
+from decimal import Decimal
 import pytest
 
 from ...audit_math import supersimple
 from ...audit_math.sampler_contest import Contest
 
 seed = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
-risk_limit = 0.1
+ALPHA = Decimal(0.1)
+RISK_LIMIT = 10
 
 
 @pytest.fixture
@@ -100,7 +102,7 @@ def test_find_one_discrepancy(contests, cvrs):
         )
         if contest == "Contest A":
             assert discrepancies[0]["counted_as"] == 1
-            assert discrepancies[0]["weighted_error"] == 1 / 20000
+            assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(20000)
             assert (
                 discrepancies[0]["discrepancy_cvr"]["reported_as"][contest]
                 != discrepancies[0]["discrepancy_cvr"]["audited_as"][contest]
@@ -126,7 +128,7 @@ def test_race_not_in_cvr_discrepancy(contests, cvrs):
 
     assert discrepancies
     assert discrepancies[0]["counted_as"] == 1
-    assert discrepancies[0]["weighted_error"] == 1 / 6
+    assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(6)
     assert "Contest F" not in discrepancies[0]["discrepancy_cvr"]["reported_as"]
 
 
@@ -147,7 +149,7 @@ def test_race_not_in_sample_discrepancy(contests, cvrs):
 
     assert discrepancies
     assert discrepancies[0]["counted_as"] == 1
-    assert discrepancies[0]["weighted_error"] == 1 / 2000
+    assert discrepancies[0]["weighted_error"] == Decimal(1) / Decimal(2000)
     assert "Contest D" not in discrepancies[0]["discrepancy_cvr"]["audited_as"]
 
 
@@ -162,7 +164,7 @@ def test_get_sample_sizes(contests):
 
     for contest in contests:
         computed = supersimple.get_sample_sizes(
-            risk_limit, contests[contest], sample_results
+            RISK_LIMIT, contests[contest], sample_results
         )
         expected = true_sample_sizes[contest]  # From Stark's tool
 
@@ -185,7 +187,7 @@ def test_compute_risk(contests, cvrs):
         }
         sample_cvr = {}
         sample_size = supersimple.get_sample_sizes(
-            risk_limit, contests[contest], to_sample
+            RISK_LIMIT, contests[contest], to_sample
         )
 
         # No discrepancies
@@ -199,7 +201,7 @@ def test_compute_risk(contests, cvrs):
             }
 
         p_value, finished = supersimple.compute_risk(
-            risk_limit, contests[contest], cvrs, sample_cvr
+            RISK_LIMIT, contests[contest], cvrs, sample_cvr
         )
 
         expected_p = expected_p_values["no_discrepancies"][contest]
@@ -221,7 +223,7 @@ def test_compute_risk(contests, cvrs):
         }
 
         next_sample_size = supersimple.get_sample_sizes(
-            risk_limit, contests[contest], to_sample
+            RISK_LIMIT, contests[contest], to_sample
         )
         assert (
             next_sample_size == no_next_sample[contest]
@@ -237,7 +239,7 @@ def test_compute_risk(contests, cvrs):
         }
 
         p_value, finished = supersimple.compute_risk(
-            risk_limit, contests[contest], cvrs, sample_cvr
+            RISK_LIMIT, contests[contest], cvrs, sample_cvr
         )
 
         expected_p = expected_p_values["one_vote_over"][contest]
@@ -262,7 +264,7 @@ def test_compute_risk(contests, cvrs):
         }
 
         next_sample_size = supersimple.get_sample_sizes(
-            risk_limit, contests[contest], to_sample
+            RISK_LIMIT, contests[contest], to_sample
         )
         assert (
             next_sample_size == o1_next_sample[contest]
@@ -280,7 +282,7 @@ def test_compute_risk(contests, cvrs):
         }
 
         p_value, finished = supersimple.compute_risk(
-            risk_limit, contests[contest], cvrs, sample_cvr
+            RISK_LIMIT, contests[contest], cvrs, sample_cvr
         )
         expected_p = expected_p_values["two_vote_over"][contest]
         diff = abs(p_value - expected_p)
@@ -305,7 +307,7 @@ def test_compute_risk(contests, cvrs):
         }
 
         next_sample_size = supersimple.get_sample_sizes(
-            risk_limit, contests[contest], to_sample
+            RISK_LIMIT, contests[contest], to_sample
         )
         assert (
             next_sample_size == o2_next_sample[contest]
