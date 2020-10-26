@@ -289,8 +289,7 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS
 
 
 def calculate_risk_measurements(election: Election, round: Round):
-    if not election.risk_limit:  # Shouldn't happen, we need this for typechecking
-        raise Exception("Risk limit not defined")  # pragma: no cover
+    assert election.risk_limit is not None
 
     for round_contest in round.round_contests:
         contest = round_contest.contest

@@ -24,10 +24,7 @@ def sample_size_options(
         raise BadRequest("Cannot compute sample sizes until risk limit is set")
 
     def sample_sizes_for_contest(contest: Contest):
-        # For some reason putting this here works, but not if it's in the outer
-        # function
-        if election.risk_limit is None:
-            raise BadRequest("Cannot compute sample sizes until risk limit is set")
+        assert election.risk_limit is not None
         if election.audit_type == AuditType.BALLOT_POLLING:
             cumulative_results = (
                 {choice.id: 0 for choice in contest.choices}

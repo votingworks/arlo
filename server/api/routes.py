@@ -53,7 +53,7 @@ def compute_sample_sizes(round_contest):
 
     for contest in election.contests:
         raw_sample_size_options = ballot_polling.get_sample_size(
-            election.risk_limit / 100,
+            election.risk_limit,
             sampler_contest.from_db_contest(contest),
             cumulative_contest_results(contest),
             "BRAVO",
@@ -110,7 +110,7 @@ def check_round(election, jurisdiction_id, round_id):
     contest = next(c for c in election.contests if c.id == round_contest.contest_id)
 
     risk, is_complete = ballot_polling.compute_risk(
-        election.risk_limit / 100,
+        election.risk_limit,
         sampler_contest.from_db_contest(contest),
         cumulative_contest_results(contest),
         "BRAVO",
