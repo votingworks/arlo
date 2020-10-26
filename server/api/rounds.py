@@ -291,14 +291,13 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS
 def calculate_risk_measurements(election: Election, round: Round):
     if not election.risk_limit:  # Shouldn't happen, we need this for typechecking
         raise Exception("Risk limit not defined")  # pragma: no cover
-    risk_limit = float(election.risk_limit) / 100
 
     for round_contest in round.round_contests:
         contest = round_contest.contest
 
         if election.audit_type == AuditType.BALLOT_POLLING:
             p_values, is_complete = ballot_polling.compute_risk(
-                risk_limit,
+                election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 cumulative_contest_results(contest),
                 "BRAVO",
@@ -306,7 +305,7 @@ def calculate_risk_measurements(election: Election, round: Round):
             p_value = max(p_values.values())
         elif election.audit_type == AuditType.BATCH_COMPARISON:
             p_value, is_complete = macro.compute_risk(
-                risk_limit,
+                election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 batch_tallies(election),
                 cumulative_batch_results(election),
@@ -314,7 +313,7 @@ def calculate_risk_measurements(election: Election, round: Round):
         else:
             assert election.audit_type == AuditType.BALLOT_COMPARISON
             p_value, is_complete = supersimple.compute_risk(
-                risk_limit,
+                election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 cvrs_for_contest(contest),
                 sampled_ballot_interpretations_to_cvrs(contest),

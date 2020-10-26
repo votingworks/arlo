@@ -16,7 +16,7 @@ class SampleSizeOption(TypedDict):
 
 
 def get_sample_size(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, int], mathtype: str
+    risk_limit: int, contest: Contest, sample_results: Dict[str, int], mathtype: str
 ) -> Dict[str, SampleSizeOption]:
 
     if mathtype == BallotPollingType.BRAVO:
@@ -26,7 +26,7 @@ def get_sample_size(
 
 
 def compute_risk(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, int], mathtype: str
+    risk_limit: int, contest: Contest, sample_results: Dict[str, int], mathtype: str
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
 
     if mathtype == BallotPollingType.BRAVO:
