@@ -34,6 +34,83 @@ export const dummyBoards = (): IAuditBoard[] => [
   },
 ]
 
+export const dummyColumnBallots: {
+  [keys in
+    | 'ballotsNoTabulatorNoContainer'
+    | 'ballotsNoContainer'
+    | 'ballotsNoTabulator'
+    | 'ballotsBoth']: { ballots: IBallot[] }
+} = {
+  ballotsNoTabulatorNoContainer: {
+    ballots: [
+      {
+        id: 'ballot-id-1',
+        batch: {
+          name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+          id: 'batch-id-1',
+          tabulator: null,
+          container: null,
+        },
+        position: 313,
+        status: BallotStatus.AUDITED,
+        interpretations: [],
+        auditBoard: dummyBoards()[0],
+      },
+    ],
+  },
+  ballotsNoContainer: {
+    ballots: [
+      {
+        id: 'ballot-id-1',
+        batch: {
+          name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+          id: 'batch-id-1',
+          tabulator: '11',
+          container: null,
+        },
+        position: 313,
+        status: BallotStatus.AUDITED,
+        interpretations: [],
+        auditBoard: dummyBoards()[0],
+      },
+    ],
+  },
+  ballotsNoTabulator: {
+    ballots: [
+      {
+        id: 'ballot-id-1',
+        batch: {
+          name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+          id: 'batch-id-1',
+          tabulator: null,
+          container: 'box',
+        },
+        position: 313,
+        status: BallotStatus.AUDITED,
+        interpretations: [],
+        auditBoard: dummyBoards()[0],
+      },
+    ],
+  },
+  ballotsBoth: {
+    ballots: [
+      {
+        id: 'ballot-id-1',
+        batch: {
+          name: '0003-04-Precinct 13 (Jonesboro Fire Department)',
+          id: 'batch-id-1',
+          tabulator: '11',
+          container: 'box',
+        },
+        position: 313,
+        status: BallotStatus.AUDITED,
+        interpretations: [],
+        auditBoard: dummyBoards()[0],
+      },
+    ],
+  },
+}
+
 export const doneDummyBallots: { ballots: IBallot[] } = {
   ballots: [
     {

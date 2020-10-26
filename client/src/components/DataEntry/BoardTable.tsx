@@ -90,14 +90,14 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
       },
     },
   ]
-  if (ballots[0].batch.tabulator)
+  if (ballots.length && ballots[0].batch.tabulator)
     columns.unshift({
       Header: 'Tabulator',
       accessor: ({ batch: { tabulator } }) => tabulator,
     })
-  if (ballots[0].batch.container)
+  if (ballots.length && ballots[0].batch.container)
     columns.unshift({
-      Header: 'Tabulator',
+      Header: 'Container',
       accessor: ({ batch: { container } }) => container,
     })
 

@@ -14,10 +14,13 @@ import BoardTable from './BoardTable'
 import MemberForm from './MemberForm'
 import Ballot from './Ballot'
 import SignOff from './SignOff'
-import { Wrapper, Inner } from '../Atoms/Wrapper'
+import { Wrapper, Inner, ThinnerInner } from '../Atoms/Wrapper'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
 
 const PaddedInner = styled(Inner)`
+  padding-top: 30px;
+`
+const PaddedThinnerInner = styled(ThinnerInner)`
   padding-top: 30px;
 `
 
@@ -265,7 +268,7 @@ const DataEntry: React.FC = () => {
 
   return (
     <Wrapper>
-      <PaddedInner>
+      <PaddedThinnerInner>
         <Switch>
           <Route
             exact
@@ -305,7 +308,7 @@ const DataEntry: React.FC = () => {
             )}
           />
         </Switch>
-      </PaddedInner>
+      </PaddedThinnerInner>
     </Wrapper>
   )
 }
