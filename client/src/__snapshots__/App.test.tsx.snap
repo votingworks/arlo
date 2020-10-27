@@ -6,13 +6,13 @@ exports[`App / renders aa logged in properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-feJyhm geOhHf"
+    class="sc-cIShpX dhyUlm"
   >
     <div
-      class="bp3-navbar sc-bZQynM jZGXQs"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
-        class="sc-bxivhb sc-gzVnrw mqUyc"
+        class="sc-bxivhb sc-bZQynM ezCmGO"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -34,7 +34,7 @@ exports[`App / renders aa logged in properly 1`] = `
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-EHOje ERhbw"
+            class="sc-ifAKCX jNLPyG"
             id="reset-button-wrapper"
           />
           <button
@@ -54,13 +54,13 @@ exports[`App / renders aa logged in properly 1`] = `
       class="sc-htpNat eniUlo"
     >
       <div
-        class="sc-bxivhb jDHpsk"
+        class="sc-bxivhb hMnACT"
       >
         <div
           style="width: 50%;"
         >
           <div
-            class="sc-hEsumM dbVBPy"
+            class="sc-fYxtnH fqihfU"
           >
             <div>
               <h2>
@@ -78,16 +78,16 @@ exports[`App / renders aa logged in properly 1`] = `
           style="width: 50%;"
         >
           <div
-            class="sc-cIShpX ewHGYq"
+            class="sc-hEsumM fhuHHa"
           >
             <h2>
               New Audit
             </h2>
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-VigVT jXYKmK"
             />
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-VigVT jXYKmK"
             >
               <label
                 for="auditName"
@@ -96,10 +96,10 @@ exports[`App / renders aa logged in properly 1`] = `
                   Audit name
                 </p>
                 <div
-                  class="sc-kafWEX bTASmM sc-kAzzGY bLtYsq"
+                  class="sc-ktHwxA cVevTH sc-cSHVUG gyNSie"
                 >
                   <div
-                    class="bp3-input-group sc-chPdSV PhUsl"
+                    class="bp3-input-group sc-kAzzGY fpNxNJ"
                   >
                     <input
                       class="bp3-input"
@@ -114,7 +114,7 @@ exports[`App / renders aa logged in properly 1`] = `
               </label>
             </div>
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-VigVT jXYKmK"
             >
               <label
                 for="auditType"
@@ -190,13 +190,13 @@ exports[`App / renders ja logged in properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-feJyhm geOhHf"
+    class="sc-cIShpX dhyUlm"
   >
     <div
-      class="bp3-navbar sc-bZQynM jZGXQs"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
-        class="sc-bxivhb sc-gzVnrw mqUyc"
+        class="sc-bxivhb sc-bZQynM ezCmGO"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -221,7 +221,7 @@ exports[`App / renders ja logged in properly 1`] = `
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-EHOje ERhbw"
+            class="sc-ifAKCX jNLPyG"
             id="reset-button-wrapper"
           />
           <button
@@ -241,13 +241,13 @@ exports[`App / renders ja logged in properly 1`] = `
       class="sc-htpNat eniUlo"
     >
       <div
-        class="sc-bxivhb jDHpsk"
+        class="sc-bxivhb hMnACT"
       >
         <div
           style="width: 50%;"
         >
           <div
-            class="sc-hEsumM dbVBPy"
+            class="sc-fYxtnH fqihfU"
           >
             <div>
               <h2>
@@ -255,7 +255,7 @@ exports[`App / renders ja logged in properly 1`] = `
                 audit one
               </h2>
               <button
-                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-ktHwxA bImPDL"
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-tilXH RVjHz"
                 href="/election/1/jurisdiction/jurisdiction-id-1"
                 type="button"
               >
@@ -266,7 +266,7 @@ exports[`App / renders ja logged in properly 1`] = `
                 </span>
               </button>
               <button
-                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-ktHwxA bImPDL"
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-tilXH RVjHz"
                 href="/election/1/jurisdiction/jurisdiction-id-3"
                 type="button"
               >
@@ -283,7 +283,7 @@ exports[`App / renders ja logged in properly 1`] = `
                 audit two
               </h2>
               <button
-                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-ktHwxA bImPDL"
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-tilXH RVjHz"
                 href="/election/2/jurisdiction/jurisdiction-id-2"
                 type="button"
               >
@@ -308,13 +308,13 @@ exports[`App / renders unauthenticated properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-feJyhm geOhHf"
+    class="sc-cIShpX dhyUlm"
   >
     <div
-      class="bp3-navbar sc-bZQynM jZGXQs"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
-        class="sc-bxivhb sc-gzVnrw mqUyc"
+        class="sc-bxivhb sc-bZQynM ezCmGO"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -336,14 +336,14 @@ exports[`App / renders unauthenticated properly 1`] = `
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-EHOje ERhbw"
+            class="sc-ifAKCX jNLPyG"
             id="reset-button-wrapper"
           />
         </div>
       </div>
     </div>
     <div
-      class="sc-tilXH cEjkQd"
+      class="sc-jnlKLf ewyYGn"
     >
       <img
         alt="Arlo, by VotingWorks"
@@ -392,13 +392,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
     class="Toastify"
   />
   <div
-    class="sc-feJyhm geOhHf"
+    class="sc-cIShpX dhyUlm"
   >
     <div
-      class="bp3-navbar sc-bZQynM jZGXQs"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
-        class="sc-bxivhb sc-gzVnrw mqUyc"
+        class="sc-bxivhb sc-bZQynM ezCmGO"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -420,7 +420,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-EHOje ERhbw"
+            class="sc-ifAKCX jNLPyG"
             id="reset-button-wrapper"
           />
           <button
@@ -440,13 +440,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
       class="sc-htpNat eniUlo"
     >
       <div
-        class="sc-bxivhb jDHpsk"
+        class="sc-bxivhb hMnACT"
       >
         <div
           style="width: 50%;"
         >
           <div
-            class="sc-hEsumM dbVBPy"
+            class="sc-fYxtnH fqihfU"
           >
             <div>
               <h2>
@@ -464,16 +464,16 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
           style="width: 50%;"
         >
           <div
-            class="sc-cIShpX ewHGYq"
+            class="sc-hEsumM fhuHHa"
           >
             <h2>
               New Audit
             </h2>
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-VigVT jXYKmK"
             />
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-VigVT jXYKmK"
             >
               <label
                 for="auditName"
@@ -482,10 +482,10 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                   Audit name
                 </p>
                 <div
-                  class="sc-kafWEX bTASmM sc-kAzzGY bLtYsq"
+                  class="sc-ktHwxA cVevTH sc-cSHVUG gyNSie"
                 >
                   <div
-                    class="bp3-input-group sc-chPdSV PhUsl"
+                    class="bp3-input-group sc-kAzzGY fpNxNJ"
                   >
                     <input
                       class="bp3-input"
@@ -500,7 +500,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
               </label>
             </div>
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-VigVT jXYKmK"
             >
               <label
                 for="auditType"
@@ -578,13 +578,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
     class="Toastify"
   />
   <div
-    class="sc-feJyhm geOhHf"
+    class="sc-cIShpX dhyUlm"
   >
     <div
-      class="bp3-navbar sc-bZQynM jZGXQs"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
-        class="sc-bxivhb sc-gzVnrw mqUyc"
+        class="sc-bxivhb sc-bZQynM ezCmGO"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -609,7 +609,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-EHOje ERhbw"
+            class="sc-ifAKCX jNLPyG"
             id="reset-button-wrapper"
           />
           <button
@@ -629,13 +629,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
       class="sc-htpNat eniUlo"
     >
       <div
-        class="sc-bxivhb jDHpsk"
+        class="sc-bxivhb hMnACT"
       >
         <div
           style="width: 50%;"
         >
           <div
-            class="sc-hEsumM dbVBPy"
+            class="sc-fYxtnH fqihfU"
           >
             <div>
               <h2>
@@ -643,7 +643,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
                 audit one
               </h2>
               <button
-                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-ktHwxA bImPDL"
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-tilXH RVjHz"
                 href="/election/1/jurisdiction/jurisdiction-id-1"
                 type="button"
               >
@@ -654,7 +654,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
                 </span>
               </button>
               <button
-                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-ktHwxA bImPDL"
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-tilXH RVjHz"
                 href="/election/1/jurisdiction/jurisdiction-id-3"
                 type="button"
               >
@@ -671,7 +671,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
                 audit two
               </h2>
               <button
-                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-ktHwxA bImPDL"
+                class="bp3-button bp3-fill bp3-large bp3-intent-primary sc-tilXH RVjHz"
                 href="/election/2/jurisdiction/jurisdiction-id-2"
                 type="button"
               >
@@ -723,13 +723,13 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthentic
     </div>
   </div>
   <div
-    class="sc-feJyhm geOhHf"
+    class="sc-cIShpX dhyUlm"
   >
     <div
-      class="bp3-navbar sc-bZQynM jZGXQs"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
-        class="sc-bxivhb sc-gzVnrw mqUyc"
+        class="sc-bxivhb sc-bZQynM ezCmGO"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -751,14 +751,14 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthentic
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-EHOje ERhbw"
+            class="sc-ifAKCX jNLPyG"
             id="reset-button-wrapper"
           />
         </div>
       </div>
     </div>
     <div
-      class="sc-tilXH cEjkQd"
+      class="sc-jnlKLf ewyYGn"
     >
       <img
         alt="Arlo, by VotingWorks"
@@ -807,13 +807,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
     class="Toastify"
   />
   <div
-    class="sc-feJyhm geOhHf"
+    class="sc-cIShpX dhyUlm"
   >
     <div
-      class="bp3-navbar sc-bZQynM jZGXQs"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
-        class="sc-bxivhb sc-gzVnrw mqUyc"
+        class="sc-bxivhb sc-bZQynM ezCmGO"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -835,7 +835,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-EHOje ERhbw"
+            class="sc-ifAKCX jNLPyG"
             id="reset-button-wrapper"
           />
           <button
@@ -855,13 +855,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
       class="sc-htpNat eniUlo"
     >
       <div
-        class="sc-bxivhb jDHpsk"
+        class="sc-bxivhb hMnACT"
       >
         <div
           style="width: 50%;"
         >
           <div
-            class="sc-hEsumM dbVBPy"
+            class="sc-fYxtnH fqihfU"
           >
             <div>
               <h2>
@@ -879,16 +879,16 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
           style="width: 50%;"
         >
           <div
-            class="sc-cIShpX ewHGYq"
+            class="sc-hEsumM fhuHHa"
           >
             <h2>
               New Audit
             </h2>
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-VigVT jXYKmK"
             />
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-VigVT jXYKmK"
             >
               <label
                 for="auditName"
@@ -897,10 +897,10 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                   Audit name
                 </p>
                 <div
-                  class="sc-kafWEX bTASmM sc-kAzzGY bLtYsq"
+                  class="sc-ktHwxA cVevTH sc-cSHVUG gyNSie"
                 >
                   <div
-                    class="bp3-input-group sc-chPdSV PhUsl"
+                    class="bp3-input-group sc-kAzzGY fpNxNJ"
                   >
                     <input
                       class="bp3-input"
@@ -915,7 +915,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
               </label>
             </div>
             <div
-              class="sc-jTzLTM hPHXqn"
+              class="sc-VigVT jXYKmK"
             >
               <label
                 for="auditType"
@@ -1237,13 +1237,13 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthen
     </div>
   </div>
   <div
-    class="sc-feJyhm geOhHf"
+    class="sc-cIShpX dhyUlm"
   >
     <div
-      class="bp3-navbar sc-bZQynM jZGXQs"
+      class="bp3-navbar sc-EHOje gMcVig"
     >
       <div
-        class="sc-bxivhb sc-gzVnrw mqUyc"
+        class="sc-bxivhb sc-bZQynM ezCmGO"
       >
         <div
           class="bp3-navbar-group bp3-align-left"
@@ -1265,14 +1265,14 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthen
           class="bp3-navbar-group bp3-align-right"
         >
           <div
-            class="sc-EHOje ERhbw"
+            class="sc-ifAKCX jNLPyG"
             id="reset-button-wrapper"
           />
         </div>
       </div>
     </div>
     <div
-      class="sc-tilXH cEjkQd"
+      class="sc-jnlKLf ewyYGn"
     >
       <img
         alt="Arlo, by VotingWorks"
