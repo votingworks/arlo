@@ -87,7 +87,12 @@ class Election(BaseModel):
     jurisdictions_file_id = Column(
         String(200), ForeignKey("file.id", ondelete="set null")
     )
-    jurisdictions_file = relationship("File", foreign_keys=[jurisdictions_file_id])
+    jurisdictions_file = relationship(
+        "File",
+        foreign_keys=[jurisdictions_file_id],
+        single_parent=True,
+        cascade="all, delete-orphan",
+    )
 
     # The standardized contests file (only used in ballot comparison audits)
     # contains a list of all possible contests and the corresponding list of
@@ -97,7 +102,10 @@ class Election(BaseModel):
         String(200), ForeignKey("file.id", ondelete="set null")
     )
     standardized_contests_file = relationship(
-        "File", foreign_keys=[standardized_contests_file_id]
+        "File",
+        foreign_keys=[standardized_contests_file_id],
+        single_parent=True,
+        cascade="all, delete-orphan",
     )
     standardized_contests = Column(JSON)
 
@@ -117,7 +125,12 @@ class Jurisdiction(BaseModel):
     # The ballot manifest file is uploaded by each jurisdiction to tell us
     # which ballots are available to audit.
     manifest_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
-    manifest_file = relationship("File", foreign_keys=[manifest_file_id])
+    manifest_file = relationship(
+        "File",
+        foreign_keys=[manifest_file_id],
+        single_parent=True,
+        cascade="all, delete-orphan",
+    )
     manifest_num_ballots = Column(Integer)
     manifest_num_batches = Column(Integer)
 
@@ -128,14 +141,24 @@ class Jurisdiction(BaseModel):
     batch_tallies_file_id = Column(
         String(200), ForeignKey("file.id", ondelete="set null")
     )
-    batch_tallies_file = relationship("File", foreign_keys=[batch_tallies_file_id])
+    batch_tallies_file = relationship(
+        "File",
+        foreign_keys=[batch_tallies_file_id],
+        single_parent=True,
+        cascade="all, delete-orphan",
+    )
     batch_tallies = Column(JSON)
 
     # The CVR file (only used in ballot comparison audits), tells us all of the
     # recorded votes for each ballot in the election. We load this file and
     # create a CvrBallot for each row.
     cvr_file_id = Column(String(200), ForeignKey("file.id", ondelete="set null"))
-    cvr_file = relationship("File", foreign_keys=[cvr_file_id])
+    cvr_file = relationship(
+        "File",
+        foreign_keys=[cvr_file_id],
+        single_parent=True,
+        cascade="all, delete-orphan",
+    )
     cvr_contests_metadata = Column(JSON)
 
     batches = relationship(

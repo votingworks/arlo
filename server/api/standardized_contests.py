@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
-from flask import request, jsonify
+from flask import request, jsonify, Request
 from sqlalchemy.orm.session import Session
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, Conflict
 
 from . import api
 from ..auth import restrict_access, UserType
@@ -68,20 +68,34 @@ def process_standardized_contests_file(
     process_file(session, file, process)
 
 
+def validate_standardized_contests_upload(request: Request, election: Election):
+    if election.audit_type != AuditType.BALLOT_COMPARISON:
+        raise Conflict(
+            "Can only upload standardized contests file for ballot comparison audits."
+        )
+
+    if len(list(election.jurisdictions)) == 0:
+        raise Conflict(
+            "Must upload jurisdictions file before uploading standardized contests file."
+        )
+
+    if "standardized-contests" not in request.files:
+        raise BadRequest("Missing required file parameter 'standardized-contests'")
+
+
 @api.route("/election/<election_id>/standardized-contests/file", methods=["PUT"])
 @restrict_access([UserType.AUDIT_ADMIN])
 def upload_standardized_contests_file(election: Election):
-    file = request.files.get("standardized-contests")
-    if not file:
-        raise BadRequest("Missing required file parameter 'standardized-contests'")
+    validate_standardized_contests_upload(request, election)
 
-    file_string = decode_csv_file(file.read())
+    file = request.files["standardized-contests"]
     election.standardized_contests_file = File(
         id=str(uuid.uuid4()),
         name=file.filename,
-        contents=file_string,
+        contents=decode_csv_file(file.read()),
         uploaded_at=datetime.utcnow(),
     )
+    election.standardized_contests = None
     db_session.commit()
 
     return jsonify(status="ok")

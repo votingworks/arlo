@@ -73,6 +73,53 @@ def test_upload_standardized_contests(
     ]
 
 
+def test_standardized_contests_replace(
+    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
+):
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(
+                    b"Contest Name,Jurisdictions\n"
+                    b"Contest 1,all\n"
+                    b'Contest 2,"J1, J3"\n'
+                    b"Contest 3,J2 \n"
+                ),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    file_id = Election.query.get(election_id).standardized_contests_file_id
+
+    bgcompute_update_standardized_contests_file()
+
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 4,all\n"),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    # The old file should have been deleted
+    assert File.query.get(file_id) is None
+    assert Election.query.get(election_id).standardized_contests_file_id != file_id
+    assert Election.query.get(election_id).standardized_contests is None
+
+    bgcompute_update_standardized_contests_file()
+
+    rv = client.get(f"/api/election/{election_id}/standardized-contests")
+    assert json.loads(rv.data) == [
+        {"name": "Contest 4", "jurisdictionIds": jurisdiction_ids},
+    ]
+
+
 def test_standardized_contests_bad_jurisdiction(
     client: FlaskClient,
     election_id: str,
@@ -132,4 +179,95 @@ def test_standardized_contests_missing_file(
     }
 
 
-# TODO - test more invalid cases
+def test_standardized_contests_bad_csv(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+):
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(b"not a csv"),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert_ok(rv)
+
+    bgcompute_update_standardized_contests_file()
+
+    rv = client.get(f"/api/election/{election_id}/standardized-contests/file")
+    compare_json(
+        json.loads(rv.data),
+        {
+            "file": {
+                "name": "standardized-contests.csv",
+                "uploadedAt": assert_is_date,
+            },
+            "processing": {
+                "status": ProcessingStatus.ERRORED,
+                "startedAt": assert_is_date,
+                "completedAt": assert_is_date,
+                "error": "Please submit a valid CSV file with columns separated by commas.",
+            },
+        },
+    )
+
+    rv = client.get(f"/api/election/{election_id}/standardized-contests")
+    assert json.loads(rv.data) is None
+
+
+def test_standardized_contests_wrong_audit_type(
+    client: FlaskClient,
+    election_id: str,
+    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
+):
+    for audit_type in [AuditType.BALLOT_POLLING, AuditType.BATCH_COMPARISON]:
+        # Hackily change the audit type
+        election = Election.query.get(election_id)
+        election.audit_type = audit_type
+        db_session.add(election)
+        db_session.commit()
+
+        rv = client.put(
+            f"/api/election/{election_id}/standardized-contests/file",
+            data={
+                "standardized-contests": (
+                    io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,all\n"),
+                    "standardized-contests.csv",
+                )
+            },
+        )
+        assert rv.status_code == 409
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "errorType": "Conflict",
+                    "message": "Can only upload standardized contests file for ballot comparison audits.",
+                }
+            ]
+        }
+
+
+def test_standardized_contests_before_jurisdictions(
+    client: FlaskClient, election_id: str
+):
+    rv = client.put(
+        f"/api/election/{election_id}/standardized-contests/file",
+        data={
+            "standardized-contests": (
+                io.BytesIO(b"Contest Name,Jurisdictions\n" b"Contest 1,all\n"),
+                "standardized-contests.csv",
+            )
+        },
+    )
+    assert rv.status_code == 409
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "errorType": "Conflict",
+                "message": "Must upload jurisdictions file before uploading standardized contests file.",
+            }
+        ]
+    }
