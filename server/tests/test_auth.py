@@ -18,12 +18,6 @@ JA_EMAIL = "ja@example.com"
 
 
 @pytest.fixture
-def org_id() -> str:
-    org = create_organization("Test Org")
-    return str(org.id)
-
-
-@pytest.fixture
 def aa_email(org_id: str) -> str:
     email = f"aa-{org_id}@example.com"
     audit_admin = create_user(email)
@@ -240,11 +234,11 @@ def test_auth_me_audit_admin(
 
     rv = client.get("/api/me")
     assert json.loads(rv.data) == {
-        "type": UserType.AUDIT_ADMIN,
+        "type": "audit_admin",
         "email": aa_email,
         "organizations": [
             {
-                "name": "Test Org",
+                "name": "Test Org test_auth_me_audit_admin",
                 "id": org_id,
                 "elections": [
                     {

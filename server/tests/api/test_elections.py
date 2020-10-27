@@ -1,53 +1,43 @@
-import json, uuid
+import json
 from flask.testing import FlaskClient
 
 from ...auth import UserType
-from ...api.routes import create_organization
 from ..helpers import *  # pylint: disable=wildcard-import
 from ...models import *  # pylint: disable=wildcard-import
 
 
-def test_without_org_with_anonymous_user(client: FlaskClient):
-    rv = post_json(
-        client,
-        "/api/election/new",
-        {
-            "auditName": "Test Audit Without Org",
-            "isMultiJurisdiction": False,
-            "auditType": AuditType.BALLOT_POLLING,
-        },
-    )
-    assert rv.status_code == 200
-    assert json.loads(rv.data)["electionId"]
-
-
-def test_multi_jurisdiction_without_org(client: FlaskClient):
+def test_create_election_missing_fields(client: FlaskClient, org_id: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = post_json(
-        client,
-        "/api/election/new",
-        {
-            "auditName": "Test Multi-jurisdiction Without Org",
+    for field in ["auditName", "isMultiJurisdiction", "auditType", "organizationId"]:
+        new_election = {
+            "auditName": f"Test Missing {field}",
             "isMultiJurisdiction": True,
             "auditType": AuditType.BALLOT_POLLING,
-        },
-    )
-    assert rv.status_code == 400
-    assert json.loads(rv.data) == {
-        "errors": [
-            {"message": "organizationId is required", "errorType": "Bad Request",}
-        ]
-    }
+            "organizationId": org_id,
+        }
+
+        del new_election[field]
+
+        rv = post_json(client, "/api/election", new_election)
+        print(rv.data)
+        assert rv.status_code == 400
+        assert json.loads(rv.data) == {
+            "errors": [
+                {
+                    "message": f"'{field}' is a required property",
+                    "errorType": "Bad Request",
+                }
+            ]
+        }
 
 
-def test_in_org_with_anonymous_user(client: FlaskClient):
-    org = create_organization()
+def test_create_election_not_logged_in(client: FlaskClient, org_id: str):
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
-            "auditName": "Test Audit In Org Anonymous",
-            "organizationId": org.id,
+            "auditName": "Test Audit Not Logged In",
+            "organizationId": org_id,
             "isMultiJurisdiction": True,
             "auditType": AuditType.BALLOT_POLLING,
         },
@@ -60,13 +50,11 @@ def test_in_org_with_anonymous_user(client: FlaskClient):
     assert rv.status_code == 401
 
 
-def test_in_org_with_logged_in_admin(client: FlaskClient):
-    org_id, _user_id = create_org_and_admin(user_email="logged-in-aa@example.com")
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, "logged-in-aa@example.com")
-
+def test_create_election(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": "Test Audit In Org Logged In AA",
             "organizationId": org_id,
@@ -77,19 +65,17 @@ def test_in_org_with_logged_in_admin(client: FlaskClient):
     response = json.loads(rv.data)
     election_id = response.get("electionId", None)
     assert election_id, response
-    assert Election.query.get(election_id).online is False
-
-    rv = client.get(f"/api/election/{election_id}/audit/status")
-
-    assert json.loads(rv.data)["organizationId"] == org_id
+    election = Election.query.get(election_id)
+    assert election.organization_id == org_id
+    assert election.online is False
 
 
-def test_new_batch_comparison_audit(client: FlaskClient, org_id: str):
+def test_create_election_new_batch_comparison_audit(client: FlaskClient, org_id: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": "Test Audit Batch Comparison",
             "organizationId": org_id,
@@ -102,12 +88,12 @@ def test_new_batch_comparison_audit(client: FlaskClient, org_id: str):
     assert Election.query.get(election_id).online is False
 
 
-def test_new_ballot_comparison_audit(client: FlaskClient, org_id: str):
+def test_create_election_new_ballot_comparison_audit(client: FlaskClient, org_id: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": "Test Audit Ballot Comparison",
             "organizationId": org_id,
@@ -122,17 +108,18 @@ def test_new_ballot_comparison_audit(client: FlaskClient, org_id: str):
     assert Election.query.get(election_id).online is True
 
 
-def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
-    _org1_id, _user1_id = create_org_and_admin(user_email="without-access@example.com")
-    org2_id, _user2_id = create_org_and_admin(user_email="with-access@example.com")
+def test_create_election_in_org_with_logged_in_admin_without_access(
+    client: FlaskClient, org_id: str
+):
+    create_org_and_admin(user_email="without-access@example.com")
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "without-access@example.com")
 
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": "Test Audit Logged In Without Access",
-            "organizationId": org2_id,
+            "organizationId": org_id,
             "isMultiJurisdiction": True,
             "auditType": AuditType.BALLOT_POLLING,
         },
@@ -140,7 +127,7 @@ def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": f"without-access@example.com does not have access to organization {org2_id}",
+                "message": f"without-access@example.com does not have access to organization {org_id}",
                 "errorType": "Forbidden",
             }
         ]
@@ -148,13 +135,16 @@ def test_in_org_with_logged_in_admin_without_access(client: FlaskClient):
     assert rv.status_code == 403
 
 
-def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
-    org_id, _user_id = create_org_and_admin(user_email="logged-in-ja@example.com")
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, "logged-in-ja@example.com")
+def test_create_election_jurisdiction_admin(
+    client: FlaskClient,
+    org_id: str,
+    election_id: str,  # pylint: disable=unused-argument
+):
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
 
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": "Test Audit In Org Logged In JA",
             "organizationId": org_id,
@@ -173,14 +163,16 @@ def test_in_org_with_logged_in_jurisdiction_admin(client: FlaskClient):
     assert rv.status_code == 403
 
 
-def test_bad_audit_type(client: FlaskClient):
+def test_create_election_bad_audit_type(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": "Test Audit",
             "isMultiJurisdiction": False,
             "auditType": "NOT A REAL TYPE",
+            "organizationId": org_id,
         },
     )
     assert rv.status_code == 400
@@ -194,52 +186,12 @@ def test_bad_audit_type(client: FlaskClient):
     }
 
 
-def test_missing_audit_name(client: FlaskClient):
-    rv = post_json(client, "/api/election/new", {})
-    assert rv.status_code == 400
-    assert json.loads(rv.data) == {
-        "errors": [
-            {
-                "message": "'auditName' is a required property",
-                "errorType": "Bad Request",
-            }
-        ]
-    }
-
-
-def test_without_org_duplicate_audit_name(client: FlaskClient):
-    rv = post_json(
-        client,
-        "/api/election/new",
-        {
-            "auditName": "Test Audit Duplicate",
-            "isMultiJurisdiction": False,
-            "auditType": AuditType.BALLOT_POLLING,
-        },
-    )
-    assert rv.status_code == 200
-    assert json.loads(rv.data)["electionId"]
+def test_create_election_in_org_duplicate_audit_name(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
 
     rv = post_json(
         client,
-        "/api/election/new",
-        {
-            "auditName": "Test Audit Duplicate",
-            "isMultiJurisdiction": False,
-            "auditType": AuditType.BALLOT_POLLING,
-        },
-    )
-    assert rv.status_code == 200
-    assert json.loads(rv.data)["electionId"]
-
-
-def test_in_org_duplicate_audit_name(client: FlaskClient):
-    org_id, _user_id = create_org_and_admin(user_email="duplicate-name@example.com")
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, "duplicate-name@example.com")
-
-    rv = post_json(
-        client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": "Test Audit In Org Duplicate",
             "organizationId": org_id,
@@ -252,7 +204,7 @@ def test_in_org_duplicate_audit_name(client: FlaskClient):
 
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": "Test Audit In Org Duplicate",
             "organizationId": org_id,
@@ -271,14 +223,14 @@ def test_in_org_duplicate_audit_name(client: FlaskClient):
     }
 
 
-def test_two_orgs_same_name(client: FlaskClient):
+def test_create_election_two_orgs_same_name(client: FlaskClient):
     org_id_1, _ = create_org_and_admin(user_email="admin-org1@example.com")
     org_id_2, _ = create_org_and_admin(user_email="admin-org2@example.com")
     set_logged_in_user(client, UserType.AUDIT_ADMIN, "admin-org1@example.com")
 
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": "Test Audit Two Orgs Duplicate",
             "organizationId": org_id_1,
@@ -293,7 +245,7 @@ def test_two_orgs_same_name(client: FlaskClient):
 
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": "Test Audit Two Orgs Duplicate",
             "organizationId": org_id_2,
@@ -303,22 +255,3 @@ def test_two_orgs_same_name(client: FlaskClient):
     )
     assert rv.status_code == 200
     assert json.loads(rv.data)["electionId"]
-
-
-def test_election_reset(client, election_id):
-    rv = client.post(f"/api/election/{election_id}/audit/reset")
-    assert_ok(rv)
-
-    rv = client.get(f"/api/election/{election_id}/audit/status")
-    status = json.loads(rv.data)
-
-    assert status["riskLimit"] is None
-    assert status["randomSeed"] is None
-    assert status["contests"] == []
-    assert status["jurisdictions"] == []
-    assert status["rounds"] == []
-
-
-def test_election_reset_not_found(client):
-    rv = client.post(f"/api/election/{str(uuid.uuid4())}/audit/reset")
-    assert rv.status_code == 404

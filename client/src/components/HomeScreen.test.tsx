@@ -16,7 +16,7 @@ const apiCalls = {
     },
   },
   postNewAudit: (body: {}) => ({
-    url: '/api/election/new',
+    url: '/api/election',
     options: {
       method: 'POST',
       body: JSON.stringify(body),

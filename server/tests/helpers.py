@@ -10,7 +10,6 @@ from ..auth.lib import (
     _USER,
     _SUPERADMIN,
 )
-from ..api.routes import create_organization
 from ..database import db_session
 from ..models import *  # pylint: disable=wildcard-import
 from ..api.audit_boards import end_round
@@ -77,7 +76,8 @@ def create_user(email=DEFAULT_AA_EMAIL) -> User:
 def create_org_and_admin(
     org_name: str = "Test Org", user_email: str = DEFAULT_AA_EMAIL
 ) -> Tuple[str, str]:
-    org = create_organization(org_name)
+    org = Organization(id=str(uuid.uuid4()), name=org_name)
+    db_session.add(org)
     audit_admin = create_user(user_email)
     db_session.add(audit_admin)
     admin = AuditAdministration(organization_id=org.id, user_id=audit_admin.id)
@@ -129,7 +129,7 @@ def create_election(
 ) -> str:
     rv = post_json(
         client,
-        "/api/election/new",
+        "/api/election",
         {
             "auditName": audit_name or f"Test Audit {datetime.utcnow()}",
             "auditType": audit_type,

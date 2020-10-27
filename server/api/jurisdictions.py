@@ -1,14 +1,22 @@
 from typing import Dict, Optional
 import enum
-from flask import jsonify
+import uuid
+import datetime
+import csv
+import io
+from flask import jsonify, request
 from sqlalchemy import func
+from werkzeug.exceptions import Conflict
 
 from . import api
 from ..models import *  # pylint: disable=wildcard-import
+from ..database import db_session
 from ..auth import restrict_access, UserType
 from .rounds import get_current_round
 from ..util.process_file import serialize_file, serialize_file_processing
 from ..util.jsonschema import JSONDict
+from ..util.csv_parse import decode_csv_file
+from ..util.csv_download import csv_response
 
 
 def serialize_jurisdiction(
@@ -290,3 +298,88 @@ def list_jurisdictions(election: Election):
         for jurisdiction in election.jurisdictions
     ]
     return jsonify({"jurisdictions": json_jurisdictions})
+
+
+@api.route("/election/<election_id>/jurisdiction/file", methods=["GET"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def get_jurisdictions_file(election: Election):
+    return jsonify(
+        file=serialize_file(election.jurisdictions_file),
+        processing=serialize_file_processing(election.jurisdictions_file),
+    )
+
+
+@api.route("/election/<election_id>/jurisdiction/file/csv", methods=["GET"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def download_jurisdictions_file(election: Election):
+    if not election.jurisdictions_file:
+        return NotFound()
+
+    return csv_response(
+        election.jurisdictions_file.contents, election.jurisdictions_file.name
+    )
+
+
+JURISDICTION_NAME = "Jurisdiction"
+ADMIN_EMAIL = "Admin Email"
+
+
+@api.route("/election/<election_id>/jurisdiction/file", methods=["PUT"])
+@restrict_access([UserType.AUDIT_ADMIN])
+def update_jurisdictions_file(election: Election):
+    if len(list(election.rounds)) > 0:
+        raise Conflict("Cannot update jurisdictions after audit has started.")
+
+    if "jurisdictions" not in request.files:
+        return (
+            jsonify(
+                errors=[
+                    {
+                        "message": 'Expected file parameter "jurisdictions" was missing',
+                        "errorType": "MissingFile",
+                    }
+                ]
+            ),
+            400,
+        )
+
+    jurisdictions_file = request.files["jurisdictions"]
+    jurisdictions_file_string = decode_csv_file(jurisdictions_file.read())
+
+    old_jurisdictions_file = election.jurisdictions_file
+    election.jurisdictions_file = File(
+        id=str(uuid.uuid4()),
+        name=jurisdictions_file.filename,
+        contents=jurisdictions_file_string,
+        uploaded_at=datetime.datetime.utcnow(),
+    )
+
+    jurisdictions_csv = csv.DictReader(io.StringIO(jurisdictions_file_string))
+
+    missing_fields = [
+        field
+        for field in [JURISDICTION_NAME, ADMIN_EMAIL]
+        if field not in (jurisdictions_csv.fieldnames or [])
+    ]
+
+    if missing_fields:
+        return (
+            jsonify(
+                errors=[
+                    {
+                        "message": f'Missing required CSV field "{field}"',
+                        "errorType": "MissingRequiredCsvField",
+                        "fieldName": field,
+                    }
+                    for field in missing_fields
+                ]
+            ),
+            400,
+        )
+
+    if old_jurisdictions_file:
+        db_session.delete(old_jurisdictions_file)
+    db_session.add(election)
+    db_session.commit()
+
+    return jsonify(status="ok")
