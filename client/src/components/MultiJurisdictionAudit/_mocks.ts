@@ -32,7 +32,6 @@ export const jaApiCalls = {
             auditName: 'audit one',
             electionName: 'election one',
             state: 'AL',
-            isMultiJurisdiction: true,
           },
         },
         {
@@ -43,7 +42,6 @@ export const jaApiCalls = {
             auditName: 'audit two',
             electionName: 'election two',
             state: 'AL',
-            isMultiJurisdiction: true,
           },
         },
         {
@@ -54,7 +52,6 @@ export const jaApiCalls = {
             auditName: 'audit one',
             electionName: 'election one',
             state: 'AL',
-            isMultiJurisdiction: true,
           },
         },
       ],

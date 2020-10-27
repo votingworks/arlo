@@ -4,10 +4,7 @@ api = Blueprint("api", __name__)
 
 # pylint: disable=wrong-import-position,cyclic-import
 
-# Single-jurisdiction flow routes
-from . import routes
-
-# Multi-jurisdiction flow routes
+from . import elections
 from . import election_settings
 from . import contests
 from . import jurisdictions

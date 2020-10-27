@@ -210,13 +210,12 @@ const CreateAudit: React.FC = () => {
     auditType,
   }: IValues) => {
     setSubmitting(true)
-    const response: { electionId: string } | null = await api('/election/new', {
+    const response: { electionId: string } | null = await api('/election', {
       method: 'POST',
       body: JSON.stringify({
         organizationId,
         auditName,
         auditType,
-        isMultiJurisdiction: true,
       }),
       headers: {
         'Content-Type': 'application/json',

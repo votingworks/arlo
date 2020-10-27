@@ -53,17 +53,11 @@ class Election(BaseModel):
     # submitting to Arlo.
     online = Column(Boolean, nullable=False)
 
-    # False for our old single-jurisdiction flow,
-    # True for our new multi-jurisdiction flow
-    is_multi_jurisdiction = Column(Boolean, nullable=False)
-
     # Who does this election belong to?
     organization_id = Column(
-        String(200), ForeignKey("organization.id", ondelete="cascade"),
+        String(200), ForeignKey("organization.id", ondelete="cascade"), nullable=False
     )
     organization = relationship("Organization", back_populates="elections")
-
-    frozen_at = Column(DateTime)
 
     jurisdictions = relationship(
         "Jurisdiction",
@@ -526,9 +520,6 @@ class RoundContest(BaseModel):
         String(200), ForeignKey("contest.id", ondelete="cascade"), nullable=False,
     )
     contest = relationship("Contest")
-
-    # Used in the single-jurisdiction flow to store pre-computed estimated sample sizes
-    sample_size_options = Column(String(1000))
 
     results = relationship("RoundContestResult", uselist=True, passive_deletes=True,)
 

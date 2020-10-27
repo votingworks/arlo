@@ -139,24 +139,11 @@ export interface IRound {
   }
 }
 
-export interface IAudit {
-  name: string
-  online: boolean
-  riskLimit: string
-  randomSeed: string
-  contests: IContest[]
-  jurisdictions: IJurisdiction[]
-  rounds: IRound[]
-  frozenAt: string | null
-  isMultiJurisdiction: boolean
-}
-
 export interface IElectionMeta {
   id: string
   auditName: string
   electionName: string
   state: string
-  isMultiJurisdiction: boolean
 }
 
 export interface IOrganizationMeta {
