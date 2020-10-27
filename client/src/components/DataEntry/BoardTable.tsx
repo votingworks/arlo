@@ -22,34 +22,6 @@ const RightWrapper = styled.div`
   }
 `
 
-// const Cell = styled(BPCell)`
-//   padding: 7px 10px;
-//   font-size: inherit;
-//   > div {
-//     display: flex;
-//     align-items: center;
-//     justify-content: space-between;
-//     height: 100%;
-//   }
-// `
-
-// const Table = styled(BPTable)`
-//   height: auto;
-// `
-
-// const ActionWrapper = styled.div` // commented out until feature is used
-//   margin-bottom: 20px;
-//   .bp3-checkbox {
-//     display: inline-block;
-//     margin-left: 20px;
-//   }
-//   @media (max-width: 775px) {
-//     .bp3-button {
-//       width: 100%;
-//     }
-//   }
-// `
-
 interface IProps {
   boardName: IAuditBoard['name']
   ballots: IBallot[]
