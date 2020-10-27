@@ -10,8 +10,8 @@ export const Inner = styled.div`
   display: flex;
   margin-right: auto;
   margin-left: auto;
-  width: 1020px;
-  min-width: 1020px;
+  width: 100%;
+  max-width: 1020px;
   padding: 0 30px;
 `
 

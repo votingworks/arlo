@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { Table as BPTable, Column, Cell as BPCell } from '@blueprintjs/table'
 import { H1 } from '@blueprintjs/core'
 import { Link } from 'react-router-dom'
+import { Column } from 'react-table'
+import { Table } from '../Atoms/Table'
 import { IAuditBoard, BallotStatus } from '../../types'
 import LinkButton from '../Atoms/LinkButton'
 import { IBallot } from '../MultiJurisdictionAudit/RoundManagement/useBallots'
@@ -21,111 +22,56 @@ const RightWrapper = styled.div`
   }
 `
 
-const Cell = styled(BPCell)`
-  padding: 7px 10px;
-  font-size: inherit;
-  > div {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100%;
-  }
-`
-
-const Table = styled(BPTable)`
-  height: auto;
-`
-
-// const ActionWrapper = styled.div` // commented out until feature is used
-//   margin-bottom: 20px;
-//   .bp3-checkbox {
-//     display: inline-block;
-//     margin-left: 20px;
-//   }
-//   @media (max-width: 775px) {
-//     .bp3-button {
-//       width: 100%;
-//     }
-//   }
-// `
-
 interface IProps {
   boardName: IAuditBoard['name']
   ballots: IBallot[]
   url: string
 }
 
-const KEYS: ('position' | 'tabulator' | 'batch' | 'status' | 'container')[] = [
-  'batch',
-  'position',
-  'tabulator',
-  'status',
-  'container',
-]
-
 const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
-  const renderCell = (rI: number, cI: number) => {
-    const ballot = ballots[rI]!
-    switch (KEYS[cI]) {
-      case 'batch':
-        return <Cell>{ballot.batch.name}</Cell>
-      case 'container':
-        return (
-          <Cell>
-            {ballot.batch.container === null ? 'N/A' : ballot.batch.container}
-          </Cell>
-        )
-      case 'position':
-        return <Cell>{ballot.position}</Cell>
-      case 'status':
+  const columns: Column<IBallot>[] = [
+    {
+      Header: 'Batch',
+      accessor: ({ batch: { name } }) => name,
+    },
+    {
+      Header: 'Ballot Position',
+      accessor: 'position',
+    },
+    {
+      Header: 'Status',
+      // eslint-disable-next-line react/display-name
+      accessor: ballot => {
         return ballot.status !== BallotStatus.NOT_AUDITED ? (
-          <Cell>
-            <>
-              {ballot.status === BallotStatus.AUDITED ? (
-                <span>Audited</span>
-              ) : (
-                <span>Not Found</span>
-              )}
-              <Link
-                to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
-                className="bp3-button bp3-small"
-              >
-                Re-audit
-              </Link>
-            </>
-          </Cell>
+          <>
+            {ballot.status === BallotStatus.AUDITED ? (
+              <span>Audited</span>
+            ) : (
+              <span>Not Found</span>
+            )}
+            <Link
+              to={`${url}/batch/${ballot.batch.id}/ballot/${ballot.position}`}
+              className="bp3-button bp3-small"
+            >
+              Re-audit
+            </Link>
+          </>
         ) : (
-          <Cell>Not Audited</Cell>
+          'Not Audited'
         )
-      case 'tabulator':
-        return (
-          <Cell>
-            {ballot.batch.tabulator === null ? 'N/A' : ballot.batch.tabulator}
-          </Cell>
-        )
-      /* istanbul ignore next */
-      default:
-        return <Cell>?</Cell>
-    }
-  }
-
-  const columnWidths = (): (number | undefined)[] => {
-    const container = document.getElementsByClassName(
-      'board-table-container'
-    )[0]
-    /* istanbul ignore next */
-    if (!container) return Array(KEYS.length).fill(undefined)
-    const containerSize = container.clientWidth
-    /* istanbul ignore next */
-    if (containerSize < 500) return Array(KEYS.length).fill(80)
-    return Array(KEYS.length).fill(containerSize / KEYS.length)
-  }
-
-  const [cols, setCols] = useState(Array(KEYS.length).fill(undefined))
-
-  useEffect(() => {
-    setCols(columnWidths())
-  }, [ballots])
+      },
+    },
+  ]
+  if (ballots.length && ballots[0].batch.tabulator)
+    columns.unshift({
+      Header: 'Tabulator',
+      accessor: ({ batch: { tabulator } }) => tabulator,
+    })
+  if (ballots.length && ballots[0].batch.container)
+    columns.unshift({
+      Header: 'Container',
+      accessor: ({ batch: { container } }) => container,
+    })
 
   const roundComplete = ballots.every(
     b => b.status !== BallotStatus.NOT_AUDITED
@@ -172,22 +118,7 @@ const BoardTable: React.FC<IProps> = ({ boardName, ballots, url }: IProps) => {
           </>
         )}
       </ActionWrapper> */}
-      <Table
-        numRows={ballots.length}
-        defaultRowHeight={40}
-        columnWidths={cols}
-        enableRowHeader={false}
-      >
-        <Column key="container" name="Container" cellRenderer={renderCell} />
-        <Column key="tabulator" name="Tabulator" cellRenderer={renderCell} />
-        <Column key="batch" name="Batch" cellRenderer={renderCell} />
-        <Column
-          key="position"
-          name="Ballot Position"
-          cellRenderer={renderCell}
-        />
-        <Column key="status" name="Status" cellRenderer={renderCell} />
-      </Table>
+      <Table data={ballots} columns={columns} />
     </div>
   )
 }

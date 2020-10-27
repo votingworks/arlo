@@ -38,6 +38,10 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
           Current ballot:
         </h4>
         <div>
+          Tabulator: 
+          11
+        </div>
+        <div>
           Batch: 
           0003-04-Precinct 13 (Jonesboro Fire Department)
         </div>

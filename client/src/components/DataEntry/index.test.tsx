@@ -156,23 +156,6 @@ describe('DataEntry', () => {
       })
     })
 
-    it('renders board table with large container size', async () => {
-      jest
-        .spyOn(window.document, 'getElementsByClassName')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .mockReturnValue([{ clientWidth: 2000 }] as any)
-      const expectedCalls = [
-        apiCalls.getAuditBoard,
-        apiCalls.getContests,
-        apiCalls.getBallotsInitial,
-      ]
-      await withMockFetch(expectedCalls, async () => {
-        const { container } = renderDataEntry()
-        await screen.findByText('Audit Board #1: Ballot Cards to Audit')
-        expect(container).toMatchSnapshot()
-      })
-    })
-
     it('renders ballot route', async () => {
       const expectedCalls = [
         apiCalls.getAuditBoard,
