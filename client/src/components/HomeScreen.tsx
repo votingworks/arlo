@@ -216,7 +216,6 @@ const CreateAudit: React.FC = () => {
         organizationId,
         auditName,
         auditType,
-        isMultiJurisdiction: true,
       }),
       headers: {
         'Content-Type': 'application/json',

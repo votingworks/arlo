@@ -125,7 +125,6 @@ def create_election(
     audit_name: str = None,
     audit_type: str = AuditType.BALLOT_POLLING,
     organization_id: str = None,
-    is_multi_jurisdiction: bool = True,
 ) -> str:
     rv = post_json(
         client,
@@ -134,7 +133,6 @@ def create_election(
             "auditName": audit_name or f"Test Audit {datetime.utcnow()}",
             "auditType": audit_type,
             "organizationId": organization_id,
-            "isMultiJurisdiction": is_multi_jurisdiction,
         },
     )
     result = json.loads(rv.data)

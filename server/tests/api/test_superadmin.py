@@ -16,9 +16,7 @@ def organization_id() -> str:
 @pytest.fixture()
 def election_id(client: FlaskClient, organization_id) -> str:
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    election_id = create_election(
-        client, organization_id=organization_id, is_multi_jurisdiction=True
-    )
+    election_id = create_election(client, organization_id=organization_id,)
     return election_id
 
 

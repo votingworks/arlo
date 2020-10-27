@@ -246,7 +246,6 @@ def test_auth_me_audit_admin(
                         "auditName": election.audit_name,
                         "electionName": None,
                         "state": None,
-                        "isMultiJurisdiction": True,
                     }
                 ],
             }
@@ -275,7 +274,6 @@ def test_auth_me_jurisdiction_admin(
                     "auditName": election.audit_name,
                     "electionName": None,
                     "state": None,
-                    "isMultiJurisdiction": True,
                 },
             }
         ],

@@ -75,10 +75,6 @@ def check_access(
     jurisdiction: Jurisdiction = None,
     audit_board: AuditBoard = None,
 ):
-    # Bypass for single-jurisdiction flow - no auth check
-    if not election.is_multi_jurisdiction:
-        return
-
     # Check user type is allowed
     user_type, user_key = get_loggedin_user()
     if not user_key:

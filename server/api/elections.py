@@ -17,9 +17,8 @@ ELECTION_SCHEMA = {
             "enum": [audit_type.value for audit_type in AuditType],
         },
         "organizationId": {"anyOf": [{"type": "string"}, {"type": "null"}]},
-        "isMultiJurisdiction": {"type": "boolean"},
     },
-    "required": ["organizationId", "auditName", "isMultiJurisdiction", "auditType"],
+    "required": ["organizationId", "auditName", "auditType"],
     "additionalProperties": False,
 }
 
@@ -52,7 +51,6 @@ def create_election():
         audit_name=election["auditName"],
         audit_type=election["auditType"],
         organization_id=election["organizationId"],
-        is_multi_jurisdiction=election["isMultiJurisdiction"],
         online=online,
     )
 
