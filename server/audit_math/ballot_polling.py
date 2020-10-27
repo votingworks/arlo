@@ -6,7 +6,7 @@ from typing import Dict, Tuple, Optional
 from typing_extensions import Literal, TypedDict
 from ..models import BallotPollingType
 from .sampler_contest import Contest
-from . import bravo
+from . import bravo, minerva
 
 
 class SampleSizeOption(TypedDict):
@@ -16,20 +16,34 @@ class SampleSizeOption(TypedDict):
 
 
 def get_sample_size(
-    risk_limit: int, contest: Contest, sample_results: Dict[str, int], mathtype: str
+    risk_limit: int, contest: Contest, sample_results: Dict[str, Dict[str, int]], mathtype: str
 ) -> Dict[str, SampleSizeOption]:
+    """
+    Compute sample size using the specified math.
 
-    if mathtype == BallotPollingType.BRAVO:
-        return bravo.get_sample_size(risk_limit, contest, sample_results)
+    Inputs:
+        - risk_limit: The integer percentage risk-limit entered by the user
+        - contest: The contest we're auditing
+        - sample_results: the sample results by round
+        - mathtype: which math to use (Minerva or BRAVO at the moment)
+    Outputs:
+        - A sample size dictionary containing sample sizes for different
+          finishing probabilities
+    """
+
+    if mathtype == BallotPollingType.MINERVA:
+        return minerva.get_sample_size(risk_limit, contest, sample_results)
     else:
+        # Default to BRAVO math
         return bravo.get_sample_size(risk_limit, contest, sample_results)
 
 
 def compute_risk(
-    risk_limit: int, contest: Contest, sample_results: Dict[str, int], mathtype: str
+    risk_limit: int, contest: Contest, sample_results: Dict[str, Dict[str, int]], mathtype: str
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
 
-    if mathtype == BallotPollingType.BRAVO:
-        return bravo.compute_risk(risk_limit, contest, sample_results)
+    if mathtype == BallotPollingType.MINERVA:
+        return minerva.compute_risk(risk_limit, contest, sample_results)
     else:
+        # Default to BRAVO
         return bravo.compute_risk(risk_limit, contest, sample_results)

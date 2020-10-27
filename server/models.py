@@ -34,6 +34,7 @@ class AuditType(str, enum.Enum):
 
 class BallotPollingType(str, enum.Enum):
     BRAVO = "BRAVO"
+    MINERVA = "MINERVA"
 
 
 # Election is a slight misnomer - this model represents an audit.
