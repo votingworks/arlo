@@ -119,12 +119,14 @@ def cumulative_contest_results(contest: Contest) -> Dict[str, int]:
         results_by_choice[result.contest_choice_id] += result.result
     return results_by_choice
 
+
 # Get round-by-round audit results
 def contest_results_by_round(contest: Contest) -> Dict[str, Dict[str, int]]:
     results_by_choice: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
     for result in contest.results:
         results_by_choice[result.round_id][result.contest_choice_id] = result.result
     return results_by_choice
+
 
 # { batch_key: { contest_id: { choice_id: votes }}}
 BatchTallies = Dict[Tuple[str, str], Dict[str, Dict[str, int]]]

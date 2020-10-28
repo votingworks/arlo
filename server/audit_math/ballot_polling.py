@@ -16,7 +16,10 @@ class SampleSizeOption(TypedDict):
 
 
 def get_sample_size(
-    risk_limit: int, contest: Contest, sample_results: Dict[str, Dict[str, int]], mathtype: str
+    risk_limit: int,
+    contest: Contest,
+    sample_results: Dict[str, Dict[str, int]],
+    mathtype: str,
 ) -> Dict[str, SampleSizeOption]:
     """
     Compute sample size using the specified math.
@@ -39,7 +42,10 @@ def get_sample_size(
 
 
 def compute_risk(
-    risk_limit: int, contest: Contest, sample_results: Dict[str, Dict[str, int]], mathtype: str
+    risk_limit: int,
+    contest: Contest,
+    sample_results: Dict[str, Dict[str, int]],
+    mathtype: str,
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
 
     if mathtype == BallotPollingType.MINERVA:

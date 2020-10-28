@@ -280,6 +280,7 @@ def expected_prob(
     # Invert the PPF used to compute z from the sample prob
     return round(float(stats.norm.cdf(float(-z))), 2)
 
+
 def compute_cumulative_sample(sample_results):
     """
     Computes a cumulative sample given a round-by-round sample

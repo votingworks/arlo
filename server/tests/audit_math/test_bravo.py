@@ -507,7 +507,9 @@ round1_sample_results = {
     "test10": {"round1": {"cand1": 60, "cand2": 30, "cand3": 10}},
     "test11": {"round1": {"cand1": 0, "cand2": 0}},
     "test12": {"round1": {"cand1": 72, "cand2": 47, "cand3": 0}},
-    "test_small_third_candidate": {"round1": {"cand1": 1200, "cand2": 1000, "cand3": 10}},
+    "test_small_third_candidate": {
+        "round1": {"cand1": 1200, "cand2": 1000, "cand3": 10}
+    },
 }
 
 true_sample_sizes = {
