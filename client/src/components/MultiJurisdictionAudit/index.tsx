@@ -31,10 +31,6 @@ const VerticalInner = styled(Inner)`
   flex-direction: column;
 `
 
-const PaddedWrapper = styled(Wrapper)`
-  padding-bottom: 30px;
-`
-
 interface IParams {
   electionId: string
   view: 'setup' | 'progress' | ''
@@ -184,7 +180,7 @@ export const JurisdictionAdminView: React.FC = () => {
 
   if (!rounds.length) {
     return (
-      <PaddedWrapper>
+      <Wrapper>
         <JurisdictionAdminStatusBox
           rounds={rounds}
           ballotManifest={ballotManifest}
@@ -248,11 +244,11 @@ export const JurisdictionAdminView: React.FC = () => {
             />
           )}
         </VerticalInner>
-      </PaddedWrapper>
+      </Wrapper>
     )
   }
   return (
-    <PaddedWrapper>
+    <Wrapper>
       <JurisdictionAdminStatusBox
         rounds={rounds}
         ballotManifest={ballotManifest}
@@ -268,7 +264,7 @@ export const JurisdictionAdminView: React.FC = () => {
           createAuditBoards={createAuditBoards}
         />
       </Inner>
-    </PaddedWrapper>
+    </Wrapper>
   )
 }
 
