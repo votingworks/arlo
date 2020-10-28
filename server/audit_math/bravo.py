@@ -9,7 +9,7 @@ targeted is being audited completely independently.
 import math
 from decimal import Decimal, ROUND_CEILING
 from collections import defaultdict
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 from scipy import stats
 
 from .sampler_contest import Contest
@@ -293,7 +293,9 @@ def compute_cumulative_sample(sample_results):
 
 
 def get_sample_size(
-    risk_limit: int, contest: Contest, sample_results: Dict[str, Dict[str, int]]
+    risk_limit: int,
+    contest: Contest,
+    sample_results: Optional[Dict[str, Dict[str, int]]],
 ) -> Dict[str, "SampleSizeOption"]:  # type: ignore
     """
     Computes initial sample size parameterized by likelihood that the

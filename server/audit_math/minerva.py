@@ -3,13 +3,15 @@ An implementation of Minerva
 """
 # TODO: remove the following once we are using the arguments
 # pylint: disable=unused-argument
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 
 from .sampler_contest import Contest
 
 
 def get_sample_size(
-    risk_limit: int, contest: Contest, sample_results: Dict[str, Dict[str, int]]
+    risk_limit: int,
+    contest: Contest,
+    sample_results: Optional[Dict[str, Dict[str, int]]],
 ) -> Dict[str, "SampleSizeOption"]:  # type: ignore
 
     return {}
