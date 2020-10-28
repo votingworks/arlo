@@ -8,6 +8,7 @@ targeted is being audited completely independently.
 """
 import math
 from decimal import Decimal, ROUND_CEILING
+from collections import defaultdict
 from typing import Dict, Tuple
 from scipy import stats
 
@@ -283,13 +284,10 @@ def compute_cumulative_sample(sample_results):
     """
     Computes a cumulative sample given a round-by-round sample
     """
-    cumulative_sample = {}
+    cumulative_sample = defaultdict(int)
     for rd in sample_results:
         for cand in sample_results[rd]:
-            if cand in cumulative_sample:
-                cumulative_sample[cand] += sample_results[rd][cand]
-            else:
-                cumulative_sample[cand] = sample_results[rd][cand]
+            cumulative_sample[cand] += sample_results[rd][cand]
     return cumulative_sample
 
 

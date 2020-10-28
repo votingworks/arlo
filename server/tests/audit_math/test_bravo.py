@@ -72,7 +72,7 @@ def test_expected_sample_sizes_second_round(contests):
     for contest in true_asns:
         expected = true_asns[contest]
         computed = bravo.get_expected_sample_sizes(
-            ALPHA, contests[contest], round1_sample_results[contest]
+            ALPHA, contests[contest], round1_sample_results[contest]["round1"]
         )
 
         assert (
@@ -256,8 +256,8 @@ def test_bravo_expected_prob():
     # Test bravo sample simulator
     # Test without sample
     expected_prob1 = 0.52
-    r0_sample_win = round0_sample_results["test1"]["cand1"]
-    r0_sample_rup = round0_sample_results["test1"]["cand2"]
+    r0_sample_win = round0_sample_results["test1"]["round0"]["cand1"]
+    r0_sample_rup = round0_sample_results["test1"]["round0"]["cand2"]
 
     computed_prob1 = round(
         bravo.expected_prob(
@@ -479,35 +479,35 @@ bravo_contests = {
 
 # Useful test data
 round0_sample_results = {
-    "test1": {"cand1": 0, "cand2": 0,},
-    "test2": {"cand1": 0, "cand2": 0, "cand3": 0,},
-    "test3": {"cand1": 0,},
-    "test4": {"cand1": 0,},
-    "test5": {"cand1": 0, "cand2": 0,},
-    "test6": {"cand1": 0, "cand2": 0, "cand3": 0},
-    "test7": {"cand1": 0, "cand2": 0, "cand3": 0},
-    "test8": {"cand1": 0, "cand2": 0, "cand3": 0},
-    "test9": {"cand1": 0, "cand2": 0, "cand3": 0},
-    "test10": {"cand1": 0, "cand2": 0, "cand3": 0},
-    "test11": {"cand1": 0, "cand2": 0},
-    "test12": {"cand1": 0, "cand2": 0, "cand3": 0},
-    "test_small_third_candidate": {"cand1": 0, "cand2": 0, "cand3": 0},
+    "test1": {"round0": {"cand1": 0, "cand2": 0,}},
+    "test2": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0,}},
+    "test3": {"round0": {"cand1": 0,}},
+    "test4": {"round0": {"cand1": 0,}},
+    "test5": {"round0": {"cand1": 0, "cand2": 0,}},
+    "test6": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
+    "test7": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
+    "test8": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
+    "test9": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
+    "test10": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
+    "test11": {"round0": {"cand1": 0, "cand2": 0}},
+    "test12": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
+    "test_small_third_candidate": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
 }
 
 round1_sample_results = {
-    "test1": {"cand1": 72, "cand2": 47},
-    "test2": {"cand1": 25, "cand2": 18, "cand3": 5,},
-    "test3": {"cand1": 0},
-    "test4": {"cand1": 100},
-    "test5": {"cand1": 500, "cand2": 500,},
-    "test6": {"cand1": 72, "cand2": 48, "cand3": 48},
-    "test7": {"cand1": 30, "cand2": 25, "cand3": 10},
-    "test8": {"cand1": 72, "cand2": 55, "cand3": 30},
-    "test9": {"cand1": 1, "cand2": 1,},
-    "test10": {"cand1": 60, "cand2": 30, "cand3": 10},
-    "test11": {"cand1": 0, "cand2": 0},
-    "test12": {"cand1": 72, "cand2": 47, "cand3": 0},
-    "test_small_third_candidate": {"cand1": 1200, "cand2": 1000, "cand3": 10},
+    "test1": {"round1": {"cand1": 72, "cand2": 47}},
+    "test2": {"round1": {"cand1": 25, "cand2": 18, "cand3": 5,}},
+    "test3": {"round1": {"cand1": 0}},
+    "test4": {"round1": {"cand1": 100}},
+    "test5": {"round1": {"cand1": 500, "cand2": 500,}},
+    "test6": {"round1": {"cand1": 72, "cand2": 48, "cand3": 48}},
+    "test7": {"round1": {"cand1": 30, "cand2": 25, "cand3": 10}},
+    "test8": {"round1": {"cand1": 72, "cand2": 55, "cand3": 30}},
+    "test9": {"round1": {"cand1": 1, "cand2": 1,}},
+    "test10": {"round1": {"cand1": 60, "cand2": 30, "cand3": 10}},
+    "test11": {"round1": {"cand1": 0, "cand2": 0}},
+    "test12": {"round1": {"cand1": 72, "cand2": 47, "cand3": 0}},
+    "test_small_third_candidate": {"round1": {"cand1": 1200, "cand2": 1000, "cand3": 10}},
 }
 
 true_sample_sizes = {
