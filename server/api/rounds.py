@@ -112,12 +112,20 @@ def count_audited_votes(election: Election, round: Round):
             db_session.add(result)
 
 
+# Sum the audit results for each contest choice from all rounds so far
+def cumulative_contest_results(contest: Contest) -> Dict[str, int]:
+    results_by_choice: Dict[str, int] = defaultdict(int)
+    for result in contest.results:
+        results_by_choice[result.contest_choice_id] += result.result
+    return results_by_choice
+
+
 # Get round-by-round audit results
 def contest_results_by_round(contest: Contest) -> Dict[str, Dict[str, int]]:
-    results_by_round: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    results_by_choice: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
     for result in contest.results:
-        results_by_round[result.round_id][result.contest_choice_id] = result.result
-    return results_by_round
+        results_by_choice[result.round_id][result.contest_choice_id] = result.result
+    return results_by_choice
 
 
 # { batch_key: { contest_id: { choice_id: votes }}}

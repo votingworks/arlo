@@ -19,7 +19,7 @@ def get_sample_size(
     risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
-    math_type: BallotPollingType,
+    mathtype: str,
 ) -> Dict[str, SampleSizeOption]:
     """
     Compute sample size using the specified math.
@@ -28,13 +28,13 @@ def get_sample_size(
         - risk_limit: The integer percentage risk-limit entered by the user
         - contest: The contest we're auditing
         - sample_results: the sample results by round
-        - math_type: which math to use (Minerva or BRAVO at the moment)
+        - mathtype: which math to use (Minerva or BRAVO at the moment)
     Outputs:
         - A sample size dictionary containing sample sizes for different
           finishing probabilities
     """
 
-    if math_type == BallotPollingType.MINERVA:
+    if mathtype == BallotPollingType.MINERVA:
         return minerva.get_sample_size(risk_limit, contest, sample_results)
     else:
         # Default to BRAVO math
@@ -45,10 +45,10 @@ def compute_risk(
     risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
-    math_type: str,
+    mathtype: str,
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
 
-    if math_type == BallotPollingType.MINERVA:
+    if mathtype == BallotPollingType.MINERVA:
         return minerva.compute_risk(risk_limit, contest, sample_results)
     else:
         # Default to BRAVO
