@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
 import * as Yup from 'yup'
-import { HTMLSelect, Spinner, FileInput } from '@blueprintjs/core'
+import { HTMLSelect, Spinner, FileInput, H5 } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
 import FormButtonBar from '../../../Atoms/Form/FormButtonBar'
 import FormButton from '../../../Atoms/Form/FormButton'
@@ -63,12 +63,13 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
 
   if (!auditSettings) return null // Still loading
 
+  const isBallotComparison = auditSettings.auditType === 'BALLOT_COMPARISON'
+
   const submit = async ({ state }: { state: IAuditSettings['state'] }) => {
     const response = await updateSettings({ state })
     if (!response) return
     setJurisdictionFileStatus('submit') // tell the jurisdiction file component to submit
-    if (auditSettings.auditType === 'BALLOT_COMPARISON')
-      setContestFileStatus('submit') // tell the contest file component to submit
+    if (isBallotComparison) setContestFileStatus('submit') // tell the contest file component to submit
   }
 
   return (
@@ -88,34 +89,36 @@ const Participants: React.FC<IProps> = ({ locked, nextStage }: IProps) => {
         <form data-testid="form-one">
           <FormWrapper
             title={
-              auditSettings.auditType === 'BALLOT_COMPARISON'
-                ? 'Participants & Contests'
-                : 'Participants'
+              isBallotComparison ? 'Participants & Contests' : 'Participants'
             }
           >
-            <label htmlFor="state">
-              Choose your state from the options below
-              <br />
-              <Field
-                component={Select}
-                id="state"
-                data-testid="state-field"
-                name="state"
-                onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-                  setFieldValue('state', e.currentTarget.value)
-                }
-                disabled={locked}
-                value={values.state || ''}
-                options={[{ value: '' }, ...labelValueStates]}
-              />
-            </label>
-            <ErrorMessage name="state" component={ErrorLabel} />
+            <FormSection>
+              <label htmlFor="state">
+                Choose your state from the options below
+                <br />
+                <Field
+                  component={Select}
+                  id="state"
+                  data-testid="state-field"
+                  name="state"
+                  onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+                    setFieldValue('state', e.currentTarget.value)
+                  }
+                  disabled={locked}
+                  value={values.state || ''}
+                  options={[{ value: '' }, ...labelValueStates]}
+                />
+              </label>
+              <ErrorMessage name="state" component={ErrorLabel} />
+            </FormSection>
+            {isBallotComparison && <H5>Participants File</H5>}
             <JurisdictionFileForm
               electionId={electionId}
               setJurisdictionFileStatus={setJurisdictionFileStatus}
               jurisdictionFileStatus={jurisdictionFileStatus}
             />
-            {auditSettings.auditType === 'BALLOT_COMPARISON' && (
+            {isBallotComparison && <H5>Standardized Contests File</H5>}
+            {isBallotComparison && (
               <ContestFileForm
                 electionId={electionId}
                 setContestFileStatus={setContestFileStatus}
