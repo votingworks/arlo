@@ -27,7 +27,7 @@ def sample_size_options(
         assert election.risk_limit is not None
         if election.audit_type == AuditType.BALLOT_POLLING:
             sample_results = (
-                {} if round_one else rounds.contest_results_by_round(contest)
+                None if round_one else rounds.contest_results_by_round(contest)
             )
             sample_size_options = ballot_polling.get_sample_size(
                 election.risk_limit,

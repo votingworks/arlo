@@ -334,7 +334,12 @@ def get_sample_size(
     samples: Dict = {}
 
     # Get cumulative sample results
-    cumulative_sample = compute_cumulative_sample(sample_results)
+    cumulative_sample = {}
+    if sample_results:
+        cumulative_sample = compute_cumulative_sample(sample_results)
+    else:
+        for candidate in contest.candidates:
+            cumulative_sample[candidate] = 0
 
     asn = get_expected_sample_sizes(alpha, contest, cumulative_sample)
 
@@ -392,8 +397,13 @@ def get_sample_size(
 
         return samples
 
-    sample_w = cumulative_sample[worse_winner]
-    sample_l = cumulative_sample[best_loser]
+    # If we haven't seen anything yet, initialize sample_w and sample_l
+    if not cumulative_sample:
+        sample_w = 0
+        sample_l = 0
+    else:
+        sample_w = cumulative_sample[worse_winner]
+        sample_l = cumulative_sample[best_loser]
 
     samples["asn"] = {
         "type": "ASN",
