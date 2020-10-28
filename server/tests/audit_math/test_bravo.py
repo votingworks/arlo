@@ -479,19 +479,19 @@ bravo_contests = {
 
 # Useful test data
 round0_sample_results = {
-    "test1": {"round0": {"cand1": 0, "cand2": 0,}},
-    "test2": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0,}},
-    "test3": {"round0": {"cand1": 0,}},
-    "test4": {"round0": {"cand1": 0,}},
-    "test5": {"round0": {"cand1": 0, "cand2": 0,}},
-    "test6": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
-    "test7": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
-    "test8": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
-    "test9": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
-    "test10": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
-    "test11": {"round0": {"cand1": 0, "cand2": 0}},
-    "test12": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
-    "test_small_third_candidate": {"round0": {"cand1": 0, "cand2": 0, "cand3": 0}},
+    "test1": None,
+    "test2": None,
+    "test3": None,
+    "test4": None,
+    "test5": None,
+    "test6": None,
+    "test7": None,
+    "test8": None,
+    "test9": None,
+    "test10": None,
+    "test11": None,
+    "test12": None,
+    "test_small_third_candidate": None,
 }
 
 round1_sample_results = {
