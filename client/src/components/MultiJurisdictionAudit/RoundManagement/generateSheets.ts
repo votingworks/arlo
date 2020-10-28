@@ -126,6 +126,14 @@ export const downloadAuditBoardCredentials = (
         20,
         140
       )
+      auditBoardCreds.setTextColor(0, 0, 238)
+      auditBoardCreds.textWithLink(
+        'Or you can click here to go there directly.',
+        20,
+        160,
+        { url: `${window.location.origin}/auditboard/${board.passphrase}` }
+      )
+      auditBoardCreds.setTextColor(0, 0, 0)
     } else {
       auditBoardsWithoutBallots.push(board.name)
     }
