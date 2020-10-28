@@ -51,7 +51,7 @@ exports[`App / renders aa logged in properly 1`] = `
       </div>
     </div>
     <div
-      class="sc-htpNat eniUlo"
+      class="sc-htpNat cBZqYS"
     >
       <div
         class="sc-bxivhb hMnACT"
@@ -238,7 +238,7 @@ exports[`App / renders ja logged in properly 1`] = `
       </div>
     </div>
     <div
-      class="sc-htpNat eniUlo"
+      class="sc-htpNat cBZqYS"
     >
       <div
         class="sc-bxivhb hMnACT"
@@ -437,7 +437,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
       </div>
     </div>
     <div
-      class="sc-htpNat eniUlo"
+      class="sc-htpNat cBZqYS"
     >
       <div
         class="sc-bxivhb hMnACT"
@@ -626,7 +626,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
       </div>
     </div>
     <div
-      class="sc-htpNat eniUlo"
+      class="sc-htpNat cBZqYS"
     >
       <div
         class="sc-bxivhb hMnACT"
@@ -852,7 +852,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
       </div>
     </div>
     <div
-      class="sc-htpNat eniUlo"
+      class="sc-htpNat cBZqYS"
     >
       <div
         class="sc-bxivhb hMnACT"

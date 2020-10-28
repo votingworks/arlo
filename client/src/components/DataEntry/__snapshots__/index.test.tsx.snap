@@ -3,7 +3,7 @@
 exports[`DataEntry ballot interaction renders ballot route 1`] = `
 <div>
   <div
-    class="sc-jKJlTe dvaPKJ"
+    class="sc-jKJlTe cdRmtQ"
   >
     <div
       class="sc-eNQAEJ sc-hMqMXs iVQcXK"
@@ -366,7 +366,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
 exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 <div>
   <div
-    class="sc-jKJlTe dvaPKJ"
+    class="sc-jKJlTe cdRmtQ"
   >
     <div
       class="sc-eNQAEJ sc-hMqMXs iVQcXK"
@@ -1361,7 +1361,7 @@ exports[`DataEntry ballot interaction renders board table with ballots 1`] = `
 exports[`DataEntry ballot interaction renders board table with no ballots 1`] = `
 <div>
   <div
-    class="sc-jKJlTe dvaPKJ"
+    class="sc-jKJlTe cdRmtQ"
   >
     <div
       class="sc-eNQAEJ sc-hMqMXs iVQcXK"
@@ -1530,7 +1530,7 @@ exports[`DataEntry ballot interaction renders board table with no ballots 1`] = 
 exports[`DataEntry member form submits and goes to ballot table 1`] = `
 <div>
   <div
-    class="sc-jKJlTe dvaPKJ"
+    class="sc-jKJlTe cdRmtQ"
   >
     <div
       class="sc-eNQAEJ sc-hMqMXs iVQcXK"

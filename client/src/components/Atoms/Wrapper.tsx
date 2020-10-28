@@ -4,6 +4,7 @@ export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  padding-bottom: 30px;
 `
 
 export const Inner = styled.div`
