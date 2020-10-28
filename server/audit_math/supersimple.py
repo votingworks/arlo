@@ -183,11 +183,11 @@ def get_sample_sizes(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
 
-    obs_o1 = Decimal(sample_results["1-over"])
-    obs_u1 = Decimal(sample_results["1-under"])
-    obs_o2 = Decimal(sample_results["2-over"])
-    obs_u2 = Decimal(sample_results["2-under"])
-    num_sampled = Decimal(sample_results["sample_size"])
+    obs_o1 = Decimal(sample_results.get("1-over", 0))
+    obs_u1 = Decimal(sample_results.get("1-under", 0))
+    obs_o2 = Decimal(sample_results.get("2-over", 0))
+    obs_u2 = Decimal(sample_results.get("2-under", 0))
+    num_sampled = Decimal(sample_results.get("sample_size", 0))
 
     if num_sampled:
         r1 = obs_o1 / num_sampled

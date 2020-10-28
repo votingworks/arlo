@@ -87,7 +87,9 @@ def sample_size_options(
             }
 
             sample_size = supersimple.get_sample_sizes(
-                election.risk_limit, contest_for_sampler, discrepancy_counts
+                election.risk_limit,
+                contest_for_sampler,
+                discrepancy_counts if not round_one else {},
             )
             return {
                 "supersimple": {"key": "supersimple", "size": sample_size, "prob": None}
