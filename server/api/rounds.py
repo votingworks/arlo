@@ -112,12 +112,12 @@ def count_audited_votes(election: Election, round: Round):
             db_session.add(result)
 
 
-# Sum the audit results for each contest choice from all rounds so far
-def cumulative_contest_results(contest: Contest) -> Dict[str, int]:
-    results_by_choice: Dict[str, int] = defaultdict(int)
+# Get round-by-round audit results
+def contest_results_by_round(contest: Contest) -> Dict[str, Dict[str, int]]:
+    results_by_round: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
     for result in contest.results:
-        results_by_choice[result.contest_choice_id] += result.result
-    return results_by_choice
+        results_by_round[result.round_id][result.contest_choice_id] = result.result
+    return results_by_round
 
 
 # { batch_key: { contest_id: { choice_id: votes }}}
@@ -298,8 +298,8 @@ def calculate_risk_measurements(election: Election, round: Round):
             p_values, is_complete = ballot_polling.compute_risk(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
-                cumulative_contest_results(contest),
-                "BRAVO",
+                contest_results_by_round(contest),
+                BallotPollingType.BRAVO,
             )
             p_value = max(p_values.values())
         elif election.audit_type == AuditType.BATCH_COMPARISON:

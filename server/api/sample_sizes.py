@@ -26,16 +26,13 @@ def sample_size_options(
     def sample_sizes_for_contest(contest: Contest):
         assert election.risk_limit is not None
         if election.audit_type == AuditType.BALLOT_POLLING:
-            cumulative_results = (
-                {choice.id: 0 for choice in contest.choices}
-                if round_one
-                else rounds.cumulative_contest_results(contest)
+            sample_results = (
+                None if round_one else rounds.contest_results_by_round(contest)
             )
-
             sample_size_options = ballot_polling.get_sample_size(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
-                cumulative_results,
+                sample_results,
                 BallotPollingType.BRAVO,
             )
             # Remove unnecessary "type" field from options, add "key" field
@@ -45,20 +42,20 @@ def sample_size_options(
             }
 
         elif election.audit_type == AuditType.BATCH_COMPARISON:
-            sample_results = rounds.cumulative_batch_results(election)
+            cumulative_batch_results = rounds.cumulative_batch_results(election)
             if round_one:
-                sample_results = {
+                cumulative_batch_results = {
                     batch_key: {
                         contest_id: {choice_id: 0 for choice_id in contest_results}
                         for contest_id, contest_results in batch_results.items()
                     }
-                    for batch_key, batch_results in sample_results.items()
+                    for batch_key, batch_results in cumulative_batch_results.items()
                 }
             sample_size = macro.get_sample_sizes(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 rounds.batch_tallies(election),
-                sample_results,
+                cumulative_batch_results,
             )
             return {"macro": {"key": "macro", "size": sample_size, "prob": None}}
 

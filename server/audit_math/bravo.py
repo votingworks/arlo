@@ -8,7 +8,8 @@ targeted is being audited completely independently.
 """
 import math
 from decimal import Decimal, ROUND_CEILING
-from typing import Dict, Tuple
+from collections import defaultdict
+from typing import Dict, Tuple, Optional
 from scipy import stats
 
 from .sampler_contest import Contest
@@ -280,8 +281,21 @@ def expected_prob(
     return round(float(stats.norm.cdf(float(-z))), 2)
 
 
+def compute_cumulative_sample(sample_results):
+    """
+    Computes a cumulative sample given a round-by-round sample
+    """
+    cumulative_sample = defaultdict(int)
+    for rd in sample_results:
+        for cand in sample_results[rd]:
+            cumulative_sample[cand] += sample_results[rd][cand]
+    return cumulative_sample
+
+
 def get_sample_size(
-    risk_limit: int, contest: Contest, sample_results: Dict[str, int]
+    risk_limit: int,
+    contest: Contest,
+    sample_results: Optional[Dict[str, Dict[str, int]]],
 ) -> Dict[str, "SampleSizeOption"]:  # type: ignore
     """
     Computes initial sample size parameterized by likelihood that the
@@ -321,7 +335,15 @@ def get_sample_size(
 
     samples: Dict = {}
 
-    asn = get_expected_sample_sizes(alpha, contest, sample_results)
+    # Get cumulative sample results
+    cumulative_sample = {}
+    if sample_results:
+        cumulative_sample = compute_cumulative_sample(sample_results)
+    else:
+        for candidate in contest.candidates:
+            cumulative_sample[candidate] = 0
+
+    asn = get_expected_sample_sizes(alpha, contest, cumulative_sample)
 
     p_w = Decimal("inf")
     p_l = Decimal(0)
@@ -377,8 +399,13 @@ def get_sample_size(
 
         return samples
 
-    sample_w = sample_results[worse_winner]
-    sample_l = sample_results[best_loser]
+    # If we haven't seen anything yet, initialize sample_w and sample_l
+    if not cumulative_sample:
+        sample_w = 0
+        sample_l = 0
+    else:
+        sample_w = cumulative_sample[worse_winner]
+        sample_l = cumulative_sample[best_loser]
 
     samples["asn"] = {
         "type": "ASN",
@@ -394,7 +421,7 @@ def get_sample_size(
 
 
 def compute_risk(
-    risk_limit: float, contest: Contest, sample_results: Dict[str, int]
+    risk_limit: int, contest: Contest, sample_results: Dict[str, Dict[str, int]]
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -402,13 +429,12 @@ def compute_risk(
     Inputs:
         risk_limit     - the risk-limit for this audit
         contest        - a sampler_contest object for the contest being measured
-        sample_results - mapping of candidates to votes in the (cumulative)
-                         sample:
-                {
+        sample_results - mapping of candidates to votes in the sample:
+                { "round": {
                     candidate1: sampled_votes,
                     candidate2: sampled_votes,
                     ...
-                }
+                }}
 
     Outputs:
         measurements    - the p-value of the hypotheses that the election
@@ -419,7 +445,14 @@ def compute_risk(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
-    T = get_test_statistics(contest.margins, sample_results)
+    # Get cumulative sample results
+    cumulative_sample = {}
+    if sample_results:
+        cumulative_sample = compute_cumulative_sample(sample_results)
+    else:
+        for candidate in contest.candidates:
+            cumulative_sample[candidate] = 0
+    T = get_test_statistics(contest.margins, cumulative_sample)
 
     measurements = {}
     finished = True
