@@ -255,6 +255,12 @@ def test_ballot_comparison_two_rounds(
     rv = client.get(f"/api/election/{election_id}/round",)
     round_2_id = json.loads(rv.data)["rounds"][1]["id"]
 
+    # Sample sizes endpoint should still return round 1 sample size
+    rv = client.get(f"/api/election/{election_id}/sample-sizes")
+    sample_size_options = json.loads(rv.data)["sampleSizes"]
+    assert len(sample_size_options) == 1
+    assert sample_size_options[target_contest_id][0] == sample_size
+
     audit_all_ballots(round_2_id, 0)
 
     rv = client.get(f"/api/election/{election_id}/report")
