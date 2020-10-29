@@ -280,8 +280,6 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS
     # - Audit board couldn't find the ballot - CVR should be None
     cvrs: supersimple.CVRS = {}
     for ballot_key, ballot in ballots:
-        assert ballot.status != BallotStatus.NOT_AUDITED
-
         # TODO add this in a separate PR just to ensure it doesn't impact the
         # test changes here
         # if ballot.status == BallotStatus.NOT_FOUND:
