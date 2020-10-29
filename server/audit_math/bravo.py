@@ -445,7 +445,13 @@ def compute_risk(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
-    cumulative_sample = compute_cumulative_sample(sample_results)
+    # Get cumulative sample results
+    cumulative_sample = {}
+    if sample_results:
+        cumulative_sample = compute_cumulative_sample(sample_results)
+    else:
+        for candidate in contest.candidates:
+            cumulative_sample[candidate] = 0
     T = get_test_statistics(contest.margins, cumulative_sample)
 
     measurements = {}

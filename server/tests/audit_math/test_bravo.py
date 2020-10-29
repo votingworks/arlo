@@ -40,8 +40,11 @@ def test_expected_sample_sizes(contests):
     }
 
     for contest in true_asns:
+        cumulative_sample = {}
+        for candidate in contests[contest].candidates:
+            cumulative_sample[candidate] = 0
         computed = bravo.get_expected_sample_sizes(
-            ALPHA, contests[contest], round0_sample_results[contest]
+            ALPHA, contests[contest], cumulative_sample
         )
         expected = true_asns[contest]
 
@@ -256,8 +259,8 @@ def test_bravo_expected_prob():
     # Test bravo sample simulator
     # Test without sample
     expected_prob1 = 0.52
-    r0_sample_win = round0_sample_results["test1"]["round0"]["cand1"]
-    r0_sample_rup = round0_sample_results["test1"]["round0"]["cand2"]
+    r0_sample_win = 0
+    r0_sample_rup = 0
 
     computed_prob1 = round(
         bravo.expected_prob(
