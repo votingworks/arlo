@@ -154,18 +154,8 @@ def test_race_not_in_sample_discrepancy(contests, cvrs):
 
 
 def test_get_sample_sizes(contests):
-    sample_results = {
-        "sample_size": 0,
-        "1-under": 0,
-        "1-over": 0,
-        "2-under": 0,
-        "2-over": 0,
-    }
-
     for contest in contests:
-        computed = supersimple.get_sample_sizes(
-            RISK_LIMIT, contests[contest], sample_results
-        )
+        computed = supersimple.get_sample_sizes(RISK_LIMIT, contests[contest], None)
         expected = true_sample_sizes[contest]  # From Stark's tool
 
         assert (
@@ -178,17 +168,8 @@ def test_get_sample_sizes(contests):
 def test_compute_risk(contests, cvrs):
 
     for contest in contests:
-        to_sample = {
-            "sample_size": 0,
-            "1-under": 0,
-            "1-over": 0,
-            "2-under": 0,
-            "2-over": 0,
-        }
         sample_cvr = {}
-        sample_size = supersimple.get_sample_sizes(
-            RISK_LIMIT, contests[contest], to_sample
-        )
+        sample_size = supersimple.get_sample_sizes(RISK_LIMIT, contests[contest], None)
 
         # No discrepancies
         for i in range(sample_size):

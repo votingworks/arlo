@@ -1,7 +1,7 @@
 # pylint: disable=invalid-name
 import math
 from decimal import Decimal, ROUND_CEILING
-from typing import Dict, Tuple, TypedDict
+from typing import Dict, Tuple, TypedDict, Optional
 
 from .sampler_contest import Contest
 
@@ -158,7 +158,7 @@ def compute_discrepancies(
 
 
 def get_sample_sizes(
-    risk_limit: int, contest: Contest, sample_results: Dict[str, int]
+    risk_limit: int, contest: Contest, sample_results: Optional[Dict[str, int]]
 ) -> int:
     """
     Computes initial sample sizes parameterized by likelihood that the
@@ -183,6 +183,7 @@ def get_sample_sizes(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1
 
+    sample_results = sample_results or {}
     obs_o1 = Decimal(sample_results.get("1-over", 0))
     obs_u1 = Decimal(sample_results.get("1-under", 0))
     obs_o2 = Decimal(sample_results.get("2-over", 0))
