@@ -1617,14 +1617,14 @@ endobj
 /Resources 2 0 R
 /MediaBox [0 0 612.00 792.00]
 /Annots [
-<</Type /Annot /Subtype /Link /Rect [56.69 351.34 308.55 335.24] /Border [0 0 0] /A <</S /URI /URI (http://localhost/auditboard/happy-randomness) >> >>
+<</Type /Annot /Subtype /Link /Rect [0.00 423.50 623.62 381.15] /Border [0 0 0] /A <</S /URI /URI (http://localhost/auditboard/happy-randomness) >> >>
 ]
 /Contents 56 0 R
 >>
 endobj
 56 0 obj
 <<
-/Length 845
+/Length 734
 >>
 stream
 0.57 w
@@ -1680,13 +1680,6 @@ BT
 56.69 395.15 Td
 (http://localhost/auditboard/happy-randomness) Tj
 ET
-BT
-/F1 14 Tf
-16.10 TL
-0.000 0.000 0.933 rg
-56.69 338.46 Td
-(Or you can click here to go there directly.) Tj
-ET
 endstream
 endobj
 57 0 obj
@@ -1695,14 +1688,14 @@ endobj
 /Resources 2 0 R
 /MediaBox [0 0 612.00 792.00]
 /Annots [
-<</Type /Annot /Subtype /Link /Rect [56.69 351.34 308.55 335.24] /Border [0 0 0] /A <</S /URI /URI (http://localhost/auditboard/happy-secondary-randomness) >> >>
+<</Type /Annot /Subtype /Link /Rect [0.00 423.50 623.62 381.15] /Border [0 0 0] /A <</S /URI /URI (http://localhost/auditboard/happy-secondary-randomness) >> >>
 ]
 /Contents 58 0 R
 >>
 endobj
 58 0 obj
 <<
-/Length 616
+/Length 489
 >>
 stream
 0.57 w
@@ -1710,21 +1703,21 @@ stream
 BT
 /F2 22 Tf
 25.30 TL
-0.000 g
+0 g
 56.69 735.31 Td
 (Audit Board #02) Tj
 ET
 BT
 /F1 14 Tf
 16.10 TL
-0.000 g
+0 g
 56.69 678.61 Td
 (Scan this QR code to enter the votes you see on your assigned ballots.) Tj
 ET
 BT
 /F1 14 Tf
 16.10 TL
-0.000 g
+0 g
 56.69 451.84 Td
 (If you are not able to scan the QR code, you may also type the following URL into) Tj
 T* (a web browser to access the data entry portal.) Tj
@@ -1732,16 +1725,9 @@ ET
 BT
 /F1 14 Tf
 16.10 TL
-0.000 g
+0 g
 56.69 395.15 Td
 (http://localhost/auditboard/happy-secondary-randomness) Tj
-ET
-BT
-/F1 14 Tf
-16.10 TL
-0.000 0.000 0.933 rg
-56.69 338.46 Td
-(Or you can click here to go there directly.) Tj
 ET
 endstream
 endobj
@@ -1953,8 +1939,8 @@ endobj
 xref
 0 78
 0000000000 65535 f 
-0000020099 00000 n 
-0000022108 00000 n 
+0000019859 00000 n 
+0000021868 00000 n 
 0000000015 00000 n 
 0000000124 00000 n 
 0000007289 00000 n 
@@ -2008,28 +1994,28 @@ xref
 0000017546 00000 n 
 0000017657 00000 n 
 0000017974 00000 n 
-0000018249 00000 n 
-0000019146 00000 n 
-0000019431 00000 n 
-0000020343 00000 n 
-0000020469 00000 n 
-0000020600 00000 n 
-0000020734 00000 n 
-0000020872 00000 n 
-0000020996 00000 n 
-0000021125 00000 n 
-0000021257 00000 n 
-0000021393 00000 n 
-0000021521 00000 n 
-0000021648 00000 n 
-0000021777 00000 n 
-0000021910 00000 n 
-0000022012 00000 n 
-0000022361 00000 n 
-0000022417 00000 n 
-0000022473 00000 n 
-0000022529 00000 n 
-0000022615 00000 n 
+0000018248 00000 n 
+0000019034 00000 n 
+0000019318 00000 n 
+0000020103 00000 n 
+0000020229 00000 n 
+0000020360 00000 n 
+0000020494 00000 n 
+0000020632 00000 n 
+0000020756 00000 n 
+0000020885 00000 n 
+0000021017 00000 n 
+0000021153 00000 n 
+0000021281 00000 n 
+0000021408 00000 n 
+0000021537 00000 n 
+0000021670 00000 n 
+0000021772 00000 n 
+0000022121 00000 n 
+0000022177 00000 n 
+0000022233 00000 n 
+0000022289 00000 n 
+0000022375 00000 n 
 trailer
 <<
 /Size 78
@@ -2038,7 +2024,7 @@ trailer
 /
 >>
 startxref
-22776
+22536
 %%EOF"
 `;
 
@@ -3659,14 +3645,14 @@ endobj
 /Resources 2 0 R
 /MediaBox [0 0 612.00 792.00]
 /Annots [
-<</Type /Annot /Subtype /Link /Rect [56.69 351.34 308.55 335.24] /Border [0 0 0] /A <</S /URI /URI (http://localhost/auditboard/happy-randomness) >> >>
+<</Type /Annot /Subtype /Link /Rect [0.00 423.50 623.62 381.15] /Border [0 0 0] /A <</S /URI /URI (http://localhost/auditboard/happy-randomness) >> >>
 ]
 /Contents 56 0 R
 >>
 endobj
 56 0 obj
 <<
-/Length 845
+/Length 734
 >>
 stream
 0.57 w
@@ -3722,13 +3708,6 @@ BT
 56.69 395.15 Td
 (http://localhost/auditboard/happy-randomness) Tj
 ET
-BT
-/F1 14 Tf
-16.10 TL
-0.000 0.000 0.933 rg
-56.69 338.46 Td
-(Or you can click here to go there directly.) Tj
-ET
 endstream
 endobj
 57 0 obj
@@ -3737,14 +3716,14 @@ endobj
 /Resources 2 0 R
 /MediaBox [0 0 612.00 792.00]
 /Annots [
-<</Type /Annot /Subtype /Link /Rect [56.69 351.34 308.55 335.24] /Border [0 0 0] /A <</S /URI /URI (http://localhost/auditboard/happy-secondary-randomness) >> >>
+<</Type /Annot /Subtype /Link /Rect [0.00 423.50 623.62 381.15] /Border [0 0 0] /A <</S /URI /URI (http://localhost/auditboard/happy-secondary-randomness) >> >>
 ]
 /Contents 58 0 R
 >>
 endobj
 58 0 obj
 <<
-/Length 616
+/Length 489
 >>
 stream
 0.57 w
@@ -3752,21 +3731,21 @@ stream
 BT
 /F2 22 Tf
 25.30 TL
-0.000 g
+0 g
 56.69 735.31 Td
 (Audit Board #02) Tj
 ET
 BT
 /F1 14 Tf
 16.10 TL
-0.000 g
+0 g
 56.69 678.61 Td
 (Scan this QR code to enter the votes you see on your assigned ballots.) Tj
 ET
 BT
 /F1 14 Tf
 16.10 TL
-0.000 g
+0 g
 56.69 451.84 Td
 (If you are not able to scan the QR code, you may also type the following URL into) Tj
 T* (a web browser to access the data entry portal.) Tj
@@ -3774,16 +3753,9 @@ ET
 BT
 /F1 14 Tf
 16.10 TL
-0.000 g
+0 g
 56.69 395.15 Td
 (http://localhost/auditboard/happy-secondary-randomness) Tj
-ET
-BT
-/F1 14 Tf
-16.10 TL
-0.000 0.000 0.933 rg
-56.69 338.46 Td
-(Or you can click here to go there directly.) Tj
 ET
 endstream
 endobj
@@ -3793,14 +3765,14 @@ endobj
 /Resources 2 0 R
 /MediaBox [0 0 612.00 792.00]
 /Annots [
-<</Type /Annot /Subtype /Link /Rect [56.69 351.34 308.55 335.24] /Border [0 0 0] /A <</S /URI /URI (http://localhost/auditboard/happy-secondary-randomness) >> >>
+<</Type /Annot /Subtype /Link /Rect [0.00 423.50 623.62 381.15] /Border [0 0 0] /A <</S /URI /URI (http://localhost/auditboard/happy-secondary-randomness) >> >>
 ]
 /Contents 60 0 R
 >>
 endobj
 60 0 obj
 <<
-/Length 616
+/Length 489
 >>
 stream
 0.57 w
@@ -3808,21 +3780,21 @@ stream
 BT
 /F2 22 Tf
 25.30 TL
-0.000 g
+0 g
 56.69 735.31 Td
 (Audit Board #02) Tj
 ET
 BT
 /F1 14 Tf
 16.10 TL
-0.000 g
+0 g
 56.69 678.61 Td
 (Scan this QR code to enter the votes you see on your assigned ballots.) Tj
 ET
 BT
 /F1 14 Tf
 16.10 TL
-0.000 g
+0 g
 56.69 451.84 Td
 (If you are not able to scan the QR code, you may also type the following URL into) Tj
 T* (a web browser to access the data entry portal.) Tj
@@ -3830,16 +3802,9 @@ ET
 BT
 /F1 14 Tf
 16.10 TL
-0.000 g
+0 g
 56.69 395.15 Td
 (http://localhost/auditboard/happy-secondary-randomness) Tj
-ET
-BT
-/F1 14 Tf
-16.10 TL
-0.000 0.000 0.933 rg
-56.69 338.46 Td
-(Or you can click here to go there directly.) Tj
 ET
 endstream
 endobj
@@ -3853,7 +3818,7 @@ endobj
 endobj
 62 0 obj
 <<
-/Length 92
+/Length 88
 >>
 stream
 0.57 w
@@ -3861,7 +3826,7 @@ stream
 BT
 /F1 14 Tf
 16.10 TL
-0.000 g
+0 g
 56.69 735.31 Td
 (Audit Board #01: No ballots) Tj
 ET
@@ -4083,8 +4048,8 @@ endobj
 xref
 0 83
 0000000000 65535 f 
-0000021306 00000 n 
-0000023329 00000 n 
+0000020934 00000 n 
+0000022957 00000 n 
 0000000015 00000 n 
 0000000124 00000 n 
 0000007289 00000 n 
@@ -4138,33 +4103,33 @@ xref
 0000017546 00000 n 
 0000017657 00000 n 
 0000017974 00000 n 
-0000018249 00000 n 
-0000019146 00000 n 
-0000019431 00000 n 
-0000020099 00000 n 
-0000020384 00000 n 
-0000021052 00000 n 
-0000021163 00000 n 
-0000021564 00000 n 
-0000021690 00000 n 
-0000021821 00000 n 
-0000021955 00000 n 
-0000022093 00000 n 
-0000022217 00000 n 
-0000022346 00000 n 
-0000022478 00000 n 
-0000022614 00000 n 
-0000022742 00000 n 
-0000022869 00000 n 
-0000022998 00000 n 
-0000023131 00000 n 
-0000023233 00000 n 
-0000023582 00000 n 
-0000023638 00000 n 
-0000023694 00000 n 
-0000023750 00000 n 
-0000023806 00000 n 
-0000023892 00000 n 
+0000018248 00000 n 
+0000019034 00000 n 
+0000019318 00000 n 
+0000019859 00000 n 
+0000020143 00000 n 
+0000020684 00000 n 
+0000020795 00000 n 
+0000021192 00000 n 
+0000021318 00000 n 
+0000021449 00000 n 
+0000021583 00000 n 
+0000021721 00000 n 
+0000021845 00000 n 
+0000021974 00000 n 
+0000022106 00000 n 
+0000022242 00000 n 
+0000022370 00000 n 
+0000022497 00000 n 
+0000022626 00000 n 
+0000022759 00000 n 
+0000022861 00000 n 
+0000023210 00000 n 
+0000023266 00000 n 
+0000023322 00000 n 
+0000023378 00000 n 
+0000023434 00000 n 
+0000023520 00000 n 
 trailer
 <<
 /Size 83
@@ -4173,7 +4138,7 @@ trailer
 /
 >>
 startxref
-24072
+23700
 %%EOF"
 `;
 
