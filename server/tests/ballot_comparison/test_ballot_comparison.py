@@ -202,7 +202,7 @@ def test_ballot_comparison_two_rounds(
         ("J1", "TABULATOR2", "BATCH2", 6): ",,1,0,1",
         ("J2", "TABULATOR1", "BATCH1", 1): "0,1,1,1,0",
         ("J2", "TABULATOR1", "BATCH1", 2): "1,0,1,0,1",
-        ("J2", "TABULATOR1", "BATCH1", 3): "0,1,1,1,0",
+        ("J2", "TABULATOR1", "BATCH1", 3): "not found",  # CVR: 0,1,1,1,0
         ("J2", "TABULATOR1", "BATCH2", 1): "1,0,1,0,1",
         ("J2", "TABULATOR2", "BATCH1", 1): "0,1,1,1,0",
         ("J2", "TABULATOR2", "BATCH2", 1): "1,0,1,0,1",
@@ -239,8 +239,13 @@ def test_ballot_comparison_two_rounds(
         assert sorted(sampled_ballot_keys) == sorted(list(audit_results.keys()))
 
         for ballot in sampled_ballots:
-            ballot.status = BallotStatus.AUDITED
             interpretation_str = audit_results[ballot_key(ballot)]
+
+            if interpretation_str == "not found":
+                ballot.status = BallotStatus.NOT_FOUND
+                continue
+
+            ballot.status = BallotStatus.AUDITED
 
             if interpretation_str == "blank":
                 audit_ballot(ballot, target_contest_id, Interpretation.BLANK)
@@ -302,13 +307,10 @@ def test_ballot_comparison_two_rounds(
     # For round 2, audit results should match the CVR exactly.
     audit_results = {
         ("J1", "TABULATOR1", "BATCH1", 2): "1,0,1,0,1",
-        ("J1", "TABULATOR1", "BATCH2", 1): "1,0,1,0,1",
         ("J1", "TABULATOR2", "BATCH1", 2): "1,0,1,0,1",
         ("J1", "TABULATOR2", "BATCH2", 1): "1,0,1,0,1",
-        ("J2", "TABULATOR1", "BATCH2", 2): "0,1,1,1,0",
         ("J2", "TABULATOR1", "BATCH2", 3): "1,0,1,0,1",
         ("J2", "TABULATOR2", "BATCH1", 2): "1,0,1,0,1",
-        ("J2", "TABULATOR2", "BATCH1", 3): "1,0,1,1,0",
         ("J2", "TABULATOR2", "BATCH2", 4): ",,1,0,1",
     }
 

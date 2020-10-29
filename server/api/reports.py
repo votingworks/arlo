@@ -96,8 +96,10 @@ def pretty_ballot_interpretation(
 def pretty_cvr_interpretation(
     ballot: SampledBallot, contest: Contest, contest_cvrs: supersimple.CVRS
 ) -> str:
-    cvrs_by_choice = contest_cvrs[ballot.id].get(contest.id)
+    ballot_cvr = contest_cvrs[ballot.id]
+    assert ballot_cvr is not None
 
+    cvrs_by_choice = ballot_cvr.get(contest.id)
     # If CVR was empty for this contest for this ballot, skip it
     if not cvrs_by_choice:
         return ""
