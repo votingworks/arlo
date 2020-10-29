@@ -43,6 +43,14 @@ def sample_size_options(
 
         elif election.audit_type == AuditType.BATCH_COMPARISON:
             cumulative_batch_results = rounds.cumulative_batch_results(election)
+            if round_one:
+                sample_results = {
+                    batch_key: {
+                        contest_id: {choice_id: 0 for choice_id in contest_results}
+                        for contest_id, contest_results in batch_results.items()
+                    }
+                    for batch_key, batch_results in sample_results.items()
+                }
             sample_size = macro.get_sample_sizes(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
