@@ -73,8 +73,8 @@ Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabula
 Contest 1,Targeted,1,2,5000,candidate 1: 5000; candidate 2: 2500; candidate 3: 2500\r
 \r
 ######## AUDIT SETTINGS ########\r
-Audit Name,Audit Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_batch_comparison_round_2,BATCH_COMPARISON,10%,1234567890,Yes\r
+Audit Name,Audit Type,Ballot Polling Type,Risk Limit,Random Seed,Online Data Entry?\r
+Test Audit test_batch_comparison_round_2,BATCH_COMPARISON,,10%,1234567890,Yes\r
 \r
 ######## AUDIT BOARDS ########\r
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r
