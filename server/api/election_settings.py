@@ -31,6 +31,7 @@ ELECTION_SETTINGS_SCHEMA = {
         # update the auditType/auditName in this endpoint - they get set on
         # audit creation only.
         "auditType": {"type": "string"},
+        "ballotPollingType": {"type": "string"},
         "auditName": {"type": "string"},
     },
     "additionalProperties": False,
@@ -46,6 +47,7 @@ def serialize_election_settings(election: Election) -> JSONDict:
         "riskLimit": election.risk_limit,
         "state": election.state,
         "auditType": election.audit_type,
+        "ballotPollingType": election.ballot_polling_type,
         "auditName": election.audit_name,
     }
 

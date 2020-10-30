@@ -12,6 +12,7 @@ def test_create_election_missing_fields(client: FlaskClient, org_id: str):
         new_election = {
             "auditName": f"Test Missing {field}",
             "auditType": AuditType.BALLOT_POLLING,
+            "ballotPollingType": BallotPollingType.BRAVO,
             "organizationId": org_id,
         }
 
@@ -164,6 +165,7 @@ def test_create_election_bad_audit_type(client: FlaskClient, org_id: str):
         {
             "auditName": "Test Audit",
             "auditType": "NOT A REAL TYPE",
+            "ballotPollingType": BallotPollingType.BRAVO,
             "organizationId": org_id,
         },
     )
@@ -172,6 +174,29 @@ def test_create_election_bad_audit_type(client: FlaskClient, org_id: str):
         "errors": [
             {
                 "message": "'NOT A REAL TYPE' is not one of ['BALLOT_POLLING', 'BATCH_COMPARISON', 'BALLOT_COMPARISON']",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+
+def test_create_election_bad_bp_type(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        "/api/election",
+        {
+            "auditName": "Test Audit",
+            "auditType": "BRAVO",
+            "ballotPollingType": "NOT A REAL TYPE",
+            "organizationId": org_id,
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "'NOT A REAL TYPE' is not one of ['BRAVO', 'MINERVA']",
                 "errorType": "Bad Request",
             }
         ]

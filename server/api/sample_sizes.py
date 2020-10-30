@@ -34,7 +34,7 @@ def sample_size_options(
                 sampler_contest.from_db_contest(contest),
                 sample_results,
                 rounds.round_sizes(election),
-                BallotPollingType.BRAVO,
+                BallotPollingType(election.ballot_polling_type),
             )
             # Remove unnecessary "type" field from options, add "key" field
             return {

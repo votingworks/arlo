@@ -312,12 +312,13 @@ def calculate_risk_measurements(election: Election, round: Round):
         contest = round_contest.contest
 
         if election.audit_type == AuditType.BALLOT_POLLING:
+            assert election.ballot_polling_type is not None
             p_values, is_complete = ballot_polling.compute_risk(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 contest_results_by_round(contest),
                 round_sizes(election),
-                BallotPollingType.BRAVO,
+                BallotPollingType(election.ballot_polling_type),
             )
             p_value = max(p_values.values())
         elif election.audit_type == AuditType.BATCH_COMPARISON:
