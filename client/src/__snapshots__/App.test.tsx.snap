@@ -6,7 +6,7 @@ exports[`App / renders aa logged in properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-cIShpX dhyUlm"
+    class="sc-kafWEX jPtLBX"
   >
     <div
       class="bp3-navbar sc-EHOje gMcVig"
@@ -96,7 +96,7 @@ exports[`App / renders aa logged in properly 1`] = `
                   Audit name
                 </p>
                 <div
-                  class="sc-ktHwxA cVevTH sc-cSHVUG gyNSie"
+                  class="sc-cIShpX krZqZq sc-cSHVUG gyNSie"
                 >
                   <div
                     class="bp3-input-group sc-kAzzGY fpNxNJ"
@@ -137,6 +137,42 @@ exports[`App / renders aa logged in properly 1`] = `
                     />
                     Ballot Polling
                   </label>
+                  <div
+                    class="sc-ktHwxA bgUWdN"
+                  >
+                    <p>
+                      Ballot polling type
+                    </p>
+                    <div>
+                      <label
+                        class="bp3-control bp3-radio"
+                      >
+                        <input
+                          checked=""
+                          name="ballotPollingType"
+                          type="radio"
+                          value="BRAVO"
+                        />
+                        <span
+                          class="bp3-control-indicator"
+                        />
+                        BRAVO
+                      </label>
+                      <label
+                        class="bp3-control bp3-radio"
+                      >
+                        <input
+                          name="ballotPollingType"
+                          type="radio"
+                          value="MINERVA"
+                        />
+                        <span
+                          class="bp3-control-indicator"
+                        />
+                        Minerva (Not recommended)
+                      </label>
+                    </div>
+                  </div>
                   <label
                     class="bp3-control bp3-radio"
                   >
@@ -190,7 +226,7 @@ exports[`App / renders ja logged in properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-cIShpX dhyUlm"
+    class="sc-kafWEX jPtLBX"
   >
     <div
       class="bp3-navbar sc-EHOje gMcVig"
@@ -308,7 +344,7 @@ exports[`App / renders unauthenticated properly 1`] = `
     class="Toastify"
   />
   <div
-    class="sc-cIShpX dhyUlm"
+    class="sc-kafWEX jPtLBX"
   >
     <div
       class="bp3-navbar sc-EHOje gMcVig"
@@ -392,7 +428,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
     class="Toastify"
   />
   <div
-    class="sc-cIShpX dhyUlm"
+    class="sc-kafWEX jPtLBX"
   >
     <div
       class="bp3-navbar sc-EHOje gMcVig"
@@ -482,7 +518,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                   Audit name
                 </p>
                 <div
-                  class="sc-ktHwxA cVevTH sc-cSHVUG gyNSie"
+                  class="sc-cIShpX krZqZq sc-cSHVUG gyNSie"
                 >
                   <div
                     class="bp3-input-group sc-kAzzGY fpNxNJ"
@@ -523,6 +559,42 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                     />
                     Ballot Polling
                   </label>
+                  <div
+                    class="sc-ktHwxA bgUWdN"
+                  >
+                    <p>
+                      Ballot polling type
+                    </p>
+                    <div>
+                      <label
+                        class="bp3-control bp3-radio"
+                      >
+                        <input
+                          checked=""
+                          name="ballotPollingType"
+                          type="radio"
+                          value="BRAVO"
+                        />
+                        <span
+                          class="bp3-control-indicator"
+                        />
+                        BRAVO
+                      </label>
+                      <label
+                        class="bp3-control bp3-radio"
+                      >
+                        <input
+                          name="ballotPollingType"
+                          type="radio"
+                          value="MINERVA"
+                        />
+                        <span
+                          class="bp3-control-indicator"
+                        />
+                        Minerva (Not recommended)
+                      </label>
+                    </div>
+                  </div>
                   <label
                     class="bp3-control bp3-radio"
                   >
@@ -578,7 +650,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders ja logged i
     class="Toastify"
   />
   <div
-    class="sc-cIShpX dhyUlm"
+    class="sc-kafWEX jPtLBX"
   >
     <div
       class="bp3-navbar sc-EHOje gMcVig"
@@ -696,7 +768,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders unauthentic
     class="Toastify"
   />
   <div
-    class="sc-cIShpX dhyUlm"
+    class="sc-kafWEX jPtLBX"
   >
     <div
       class="bp3-navbar sc-EHOje gMcVig"
@@ -780,7 +852,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
     class="Toastify"
   />
   <div
-    class="sc-cIShpX dhyUlm"
+    class="sc-kafWEX jPtLBX"
   >
     <div
       class="bp3-navbar sc-EHOje gMcVig"
@@ -870,7 +942,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                   Audit name
                 </p>
                 <div
-                  class="sc-ktHwxA cVevTH sc-cSHVUG gyNSie"
+                  class="sc-cIShpX krZqZq sc-cSHVUG gyNSie"
                 >
                   <div
                     class="bp3-input-group sc-kAzzGY fpNxNJ"
@@ -911,6 +983,42 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                     />
                     Ballot Polling
                   </label>
+                  <div
+                    class="sc-ktHwxA bgUWdN"
+                  >
+                    <p>
+                      Ballot polling type
+                    </p>
+                    <div>
+                      <label
+                        class="bp3-control bp3-radio"
+                      >
+                        <input
+                          checked=""
+                          name="ballotPollingType"
+                          type="radio"
+                          value="BRAVO"
+                        />
+                        <span
+                          class="bp3-control-indicator"
+                        />
+                        BRAVO
+                      </label>
+                      <label
+                        class="bp3-control bp3-radio"
+                      >
+                        <input
+                          name="ballotPollingType"
+                          type="radio"
+                          value="MINERVA"
+                        />
+                        <span
+                          class="bp3-control-indicator"
+                        />
+                        Minerva (Not recommended)
+                      </label>
+                    </div>
+                  </div>
                   <label
                     class="bp3-control bp3-radio"
                   >
@@ -1183,7 +1291,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders unauthen
     class="Toastify"
   />
   <div
-    class="sc-cIShpX dhyUlm"
+    class="sc-kafWEX jPtLBX"
   >
     <div
       class="bp3-navbar sc-EHOje gMcVig"
