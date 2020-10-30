@@ -200,11 +200,21 @@ interface IValues {
   organizationId: string
   auditName: string
   auditType: IAuditSettings['auditType']
+  ballotPollingType: IAuditSettings['ballotPollingType']
 }
 
 const CreateAuditWrapper = styled.div`
   background-color: #ebf1f5;
   padding: 30px;
+`
+
+const BallotPollingWrapper = styled.div`
+  margin: 20px 0;
+  background-color: #ffffff;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  padding-left: 20px;
+  font-size: 85%;
 `
 
 const WideField = styled(FormField)`
@@ -247,6 +257,7 @@ const CreateAudit: React.FC = () => {
         organizationId: meta!.organizations[0].id,
         auditName: '',
         auditType: 'BALLOT_POLLING',
+        ballotPollingType: 'BRAVO',
       }}
     >
       {({ handleSubmit, setFieldValue, values }: FormikProps<IValues>) => (
@@ -297,6 +308,24 @@ const CreateAudit: React.FC = () => {
                 selectedValue={values.auditType}
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
+                {values.auditType === 'BALLOT_POLLING' ? (
+                  <BallotPollingWrapper>
+                    <p>Ballot polling type</p>
+                    <RadioGroup
+                      name="ballotPollingType"
+                      onChange={e =>
+                        setFieldValue(
+                          'ballotPollingType',
+                          e.currentTarget.value
+                        )
+                      }
+                      selectedValue={values.ballotPollingType}
+                    >
+                      <Radio value="BRAVO">BRAVO</Radio>
+                      <Radio value="MINERVA">Minerva (Not recommended)</Radio>
+                    </RadioGroup>
+                  </BallotPollingWrapper>
+                ) : null}
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
                 <Radio value="BALLOT_COMPARISON">Ballot Comparison</Radio>
               </RadioGroup>
