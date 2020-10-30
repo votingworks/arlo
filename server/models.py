@@ -43,6 +43,7 @@ class Election(BaseModel):
     # audit_name must be unique within each Organization
     audit_name = Column(String(200), nullable=False)
     audit_type = Column(Enum(AuditType), nullable=False)
+    ballot_polling_type = Column(Enum(BallotPollingType), nullable=True)
     # election_name can be the same across audits
     election_name = Column(String(200))
     state = Column(String(100))

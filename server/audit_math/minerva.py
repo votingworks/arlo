@@ -14,11 +14,10 @@ def get_sample_size(
     sample_results: Optional[Dict[str, Dict[str, int]]],
 ) -> Dict[str, "SampleSizeOption"]:  # type: ignore
 
-    return {}
+    raise Exception("Not implemented!")
 
 
 def compute_risk(
     risk_limit: float, contest: Contest, sample_results: Dict[str, Dict[str, int]]
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
-
-    return {("", ""): 0.0}, False
+    raise Exception("Not implemented!")

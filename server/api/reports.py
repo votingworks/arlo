@@ -187,10 +187,22 @@ def contest_rows(election: Election):
 def audit_settings_rows(election: Election):
     return [
         heading("AUDIT SETTINGS"),
-        ["Audit Name", "Audit Type", "Risk Limit", "Random Seed", "Online Data Entry?"],
+        [
+            "Audit Name",
+            "Audit Type",
+            "Ballot Polling Type",
+            "Risk Limit",
+            "Random Seed",
+            "Online Data Entry?",
+        ],
         [
             election.audit_name,
             election.audit_type,
+            (
+                election.ballot_polling_type
+                if election.audit_type == "BALLOT_POLLING"
+                else ""
+            ),
             f"{election.risk_limit}%",
             election.random_seed,
             pretty_boolean(election.online),
