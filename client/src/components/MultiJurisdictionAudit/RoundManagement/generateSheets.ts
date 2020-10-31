@@ -118,14 +118,18 @@ export const downloadAuditBoardCredentials = (
         20,
         120
       )
-      auditBoardCreds.text(
-        auditBoardCreds.splitTextToSize(
-          `${window.location.origin}/auditboard/${board.passphrase}`,
-          180
-        ),
-        20,
-        140
+      const urlText: string[] = auditBoardCreds.splitTextToSize(
+        `${window.location.origin}/auditboard/${board.passphrase}`,
+        180
       )
+      const urlHeight = urlText.reduce(
+        (a: number, t: string) => auditBoardCreds.getTextDimensions(t).h + a,
+        0
+      )
+      auditBoardCreds.text(urlText, 20, 140)
+      auditBoardCreds.link(0, 130, 220, urlHeight + 10, {
+        url: `${window.location.origin}/auditboard/${board.passphrase}`,
+      })
     } else {
       auditBoardsWithoutBallots.push(board.name)
     }
