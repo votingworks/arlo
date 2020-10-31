@@ -57,7 +57,7 @@ def compute_error(
             a_lp = sampled_results[contest.name][loser]
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
-            if not V_wl:
+            if V_wl == 0:
                 return Decimal("inf")
 
             e_pwl = Decimal((v_wp - v_lp) - (a_wp - a_lp)) / Decimal(V_wl)
@@ -107,7 +107,7 @@ def compute_max_error(
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
 
-            if not V_wl:
+            if V_wl == 0:
                 return Decimal("inf")
 
             u_pwl = Decimal((v_wp - v_lp) + b_cp) / Decimal(V_wl)
@@ -204,7 +204,7 @@ def get_sample_sizes(
     # to try to provide a sense of "how close" the audit is to finishing.
     U = compute_U(reported_results, sample_results, contest)
 
-    if not U:
+    if U == 0:
         return 1
     elif U < 0 or U == Decimal("inf"):
         # This means we have a tie

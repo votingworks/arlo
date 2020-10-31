@@ -140,7 +140,7 @@ def compute_discrepancies(
                     # we found a discrepancy!
                     found = True
 
-                if not V_wl:
+                if V_wl == 0:
                     # In this case the error is undefined
                     e_weighted = Decimal("inf")
                 else:
