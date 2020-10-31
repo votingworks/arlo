@@ -163,6 +163,7 @@ disable=print-statement,
         duplicate-code,
         broad-except,
         no-else-raise,
+        logging-fstring-interpolation,
 
 
 
