@@ -17,6 +17,7 @@ snapshottest = "*"
 pytest-alembic = "*"
 pytest-xdist = "*"
 filelock = "*"
+pytest-testmon = "*"
 
 [packages]
 alembic = "*"
@@ -38,7 +39,6 @@ sqlalchemy-utils = "==0.36.7"
 xkcdpass = "*"
 sqlalchemy = "*"
 typing-extensions = "*"
-pytest-testmon = "*"
 
 [requires]
 python_version = "3.8"
