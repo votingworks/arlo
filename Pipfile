@@ -40,6 +40,7 @@ sqlalchemy = "*"
 typing-extensions = "*"
 pytest-testmon = "*"
 sentry-sdk = {extras = ["flask"], version = "*"}
+athena = {editable = true,git = "https://github.com/filipzz/athena.git"}
 
 [requires]
 python_version = "3.8"
