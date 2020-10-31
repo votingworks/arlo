@@ -346,6 +346,57 @@ def test_tied_contest():
     assert res
 
 
+def test_snapshot_test():
+    contest_data = {
+        "winner": 16,
+        "loser": 10,
+        "ballots": 26,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("Jonah Test", contest_data)
+
+    cvr = {}
+
+    for i in range(contest_data["ballots"]):
+        if i < contest_data["winner"]:
+            cvr[i] = {"Jonah Test": {"winner": 1, "loser": 0}}
+        else:
+            cvr[i] = {"Jonah Test": {"winner": 0, "loser": 1}}
+
+    sample_results = {
+        "sample_size": 0,
+        "1-under": 0,
+        "1-over": 0,
+        "2-under": 0,
+        "2-over": 0,
+    }
+
+    _ = supersimple.get_sample_sizes(RISK_LIMIT, contest, sample_results)
+
+    sample_cvr = {i: cvr[i] for i in range(18)}
+    # Two of our winning ballots were actually blank
+    sample_cvr[0]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr[1]["Jonah Test"] = {"winner": 0, "loser": 0}
+
+    p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
+
+    expected_p = 0.1201733
+    assert abs(expected_p - p) < 0.0001
+    assert not res
+
+    # now draw 9 more ballots without any discrepancies
+    sample_cvr = cvr
+    sample_cvr[0]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr[1]["Jonah Test"] = {"winner": 0, "loser": 0}
+
+    p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
+
+    assert res
+    assert p < 0.000000001
+
+
 true_dms = {
     "Contest A": 0.2,
     "Contest B": 0.1,

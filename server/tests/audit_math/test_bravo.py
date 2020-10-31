@@ -219,21 +219,21 @@ def test_get_sample_size(contests):
 
         assert (
             computed.keys() == expected.keys()
-        ), "get_sample_sizes returning the wrong keys! got {}, expected {}".format(
-            computed.keys(), expected.keys()
+        ), "{} get_sample_sizes returning the wrong keys! got {}, expected {}".format(
+            contest, computed.keys(), expected.keys()
         )
 
         assert (
             computed["asn"]["size"] == expected["asn"]["size"]
-        ), "get_sample_sizes returning the wrong ASN! got {}, expected {}".format(
-            computed["asn"]["size"], expected["asn"]["size"]
+        ), "{} get_sample_sizes returning the wrong ASN! got {}, expected {}".format(
+            contest, computed["asn"]["size"], expected["asn"]["size"]
         )
 
         if expected["asn"]["prob"]:
             assert (
                 round(computed["asn"]["prob"], 2) == expected["asn"]["prob"]
-            ), "get_sample_sizes returning the wrong ASN probs! got {}, expected {}".format(
-                round(computed["asn"]["prob"], 2), expected["asn"]["prob"]
+            ), "{} get_sample_sizes returning the wrong ASN probs! got {}, expected {}".format(
+                contest, round(computed["asn"]["prob"], 2), expected["asn"]["prob"]
             )
 
         else:
@@ -563,18 +563,8 @@ true_sample_sizes = {
         "0.8": {"type": None, "size": 41, "prob": 0.8},
         "0.9": {"type": None, "size": 57, "prob": 0.9},
     },
-    "test3": {
-        "asn": {"type": "ASN", "size": -1, "prob": -1},
-        "0.7": {"type": None, "size": -1, "prob": 0.7},
-        "0.8": {"type": None, "size": -1, "prob": 0.8},
-        "0.9": {"type": None, "size": -1, "prob": 0.9},
-    },
-    "test4": {
-        "asn": {"type": "ASN", "size": -1, "prob": -1},
-        "0.7": {"type": None, "size": -1, "prob": 0.7},
-        "0.8": {"type": None, "size": -1, "prob": 0.8},
-        "0.9": {"type": None, "size": -1, "prob": 0.9},
-    },
+    "test3": {"asn": {"type": "ASN", "size": 1, "prob": 1.0},},
+    "test4": {"asn": {"type": "ASN", "size": 1, "prob": 1.0},},
     "test5": {
         "asn": {"type": "ASN", "size": 1000, "prob": 1},
         "0.7": {"type": None, "size": 1000, "prob": 0.7},
