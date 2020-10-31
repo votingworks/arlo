@@ -54,7 +54,7 @@ def get_expected_sample_sizes(
 
     s_w = p_w / (p_w + p_l)
 
-    if p_w == 1.0:
+    if p_w == 1.0 or contest.num_winners >= len(contest.candidates):
         # Handle single-candidate or crazy landslides
         return -1
     elif p_w == p_l:
