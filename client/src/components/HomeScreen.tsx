@@ -218,6 +218,7 @@ const CreateAudit: React.FC = () => {
     organizationId,
     auditName,
     auditType,
+    ballotPollingType,
   }: IValues) => {
     setSubmitting(true)
     const response: { electionId: string } | null = await api('/election', {
@@ -226,6 +227,7 @@ const CreateAudit: React.FC = () => {
         organizationId,
         auditName,
         auditType,
+        ballotPollingType,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -298,20 +300,22 @@ const CreateAudit: React.FC = () => {
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
                 {values.auditType === 'BALLOT_POLLING' ? (
                   <BallotPollingWrapper>
-                    <p>Ballot polling type</p>
-                    <RadioGroup
-                      name="ballotPollingType"
-                      onChange={e =>
-                        setFieldValue(
-                          'ballotPollingType',
-                          e.currentTarget.value
-                        )
-                      }
-                      selectedValue={values.ballotPollingType}
-                    >
-                      <Radio value="BRAVO">BRAVO</Radio>
-                      <Radio value="MINERVA">Minerva (Not recommended)</Radio>
-                    </RadioGroup>
+                    <label htmlFor="ballotPollingType">
+                      <p>Ballot polling type</p>
+                      <RadioGroup
+                        name="ballotPollingType"
+                        onChange={e =>
+                          setFieldValue(
+                            'ballotPollingType',
+                            e.currentTarget.value
+                          )
+                        }
+                        selectedValue={values.ballotPollingType}
+                      >
+                        <Radio value="BRAVO">BRAVO</Radio>
+                        <Radio value="MINERVA">Minerva (Not recommended)</Radio>
+                      </RadioGroup>
+                    </label>
                   </BallotPollingWrapper>
                 ) : null}
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
