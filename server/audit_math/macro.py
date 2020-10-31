@@ -58,7 +58,7 @@ def compute_error(
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
             if not V_wl:
-                return -1
+                return Decimal("inf")
 
             e_pwl = Decimal((v_wp - v_lp) - (a_wp - a_lp)) / Decimal(V_wl)
 
@@ -108,7 +108,7 @@ def compute_max_error(
             V_wl = contest.candidates[winner] - contest.candidates[loser]
 
             if not V_wl:
-                return -1
+                return Decimal("inf")
 
             u_pwl = Decimal((v_wp - v_lp) + b_cp) / Decimal(V_wl)
 
@@ -206,9 +206,14 @@ def get_sample_sizes(
 
     if not U:
         return 1
-    elif U < 0:
+    elif U < 0 or U == Decimal("inf"):
         # This means we have a tie
         return len(reported_results)
+    elif U == 1:
+        # In this case, there is just enough potential error left to cause an
+        # outcome change. Since U is so close to being less than one, we probably
+        # only need to look at one more batch.
+        return 1
 
     retval = int(
         (alpha.ln() / ((1 - (1 / U))).ln()).quantize(Decimal(1), ROUND_CEILING)
@@ -266,6 +271,10 @@ def compute_risk(
         e_p = compute_error(reported_results[batch], sample_results[batch], contest)
 
         u_p = compute_max_error(reported_results[batch], contest)
+
+        # If this happens, we need a full hand recount
+        if e_p == Decimal("inf") or u_p == Decimal("inf"):
+            return 1.0, False
 
         taint = e_p / u_p
 

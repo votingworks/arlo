@@ -285,7 +285,7 @@ def test_tied_contest():
 
     computed_p, res = macro.compute_risk(RISK_LIMIT, contest, batches, sample_results)
 
-    assert computed_p > RISK_LIMIT
+    assert computed_p > ALPHA
     assert not res
 
     # Now do a full hand recount

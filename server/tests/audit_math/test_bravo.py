@@ -414,14 +414,11 @@ def test_tied_contest():
 
     computed_p, res = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
 
-    assert computed_p[("cand1", "cand2")] > RISK_LIMIT
+    assert computed_p[("cand1", "cand2")] > ALPHA
     assert not res
 
     # Now do a full hand recount
-    sample_results = {
-        "cand1": 501,
-        "cand2": 499,
-    }
+    sample_results = {"round1": {"cand1": 501, "cand2": 499,}}
 
     computed_p, res = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
 

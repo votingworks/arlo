@@ -324,23 +324,23 @@ def test_tied_contest():
         "2-over": 0,
     }
 
-    sample_size = supersimple.get_sample_sizes(risk_limit, contest, sample_results)
+    sample_size = supersimple.get_sample_sizes(RISK_LIMIT, contest, sample_results)
 
     assert sample_size == contest_data["ballots"]
 
     sample_cvr = {0: {"Tied Contest": {"winner": 1, "loser": 0}}}
 
     # Ensure that anything short of a full recount doesn't finish
-    p, res = supersimple.compute_risk(risk_limit, contest, cvr, sample_cvr)
+    p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
-    assert p > risk_limit
+    assert p > ALPHA
     assert not res
 
     # Do a full hand recount with no discrepancies
     sample_cvr = cvr
     sample_cvr[len(cvr) - 1]["Tied Contest"] = {"winner": 1, "loser": 0}
 
-    p, res = supersimple.compute_risk(risk_limit, contest, cvr, sample_cvr)
+    p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
     assert not p
     assert res
