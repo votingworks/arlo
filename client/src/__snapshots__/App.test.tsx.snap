@@ -140,38 +140,42 @@ exports[`App / renders aa logged in properly 1`] = `
                   <div
                     class="sc-ktHwxA bgUWdN"
                   >
-                    <p>
-                      Ballot polling type
-                    </p>
-                    <div>
-                      <label
-                        class="bp3-control bp3-radio"
-                      >
-                        <input
-                          checked=""
-                          name="ballotPollingType"
-                          type="radio"
-                          value="BRAVO"
-                        />
-                        <span
-                          class="bp3-control-indicator"
-                        />
-                        BRAVO
-                      </label>
-                      <label
-                        class="bp3-control bp3-radio"
-                      >
-                        <input
-                          name="ballotPollingType"
-                          type="radio"
-                          value="MINERVA"
-                        />
-                        <span
-                          class="bp3-control-indicator"
-                        />
-                        Minerva (Not recommended)
-                      </label>
-                    </div>
+                    <label
+                      for="ballotPollingType"
+                    >
+                      <p>
+                        Ballot polling type
+                      </p>
+                      <div>
+                        <label
+                          class="bp3-control bp3-radio"
+                        >
+                          <input
+                            checked=""
+                            name="ballotPollingType"
+                            type="radio"
+                            value="BRAVO"
+                          />
+                          <span
+                            class="bp3-control-indicator"
+                          />
+                          BRAVO
+                        </label>
+                        <label
+                          class="bp3-control bp3-radio"
+                        >
+                          <input
+                            name="ballotPollingType"
+                            type="radio"
+                            value="MINERVA"
+                          />
+                          <span
+                            class="bp3-control-indicator"
+                          />
+                          Minerva (Not recommended)
+                        </label>
+                      </div>
+                    </label>
                   </div>
                   <label
                     class="bp3-control bp3-radio"
@@ -562,38 +566,42 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                   <div
                     class="sc-ktHwxA bgUWdN"
                   >
-                    <p>
-                      Ballot polling type
-                    </p>
-                    <div>
-                      <label
-                        class="bp3-control bp3-radio"
-                      >
-                        <input
-                          checked=""
-                          name="ballotPollingType"
-                          type="radio"
-                          value="BRAVO"
-                        />
-                        <span
-                          class="bp3-control-indicator"
-                        />
-                        BRAVO
-                      </label>
-                      <label
-                        class="bp3-control bp3-radio"
-                      >
-                        <input
-                          name="ballotPollingType"
-                          type="radio"
-                          value="MINERVA"
-                        />
-                        <span
-                          class="bp3-control-indicator"
-                        />
-                        Minerva (Not recommended)
-                      </label>
-                    </div>
+                    <label
+                      for="ballotPollingType"
+                    >
+                      <p>
+                        Ballot polling type
+                      </p>
+                      <div>
+                        <label
+                          class="bp3-control bp3-radio"
+                        >
+                          <input
+                            checked=""
+                            name="ballotPollingType"
+                            type="radio"
+                            value="BRAVO"
+                          />
+                          <span
+                            class="bp3-control-indicator"
+                          />
+                          BRAVO
+                        </label>
+                        <label
+                          class="bp3-control bp3-radio"
+                        >
+                          <input
+                            name="ballotPollingType"
+                            type="radio"
+                            value="MINERVA"
+                          />
+                          <span
+                            class="bp3-control-indicator"
+                          />
+                          Minerva (Not recommended)
+                        </label>
+                      </div>
+                    </label>
                   </div>
                   <label
                     class="bp3-control bp3-radio"
@@ -1013,38 +1021,42 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                   <div
                     class="sc-ktHwxA bgUWdN"
                   >
-                    <p>
-                      Ballot polling type
-                    </p>
-                    <div>
-                      <label
-                        class="bp3-control bp3-radio"
-                      >
-                        <input
-                          checked=""
-                          name="ballotPollingType"
-                          type="radio"
-                          value="BRAVO"
-                        />
-                        <span
-                          class="bp3-control-indicator"
-                        />
-                        BRAVO
-                      </label>
-                      <label
-                        class="bp3-control bp3-radio"
-                      >
-                        <input
-                          name="ballotPollingType"
-                          type="radio"
-                          value="MINERVA"
-                        />
-                        <span
-                          class="bp3-control-indicator"
-                        />
-                        Minerva (Not recommended)
-                      </label>
-                    </div>
+                    <label
+                      for="ballotPollingType"
+                    >
+                      <p>
+                        Ballot polling type
+                      </p>
+                      <div>
+                        <label
+                          class="bp3-control bp3-radio"
+                        >
+                          <input
+                            checked=""
+                            name="ballotPollingType"
+                            type="radio"
+                            value="BRAVO"
+                          />
+                          <span
+                            class="bp3-control-indicator"
+                          />
+                          BRAVO
+                        </label>
+                        <label
+                          class="bp3-control bp3-radio"
+                        >
+                          <input
+                            name="ballotPollingType"
+                            type="radio"
+                            value="MINERVA"
+                          />
+                          <span
+                            class="bp3-control-indicator"
+                          />
+                          Minerva (Not recommended)
+                        </label>
+                      </div>
+                    </label>
                   </div>
                   <label
                     class="bp3-control bp3-radio"
