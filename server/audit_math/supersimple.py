@@ -139,13 +139,12 @@ def compute_discrepancies(
                 if e:
                     # we found a discrepancy!
                     found = True
-                e_weighted = Decimal(e) / Decimal(V_wl)
 
                 if not V_wl:
                     # In this case the error is undefined
-                    e_weighted = -1.0
+                    e_weighted = Decimal("inf")
                 else:
-                    e_weighted = e / V_wl
+                    e_weighted = Decimal(e) / Decimal(V_wl)
 
                 if e_weighted > e_r:
                     e_r = e_weighted
@@ -271,7 +270,10 @@ def compute_risk(
     N = contest.ballots
     V = Decimal(contest.diluted_margin * N)
 
-    U = 2 * gamma / Decimal(contest.diluted_margin)
+    if contest.diluted_margin == 0:
+        U = Decimal("inf")
+    else:
+        U = 2 * gamma / Decimal(contest.diluted_margin)
 
     result = False
 
@@ -284,13 +286,13 @@ def compute_risk(
             e_r = Decimal(0)
 
         if contest.diluted_margin:
-            U = 2 * gamma / contest.diluted_margin
+            U = 2 * gamma / Decimal(contest.diluted_margin)
             denom = (2 * gamma) / V
             p_b = (1 - 1 / U) / (1 - (e_r / denom))
         else:
             # If the contest is a tie, this step results in 1 - 1/(infinity)
             # divided by 1 - e_r/infinity, i.e. 1
-            p_b = 1.0
+            p_b = Decimal(1.0)
 
         p *= p_b
 
