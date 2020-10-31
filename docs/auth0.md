@@ -12,13 +12,13 @@ Auth0 is used for authentication. Key things to keep in mind:
 - we use two separate Auth0 tenants, one for audit administrators, one
   for jurisdiction administrators, each with its own single
   application, so we can use completely different login screens for
-  both, specifically 2FA for audit administrators and passwordless for
-  jurisdiction administrators.
+  both, specifically 2FA for audit administrators, and both 2FA
+  and passwordless for jurisdiction administrators / audit boards.
 
 - setting up auth0 passwordless requires either creating users via the
   Management API, or letting anyone sign in and filtering on our
-  end. We'll start with the latter, we may do the former at some
-  point.
+  end. We'll start with the latter, creating URLs for audit boards on
+  the fly, but we may do the former at some point.
 
 - right now we're using "Universal Login", where Auth0 controls the
   login page. It's not clear that's the right way forward for Arlo, as
