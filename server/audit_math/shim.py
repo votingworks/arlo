@@ -11,6 +11,7 @@ Or is it better to make them up for each pairwise estimate as we go?
 import logging
 import math
 from typing import Any
+from decimal import Decimal
 from athena.audit import Audit  # type: ignore
 
 
@@ -117,9 +118,9 @@ def get_minerva_test_statistics(
 
 
 def minerva_sample_sizes(
-    risk_limit: float,
-    p_w: float,
-    p_r: float,
+    alpha: Decimal,
+    p_w: Decimal,
+    p_r: Decimal,
     sample_w: int,
     sample_r: int,
     p_completion: float,
@@ -153,6 +154,10 @@ def minerva_sample_sizes(
     >>> minerva_sample_sizes(0.1, 0.6, 0.4, 0, 0, 0.9)
     179
     """
+
+    risk_limit = float(alpha)
+    p_w = float(p_w)
+    p_r = float(p_r)
 
     # calculate the undiluted "two-way" share of votes for the winner
     p_wr = p_w + p_r
