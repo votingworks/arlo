@@ -62,7 +62,7 @@ describe('Progress screen', () => {
     within(rows[2]).getByRole('cell', { name: 'Jurisdiction 2' })
     within(rows[2]).getByRole('cell', { name: 'No manifest uploaded' })
     within(rows[3]).getByRole('cell', { name: 'Jurisdiction 3' })
-    within(rows[3]).getByRole('cell', { name: '2117' })
+    within(rows[3]).getByRole('cell', { name: '2,117' })
     within(rows[3]).getByRole('cell', { name: 'Manifest uploaded' })
   })
 
@@ -86,7 +86,7 @@ describe('Progress screen', () => {
     within(rows[1]).getByRole('cell', { name: 'Jurisdiction 1' })
     within(rows[1]).getByRole('cell', { name: 'In progress' })
     within(rows[1]).getByRole('cell', { name: '4' })
-    within(rows[1]).getByRole('cell', { name: '2117' })
+    within(rows[1]).getByRole('cell', { name: '2,117' })
     within(rows[1]).getByRole('cell', { name: '6' })
     within(rows[2]).getByRole('cell', { name: 'Jurisdiction 2' })
     within(rows[2]).getByRole('cell', { name: 'Not started' })
@@ -96,7 +96,7 @@ describe('Progress screen', () => {
     within(rows[3]).getByRole('cell', { name: 'Jurisdiction 3' })
     within(rows[3]).getByRole('cell', { name: 'Complete' })
     within(rows[3]).getByRole('cell', { name: '30' })
-    within(rows[3]).getByRole('cell', { name: '2117' })
+    within(rows[3]).getByRole('cell', { name: '2,117' })
     within(rows[3]).getByRole('cell', { name: '0' })
   })
 

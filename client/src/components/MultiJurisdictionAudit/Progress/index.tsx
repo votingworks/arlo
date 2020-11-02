@@ -34,6 +34,8 @@ const TableControls = styled.div`
   }
 `
 
+const formatNumber = (n: number | null) => n && n.toLocaleString()
+
 interface IProps {
   jurisdictions: IJurisdiction[]
   auditSettings: IAuditSettings
@@ -159,7 +161,8 @@ const Progress: React.FC<IProps> = ({
     },
     {
       Header: 'Total in Manifest',
-      accessor: ({ ballotManifest: { numBallots } }) => numBallots,
+      accessor: ({ ballotManifest: { numBallots } }) =>
+        formatNumber(numBallots),
     },
   ]
   if (round) {
@@ -167,15 +170,20 @@ const Progress: React.FC<IProps> = ({
       {
         Header: 'Audited',
         accessor: ({ currentRoundStatus: s }) =>
-          s && (isShowingUnique ? s.numUniqueAudited : s.numSamplesAudited),
+          s &&
+          formatNumber(
+            isShowingUnique ? s.numUniqueAudited : s.numSamplesAudited
+          ),
       },
       {
         Header: 'Still to Audit',
         accessor: ({ currentRoundStatus: s }) =>
           s &&
-          (isShowingUnique
-            ? s.numUnique - s.numUniqueAudited
-            : s.numSamples - s.numSamplesAudited),
+          formatNumber(
+            isShowingUnique
+              ? s.numUnique - s.numUniqueAudited
+              : s.numSamples - s.numSamplesAudited
+          ),
       }
     )
   }
