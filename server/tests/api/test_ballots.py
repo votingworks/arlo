@@ -441,10 +441,10 @@ def test_ab_audit_ballot_happy_path(
         ballots = json.loads(rv.data)["ballots"]
 
         ballots[0]["interpretations"] = sorted(
-            ballots[0]["interpretations"], key=lambda i: i["contestId"]
+            ballots[0]["interpretations"], key=lambda i: str(i["contestId"])
         )
         audit_request["interpretations"] = sorted(
-            audit_request["interpretations"], key=lambda i: i["contestId"]
+            audit_request["interpretations"], key=lambda i: str(i["contestId"])
         )
 
         assert ballots[0] == {**ballot, **audit_request}
