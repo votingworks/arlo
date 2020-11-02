@@ -202,7 +202,11 @@ export const JurisdictionAdminView: React.FC = () => {
                   to store ballots for this particular election, plus a count of
                   how many ballot cards (individual pieces of paper) are stored
                   in each container.'
-            sampleFileLink="/sample_ballot_manifest.csv"
+            sampleFileLink={
+              auditSettings.auditType === 'BALLOT_COMPARISON'
+                ? '/sample_manifest_BC.csv'
+                : '/sample_ballot_manifest.csv'
+            }
             enabled
           />
           {auditSettings.auditType === 'BATCH_COMPARISON' && (
