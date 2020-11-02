@@ -186,7 +186,7 @@ def audit_settings_rows(election: Election):
         [
             "Audit Name",
             "Audit Type",
-            "Ballot Polling Type",
+            "Audut Math Type",
             "Risk Limit",
             "Random Seed",
             "Online Data Entry?",
@@ -194,11 +194,7 @@ def audit_settings_rows(election: Election):
         [
             election.audit_name,
             election.audit_type,
-            (
-                election.ballot_polling_type
-                if election.audit_type == "BALLOT_POLLING"
-                else ""
-            ),
+            election.audit_math_type,
             f"{election.risk_limit}%",
             election.random_seed,
             pretty_boolean(election.online),
