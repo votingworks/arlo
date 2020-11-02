@@ -16,11 +16,9 @@ ELECTION_SCHEMA = {
             "type": "string",
             "enum": [audit_type.value for audit_type in AuditType],
         },
-        "ballotPollingType": {
+        "auditMathType": {
             "type": "string",
-            "enum": [
-                ballot_polling_type.value for ballot_polling_type in BallotPollingType
-            ],
+            "enum": [audit_math_type.value for audit_math_type in AuditMathType],
         },
         "organizationId": {"anyOf": [{"type": "string"}, {"type": "null"}]},
     },
@@ -56,7 +54,7 @@ def create_election():
         id=str(uuid.uuid4()),
         audit_name=election["auditName"],
         audit_type=election["auditType"],
-        ballot_polling_type=election["ballotPollingType"],
+        audit_math_type=election["auditMathType"],
         organization_id=election["organizationId"],
         online=online,
     )

@@ -4,7 +4,7 @@ ballot polling audits.
 """
 from typing import Dict, Tuple, Optional
 from typing_extensions import Literal, TypedDict
-from ..models import BallotPollingType
+from ..models import AuditMathType
 from .sampler_contest import Contest
 from . import bravo, minerva
 
@@ -19,7 +19,7 @@ def get_sample_size(
     risk_limit: int,
     contest: Contest,
     sample_results: Optional[Dict[str, Dict[str, int]]],
-    math_type: BallotPollingType,
+    math_type: AuditMathType,
 ) -> Dict[str, SampleSizeOption]:
     """
     Compute sample size using the specified math.
@@ -34,7 +34,7 @@ def get_sample_size(
           finishing probabilities
     """
 
-    if math_type == BallotPollingType.MINERVA:
+    if math_type == AuditMathType.MINERVA:
         return minerva.get_sample_size(risk_limit, contest, sample_results)
     else:
         # Default to BRAVO math
@@ -45,10 +45,10 @@ def compute_risk(
     risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
-    math_type: BallotPollingType,
+    math_type: AuditMathType,
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
 
-    if math_type == BallotPollingType.MINERVA:
+    if math_type == AuditMathType.MINERVA:
         return minerva.compute_risk(risk_limit, contest, sample_results)
     else:
         # Default to BRAVO
