@@ -279,7 +279,7 @@ def compute_risk(
         taint = e_p / u_p
 
         if taint == 1:
-            p *= 1
+            p = Decimal("inf")  # Our p-value blows up
         else:
             p *= (1 - 1 / U) / (1 - taint)
 
