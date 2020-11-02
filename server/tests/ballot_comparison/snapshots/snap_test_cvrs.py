@@ -82,7 +82,7 @@ snapshots["test_cvr_upload 1"] = [
         "ballot_position": 2,
         "batch_name": "BATCH2",
         "imprinted_id": "2-2-2",
-        "interpretations": "1,1,1,1,0",
+        "interpretations": "1,1,1,1,1",
         "tabulator": "TABULATOR2",
     },
     {
@@ -118,16 +118,16 @@ snapshots["test_cvr_upload 1"] = [
 snapshots["test_cvr_upload 2"] = {
     "Contest 1": {
         "choices": {
-            "Choice 1-1": {"column": 0, "num_votes": 8},
-            "Choice 1-2": {"column": 1, "num_votes": 5},
+            "Choice 1-1": {"column": 0, "num_votes": 7},
+            "Choice 1-2": {"column": 1, "num_votes": 4},
         },
         "total_ballots_cast": 12,
         "votes_allowed": 1,
     },
     "Contest 2": {
         "choices": {
-            "Choice 2-1": {"column": 2, "num_votes": 15},
-            "Choice 2-2": {"column": 3, "num_votes": 7},
+            "Choice 2-1": {"column": 2, "num_votes": 14},
+            "Choice 2-2": {"column": 3, "num_votes": 6},
             "Choice 2-3": {"column": 4, "num_votes": 8},
         },
         "total_ballots_cast": 15,
@@ -246,8 +246,8 @@ snapshots["test_cvrs_counting_group 1"] = [
 snapshots["test_cvrs_counting_group 2"] = {
     "Contest 1": {
         "choices": {
-            "Choice 1-1": {"column": 0, "num_votes": 8},
-            "Choice 1-2": {"column": 1, "num_votes": 5},
+            "Choice 1-1": {"column": 0, "num_votes": 7},
+            "Choice 1-2": {"column": 1, "num_votes": 4},
         },
         "total_ballots_cast": 12,
         "votes_allowed": 1,

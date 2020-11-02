@@ -67,7 +67,7 @@ def cvrs(
     manifests,  # pylint: disable=unused-argument
 ):
     j1_cvr_lines = [
-        f"TABULATOR{tabulator},BATCH{batch},{ballot},{tabulator}-{batch}-{ballot},x,x,1,1,0,1,0"
+        f"TABULATOR{tabulator},BATCH{batch},{ballot},{tabulator}-{batch}-{ballot},x,x,1,0,0,1,0"
         for tabulator in range(1, 3)
         for batch in range(1, 5)
         for ballot in range(1, 21)

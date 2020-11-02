@@ -22,6 +22,7 @@ from ..util.process_file import (
 from ..util.csv_download import csv_response
 from ..util.csv_parse import decode_csv_file
 from ..util.jsonschema import JSONDict
+from ..util.group_by import group_by
 
 
 def set_contest_metadata_from_cvrs(contest: Contest):
@@ -84,18 +85,14 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
             contest_names.append(match[1])
             contest_votes_allowed.append(int(match[2]))
 
-        interpretation_headers = list(
-            zip(contest_names, contest_votes_allowed, contest_choices)
-        )
-
         # Parse out metadata about the contests to store - we'll later use this
         # to populate the Contest object.
         contests_metadata = defaultdict(lambda: dict(choices=dict()))
-        for column, (contest_name, votes_allowed, contest_choice) in enumerate(
-            interpretation_headers
+        for column, (contest_name, votes_allowed, choice_name) in enumerate(
+            zip(contest_names, contest_votes_allowed, contest_choices)
         ):
             contests_metadata[contest_name]["votes_allowed"] = votes_allowed
-            contests_metadata[contest_name]["choices"][contest_choice] = dict(
+            contests_metadata[contest_name]["choices"][choice_name] = dict(
                 # Store the column index of this contest choice so we can parse
                 # interpretations later
                 column=column,
@@ -143,14 +140,30 @@ def process_cvr_file(session: Session, jurisdiction: Jurisdiction, file: File):
                 # Add to our running totals for ContestChoice.num_votes and
                 # Contest.total_ballots_cast
                 contests_on_ballot = set()
-                for (contest_name, _, contest_choice), interpretation in zip(
-                    interpretation_headers, interpretations
-                ):
-                    if interpretation:
-                        contests_metadata[contest_name]["choices"][contest_choice][
+                interpretations_by_contest = group_by(
+                    zip(contest_names, contest_choices, interpretations),
+                    key=lambda tuple: tuple[0],  # contest_name
+                )
+                for contest_name, interpretations in interpretations_by_contest.items():
+                    # Skip contests not on ballot
+                    if any(
+                        interpretation == "" for _, _, interpretation in interpretations
+                    ):
+                        continue
+                    contests_on_ballot.add(contest_name)
+
+                    # Skip overvotes
+                    votes = sum(
+                        int(interpretation) for _, _, interpretation in interpretations
+                    )
+                    if votes > contests_metadata[contest_name]["votes_allowed"]:
+                        continue
+
+                    for _, choice_name, interpretation in interpretations:
+                        contests_metadata[contest_name]["choices"][choice_name][
                             "num_votes"
                         ] += int(interpretation)
-                        contests_on_ballot.add(contest_name)
+
                 for contest_name in contests_on_ballot:
                     contests_metadata[contest_name]["total_ballots_cast"] += 1
 
