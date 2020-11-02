@@ -82,7 +82,7 @@ snapshots["test_cvr_upload 1"] = [
         "ballot_position": 2,
         "batch_name": "BATCH2",
         "imprinted_id": "2-2-2",
-        "interpretations": "1,1,1,1,0",
+        "interpretations": "1,1,1,1,1",
         "tabulator": "TABULATOR2",
     },
     {
@@ -126,8 +126,8 @@ snapshots["test_cvr_upload 2"] = {
     },
     "Contest 2": {
         "choices": {
-            "Choice 2-1": {"column": 2, "num_votes": 15},
-            "Choice 2-2": {"column": 3, "num_votes": 7},
+            "Choice 2-1": {"column": 2, "num_votes": 14},
+            "Choice 2-2": {"column": 3, "num_votes": 6},
             "Choice 2-3": {"column": 4, "num_votes": 8},
         },
         "total_ballots_cast": 15,
