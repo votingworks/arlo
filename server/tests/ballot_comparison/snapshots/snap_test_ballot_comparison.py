@@ -7,6 +7,19 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots[
+    "test_ballot_comparison_cvr_metadata 1"
+] = """Tabulator,Batch Name,Ballot Number,Imprinted ID,Ticket Numbers,Already Audited,Audit Board
+TABULATOR1,BATCH1,1,1-1-1,0.243550726331576894,N,Audit Board #1
+TABULATOR1,BATCH2,2,1-2-2,0.125871889047705889,N,Audit Board #1
+TABULATOR1,BATCH2,3,1-2-3,0.126622033568908859,N,Audit Board #1
+TABULATOR2,BATCH2,2,2-2-2,0.053992217600758631,N,Audit Board #1
+TABULATOR2,BATCH2,3,2-2-3,0.255119157791673311,N,Audit Board #1
+TABULATOR2,BATCH2,4,2-2-4,"0.064984443990590400,0.069414660569975443",N,Audit Board #1
+TABULATOR2,BATCH2,5,2-2-5,"0.442956417641278897,0.492638838970333256",N,Audit Board #1
+TABULATOR2,BATCH2,6,2-2-6,0.300053574780458718,N,Audit Board #1
+"""
+
 snapshots["test_ballot_comparison_two_rounds 1"] = {
     "key": "supersimple",
     "prob": None,
@@ -29,17 +42,6 @@ snapshots["test_ballot_comparison_two_rounds 3"] = {
     "status": "NOT_STARTED",
 }
 
-snapshots["test_set_contest_metadata_from_cvrs 1"] = {
-    "choices": [
-        {"name": "Choice 2-1", "num_votes": 30},
-        {"name": "Choice 2-2", "num_votes": 14},
-        {"name": "Choice 2-3", "num_votes": 16},
-    ],
-    "num_winners": 1,
-    "total_ballots_cast": 30,
-    "votes_allowed": 2,
-}
-
 snapshots[
     "test_ballot_comparison_two_rounds 4"
 ] = """######## ELECTION INFO ########\r
@@ -48,7 +50,7 @@ Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,1,24,Choice 1-1: 16; Choice 1-2: 10\r
+Contest 1,Targeted,1,1,24,Choice 1-1: 14; Choice 1-2: 8\r
 Contest 2,Opportunistic,1,2,30,Choice 2-1: 30; Choice 2-2: 14; Choice 2-3: 16\r
 \r
 ######## AUDIT SETTINGS ########\r
@@ -95,7 +97,7 @@ Test Election,CA\r
 \r
 ######## CONTESTS ########\r
 Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabulated Votes\r
-Contest 1,Targeted,1,1,24,Choice 1-1: 16; Choice 1-2: 10\r
+Contest 1,Targeted,1,1,24,Choice 1-1: 14; Choice 1-2: 8\r
 Contest 2,Opportunistic,1,2,30,Choice 2-1: 30; Choice 2-2: 14; Choice 2-3: 16\r
 \r
 ######## AUDIT SETTINGS ########\r
@@ -145,15 +147,13 @@ J2,TABULATOR2,BATCH1,3,2-1-3,"Round 2: 0.803716379074313244, 0.85340017898534064
 J2,TABULATOR2,BATCH2,4,2-2-4,"Round 2: 0.583133559190710795, 0.685610948371080498",AUDITED,,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",\r
 """
 
-snapshots[
-    "test_ballot_comparison_cvr_metadata 1"
-] = """Tabulator,Batch Name,Ballot Number,Imprinted ID,Ticket Numbers,Already Audited,Audit Board
-TABULATOR1,BATCH1,1,1-1-1,0.243550726331576894,N,Audit Board #1
-TABULATOR1,BATCH2,2,1-2-2,0.125871889047705889,N,Audit Board #1
-TABULATOR1,BATCH2,3,1-2-3,0.126622033568908859,N,Audit Board #1
-TABULATOR2,BATCH2,2,2-2-2,0.053992217600758631,N,Audit Board #1
-TABULATOR2,BATCH2,3,2-2-3,0.255119157791673311,N,Audit Board #1
-TABULATOR2,BATCH2,4,2-2-4,"0.064984443990590400,0.069414660569975443",N,Audit Board #1
-TABULATOR2,BATCH2,5,2-2-5,"0.442956417641278897,0.492638838970333256",N,Audit Board #1
-TABULATOR2,BATCH2,6,2-2-6,0.300053574780458718,N,Audit Board #1
-"""
+snapshots["test_set_contest_metadata_from_cvrs 1"] = {
+    "choices": [
+        {"name": "Choice 2-1", "num_votes": 30},
+        {"name": "Choice 2-2", "num_votes": 14},
+        {"name": "Choice 2-3", "num_votes": 16},
+    ],
+    "num_winners": 1,
+    "total_ballots_cast": 30,
+    "votes_allowed": 2,
+}
