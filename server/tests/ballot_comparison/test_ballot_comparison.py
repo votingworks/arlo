@@ -151,6 +151,7 @@ def test_ballot_comparison_two_rounds(
     rv = client.get(f"/api/election/{election_id}/contest")
     contests = json.loads(rv.data)["contests"]
     target_contest_id = contests[0]["id"]
+    opportunistic_contest_id = contests[1]["id"]
 
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
     sample_size_options = json.loads(rv.data)["sampleSizes"]
@@ -187,61 +188,98 @@ def test_ballot_comparison_two_rounds(
     # Audit boards audit all the ballots.
     # Our goal is to mostly make the audit board interpretations match the CVRs
     # for the target contest, messing up just a couple in order to trigger a
-    # second round.
-    def audit_all_ballots(round_id: str, num_wrong: int):
+    # second round. For convenience, using the same format as the CVR to
+    # specify our audit results.
+    # Tabulator, Batch, Ballot, Choice 1-1, Choice 1-2, Choice 2-1, Choice 2-2, Choice 2-3
+    audit_results = {
+        ("J1", "TABULATOR1", "BATCH1", 1): "0,1,1,1,0",
+        ("J1", "TABULATOR1", "BATCH2", 2): "0,1,1,1,0",
+        ("J1", "TABULATOR1", "BATCH2", 3): "1,1,0,1,1",  # CVR: 1,0,1,0,1
+        ("J1", "TABULATOR2", "BATCH2", 2): "1,1,1,1,0",
+        ("J1", "TABULATOR2", "BATCH2", 3): "blank",  # CVR: 1,0,1,0,1
+        ("J1", "TABULATOR2", "BATCH2", 4): ",,1,0,1",
+        ("J1", "TABULATOR2", "BATCH2", 5): ",,1,1,0",
+        ("J1", "TABULATOR2", "BATCH2", 6): ",,1,0,1",
+        ("J2", "TABULATOR1", "BATCH1", 1): "0,1,1,1,0",
+        ("J2", "TABULATOR1", "BATCH1", 2): "1,0,1,0,1",
+        ("J2", "TABULATOR1", "BATCH1", 3): "0,1,1,1,0",
+        ("J2", "TABULATOR1", "BATCH2", 1): "1,0,1,0,1",
+        ("J2", "TABULATOR2", "BATCH1", 1): "0,1,1,1,0",
+        ("J2", "TABULATOR2", "BATCH2", 1): "1,0,1,0,1",
+        ("J2", "TABULATOR2", "BATCH2", 2): "1,1,1,1,0",
+        ("J2", "TABULATOR2", "BATCH2", 3): "1,0,1,0,1",
+        ("J2", "TABULATOR2", "BATCH2", 5): "1,0,,,",  # CVR: ,,1,1,0
+        ("J2", "TABULATOR2", "BATCH2", 6): ",,1,0,1",
+    }
+
+    def ballot_key(ballot: SampledBallot):
+        return (
+            ballot.batch.jurisdiction.name,
+            ballot.batch.tabulator,
+            ballot.batch.name,
+            ballot.ballot_position,
+        )
+
+    choice_1_1, choice_1_2 = Contest.query.get(target_contest_id).choices
+    choice_2_1, choice_2_2, choice_2_3 = Contest.query.get(
+        opportunistic_contest_id
+    ).choices
+
+    def audit_all_ballots(round_id: str, audit_results):
         round = Round.query.get(round_id)
-        for contest_id in [target_contest_id, contests[1]["id"]]:
-            contest = Contest.query.get(contest_id)
-            ballots_and_cvrs = (
-                SampledBallot.query.join(SampledBallotDraw)
-                .filter_by(round_id=round.id)
-                .join(Batch)
-                .join(
-                    CvrBallot,
-                    and_(
-                        CvrBallot.batch_id == SampledBallot.batch_id,
-                        CvrBallot.ballot_position == SampledBallot.ballot_position,
-                    ),
-                )
-                .order_by(Batch.tabulator, Batch.name, SampledBallot.ballot_position)
-                .with_entities(SampledBallot, CvrBallot)
-                .all()
-            )
-            for i, (ballot, cvr) in enumerate(ballots_and_cvrs):
-                choice_1_str, choice_2_str, *_ = cvr.interpretations.split(",")
-                ballot.status = BallotStatus.AUDITED
-                choice_1 = int(choice_1_str) if choice_1_str else None
-                choice_2 = int(choice_2_str) if choice_2_str else None
-                if not (choice_1 or choice_2):
-                    continue
-                if i < num_wrong:
-                    ballot.interpretations = list(ballot.interpretations) + [
-                        BallotInterpretation(
-                            ballot_id=ballot.id,
-                            contest_id=contest.id,
-                            interpretation=Interpretation.BLANK,
-                            selected_choices=[],
-                            is_overvote=False,
-                        )
-                    ]
-                if not any(
-                    i for i in ballot.interpretations if i.contest_id == contest_id
-                ):
-                    ballot.interpretations = list(ballot.interpretations) + [
-                        BallotInterpretation(
-                            ballot_id=ballot.id,
-                            contest_id=contest.id,
-                            interpretation=Interpretation.VOTE,
-                            selected_choices=([contest.choices[0]] if choice_1 else [])
-                            + ([contest.choices[1]] if choice_2 else []),
-                            is_overvote=bool(choice_1 and choice_2),
-                        )
-                    ]
+        sampled_ballots = (
+            SampledBallot.query.filter_by(status=BallotStatus.NOT_AUDITED)
+            .join(SampledBallotDraw)
+            .filter_by(round_id=round.id)
+            .join(Batch)
+            .order_by(Batch.tabulator, Batch.name, SampledBallot.ballot_position)
+            .all()
+        )
+        sampled_ballot_keys = [ballot_key(ballot) for ballot in sampled_ballots]
+        assert sorted(sampled_ballot_keys) == sorted(list(audit_results.keys()))
+
+        for ballot in sampled_ballots:
+            ballot.status = BallotStatus.AUDITED
+            interpretation_str = audit_results[ballot_key(ballot)]
+
+            if interpretation_str == "blank":
+                audit_ballot(ballot, target_contest_id, Interpretation.BLANK)
+                audit_ballot(ballot, opportunistic_contest_id, Interpretation.BLANK)
+
+            else:
+                (
+                    vote_choice_1_1,
+                    vote_choice_1_2,
+                    vote_choice_2_1,
+                    vote_choice_2_2,
+                    vote_choice_2_3,
+                ) = interpretation_str.split(",")
+
+                if vote_choice_1_1 != "":
+                    target_choices = (
+                        [choice_1_1] if vote_choice_1_1 == "1" else []
+                    ) + ([choice_1_2] if vote_choice_1_2 == "1" else [])
+                    audit_ballot(
+                        ballot, target_contest_id, Interpretation.VOTE, target_choices
+                    )
+
+                if vote_choice_2_1 != "":
+                    opportunistic_choices = (
+                        ([choice_2_1] if vote_choice_2_1 == "1" else [])
+                        + ([choice_2_2] if vote_choice_2_2 == "1" else [])
+                        + ([choice_2_3] if vote_choice_2_3 == "1" else [])
+                    )
+                    audit_ballot(
+                        ballot,
+                        opportunistic_contest_id,
+                        Interpretation.VOTE,
+                        opportunistic_choices,
+                    )
 
         end_round(round.election, round)
         db_session.commit()
 
-    audit_all_ballots(round_1_id, 6)
+    audit_all_ballots(round_1_id, audit_results)
 
     # Check the audit report
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
@@ -261,10 +299,58 @@ def test_ballot_comparison_two_rounds(
     assert len(sample_size_options) == 1
     assert sample_size_options[target_contest_id][0] == sample_size
 
-    audit_all_ballots(round_2_id, 0)
+    # For round 2, audit results should match the CVR exactly.
+    audit_results = {
+        ("J1", "TABULATOR1", "BATCH1", 2): "1,0,1,0,1",
+        ("J1", "TABULATOR1", "BATCH2", 1): "1,0,1,0,1",
+        ("J1", "TABULATOR2", "BATCH1", 2): "1,0,1,0,1",
+        ("J1", "TABULATOR2", "BATCH2", 1): "1,0,1,0,1",
+        ("J2", "TABULATOR1", "BATCH2", 2): "0,1,1,1,0",
+        ("J2", "TABULATOR1", "BATCH2", 3): "1,0,1,0,1",
+        ("J2", "TABULATOR2", "BATCH1", 2): "1,0,1,0,1",
+        ("J2", "TABULATOR2", "BATCH1", 3): "1,0,1,1,0",
+        ("J2", "TABULATOR2", "BATCH2", 4): ",,1,0,1",
+    }
+
+    audit_all_ballots(round_2_id, audit_results)
 
     rv = client.get(f"/api/election/{election_id}/report")
     assert_match_report(rv.data, snapshot)
+
+
+# This function can be used to generate the correct audit results in case you
+# need to update the above test case.
+# def generate_audit_results(round_id: str):
+#     ballots_and_cvrs = (
+#         SampledBallot.query.filter_by(status=BallotStatus.NOT_AUDITED)
+#         .join(SampledBallotDraw)
+#         .filter_by(round_id=round_id)
+#         .join(Batch)
+#         .join(Jurisdiction)
+#         .join(
+#             CvrBallot,
+#             and_(
+#                 CvrBallot.batch_id == SampledBallot.batch_id,
+#                 CvrBallot.ballot_position == SampledBallot.ballot_position,
+#             ),
+#         )
+#         .order_by(
+#             Jurisdiction.name,
+#             Batch.tabulator,
+#             Batch.name,
+#             SampledBallot.ballot_position,
+#         )
+#         .with_entities(SampledBallot, CvrBallot)
+#         .all()
+#     )
+#     def ballot_key(ballot: SampledBallot):
+#         return (
+#             ballot.batch.jurisdiction.name,
+#             ballot.batch.tabulator,
+#             ballot.batch.name,
+#             ballot.ballot_position,
+#         )
+#     print({ballot_key(ballot): cvr.interpretations for ballot, cvr in ballots_and_cvrs})
 
 
 def test_ballot_comparison_cvr_metadata(
