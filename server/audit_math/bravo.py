@@ -67,7 +67,7 @@ def get_expected_sample_sizes(
         z_w = (2 * s_w).ln()
         z_l = (2 - 2 * s_w).ln()
 
-        T = min(get_test_statistics(contest.margins, sample_results).values())
+        T = Decimal(min(get_test_statistics(contest.margins, sample_results).values()))
 
         weighted_alpha = (Decimal(1.0) / alpha) / T
         return int(
@@ -353,6 +353,10 @@ def get_sample_size(
                 }
     """
 
+    logging.debug(
+        f"bravo::get_sample_size({risk_limit=}, {contest=}, {sample_results=})"
+    )
+
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
@@ -442,6 +446,8 @@ def get_sample_size(
         size = bravo_sample_sizes(alpha, p_w, p_l, sample_w, sample_l, quant)
         samples[str(quant)] = {"type": None, "size": size, "prob": quant}
 
+    logging.debug(f"bravo::get_sample_size => {samples=}")
+
     return samples
 
 
@@ -467,6 +473,8 @@ def compute_risk(
                           winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
+    logging.debug(f"bravo::compute_risk({risk_limit=}, {contest=}, {sample_results=})")
+
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
@@ -494,7 +502,7 @@ def compute_risk(
 
         if raw > alpha:
             finished = False
-    logging.debug(f"samples {sample_results}, measurements {measurements}")
+    logging.debug(f"bravo::compute_risk -> {measurements=}, {finished=}")
     return measurements, finished
 
 
