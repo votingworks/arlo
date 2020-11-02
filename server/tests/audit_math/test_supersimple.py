@@ -67,11 +67,14 @@ def test_find_no_discrepancies(contests, cvrs):
     # Test no discrepancies
     sample_cvr = {
         0: {
-            "Contest A": {"winner": 1, "loser": 0},
-            "Contest B": {"winner": 1, "loser": 0},
-            "Contest C": {"winner": 1, "loser": 0},
-            "Contest D": {"winner": 1, "loser": 0},
-            "Contest E": {"winner": 1, "loser": 0},
+            "times_sampled": 1,
+            "cvr": {
+                "Contest A": {"winner": 1, "loser": 0},
+                "Contest B": {"winner": 1, "loser": 0},
+                "Contest C": {"winner": 1, "loser": 0},
+                "Contest D": {"winner": 1, "loser": 0},
+                "Contest E": {"winner": 1, "loser": 0},
+            },
         }
     }
 
@@ -79,7 +82,6 @@ def test_find_no_discrepancies(contests, cvrs):
         discrepancies = supersimple.compute_discrepancies(
             contests[contest], cvrs, sample_cvr
         )
-
         assert not discrepancies
 
 
@@ -88,11 +90,14 @@ def test_find_one_discrepancy(contests, cvrs):
     # Test one discrepancy
     sample_cvr = {
         0: {
-            "Contest A": {"winner": 0, "loser": 0},
-            "Contest B": {"winner": 1, "loser": 0},
-            "Contest C": {"winner": 1, "loser": 0},
-            "Contest D": {"winner": 1, "loser": 0},
-            "Contest E": {"winner": 1, "loser": 0},
+            "times_sampled": 1,
+            "cvr": {
+                "Contest A": {"winner": 0, "loser": 0},
+                "Contest B": {"winner": 1, "loser": 0},
+                "Contest C": {"winner": 1, "loser": 0},
+                "Contest D": {"winner": 1, "loser": 0},
+                "Contest E": {"winner": 1, "loser": 0},
+            },
         }
     }
 
@@ -115,10 +120,13 @@ def test_race_not_in_cvr_discrepancy(contests, cvrs):
 
     sample_cvr = {
         0: {
-            "Contest F": {
-                "winner": 0,
-                "loser": 1,
-            },  # The audit board found a race not in the CVR
+            "times_sampled": 1,
+            "cvr": {
+                "Contest F": {
+                    "winner": 0,
+                    "loser": 1,
+                },  # The audit board found a race not in the CVR
+            },
         }
     }
 
@@ -136,10 +144,13 @@ def test_race_not_in_sample_discrepancy(contests, cvrs):
 
     sample_cvr = {
         0: {
-            "Contest A": {"winner": 0, "loser": 0},
-            "Contest B": {"winner": 1, "loser": 0},
-            "Contest C": {"winner": 1, "loser": 0},
-            "Contest E": {"winner": 1, "loser": 0},
+            "times_sampled": 1,
+            "cvr": {
+                "Contest A": {"winner": 0, "loser": 0},
+                "Contest B": {"winner": 1, "loser": 0},
+                "Contest C": {"winner": 1, "loser": 0},
+                "Contest E": {"winner": 1, "loser": 0},
+            },
         }
     }
 
@@ -174,11 +185,14 @@ def test_compute_risk(contests, cvrs):
         # No discrepancies
         for i in range(sample_size):
             sample_cvr[i] = {
-                "Contest A": {"winner": 1, "loser": 0},
-                "Contest B": {"winner": 1, "loser": 0},
-                "Contest C": {"winner": 1, "loser": 0},
-                "Contest D": {"winner": 1, "loser": 0},
-                "Contest E": {"winner": 1, "loser": 0},
+                "times_sampled": 1,
+                "cvr": {
+                    "Contest A": {"winner": 1, "loser": 0},
+                    "Contest B": {"winner": 1, "loser": 0},
+                    "Contest C": {"winner": 1, "loser": 0},
+                    "Contest D": {"winner": 1, "loser": 0},
+                    "Contest E": {"winner": 1, "loser": 0},
+                },
             }
 
         p_value, finished = supersimple.compute_risk(
@@ -212,11 +226,14 @@ def test_compute_risk(contests, cvrs):
 
         # Test one-vote overstatement
         sample_cvr[0] = {
-            "Contest A": {"winner": 0, "loser": 0},
-            "Contest B": {"winner": 0, "loser": 0},
-            "Contest C": {"winner": 0, "loser": 0},
-            "Contest D": {"winner": 0, "loser": 0},
-            "Contest E": {"winner": 0, "loser": 0},
+            "times_sampled": 1,
+            "cvr": {
+                "Contest A": {"winner": 0, "loser": 0},
+                "Contest B": {"winner": 0, "loser": 0},
+                "Contest C": {"winner": 0, "loser": 0},
+                "Contest D": {"winner": 0, "loser": 0},
+                "Contest E": {"winner": 0, "loser": 0},
+            },
         }
 
         p_value, finished = supersimple.compute_risk(
@@ -255,11 +272,14 @@ def test_compute_risk(contests, cvrs):
 
         # Test two-vote overstatement
         sample_cvr[0] = {
-            "Contest A": {"winner": 0, "loser": 1},
-            "Contest B": {"winner": 0, "loser": 1},
-            "Contest C": {"winner": 0, "loser": 1},
-            "Contest D": {"winner": 0, "loser": 1},
-            "Contest E": {"winner": 0, "loser": 1},
+            "times_sampled": 1,
+            "cvr": {
+                "Contest A": {"winner": 0, "loser": 1},
+                "Contest B": {"winner": 0, "loser": 1},
+                "Contest C": {"winner": 0, "loser": 1},
+                "Contest D": {"winner": 0, "loser": 1},
+                "Contest E": {"winner": 0, "loser": 1},
+            },
         }
 
         p_value, finished = supersimple.compute_risk(
@@ -328,7 +348,9 @@ def test_tied_contest():
 
     assert sample_size == contest_data["ballots"]
 
-    sample_cvr = {0: {"Tied Contest": {"winner": 1, "loser": 0}}}
+    sample_cvr = {
+        0: {"times_sampled": 1, "cvr": {"Tied Contest": {"winner": 1, "loser": 0}}}
+    }
 
     # Ensure that anything short of a full recount doesn't finish
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
@@ -337,8 +359,9 @@ def test_tied_contest():
     assert not res
 
     # Do a full hand recount with no discrepancies
-    sample_cvr = cvr
-    sample_cvr[len(cvr) - 1]["Tied Contest"] = {"winner": 1, "loser": 0}
+    sample_cvr = {}
+    for ballot in cvr:
+        sample_cvr[ballot] = {"times_sampled": 1, "cvr": cvr[ballot]}
 
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
@@ -375,10 +398,13 @@ def test_snapshot_test():
 
     _ = supersimple.get_sample_sizes(RISK_LIMIT, contest, sample_results)
 
-    sample_cvr = {i: cvr[i] for i in range(18)}
+    sample_cvr = {}
+    for ballot in range(18):
+        sample_cvr[ballot] = {"times_sampled": 1, "cvr": cvr[ballot]}
+
     # Two of our winning ballots were actually blank
-    sample_cvr[0]["Jonah Test"] = {"winner": 0, "loser": 0}
-    sample_cvr[1]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr[0]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr[1]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
 
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
@@ -387,14 +413,68 @@ def test_snapshot_test():
     assert not res
 
     # now draw 9 more ballots without any discrepancies
-    sample_cvr = cvr
-    sample_cvr[0]["Jonah Test"] = {"winner": 0, "loser": 0}
-    sample_cvr[1]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr = {}
+    for ballot in cvr:
+        sample_cvr[ballot] = {"times_sampled": 1, "cvr": cvr[ballot]}
+    sample_cvr[0]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr[1]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
 
     p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
 
     assert res
     assert p < 0.000000001
+
+
+def test_multiplicity():
+    contest_data = {
+        "winner": 16,
+        "loser": 10,
+        "ballots": 26,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("Jonah Test", contest_data)
+
+    cvr = {}
+
+    for i in range(contest_data["ballots"]):
+        if i < contest_data["winner"]:
+            cvr[i] = {"Jonah Test": {"winner": 1, "loser": 0}}
+        else:
+            cvr[i] = {"Jonah Test": {"winner": 0, "loser": 1}}
+
+    sample_results = {
+        "sample_size": 0,
+        "1-under": 0,
+        "1-over": 0,
+        "2-under": 0,
+        "2-over": 0,
+    }
+
+    _ = supersimple.get_sample_sizes(RISK_LIMIT, contest, sample_results)
+
+    sample_cvr = {}
+    for ballot in range(18):
+        sample_cvr[ballot] = {"times_sampled": 1, "cvr": cvr[ballot]}
+    # Two of our winning ballots were actually blank
+    sample_cvr[0]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
+    sample_cvr[1]["cvr"]["Jonah Test"] = {"winner": 0, "loser": 0}
+
+    p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
+
+    expected_p = 0.1201733
+    assert abs(expected_p - p) < 0.0001
+    assert not res
+
+    # now draw those same ballots again
+    for i in sample_cvr:
+        sample_cvr[i]["cvr"]["times_sampled"] = 2
+
+    p, res = supersimple.compute_risk(RISK_LIMIT, contest, cvr, sample_cvr)
+
+    assert not res
+    assert p != 0  # This wasn't a recount
 
 
 true_dms = {
