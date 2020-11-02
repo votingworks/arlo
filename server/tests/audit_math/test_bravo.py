@@ -104,7 +104,7 @@ def test_bravo_sample_sizes():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -122,7 +122,7 @@ def test_bravo_sample_sizes():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -140,7 +140,7 @@ def test_bravo_sample_sizes():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -158,7 +158,7 @@ def test_bravo_sample_sizes():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -181,7 +181,7 @@ def test_bravo_sample_sizes_round1_finish():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -203,7 +203,7 @@ def test_bravo_sample_sizes_round1_incomplete():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -237,9 +237,9 @@ def test_get_sample_size(contests):
             )
 
         else:
-            assert not computed["asn"][
-                "prob"
-            ], "Returned ASN probability when there shouldn't be one!"
+            assert (
+                computed["asn"]["prob"] == 0
+            ), "Returned ASN probability when there shouldn't be one!"
 
         for item in computed:
             assert (
@@ -275,7 +275,7 @@ def test_bravo_expected_prob():
     )
     delta = expected_prob1 - computed_prob1
 
-    assert not delta, "bravo_simulator failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_simulator failed: got {}, expected {}".format(
         computed_prob1, expected_prob1
     )
 
@@ -422,7 +422,7 @@ def test_tied_contest():
 
     computed_p, res = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
 
-    assert not computed_p[("cand1", "cand2")]
+    assert computed_p[("cand1", "cand2")] == 0
     assert res
 
 
