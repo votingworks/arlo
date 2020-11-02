@@ -255,35 +255,55 @@ def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
 
 
 def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.CVRS:
-    interpretations_query = BallotInterpretation.query.filter_by(
-        contest_id=contest.id
-    ).outerjoin(BallotInterpretation.selected_choices)
+    ballots_query = (
+        SampledBallot.query.join(Batch)
+        .join(Jurisdiction)
+        .filter(Jurisdiction.contests.contains(contest))
+    )
     # For targeted contests, use the ticket number to key the ballots so that
     # we count all sample draws
     if contest.is_targeted:
-        interpretations = (
-            interpretations_query.join(
-                SampledBallotDraw,
-                BallotInterpretation.ballot_id == SampledBallotDraw.ballot_id,
-            )
-            .filter(SampledBallotDraw.contest_id == contest.id)
-            .with_entities(SampledBallotDraw.ticket_number, BallotInterpretation)
+        ballots = (
+            ballots_query.join(SampledBallotDraw)
+            .filter_by(contest_id=contest.id)
+            .with_entities(SampledBallotDraw.ticket_number, SampledBallot)
             .all()
         )
     # For opportunistic contests, use the ballot id to key the ballots so that
     # we only count unique ballots
     else:
-        interpretations = interpretations_query.with_entities(
-            BallotInterpretation.ballot_id, BallotInterpretation
-        ).all()
+        ballots = ballots_query.with_entities(SampledBallot.id, SampledBallot).all()
 
-    cvrs = {}
-    for ballot_key, interpretation in interpretations:
-        cvrs[ballot_key] = {contest.id: {choice.id: 0 for choice in contest.choices}}
-        # TODO maybe make Interpretation.CANT_AGREE a vote for the loser?
-        if interpretation.interpretation == Interpretation.VOTE:
-            for choice in interpretation.selected_choices:
-                cvrs[ballot_key][contest.id][choice.id] = 1
+    # The CVR we build should have a 1 for each choice that got voted for,
+    # and a 0 otherwise. There are a couple special cases:
+    # - Contest wasn't on the ballot - CVR should be an empty object
+    # - Audit board couldn't find the ballot - CVR should be None
+    cvrs: supersimple.CVRS = {}
+    for ballot_key, ballot in ballots:
+        # TODO add this in a separate PR just to ensure it doesn't impact the
+        # test changes here
+        # if ballot.status == BallotStatus.NOT_FOUND:
+        #     cvrs[ballot_key] = None
+        #     continue
+
+        if ballot.status == BallotStatus.AUDITED:
+            interpretation = next(
+                (
+                    interpretation
+                    for interpretation in ballot.interpretations
+                    if interpretation.contest_id == contest.id
+                ),
+                None,
+            )
+            if interpretation is None:  # Contest not on ballot
+                cvrs[ballot_key] = {}
+            else:
+                cvrs[ballot_key] = {
+                    contest.id: {choice.id: 0 for choice in contest.choices}
+                }
+                if interpretation.interpretation == Interpretation.VOTE:
+                    for choice in interpretation.selected_choices:
+                        cvrs[ballot_key][contest.id][choice.id] = 1
 
     return cvrs
 
