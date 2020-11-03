@@ -278,14 +278,12 @@ def validate_interpretation(interpretation: JSONDict):
             )
 
 
-def validate_audit_ballot(ballot_audit: JSONDict):
+def validate_audit_ballot(ballot_audit: JSONDict, jurisdiction: Jurisdiction):
     validate(ballot_audit, AUDIT_BALLOT_SCHEMA)
 
     if ballot_audit["status"] == BallotStatus.AUDITED:
-        if len(ballot_audit["interpretations"]) == 0:
-            raise BadRequest(
-                f"Must include interpretations with ballot status {BallotStatus.AUDITED}."
-            )
+        if len(ballot_audit["interpretations"]) != len(list(jurisdiction.contests)):
+            raise BadRequest("Must include an interpretation for each contest.")
         for interpretation in ballot_audit["interpretations"]:
             validate_interpretation(interpretation)
 
@@ -315,7 +313,7 @@ def audit_ballot(
         raise NotFound()
 
     ballot_audit = request.get_json()
-    validate_audit_ballot(ballot_audit)
+    validate_audit_ballot(ballot_audit, jurisdiction)
 
     ballot.status = ballot_audit["status"]
     ballot.interpretations = [

@@ -78,7 +78,13 @@ def test_ja_ballots_round_1(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
-                }
+                },
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "choiceIds": [],
+                    "comment": None,
+                },
             ],
         },
     )
@@ -109,7 +115,13 @@ def test_ja_ballots_round_1(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
-                }
+                },
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "choiceIds": [],
+                    "comment": None,
+                },
             ],
         },
     )
@@ -240,7 +252,13 @@ def test_ab_list_ballot_round_1(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
-                }
+                },
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "choiceIds": [],
+                    "comment": None,
+                },
             ],
         },
     )
@@ -270,7 +288,13 @@ def test_ab_list_ballot_round_1(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
-                }
+                },
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "choiceIds": [],
+                    "comment": None,
+                },
             ],
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
         },
@@ -370,7 +394,13 @@ def test_ab_audit_ballot_happy_path(
                     "interpretation": "VOTE",
                     "choiceIds": [choice_id],
                     "comment": "blah blah blah",
-                }
+                },
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "choiceIds": [],
+                    "comment": None,
+                },
             ],
         },
         {
@@ -381,7 +411,13 @@ def test_ab_audit_ballot_happy_path(
                     "interpretation": "BLANK",
                     "choiceIds": [],
                     "comment": None,
-                }
+                },
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "choiceIds": [],
+                    "comment": None,
+                },
             ],
         },
         {
@@ -392,7 +428,13 @@ def test_ab_audit_ballot_happy_path(
                     "interpretation": "CANT_AGREE",
                     "choiceIds": [],
                     "comment": None,
-                }
+                },
+                {
+                    "contestId": contest_ids[1],
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "choiceIds": [],
+                    "comment": None,
+                },
             ],
         },
         {"status": "NOT_AUDITED", "interpretations": [],},
@@ -417,6 +459,12 @@ def test_ab_audit_ballot_happy_path(
         {
             "status": "AUDITED",
             "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "choiceIds": [],
+                    "comment": None,
+                },
                 {
                     "contestId": contest_ids[1],
                     "interpretation": "VOTE",
@@ -477,6 +525,12 @@ def test_ab_audit_ballot_overvote(
             "status": "AUDITED",
             "interpretations": [
                 {
+                    "contestId": contest_ids[0],
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "choiceIds": [],
+                    "comment": None,
+                },
+                {
                     "contestId": contest_id,
                     "interpretation": "VOTE",
                     "choiceIds": choice_ids,
@@ -496,6 +550,12 @@ def test_ab_audit_ballot_overvote(
         {
             "status": "AUDITED",
             "interpretations": [
+                {
+                    "contestId": contest_ids[0],
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                    "choiceIds": [],
+                    "comment": None,
+                },
                 {
                     "contestId": contest_id,
                     "interpretation": "VOTE",
@@ -642,7 +702,7 @@ def test_ab_audit_ballot_invalid(
                     }
                 ],
             },
-            "'vote' is not one of ['BLANK', 'CANT_AGREE', 'VOTE']",
+            "'vote' is not one of ['BLANK', 'CANT_AGREE', 'CONTEST_NOT_ON_BALLOT', 'VOTE']",
         ),
         (
             {
@@ -653,7 +713,13 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [],
                         "comment": "blah blah blah",
-                    }
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                    },
                 ],
             },
             f"Must include choiceIds with interpretation VOTE for contest {contest_ids[0]}",
@@ -667,7 +733,13 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [""],
                         "comment": "blah blah blah",
-                    }
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                    },
                 ],
             },
             "Contest choices not found: ",
@@ -681,7 +753,13 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
-                    }
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                    },
                 ],
             },
             "Contest not found: 12345",
@@ -695,7 +773,13 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": ["12345"],
                         "comment": "blah blah blah",
-                    }
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                    },
                 ],
             },
             "Contest choices not found: 12345",
@@ -705,11 +789,17 @@ def test_ab_audit_ballot_invalid(
                 "status": "AUDITED",
                 "interpretations": [
                     {
+                        "contestId": contest_ids[0],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                    },
+                    {
                         "contestId": contest_ids[1],
                         "interpretation": "VOTE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
-                    }
+                    },
                 ],
             },
             f"Contest choice {choice_id} is not associated with contest {contest_ids[1]}",
@@ -723,7 +813,13 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "BLANK",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
-                    }
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                    },
                 ],
             },
             f"Cannot include choiceIds with interpretation BLANK for contest {contest_ids[0]}",
@@ -737,14 +833,54 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "CANT_AGREE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
-                    }
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                    },
                 ],
             },
             f"Cannot include choiceIds with interpretation CANT_AGREE for contest {contest_ids[0]}",
         ),
         (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [choice_id],
+                        "comment": "blah blah blah",
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                    },
+                ],
+            },
+            f"Cannot include choiceIds with interpretation CONTEST_NOT_ON_BALLOT for contest {contest_ids[0]}",
+        ),
+        (
             {"status": "AUDITED", "interpretations": [],},
-            "Must include interpretations with ballot status AUDITED.",
+            "Must include an interpretation for each contest.",
+        ),
+        (
+            {
+                "status": "AUDITED",
+                "interpretations": [
+                    {
+                        "contestId": contest_ids[0],
+                        "interpretation": "VOTE",
+                        "choiceIds": [choice_id],
+                        "comment": "blah blah blah",
+                    }
+                ],
+            },
+            "Must include an interpretation for each contest.",
         ),
         (
             {
@@ -755,7 +891,13 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
-                    }
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                    },
                 ],
             },
             "Cannot include interpretations with ballot status NOT_FOUND.",
@@ -769,7 +911,13 @@ def test_ab_audit_ballot_invalid(
                         "interpretation": "VOTE",
                         "choiceIds": [choice_id],
                         "comment": "blah blah blah",
-                    }
+                    },
+                    {
+                        "contestId": contest_ids[1],
+                        "interpretation": "CONTEST_NOT_ON_BALLOT",
+                        "choiceIds": [],
+                        "comment": None,
+                    },
                 ],
             },
             "Cannot include interpretations with ballot status NOT_AUDITED.",
