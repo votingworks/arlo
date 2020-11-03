@@ -100,7 +100,7 @@ def test_two_rounds(
 
     # Audit all the ballots for Contest 1 and meet the risk limit, but don't
     # audit any for Contest 2, which should still trigger a second round.
-    run_audit_round(round_1.id, contest_ids[0], 0.7)
+    run_audit_round(round_1.id, contest_ids[0], contest_ids, 0.7)
 
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)
@@ -193,7 +193,7 @@ def test_two_rounds(
     snapshot.assert_match(contest_2_ballots)
 
     # Run the second round, auditing all the ballots for the second contest to complete the audit
-    run_audit_round(rounds["rounds"][1]["id"], contest_ids[1], 0.7)
+    run_audit_round(rounds["rounds"][1]["id"], contest_ids[1], contest_ids[1:], 0.7)
 
     rv = client.get(f"/api/election/{election_id}/round")
     rounds = json.loads(rv.data)

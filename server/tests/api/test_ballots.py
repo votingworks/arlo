@@ -193,7 +193,13 @@ def test_ja_ballots_round_2(
                     "comment": None,
                     "contestId": assert_is_id,
                     "interpretation": "VOTE",
-                }
+                },
+                {
+                    "choiceIds": [],
+                    "comment": None,
+                    "contestId": assert_is_id,
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                },
             ],
         },
     )
@@ -342,7 +348,13 @@ def test_ab_list_ballots_round_2(
                     "comment": None,
                     "contestId": assert_is_id,
                     "interpretation": "VOTE",
-                }
+                },
+                {
+                    "choiceIds": [],
+                    "comment": None,
+                    "contestId": assert_is_id,
+                    "interpretation": "CONTEST_NOT_ON_BALLOT",
+                },
             ],
             "auditBoard": {"id": assert_is_id, "name": "Audit Board #1"},
         },
