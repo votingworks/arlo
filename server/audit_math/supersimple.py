@@ -168,7 +168,13 @@ def compute_discrepancies(
                     if e:
                         # we found a discrepancy!
                         found = True
-                    e_weighted = Decimal(e) / Decimal(V_wl)
+
+                    if V_wl == 0:
+                        # In this case the error is undefined
+                        e_weighted = Decimal("inf")
+                    else:
+                        e_weighted = Decimal(e) / Decimal(V_wl)
+
                     if e_weighted > e_r:
                         e_r = e_weighted
                         e_int = e

@@ -165,7 +165,7 @@ def test_race_not_in_sample_discrepancy(contests, cvrs):
 
 
 def test_ballot_not_found_discrepancy(contests, cvrs):
-    sample_cvr = {0: None}
+    sample_cvr = {0: {"times_sampled": 1, "cvr": None}}
 
     discrepancies = supersimple.compute_discrepancies(
         contests["Contest D"], cvrs, sample_cvr
