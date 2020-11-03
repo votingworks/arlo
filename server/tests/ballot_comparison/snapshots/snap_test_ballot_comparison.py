@@ -41,8 +41,8 @@ Contest 1,Targeted,1,1,24,Choice 1-1: 16; Choice 1-2: 10\r
 Contest 2,Opportunistic,1,2,30,Choice 2-1: 30; Choice 2-2: 14; Choice 2-3: 16\r
 \r
 ######## AUDIT SETTINGS ########\r
-Audit Name,Audit Type,Ballot Polling Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_ballot_comparison_two_rounds,BALLOT_COMPARISON,,10%,1234567890,Yes\r
+Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
+Test Audit test_ballot_comparison_two_rounds,BALLOT_COMPARISON,SUPERSIMPLE,10%,1234567890,Yes\r
 \r
 ######## AUDIT BOARDS ########\r
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r
@@ -88,8 +88,8 @@ Contest 1,Targeted,1,1,24,Choice 1-1: 16; Choice 1-2: 10\r
 Contest 2,Opportunistic,1,2,30,Choice 2-1: 30; Choice 2-2: 14; Choice 2-3: 16\r
 \r
 ######## AUDIT SETTINGS ########\r
-Audit Name,Audit Type,Ballot Polling Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_ballot_comparison_two_rounds,BALLOT_COMPARISON,,10%,1234567890,Yes\r
+Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
+Test Audit test_ballot_comparison_two_rounds,BALLOT_COMPARISON,SUPERSIMPLE,10%,1234567890,Yes\r
 \r
 ######## AUDIT BOARDS ########\r
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r

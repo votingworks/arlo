@@ -37,6 +37,20 @@ def validate_new_election(election: JSONDict):
             f"An audit with name '{election['auditName']}' already exists within your organization"
         )
 
+    valid_math_types_for_audit_type = {
+        AuditType.BALLOT_POLLING: [AuditMathType.BRAVO, AuditMathType.MINERVA],
+        AuditType.BALLOT_COMPARISON: [AuditMathType.SUPERSIMPLE],
+        AuditType.BATCH_COMPARISON: [AuditMathType.MACRO],
+    }
+
+    if (
+        election["audit_math_type"]
+        not in valid_math_types_for_audit_type[election["audit_type"]]
+    ):
+        raise Conflict(
+            f"AuditMathType '{election['audit_math_type']}' cannot be used with audit type '{election['audit_type']}'"
+        )
+
 
 @api.route("/election", methods=["POST"])
 def create_election():
