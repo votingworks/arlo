@@ -312,7 +312,7 @@ def compute_risk(
     if 0 < p < alpha:
         result = True
 
-    if len(set(sample_cvr.keys())) >= len(set(cvrs.keys())):
+    if len(sample_cvr) >= N:
         # We've done a full hand recount
         return 0, True
 
