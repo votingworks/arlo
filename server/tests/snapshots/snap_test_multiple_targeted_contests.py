@@ -55,7 +55,7 @@ Contest 2,Targeted,1,1,1600,Yes: 800; No: 650\r
 Contest 3,Opportunistic,2,2,600,candidate 1: 200; candidate 2: 300; candidate 3: 100\r
 \r
 ######## AUDIT SETTINGS ########\r
-Audit Name,Audit Type,Ballot Polling Type,Risk Limit,Random Seed,Online Data Entry?\r
+Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
 Test Audit test_two_rounds,BALLOT_POLLING,BRAVO,10%,1234567890,Yes\r
 \r
 ######## AUDIT BOARDS ########\r
