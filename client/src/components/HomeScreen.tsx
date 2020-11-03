@@ -306,20 +306,23 @@ const CreateAudit: React.FC = () => {
               <p>Audit type</p>
               <RadioGroup
                 name="auditType"
-                onChange={e =>
+                onChange={e => {
                   setFieldValue('auditType', e.currentTarget.value)
                   switch (values.auditType) {
-                      case 'BALLOT_POLLING' :
-                        setFieldValue('auditMathType', 'BRAVO')
-                        break
-                      case 'BALLOT_COMPARISON' :
-                        setFieldValue('auditMathType', 'SUPERSIMPLE')
-                        break
-                      default: 
-                        setFieldValue('auditMathType', 'MACRO')
-                        break
+                    case 'BALLOT_POLLING': {
+                      setFieldValue('auditMathType', 'BRAVO')
+                      break
                     }
-                }
+                    case 'BALLOT_COMPARISON': {
+                      setFieldValue('auditMathType', 'SUPERSIMPLE')
+                      break
+                    }
+                    default: {
+                      setFieldValue('auditMathType', 'MACRO')
+                      break
+                    }
+                  }
+                }}
                 selectedValue={values.auditType}
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
