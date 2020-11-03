@@ -14,7 +14,6 @@ from scipy import stats
 
 from .sampler_contest import Contest
 from .shim import minerva_sample_sizes, get_minerva_test_statistics  # type: ignore
-from ..config import ALGORITHM
 
 
 def get_expected_sample_sizes(
@@ -126,20 +125,19 @@ def get_test_statistics(
 
     logging.debug(f"bravo test_stats: T={T}")
 
-    if ALGORITHM == "minerva":
-        for winner, winner_res in winners.items():
-            for loser, loser_res in losers.items():
-                res = get_minerva_test_statistics(
-                    0.1,
-                    winner_res["p_w"],
-                    loser_res["p_l"],
-                    sample_results[winner],
-                    sample_results[loser],
-                )
-                logging.debug(
-                    f"minerva test_stats {res=} for: {winner_res['p_w']=}, {loser_res['p_l']=}, {sample_results[winner]=}, {sample_results[loser]=})"
-                )
-                T[(winner, loser)] = 1.0 if res is None else 1.0 / res
+    for winner, winner_res in winners.items():
+        for loser, loser_res in losers.items():
+            res = get_minerva_test_statistics(
+                0.1,
+                winner_res["p_w"],
+                loser_res["p_l"],
+                sample_results[winner],
+                sample_results[loser],
+            )
+            logging.debug(
+                f"minerva test_stats {res=} for: {winner_res['p_w']=}, {loser_res['p_l']=}, {sample_results[winner]=}, {sample_results[loser]=})"
+            )
+            T[(winner, loser)] = 1.0 if res is None else 1.0 / res
 
         logging.debug(f"minerva test_stats return: T={T}")
         return T
@@ -253,6 +251,24 @@ def get_sample_size(
                 }
     """
 
+    # import pdb; pdb.set_trace()
+    # logging.warning(f"{sample.results=}")
+    # from ..api.rounds import contest_results_by_round
+    # logging.warning(f"{contest_results_by_round(contest)=}")
+
+    if sample_results is None:
+        prev_round_schedule = []
+    else:
+        # Set up some parameters we hope to get via the API
+        first_round_size = 100
+        prev_round_count = len(sample_results)
+        prev_round_schedule = [
+            first_round_size * 2 ** i for i in range(prev_round_count)
+        ]
+        next_round_size = first_round_size * 2 ** prev_round_count
+        logging.debug(f"{prev_round_schedule=}, {next_round_size=}")
+        return {"0.9": {"type": None, "size": next_round_size, "prob": 0.9}}
+
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
@@ -277,6 +293,8 @@ def get_sample_size(
 
     # For multi-winner, do nothing
     if contest.num_winners != 1:
+        # FIXME: handle this some day
+        # TODO: return -1 instead?
         return {"asn": {"type": "ASN", "size": asn, "prob": None}}
 
 
@@ -295,7 +313,6 @@ def get_sample_size(
 
     # If we're in a single-candidate race, set sample to 0
     if not margin["losers"]:
-        samples["asn"] = {"type": "ASN", "size": -1, "prob": -1.0}
         for quant in quants:
             samples[str(quant)] = {"type": None, "size": -1.0, "prob": quant}
 
@@ -333,12 +350,6 @@ def get_sample_size(
     else:
         sample_w = cumulative_sample[worse_winner]
         sample_l = cumulative_sample[best_loser]
-
-    samples["asn"] = {
-        "type": "ASN",
-        "size": asn,
-        "prob": expected_prob(alpha, p_w, p_l, sample_w, sample_l, asn),
-    }
 
     for quant in quants:
         size = minerva_sample_sizes(alpha, p_w, p_l, sample_w, sample_l, quant)
@@ -380,8 +391,19 @@ def compute_risk(
                           winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
-    alpha = risk_limit
+    # import pdb; pdb.set_trace()
+
+    alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
+
+    if sample_results is None:
+        raise ValueError("compute_risk: sample_results must not be None")
+
+    # Set up some parameters we hope to get via the API
+    first_round_size = 100
+    prev_round_count = len(sample_results)
+    prev_round_schedule = [first_round_size * 2 ** i for i in range(prev_round_count)]
+    logging.debug(f"{prev_round_schedule=}")
 
     # Get cumulative sample results
     cumulative_sample = {}
@@ -400,4 +422,5 @@ def compute_risk(
 
         if raw > alpha:
             finished = False
+
     return measurements, finished
