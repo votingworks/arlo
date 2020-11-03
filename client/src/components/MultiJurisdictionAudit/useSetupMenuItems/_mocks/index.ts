@@ -39,7 +39,7 @@ export const auditSettings: {
     randomSeed: null,
     riskLimit: null,
     auditType: 'BALLOT_POLLING',
-    ballotPollingType: 'BRAVO',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
   blankBatch: {
@@ -49,7 +49,7 @@ export const auditSettings: {
     randomSeed: null,
     riskLimit: null,
     auditType: 'BATCH_COMPARISON',
-    ballotPollingType: 'BRAVO',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
   onlyState: {
@@ -59,7 +59,7 @@ export const auditSettings: {
     randomSeed: null,
     riskLimit: null,
     auditType: 'BALLOT_POLLING',
-    ballotPollingType: 'BRAVO',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
   otherSettings: {
@@ -69,7 +69,7 @@ export const auditSettings: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
-    ballotPollingType: 'BRAVO',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
   all: {
@@ -79,7 +79,7 @@ export const auditSettings: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
-    ballotPollingType: 'BRAVO',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
   offlineAll: {
@@ -89,7 +89,7 @@ export const auditSettings: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
-    ballotPollingType: 'BRAVO',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
   batchComparisonAll: {
@@ -99,7 +99,7 @@ export const auditSettings: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BATCH_COMPARISON',
-    ballotPollingType: 'BRAVO',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
 }

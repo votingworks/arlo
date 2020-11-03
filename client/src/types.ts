@@ -178,6 +178,6 @@ export interface IAuditSettings {
   randomSeed: string | null
   riskLimit: number | null
   auditType: 'BALLOT_POLLING' | 'BATCH_COMPARISON' | 'BALLOT_COMPARISON'
-  ballotPollingType: 'BRAVO' | 'MINERVA'
+  auditMathType: 'BRAVO' | 'MINERVA' | 'SUPERSIMPLE' | 'MACRO'
   auditName: string
 }

@@ -141,7 +141,7 @@ exports[`App / renders aa logged in properly 1`] = `
                     class="sc-ktHwxA leegmq"
                   >
                     <label
-                      for="ballotPollingType"
+                      for="auditMathType"
                     >
                       <p>
                         Ballot polling type
@@ -152,7 +152,7 @@ exports[`App / renders aa logged in properly 1`] = `
                         >
                           <input
                             checked=""
-                            name="ballotPollingType"
+                            name="auditMathType"
                             type="radio"
                             value="BRAVO"
                           />
@@ -165,7 +165,7 @@ exports[`App / renders aa logged in properly 1`] = `
                           class="bp3-control bp3-radio"
                         >
                           <input
-                            name="ballotPollingType"
+                            name="auditMathType"
                             type="radio"
                             value="MINERVA"
                           />
@@ -567,7 +567,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                     class="sc-ktHwxA leegmq"
                   >
                     <label
-                      for="ballotPollingType"
+                      for="auditMathType"
                     >
                       <p>
                         Ballot polling type
@@ -578,7 +578,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                         >
                           <input
                             checked=""
-                            name="ballotPollingType"
+                            name="auditMathType"
                             type="radio"
                             value="BRAVO"
                           />
@@ -591,7 +591,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                           class="bp3-control bp3-radio"
                         >
                           <input
-                            name="ballotPollingType"
+                            name="auditMathType"
                             type="radio"
                             value="MINERVA"
                           />
@@ -995,7 +995,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                     class="sc-ktHwxA leegmq"
                   >
                     <label
-                      for="ballotPollingType"
+                      for="auditMathType"
                     >
                       <p>
                         Ballot polling type
@@ -1006,7 +1006,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                         >
                           <input
                             checked=""
-                            name="ballotPollingType"
+                            name="auditMathType"
                             type="radio"
                             value="BRAVO"
                           />
@@ -1019,7 +1019,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                           class="bp3-control bp3-radio"
                         >
                           <input
-                            name="ballotPollingType"
+                            name="auditMathType"
                             type="radio"
                             value="MINERVA"
                           />
