@@ -9,7 +9,6 @@ import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileSta
 import { IAuditSettings } from '../../types'
 import { IBallot } from './RoundManagement/useBallots'
 import { IAuditBoard } from './useAuditBoards'
-import { IStandardizedContest } from './useStandardizedContests'
 
 const manifestFormData: FormData = new FormData()
 manifestFormData.append('manifest', manifestFile, manifestFile.name)
@@ -68,6 +67,10 @@ export const jaApiCalls = {
   }),
   getBatchTalliesFile: (response: IFileInfo) => ({
     url: '/api/election/1/jurisdiction/jurisdiction-id-1/batch-tallies',
+    response,
+  }),
+  getCvrsFile: (response: IFileInfo) => ({
+    url: '/api/election/1/jurisdiction/jurisdiction-id-1/cvrs',
     response,
   }),
   getSettings: (response: IAuditSettings) => ({

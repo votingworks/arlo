@@ -9,11 +9,7 @@ import { auditSettings } from './MultiJurisdictionAudit/useSetupMenuItems/_mocks
 const apiCalls = {
   unauthenticatedUser: {
     url: '/api/me',
-    response: {},
-    error: {
-      status: 401,
-      statusText: 'UNAUTHORIZED',
-    },
+    response: null,
   },
   postNewAudit: (body: {}) => ({
     url: '/api/election',
@@ -79,6 +75,17 @@ const setupScreenCalls = [
   aaApiCalls.getContests,
   aaApiCalls.getSettings(auditSettings.blank),
 ]
+const refreshCalls = [
+  ...setupScreenCalls,
+  aaApiCalls.getJurisdictionFile,
+  aaApiCalls.getRounds,
+  ...setupScreenCalls,
+  aaApiCalls.getJurisdictionFile,
+  aaApiCalls.getRounds,
+  ...setupScreenCalls,
+  aaApiCalls.getSettings(auditSettings.blank),
+  aaApiCalls.getJurisdictionFile,
+]
 
 const renderView = (route: string) => renderWithRouter(<App />, { route })
 
@@ -102,8 +109,7 @@ describe('Home screen', () => {
     })
   })
 
-  it.skip('shows a list of audits and create audit form for audit admins', async () => {
-    // TEST TODO
+  it('shows a list of audits and create audit form for audit admins', async () => {
     const expectedCalls = [
       aaApiCalls.getUser,
       aaApiCalls.getUser, // Extra call to load the list of audits
@@ -112,19 +118,9 @@ describe('Home screen', () => {
         auditName: 'November Presidential Election 2020',
         auditType: 'BATCH_COMPARISON',
       }),
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds,
-      ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getJurisdictionFile,
+      ...refreshCalls,
       apiCalls.getUserWithAudit,
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds,
-      ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getJurisdictionFile,
+      ...refreshCalls,
     ]
     await withMockFetch(expectedCalls, async () => {
       const { history } = renderView('/')
@@ -173,8 +169,7 @@ describe('Home screen', () => {
     })
   })
 
-  it.skip('shows a list of audits and create audit form for audit admins with multiple orgs', async () => {
-    // TEST TODO
+  it('shows a list of audits and create audit form for audit admins with multiple orgs', async () => {
     const expectedCalls = [
       apiCalls.getUserMultipleOrgs,
       apiCalls.getUserMultipleOrgs,
@@ -183,12 +178,7 @@ describe('Home screen', () => {
         auditName: 'Presidential Primary',
         auditType: 'BALLOT_POLLING',
       }),
-      ...setupScreenCalls,
-      aaApiCalls.getJurisdictionFile,
-      aaApiCalls.getRounds,
-      ...setupScreenCalls,
-      aaApiCalls.getSettings(auditSettings.blank),
-      aaApiCalls.getJurisdictionFile,
+      ...refreshCalls,
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
@@ -236,14 +226,14 @@ describe('Home screen', () => {
     })
   })
 
-  it.skip('shows a list of audits for jurisdiction admins', async () => {
-    // TEST TODO
+  it('shows a list of audits for jurisdiction admins', async () => {
     const expectedCalls = [
       jaApiCalls.getUser,
       jaApiCalls.getSettings(auditSettings.blank),
       jaApiCalls.getRounds,
       jaApiCalls.getBallotManifestFile({ file: null, processing: null }),
       jaApiCalls.getBatchTalliesFile({ file: null, processing: null }),
+      jaApiCalls.getCvrsFile({ file: null, processing: null }),
     ]
     await withMockFetch(expectedCalls, async () => {
       renderView('/')
