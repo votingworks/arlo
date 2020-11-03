@@ -201,7 +201,7 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
 def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
     choice_name_to_id = {choice.name: choice.id for choice in contest.choices}
 
-    cvrs: supersimple.CVRS = defaultdict(lambda: {contest.id: {}})
+    cvrs: supersimple.CVRS = {}
 
     for jurisdiction in contest.jurisdictions:
         cvr_contests_metadata = typing_cast(
@@ -222,7 +222,8 @@ def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
             .values(SampledBallot.id, CvrBallot.interpretations)
         )
 
-        for ballot_id, interpretations_str in interpretations_by_ballot:
+        for ballot_key, interpretations_str in interpretations_by_ballot:
+            ballot_cvr: supersimple.CVR = {contest.id: {}}
             # interpretations is the raw CVR string: 1,0,0,1,0,1,0. We need to
             # pick out the interpretation for each contest choice. We saved the
             # column index for each choice when we parsed the CVR.
@@ -233,12 +234,14 @@ def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
                 # on the ballot, so we should skip this contest entirely for
                 # this ballot.
                 if interpretation == "":
-                    cvrs[ballot_id] = {}
+                    ballot_cvr = {}
                 else:
                     choice_id = choice_name_to_id[choice_name]
-                    cvrs[ballot_id][contest.id][choice_id] = int(interpretation)
+                    ballot_cvr[contest.id][choice_id] = int(interpretation)
 
-    return dict(cvrs)
+            cvrs[ballot_key] = ballot_cvr
+
+    return cvrs
 
 
 def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.SAMPLE_CVRS:
@@ -266,13 +269,10 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.SAMP
     # - Audit board couldn't find the ballot - CVR should be None
     cvrs: supersimple.SAMPLE_CVRS = {}
     for ballot, times_sampled in ballots:
-        # TODO add this in a separate PR just to ensure it doesn't impact the
-        # test changes here
-        # if ballot.status == BallotStatus.NOT_FOUND:
-        #     cvrs[ballot_key] = {"times_sampled": times_sampled, "cvr": None}
-        #     continue
+        if ballot.status == BallotStatus.NOT_FOUND:
+            cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": None}
 
-        if ballot.status == BallotStatus.AUDITED:
+        elif ballot.status == BallotStatus.AUDITED:
             interpretation = next(
                 (
                     interpretation
@@ -282,15 +282,14 @@ def sampled_ballot_interpretations_to_cvrs(contest: Contest) -> supersimple.SAMP
                 None,
             )
             if interpretation is None:  # Contest not on ballot
-                cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": {}}
+                ballot_cvr = {}
             else:
-                cvrs[ballot.id] = {
-                    "times_sampled": times_sampled,
-                    "cvr": {contest.id: {choice.id: 0 for choice in contest.choices}},
-                }
+                ballot_cvr = {contest.id: {choice.id: 0 for choice in contest.choices}}
                 if interpretation.interpretation == Interpretation.VOTE:
                     for choice in interpretation.selected_choices:
-                        cvrs[ballot.id]["cvr"][contest.id][choice.id] = 1
+                        ballot_cvr[contest.id][choice.id] = 1
+
+            cvrs[ballot.id] = {"times_sampled": times_sampled, "cvr": ballot_cvr}
 
     return cvrs
 
