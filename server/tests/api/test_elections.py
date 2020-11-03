@@ -80,7 +80,7 @@ def test_create_election_new_batch_comparison_audit(client: FlaskClient, org_id:
             "auditName": "Test Audit Batch Comparison",
             "organizationId": org_id,
             "auditType": "BATCH_COMPARISON",
-            "auditMathType": AuditMathType.BRAVO,
+            "auditMathType": AuditMathType.MACRO,
         },
     )
     assert rv.status_code == 200
@@ -98,7 +98,7 @@ def test_create_election_new_ballot_comparison_audit(client: FlaskClient, org_id
             "auditName": "Test Audit Ballot Comparison",
             "organizationId": org_id,
             "auditType": "BALLOT_COMPARISON",
-            "auditMathType": AuditMathType.BRAVO,
+            "auditMathType": AuditMathType.SUPERSIMPLE,
         },
     )
     assert rv.status_code == 200
@@ -202,7 +202,7 @@ def test_create_election_bad_bp_type(client: FlaskClient, org_id: str):
     assert json.loads(rv.data) == {
         "errors": [
             {
-                "message": "'NOT A REAL TYPE' is not one of ['BRAVO', 'MINERVA']",
+                "message": "'NOT A REAL TYPE' is not one of ['BRAVO', 'MINERVA', 'SUPERSIMPLE', 'MACRO']",
                 "errorType": "Bad Request",
             }
         ]
