@@ -82,6 +82,7 @@ bravo_contests = {
         "ballots": 1000,
         "numWinners": 1,
         "votesAllowed": 1,
+        "roundSizes": {},
     },
     "test2": {
         "cand1": 600,
@@ -90,15 +91,29 @@ bravo_contests = {
         "ballots": 900,
         "votesAllowed": 1,
         "numWinners": 1,
+        "roundSizes": {},
     },
-    "test3": {"cand1": 100, "ballots": 100, "votesAllowed": 1, "numWinners": 1},
-    "test4": {"cand1": 100, "ballots": 100, "votesAllowed": 1, "numWinners": 1},
+    "test3": {
+        "cand1": 100,
+        "ballots": 100,
+        "votesAllowed": 1,
+        "numWinners": 1,
+        "roundSizes": {},
+    },
+    "test4": {
+        "cand1": 100,
+        "ballots": 100,
+        "votesAllowed": 1,
+        "numWinners": 1,
+        "roundSizes": {},
+    },
     "test5": {
         "cand1": 500,
         "cand2": 500,
         "ballots": 1000,
         "votesAllowed": 1,
         "numWinners": 1,
+        "roundSizes": {},
     },
     "test6": {
         "cand1": 300,
@@ -107,6 +122,7 @@ bravo_contests = {
         "ballots": 1000,
         "votesAllowed": 1,
         "numWinners": 1,
+        "roundSizes": {},
     },
     "test7": {
         "cand1": 300,
@@ -115,6 +131,7 @@ bravo_contests = {
         "ballots": 700,
         "votesAllowed": 1,
         "numWinners": 2,
+        "roundSizes": {},
     },
     "test8": {
         "cand1": 300,
@@ -123,6 +140,7 @@ bravo_contests = {
         "ballots": 700,
         "votesAllowed": 1,
         "numWinners": 2,
+        "roundSizes": {},
     },
     "test9": {
         "cand1": 300,
@@ -130,6 +148,7 @@ bravo_contests = {
         "ballots": 700,
         "votesAllowed": 1,
         "numWinners": 2,
+        "roundSizes": {},
     },
     "test10": {
         "cand1": 600,
@@ -138,6 +157,7 @@ bravo_contests = {
         "ballots": 1000,
         "votesAllowed": 1,
         "numWinners": 2,
+        "roundSizes": {},
     },
 }
 

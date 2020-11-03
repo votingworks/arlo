@@ -31,7 +31,7 @@ def sample_size_options(
             )
             sample_size_options = ballot_polling.get_sample_size(
                 election.risk_limit,
-                sampler_contest.from_db_contest(contest),
+                sampler_contest.from_db_contest(contest, election.rounds),
                 sample_results,
                 BallotPollingType.BRAVO,
             )
@@ -53,7 +53,7 @@ def sample_size_options(
                 }
             sample_size = macro.get_sample_sizes(
                 election.risk_limit,
-                sampler_contest.from_db_contest(contest),
+                sampler_contest.from_db_contest(contest, election.rounds),
                 rounds.batch_tallies(election),
                 cumulative_batch_results,
             )
@@ -63,7 +63,9 @@ def sample_size_options(
             assert election.audit_type == AuditType.BALLOT_COMPARISON
 
             set_contest_metadata_from_cvrs(contest)
-            contest_for_sampler = sampler_contest.from_db_contest(contest)
+            contest_for_sampler = sampler_contest.from_db_contest(
+                contest, election.rounds
+            )
 
             if round_one:
                 discrepancy_counts = None

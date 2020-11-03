@@ -6,7 +6,7 @@ from typing import Dict
 import operator
 
 
-def from_db_contest(db_contest):
+def from_db_contest(db_contest, db_rounds):
     """
     Builds sampler_contest object from the database
 
@@ -17,10 +17,15 @@ def from_db_contest(db_contest):
         Contest - A contest object
     """
     name = db_contest.id
+    round_sizes = {}
+    for rnd in db_rounds:
+        round_sizes[rnd.round_num] = len(rnd.sampled_ballot_draws)
+
     info_dict = {
         "ballots": db_contest.total_ballots_cast,
         "numWinners": db_contest.num_winners,
         "votesAllowed": db_contest.votes_allowed,
+        "roundSizes": round_sizes,
     }
 
     # Initialize the choices in this contest and how many votes each received
@@ -41,6 +46,7 @@ class Contest:
     votesAllowed: int  # How many voters are allowed in this contest
     ballots: int  # The total number of ballots cast in this contest
     name: str  # The name of the contest
+    round_sizes: Dict[int, int]  # Maps rounds to the number of draws in that round
 
     winners: Dict[str, int]  # List of all the winners
     losers: Dict[str, int]  # List of all the losers
@@ -65,6 +71,7 @@ class Contest:
         self.ballots = contest_info_dict["ballots"]
         self.num_winners = contest_info_dict["numWinners"]
         self.votes_allowed = contest_info_dict["votesAllowed"]
+        self.round_sizes = contest_info_dict["roundSizes"]
 
         self.candidates = {}
 
@@ -72,7 +79,7 @@ class Contest:
         self.losers = {}
 
         for cand in contest_info_dict:
-            if cand in ["ballots", "numWinners", "votesAllowed"]:
+            if cand in ["ballots", "numWinners", "votesAllowed", "roundSizes"]:
                 continue
 
             self.candidates[cand] = contest_info_dict[cand]

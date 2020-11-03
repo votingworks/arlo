@@ -345,7 +345,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         }
         discrepancies_by_contest = {
             contest.id: supersimple.compute_discrepancies(
-                sampler_contest.from_db_contest(contest),
+                sampler_contest.from_db_contest(contest, election.rounds),
                 cvrs_by_contest[contest.id],
                 sampled_ballot_interpretations_to_cvrs(contest),
             )

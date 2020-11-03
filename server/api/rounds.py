@@ -303,7 +303,7 @@ def calculate_risk_measurements(election: Election, round: Round):
         if election.audit_type == AuditType.BALLOT_POLLING:
             p_values, is_complete = ballot_polling.compute_risk(
                 election.risk_limit,
-                sampler_contest.from_db_contest(contest),
+                sampler_contest.from_db_contest(contest, election.rounds),
                 contest_results_by_round(contest),
                 BallotPollingType.BRAVO,
             )
@@ -311,7 +311,7 @@ def calculate_risk_measurements(election: Election, round: Round):
         elif election.audit_type == AuditType.BATCH_COMPARISON:
             p_value, is_complete = macro.compute_risk(
                 election.risk_limit,
-                sampler_contest.from_db_contest(contest),
+                sampler_contest.from_db_contest(contest, election.rounds),
                 batch_tallies(election),
                 cumulative_batch_results(election),
             )
@@ -319,7 +319,7 @@ def calculate_risk_measurements(election: Election, round: Round):
             assert election.audit_type == AuditType.BALLOT_COMPARISON
             p_value, is_complete = supersimple.compute_risk(
                 election.risk_limit,
-                sampler_contest.from_db_contest(contest),
+                sampler_contest.from_db_contest(contest, election.rounds),
                 cvrs_for_contest(contest),
                 sampled_ballot_interpretations_to_cvrs(contest),
             )
@@ -585,7 +585,7 @@ def sample_batches(
 
     sample = sampler.draw_ppeb_sample(
         str(election.random_seed),
-        sampler_contest.from_db_contest(contest),
+        sampler_contest.from_db_contest(contest, election.rounds),
         sample_sizes[contest.id],
         num_previously_sampled,
         batch_tallies(election),

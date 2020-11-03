@@ -14,6 +14,7 @@ macro_contests = {
         "loser": 54000,
         "ballots": 120000,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     },
     "Contest B": {
@@ -21,6 +22,7 @@ macro_contests = {
         "loser": 24000,
         "ballots": 60000,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     },
     "Contest C": {
@@ -28,6 +30,7 @@ macro_contests = {
         "loser": 12600,
         "ballots": 36000,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     },
 }
@@ -62,12 +65,14 @@ def batches():
             "loser": 160,
             "ballots": 400,
             "numWinners": 1,
+            "roundSizes": {},
         }
         batches["Batch {} AV".format(i)]["Contest B"] = {
             "winner": 100,
             "loser": 80,
             "ballots": 200,
             "numWinners": 1,
+            "roundSizes": {},
         }
 
     for i in range(30):
@@ -76,12 +81,14 @@ def batches():
             "loser": 140,
             "ballots": 400,
             "numWinners": 1,
+            "roundSizes": {},
         }
         batches["Batch {} AV".format(i)]["Contest C"] = {
             "winner": 100,
             "loser": 70,
             "ballots": 200,
             "numWinners": 1,
+            "roundSizes": {},
         }
 
     for i in range(100, 130):
@@ -90,12 +97,14 @@ def batches():
             "loser": 140,
             "ballots": 400,
             "numWinners": 1,
+            "roundSizes": {},
         }
         batches["Batch {} AV".format(i)]["Contest C"] = {
             "winner": 100,
             "loser": 70,
             "ballots": 200,
             "numWinners": 1,
+            "roundSizes": {},
         }
 
     return batches
@@ -250,6 +259,7 @@ def test_tied_contest():
         "loser": 50000,
         "ballots": 100000,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     }
 
@@ -263,6 +273,7 @@ def test_tied_contest():
                 "loser": 500,
                 "ballots": 1000,
                 "numWinners": 1,
+                "roundSizes": {},
             }
         }
 
@@ -279,6 +290,7 @@ def test_tied_contest():
                 "loser": 500,
                 "ballots": 1000,
                 "numWinners": 1,
+                "roundSizes": {},
             }
         }
     }

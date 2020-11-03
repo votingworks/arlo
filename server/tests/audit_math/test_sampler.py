@@ -35,6 +35,7 @@ def macro_contest():
         "ballots": 1000,
         "numWinners": 1,
         "votesAllowed": 1,
+        "roundSizes": {},
     }
 
     return Contest(name, info_dict)

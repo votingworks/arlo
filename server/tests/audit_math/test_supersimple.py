@@ -336,6 +336,7 @@ def test_tied_contest():
         "loser": 50000,
         "ballots": 100000,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     }
 
@@ -388,6 +389,7 @@ def test_snapshot_test():
         "loser": 10,
         "ballots": 26,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     }
 
@@ -444,6 +446,7 @@ def test_multiplicity():
         "loser": 10,
         "ballots": 26,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     }
 
@@ -540,6 +543,7 @@ ss_contests = {
         "loser": 40000,
         "ballots": 100000,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     },
     "Contest B": {
@@ -547,6 +551,7 @@ ss_contests = {
         "loser": 24000,
         "ballots": 60000,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     },
     "Contest C": {
@@ -554,6 +559,7 @@ ss_contests = {
         "loser": 12600,
         "ballots": 36000,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     },
     "Contest D": {
@@ -561,6 +567,7 @@ ss_contests = {
         "loser": 6000,
         "ballots": 15000,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     },
     "Contest E": {
@@ -568,6 +575,7 @@ ss_contests = {
         "loser": 0,
         "ballots": 10000,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     },
     "Contest F": {
@@ -575,6 +583,7 @@ ss_contests = {
         "loser": 4,
         "ballots": 15,
         "numWinners": 1,
+        "roundSizes": {},
         "votesAllowed": 1,
     },
 }
