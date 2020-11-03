@@ -308,6 +308,17 @@ const CreateAudit: React.FC = () => {
                 name="auditType"
                 onChange={e =>
                   setFieldValue('auditType', e.currentTarget.value)
+                  switch (values.auditType) {
+                      case 'BALLOT_POLLING' :
+                        setFieldValue('auditMathType', 'BRAVO')
+                        break
+                      case 'BALLOT_COMPARISON' :
+                        setFieldValue('auditMathType', 'SUPERSIMPLE')
+                        break
+                      default: 
+                        setFieldValue('auditMathType', 'MACRO')
+                        break
+                    }
                 }
                 selectedValue={values.auditType}
               >
