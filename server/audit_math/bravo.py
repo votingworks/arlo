@@ -14,9 +14,6 @@ from typing import Dict, Tuple, Optional
 from scipy import stats
 
 from .sampler_contest import Contest
-from .shim import minerva_sample_sizes, get_minerva_test_statistics  # type: ignore
-
-from ..config import ALGORITHM
 
 
 def get_expected_sample_sizes(
@@ -128,25 +125,6 @@ def get_test_statistics(
 
     logging.debug(f"bravo test_stats: T={T}")
 
-    if ALGORITHM == "minerva":
-        for winner, winner_res in winners.items():
-            for loser, loser_res in losers.items():
-                res = get_minerva_test_statistics(
-                    0.1,
-                    winner_res["p_w"],
-                    loser_res["p_l"],
-                    sample_results[winner],
-                    sample_results[loser],
-                )
-                logging.debug(
-                    f"minerva test_stats {res=} for: {winner_res['p_w']=}, {loser_res['p_l']=}, {sample_results[winner]=}, {sample_results[loser]=})"
-                )
-                T[(winner, loser)] = 1.0 if res is None else 1.0 / res
-
-        logging.debug(f"minerva test_stats return: T={T}")
-        return T
-
-    # else.....
     return T
 
 
@@ -504,8 +482,3 @@ def compute_risk(
             finished = False
     logging.debug(f"bravo::compute_risk -> {measurements=}, {finished=}")
     return measurements, finished
-
-
-# Quick-and-dirty way to switch between auditing algorithms: override the function
-if ALGORITHM == "minerva":
-    bravo_sample_sizes = minerva_sample_sizes
