@@ -38,6 +38,7 @@ def election_id(client: FlaskClient, org_id: str, request):
         client,
         audit_name=f"Test Audit {request.node.name}",
         audit_type=AuditType.BALLOT_COMPARISON,
+        audit_math_type=AuditMathType.SUPERSIMPLE,
         organization_id=org_id,
     )
 

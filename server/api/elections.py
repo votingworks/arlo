@@ -44,11 +44,11 @@ def validate_new_election(election: JSONDict):
     }
 
     if (
-        election["audit_math_type"]
-        not in valid_math_types_for_audit_type[election["audit_type"]]
+        election["auditMathType"]
+        not in valid_math_types_for_audit_type[election["auditType"]]
     ):
         raise Conflict(
-            f"AuditMathType '{election['audit_math_type']}' cannot be used with audit type '{election['audit_type']}'"
+            f"AuditMathType '{election['auditMathType']}' cannot be used with audit type '{election['auditType']}'"
         )
 
 

@@ -19,7 +19,7 @@ Contest 1,Targeted,1,1,1000,candidate 1: 600; candidate 2: 400\r
 Contest 2,Opportunistic,2,2,600,candidate 1: 200; candidate 2: 300; candidate 3: 100\r
 \r
 ######## AUDIT SETTINGS ########\r
-Audit Name,Audit Type,Ballot Polling Type,Risk Limit,Random Seed,Online Data Entry?\r
+Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
 Test Audit test_audit_admin_report,BALLOT_POLLING,BRAVO,10%,1234567890,Yes\r
 \r
 ######## AUDIT BOARDS ########\r

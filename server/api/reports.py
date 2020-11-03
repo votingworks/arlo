@@ -190,7 +190,7 @@ def audit_settings_rows(election: Election):
         [
             "Audit Name",
             "Audit Type",
-            "Audut Math Type",
+            "Audit Math Type",
             "Risk Limit",
             "Random Seed",
             "Online Data Entry?",
