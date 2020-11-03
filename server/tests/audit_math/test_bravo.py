@@ -237,9 +237,9 @@ def test_get_sample_size(contests):
             )
 
         else:
-            assert (
-                computed["asn"]["prob"] == 0
-            ), "Returned ASN probability when there shouldn't be one!"
+            assert not computed["asn"][
+                "prob"
+            ], "Returned ASN probability when there shouldn't be one!"
 
         for item in computed:
             assert (
