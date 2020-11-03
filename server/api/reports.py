@@ -96,10 +96,7 @@ def pretty_ballot_interpretation(
 def pretty_cvr_interpretation(
     ballot: SampledBallot, contest: Contest, contest_cvrs: supersimple.CVRS
 ) -> str:
-    ballot_key = (
-        list(ballot.draws)[0].ticket_number if contest.is_targeted else ballot.id
-    )
-    cvrs_by_choice = contest_cvrs[ballot_key].get(contest.id)
+    cvrs_by_choice = contest_cvrs[ballot.id].get(contest.id)
 
     # If CVR was empty for this contest for this ballot, skip it
     if not cvrs_by_choice:
@@ -114,15 +111,10 @@ def pretty_cvr_interpretation(
 
 
 def pretty_discrepancy(
-    ballot: SampledBallot,
-    contest: Contest,
-    contest_discrepancies: Dict[str, supersimple.Discrepancy],
+    ballot: SampledBallot, contest_discrepancies: Dict[str, supersimple.Discrepancy],
 ) -> str:
-    ballot_key = (
-        list(ballot.draws)[0].ticket_number if contest.is_targeted else ballot.id
-    )
-    if ballot_key in contest_discrepancies:
-        return str(contest_discrepancies[ballot_key]["counted_as"])
+    if ballot.id in contest_discrepancies:
+        return str(contest_discrepancies[ballot.id]["counted_as"])
     else:
         return ""
 
@@ -371,9 +363,7 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
                     )
                     result_values.append(cvr_interpretation)
                     result_values.append(
-                        pretty_discrepancy(
-                            ballot, contest, discrepancies_by_contest[contest.id]
-                        )
+                        pretty_discrepancy(ballot, discrepancies_by_contest[contest.id])
                     )
 
         rows.append(

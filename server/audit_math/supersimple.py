@@ -17,8 +17,16 @@ o2: Decimal = Decimal(0.0001)
 u2: Decimal = Decimal(0.0001)
 
 # { ballot_id: { contest_id: { choice_id: 0 | 1 }}}
-CVRS = Dict[str, Dict[str, Dict[str, int]]]
 CVR = Dict[str, Dict[str, int]]
+CVRS = Dict[str, CVR]
+
+
+class SampleCVR(TypedDict):
+    times_sampled: int
+    cvr: CVR
+
+
+SAMPLE_CVRS = Dict[str, SampleCVR]
 
 
 class Discrepancy(TypedDict):
@@ -51,7 +59,7 @@ def nMin(
 
 
 def compute_discrepancies(
-    contest: Contest, cvrs: CVRS, sample_cvr: CVRS,
+    contest: Contest, cvrs: CVRS, sample_cvr: SAMPLE_CVRS
 ) -> Dict[str, Discrepancy]:
     """
     Iterates through a given sample and returns the discrepancies found.
@@ -72,11 +80,14 @@ def compute_discrepancies(
         sample_cvr - the CVR of the audited ballots
                 {
                     'ballot_id': {
-                        'contest': {
-                            'candidate1': 1,
-                            'candidate2': 0,
-                            ...
-                        }
+                        'times_sampled': 1,
+                        'cvr': {
+                            'contest': {
+                                'candidate1': 1,
+                                'candidate2': 0,
+                                ...
+                            }
+                    }
                     ...
                 }
 
@@ -125,9 +136,9 @@ def compute_discrepancies(
                     v_w = 0
                     v_l = 0
 
-                if contest.name in sample_cvr[ballot]:
-                    a_w = sample_cvr[ballot][contest.name][winner]
-                    a_l = sample_cvr[ballot][contest.name][loser]
+                if contest.name in sample_cvr[ballot]["cvr"]:
+                    a_w = sample_cvr[ballot]["cvr"][contest.name][winner]
+                    a_l = sample_cvr[ballot]["cvr"][contest.name][loser]
                 else:
                     a_w = 0
                     a_l = 0
@@ -139,7 +150,13 @@ def compute_discrepancies(
                 if e:
                     # we found a discrepancy!
                     found = True
-                e_weighted = Decimal(e) / Decimal(V_wl)
+
+                if V_wl == 0:
+                    # In this case the error is undefined
+                    e_weighted = Decimal("inf")
+                else:
+                    e_weighted = Decimal(e) / Decimal(V_wl)
+
                 if e_weighted > e_r:
                     e_r = e_weighted
                     e_int = e
@@ -150,7 +167,7 @@ def compute_discrepancies(
                 weighted_error=e_weighted,
                 discrepancy_cvr={
                     "reported_as": cvrs[ballot],
-                    "audited_as": sample_cvr[ballot],
+                    "audited_as": sample_cvr[ballot]["cvr"],
                 },
             )
 
@@ -222,7 +239,7 @@ def get_sample_sizes(
 
 
 def compute_risk(
-    risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: CVRS,
+    risk_limit: int, contest: Contest, cvrs: CVRS, sample_cvr: SAMPLE_CVRS,
 ) -> Tuple[float, bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -243,6 +260,7 @@ def compute_risk(
         sample_cvr - the CVR of the audited ballots
                 {
                     'ballot_id': {
+                        'times_sampled': 1,
                         'contest': {
                             'candidate1': 1,
                             'candidate2': 0,
@@ -264,7 +282,10 @@ def compute_risk(
     N = contest.ballots
     V = Decimal(contest.diluted_margin * N)
 
-    U = 2 * gamma / Decimal(contest.diluted_margin)
+    if contest.diluted_margin == 0:
+        U = Decimal("inf")
+    else:
+        U = 2 * gamma / Decimal(contest.diluted_margin)
 
     result = False
 
@@ -276,11 +297,23 @@ def compute_risk(
         else:
             e_r = Decimal(0)
 
-        denom = (2 * gamma) / V
-        p_b = (1 - 1 / U) / (1 - (e_r / denom))
-        p *= p_b
+        if contest.diluted_margin:
+            U = 2 * gamma / Decimal(contest.diluted_margin)
+            denom = (2 * gamma) / V
+            p_b = (1 - 1 / U) / (1 - (e_r / denom))
+        else:
+            # If the contest is a tie, this step results in 1 - 1/(infinity)
+            # divided by 1 - e_r/infinity, i.e. 1
+            p_b = Decimal(1.0)
+
+        multiplicity = sample_cvr[ballot]["times_sampled"]
+        p *= p_b ** multiplicity
 
     if 0 < p < alpha:
         result = True
+
+    if len(sample_cvr) >= N:
+        # We've done a full hand recount
+        return 0, True
 
     return float(p), result

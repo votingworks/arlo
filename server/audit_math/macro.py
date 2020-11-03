@@ -57,6 +57,8 @@ def compute_error(
             a_lp = sampled_results[contest.name][loser]
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
+            if V_wl == 0:
+                return Decimal("inf")
 
             e_pwl = Decimal((v_wp - v_lp) - (a_wp - a_lp)) / Decimal(V_wl)
 
@@ -104,6 +106,9 @@ def compute_max_error(
             b_cp = batch_results[contest.name]["ballots"]
 
             V_wl = contest.candidates[winner] - contest.candidates[loser]
+
+            if V_wl == 0:
+                return Decimal("inf")
 
             u_pwl = Decimal((v_wp - v_lp) + b_cp) / Decimal(V_wl)
 
@@ -199,7 +204,15 @@ def get_sample_sizes(
     # to try to provide a sense of "how close" the audit is to finishing.
     U = compute_U(reported_results, sample_results, contest)
 
-    if not U:
+    if U == 0:
+        return 1
+    elif U < 0 or U == Decimal("inf"):
+        # This means we have a tie
+        return len(reported_results)
+    elif U == 1:
+        # In this case, there is just enough potential error left to cause an
+        # outcome change. Since U is so close to being less than one, we probably
+        # only need to look at one more batch.
         return 1
 
     retval = int(
@@ -245,6 +258,10 @@ def compute_risk(
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
+    # We've done a full hand recount
+    if len(sample_results) == len(reported_results):
+        return 0, True
+
     p = Decimal(1.0)
 
     # Computing U without the sample preserves conservative-ness
@@ -255,9 +272,16 @@ def compute_risk(
 
         u_p = compute_max_error(reported_results[batch], contest)
 
+        # If this happens, we need a full hand recount
+        if e_p == Decimal("inf") or u_p == Decimal("inf"):
+            return 1.0, False
+
         taint = e_p / u_p
 
-        p *= (1 - 1 / U) / (1 - taint)
+        if taint == 1:
+            p = Decimal("inf")  # Our p-value blows up
+        else:
+            p *= (1 - 1 / U) / (1 - taint)
 
         if p <= alpha:
             return float(p), True

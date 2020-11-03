@@ -104,7 +104,7 @@ def test_bravo_sample_sizes():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -122,7 +122,7 @@ def test_bravo_sample_sizes():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -140,7 +140,7 @@ def test_bravo_sample_sizes():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -158,7 +158,7 @@ def test_bravo_sample_sizes():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -181,7 +181,7 @@ def test_bravo_sample_sizes_round1_finish():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -203,7 +203,7 @@ def test_bravo_sample_sizes_round1_incomplete():
     )
     delta = expected_size1 - computed_size1
 
-    assert not delta, "bravo_sample_sizes failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_sample_sizes failed: got {}, expected {}".format(
         computed_size1, expected_size1
     )
 
@@ -219,21 +219,21 @@ def test_get_sample_size(contests):
 
         assert (
             computed.keys() == expected.keys()
-        ), "get_sample_sizes returning the wrong keys! got {}, expected {}".format(
-            computed.keys(), expected.keys()
+        ), "{} get_sample_sizes returning the wrong keys! got {}, expected {}".format(
+            contest, computed.keys(), expected.keys()
         )
 
         assert (
             computed["asn"]["size"] == expected["asn"]["size"]
-        ), "get_sample_sizes returning the wrong ASN! got {}, expected {}".format(
-            computed["asn"]["size"], expected["asn"]["size"]
+        ), "{} get_sample_sizes returning the wrong ASN! got {}, expected {}".format(
+            contest, computed["asn"]["size"], expected["asn"]["size"]
         )
 
         if expected["asn"]["prob"]:
             assert (
                 round(computed["asn"]["prob"], 2) == expected["asn"]["prob"]
-            ), "get_sample_sizes returning the wrong ASN probs! got {}, expected {}".format(
-                round(computed["asn"]["prob"], 2), expected["asn"]["prob"]
+            ), "{} get_sample_sizes returning the wrong ASN probs! got {}, expected {}".format(
+                contest, round(computed["asn"]["prob"], 2), expected["asn"]["prob"]
             )
 
         else:
@@ -275,7 +275,7 @@ def test_bravo_expected_prob():
     )
     delta = expected_prob1 - computed_prob1
 
-    assert not delta, "bravo_simulator failed: got {}, expected {}".format(
+    assert delta == 0, "bravo_simulator failed: got {}, expected {}".format(
         computed_prob1, expected_prob1
     )
 
@@ -286,8 +286,8 @@ def test_compute_risk(contests):
         "test1": {("cand1", "cand2"): 0.07},
         "test2": {("cand1", "cand2"): 10.38, ("cand1", "cand3"): 0,},
         "test3": {("cand1", ""): 1},
-        "test4": {("cand1", ""): 1},
-        "test5": {("cand1", "cand2"): 1},
+        "test4": {("cand1", ""): 0},
+        "test5": {("cand1", "cand2"): 0},
         "test6": {("cand1", "cand2"): 0.08, ("cand1", "cand3"): 0.08,},
         "test7": {("cand1", "cand3"): 0.01, ("cand2", "cand3"): 0.04,},
         "test8": {("cand1", "cand3"): 0.0, ("cand2", "cand3"): 0.22,},
@@ -305,8 +305,8 @@ def test_compute_risk(contests):
         "test1": True,
         "test2": False,
         "test3": False,
-        "test4": False,
-        "test5": False,
+        "test4": True,
+        "test5": True,
         "test6": True,
         "test7": True,
         "test8": False,
@@ -389,6 +389,41 @@ def test_compute_risk_empty(contests):
         ), "Risk decision for {} failed! Expected {}, got{}".format(
             contest.name, expected_decision, decision
         )
+
+
+def test_tied_contest():
+    contest_data = {
+        "cand1": 500,
+        "cand2": 500,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("Tied Contest", contest_data)
+
+    sample_results = {}
+
+    sample_options = bravo.get_sample_size(RISK_LIMIT, contest, sample_results)
+
+    assert 0.7 not in sample_options
+    assert 0.8 not in sample_options
+    assert 0.9 not in sample_options
+    assert sample_options["asn"]["size"] == contest.ballots
+    assert sample_options["asn"]["prob"] == 1.0
+
+    computed_p, res = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
+
+    assert computed_p[("cand1", "cand2")] > ALPHA
+    assert not res
+
+    # Now do a full hand recount
+    sample_results = {"round1": {"cand1": 501, "cand2": 499,}}
+
+    computed_p, res = bravo.compute_risk(RISK_LIMIT, contest, sample_results)
+
+    assert computed_p[("cand1", "cand2")] == 0
+    assert res
 
 
 bravo_contests = {
@@ -528,18 +563,8 @@ true_sample_sizes = {
         "0.8": {"type": None, "size": 41, "prob": 0.8},
         "0.9": {"type": None, "size": 57, "prob": 0.9},
     },
-    "test3": {
-        "asn": {"type": "ASN", "size": -1, "prob": -1},
-        "0.7": {"type": None, "size": -1, "prob": 0.7},
-        "0.8": {"type": None, "size": -1, "prob": 0.8},
-        "0.9": {"type": None, "size": -1, "prob": 0.9},
-    },
-    "test4": {
-        "asn": {"type": "ASN", "size": -1, "prob": -1},
-        "0.7": {"type": None, "size": -1, "prob": 0.7},
-        "0.8": {"type": None, "size": -1, "prob": 0.8},
-        "0.9": {"type": None, "size": -1, "prob": 0.9},
-    },
+    "test3": {"asn": {"type": "ASN", "size": 1, "prob": 1.0},},
+    "test4": {"asn": {"type": "ASN", "size": 1, "prob": 1.0},},
     "test5": {
         "asn": {"type": "ASN", "size": 1000, "prob": 1},
         "0.7": {"type": None, "size": 1000, "prob": 0.7},

@@ -241,3 +241,55 @@ def test_compute_risk(contests, batches):
         )
 
         assert result, "Audit did not terminate but should have"
+
+
+def test_tied_contest():
+
+    contest_data = {
+        "winner": 50000,
+        "loser": 50000,
+        "ballots": 100000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("Tied Contest", contest_data)
+
+    batches = {}
+    for i in range(100):
+        batches[i] = {
+            "Tied Contest": {
+                "winner": 500,
+                "loser": 500,
+                "ballots": 1000,
+                "numWinners": 1,
+            }
+        }
+
+    sample_results = {}
+
+    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample_results)
+
+    assert sample_size == len(batches)
+
+    sample_results = {
+        0: {
+            "Tied Contest": {
+                "winner": 500,
+                "loser": 500,
+                "ballots": 1000,
+                "numWinners": 1,
+            }
+        }
+    }
+
+    computed_p, res = macro.compute_risk(RISK_LIMIT, contest, batches, sample_results)
+
+    assert computed_p > ALPHA
+    assert not res
+
+    # Now do a full hand recount
+    computed_p, res = macro.compute_risk(RISK_LIMIT, contest, batches, batches)
+
+    assert not computed_p
+    assert res

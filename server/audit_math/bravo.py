@@ -45,7 +45,7 @@ def get_expected_sample_sizes(
         if margin["winners"][winner]["p_w"] < p_w:
             p_w = Decimal(margin["winners"][winner]["p_w"])
 
-    if not margin["losers"]:
+    if margin["losers"] == 0:
         return -1
 
     for loser in margin["losers"]:
@@ -54,7 +54,7 @@ def get_expected_sample_sizes(
 
     s_w = p_w / (p_w + p_l)
 
-    if p_w == 1.0:
+    if p_w == 1.0 or contest.num_winners >= len(contest.candidates):
         # Handle single-candidate or crazy landslides
         return -1
     elif p_w == p_l:
@@ -367,7 +367,7 @@ def get_sample_size(
             best_loser = loser
 
     # If we're in a single-candidate race, set sample to 0
-    if not margin["losers"]:
+    if margin["losers"] == 0:
         samples["asn"] = {"type": "ASN", "size": -1, "prob": -1.0}
         for quant in quants:
             samples[str(quant)] = {"type": None, "size": -1.0, "prob": quant}
@@ -455,6 +455,13 @@ def compute_risk(
     T = get_test_statistics(contest.margins, cumulative_sample)
 
     measurements = {}
+
+    # If we've done a full hand recount
+    if sum(cumulative_sample.values()) >= contest.ballots:
+        for pair in T:
+            measurements[pair] = 0.0
+        return measurements, True
+
     finished = True
     for pair in T:
         raw = 1 / T[pair]
