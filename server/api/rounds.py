@@ -198,6 +198,12 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
     }
 
 
+def round_sizes(election: Election) -> Dict[int, int]:
+    return {
+        rnd.round_num: len(list(rnd.sampled_ballot_draws)) for rnd in election.rounds
+    }
+
+
 def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
     choice_name_to_id = {choice.name: choice.id for choice in contest.choices}
 
@@ -305,6 +311,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 contest_results_by_round(contest),
+                round_sizes(election),
                 BallotPollingType.BRAVO,
             )
             p_value = max(p_values.values())
