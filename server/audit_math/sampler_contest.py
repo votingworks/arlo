@@ -2,7 +2,7 @@
 A Module containing the Contest class, which encapsulates useful info for RLA
 computations.
 """
-from typing import Dict
+from typing import Dict, Any
 import operator
 
 
@@ -54,7 +54,7 @@ class Contest:
     diluted_margin: float  # The smallest diluted margin in this contest
     margins: Dict[str, Dict]  # Dict of the margins for this contest
 
-    def __init__(self, name: str, contest_info_dict: Dict[str, int]):
+    def __init__(self, name: str, contest_info_dict: Dict[str, Any]):
         """
         Initializes the contest info from a dict of the form:
             {
