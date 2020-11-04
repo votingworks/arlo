@@ -86,7 +86,11 @@ const ContestForm: React.FC<IProps> = ({
     touched: {},
     values: { contests: IContest[] }
   ) => {
-    return isObjectEmpty(touched) && isObjectEqual(initialValues, values)
+    return (
+      !isTargeted &&
+      isObjectEmpty(touched) &&
+      isObjectEqual(initialValues, values)
+    )
   }
 
   const goToNextStage = () => {
@@ -303,11 +307,11 @@ const ContestForm: React.FC<IProps> = ({
                 type="submit"
                 intent="primary"
                 disabled={nextStage.state === 'locked'}
-                onClick={() =>
-                  isOpportunisticFormClean(touched, values)
-                    ? goToNextStage()
-                    : handleSubmit()
-                }
+                onClick={e => {
+                  e.preventDefault()
+                  if (isOpportunisticFormClean(touched, values)) goToNextStage()
+                  else handleSubmit()
+                }}
               >
                 Save &amp; Next
               </FormButton>

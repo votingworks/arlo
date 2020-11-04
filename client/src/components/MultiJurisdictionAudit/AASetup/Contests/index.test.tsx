@@ -258,6 +258,66 @@ describe('Audit Setup > Contests', () => {
     })
   })
 
+  it('it should skip to next stage when opportunistic contest form is clean and not touched', async () => {
+    const { findByText, getByText } = render(
+      <Contests
+        auditType="BALLOT_POLLING"
+        locked={false}
+        isTargeted={false}
+        nextStage={nextStage}
+        prevStage={prevStage}
+      />
+    )
+
+    await findByText('Opportunistic Contests')
+    fireEvent.click(getByText('Save & Next'), { bubbles: true })
+    await waitFor(() => {
+      expect(nextStage.activate).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('it should not skip to next stage when targeted contest form is clean and not touched', async () => {
+    const { findByText, getByText } = render(
+      <Contests
+        auditType="BALLOT_POLLING"
+        locked={false}
+        isTargeted
+        nextStage={nextStage}
+        prevStage={prevStage}
+      />
+    )
+
+    await findByText('Target Contests')
+    fireEvent.click(getByText('Save & Next'), { bubbles: true })
+    await waitFor(() => {
+      expect(nextStage.activate).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  it('it should not skip to next stage when opportunistic contest form is touched', async () => {
+    const { findByText, findByLabelText, getByText } = render(
+      <Contests
+        auditType="BALLOT_POLLING"
+        locked={false}
+        isTargeted={false}
+        nextStage={nextStage}
+        prevStage={prevStage}
+      />
+    )
+
+    await findByText('Opportunistic Contests')
+    typeInto(
+      await findByLabelText('Votes Allowed', {
+        selector: 'input',
+      }),
+      '2'
+    )
+    fireEvent.click(getByText('Save & Next'), { bubbles: true })
+    await waitFor(() => {
+      expect(nextStage.activate).toHaveBeenCalledTimes(0)
+    })
+  })
+
   it('displays errors', async () => {
     const { getByLabelText, getByTestId, getByText, findByText } = render(
       <Contests
