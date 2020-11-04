@@ -199,9 +199,12 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
 
 
 def round_sizes(election: Election) -> Dict[int, int]:
-    return {
-        rnd.round_num: len(list(rnd.sampled_ballot_draws)) for rnd in election.rounds
-    }
+    return dict(
+        Round.query.filter_by(election_id=election.id)
+        .join(SampledBallotDraw)
+        .group_by(Round.id)
+        .values(Round.round_num, func.count(SampledBallotDraw.ticket_number))
+    )
 
 
 def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
