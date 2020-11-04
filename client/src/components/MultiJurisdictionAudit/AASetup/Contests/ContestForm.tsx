@@ -25,6 +25,7 @@ import { IContest, ICandidate, IAuditSettings } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
 import Card from '../../../Atoms/SpacedCard'
 import { testNumber } from '../../../utilities'
+import { isObjectEmpty, isObjectEqual } from '../../../../utils/objects'
 
 interface IProps {
   isTargeted: boolean
@@ -77,26 +78,39 @@ const ContestForm: React.FC<IProps> = ({
   /* istanbul ignore next */
   if (isBatch && !isTargeted && nextStage.activate) nextStage.activate() // skip to next stage if on opportunistic contests screen and during a batch audit (until batch audits support multiple contests)
 
+  const initialValues = {
+    contests: filteredContests.length ? filteredContests : contestValues,
+  }
+
+  const isOpportunisticFormClean = (
+    touched: {},
+    values: { contests: IContest[] }
+  ) => {
+    return isObjectEmpty(touched) && isObjectEqual(initialValues, values)
+  }
+
+  const goToNextStage = () => {
+    if (nextStage.activate) nextStage.activate()
+    else throw new Error('Wrong menuItems passed in: activate() is missing')
+  }
+
   const submit = async (values: { contests: IContest[] }) => {
     const response = await updateContests(values.contests)
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
-    /* istanbul ignore else */
-    if (nextStage.activate) nextStage.activate()
-    else throw new Error('Wrong menuItems passed in: activate() is missing')
+    goToNextStage()
   }
   return (
     <Formik
-      initialValues={{
-        contests: filteredContests.length ? filteredContests : contestValues,
-      }}
+      initialValues={initialValues}
       validationSchema={schema}
       enableReinitialize
       onSubmit={submit}
     >
       {({
         values,
+        touched,
         handleSubmit,
         setFieldValue,
       }: FormikProps<{ contests: IContest[] }>) => (
@@ -289,7 +303,11 @@ const ContestForm: React.FC<IProps> = ({
                 type="submit"
                 intent="primary"
                 disabled={nextStage.state === 'locked'}
-                onClick={handleSubmit}
+                onClick={() =>
+                  isOpportunisticFormClean(touched, values)
+                    ? goToNextStage()
+                    : handleSubmit()
+                }
               >
                 Save &amp; Next
               </FormButton>
