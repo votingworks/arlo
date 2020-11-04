@@ -3,12 +3,15 @@ from flask import Flask
 from flask_talisman import Talisman
 from werkzeug.wrappers import Request
 from werkzeug.middleware.proxy_fix import ProxyFix
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 from .config import (
     SESSION_SECRET,
     FLASK_ENV,
     DEVELOPMENT_ENVS,
     HTTP_ORIGIN,
+    SENTRY_DSN,
 )
 from .database import init_db, db_session
 from .api import api
@@ -55,3 +58,12 @@ from . import errors
 @app.teardown_appcontext
 def shutdown_session(exception=None):  # pylint: disable=unused-argument
     db_session.remove()
+
+
+# Configure Sentry to record exceptions
+sentry_sdk.init(
+    SENTRY_DSN,
+    environment=FLASK_ENV,
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=1.0,
+)

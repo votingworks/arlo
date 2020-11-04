@@ -39,6 +39,7 @@ xkcdpass = "*"
 sqlalchemy = "*"
 typing-extensions = "*"
 pytest-testmon = "*"
+sentry-sdk = {extras = ["flask"], version = "*"}
 
 [requires]
 python_version = "3.8"
