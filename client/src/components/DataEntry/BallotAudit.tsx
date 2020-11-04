@@ -35,11 +35,11 @@ const BallotAudit: React.FC<IProps> = ({
           If the voter did not vote in the contest, select &quot;Blank vote/Not
           on Ballot.&quot;
         </p>
-        <p>
+        {/* <p>
           If the audit board cannot agree, select &quot;Audit board can&apos;t
           agree.&quot; You may add a comment for additional information about
           the disagreement.
-        </p>
+        </p> */}
         <Formik
           initialValues={{ interpretations }}
           enableReinitialize
