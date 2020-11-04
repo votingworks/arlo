@@ -162,9 +162,12 @@ def audit_ballot(
         ballot.status = BallotStatus.AUDITED
 
 
-def run_audit_round(round_id: str, contest_id: str, vote_ratio: float):
+def run_audit_round(
+    round_id: str, target_contest_id: str, contest_ids: List[str], vote_ratio: float
+):
     round = Round.query.get(round_id)
-    contest = Contest.query.get(contest_id)
+    contest = Contest.query.get(target_contest_id)
+    other_contest_ids = set(contest_ids) - {target_contest_id}
     ballot_draws = (
         SampledBallotDraw.query.filter_by(round_id=round_id)
         .join(SampledBallot)
@@ -180,6 +183,12 @@ def run_audit_round(round_id: str, contest_id: str, vote_ratio: float):
             Interpretation.VOTE,
             [contest.choices[0]],
         )
+        for other_contest_id in other_contest_ids:
+            audit_ballot(
+                ballot_draw.sampled_ballot,
+                other_contest_id,
+                Interpretation.CONTEST_NOT_ON_BALLOT,
+            )
     for ballot_draw in ballot_draws[winner_votes:]:
         audit_ballot(
             ballot_draw.sampled_ballot,
@@ -187,6 +196,12 @@ def run_audit_round(round_id: str, contest_id: str, vote_ratio: float):
             Interpretation.VOTE,
             [contest.choices[1]],
         )
+        for other_contest_id in other_contest_ids:
+            audit_ballot(
+                ballot_draw.sampled_ballot,
+                other_contest_id,
+                Interpretation.CONTEST_NOT_ON_BALLOT,
+            )
     end_round(round.election, round)
     db_session.commit()
 

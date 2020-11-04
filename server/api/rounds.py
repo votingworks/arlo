@@ -64,7 +64,9 @@ def count_audited_votes(election: Election, round: Round):
             if election.online:
                 interpretations_query = (
                     BallotInterpretation.query.filter_by(
-                        contest_id=contest.id, is_overvote=False
+                        contest_id=contest.id,
+                        is_overvote=False,
+                        interpretation=Interpretation.VOTE,
                     )
                     .join(SampledBallot)
                     .join(SampledBallotDraw)

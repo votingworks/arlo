@@ -453,6 +453,7 @@ class SampledBallot(BaseModel):
         uselist=True,
         cascade="all, delete-orphan",
         passive_deletes=True,
+        order_by="BallotInterpretation.created_at",
     )
 
 
@@ -487,6 +488,7 @@ class SampledBallotDraw(BaseModel):
 class Interpretation(str, enum.Enum):
     BLANK = "BLANK"
     CANT_AGREE = "CANT_AGREE"
+    CONTEST_NOT_ON_BALLOT = "CONTEST_NOT_ON_BALLOT"
     VOTE = "VOTE"
 
 

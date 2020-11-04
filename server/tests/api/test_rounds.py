@@ -32,7 +32,6 @@ def test_rounds_create_one(
 ):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    print(json.loads(rv.data))
     sample_size_options = json.loads(rv.data)["sampleSizes"]
     sample_size = sample_size_options[contest_ids[0]][0]["size"]
     rv = post_json(
@@ -92,7 +91,7 @@ def test_rounds_create_two(
     round_1_id: str,
     snapshot,
 ):
-    run_audit_round(round_1_id, contest_ids[0], 0.5)
+    run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.5)
 
     rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
     assert_ok(rv)
@@ -141,7 +140,7 @@ def test_rounds_create_two(
 def test_rounds_complete_audit(
     client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
 ):
-    run_audit_round(round_1_id, contest_ids[0], 0.7)
+    run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.7)
 
     expected_rounds = {
         "rounds": [

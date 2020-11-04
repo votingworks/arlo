@@ -80,6 +80,8 @@ def pretty_ballot_interpretation(
     interpretation = next(
         (i for i in interpretations if i.contest_id == contest.id), None,
     )
+    # Legacy case: we used to not require an interpretation for every contest
+    # before we had Interpretation.CONTEST_NOT_ON_BALLOT
     if not interpretation:
         return ""
 

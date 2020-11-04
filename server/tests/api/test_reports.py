@@ -33,6 +33,21 @@ def test_audit_admin_report(
     assert_match_report(rv.data, snapshot)
 
 
+def test_audit_admin_report_round_2(
+    client: FlaskClient,
+    election_id: str,
+    round_2_id: str,  # pylint: disable=unused-argument
+    snapshot,
+):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/report")
+    assert (
+        scrub_datetime(rv.headers["Content-Disposition"])
+        == 'attachment; filename="audit-report-Test-Audit-test-audit-admin-report-round-2-DATETIME.csv"'
+    )
+    assert_match_report(rv.data, snapshot)
+
+
 def test_jurisdiction_admin_report(
     client: FlaskClient,
     election_id: str,
