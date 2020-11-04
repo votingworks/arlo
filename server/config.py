@@ -141,3 +141,5 @@ def read_jurisdictionadmin_auth0_creds() -> Tuple[str, str, str]:
     JURISDICTIONADMIN_AUTH0_CLIENT_ID,
     JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
 ) = read_jurisdictionadmin_auth0_creds()
+
+SENTRY_DSN = os.environ.get("SENTRY_DSN")
