@@ -35,7 +35,13 @@ const renderInterpretation = (
     case Interpretation.BLANK:
       return (
         <LockedButton disabled large intent="primary">
-          Blank vote/Not on Ballot
+          Blank vote
+        </LockedButton>
+      )
+    case Interpretation.CONTEST_NOT_ON_BALLOT:
+      return (
+        <LockedButton disabled large intent="primary">
+          Not on Ballot
         </LockedButton>
       )
     case Interpretation.CANT_AGREE:

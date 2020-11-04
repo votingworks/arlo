@@ -43,6 +43,7 @@ export enum Interpretation {
   BLANK = 'BLANK',
   CANT_AGREE = 'CANT_AGREE',
   VOTE = 'VOTE',
+  CONTEST_NOT_ON_BALLOT = 'CONTEST_NOT_ON_BALLOT',
 }
 
 export interface IBallotInterpretation {

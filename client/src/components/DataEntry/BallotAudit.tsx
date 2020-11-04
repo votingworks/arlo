@@ -32,8 +32,8 @@ const BallotAudit: React.FC<IProps> = ({
           marked on the paper ballot.
         </p>
         <p>
-          If the voter did not vote in the contest, select &quot;Blank vote/Not
-          on Ballot.&quot;
+          If the voter did not vote in the contest, select &quot;Blank
+          vote.&quot;
         </p>
         {/* <p>
           If the audit board cannot agree, select &quot;Audit board can&apos;t
@@ -111,7 +111,11 @@ const BallotAuditContest = ({
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { checked } = e.currentTarget
-    if (value === Interpretation.BLANK || value === Interpretation.CANT_AGREE) {
+    if (
+      value === Interpretation.BLANK ||
+      value === Interpretation.CANT_AGREE ||
+      value === Interpretation.CONTEST_NOT_ON_BALLOT
+    ) {
       setInterpretation({
         ...interpretation,
         interpretation: checked ? value : null,
@@ -153,7 +157,15 @@ const BallotAuditContest = ({
         handleChange={onCheckboxClick(Interpretation.BLANK)}
         gray
         checked={interpretation.interpretation === Interpretation.BLANK}
-        label="Blank vote/Not on Ballot"
+        label="Blank vote"
+      />
+      <BlockCheckbox
+        handleChange={onCheckboxClick(Interpretation.CONTEST_NOT_ON_BALLOT)}
+        gray
+        checked={
+          interpretation.interpretation === Interpretation.CONTEST_NOT_ON_BALLOT
+        }
+        label="Not on Ballot"
       />
       <Button minimal icon="edit" onClick={toggleCommenting}>
         {commenting ? 'Remove comment' : 'Add comment'}
