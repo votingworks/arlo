@@ -19,6 +19,7 @@ def get_sample_size(
     risk_limit: int,
     contest: Contest,
     sample_results: Optional[Dict[str, Dict[str, int]]],
+    round_sizes: Dict[int, int],
     math_type: BallotPollingType,
 ) -> Dict[str, SampleSizeOption]:
     """
@@ -35,7 +36,7 @@ def get_sample_size(
     """
 
     if math_type == BallotPollingType.MINERVA:
-        return minerva.get_sample_size(risk_limit, contest, sample_results)
+        return minerva.get_sample_size(risk_limit, contest, sample_results, round_sizes)
     else:
         # Default to BRAVO math
         return bravo.get_sample_size(risk_limit, contest, sample_results)
@@ -45,11 +46,12 @@ def compute_risk(
     risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
+    round_sizes: Dict[int, int],
     math_type: BallotPollingType,
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
 
     if math_type == BallotPollingType.MINERVA:
-        return minerva.compute_risk(risk_limit, contest, sample_results)
+        return minerva.compute_risk(risk_limit, contest, sample_results, round_sizes)
     else:
         # Default to BRAVO
         return bravo.compute_risk(risk_limit, contest, sample_results)

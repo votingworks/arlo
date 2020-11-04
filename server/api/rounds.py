@@ -198,6 +198,15 @@ def cumulative_batch_results(election: Election) -> BatchTallies:
     }
 
 
+def round_sizes(election: Election) -> Dict[int, int]:
+    return dict(
+        Round.query.filter_by(election_id=election.id)
+        .join(SampledBallotDraw)
+        .group_by(Round.id)
+        .values(Round.round_num, func.count(SampledBallotDraw.ticket_number))
+    )
+
+
 def cvrs_for_contest(contest: Contest) -> supersimple.CVRS:
     choice_name_to_id = {choice.name: choice.id for choice in contest.choices}
 
@@ -305,6 +314,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 contest_results_by_round(contest),
+                round_sizes(election),
                 BallotPollingType.BRAVO,
             )
             p_value = max(p_values.values())
