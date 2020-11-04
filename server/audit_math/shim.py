@@ -59,7 +59,7 @@ def get_minerva_test_statistics(
     risk_limit: float, p_w: float, p_r: float, sample_w: int, sample_r: int,
 ) -> Any:
     """
-    Return Minerva p-value
+    Return Minerva p-value for a given winner-loser pair
     TODO: refactor to pass in integer vote shares to allow more exact calculations, incorporate or
     track round schedule over time, and handle sampling without replacement.
 
@@ -99,7 +99,6 @@ def get_minerva_test_statistics(
 
     if sample_w or sample_r:
         round_sizes = [sample_w + sample_r]
-        audit.add_round_schedule(round_sizes)
         audit.set_observations(round_sizes[0], round_sizes[0], [sample_w, sample_r])
     else:
         round_sizes = []
