@@ -143,12 +143,12 @@ const BallotAuditContest = ({
           label={c.name}
         />
       ))}
-      <BlockCheckbox
+      {/* <BlockCheckbox
         handleChange={onCheckboxClick(Interpretation.CANT_AGREE)}
         gray
         checked={interpretation.interpretation === Interpretation.CANT_AGREE}
         label="Audit board can't agree"
-      />
+      /> */}
       <BlockCheckbox
         handleChange={onCheckboxClick(Interpretation.BLANK)}
         gray
