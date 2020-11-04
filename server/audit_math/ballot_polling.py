@@ -21,6 +21,7 @@ def get_sample_size(
     sample_results: Optional[Dict[str, Dict[str, int]]],
     round_sizes: Dict[int, int],
     math_type: AuditMathType,
+    round_sizes: Dict[int, int],
 ) -> Dict[str, SampleSizeOption]:
     """
     Compute sample size using the specified math.
@@ -48,6 +49,7 @@ def compute_risk(
     sample_results: Dict[str, Dict[str, int]],
     round_sizes: Dict[int, int],
     math_type: AuditMathType,
+    round_sizes: Dict[int, int],
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
 
     if math_type == AuditMathType.MINERVA:

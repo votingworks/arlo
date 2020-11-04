@@ -319,6 +319,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 contest_results_by_round(contest),
                 round_sizes(election),
                 AuditMathType(election.audit_math_type),
+                round_sizes(election),
             )
             p_value = max(p_values.values())
         elif election.audit_type == AuditType.BATCH_COMPARISON:

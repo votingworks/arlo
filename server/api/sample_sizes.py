@@ -35,6 +35,7 @@ def sample_size_options(
                 sample_results,
                 rounds.round_sizes(election),
                 AuditMathType(election.audit_math_type),
+                rounds.round_sizes(election),
             )
             # Remove unnecessary "type" field from options, add "key" field
             return {
