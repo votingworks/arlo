@@ -110,10 +110,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
            the candidates/choices below that you see marked on the paper ballot.
         </p>
         <p>
-          If the voter did not vote in the contest, select "Blank vote/Not on Ballot."
-        </p>
-        <p>
-          If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
+          If the voter did not vote in the contest, select "Blank vote."
         </p>
         <form>
           <div
@@ -171,7 +168,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 <span
                   class="checkbox-text"
                 >
-                  Audit board can't agree
+                  Blank vote
                 </span>
               </span>
             </label>
@@ -187,7 +184,7 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
                 <span
                   class="checkbox-text"
                 >
-                  Blank vote/Not on Ballot
+                  Not on Ballot
                 </span>
               </span>
             </label>
@@ -370,10 +367,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
            the candidates/choices below that you see marked on the paper ballot.
         </p>
         <p>
-          If the voter did not vote in the contest, select "Blank vote/Not on Ballot."
-        </p>
-        <p>
-          If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
+          If the voter did not vote in the contest, select "Blank vote."
         </p>
         <form>
           <div
@@ -431,7 +425,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 <span
                   class="checkbox-text"
                 >
-                  Audit board can't agree
+                  Blank vote
                 </span>
               </span>
             </label>
@@ -447,7 +441,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
                 <span
                   class="checkbox-text"
                 >
-                  Blank vote/Not on Ballot
+                  Not on Ballot
                 </span>
               </span>
             </label>
@@ -512,7 +506,7 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
 </div>
 `;
 
-exports[`Ballot selects Audit board can't agree 1`] = `
+exports[`Ballot selects Blank vote 1`] = `
 <div>
   <div
     class="sc-kAzzGY jLybqU"
@@ -630,7 +624,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
               <span
                 class="bp3-button-text"
               >
-                Audit board can't agree
+                Blank vote
               </span>
             </button>
             <button
@@ -695,7 +689,7 @@ exports[`Ballot selects Audit board can't agree 1`] = `
 </div>
 `;
 
-exports[`Ballot selects Blank vote/Not on Ballot 1`] = `
+exports[`Ballot selects Not on Ballot 1`] = `
 <div>
   <div
     class="sc-kAzzGY jLybqU"
@@ -813,7 +807,7 @@ exports[`Ballot selects Blank vote/Not on Ballot 1`] = `
               <span
                 class="bp3-button-text"
               >
-                Blank vote/Not on Ballot
+                Not on Ballot
               </span>
             </button>
             <button
