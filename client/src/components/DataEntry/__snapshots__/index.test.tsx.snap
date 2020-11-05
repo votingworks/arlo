@@ -114,10 +114,10 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                the candidates/choices below that you see marked on the paper ballot.
             </p>
             <p>
-              If the voter did not vote in the contest, select "Blank vote/Not on Ballot."
+              If the voter did not vote in the contest, select "Blank vote."
             </p>
             <p>
-              If the audit board cannot agree, select "Audit board can't agree." You may add a comment for additional information about the disagreement.
+              If this contest is not shown on this ballot, select "Not on ballot."
             </p>
             <form>
               <div
@@ -175,7 +175,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                     <span
                       class="checkbox-text"
                     >
-                      Audit board can't agree
+                      Blank vote
                     </span>
                   </span>
                 </label>
@@ -191,7 +191,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                     <span
                       class="checkbox-text"
                     >
-                      Blank vote/Not on Ballot
+                      Not on Ballot
                     </span>
                   </span>
                 </label>
@@ -280,7 +280,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                     <span
                       class="checkbox-text"
                     >
-                      Audit board can't agree
+                      Blank vote
                     </span>
                   </span>
                 </label>
@@ -296,7 +296,7 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
                     <span
                       class="checkbox-text"
                     >
-                      Blank vote/Not on Ballot
+                      Not on Ballot
                     </span>
                   </span>
                 </label>
