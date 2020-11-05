@@ -7,7 +7,9 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['test_ballot_comparison_cvr_metadata 1'] = '''Tabulator,Batch Name,Ballot Number,Imprinted ID,Ticket Numbers,Already Audited,Audit Board
+snapshots[
+    "test_ballot_comparison_cvr_metadata 1"
+] = """Tabulator,Batch Name,Ballot Number,Imprinted ID,Ticket Numbers,Already Audited,Audit Board
 TABULATOR1,BATCH1,1,1-1-1,0.243550726331576894,N,Audit Board #1
 TABULATOR1,BATCH2,2,1-2-2,0.125871889047705889,N,Audit Board #1
 TABULATOR1,BATCH2,3,1-2-3,0.126622033568908859,N,Audit Board #1
@@ -16,31 +18,33 @@ TABULATOR2,BATCH2,3,2-2-3,0.255119157791673311,N,Audit Board #1
 TABULATOR2,BATCH2,4,2-2-4,"0.064984443990590400,0.069414660569975443",N,Audit Board #1
 TABULATOR2,BATCH2,5,2-2-5,"0.442956417641278897,0.492638838970333256",N,Audit Board #1
 TABULATOR2,BATCH2,6,2-2-6,0.300053574780458718,N,Audit Board #1
-'''
+"""
 
-snapshots['test_ballot_comparison_two_rounds 1'] = {
-    'key': 'supersimple',
-    'prob': None,
-    'size': 22
+snapshots["test_ballot_comparison_two_rounds 1"] = {
+    "key": "supersimple",
+    "prob": None,
+    "size": 22,
 }
 
-snapshots['test_ballot_comparison_two_rounds 2'] = {
-    'numSamples': 10,
-    'numSamplesAudited': 0,
-    'numUnique': 8,
-    'numUniqueAudited': 0,
-    'status': 'NOT_STARTED'
+snapshots["test_ballot_comparison_two_rounds 2"] = {
+    "numSamples": 10,
+    "numSamplesAudited": 0,
+    "numUnique": 8,
+    "numUniqueAudited": 0,
+    "status": "NOT_STARTED",
 }
 
-snapshots['test_ballot_comparison_two_rounds 3'] = {
-    'numSamples': 12,
-    'numSamplesAudited': 0,
-    'numUnique': 10,
-    'numUniqueAudited': 0,
-    'status': 'NOT_STARTED'
+snapshots["test_ballot_comparison_two_rounds 3"] = {
+    "numSamples": 12,
+    "numSamplesAudited": 0,
+    "numUnique": 10,
+    "numUniqueAudited": 0,
+    "status": "NOT_STARTED",
 }
 
-snapshots['test_ballot_comparison_two_rounds 4'] = '''######## ELECTION INFO ########\r
+snapshots[
+    "test_ballot_comparison_two_rounds 4"
+] = """######## ELECTION INFO ########\r
 Election Name,State\r
 Test Election,CA\r
 \r
@@ -83,9 +87,11 @@ J2,TABULATOR2,BATCH2,2,2-2-2,"Round 1: 0.252054739518646128, 0.29714502131721743
 J2,TABULATOR2,BATCH2,3,2-2-3,"Round 1: 0.179114059650472941, 0.443867094961314498",AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",\r
 J2,TABULATOR2,BATCH2,5,2-2-5,Round 1: 0.462119987445142117,AUDITED,Choice 1-1,,0,,"Choice 2-1, Choice 2-2",1\r
 J2,TABULATOR2,BATCH2,6,2-2-6,Round 1: 0.414184312862040881,AUDITED,,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",\r
-'''
+"""
 
-snapshots['test_ballot_comparison_two_rounds 5'] = '''######## ELECTION INFO ########\r
+snapshots[
+    "test_ballot_comparison_two_rounds 5"
+] = """######## ELECTION INFO ########\r
 Election Name,State\r
 Test Election,CA\r
 \r
@@ -136,24 +142,15 @@ J1,TABULATOR2,BATCH2,1,2-2-1,Round 2: 0.607927957276839128,AUDITED,Choice 1-1,Ch
 J2,TABULATOR1,BATCH2,3,1-2-3,Round 2: 0.556310137163677574,AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",\r
 J2,TABULATOR2,BATCH1,2,2-1-2,Round 2: 0.677864268646804078,AUDITED,Choice 1-1,Choice 1-1,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",\r
 J2,TABULATOR2,BATCH2,4,2-2-4,"Round 2: 0.583133559190710795, 0.685610948371080498",AUDITED,,,,"Choice 2-1, Choice 2-3","Choice 2-1, Choice 2-3",\r
-'''
+"""
 
-snapshots['test_set_contest_metadata_from_cvrs 1'] = {
-    'choices': [
-        {
-            'name': 'Choice 2-1',
-            'num_votes': 28
-        },
-        {
-            'name': 'Choice 2-2',
-            'num_votes': 12
-        },
-        {
-            'name': 'Choice 2-3',
-            'num_votes': 16
-        }
+snapshots["test_set_contest_metadata_from_cvrs 1"] = {
+    "choices": [
+        {"name": "Choice 2-1", "num_votes": 28},
+        {"name": "Choice 2-2", "num_votes": 12},
+        {"name": "Choice 2-3", "num_votes": 16},
     ],
-    'num_winners': 1,
-    'total_ballots_cast': 30,
-    'votes_allowed': 2
+    "num_winners": 1,
+    "total_ballots_cast": 30,
+    "votes_allowed": 2,
 }
