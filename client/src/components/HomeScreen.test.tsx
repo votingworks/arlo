@@ -101,7 +101,7 @@ describe('Home screen', () => {
   it('shows a message when logged out for inactivity', async () => {
     const expectedCalls = [apiCalls.unauthenticatedUser]
     await withMockFetch(expectedCalls, async () => {
-      renderView('/?logged-out=1')
+      renderView('/#logged-out')
       await screen.findByText('You have been logged out due to inactivity.')
     })
   })

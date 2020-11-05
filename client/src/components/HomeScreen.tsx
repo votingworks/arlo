@@ -73,12 +73,12 @@ const LoginWrapper = styled.div`
 `
 
 const LoginScreen: React.FC = () => {
-  const query = new URLSearchParams(useLocation().search)
+  const wasLoggedOut = useLocation().hash === '#logged-out'
 
   return (
     <LoginWrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      {query.get('logged-out') && (
+      {wasLoggedOut && (
         <Callout
           icon="lock"
           intent="warning"
