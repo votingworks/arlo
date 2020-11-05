@@ -5,14 +5,22 @@ as described by Zagórski et al https://arxiv.org/abs/2008.02315
 
 Note that this library works for one contest at a time, as if each contest being
 targeted is being audited completely independently.
+
+TODO: ensure the no-losers case is handled
+TODO: if necessary pull out risks for individual contests
+
 """
 from decimal import Decimal
 from collections import defaultdict
 import logging
 from typing import List, Dict, Tuple, Optional
 
+from athena.audit import Audit  # type: ignore
 from .sampler_contest import Contest
-from .shim import minerva_sample_sizes, get_minerva_test_statistics  # type: ignore
+from .shim import minerva_sample_sizes  # type: ignore
+
+# FIXME: make this an environmental variable
+MINERVA_MULTIPLE = 1.5
 
 
 def compute_cumulative_sample(sample_results):
@@ -24,6 +32,70 @@ def compute_cumulative_sample(sample_results):
         for cand in sample_results[rd]:
             cumulative_sample[cand] += sample_results[rd][cand]
     return cumulative_sample
+
+
+def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
+    """Return an Arlo Contest with the given tally (a dictionary of candidate_name:vote_counts)
+    Treat "_undervote_" candidate as undervotes
+    For testing purposes.
+    """
+
+    ballots = sum(tally.values())
+    votes = {key:tally[key] for key in tally if key != "_undervote_"}
+    return Contest("c1", {"ballots": ballots, "numWinners": num_winners, "votesAllowed": votes_allowed, **votes})
+
+
+def make_sample_results(contest: Contest, votes_per_round: List[List]) -> Dict[str, Dict[str, int]]:
+    """Make up sample_results for testing given Arlo contest based on votes.
+    Note that athena's API relies on Python requiring dictionaries (of candidates and sample results)
+    to be ordered since 3.7.
+    """
+
+    sample_results = {}
+    for i, votes in enumerate(votes_per_round):
+        sample_results[f'r{i}'] = {c: v for c, v in zip(contest.candidates, votes)}
+
+    return sample_results
+
+
+def minerva_round_size(first_round_size, round_num):
+    """Return size of ith round based on first round size and round number
+    """
+
+    return int(first_round_size * MINERVA_MULTIPLE ** round_num)
+
+
+def make_athena_audit(arlo_contest, alpha):
+    """Make an Athena audit object, with associated contest and election, from an Arlo contest
+
+    >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
+    >>> audit = make_athena_audit(c3, 0.1)
+    >>> audit.election.contests
+    {'c1': {"contest_ballots": 0, "num_winners": 1, "reported_winners": ['a'], "contest_type": "PLURALITY", "tally": {'a': 600, 'b': 400, 'c': 100}, "declared_winners": [0], "declared_losers": [1, 2]}}
+    >>> audit.alpha
+    0.1
+    """
+
+    athena_contest = {
+        "contest_ballots": arlo_contest.ballots,
+        "tally": arlo_contest.candidates,
+        "num_winners": arlo_contest.num_winners,
+        "reported_winners": list(arlo_contest.margins['winners'].keys()),
+        "contest_type": "PLURALITY",
+    }
+
+    contest_name = arlo_contest.name
+    election = {
+        "name": "ArloElection",
+        "total_ballots": arlo_contest.ballots,
+        "contests": {contest_name: athena_contest},
+    }
+
+    audit = Audit("minerva", alpha)
+    audit.add_election(election)
+    audit.load_contest(contest_name)
+
+    return audit
 
 
 def get_sample_size(
@@ -55,9 +127,20 @@ def get_sample_size(
                     likelihood2: sample_size,
                     ...
                 }
+    FIXME: add round size arguments and update tests
+
+    >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
+    >>> get_sample_size(10, c3, None)
+    {'0.7': {'type': None, 'size': 134, 'prob': 0.7}, '0.8': {'type': None, 'size': 166, 'prob': 0.8}, '0.9': {'type': None, 'size': 215, 'prob': 0.9}}
+
+    >>> get_sample_size(20, c3, None)
+    {'0.7': {'type': None, 'size': 87, 'prob': 0.7}, '0.8': {'type': None, 'size': 110, 'prob': 0.8}, '0.9': {'type': None, 'size': 156, 'prob': 0.9}}
+
+    One less than the kmin
+    >>> get_sample_size(10, c3, make_sample_results(c3, [[56, 40, 3]]))
+    {'0.9': {'type': None, 'size': 150, 'prob': 0.9}}
     """
 
-    # import pdb; pdb.set_trace()
     # logging.warning(f"{sample.results=}")
     # from ..api.rounds import contest_results_by_round
     # logging.warning(f"{contest_results_by_round(contest)=}")
@@ -65,13 +148,22 @@ def get_sample_size(
     if sample_results is None:
         prev_round_schedule = []
     else:
-        # Set up some parameters we hope to get via the API
+        # Construct round schedule as a function of only first round size.
+        # and other information set at the start of the audit.
+
+        # Minerva is not designed to be this formulaic in its round sizes,
+        # but while we work on rigorously demonstrating that round sizes can be chosen freely
+        # leveraging information on sample results in previous rounds, we offer this
+        # approach which simply defines all round sizes uniformly based on the first
+        # round size.
+
+        # Temporarily set up some parameters we will eventually get via the API
         first_round_size = 100
         prev_round_count = len(sample_results)
         prev_round_schedule = [
-            first_round_size * 2 ** i for i in range(prev_round_count)
+            minerva_round_size(first_round_size, i) for i in range(prev_round_count)
         ]
-        next_round_size = first_round_size * 2 ** prev_round_count
+        next_round_size = minerva_round_size(first_round_size, prev_round_count)
         logging.debug(f"{prev_round_schedule=}, {next_round_size=}")
         return {"0.9": {"type": None, "size": next_round_size, "prob": 0.9}}
 
@@ -98,7 +190,6 @@ def get_sample_size(
     # For multi-winner, do nothing
     if contest.num_winners != 1:
         # FIXME: handle this some day
-        # TODO: return -1 instead?
         return {"asn": {"type": "ASN", "size": -1, "prob": None}}
 
 
@@ -162,10 +253,10 @@ def get_sample_size(
     return samples
 
 
-def collect_p_values(
+def collect_risks(
         alpha: float,
-        margins: Dict[str, Dict], round_schedule: List[int], sample_results: Dict[str, int]
-) -> Dict[Tuple[str, str], Decimal]:
+        arlo_contest: Contest, round_schedule: List[int], sample_results: Dict[str, Dict[str, int]]
+) -> Dict[Tuple[str, str], float]:
     """
     Collect risk levels for each pair of candidates.
 
@@ -176,39 +267,43 @@ def collect_p_values(
         sample_results - mapping of candidates to votes in each round
 
     Outputs:
-        T - Mapping of (winner, loser) pairs to their test statistic based
-            on sample_results
+        risks - Mapping of (winner, loser) pairs to their risk levels
+
+    >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
+    >>> collect_risks(0.1, c3, [120], make_sample_results(c3, [[56, 40, 3]]))
+    {('winner', 'loser'): 0.0933945799801079}
+    >>> collect_risks(0.1, c3, [83], make_sample_results(c3, [[40, 40, 3]]))
+    {('winner', 'loser'): 0.5596434615209632}
+    >>> collect_risks(0.1, c3, [83, 200], make_sample_results(c3, [[40, 40, 3], [70, 30, 10]]))
+    {('winner', 'loser'): 0.00638203150599862}
+
+    # TODO: Make better test here of third-candidate surge, after not being eliminated earlier
+    #>>> collect_risks(0.1, c3, [83, 200], make_sample_results(c3, [[40, 40, 3], [70, 30, 90]]))
+    #surely not {('winner', 'loser'): 0.00638203150599862}
+    >>> collect_risks(0.1, c3, [82], make_sample_results(c3, [[40, 40, 3]]))
+    Traceback (most recent call last):
+    ValueError: Incorrect number of valid ballots entered
     """
 
-    winners = margins["winners"]
-    losers = margins["losers"]
+    logging.debug(f"minerva collect_risks {alpha=}, {arlo_contest=}, {round_schedule=}, {sample_results=})")
 
-    risks = {}
+    audit = make_athena_audit(arlo_contest, alpha)
+    for round_size, sample in zip(round_schedule, sample_results.values()):
+        obs = list(sample.values())
+        # if round_size != sum(obs):
+        #    raise ValueError(f"{round_size=} not equal to sum({obs=})")
+        audit.set_observations(round_size, sum(obs), obs)
 
-    for winner in winners:
-        for loser in losers:
-            risks[(winner, loser)] = Decimal(1.0)
+        # TODO: check for the audit being over, after which it will throw an error
+        logging.debug(f"minerva  collect_risks: {audit.status[audit.active_contest].risks[-1]=}")
 
-    # Handle the no-losers case
-    if not losers:
-        for winner in winners:
-            risks[(winner, "")] = Decimal(1.0)
+    # FIXME: for now we're returning only the max p_value for the deciding pair,
+    # since other audits only return a single p_value,
+    # and rounds.py throws it out right away p_value = max(p_values.values())
 
-    for winner, winner_res in winners.items():
-        for loser, loser_res in losers.items():
-            res = get_minerva_test_statistics(
-                alpha,
-                winner_res["p_w"],
-                loser_res["p_l"],
-                sample_results[winner],
-                sample_results[loser],
-            )
-            logging.debug(
-                f"minerva test_stats {res=} for: {winner_res['p_w']=}, {loser_res['p_l']=}, {sample_results[winner]=}, {sample_results[loser]=})"
-            )
-            risks[(winner, loser)] = 1.0 if res is None else 1.0 / res
+    risks = {('winner', 'loser'): audit.status[audit.active_contest].risks[-1]}
+    logging.debug(f"minerva  collect_risks return: {risks=}")
 
-    logging.debug(f"minerva test_stats return: {risks=}")
     return risks
 
 
@@ -237,8 +332,15 @@ def compute_risk(
                           result is correct based on the sample, for each
                           winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
+
+    >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
+    >>> compute_risk(10, c3, make_sample_results(c3, [[56, 40, 3]]))
+    ({('winner', 'loser'): 0.0933945799801079}, True)
+    >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3]]))
+    ({('winner', 'loser'): 0.5596434615209632}, False)
+    >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3], [70, 30, 10]]))
+    ({('winner', 'loser'): 0.00638203150599862}, True)
     """
-    # import pdb; pdb.set_trace()
 
     alpha = risk_limit / 100
     assert 0.0 < alpha < 1.0, "The risk-limit must be greater than zero and less than one!"
@@ -246,25 +348,39 @@ def compute_risk(
     # Set up some parameters we hope to get via the API
     first_round_size = 100
     prev_round_count = len(sample_results)
-    prev_round_schedule = [first_round_size * 2 ** i for i in range(prev_round_count)]
+    prev_round_schedule = [minerva_round_size(first_round_size, i) for i in range(prev_round_count)]
     logging.debug(f"{prev_round_schedule=}")
 
-    # Get cumulative sample results
-    cumulative_sample = {}
-    if sample_results:
-        cumulative_sample = compute_cumulative_sample(sample_results)
-    else:
-        for candidate in contest.candidates:
-            cumulative_sample[candidate] = 0
-    risks = collect_p_values(alpha, contest.margins, prev_round_schedule, cumulative_sample)
+    risks = collect_risks(alpha, contest, prev_round_schedule, sample_results)
+    finished = all(risk <= alpha for risk in risks.values())
+    return risks, finished
 
-    measurements = {}
-    finished = True
-    for pair in risks:
-        raw = 1 / risks[pair]
-        measurements[pair] = float(raw)
 
-        if raw > alpha:
-            finished = False
+def filter_athena_messages(record):
+    "Filter out any logging messages from athena/audit.py, in preference to our tighter logging"
 
-    return measurements, finished
+    return not record.pathname.endswith("athena/audit.py")
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=10)
+    logging.getLogger().addFilter(filter_athena_messages)
+
+    import doctest
+
+    doctest.testmod()
+
+    # TODO - check out the str() output for an Audit
+    if False:
+        c10 = make_arlo_contest({"a": 55000, "b": 45000})
+        sample_results = make_sample_results(c10, [[71, 73], [283, 261]])
+        print(sample_results)
+        print(collect_risks(0.1, c10, [144, 544], sample_results))
+
+        c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
+        audit = make_athena_audit(c3, 0.1)
+        audit.set_observations(93, 93, [49, 40, 3])
+        print(f"{audit}")
+        # TODO is what it prints out really right, with nested lists of individual candidate obs?
+        #  "observations: {'c1': [[49], [40], [3]]}"
+        print(f"{audit.status[audit.active_contest].risks[0]=}")
