@@ -262,7 +262,7 @@ describe('DataEntry', () => {
             },
             {
               contestId: 'contest-id-2',
-              interpretation: 'CANT_AGREE',
+              interpretation: 'CONTEST_NOT_ON_BALLOT',
               choiceIds: [],
               comment: null,
             },
@@ -292,7 +292,7 @@ describe('DataEntry', () => {
         screen.getByRole('heading', { name: 'Contest 2' })
         userEvent.click(
           screen.getAllByRole('checkbox', {
-            name: "Audit board can't agree",
+            name: 'Not on Ballot',
           })[1]
         )
 
@@ -302,7 +302,7 @@ describe('DataEntry', () => {
           await screen.findByRole('button', { name: 'Choice One' })
         ).toBeDisabled()
         expect(
-          screen.getByRole('button', { name: "Audit board can't agree" })
+          screen.getByRole('button', { name: 'Not on Ballot' })
         ).toBeDisabled()
         expect(screen.queryByText('Choice Two')).not.toBeInTheDocument()
         expect(screen.queryByText('Choice Three')).not.toBeInTheDocument()

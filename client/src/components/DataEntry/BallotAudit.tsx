@@ -32,14 +32,18 @@ const BallotAudit: React.FC<IProps> = ({
           marked on the paper ballot.
         </p>
         <p>
-          If the voter did not vote in the contest, select &quot;Blank vote/Not
-          on Ballot.&quot;
+          If the voter did not vote in the contest, select &quot;Blank
+          vote.&quot;
         </p>
         <p>
+          If this contest is not shown on this ballot, select &quot;Not on
+          ballot.&quot;
+        </p>
+        {/* <p>
           If the audit board cannot agree, select &quot;Audit board can&apos;t
           agree.&quot; You may add a comment for additional information about
           the disagreement.
-        </p>
+        </p> */}
         <Formik
           initialValues={{ interpretations }}
           enableReinitialize
@@ -111,7 +115,11 @@ const BallotAuditContest = ({
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { checked } = e.currentTarget
-    if (value === Interpretation.BLANK || value === Interpretation.CANT_AGREE) {
+    if (
+      value === Interpretation.BLANK ||
+      value === Interpretation.CANT_AGREE ||
+      value === Interpretation.CONTEST_NOT_ON_BALLOT
+    ) {
       setInterpretation({
         ...interpretation,
         interpretation: checked ? value : null,
@@ -143,17 +151,25 @@ const BallotAuditContest = ({
           label={c.name}
         />
       ))}
-      <BlockCheckbox
+      {/* <BlockCheckbox
         handleChange={onCheckboxClick(Interpretation.CANT_AGREE)}
         gray
         checked={interpretation.interpretation === Interpretation.CANT_AGREE}
         label="Audit board can't agree"
-      />
+      /> */}
       <BlockCheckbox
         handleChange={onCheckboxClick(Interpretation.BLANK)}
         gray
         checked={interpretation.interpretation === Interpretation.BLANK}
-        label="Blank vote/Not on Ballot"
+        label="Blank vote"
+      />
+      <BlockCheckbox
+        handleChange={onCheckboxClick(Interpretation.CONTEST_NOT_ON_BALLOT)}
+        gray
+        checked={
+          interpretation.interpretation === Interpretation.CONTEST_NOT_ON_BALLOT
+        }
+        label="Not on Ballot"
       />
       <Button minimal icon="edit" onClick={toggleCommenting}>
         {commenting ? 'Remove comment' : 'Add comment'}
