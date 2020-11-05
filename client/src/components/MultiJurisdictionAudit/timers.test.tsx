@@ -40,7 +40,7 @@ const renderWithRoute = (route: string, component: ReactElement) =>
   )
 
 const loadEach = [
-  aaApiCalls.getRounds,
+  aaApiCalls.getRounds([]),
   aaApiCalls.getJurisdictions,
   aaApiCalls.getContests,
   aaApiCalls.getSettings(auditSettings.all),

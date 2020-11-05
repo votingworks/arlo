@@ -17,6 +17,7 @@ import {
   manifestFile,
   talliesFile,
   auditSettings,
+  roundMocks,
 } from './useSetupMenuItems/_mocks'
 import {
   routerTestProps,
@@ -63,7 +64,7 @@ describe('AA setup flow', () => {
   }
 
   const loadEach = [
-    aaApiCalls.getRounds,
+    aaApiCalls.getRounds([]),
     aaApiCalls.getJurisdictions,
     aaApiCalls.getContests,
     aaApiCalls.getSettings(auditSettings.all),
@@ -200,9 +201,19 @@ describe('AA setup flow', () => {
     })
   })
 
-  it.skip('redirects to /progress by default', async () => {
-    // TEST TODO
-    const expectedCalls = [aaApiCalls.getUser, ...loadEach, ...loadEach]
+  it('redirects to /progress after audit is launched', async () => {
+    const loadAfterLaunch = [
+      aaApiCalls.getRounds(roundMocks.singleIncomplete),
+      aaApiCalls.getJurisdictions,
+      aaApiCalls.getContests,
+      aaApiCalls.getSettings(auditSettings.all),
+    ]
+    const expectedCalls = [
+      aaApiCalls.getUser,
+      ...loadAfterLaunch,
+      ...loadAfterLaunch,
+      ...loadAfterLaunch,
+    ]
     const routeProps = routerTestProps('/election/1', { electionId: '1' })
     await withMockFetch(expectedCalls, async () => {
       paramsMock.mockReturnValue({
