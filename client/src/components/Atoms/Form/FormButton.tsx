@@ -31,8 +31,6 @@ const FormButton: React.FC<IProps> = ({
   disabled,
   onClick,
   size,
-  // should we use this?
-  inline, // eslint-disable-line @typescript-eslint/no-unused-vars
   children,
   verticalSpaced,
   ...rest

@@ -9,7 +9,6 @@ import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileSta
 import { IAuditSettings } from '../../types'
 import { IBallot } from './RoundManagement/useBallots'
 import { IAuditBoard } from './useAuditBoards'
-import { IStandardizedContest } from './useStandardizedContests'
 
 const manifestFormData: FormData = new FormData()
 manifestFormData.append('manifest', manifestFile, manifestFile.name)

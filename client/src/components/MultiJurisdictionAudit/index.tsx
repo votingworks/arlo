@@ -11,11 +11,7 @@ import Progress from './Progress'
 import useSetupMenuItems from './useSetupMenuItems'
 import RoundManagement from './RoundManagement'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
-import {
-  AuditAdminStatusBox,
-  JurisdictionAdminStatusBox,
-  isSetupComplete,
-} from './StatusBox'
+import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from './StatusBox'
 import { useBallotManifest, useBatchTallies, useCVRS } from './useCSV'
 import useAuditBoards from './useAuditBoards'
 import useAuditSettings from './useAuditSettings'
