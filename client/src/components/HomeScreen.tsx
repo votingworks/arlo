@@ -264,7 +264,12 @@ const CreateAudit: React.FC = () => {
         auditMathType: 'BRAVO',
       }}
     >
-      {({ handleSubmit, setFieldValue, values }: FormikProps<IValues>) => (
+      {({
+        handleSubmit,
+        setFieldValue,
+        setValues,
+        values,
+      }: FormikProps<IValues>) => (
         <CreateAuditWrapper>
           <h2>New Audit</h2>
           <FormSection>
@@ -307,21 +312,14 @@ const CreateAudit: React.FC = () => {
               <RadioGroup
                 name="auditType"
                 onChange={e => {
-                  setFieldValue('auditType', e.currentTarget.value)
-                  switch (values.auditType) {
-                    case 'BALLOT_POLLING': {
-                      setFieldValue('auditMathType', 'BRAVO')
-                      break
-                    }
-                    case 'BALLOT_COMPARISON': {
-                      setFieldValue('auditMathType', 'SUPERSIMPLE')
-                      break
-                    }
-                    default: {
-                      setFieldValue('auditMathType', 'MACRO')
-                      break
-                    }
-                  }
+                  const auditType = e.currentTarget
+                    .value as IValues['auditType']
+                  const auditMathType = {
+                    BALLOT_POLLING: 'BRAVO',
+                    BALLOT_COMPARISON: 'SUPERSIMPLE',
+                    BATCH_COMPARISON: 'MACRO',
+                  }[auditType] as IValues['auditMathType']
+                  setValues({ ...values, auditType, auditMathType })
                 }}
                 selectedValue={values.auditType}
               >
