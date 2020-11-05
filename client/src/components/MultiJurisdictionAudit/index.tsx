@@ -131,7 +131,7 @@ export const AuditAdminView: React.FC = () => {
       return (
         <Redirect
           to={
-            isSetupComplete(jurisdictions, contests, auditSettings)
+            rounds.length > 0
               ? `/election/${electionId}/progress`
               : `/election/${electionId}/setup`
           }
