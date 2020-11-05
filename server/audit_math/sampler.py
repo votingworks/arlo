@@ -107,6 +107,10 @@ def draw_ppeb_sample(
 
     U = macro.compute_U(batch_results, {}, contest)
 
+    # This can only be the case if we've already recounted
+    if U == 0:
+        return []
+
     # Map each batch to its weighted probability of being picked
     batch_to_prob: Dict[str, Decimal] = {}
     min_prob = Decimal(1.0)
