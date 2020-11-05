@@ -85,6 +85,6 @@ snapshots["test_draw_sample 1"] = [
     ("0.138772253094235762", ("pct 4", 20), 1),
 ]
 
-snapshots["test_macro_recount_sample 1"] = 0
+snapshots["test_macro_recount_sample 1"] = []
 
-snapshots["test_macro_recount_sample 2"] = 0
+snapshots["test_macro_recount_sample 2"] = []
