@@ -48,6 +48,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
   const shouldShowSampleSizes =
+    !!jurisdictions &&
     !!contests &&
     !!auditSettings &&
     isSetupComplete(jurisdictions, contests, auditSettings)
@@ -57,6 +58,7 @@ const Review: React.FC<IProps> = ({ prevStage, locked, refresh }: IProps) => {
   )
 
   if (
+    !jurisdictions ||
     !contests ||
     !auditSettings ||
     (shouldShowSampleSizes && !sampleSizeOptions)

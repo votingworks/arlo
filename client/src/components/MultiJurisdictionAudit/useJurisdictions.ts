@@ -47,8 +47,13 @@ export interface IJurisdiction {
   } | null
 }
 
-const useJurisdictions = (electionId: string, refreshId?: string) => {
-  const [jurisdictions, setJurisdictions] = useState<IJurisdiction[]>([])
+const useJurisdictions = (
+  electionId: string,
+  refreshId?: string
+): IJurisdiction[] | null => {
+  const [jurisdictions, setJurisdictions] = useState<IJurisdiction[] | null>(
+    null
+  )
   useEffect(() => {
     ;(async () => {
       const response = await api<{ jurisdictions: IJurisdiction[] }>(
