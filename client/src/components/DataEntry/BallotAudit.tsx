@@ -35,6 +35,10 @@ const BallotAudit: React.FC<IProps> = ({
           If the voter did not vote in the contest, select &quot;Blank
           vote.&quot;
         </p>
+        <p>
+          If this contest is not shown on this ballot, select &quot;Not on
+          ballot.&quot;
+        </p>
         {/* <p>
           If the audit board cannot agree, select &quot;Audit board can&apos;t
           agree.&quot; You may add a comment for additional information about
