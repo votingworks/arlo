@@ -120,12 +120,9 @@ def draw_ppeb_sample(
 
         # Probability of being picked is directly related to how much this
         # batch contributes to the overall possible error
-        if U == 0:
-            batch_to_prob[batch] = Decimal(1)
-        else:
-            batch_to_prob[batch] = error / U
+        batch_to_prob[batch] = error / U
 
-        if U != 0 and error / U < min_prob:
+        if error / U < min_prob:
             min_prob = error / U
 
     sample_from = []
