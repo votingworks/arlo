@@ -311,6 +311,8 @@ def test_auth_me_not_logged_in(client: FlaskClient):
 def test_session_expiration(client: FlaskClient, aa_email: str):
     original_session_lifetime = app.permanent_session_lifetime
     assert original_session_lifetime > timedelta(minutes=1)
+    assert app.config["SESSION_REFRESH_EACH_REQUEST"] is True
+
     app.permanent_session_lifetime = timedelta(milliseconds=1)
 
     set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
