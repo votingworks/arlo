@@ -26,12 +26,43 @@ def macro_batches():
 
 
 @pytest.fixture
+def close_macro_batches():
+    batches = {}
+
+    for i in range(10):
+        batches["pct {}".format(i)] = {
+            "test1": {"cand1": 26, "cand2": 24, "ballots": 50}
+        }
+        # 10 batches will have max error of .04
+        batches["pct {}".format(i)] = {
+            "test1": {"cand1": 24, "cand2": 26, "ballots": 50}
+        }
+
+    return batches
+
+
+@pytest.fixture
 def macro_contest():
     name = "test1"
 
     info_dict = {
         "cand1": 600,
         "cand2": 400,
+        "ballots": 1000,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    return Contest(name, info_dict)
+
+
+@pytest.fixture
+def close_macro_contest():
+    name = "recount"
+
+    info_dict = {
+        "cand1": 501,
+        "cand2": 499,
         "ballots": 1000,
         "numWinners": 1,
         "votesAllowed": 1,
@@ -86,6 +117,24 @@ def test_draw_more_macro_sample(macro_batches, macro_contest, snapshot):
 
     sample = sampler.draw_ppeb_sample(
         SEED, macro_contest, 5, num_sampled=5, batch_results=macro_batches
+    )
+    snapshot.assert_match(sample)
+
+
+def test_macro_recount_sample(close_macro_batches, close_macro_contest, snapshot):
+
+    sample = sampler.draw_ppeb_sample(
+        SEED, close_macro_contest, 5, 0, batch_results=close_macro_batches,
+    )
+    snapshot.assert_match(sample)
+
+    # Now do a full recount
+    sample = sampler.draw_ppeb_sample(
+        SEED,
+        close_macro_contest,
+        1000,
+        num_sampled=5,
+        batch_results=close_macro_batches,
     )
     snapshot.assert_match(sample)
 
