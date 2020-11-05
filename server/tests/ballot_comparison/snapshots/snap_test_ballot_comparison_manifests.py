@@ -31,8 +31,8 @@ Contest Name,Targeted?,Number of Winners,Votes Allowed,Total Ballots Cast,Tabula
 Contest 1,Targeted,1,1,360,Choice 1-1: 160; Choice 1-2: 0\r
 \r
 ######## AUDIT SETTINGS ########\r
-Audit Name,Audit Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_ballot_comparison_container_manifest,BALLOT_COMPARISON,10%,1234567890,Yes\r
+Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
+Test Audit test_ballot_comparison_container_manifest,BALLOT_COMPARISON,SUPERSIMPLE,10%,1234567890,Yes\r
 \r
 ######## AUDIT BOARDS ########\r
 Jurisdiction Name,Audit Board Name,Member 1 Name,Member 1 Affiliation,Member 2 Name,Member 2 Affiliation\r

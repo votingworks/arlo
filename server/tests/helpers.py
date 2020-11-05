@@ -124,6 +124,7 @@ def create_election(
     client: FlaskClient,
     audit_name: str = None,
     audit_type: str = AuditType.BALLOT_POLLING,
+    audit_math_type: str = AuditMathType.BRAVO,
     organization_id: str = None,
 ) -> str:
     rv = post_json(
@@ -132,6 +133,7 @@ def create_election(
         {
             "auditName": audit_name or f"Test Audit {datetime.utcnow()}",
             "auditType": audit_type,
+            "auditMathType": audit_math_type,
             "organizationId": organization_id,
         },
     )

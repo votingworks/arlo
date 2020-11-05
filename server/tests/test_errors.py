@@ -140,6 +140,7 @@ def test_bgcompute_batch_tallies_errors(
 ):
     election = Election.query.get(election_id)
     election.audit_type = AuditType.BATCH_COMPARISON
+    election.audit_math_type = AuditMathType.MACRO
     contest_2 = Contest.query.get(contest_ids[1])
     db_session.delete(contest_2)
     db_session.commit()

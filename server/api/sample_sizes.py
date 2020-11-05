@@ -33,8 +33,8 @@ def sample_size_options(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 sample_results,
+                AuditMathType(election.audit_math_type),
                 rounds.round_sizes(election),
-                BallotPollingType.BRAVO,
             )
             # Remove unnecessary "type" field from options, add "key" field
             return {

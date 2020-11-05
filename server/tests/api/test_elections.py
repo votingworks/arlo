@@ -12,6 +12,7 @@ def test_create_election_missing_fields(client: FlaskClient, org_id: str):
         new_election = {
             "auditName": f"Test Missing {field}",
             "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.BRAVO,
             "organizationId": org_id,
         }
 
@@ -38,6 +39,7 @@ def test_create_election_not_logged_in(client: FlaskClient, org_id: str):
             "auditName": "Test Audit Not Logged In",
             "organizationId": org_id,
             "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.BRAVO,
         },
     )
     assert json.loads(rv.data) == {
@@ -57,6 +59,7 @@ def test_create_election(client: FlaskClient, org_id: str):
             "auditName": "Test Audit In Org Logged In AA",
             "organizationId": org_id,
             "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.BRAVO,
         },
     )
     response = json.loads(rv.data)
@@ -77,6 +80,7 @@ def test_create_election_new_batch_comparison_audit(client: FlaskClient, org_id:
             "auditName": "Test Audit Batch Comparison",
             "organizationId": org_id,
             "auditType": "BATCH_COMPARISON",
+            "auditMathType": AuditMathType.MACRO,
         },
     )
     assert rv.status_code == 200
@@ -94,6 +98,7 @@ def test_create_election_new_ballot_comparison_audit(client: FlaskClient, org_id
             "auditName": "Test Audit Ballot Comparison",
             "organizationId": org_id,
             "auditType": "BALLOT_COMPARISON",
+            "auditMathType": AuditMathType.SUPERSIMPLE,
         },
     )
     assert rv.status_code == 200
@@ -116,6 +121,7 @@ def test_create_election_in_org_with_logged_in_admin_without_access(
             "auditName": "Test Audit Logged In Without Access",
             "organizationId": org_id,
             "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.BRAVO,
         },
     )
     assert json.loads(rv.data) == {
@@ -143,6 +149,7 @@ def test_create_election_jurisdiction_admin(
             "auditName": "Test Audit In Org Logged In JA",
             "organizationId": org_id,
             "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.BRAVO,
         },
     )
     assert json.loads(rv.data) == {
@@ -164,6 +171,7 @@ def test_create_election_bad_audit_type(client: FlaskClient, org_id: str):
         {
             "auditName": "Test Audit",
             "auditType": "NOT A REAL TYPE",
+            "auditMathType": AuditMathType.BRAVO,
             "organizationId": org_id,
         },
     )
@@ -172,6 +180,29 @@ def test_create_election_bad_audit_type(client: FlaskClient, org_id: str):
         "errors": [
             {
                 "message": "'NOT A REAL TYPE' is not one of ['BALLOT_POLLING', 'BATCH_COMPARISON', 'BALLOT_COMPARISON']",
+                "errorType": "Bad Request",
+            }
+        ]
+    }
+
+
+def test_create_election_bad_bp_type(client: FlaskClient, org_id: str):
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = post_json(
+        client,
+        "/api/election",
+        {
+            "auditName": "Test Audit",
+            "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": "NOT A REAL TYPE",
+            "organizationId": org_id,
+        },
+    )
+    assert rv.status_code == 400
+    assert json.loads(rv.data) == {
+        "errors": [
+            {
+                "message": "'NOT A REAL TYPE' is not one of ['BRAVO', 'MINERVA', 'SUPERSIMPLE', 'MACRO']",
                 "errorType": "Bad Request",
             }
         ]
@@ -188,6 +219,7 @@ def test_create_election_in_org_duplicate_audit_name(client: FlaskClient, org_id
             "auditName": "Test Audit In Org Duplicate",
             "organizationId": org_id,
             "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.BRAVO,
         },
     )
     assert rv.status_code == 200
@@ -200,6 +232,7 @@ def test_create_election_in_org_duplicate_audit_name(client: FlaskClient, org_id
             "auditName": "Test Audit In Org Duplicate",
             "organizationId": org_id,
             "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.BRAVO,
         },
     )
     assert rv.status_code == 409
@@ -225,6 +258,7 @@ def test_create_election_two_orgs_same_name(client: FlaskClient):
             "auditName": "Test Audit Two Orgs Duplicate",
             "organizationId": org_id_1,
             "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.BRAVO,
         },
     )
     assert rv.status_code == 200
@@ -239,6 +273,7 @@ def test_create_election_two_orgs_same_name(client: FlaskClient):
             "auditName": "Test Audit Two Orgs Duplicate",
             "organizationId": org_id_2,
             "auditType": AuditType.BALLOT_POLLING,
+            "auditMathType": AuditMathType.BRAVO,
         },
     )
     assert rv.status_code == 200

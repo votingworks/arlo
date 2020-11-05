@@ -16,6 +16,10 @@ ELECTION_SCHEMA = {
             "type": "string",
             "enum": [audit_type.value for audit_type in AuditType],
         },
+        "auditMathType": {
+            "type": "string",
+            "enum": [audit_math_type.value for audit_math_type in AuditMathType],
+        },
         "organizationId": {"anyOf": [{"type": "string"}, {"type": "null"}]},
     },
     "required": ["organizationId", "auditName", "auditType"],
@@ -31,6 +35,20 @@ def validate_new_election(election: JSONDict):
     ).first():
         raise Conflict(
             f"An audit with name '{election['auditName']}' already exists within your organization"
+        )
+
+    valid_math_types_for_audit_type = {
+        AuditType.BALLOT_POLLING: [AuditMathType.BRAVO, AuditMathType.MINERVA],
+        AuditType.BALLOT_COMPARISON: [AuditMathType.SUPERSIMPLE],
+        AuditType.BATCH_COMPARISON: [AuditMathType.MACRO],
+    }
+
+    if (
+        election["auditMathType"]
+        not in valid_math_types_for_audit_type[election["auditType"]]
+    ):
+        raise Conflict(
+            f"AuditMathType '{election['auditMathType']}' cannot be used with audit type '{election['auditType']}'"
         )
 
 
@@ -50,6 +68,7 @@ def create_election():
         id=str(uuid.uuid4()),
         audit_name=election["auditName"],
         audit_type=election["auditType"],
+        audit_math_type=election["auditMathType"],
         organization_id=election["organizationId"],
         online=online,
     )

@@ -15,7 +15,7 @@ def get_sample_size(
     round_sizes: Dict[int, int],
 ) -> Dict[str, "SampleSizeOption"]:  # type: ignore
 
-    return {}
+    raise Exception("Not implemented!")
 
 
 def compute_risk(
@@ -24,5 +24,4 @@ def compute_risk(
     sample_results: Dict[str, Dict[str, int]],
     round_sizes: Dict[int, int],
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
-
-    return {("", ""): 0.0}, False
+    raise Exception("Not implemented!")

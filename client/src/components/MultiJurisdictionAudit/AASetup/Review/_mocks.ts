@@ -10,6 +10,7 @@ export const settingsMock: {
     randomSeed: null,
     riskLimit: null,
     auditType: 'BALLOT_POLLING',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
   full: {
@@ -19,6 +20,7 @@ export const settingsMock: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
   offline: {
@@ -28,6 +30,7 @@ export const settingsMock: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BALLOT_POLLING',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
   batch: {
@@ -37,6 +40,7 @@ export const settingsMock: {
     randomSeed: '12345',
     riskLimit: 10,
     auditType: 'BATCH_COMPARISON',
+    auditMathType: 'BRAVO',
     auditName: 'Test Audit',
   },
 }

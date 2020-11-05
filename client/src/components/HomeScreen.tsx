@@ -200,11 +200,23 @@ interface IValues {
   organizationId: string
   auditName: string
   auditType: IAuditSettings['auditType']
+  auditMathType: IAuditSettings['auditMathType']
 }
 
 const CreateAuditWrapper = styled.div`
   background-color: #ebf1f5;
   padding: 30px;
+`
+
+// TODO: remove "display: none;" when we implement Minerva
+const BallotPollingWrapper = styled.div`
+  display: none;
+  margin: 20px 0;
+  background-color: #ffffff;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  padding-left: 20px;
+  font-size: 85%;
 `
 
 const WideField = styled(FormField)`
@@ -220,6 +232,7 @@ const CreateAudit: React.FC = () => {
     organizationId,
     auditName,
     auditType,
+    auditMathType,
   }: IValues) => {
     setSubmitting(true)
     const response: { electionId: string } | null = await api('/election', {
@@ -228,6 +241,7 @@ const CreateAudit: React.FC = () => {
         organizationId,
         auditName,
         auditType,
+        auditMathType,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -247,9 +261,15 @@ const CreateAudit: React.FC = () => {
         organizationId: meta!.organizations[0].id,
         auditName: '',
         auditType: 'BALLOT_POLLING',
+        auditMathType: 'BRAVO',
       }}
     >
-      {({ handleSubmit, setFieldValue, values }: FormikProps<IValues>) => (
+      {({
+        handleSubmit,
+        setFieldValue,
+        setValues,
+        values,
+      }: FormikProps<IValues>) => (
         <CreateAuditWrapper>
           <h2>New Audit</h2>
           <FormSection>
@@ -291,12 +311,36 @@ const CreateAudit: React.FC = () => {
               <p>Audit type</p>
               <RadioGroup
                 name="auditType"
-                onChange={e =>
-                  setFieldValue('auditType', e.currentTarget.value)
-                }
+                onChange={e => {
+                  const auditType = e.currentTarget
+                    .value as IValues['auditType']
+                  const auditMathType = {
+                    BALLOT_POLLING: 'BRAVO',
+                    BALLOT_COMPARISON: 'SUPERSIMPLE',
+                    BATCH_COMPARISON: 'MACRO',
+                  }[auditType] as IValues['auditMathType']
+                  setValues({ ...values, auditType, auditMathType })
+                }}
                 selectedValue={values.auditType}
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
+                {values.auditType === 'BALLOT_POLLING' ? (
+                  <BallotPollingWrapper>
+                    <label htmlFor="auditMathType">
+                      <p>Ballot polling type</p>
+                      <RadioGroup
+                        name="auditMathType"
+                        onChange={e =>
+                          setFieldValue('auditMathType', e.currentTarget.value)
+                        }
+                        selectedValue={values.auditMathType}
+                      >
+                        <Radio value="BRAVO">BRAVO</Radio>
+                        <Radio value="MINERVA">Minerva (Not recommended)</Radio>
+                      </RadioGroup>
+                    </label>
+                  </BallotPollingWrapper>
+                ) : null}
                 <Radio value="BATCH_COMPARISON">Batch Comparison</Radio>
                 <Radio value="BALLOT_COMPARISON">Ballot Comparison</Radio>
               </RadioGroup>

@@ -27,8 +27,8 @@ Contest 1,Targeted,1,1,1000,candidate 1: 600; candidate 2: 400\r
 Contest 2,Opportunistic,2,2,600,candidate 1: 200; candidate 2: 300; candidate 3: 100\r
 \r
 ######## AUDIT SETTINGS ########\r
-Audit Name,Audit Type,Risk Limit,Random Seed,Online Data Entry?\r
-Test Audit test_run_offline_audit,BALLOT_POLLING,10%,1234567890,No\r
+Audit Name,Audit Type,Audit Math Type,Risk Limit,Random Seed,Online Data Entry?\r
+Test Audit test_run_offline_audit,BALLOT_POLLING,BRAVO,10%,1234567890,No\r
 \r
 ######## ROUNDS ########\r
 Round Number,Contest Name,Targeted?,Sample Size,Risk Limit Met?,P-Value,Start Time,End Time,Audited Votes\r
