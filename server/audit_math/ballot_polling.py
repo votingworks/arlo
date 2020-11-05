@@ -37,7 +37,7 @@ def get_sample_size(
     """
 
     if math_type == AuditMathType.MINERVA:
-        return minerva.get_sample_size(risk_limit, contest, sample_results)
+        return minerva.get_sample_size(risk_limit, contest, sample_results, round_sizes)
     else:
         # Default to BRAVO math
         return bravo.get_sample_size(risk_limit, contest, sample_results)
@@ -53,7 +53,7 @@ def compute_risk(
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
 
     if math_type == AuditMathType.MINERVA:
-        return minerva.compute_risk(risk_limit, contest, sample_results)
+        return minerva.compute_risk(risk_limit, contest, sample_results, round_sizes)
     else:
         # Default to BRAVO
         return bravo.compute_risk(risk_limit, contest, sample_results)
