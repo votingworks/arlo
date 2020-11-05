@@ -1,3 +1,5 @@
+import time
+from datetime import timedelta
 import json, re, uuid
 from typing import List, Optional
 from unittest.mock import Mock, MagicMock
@@ -10,6 +12,7 @@ from ..auth.routes import auth0_sa, auth0_aa, auth0_ja
 from ..models import *  # pylint: disable=wildcard-import
 from ..util.jsonschema import JSONDict
 from .helpers import *  # pylint: disable=wildcard-import
+from ..app import app
 
 
 SA_EMAIL = "sa@voting.works"
@@ -303,6 +306,31 @@ def test_auth_me_not_logged_in(client: FlaskClient):
     rv = client.get("/api/me")
     assert rv.status_code == 200
     assert json.loads(rv.data) is None
+
+
+def test_session_expiration(client: FlaskClient, aa_email: str):
+    original_session_lifetime = app.permanent_session_lifetime
+    assert original_session_lifetime > timedelta(minutes=1)
+
+    # In order to make sure the session only expires after the user has been
+    # inactive for the specified amount of time, we need to make sure the
+    # session gets refreshed every request. This is turned on by default in
+    # Flask, so we just check to make sure it didn't accidentally get turned
+    # off.
+    assert app.config["SESSION_REFRESH_EACH_REQUEST"] is True
+
+    app.permanent_session_lifetime = timedelta(milliseconds=1)
+
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, aa_email)
+    rv = client.get("/api/me")
+    assert json.loads(rv.data) is not None
+
+    time.sleep(1.0)
+
+    rv = client.get("/api/me")
+    assert json.loads(rv.data) is None
+
+    app.permanent_session_lifetime = original_session_lifetime
 
 
 # Tests for route decorators. We have added special routes to test the

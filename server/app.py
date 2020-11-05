@@ -1,3 +1,4 @@
+from datetime import timedelta
 from urllib.parse import urlparse
 from flask import Flask
 from flask_talisman import Talisman
@@ -41,6 +42,7 @@ T = Talisman(
     },
 )
 app.secret_key = SESSION_SECRET
+app.permanent_session_lifetime = timedelta(hours=2)
 
 init_db()
 

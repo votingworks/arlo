@@ -9,11 +9,7 @@ import { auditSettings } from './MultiJurisdictionAudit/useSetupMenuItems/_mocks
 const apiCalls = {
   unauthenticatedUser: {
     url: '/api/me',
-    response: {},
-    error: {
-      status: 401,
-      statusText: 'UNAUTHORIZED',
-    },
+    response: null,
   },
   postNewAudit: (body: {}) => ({
     url: '/api/election',
@@ -99,6 +95,14 @@ describe('Home screen', () => {
         name: 'Log in as an admin',
       })
       expect(aaLoginButton).toHaveAttribute('href', '/auth/auditadmin/start')
+    })
+  })
+
+  it('shows a message when logged out for inactivity', async () => {
+    const expectedCalls = [apiCalls.unauthenticatedUser]
+    await withMockFetch(expectedCalls, async () => {
+      renderView('/#logged-out')
+      await screen.findByText('You have been logged out due to inactivity.')
     })
   })
 

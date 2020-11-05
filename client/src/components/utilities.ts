@@ -18,6 +18,13 @@ export const api = async <T>(
   try {
     const response = await fetch(`/api${endpoint}`, options)
     if (!response.ok) {
+      // If we get a 401, it most likely means the session expired, so we
+      // redirect to the login screen with a flag to show a message.
+      if (response.status === 401) {
+        window.location.replace('/#logged-out')
+        return null
+      }
+
       const responseText = await response.text()
       const { errors } = tryJson(responseText)
       const error =

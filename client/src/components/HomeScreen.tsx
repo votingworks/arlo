@@ -5,8 +5,9 @@ import {
   RadioGroup,
   Radio,
   HTMLSelect,
+  Callout,
 } from '@blueprintjs/core'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import { Formik, FormikProps, Field } from 'formik'
 import { useAuthDataContext } from './UserContext'
@@ -72,9 +73,20 @@ const LoginWrapper = styled.div`
 `
 
 const LoginScreen: React.FC = () => {
+  const wasLoggedOut = useLocation().hash === '#logged-out'
+
   return (
     <LoginWrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
+      {wasLoggedOut && (
+        <Callout
+          icon="lock"
+          intent="warning"
+          style={{ margin: '20px 0 20px 0' }}
+        >
+          You have been logged out due to inactivity.
+        </Callout>
+      )}
       <Card style={{ margin: '25px 0 15px 0' }}>
         <p>Participating in an audit in your local jurisdiction?</p>
         <AnchorButton

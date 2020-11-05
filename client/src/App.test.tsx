@@ -19,11 +19,7 @@ jest.unmock('react-toastify')
 const apiMocks = {
   failedAuth: {
     url: '/api/me',
-    response: {},
-    error: {
-      status: 401,
-      statusText: 'UNAUTHORIZED',
-    },
+    response: null,
   },
   abAuth: {
     url: '/api/me',
