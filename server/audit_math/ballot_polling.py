@@ -19,7 +19,6 @@ def get_sample_size(
     risk_limit: int,
     contest: Contest,
     sample_results: Optional[Dict[str, Dict[str, int]]],
-    round_sizes: Dict[int, int],
     math_type: AuditMathType,
     round_sizes: Dict[int, int],
 ) -> Dict[str, SampleSizeOption]:
@@ -47,7 +46,6 @@ def compute_risk(
     risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
-    round_sizes: Dict[int, int],
     math_type: AuditMathType,
     round_sizes: Dict[int, int],
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:

@@ -317,7 +317,6 @@ def calculate_risk_measurements(election: Election, round: Round):
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 contest_results_by_round(contest),
-                round_sizes(election),
                 AuditMathType(election.audit_math_type),
                 round_sizes(election),
             )

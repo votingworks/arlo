@@ -33,7 +33,6 @@ def sample_size_options(
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 sample_results,
-                rounds.round_sizes(election),
                 AuditMathType(election.audit_math_type),
                 rounds.round_sizes(election),
             )
