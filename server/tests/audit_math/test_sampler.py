@@ -29,15 +29,10 @@ def macro_batches():
 def close_macro_batches():
     batches = {}
 
-    for i in range(10):
-        batches["pct {}".format(i)] = {
-            "test1": {"cand1": 26, "cand2": 24, "ballots": 50}
-        }
-        # 10 batches will have max error of .04
-        batches["pct {}".format(i)] = {
-            "test1": {"cand1": 24, "cand2": 26, "ballots": 50}
-        }
-
+    batches["pct {}".format(1)] = {"test1": {"cand1": 100, "cand2": 0, "ballots": 100}}
+    batches["pct {}".format(2)] = {"test1": {"cand1": 100, "cand2": 0, "ballots": 100}}
+    batches["pct {}".format(3)] = {"test1": {"cand1": 0, "cand2": 100, "ballots": 100}}
+    batches["pct {}".format(4)] = {"test1": {"cand1": 0, "cand2": 98, "ballots": 100}}
     return batches
 
 
@@ -61,9 +56,9 @@ def close_macro_contest():
     name = "recount"
 
     info_dict = {
-        "cand1": 501,
-        "cand2": 499,
-        "ballots": 1000,
+        "cand1": 200,
+        "cand2": 198,
+        "ballots": 400,
         "numWinners": 1,
         "votesAllowed": 1,
     }
