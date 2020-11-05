@@ -116,6 +116,9 @@ exports[`DataEntry ballot interaction renders ballot route 1`] = `
             <p>
               If the voter did not vote in the contest, select "Blank vote."
             </p>
+            <p>
+              If this contest is not shown on this ballot, select "Not on ballot."
+            </p>
             <form>
               <div
                 class="sc-dnqmqq fUlqUV"

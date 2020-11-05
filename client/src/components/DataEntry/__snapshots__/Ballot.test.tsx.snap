@@ -112,6 +112,9 @@ exports[`Ballot renders correctly with an audited ballot 1`] = `
         <p>
           If the voter did not vote in the contest, select "Blank vote."
         </p>
+        <p>
+          If this contest is not shown on this ballot, select "Not on ballot."
+        </p>
         <form>
           <div
             class="sc-htpNat jWiLEy"
@@ -368,6 +371,9 @@ exports[`Ballot renders correctly with an unaudited ballot 1`] = `
         </p>
         <p>
           If the voter did not vote in the contest, select "Blank vote."
+        </p>
+        <p>
+          If this contest is not shown on this ballot, select "Not on ballot."
         </p>
         <form>
           <div
