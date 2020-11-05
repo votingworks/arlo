@@ -108,7 +108,7 @@ def draw_ppeb_sample(
     U = macro.compute_U(batch_results, {}, contest)
 
     # Map each batch to its weighted probability of being picked
-    batch_to_prob = {}
+    batch_to_prob: Dict[str, Decimal] = {}
     min_prob = Decimal(1.0)
     # Get u_ps
     for batch in batch_results:
@@ -116,9 +116,12 @@ def draw_ppeb_sample(
 
         # Probability of being picked is directly related to how much this
         # batch contributes to the overall possible error
-        batch_to_prob[batch] = error / U
+        if U == 0:
+            batch_to_prob[batch] = Decimal(1)
+        else:
+            batch_to_prob[batch] = error / U
 
-        if error / U < min_prob:
+        if U != 0 and error / U < min_prob:
             min_prob = error / U
 
     sample_from = []

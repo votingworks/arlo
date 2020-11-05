@@ -293,3 +293,57 @@ def test_tied_contest():
 
     assert not computed_p
     assert res
+
+
+def test_close_contest():
+    contest_data = {
+        "winner": 200,
+        "loser": 198,
+        "ballots": 400,
+        "numWinners": 1,
+        "votesAllowed": 1,
+    }
+
+    contest = Contest("Tied Contest", contest_data)
+
+    batches = {}
+    batches[1] = {
+        "Tied Contest": {"winner": 100, "loser": 0, "ballots": 100, "numWinners": 1,}
+    }
+    batches[2] = {
+        "Tied Contest": {"winner": 100, "loser": 0, "ballots": 100, "numWinners": 1,}
+    }
+    batches[3] = {
+        "Tied Contest": {"winner": 0, "loser": 100, "ballots": 100, "numWinners": 1,}
+    }
+    batches[4] = {
+        "Tied Contest": {"winner": 0, "loser": 98, "ballots": 100, "numWinners": 1,}
+    }
+
+    sample_results = {}
+
+    sample_size = macro.get_sample_sizes(RISK_LIMIT, contest, batches, sample_results)
+
+    assert sample_size == len(batches)
+
+    sample_results = {
+        1: {
+            "Tied Contest": {
+                "winner": 100,
+                "loser": 0,
+                "ballots": 100,
+                "numWinners": 1,
+            }
+        }
+    }
+
+    computed_p, res = macro.compute_risk(RISK_LIMIT, contest, batches, sample_results)
+
+    assert computed_p > ALPHA
+    assert not res
+
+    # Now do a full hand recount
+    computed_p, res = macro.compute_risk(RISK_LIMIT, contest, batches, batches)
+
+    assert not computed_p
+    assert res

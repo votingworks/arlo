@@ -218,7 +218,8 @@ def get_sample_sizes(
     retval = int(
         (alpha.ln() / ((1 - (1 / U))).ln()).quantize(Decimal(1), ROUND_CEILING)
     )
-    return retval
+
+    return min(retval, len(reported_results))
 
 
 def compute_risk(
