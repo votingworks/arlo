@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { useParams } from 'react-router-dom'
+import equal from 'fast-deep-equal'
 import { Formik, FormikProps, Field, FieldArray } from 'formik'
 import { Spinner } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
@@ -25,7 +26,7 @@ import { IContest, ICandidate, IAuditSettings } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
 import Card from '../../../Atoms/SpacedCard'
 import { testNumber } from '../../../utilities'
-import { isObjectEmpty, isObjectEqual } from '../../../../utils/objects'
+import isObjectEmpty from '../../../../utils/objects'
 
 interface IProps {
   isTargeted: boolean
@@ -87,9 +88,7 @@ const ContestForm: React.FC<IProps> = ({
     values: { contests: IContest[] }
   ) => {
     return (
-      !isTargeted &&
-      isObjectEmpty(touched) &&
-      isObjectEqual(initialValues, values)
+      !isTargeted && (isObjectEmpty(touched) || equal(initialValues, values))
     )
   }
 
