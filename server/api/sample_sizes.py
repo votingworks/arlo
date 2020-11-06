@@ -9,7 +9,7 @@ from ..auth import restrict_access, UserType
 from ..audit_math import ballot_polling, macro, supersimple, sampler_contest
 from . import rounds  # pylint: disable=cyclic-import
 from .cvrs import set_contest_metadata_from_cvrs
-from ..config import ALGORITHM
+
 
 # Because the /sample-sizes endpoint is only used for the audit setup flow,
 # we always want it to return the sample size options for the first round.
@@ -35,9 +35,6 @@ def sample_size_options(
                 sample_results,
                 AuditMathType(election.audit_math_type),
                 rounds.round_sizes(election),
-                BallotPollingType.MINERVA
-                if ALGORITHM == "minerva"
-                else BallotPollingType.BRAVO,
             )
             # Remove unnecessary "type" field from options, add "key" field
             return {

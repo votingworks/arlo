@@ -208,9 +208,7 @@ const CreateAuditWrapper = styled.div`
   padding: 30px;
 `
 
-// TODO: remove "display: none;" when we implement Minerva
 const BallotPollingWrapper = styled.div`
-  display: none;
   margin: 20px 0;
   background-color: #ffffff;
   padding-top: 10px;
