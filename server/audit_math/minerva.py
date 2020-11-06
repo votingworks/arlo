@@ -366,13 +366,3 @@ def filter_athena_messages(record):
     "Filter out any logging messages from athena/audit.py, in preference to our tighter logging"
 
     return not record.pathname.endswith("athena/audit.py")
-
-
-if __name__ == "__main__":
-    # For debugging:
-    # logging.basicConfig(level=10)
-    # logging.getLogger().addFilter(filter_athena_messages)
-
-    import doctest
-
-    doctest.testmod()
