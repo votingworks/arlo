@@ -27,7 +27,7 @@
         "athena": {
             "editable": true,
             "git": "https://github.com/filipzz/athena.git",
-            "ref": "0d44146a78bec40e19ad799900feb5defc825d57"
+            "ref": "b3d9b7ba8348d69bcd90dde5a489c149fccb02ed"
         },
         "attrs": {
             "hashes": [
