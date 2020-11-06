@@ -180,11 +180,3 @@ def read_jurisdictionadmin_auth0_creds() -> Tuple[str, str, str]:
 ) = read_jurisdictionadmin_auth0_creds()
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
-
-def setup_audit_math():
-    return os.environ.get("ARLO_ALGORITHM", "minerva")
-
-
-ALGORITHM = setup_audit_math()
-logging.warning(f"Arlo using auditing algorithm {ALGORITHM}")
-

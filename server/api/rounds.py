@@ -18,7 +18,6 @@ from ..util.group_by import group_by
 from ..util.jsonschema import JSONDict
 from ..audit_math import sampler, ballot_polling, macro, supersimple, sampler_contest
 from .cvrs import set_contest_metadata_from_cvrs
-from ..config import ALGORITHM
 
 
 def get_current_round(election: Election) -> Optional[Round]:
@@ -319,9 +318,7 @@ def calculate_risk_measurements(election: Election, round: Round):
                 election.risk_limit,
                 sampler_contest.from_db_contest(contest),
                 contest_results_by_round(contest),
-                BallotPollingType.MINERVA
-                if ALGORITHM == "minerva"
-                else BallotPollingType.BRAVO,
+                AuditMathType(election.audit_math_type),
                 round_sizes(election),
             )
             p_value = max(p_values.values())
