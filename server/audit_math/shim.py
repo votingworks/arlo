@@ -128,9 +128,3 @@ def minerva_sample_sizes(
     )
 
     return size_adj
-
-
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod()
