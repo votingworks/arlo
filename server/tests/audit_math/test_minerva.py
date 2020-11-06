@@ -1,13 +1,8 @@
 # pylint: disable=invalid-name
-from decimal import Decimal
 import pytest
 
 from ...audit_math import minerva
 from ...audit_math.sampler_contest import Contest
-
-SEED = "12345678901234567890abcdefghijklmnopqrstuvwxyz😊"
-RISK_LIMIT = 10
-ALPHA = Decimal(0.1)
 
 
 @pytest.fixture
@@ -20,23 +15,25 @@ def contests():
     return contests
 
 
-def test_unused_sample_size(contests):
-    for contest in contests:
-        pytest.raises(
-            Exception,
-            minerva.get_sample_size,
-            RISK_LIMIT,
-            contests[contest],
-            None,
-            {0: 0},
-        )
+# FIXME improve these tests.  Note also doctests in minerva.py module.
 
 
-def test_unused_compute_risk(contests):
-    for contest in contests:
-        pytest.raises(
-            Exception, minerva.compute_risk, RISK_LIMIT, contests[contest], {}, {0: 0}
-        )
+def test_get_sample_size():
+    c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
+    res = minerva.get_sample_size(10, c3, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 134, "prob": 0.7},
+        "0.8": {"type": None, "size": 166, "prob": 0.8},
+        "0.9": {"type": None, "size": 215, "prob": 0.9},
+    }
+
+
+def test_compute_risk():
+    c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
+    res = minerva.compute_risk(
+        10, c3, minerva.make_sample_results(c3, [[56, 40, 3]]), {1: 100, 2: 150}
+    )
+    assert res == ({("winner", "loser"): 0.0933945799801079}, True)
 
 
 bravo_contests = {
