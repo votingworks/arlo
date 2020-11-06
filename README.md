@@ -109,17 +109,11 @@ Rather than manually config the environment, you can also run the setup script d
 
 ### Creating Organizations and Administrators
 
-Arlo identifies and authenticates three classes of end-user:
-organization administrators, jurisdiction adminstrators,
-and audit boards.
-
-Organizations identify administrators and jurisdictions for whom they
-administrate audits. Jurisdictions identify their own administrators,
-as well as audit boards. Audit boards enter ballot-by-ballot auditing data.
-
-Thus, organizations are, for example, the State of
+Organizations are, for example, the State of
 Massachusetts. Administrators are individual users that administer
-audits for an organization.
+audits for an organization. All authentication is done via auth0 with
+email addresses, so users in the Arlo database also need to be
+mirrored in the appropriate auth0 tenant user database.
 
 To create an organization in the database:
 
@@ -132,26 +126,6 @@ Then, to create an administrator for the organization:
 `pipenv run python -m scripts.create-admin <org_id> <admin_email>`
 
 which returns the `user_id`.
-
-This can be be automated via:
-
-    org=$(python -m scripts.create-org MyOrg)
-    python -m scripts.create-admin $org my_administrator@example.org
-
-The email addresses authorized to administer jurisdictions are identified
-via the `filesheet.csv` file uploaded by the organization administrator.
-
-After the jurisdiction admin creates audit boards for each audit,
-they download the `Audit Board Credentials for Data Entry.pdf` files.
-Each one contains a URL for an audit board, with an embedded
-authentication token.
-
-All authentication is done using OAuth 2.0
-(e.g. via [Auth0](https://auth0.com/), with
-email addresses, so users in the Arlo database also should typically be
-configured in the appropriate auth0 tenant user database.
-
-For design details, see [Arlo's use of Auth0](docs/auth0.md).
 
 ### Resetting the Database When Upgrading Arlo
 
@@ -185,7 +159,6 @@ If you would just like to run Arlo and do not wish to setup a custom configurati
 
 #### Troubleshooting
 
-- Beware: if you run make format-server, it will run black in a way which changes all files under the current directory without providing a backup
 - Postgres is best installed by grabbing `postgresql-server-dev-10` and `postgresql-client-10`.
 - `psychopg2` has known issues depending on your install (see, e.g., [here](https://github.com/psycopg/psycopg2/issues/674)). If you run into issues, switch `psychopg2` to `psychopg2-binary` in the Pipfile
 - `pipenv install` can hang attempting to get [a lock on the packages it's installing](https://github.com/pypa/pipenv/issues/3827). To get around this, add the `--skip-lock` flag in the Makefile (the first line should be `pipenv install --skip-lock`).
