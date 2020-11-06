@@ -41,11 +41,21 @@ def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
     """
 
     ballots = sum(tally.values())
-    votes = {key:tally[key] for key in tally if key != "_undervote_"}
-    return Contest("c1", {"ballots": ballots, "numWinners": num_winners, "votesAllowed": votes_allowed, **votes})
+    votes = {key: tally[key] for key in tally if key != "_undervote_"}
+    return Contest(
+        "c1",
+        {
+            "ballots": ballots,
+            "numWinners": num_winners,
+            "votesAllowed": votes_allowed,
+            **votes,
+        },
+    )
 
 
-def make_sample_results(contest: Contest, votes_per_round: List[List]) -> Dict[str, Dict[str, int]]:
+def make_sample_results(
+    contest: Contest, votes_per_round: List[List]
+) -> Dict[str, Dict[str, int]]:
     """Make up sample_results for testing given Arlo contest based on votes.
     Note that athena's API relies on Python requiring dictionaries (of candidates and sample results)
     to be ordered since 3.7.
@@ -53,7 +63,7 @@ def make_sample_results(contest: Contest, votes_per_round: List[List]) -> Dict[s
 
     sample_results = {}
     for i, votes in enumerate(votes_per_round):
-        sample_results[f'r{i}'] = {c: v for c, v in zip(contest.candidates, votes)}
+        sample_results[f"r{i}"] = dict(zip(contest.candidates, votes))
 
     return sample_results
 
@@ -80,7 +90,7 @@ def make_athena_audit(arlo_contest, alpha):
         "contest_ballots": arlo_contest.ballots,
         "tally": arlo_contest.candidates,
         "num_winners": arlo_contest.num_winners,
-        "reported_winners": list(arlo_contest.margins['winners'].keys()),
+        "reported_winners": list(arlo_contest.margins["winners"].keys()),
         "contest_type": "PLURALITY",
     }
 
@@ -130,14 +140,14 @@ def get_sample_size(
     FIXME: add round size arguments and update tests
 
     >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
-    >>> get_sample_size(10, c3, None)
+    >>> get_sample_size(10, c3, None, [])
     {'0.7': {'type': None, 'size': 134, 'prob': 0.7}, '0.8': {'type': None, 'size': 166, 'prob': 0.8}, '0.9': {'type': None, 'size': 215, 'prob': 0.9}}
 
-    >>> get_sample_size(20, c3, None)
+    >>> get_sample_size(20, c3, None, [])
     {'0.7': {'type': None, 'size': 87, 'prob': 0.7}, '0.8': {'type': None, 'size': 110, 'prob': 0.8}, '0.9': {'type': None, 'size': 156, 'prob': 0.9}}
 
     One less than the kmin
-    >>> get_sample_size(10, c3, make_sample_results(c3, [[56, 40, 3]]))
+    >>> get_sample_size(10, c3, make_sample_results(c3, [[56, 40, 3]]), {1: 100})
     {'0.9': {'type': None, 'size': 150, 'prob': 0.9}}
     """
 
@@ -145,9 +155,7 @@ def get_sample_size(
     # from ..api.rounds import contest_results_by_round
     # logging.warning(f"{contest_results_by_round(contest)=}")
 
-    if sample_results is None:
-        prev_round_schedule = []
-    else:
+    if sample_results is not None:
         # Construct round schedule as a function of only first round size.
         # and other information set at the start of the audit.
 
@@ -157,14 +165,10 @@ def get_sample_size(
         # approach which simply defines all round sizes uniformly based on the first
         # round size.
 
-        # Temporarily set up some parameters we will eventually get via the API
-        first_round_size = 100
-        prev_round_count = len(sample_results)
-        prev_round_schedule = [
-            minerva_round_size(first_round_size, i) for i in range(prev_round_count)
-        ]
+        first_round_size = round_sizes[1]
+        prev_round_count = len(round_sizes)
         next_round_size = minerva_round_size(first_round_size, prev_round_count)
-        logging.debug(f"{prev_round_schedule=}, {next_round_size=}")
+        logging.debug(f"{round_sizes=}, {next_round_size=}")
         return {"0.9": {"type": None, "size": next_round_size, "prob": 0.9}}
 
     alpha = Decimal(risk_limit) / 100
@@ -191,8 +195,6 @@ def get_sample_size(
     if contest.num_winners != 1:
         # FIXME: handle this some day
         return {"asn": {"type": "ASN", "size": -1, "prob": None}}
-
-
 
     margin = contest.margins
     # Get smallest p_w - p_l
@@ -254,8 +256,10 @@ def get_sample_size(
 
 
 def collect_risks(
-        alpha: float,
-        arlo_contest: Contest, round_schedule: List[int], sample_results: Dict[str, Dict[str, int]]
+    alpha: float,
+    arlo_contest: Contest,
+    round_schedule: List[int],
+    sample_results: Dict[str, Dict[str, int]],
 ) -> Dict[Tuple[str, str], float]:
     """
     Collect risk levels for each pair of candidates.
@@ -285,7 +289,9 @@ def collect_risks(
     ValueError: Incorrect number of valid ballots entered
     """
 
-    logging.debug(f"minerva collect_risks {alpha=}, {arlo_contest=}, {round_schedule=}, {sample_results=})")
+    logging.debug(
+        f"minerva collect_risks {alpha=}, {arlo_contest=}, {round_schedule=}, {sample_results=})"
+    )
 
     audit = make_athena_audit(arlo_contest, alpha)
     for round_size, sample in zip(round_schedule, sample_results.values()):
@@ -295,24 +301,25 @@ def collect_risks(
         audit.set_observations(round_size, sum(obs), obs)
 
         # TODO: check for the audit being over, after which it will throw an error
-        logging.debug(f"minerva  collect_risks: {audit.status[audit.active_contest].risks[-1]=}")
+        logging.debug(
+            f"minerva  collect_risks: {audit.status[audit.active_contest].risks[-1]=}"
+        )
 
     # FIXME: for now we're returning only the max p_value for the deciding pair,
     # since other audits only return a single p_value,
     # and rounds.py throws it out right away p_value = max(p_values.values())
 
-    risks = {('winner', 'loser'): audit.status[audit.active_contest].risks[-1]}
+    risks = {("winner", "loser"): audit.status[audit.active_contest].risks[-1]}
     logging.debug(f"minerva  collect_risks return: {risks=}")
 
     return risks
 
 
 def compute_risk(
-    risk_limit: float,
+    risk_limit: int,
     contest: Contest,
     sample_results: Dict[str, Dict[str, int]],
     round_sizes: Dict[int, int],
-    risk_limit: float, contest: Contest, sample_results: Dict[str, Dict[str, int]]
 ) -> Tuple[Dict[Tuple[str, str], float], bool]:
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
@@ -334,22 +341,21 @@ def compute_risk(
         confirmed       - a boolean indicating whether the audit can stop
 
     >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
-    >>> compute_risk(10, c3, make_sample_results(c3, [[56, 40, 3]]))
+    >>> compute_risk(10, c3, make_sample_results(c3, [[56, 40, 3]]), {1: 100, 2: 150})
     ({('winner', 'loser'): 0.0933945799801079}, True)
-    >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3]]))
+    >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3]]), {1: 100, 2: 150})
     ({('winner', 'loser'): 0.5596434615209632}, False)
-    >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3], [70, 30, 10]]))
+    >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3], [70, 30, 10]]), {1: 100, 2: 150, 3: 150})
     ({('winner', 'loser'): 0.00638203150599862}, True)
     """
 
     alpha = risk_limit / 100
-    assert 0.0 < alpha < 1.0, "The risk-limit must be greater than zero and less than one!"
+    assert (
+        0.0 < alpha < 1.0
+    ), "The risk-limit must be greater than zero and less than one!"
 
-    # Set up some parameters we hope to get via the API
-    first_round_size = 100
-    prev_round_count = len(sample_results)
-    prev_round_schedule = [minerva_round_size(first_round_size, i) for i in range(prev_round_count)]
-    logging.debug(f"{prev_round_schedule=}")
+    prev_round_schedule = [value for key, value in sorted(round_sizes.items())]
+    logging.debug(f"{round_sizes=}, {prev_round_schedule=}")
 
     risks = collect_risks(alpha, contest, prev_round_schedule, sample_results)
     finished = all(risk <= alpha for risk in risks.values())
@@ -363,24 +369,10 @@ def filter_athena_messages(record):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=10)
-    logging.getLogger().addFilter(filter_athena_messages)
+    # For debugging:
+    # logging.basicConfig(level=10)
+    # logging.getLogger().addFilter(filter_athena_messages)
 
     import doctest
 
     doctest.testmod()
-
-    # TODO - check out the str() output for an Audit
-    if False:
-        c10 = make_arlo_contest({"a": 55000, "b": 45000})
-        sample_results = make_sample_results(c10, [[71, 73], [283, 261]])
-        print(sample_results)
-        print(collect_risks(0.1, c10, [144, 544], sample_results))
-
-        c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
-        audit = make_athena_audit(c3, 0.1)
-        audit.set_observations(93, 93, [49, 40, 3])
-        print(f"{audit}")
-        # TODO is what it prints out really right, with nested lists of individual candidate obs?
-        #  "observations: {'c1': [[49], [40], [3]]}"
-        print(f"{audit.status[audit.active_contest].risks[0]=}")
