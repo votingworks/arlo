@@ -10,7 +10,7 @@ As part of the audit, Arlo:
 
 - Randomly selects individual ballots to be examined from a list of all ballots cast in particular contest(s), and provides auditors with the information they need to find those ballots in storage
 
-- Provides supplemental materials necessary to maintain chain of custory while retrieving ballots
+- Provides supplemental materials necessary to maintain chain of custody while retrieving ballots
 
 - Checks whether votes recorded by auditors examining each ballot match what we would expect if the reported outcome is correct, more specifically whether the desired risk-limit has been achieved based on these results
 
