@@ -27,6 +27,60 @@ def test_get_sample_size():
         "0.9": {"type": None, "size": 215, "prob": 0.9},
     }
 
+    c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
+    res = minerva.get_sample_size(10, c3, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 134, "prob": 0.7},
+        "0.8": {"type": None, "size": 166, "prob": 0.8},
+        "0.9": {"type": None, "size": 215, "prob": 0.9},
+    }
+
+    d1 = minerva.make_arlo_contest({"a": 600, "b": 200, "c": 100})
+    res = minerva.get_sample_size(10, d1, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 20, "prob": 0.7},
+        "0.8": {"type": None, "size": 25, "prob": 0.8},
+        "0.9": {"type": None, "size": 35, "prob": 0.9},
+    }
+
+    d2 = minerva.make_arlo_contest({"a": 100, "b": 1})
+    res = minerva.get_sample_size(10, d2, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 4, "prob": 0.7},
+        "0.8": {"type": None, "size": 4, "prob": 0.8},
+        "0.9": {"type": None, "size": 4, "prob": 0.9},
+    }
+
+    d3 = minerva.make_arlo_contest({"a": 500, "b": 500})
+    res = minerva.get_sample_size(10, d3, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 1000, "prob": 0.7},
+        "0.8": {"type": None, "size": 1000, "prob": 0.8},
+        "0.9": {"type": None, "size": 1000, "prob": 0.9},
+    }
+
+    d4 = minerva.make_arlo_contest({"a": 300, "b": 200, "c": 200, "_undervote_": 300})
+    res = minerva.get_sample_size(10, d4, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 222, "prob": 0.7},
+        "0.8": {"type": None, "size": 276, "prob": 0.8},
+        "0.9": {"type": None, "size": 358, "prob": 0.9},
+    }
+
+    d5 = minerva.make_arlo_contest({"a": 300})
+    res = minerva.get_sample_size(10, d5, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": -1, "prob": 0.7},
+        "0.8": {"type": None, "size": -1, "prob": 0.8},
+        "0.9": {"type": None, "size": -1, "prob": 0.9},
+    }
+
+
+def test_get_sample_size_landslide():
+    d2 = minerva.make_arlo_contest({"a": 100, "b": 0})
+    res = minerva.get_sample_size(10, d2, None, [])
+    assert res == {"asn": {"type": "ASN", "size": 4, "prob": 1.0}}
+
 
 def test_compute_risk():
     c3 = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
