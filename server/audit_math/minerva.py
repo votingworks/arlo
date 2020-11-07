@@ -11,7 +11,6 @@ TODO: if necessary pull out risks for individual contests
 
 """
 from decimal import Decimal
-from collections import defaultdict
 import logging
 from typing import List, Dict, Tuple, Optional
 
@@ -21,17 +20,6 @@ from .shim import minerva_sample_sizes  # type: ignore
 
 # FIXME: make this an environmental variable
 MINERVA_MULTIPLE = 1.5
-
-
-def compute_cumulative_sample(sample_results):
-    """
-    Computes a cumulative sample given a round-by-round sample
-    """
-    cumulative_sample = defaultdict(int)
-    for rd in sample_results:
-        for cand in sample_results[rd]:
-            cumulative_sample[cand] += sample_results[rd][cand]
-    return cumulative_sample
 
 
 def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
@@ -178,30 +166,18 @@ def get_sample_size(
 
     samples: Dict = {}
 
-    # Get cumulative sample results
-    cumulative_sample = {}
-    if sample_results:
-        cumulative_sample = compute_cumulative_sample(sample_results)
-    else:
-        for candidate in contest.candidates:
-            cumulative_sample[candidate] = 0
-
     p_w = Decimal("inf")
     p_l = Decimal(-1)
-    best_loser = ""
-    worse_winner = ""
 
     margin = contest.margins
     # Get smallest p_w - p_l
     for winner in margin["winners"]:
         if margin["winners"][winner]["p_w"] < p_w:
             p_w = Decimal(margin["winners"][winner]["p_w"])
-            worse_winner = winner
 
     for loser in margin["losers"]:
         if margin["losers"][loser]["p_l"] > p_l:
             p_l = Decimal(margin["losers"][loser]["p_l"])
-            best_loser = loser
 
     # If we're in a single-candidate race, set sample to 0
     if not margin["losers"]:
@@ -229,16 +205,9 @@ def get_sample_size(
 
         return samples
 
-    # If we haven't seen anything yet, initialize sample_w and sample_l
-    if not cumulative_sample:
-        sample_w = 0
-        sample_l = 0
-    else:
-        sample_w = cumulative_sample[worse_winner]
-        sample_l = cumulative_sample[best_loser]
-
+    # If we haven't returned yet, actually do the math for the first round
     for quant in quants:
-        size = minerva_sample_sizes(alpha, p_w, p_l, sample_w, sample_l, quant)
+        size = minerva_sample_sizes(alpha, p_w, p_l, 0, 0, quant)
         samples[str(quant)] = {"type": None, "size": size, "prob": quant}
 
     return samples
