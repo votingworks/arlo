@@ -143,3 +143,5 @@ def read_jurisdictionadmin_auth0_creds() -> Tuple[str, str, str]:
 ) = read_jurisdictionadmin_auth0_creds()
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
+
+ALLOW_ALTERNATE_MATH = (os.environ.get("ALLOW_ALTERNATE_MATH", "0") == "1")
