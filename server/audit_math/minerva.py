@@ -187,14 +187,9 @@ def get_sample_size(
             cumulative_sample[candidate] = 0
 
     p_w = Decimal("inf")
-    p_l = Decimal(0)
+    p_l = Decimal(-1)
     best_loser = ""
     worse_winner = ""
-
-    # For multi-winner, do nothing
-    if contest.num_winners != 1:
-        # FIXME: handle this some day
-        return {"asn": {"type": "ASN", "size": -1, "prob": None}}
 
     margin = contest.margins
     # Get smallest p_w - p_l
@@ -219,22 +214,16 @@ def get_sample_size(
 
     # Handles ties
     if p_w == p_l:
-        samples["asn"] = {
-            "type": "ASN",
-            "size": num_ballots,
-            "prob": 1.0,
-        }
-
         for quant in quants:
             samples[str(quant)] = {"type": None, "size": num_ballots, "prob": quant}
 
         return samples
 
-    # Handle landslides
+    # Handle landslides.   TODO: remove this case if fixed upstream
     if p_w == 1.0:
         samples["asn"] = {
             "type": "ASN",
-            "size": 1,
+            "size": 4,
             "prob": 1.0,
         }
 
@@ -360,9 +349,3 @@ def compute_risk(
     risks = collect_risks(alpha, contest, prev_round_schedule, sample_results)
     finished = all(risk <= alpha for risk in risks.values())
     return risks, finished
-
-
-def filter_athena_messages(record):
-    "Filter out any logging messages from athena/audit.py, in preference to our tighter logging"
-
-    return not record.pathname.endswith("athena/audit.py")
