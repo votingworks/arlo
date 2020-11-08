@@ -7,4 +7,4 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots["test_rounds_create_two 1"] = 539
+snapshots["test_rounds_create_two 1"] = 0

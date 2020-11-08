@@ -515,6 +515,7 @@ def sample_ballots(
     samples = [
         draw_sample_for_contest(contest, sample_sizes[contest.id])
         for contest in contests
+        if contest.is_targeted
     ]
 
     # Group all sample draws by ballot
@@ -663,16 +664,29 @@ def create_round(election: Election):
         sample_sizes = json_round["sampleSizes"]
     # In later rounds, select a sample size automatically.
     else:
+        sample_sizes = {}
         sample_size_options = sample_sizes_module.sample_size_options(election)
-        sample_size_key = {
-            AuditType.BALLOT_POLLING: "0.9",
-            AuditType.BATCH_COMPARISON: "macro",
-            AuditType.BALLOT_COMPARISON: "supersimple",
-        }[AuditType(election.audit_type)]
-        sample_sizes = {
-            contest_id: options[sample_size_key]["size"]
-            for contest_id, options in sample_size_options.items()
-        }
+        for contest in election.contests:
+            # ignore cases where we don't have sample_size_options
+            if not contest.is_targeted:
+                continue
+
+            assert contest.num_winners is not None
+            # Handle multiwinner BRAVO
+            if (
+                contest.num_winners > 1
+                and AuditType(election.audit_type) == AuditType.BALLOT_POLLING
+            ):
+                sample_size_key = "asn"
+            else:
+                sample_size_key = {
+                    AuditType.BALLOT_POLLING: "0.9",
+                    AuditType.BATCH_COMPARISON: "macro",
+                    AuditType.BALLOT_COMPARISON: "supersimple",
+                }[AuditType(election.audit_type)]
+                sample_sizes[contest.id] = sample_size_options[contest.id][
+                    sample_size_key
+                ]["size"]
 
     # For ballot comparison audits, we need to lock in the contest metadata we
     # parse from the CVRs when we launch the audit.

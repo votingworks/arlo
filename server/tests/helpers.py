@@ -177,14 +177,16 @@ def run_audit_round(
         .order_by(Batch.name, SampledBallot.ballot_position)
         .all()
     )
-    winner_votes = int(vote_ratio * len(ballot_draws))
+    # split the winning votes across all the winners
+    winner_votes = int((vote_ratio * len(ballot_draws)) / contest.num_winners)
     for ballot_draw in ballot_draws[:winner_votes]:
-        audit_ballot(
-            ballot_draw.sampled_ballot,
-            contest.id,
-            Interpretation.VOTE,
-            [contest.choices[0]],
-        )
+        for i in range(contest.num_winners):
+            audit_ballot(
+                ballot_draw.sampled_ballot,
+                contest.id,
+                Interpretation.VOTE,
+                [contest.choices[i]],
+            )
         for other_contest_id in other_contest_ids:
             audit_ballot(
                 ballot_draw.sampled_ballot,
@@ -196,7 +198,7 @@ def run_audit_round(
             ballot_draw.sampled_ballot,
             contest.id,
             Interpretation.VOTE,
-            [contest.choices[1]],
+            [contest.choices[contest.num_winners]],
         )
         for other_contest_id in other_contest_ids:
             audit_ballot(
