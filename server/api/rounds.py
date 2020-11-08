@@ -666,11 +666,8 @@ def create_round(election: Election):
     else:
         sample_sizes = {}
         sample_size_options = sample_sizes_module.sample_size_options(election)
-        for contest in election.contests:
-            # ignore cases where we don't have sample_size_options
-            if not contest.is_targeted:
-                continue
-
+        for contest_id in sample_size_options:
+            contest = Contest.query.filter_by(id=contest_id).all()[0]
             assert contest.num_winners is not None
             # Handle multiwinner BRAVO
             if (
@@ -684,7 +681,7 @@ def create_round(election: Election):
                     AuditType.BATCH_COMPARISON: "macro",
                     AuditType.BALLOT_COMPARISON: "supersimple",
                 }[AuditType(election.audit_type)]
-                sample_sizes[contest.id] = sample_size_options[contest.id][
+                sample_sizes[contest_id] = sample_size_options[contest_id][
                     sample_size_key
                 ]["size"]
 
