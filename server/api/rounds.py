@@ -511,7 +511,7 @@ def sample_ballots(
             for (ticket_number, ballot_key, _) in sample
         ]
 
-    # Draw a sample for each targeted contest
+    # Draw a sample for each contest
     samples = [
         draw_sample_for_contest(contest, sample_sizes[contest.id])
         for contest in contests
@@ -664,13 +664,19 @@ def create_round(election: Election):
     # In later rounds, select a sample size automatically.
     else:
         sample_size_options = sample_sizes_module.sample_size_options(election)
-        sample_size_key = {
-            AuditType.BALLOT_POLLING: "0.9",
-            AuditType.BATCH_COMPARISON: "macro",
-            AuditType.BALLOT_COMPARISON: "supersimple",
-        }[AuditType(election.audit_type)]
+
+        def select_sample_size(options):
+            audit_type = AuditType(election.audit_type)
+            if audit_type == AuditType.BALLOT_POLLING:
+                return options.get("0.9", options["asn"])
+            elif audit_type == AuditType.BATCH_COMPARISON:
+                return options["macro"]
+            else:
+                assert audit_type == AuditType.BALLOT_COMPARISON
+                return options["supersimple"]
+
         sample_sizes = {
-            contest_id: options[sample_size_key]["size"]
+            contest_id: select_sample_size(options)["size"]
             for contest_id, options in sample_size_options.items()
         }
 
