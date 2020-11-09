@@ -279,8 +279,6 @@ def compute_risk(
     ({('winner', 'loser'): 0.0933945799801079}, True)
     >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3]]), {1: 100, 2: 150})
     ({('winner', 'loser'): 0.5596434615209632}, False)
-    >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3], [70, 30, 10]]), {1: 100, 2: 150, 3: 150})
-    ({('winner', 'loser'): 0.006382031505998191}, True)
     """
 
     alpha = risk_limit / 100
