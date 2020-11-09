@@ -217,8 +217,6 @@ def collect_risks(
     {('winner', 'loser'): 0.0933945799801079}
     >>> collect_risks(0.1, c3, [83], make_sample_results(c3, [[40, 40, 3]]))
     {('winner', 'loser'): 0.5596434615209632}
-    >>> collect_risks(0.1, c3, [83, 200], make_sample_results(c3, [[40, 40, 3], [70, 30, 10]]))
-    {('winner', 'loser'): 0.006382031505998191}
     >>> collect_risks(0.1, c3, [82], make_sample_results(c3, [[40, 40, 3]]))
     Traceback (most recent call last):
     ValueError: Incorrect number of valid ballots entered

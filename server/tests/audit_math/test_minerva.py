@@ -84,6 +84,17 @@ def test_get_sample_size_landslide():
     assert res == {"0.9": {"type": None, "size": 4, "prob": 1.0}}
 
 
+def test_get_sample_size_2r():
+    c = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
+    res = minerva.compute_risk(
+        10,
+        c,
+        minerva.make_sample_results(c, [[40, 40, 3], [70, 30, 10]]),
+        {1: 83, 2: 200},
+    )
+    assert res == (approx({("winner", "loser"): 0.006382031505998192}), True)
+
+
 def test_get_sample_size_2win():
     d2 = minerva.make_arlo_contest(
         {"a": 400, "b": 400, "c": 200, "d": 100}, num_winners=2
