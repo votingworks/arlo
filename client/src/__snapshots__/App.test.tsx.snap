@@ -138,7 +138,7 @@ exports[`App / renders aa logged in properly 1`] = `
                     Ballot Polling
                   </label>
                   <div
-                    class="sc-ktHwxA leegmq"
+                    class="sc-ktHwxA bgUWdN"
                   >
                     <label
                       for="auditMathType"
@@ -564,7 +564,7 @@ exports[`App /election/:electionId/audit-board/:auditBoardId renders aa logged i
                     Ballot Polling
                   </label>
                   <div
-                    class="sc-ktHwxA leegmq"
+                    class="sc-ktHwxA bgUWdN"
                   >
                     <label
                       for="auditMathType"
@@ -992,7 +992,7 @@ exports[`App /election/:electionId/jurisdiction/:jurisdictionId renders aa logge
                     Ballot Polling
                   </label>
                   <div
-                    class="sc-ktHwxA leegmq"
+                    class="sc-ktHwxA bgUWdN"
                   >
                     <label
                       for="auditMathType"
