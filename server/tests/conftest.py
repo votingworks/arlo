@@ -135,31 +135,6 @@ def contest_ids(
 
 
 @pytest.fixture
-def mw_contest_ids(
-    client: FlaskClient, election_id: str, jurisdiction_ids: List[str]
-) -> List[str]:
-    contests = [
-        {
-            "id": str(uuid.uuid4()),
-            "name": "Contest 1",
-            "isTargeted": True,
-            "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 300,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 100,},
-            ],
-            "totalBallotsCast": 1000,
-            "numWinners": 2,
-            "votesAllowed": 1,
-            "jurisdictionIds": jurisdiction_ids,
-        },
-    ]
-    rv = put_json(client, f"/api/election/{election_id}/contest", contests)
-    assert_ok(rv)
-    return [str(c["id"]) for c in contests]
-
-
-@pytest.fixture
 def election_settings(client: FlaskClient, election_id: str):
     set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
     settings = {
@@ -230,34 +205,6 @@ def round_1_id(
             "roundNum": 1,
             "sampleSizes": {
                 contest_ids[0]: sample_size_options[contest_ids[0]][0]["size"]
-            },
-        },
-    )
-    assert_ok(rv)
-    rv = client.get(f"/api/election/{election_id}/round",)
-    rounds = json.loads(rv.data)["rounds"]
-    return str(rounds[0]["id"])
-
-
-@pytest.fixture
-def mw_round_1_id(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],  # pylint: disable=unused-argument
-    mw_contest_ids: str,  # pylint: disable=unused-argument
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-) -> str:
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_size_options = json.loads(rv.data)["sampleSizes"]
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/round",
-        {
-            "roundNum": 1,
-            "sampleSizes": {
-                mw_contest_ids[0]: sample_size_options[mw_contest_ids[0]][0]["size"]
             },
         },
     )

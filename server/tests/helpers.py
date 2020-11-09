@@ -208,68 +208,6 @@ def run_audit_round(
     db_session.commit()
 
 
-def run_mw_audit_round(
-    round_id: str,
-    target_contest_id: str,
-    contest_ids: List[str],
-    vote1_ratio: float,
-    vote2_ratio: float,
-):
-    round = Round.query.get(round_id)
-    contest = Contest.query.get(target_contest_id)
-    other_contest_ids = set(contest_ids) - {target_contest_id}
-    ballot_draws = (
-        SampledBallotDraw.query.filter_by(round_id=round_id)
-        .join(SampledBallot)
-        .join(Batch)
-        .order_by(Batch.name, SampledBallot.ballot_position)
-        .all()
-    )
-    winner1_votes = int(vote1_ratio * len(ballot_draws))
-    winner2_votes = int(vote2_ratio * len(ballot_draws))
-    for ballot_draw in ballot_draws[:winner1_votes]:
-        audit_ballot(
-            ballot_draw.sampled_ballot,
-            contest.id,
-            Interpretation.VOTE,
-            [contest.choices[0]],
-        )
-        for other_contest_id in other_contest_ids:
-            audit_ballot(
-                ballot_draw.sampled_ballot,
-                other_contest_id,
-                Interpretation.CONTEST_NOT_ON_BALLOT,
-            )
-    for ballot_draw in ballot_draws[winner1_votes : (winner2_votes + winner1_votes)]:
-        audit_ballot(
-            ballot_draw.sampled_ballot,
-            contest.id,
-            Interpretation.VOTE,
-            [contest.choices[1]],
-        )
-        for other_contest_id in other_contest_ids:
-            audit_ballot(
-                ballot_draw.sampled_ballot,
-                other_contest_id,
-                Interpretation.CONTEST_NOT_ON_BALLOT,
-            )
-    for ballot_draw in ballot_draws[(winner1_votes + winner2_votes) :]:
-        audit_ballot(
-            ballot_draw.sampled_ballot,
-            contest.id,
-            Interpretation.VOTE,
-            [contest.choices[2]],
-        )
-        for other_contest_id in other_contest_ids:
-            audit_ballot(
-                ballot_draw.sampled_ballot,
-                other_contest_id,
-                Interpretation.CONTEST_NOT_ON_BALLOT,
-            )
-    end_round(round.election, round)
-    db_session.commit()
-
-
 DATETIME_REGEX = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}.\d{6})?")
 
 

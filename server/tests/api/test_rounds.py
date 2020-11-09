@@ -83,67 +83,6 @@ def test_rounds_create_one(
     assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
 
 
-def test_multiwinner_rounds_create_one(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    mw_contest_ids: List[str],
-    election_settings,  # pylint: disable=unused-argument
-    manifests,  # pylint: disable=unused-argument
-):
-    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
-    rv = client.get(f"/api/election/{election_id}/sample-sizes")
-    sample_size_options = json.loads(rv.data)["sampleSizes"]
-    sample_size = sample_size_options[mw_contest_ids[0]][0]["size"]
-    rv = post_json(
-        client,
-        f"/api/election/{election_id}/round",
-        {"roundNum": 1, "sampleSizes": {mw_contest_ids[0]: sample_size},},
-    )
-    assert_ok(rv)
-
-    expected_rounds = {
-        "rounds": [
-            {
-                "id": assert_is_id,
-                "roundNum": 1,
-                "startedAt": assert_is_date,
-                "endedAt": None,
-                "isAuditComplete": None,
-            }
-        ]
-    }
-
-    rv = client.get(f"/api/election/{election_id}/round")
-    rounds = json.loads(rv.data)
-    compare_json(rounds, expected_rounds)
-
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round"
-    )
-    rounds = json.loads(rv.data)
-    compare_json(rounds, expected_rounds)
-
-    # Check that we also created RoundContest objects
-    round_contests = RoundContest.query.filter_by(
-        round_id=rounds["rounds"][0]["id"]
-    ).all()
-    assert len(round_contests) == 1
-    assert sorted([rc.contest_id for rc in round_contests]) == sorted(mw_contest_ids)
-
-    # Check that the ballots got sampled
-    ballot_draws = SampledBallotDraw.query.filter_by(
-        round_id=rounds["rounds"][0]["id"]
-    ).all()
-    assert len(ballot_draws) == sample_size
-    # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
-    sampled_jurisdictions = {
-        draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
-    }
-    assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
-
-
 def test_rounds_create_two(
     client: FlaskClient,
     election_id: str,
@@ -198,88 +137,10 @@ def test_rounds_create_two(
     assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
 
 
-def test_multiwinner_rounds_create_two(
-    client: FlaskClient,
-    election_id: str,
-    jurisdiction_ids: List[str],
-    mw_contest_ids: List[str],
-    mw_round_1_id: str,
-    snapshot,
-):
-    run_mw_audit_round(mw_round_1_id, mw_contest_ids[0], mw_contest_ids, 0.5, 0.3)
-
-    rv = post_json(client, f"/api/election/{election_id}/round", {"roundNum": 2},)
-    assert_ok(rv)
-
-    expected_rounds = {
-        "rounds": [
-            {
-                "id": assert_is_id,
-                "roundNum": 1,
-                "startedAt": assert_is_date,
-                "endedAt": assert_is_date,
-                "isAuditComplete": False,
-            },
-            {
-                "id": assert_is_id,
-                "roundNum": 2,
-                "startedAt": assert_is_date,
-                "endedAt": None,
-                "isAuditComplete": None,
-            },
-        ]
-    }
-    rv = client.get(f"/api/election/{election_id}/round")
-    rounds = json.loads(rv.data)
-    compare_json(rounds, expected_rounds)
-
-    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-    rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round"
-    )
-    rounds = json.loads(rv.data)
-    compare_json(rounds, expected_rounds)
-
-    ballot_draws = SampledBallotDraw.query.filter_by(
-        round_id=rounds["rounds"][1]["id"]
-    ).all()
-    # Check that we automatically select the 90% prob sample size
-    snapshot.assert_match(len(ballot_draws))
-    # Check that we're sampling ballots from the two jurisdictions that uploaded manifests
-    sampled_jurisdictions = {
-        draw.sampled_ballot.batch.jurisdiction_id for draw in ballot_draws
-    }
-    assert sorted(sampled_jurisdictions) == sorted(jurisdiction_ids[:2])
-
-
 def test_rounds_complete_audit(
     client: FlaskClient, election_id: str, contest_ids: List[str], round_1_id: str,
 ):
     run_audit_round(round_1_id, contest_ids[0], contest_ids, 0.7)
-
-    expected_rounds = {
-        "rounds": [
-            {
-                "id": assert_is_id,
-                "roundNum": 1,
-                "startedAt": assert_is_date,
-                "endedAt": assert_is_date,
-                "isAuditComplete": True,
-            }
-        ]
-    }
-    rv = client.get(f"/api/election/{election_id}/round")
-    rounds = json.loads(rv.data)
-    compare_json(rounds, expected_rounds)
-
-
-def test_multiwinner_rounds_complete_audit(
-    client: FlaskClient,
-    election_id: str,
-    mw_contest_ids: List[str],
-    mw_round_1_id: str,
-):
-    run_mw_audit_round(mw_round_1_id, mw_contest_ids[0], mw_contest_ids, 0.7, 0.3)
 
     expected_rounds = {
         "rounds": [
