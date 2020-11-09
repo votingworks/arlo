@@ -9,7 +9,7 @@ import { FileProcessingStatus } from './useSetupMenuItems/getJurisdictionFileSta
 import { IAuditSettings } from '../../types'
 import { IBallot } from './RoundManagement/useBallots'
 import { IAuditBoard } from './useAuditBoards'
-import { IStandardizedContest } from './useStandardizedContests'
+import { IRound } from './useRoundsAuditAdmin'
 
 const manifestFormData: FormData = new FormData()
 manifestFormData.append('manifest', manifestFile, manifestFile.name)
@@ -118,10 +118,10 @@ export const aaApiCalls = {
       ],
     },
   },
-  getRounds: {
+  getRounds: (rounds: IRound[]) => ({
     url: '/api/election/1/round',
-    response: { rounds: [] },
-  },
+    response: { rounds },
+  }),
   getJurisdictions: {
     url: '/api/election/1/jurisdiction',
     response: {
