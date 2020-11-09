@@ -60,7 +60,7 @@ export const AuditAdminView: React.FC = () => {
 
   useEffect(refresh, [refresh, isBallotComparison])
 
-  if (!contests || !rounds || !auditSettings) return null // Still loading
+  if (!jurisdictions || !contests || !rounds || !auditSettings) return null // Still loading
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'

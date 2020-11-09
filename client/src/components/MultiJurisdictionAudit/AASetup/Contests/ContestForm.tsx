@@ -68,7 +68,7 @@ const ContestForm: React.FC<IProps> = ({
   const [contests, updateContests] = useContests(electionId)
   const jurisdictions = useJurisdictions(electionId)
 
-  if (!contests) return null // Still loading
+  if (!jurisdictions || !contests) return null // Still loading
   const filteredContests = contests.filter(c => c.isTargeted === isTargeted)
 
   const isBatch = auditType === 'BATCH_COMPARISON'

@@ -1,13 +1,14 @@
 import React from 'react'
 import { useParams, MemoryRouter } from 'react-router-dom'
-import { render, waitFor } from '@testing-library/react'
-import { auditSettings } from '../useSetupMenuItems/_mocks'
+import { render, waitFor, screen } from '@testing-library/react'
+import { auditSettings, jurisdictionMocks } from '../useSetupMenuItems/_mocks'
 import * as utilities from '../../utilities'
 import Setup from './index'
 import relativeStages from './_mocks'
 import { contestMocks } from './Contests/_mocks'
 import useContests from '../useContests'
 import useAuditSettings from '../useAuditSettings'
+import useJurisdictions from '../useJurisdictions'
 
 const apiMock: jest.SpyInstance<
   ReturnType<typeof utilities.api>,
@@ -18,6 +19,10 @@ const checkAndToastMock: jest.SpyInstance<
   Parameters<typeof utilities.checkAndToast>
 > = jest.spyOn(utilities, 'checkAndToast').mockReturnValue(false)
 apiMock.mockImplementation(async () => {})
+
+const useJurisdictionsMock = useJurisdictions as jest.Mock
+jest.mock('../useJurisdictions')
+useJurisdictionsMock.mockImplementation(() => jurisdictionMocks.noManifests)
 
 const useContestsMock = useContests as jest.Mock
 jest.mock('../useContests')
@@ -109,7 +114,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    screen.getByText('Target Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -124,7 +129,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    screen.getByText('Target Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -139,7 +144,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    screen.getByText('Target Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -158,7 +163,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    screen.getByText('Opportunistic Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -179,7 +184,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    screen.getByText('Opportunistic Contests')
     expect(container).toMatchSnapshot()
   })
 
@@ -200,7 +205,7 @@ describe('Setup', () => {
         />
       </MemoryRouter>
     )
-    await waitFor(() => expect(apiMock).toHaveBeenCalled())
+    screen.getByText('Opportunistic Contests')
     expect(container).toMatchSnapshot()
   })
 
