@@ -6,7 +6,6 @@ like we did with compute_risk.
 Then this file can be eliminated.
 """
 
-import logging
 import math
 from typing import Any
 from decimal import Decimal
@@ -97,7 +96,7 @@ def minerva_sample_sizes(
 
     # calculate the undiluted "two-way" share of votes for the winner
     p_wr = p_w + p_r
-    p_w2 = p_w / p_wr
+    # p_w2 = p_w / p_wr
 
     audit = make_election(risk_limit, p_w, p_r)  # type: ignore
 
@@ -122,9 +121,5 @@ def minerva_sample_sizes(
     next_round_size = next_round_size_0 + 2 * below_kmin
 
     size_adj = math.ceil(next_round_size / p_wr)
-
-    logging.info(
-        f"shim sample sizes: margin {(p_w2 - 0.5) * 2} (pw {p_w} pr {p_r}) (sw {sample_w} sr {sample_r}) pstop {p_completion} below_kmin {below_kmin} raw {next_round_size} scaled {size_adj}"  # type: ignore
-    )
 
     return size_adj

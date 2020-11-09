@@ -11,7 +11,6 @@ TODO: if necessary pull out risks for individual contests
 
 """
 from decimal import Decimal
-import logging
 from typing import List, Dict, Tuple, Optional
 
 from athena.audit import Audit  # type: ignore
@@ -139,9 +138,7 @@ def get_sample_size(
     {'0.9': {'type': None, 'size': 150, 'prob': 0.9}}
     """
 
-    # logging.warning(f"{sample.results=}")
     # from ..api.rounds import contest_results_by_round
-    # logging.warning(f"{contest_results_by_round(contest)=}")
 
     if sample_results is not None:
         # Construct round schedule as a function of only first round size.
@@ -156,7 +153,6 @@ def get_sample_size(
         first_round_size = round_sizes[1]
         prev_round_count = len(round_sizes)
         next_round_size = minerva_round_size(first_round_size, prev_round_count)
-        logging.debug(f"{round_sizes=}, {next_round_size=}")
         return {"0.9": {"type": None, "size": next_round_size, "prob": 0.9}}
 
     alpha = Decimal(risk_limit) / 100
@@ -247,10 +243,6 @@ def collect_risks(
     ValueError: Incorrect number of valid ballots entered
     """
 
-    logging.debug(
-        f"minerva collect_risks {alpha=}, {arlo_contest=}, {round_schedule=}, {sample_results=})"
-    )
-
     audit = make_athena_audit(arlo_contest, alpha)
     for round_size, sample in zip(round_schedule, sample_results.values()):
         obs = list(sample.values())
@@ -259,16 +251,12 @@ def collect_risks(
         audit.set_observations(round_size, sum(obs), obs)
 
         # TODO: check for the audit being over, after which it will throw an error
-        logging.debug(
-            f"minerva  collect_risks: {audit.status[audit.active_contest].risks[-1]=}"
-        )
 
     # FIXME: for now we're returning only the max p_value for the deciding pair,
     # since other audits only return a single p_value,
     # and rounds.py throws it out right away p_value = max(p_values.values())
 
     risks = {("winner", "loser"): audit.status[audit.active_contest].risks[-1]}
-    logging.debug(f"minerva  collect_risks return: {risks=}")
 
     return risks
 
@@ -313,7 +301,6 @@ def compute_risk(
     ), "The risk-limit must be greater than zero and less than one!"
 
     prev_round_schedule = [value for key, value in sorted(round_sizes.items())]
-    logging.debug(f"{round_sizes=}, {prev_round_schedule=}")
 
     risks = collect_risks(alpha, contest, prev_round_schedule, sample_results)
     finished = all(risk <= alpha for risk in risks.values())
