@@ -161,7 +161,7 @@ def test_compute_risk_close_narrow_2():
         minerva.make_sample_results(c, [[5100, 4990, 1], [5100, 4900, 0]]),
         {1: 10091, 2: 10000},
     )
-    assert res == ({("winner", "loser"): 0.03907953348498701}, True)
+    assert res == (approx({("winner", "loser"): 0.03907953348498701}), True)
 
 
 @pytest.mark.skip(reason="Takes over a minute to run.")
