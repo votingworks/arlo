@@ -671,7 +671,9 @@ def create_round(election: Election):
             AuditType.BALLOT_COMPARISON: "supersimple",
         }[AuditType(election.audit_type)]
         sample_sizes = {
-            contest_id: options.get(sample_size_key, "asn")["size"]  # type: ignore
+            contest_id: (sample_size_options[contest_id]).get(
+                sample_size_key, sample_size_options[contest_id]["asn"]
+            )["size"]
             for contest_id, options in sample_size_options.items()
         }
 
