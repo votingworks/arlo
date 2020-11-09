@@ -106,6 +106,19 @@ def contest_ids(
             "name": "Contest 1",
             "isTargeted": True,
             "choices": [
+                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
+                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
+            ],
+            "totalBallotsCast": 1000,
+            "numWinners": 1,
+            "votesAllowed": 1,
+            "jurisdictionIds": jurisdiction_ids,
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Contest 2",
+            "isTargeted": False,
+            "choices": [
                 {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 200,},
                 {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 300,},
                 {"id": str(uuid.uuid4()), "name": "candidate 3", "numVotes": 100,},
@@ -114,19 +127,6 @@ def contest_ids(
             "numWinners": 2,
             "votesAllowed": 2,
             "jurisdictionIds": jurisdiction_ids[:2],
-        },
-        {
-            "id": str(uuid.uuid4()),
-            "name": "Contest 2",
-            "isTargeted": False,
-            "choices": [
-                {"id": str(uuid.uuid4()), "name": "candidate 1", "numVotes": 600,},
-                {"id": str(uuid.uuid4()), "name": "candidate 2", "numVotes": 400,},
-            ],
-            "totalBallotsCast": 1000,
-            "numWinners": 1,
-            "votesAllowed": 1,
-            "jurisdictionIds": jurisdiction_ids,
         },
     ]
     rv = put_json(client, f"/api/election/{election_id}/contest", contests)
