@@ -290,7 +290,7 @@ describe('Audit Setup > Contests', () => {
     await findByText('Target Contests')
     fireEvent.click(getByText('Save & Next'), { bubbles: true })
     await waitFor(() => {
-      expect(nextStage.activate).toHaveBeenCalledTimes(0)
+      expect(screen.queryAllByText('Required').length).toBe(5)
     })
   })
 
