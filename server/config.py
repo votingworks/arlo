@@ -179,4 +179,18 @@ def read_jurisdictionadmin_auth0_creds() -> Tuple[str, str, str]:
     JURISDICTIONADMIN_AUTH0_CLIENT_SECRET,
 ) = read_jurisdictionadmin_auth0_creds()
 
+
+def setup_minerva():
+    "Configure round size growth from $ARLO_MINERVA_MULTIPLE (a float) if given, otherwise 1.5"
+
+    arlo_minerva_multiple = os.environ.get("ARLO_MINERVA_MULTIPLE", "1.5")
+
+    minerva_multiple = float(arlo_minerva_multiple)
+    logging.warning(f"Round sizes will increase by MINERVA_MULTIPLE={minerva_multiple}")
+
+    return minerva_multiple
+
+
+MINERVA_MULTIPLE = setup_minerva()
+
 SENTRY_DSN = os.environ.get("SENTRY_DSN")
