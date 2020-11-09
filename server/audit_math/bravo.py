@@ -9,7 +9,6 @@ targeted is being audited completely independently.
 import math
 from decimal import Decimal, ROUND_CEILING
 from collections import defaultdict
-import logging
 from typing import Dict, Tuple, Optional
 from scipy import stats
 
@@ -122,8 +121,6 @@ def get_test_statistics(
                 T[(winner, cand)] *= (
                     Decimal((1 - winners[winner]["swl"][cand]) / 0.5) ** votes
                 )
-
-    logging.debug(f"bravo test_stats: T={T}")
 
     return T
 
@@ -331,10 +328,6 @@ def get_sample_size(
                 }
     """
 
-    logging.debug(
-        f"bravo::get_sample_size({risk_limit=}, {contest=}, {sample_results=})"
-    )
-
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
@@ -424,8 +417,6 @@ def get_sample_size(
         size = bravo_sample_sizes(alpha, p_w, p_l, sample_w, sample_l, quant)
         samples[str(quant)] = {"type": None, "size": size, "prob": quant}
 
-    logging.debug(f"bravo::get_sample_size => {samples=}")
-
     return samples
 
 
@@ -451,8 +442,6 @@ def compute_risk(
                           winner-loser pair.
         confirmed       - a boolean indicating whether the audit can stop
     """
-    logging.debug(f"bravo::compute_risk({risk_limit=}, {contest=}, {sample_results=})")
-
     alpha = Decimal(risk_limit) / 100
     assert alpha < 1, "The risk-limit must be less than one!"
 
@@ -480,5 +469,4 @@ def compute_risk(
 
         if raw > alpha:
             finished = False
-    logging.debug(f"bravo::compute_risk -> {measurements=}, {finished=}")
     return measurements, finished

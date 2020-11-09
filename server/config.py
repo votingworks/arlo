@@ -1,5 +1,4 @@
 import os
-import logging
 from typing import Tuple
 
 ###
@@ -31,44 +30,12 @@ def setup_flask_config() -> Tuple[str, bool]:
 
 FLASK_ENV, FLASK_DEBUG = setup_flask_config()
 
-
-def setup_logging():
-    "Use $ARLO_LOGLEVEL (an integer) if given, otherwise a default based on FLASK_ENV"
-
-    arlo_loglevel = os.environ.get("ARLO_LOGLEVEL", None)
-
-    if arlo_loglevel is None:
-        loglevel = logging.DEBUG if FLASK_ENV == "development" else logging.WARNING
-    else:
-        loglevel = int(arlo_loglevel)
-
-    return loglevel
-
-
-LOGLEVEL = setup_logging()
-logging.basicConfig(
-    format="%(asctime)s:%(name)s:%(levelname)s:%(message)s", level=LOGLEVEL
-)
-logging.debug("Test debug log")
-logging.warning(f"Arlo running at loglevel {LOGLEVEL}")
-
-
-def filter_athena_messages(record):
-    "Filter out any logging messages from athena/audit.py, in preference to our tighter logging"
-
-    return not record.pathname.endswith("athena/audit.py")
-
-
-logging.getLogger().addFilter(filter_athena_messages)
-
-
 DEVELOPMENT_DATABASE_URL = "postgresql://arlo:arlo@localhost:5432/arlo"
 TEST_DATABASE_URL = "postgresql://arlo:arlo@localhost:5432/arlotest"
 
 
 def read_database_url_config() -> str:
     environment_database_url = os.environ.get("DATABASE_URL", None)
-    logging.warning(f"environment_database_url = {environment_database_url}")
     if environment_database_url:
         return environment_database_url
 
@@ -109,11 +76,6 @@ SESSION_SECRET = read_session_secret()
 
 def read_http_origin() -> str:
     http_origin = os.environ.get("ARLO_HTTP_ORIGIN", None)
-
-    logging.warning(f"ARLO_HTTP_ORIGIN={http_origin}")
-    logging.warning(
-        f"FLASK_ENV={FLASK_ENV}, HEROKU_APP_NAME={os.environ.get('HEROKU_APP_NAME')}"
-    )
 
     if not http_origin:
         if FLASK_ENV in DEVELOPMENT_ENVS:
