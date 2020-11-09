@@ -13,7 +13,7 @@ TODO: if necessary pull out risks for individual contests
 from decimal import Decimal
 from typing import List, Dict, Tuple, Optional
 
-from athena.audit import Audit  # type: ignore
+from athena.audit import Audit as AthenaAudit  # type: ignore
 from .sampler_contest import Contest
 from .shim import minerva_sample_sizes  # type: ignore
 
@@ -88,7 +88,7 @@ def make_athena_audit(arlo_contest, alpha):
         "contests": {contest_name: athena_contest},
     }
 
-    audit = Audit("minerva", alpha)
+    audit = AthenaAudit("minerva", alpha)
     audit.add_election(election)
     audit.load_contest(contest_name)
 
@@ -102,43 +102,30 @@ def get_sample_size(
     round_sizes: Dict[int, int],
 ) -> Dict[str, "SampleSizeOption"]:  # type: ignore
     """
-    Computes initial sample size parameterized by likelihood that the
-    initial sample will confirm the election result, assuming no
-    discrepancies.
+    Computes sample size for the next round, parameterized by likelihood that the
+    sample will confirm the election result, assuming accurate results.
 
     Inputs:
-        risk_limit     - the risk-limit for this audit
-        contest        - a sampler_contest object of the contest being audited
-        sample_results - mapping of candidates to votes in the (cumulative)
-                         sample:
-                        {
-                            candidate1: sampled_votes,
-                            candidate2: sampled_votes,
-                            ...
-                        }
+        risk_limit:     maximum risk as an integer percentage
+        contest:        a sampler_contest object of the contest being audited
+        sample_results: map round ids to mapping of candidates to incremental votes
+        round_sizes:    map round ids to incremental round sizes
 
     Outputs:
-        samples - dictionary mapping confirmation likelihood to sample size:
-                {
-                    likelihood1: sample_size,
-                    likelihood2: sample_size,
-                    ...
-                }
-    FIXME: add round size arguments and update tests
+        samples:        dictionary mapping confirmation likelihood to next sample size
 
     >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
     >>> get_sample_size(10, c3, None, [])
     {'0.7': {'type': None, 'size': 134, 'prob': 0.7}, '0.8': {'type': None, 'size': 166, 'prob': 0.8}, '0.9': {'type': None, 'size': 215, 'prob': 0.9}}
-
     >>> get_sample_size(20, c3, None, [])
     {'0.7': {'type': None, 'size': 87, 'prob': 0.7}, '0.8': {'type': None, 'size': 110, 'prob': 0.8}, '0.9': {'type': None, 'size': 156, 'prob': 0.9}}
-
-    One less than the kmin
-    >>> get_sample_size(10, c3, make_sample_results(c3, [[56, 40, 3]]), {1: 100})
+    >>> get_sample_size(10, c3, make_sample_results(c3, [[55, 40, 3]]), {1: 100})
     {'0.9': {'type': None, 'size': 150, 'prob': 0.9}}
     """
 
+    # logging.warning(f"{sample.results=}")
     # from ..api.rounds import contest_results_by_round
+    # logging.warning(f"{contest_results_by_round(contest)=}")
 
     if sample_results is not None:
         # Construct round schedule as a function of only first round size.
@@ -191,10 +178,10 @@ def get_sample_size(
 
         return samples
 
-    # Handle landslides.   TODO: remove this case if fixed upstream
+    # Handle landslides.   TODO: this works for a 10% risk limit. But remove this case if handled upstream
     if p_w == 1.0:
-        samples["asn"] = {
-            "type": "ASN",
+        samples["0.9"] = {
+            "type": None,
             "size": 4,
             "prob": 1.0,
         }
@@ -219,10 +206,10 @@ def collect_risks(
     Collect risk levels for each pair of candidates.
 
     Inputs:
-        alpha          - risk limit
-        margins        - the margins for the contest being audited
-        round_schedule - the sizes of each round
-        sample_results - mapping of candidates to votes in each round
+        alpha:           risk limit
+        margins:         the margins for the contest being audited
+        round_schedule:  the sizes of each round
+        sample_results:  mapping of candidates to votes in each round
 
     Outputs:
         risks - Mapping of (winner, loser) pairs to their risk levels
@@ -233,11 +220,7 @@ def collect_risks(
     >>> collect_risks(0.1, c3, [83], make_sample_results(c3, [[40, 40, 3]]))
     {('winner', 'loser'): 0.5596434615209632}
     >>> collect_risks(0.1, c3, [83, 200], make_sample_results(c3, [[40, 40, 3], [70, 30, 10]]))
-    {('winner', 'loser'): 0.00638203150599862}
-
-    # TODO: Make better test here of third-candidate surge, after not being eliminated earlier
-    #>>> collect_risks(0.1, c3, [83, 200], make_sample_results(c3, [[40, 40, 3], [70, 30, 90]]))
-    #surely not {('winner', 'loser'): 0.00638203150599862}
+    {('winner', 'loser'): 0.006382031505998191}
     >>> collect_risks(0.1, c3, [82], make_sample_results(c3, [[40, 40, 3]]))
     Traceback (most recent call last):
     ValueError: Incorrect number of valid ballots entered
@@ -270,21 +253,22 @@ def compute_risk(
     """
     Computes the risk-value of <sample_results> based on results in <contest>.
 
+    Computes sample size for the next round, parameterized by likelihood that the
+    sample will confirm the election result, assuming accurate results.
+
     Inputs:
-        risk_limit     - the risk-limit for this audit - integer percentage
-        contest        - a sampler_contest object for the contest being measured
-        sample_results - mapping of candidates to votes in the sample:
-                { "round": {
-                    candidate1: sampled_votes,
-                    candidate2: sampled_votes,
-                    ...
-                }}
+        risk_limit:     maximum risk as an integer percentage
+        contest:        a sampler_contest object of the contest being measured
+        sample_results: map round ids to mapping of candidates to incremental votes
+        round_sizes:    map round ids to incremental round sizes
 
     Outputs:
-        measurements    - the p-value of the hypotheses that the election
-                          result is correct based on the sample, for each
-                          winner-loser pair.
-        confirmed       - a boolean indicating whether the audit can stop
+        samples:        dictionary mapping confirmation likelihood to next sample size
+
+    Outputs:
+        measurements:   the p-value of the hypotheses that the election
+                        result is correct based on the sample
+        confirmed:      a boolean indicating whether the audit can stop
 
     >>> c3 = make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
     >>> compute_risk(10, c3, make_sample_results(c3, [[56, 40, 3]]), {1: 100, 2: 150})
@@ -292,7 +276,7 @@ def compute_risk(
     >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3]]), {1: 100, 2: 150})
     ({('winner', 'loser'): 0.5596434615209632}, False)
     >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3], [70, 30, 10]]), {1: 100, 2: 150, 3: 150})
-    ({('winner', 'loser'): 0.00638203150599862}, True)
+    ({('winner', 'loser'): 0.006382031505998191}, True)
     """
 
     alpha = risk_limit / 100
