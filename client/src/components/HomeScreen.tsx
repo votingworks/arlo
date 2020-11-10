@@ -73,18 +73,16 @@ const LoginWrapper = styled.div`
 `
 
 const LoginScreen: React.FC = () => {
-  const wasLoggedOut = useLocation().hash === '#logged-out'
+  // Support two query parameters: 'error' and 'message'
+  // We use these to communicate authentication errors to the user.
+  const query = new URLSearchParams(useLocation().search)
 
   return (
     <LoginWrapper>
       <img height="50px" src="/arlo.png" alt="Arlo, by VotingWorks" />
-      {wasLoggedOut && (
-        <Callout
-          icon="lock"
-          intent="warning"
-          style={{ margin: '20px 0 20px 0' }}
-        >
-          You have been logged out due to inactivity.
+      {query.get('error') && (
+        <Callout intent="danger" style={{ margin: '20px 0 20px 0' }}>
+          {query.get('message')}
         </Callout>
       )}
       <Card style={{ margin: '25px 0 15px 0' }}>
