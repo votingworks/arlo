@@ -10,7 +10,7 @@ import * as serviceWorker from './serviceWorker'
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
-  environment: process.env.NODE_ENV,
+  environment: process.env.REACT_APP_ENV || 'development',
   integrations: [new Integrations.BrowserTracing()],
   tracesSampleRate: 1.0,
 })
