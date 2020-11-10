@@ -11,14 +11,13 @@ TODO: if necessary pull out risks for individual contests
 
 """
 from decimal import Decimal
+import logging
 from typing import List, Dict, Tuple, Optional
 
 from athena.audit import Audit as AthenaAudit  # type: ignore
 from .sampler_contest import Contest
 from .shim import minerva_sample_sizes  # type: ignore
-
-# FIXME: make this an environmental variable
-MINERVA_MULTIPLE = 1.5
+from ..config import MINERVA_MULTIPLE
 
 
 def make_arlo_contest(tally, num_winners=1, votes_allowed=1):
@@ -123,10 +122,6 @@ def get_sample_size(
     {'0.9': {'type': None, 'size': 150, 'prob': 0.9}}
     """
 
-    # logging.warning(f"{sample.results=}")
-    # from ..api.rounds import contest_results_by_round
-    # logging.warning(f"{contest_results_by_round(contest)=}")
-
     if sample_results is not None:
         # Construct round schedule as a function of only first round size.
         # and other information set at the start of the audit.
@@ -140,6 +135,7 @@ def get_sample_size(
         first_round_size = round_sizes[1]
         prev_round_count = len(round_sizes)
         next_round_size = minerva_round_size(first_round_size, prev_round_count)
+        logging.debug(f"{round_sizes=}, {next_round_size=}")
         return {"0.9": {"type": None, "size": next_round_size, "prob": 0.9}}
 
     alpha = Decimal(risk_limit) / 100
@@ -219,12 +215,14 @@ def collect_risks(
     {('winner', 'loser'): 0.0933945799801079}
     >>> collect_risks(0.1, c3, [83], make_sample_results(c3, [[40, 40, 3]]))
     {('winner', 'loser'): 0.5596434615209632}
-    >>> collect_risks(0.1, c3, [83, 200], make_sample_results(c3, [[40, 40, 3], [70, 30, 10]]))
-    {('winner', 'loser'): 0.006382031505998191}
     >>> collect_risks(0.1, c3, [82], make_sample_results(c3, [[40, 40, 3]]))
     Traceback (most recent call last):
     ValueError: Incorrect number of valid ballots entered
     """
+
+    logging.debug(
+        f"minerva collect_risks {alpha=}, {arlo_contest=}, {round_schedule=}, {sample_results=})"
+    )
 
     audit = make_athena_audit(arlo_contest, alpha)
     for round_size, sample in zip(round_schedule, sample_results.values()):
@@ -234,12 +232,16 @@ def collect_risks(
         audit.set_observations(round_size, sum(obs), obs)
 
         # TODO: check for the audit being over, after which it will throw an error
+        logging.debug(
+            f"minerva  collect_risks: {audit.status[audit.active_contest].risks[-1]=}"
+        )
 
     # FIXME: for now we're returning only the max p_value for the deciding pair,
     # since other audits only return a single p_value,
     # and rounds.py throws it out right away p_value = max(p_values.values())
 
     risks = {("winner", "loser"): audit.status[audit.active_contest].risks[-1]}
+    logging.debug(f"minerva  collect_risks return: {risks=}")
 
     return risks
 
@@ -275,8 +277,6 @@ def compute_risk(
     ({('winner', 'loser'): 0.0933945799801079}, True)
     >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3]]), {1: 100, 2: 150})
     ({('winner', 'loser'): 0.5596434615209632}, False)
-    >>> compute_risk(10, c3, make_sample_results(c3, [[40, 40, 3], [70, 30, 10]]), {1: 100, 2: 150, 3: 150})
-    ({('winner', 'loser'): 0.006382031505998191}, True)
     """
 
     alpha = risk_limit / 100
@@ -285,6 +285,7 @@ def compute_risk(
     ), "The risk-limit must be greater than zero and less than one!"
 
     prev_round_schedule = [value for key, value in sorted(round_sizes.items())]
+    logging.debug(f"{round_sizes=}, {prev_round_schedule=}")
 
     risks = collect_risks(alpha, contest, prev_round_schedule, sample_results)
     finished = all(risk <= alpha for risk in risks.values())

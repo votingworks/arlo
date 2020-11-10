@@ -38,7 +38,7 @@ const ContestSelect: React.FC<IProps> = ({
   const [filter, setFilter] = useState('')
   const jurisdictions = useJurisdictions(electionId)
 
-  if (!standardizedContests || !jurisdictions.length) return null // Still loading
+  if (!standardizedContests || !jurisdictions) return null // Still loading
 
   const submit = async ({
     contests,

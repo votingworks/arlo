@@ -11,11 +11,7 @@ import Progress from './Progress'
 import useSetupMenuItems from './useSetupMenuItems'
 import RoundManagement from './RoundManagement'
 import useRoundsJurisdictionAdmin from './useRoundsJurisdictionAdmin'
-import {
-  AuditAdminStatusBox,
-  JurisdictionAdminStatusBox,
-  isSetupComplete,
-} from './StatusBox'
+import { AuditAdminStatusBox, JurisdictionAdminStatusBox } from './StatusBox'
 import { useBallotManifest, useBatchTallies, useCVRS } from './useCSV'
 import useAuditBoards from './useAuditBoards'
 import useAuditSettings from './useAuditSettings'
@@ -60,7 +56,7 @@ export const AuditAdminView: React.FC = () => {
 
   useEffect(refresh, [refresh, isBallotComparison])
 
-  if (!contests || !rounds || !auditSettings) return null // Still loading
+  if (!jurisdictions || !contests || !rounds || !auditSettings) return null // Still loading
 
   // TODO support multiple contests in batch comparison audits
   const isBatch = auditSettings.auditType === 'BATCH_COMPARISON'
@@ -131,7 +127,7 @@ export const AuditAdminView: React.FC = () => {
       return (
         <Redirect
           to={
-            isSetupComplete(jurisdictions, contests, auditSettings)
+            rounds.length > 0
               ? `/election/${electionId}/progress`
               : `/election/${electionId}/setup`
           }
