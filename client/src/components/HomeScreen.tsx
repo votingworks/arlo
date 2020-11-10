@@ -208,9 +208,7 @@ const CreateAuditWrapper = styled.div`
   padding: 30px;
 `
 
-// TODO: remove "display: none;" when we implement Minerva
 const BallotPollingWrapper = styled.div`
-  display: none;
   margin: 20px 0;
   background-color: #ffffff;
   padding-top: 10px;
@@ -324,7 +322,9 @@ const CreateAudit: React.FC = () => {
                 selectedValue={values.auditType}
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
-                {values.auditType === 'BALLOT_POLLING' ? (
+                {/* For now, disable switching audit math type in production */}
+                {process.env.NODE_ENV !== 'production' &&
+                values.auditType === 'BALLOT_POLLING' ? (
                   <BallotPollingWrapper>
                     <label htmlFor="auditMathType">
                       <p>Ballot polling type</p>
