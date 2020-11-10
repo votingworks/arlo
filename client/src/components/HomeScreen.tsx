@@ -321,7 +321,7 @@ const CreateAudit: React.FC = () => {
               >
                 <Radio value="BALLOT_POLLING">Ballot Polling</Radio>
                 {/* For now, disable switching audit math type in production */}
-                {process.env.NODE_ENV !== 'production' &&
+                {process.env.REACT_APP_ENV !== 'production' &&
                 values.auditType === 'BALLOT_POLLING' ? (
                   <BallotPollingWrapper>
                     <label htmlFor="auditMathType">
