@@ -21,7 +21,7 @@ export const api = async <T>(
       // If we get a 401, it most likely means the session expired, so we
       // redirect to the login screen with a flag to show a message.
       if (response.status === 401) {
-        window.location.replace(
+        window.location.assign(
           encodeURI(
             '/?error=unauthorized&message=You have been logged out due to inactivity.'
           )
