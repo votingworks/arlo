@@ -98,10 +98,12 @@ describe('Home screen', () => {
     })
   })
 
-  it('shows a message when logged out for inactivity', async () => {
+  it('shows a message when an auth error occurs', async () => {
     const expectedCalls = [apiCalls.unauthenticatedUser]
     await withMockFetch(expectedCalls, async () => {
-      renderView('/#logged-out')
+      renderView(
+        '/?error=unauthorized&message=You+have+been+logged+out+due+to+inactivity.'
+      )
       await screen.findByText('You have been logged out due to inactivity.')
     })
   })

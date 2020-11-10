@@ -1,6 +1,6 @@
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlencode
 from flask import redirect, jsonify, request
-from authlib.integrations.flask_client import OAuth
+from authlib.integrations.flask_client import OAuth, OAuthError
 
 from . import auth
 from ..models import *  # pylint: disable=wildcard-import
@@ -200,4 +200,19 @@ def auditboard_passphrase(passphrase):
     set_loggedin_user(UserType.AUDIT_BOARD, auditboard.id)
     return redirect(
         f"/election/{auditboard.jurisdiction.election.id}/audit-board/{auditboard.id}"
+    )
+
+
+@auth.errorhandler(OAuthError)
+def handle_oauth_error(error):
+    # If Auth0 sends an error to one of the callbacks, we want to redirect the
+    # user to the login screen and display the error.
+    return redirect(
+        "/?"
+        + urlencode(
+            {
+                "error": "oauth",
+                "message": f"Login error: {error.error} - {error.description}",
+            }
+        )
     )

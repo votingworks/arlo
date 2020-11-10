@@ -8,7 +8,6 @@ import './index.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 
-console.log(process.env)
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
   environment: process.env.NODE_ENV,

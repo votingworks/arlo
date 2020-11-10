@@ -2,7 +2,7 @@ import time
 from datetime import timedelta
 import json, re, uuid
 from typing import List, Optional
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock, patch
 from urllib.parse import urlparse, parse_qs
 import pytest
 from flask.testing import FlaskClient
@@ -110,22 +110,21 @@ def test_superadmin_start(client: FlaskClient):
 def test_superadmin_callback(
     client: FlaskClient, org_id: str,  # pylint: disable=unused-argument
 ):
-    auth0_sa.authorize_access_token = MagicMock(return_value=None)
+    with patch.object(auth0_sa, "authorize_access_token", return_value=None):
+        mock_response = Mock()
+        mock_response.json = MagicMock(return_value={"email": SA_EMAIL})
+        with patch.object(auth0_sa, "get", return_value=mock_response):
 
-    mock_response = Mock()
-    mock_response.json = MagicMock(return_value={"email": SA_EMAIL})
-    auth0_sa.get = Mock(return_value=mock_response)
+            rv = client.get("/auth/superadmin/callback?code=foobar")
+            assert rv.status_code == 302
+            assert urlparse(rv.location).path == "/superadmin/"
 
-    rv = client.get("/auth/superadmin/callback?code=foobar")
-    assert rv.status_code == 302
-    assert urlparse(rv.location).path == "/superadmin/"
+            with client.session_transaction() as session:  # type: ignore
+                assert session["_superadmin"]
+                assert list(session.keys()) == ["_superadmin"]
 
-    with client.session_transaction() as session:  # type: ignore
-        assert session["_superadmin"]
-        assert list(session.keys()) == ["_superadmin"]
-
-    assert auth0_sa.authorize_access_token.called
-    assert auth0_sa.get.called
+            assert auth0_sa.authorize_access_token.called
+            assert auth0_sa.get.called
 
 
 def test_superadmin_callback_rejected(
@@ -133,21 +132,20 @@ def test_superadmin_callback_rejected(
 ):
     bad_user_infos: List[Optional[JSONDict]] = [None, {}, {"email": AA_EMAIL}]
     for bad_user_info in bad_user_infos:
-        auth0_sa.authorize_access_token = MagicMock(return_value=None)
+        with patch.object(auth0_sa, "authorize_access_token", return_value=None):
+            mock_response = Mock()
+            mock_response.json = MagicMock(return_value=bad_user_info)
+            with patch.object(auth0_sa, "get", return_value=mock_response):
 
-        mock_response = Mock()
-        mock_response.json = MagicMock(return_value=bad_user_info)
-        auth0_sa.get = Mock(return_value=mock_response)
+                rv = client.get("/auth/superadmin/callback?code=foobar")
+                assert rv.status_code == 302
+                assert urlparse(rv.location).path == "/"
 
-        rv = client.get("/auth/superadmin/callback?code=foobar")
-        assert rv.status_code == 302
-        assert urlparse(rv.location).path == "/"
+                with client.session_transaction() as session:  # type: ignore
+                    assert "_superadmin" not in session
 
-        with client.session_transaction() as session:  # type: ignore
-            assert "_superadmin" not in session
-
-        assert auth0_sa.authorize_access_token.called
-        assert auth0_sa.get.called
+                assert auth0_sa.authorize_access_token.called
+                assert auth0_sa.get.called
 
 
 def test_auditadmin_start(client: FlaskClient):
@@ -156,21 +154,21 @@ def test_auditadmin_start(client: FlaskClient):
 
 
 def test_auditadmin_callback(client: FlaskClient, aa_email: str):
-    auth0_aa.authorize_access_token = MagicMock(return_value=None)
+    with patch.object(auth0_aa, "authorize_access_token", return_value=None):
 
-    mock_response = Mock()
-    mock_response.json = MagicMock(return_value={"email": aa_email})
-    auth0_aa.get = Mock(return_value=mock_response)
+        mock_response = Mock()
+        mock_response.json = MagicMock(return_value={"email": aa_email})
+        with patch.object(auth0_aa, "get", return_value=mock_response):
 
-    rv = client.get("/auth/auditadmin/callback?code=foobar")
-    assert rv.status_code == 302
+            rv = client.get("/auth/auditadmin/callback?code=foobar")
+            assert rv.status_code == 302
 
-    with client.session_transaction() as session:  # type: ignore
-        assert session["_user"]["type"] == UserType.AUDIT_ADMIN
-        assert session["_user"]["key"] == aa_email
+            with client.session_transaction() as session:  # type: ignore
+                assert session["_user"]["type"] == UserType.AUDIT_ADMIN
+                assert session["_user"]["key"] == aa_email
 
-    assert auth0_aa.authorize_access_token.called
-    assert auth0_aa.get.called
+            assert auth0_aa.authorize_access_token.called
+            assert auth0_aa.get.called
 
 
 def test_jurisdictionadmin_start(client: FlaskClient):
@@ -179,21 +177,21 @@ def test_jurisdictionadmin_start(client: FlaskClient):
 
 
 def test_jurisdictionadmin_callback(client: FlaskClient, ja_email: str):
-    auth0_ja.authorize_access_token = MagicMock(return_value=None)
+    with patch.object(auth0_ja, "authorize_access_token", return_value=None):
 
-    mock_response = Mock()
-    mock_response.json = MagicMock(return_value={"email": ja_email})
-    auth0_ja.get = Mock(return_value=mock_response)
+        mock_response = Mock()
+        mock_response.json = MagicMock(return_value={"email": ja_email})
+        with patch.object(auth0_ja, "get", return_value=mock_response):
 
-    rv = client.get("/auth/jurisdictionadmin/callback?code=foobar")
-    assert rv.status_code == 302
+            rv = client.get("/auth/jurisdictionadmin/callback?code=foobar")
+            assert rv.status_code == 302
 
-    with client.session_transaction() as session:  # type: ignore
-        assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
-        assert session["_user"]["key"] == ja_email
+            with client.session_transaction() as session:  # type: ignore
+                assert session["_user"]["type"] == UserType.JURISDICTION_ADMIN
+                assert session["_user"]["key"] == ja_email
 
-    assert auth0_ja.authorize_access_token.called
-    assert auth0_ja.get.called
+            assert auth0_ja.authorize_access_token.called
+            assert auth0_ja.get.called
 
 
 def test_audit_board_log_in(
@@ -224,6 +222,19 @@ def test_logout(client: FlaskClient, aa_email: str):
     # logging out a second time should not cause an error
     rv = client.get("/auth/logout")
     assert rv.status_code == 302
+
+
+def test_auth0_error(client: FlaskClient):
+    rv = client.get(
+        "/auth/auditadmin/callback?error=invalid_request&error_description=some%20error%20from%20auth0"
+    )
+    assert rv.status_code == 302
+    location = urlparse(rv.location)
+    assert location.path == "/"
+    assert (
+        location.query
+        == "error=oauth&message=Login+error%3A+invalid_request+-+some+error+from+auth0"
+    )
 
 
 # Tests for /api/me
