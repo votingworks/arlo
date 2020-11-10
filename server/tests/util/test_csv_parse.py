@@ -440,6 +440,15 @@ def test_parse_csv_empty_trailing_columns():
     assert parsed == [{"Batch Name": "Batch A", "Number of Ballots": 20}]
 
 
+def test_parse_csv_excel_mac_newlines():
+    parsed = list(
+        parse_csv("Batch Name,Number of Ballots\rBatch 1,20", BALLOT_MANIFEST_COLUMNS,)
+    )
+    assert parsed == [
+        {"Batch Name": "Batch 1", "Number of Ballots": 20},
+    ]
+
+
 REAL_WORLD_REJECTED_CSVS = [
     (
         """Batch Name,,Number of Ballots,

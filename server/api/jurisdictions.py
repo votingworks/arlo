@@ -396,7 +396,9 @@ def update_jurisdictions_file(election: Election):
         uploaded_at=datetime.datetime.utcnow(),
     )
 
-    jurisdictions_csv = csv.DictReader(io.StringIO(jurisdictions_file_string))
+    jurisdictions_csv = csv.DictReader(
+        io.StringIO(jurisdictions_file_string, newline=None)
+    )
 
     missing_fields = [
         field
