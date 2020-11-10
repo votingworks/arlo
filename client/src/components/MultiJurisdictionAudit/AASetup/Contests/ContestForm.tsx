@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { useParams } from 'react-router-dom'
+import equal from 'fast-deep-equal'
 import { Formik, FormikProps, Field, FieldArray } from 'formik'
 import { Spinner } from '@blueprintjs/core'
 import FormWrapper from '../../../Atoms/Form/FormWrapper'
@@ -25,6 +26,7 @@ import { IContest, ICandidate, IAuditSettings } from '../../../../types'
 import DropdownCheckboxList from './DropdownCheckboxList'
 import Card from '../../../Atoms/SpacedCard'
 import { testNumber } from '../../../utilities'
+import isObjectEmpty from '../../../../utils/objects'
 
 interface IProps {
   isTargeted: boolean
@@ -77,26 +79,41 @@ const ContestForm: React.FC<IProps> = ({
   /* istanbul ignore next */
   if (isBatch && !isTargeted && nextStage.activate) nextStage.activate() // skip to next stage if on opportunistic contests screen and during a batch audit (until batch audits support multiple contests)
 
+  const initialValues = {
+    contests: filteredContests.length ? filteredContests : contestValues,
+  }
+
+  const isOpportunisticFormClean = (
+    touched: {},
+    values: { contests: IContest[] }
+  ) => {
+    return (
+      !isTargeted && (isObjectEmpty(touched) || equal(initialValues, values))
+    )
+  }
+
+  const goToNextStage = () => {
+    if (nextStage.activate) nextStage.activate()
+    else throw new Error('Wrong menuItems passed in: activate() is missing')
+  }
+
   const submit = async (values: { contests: IContest[] }) => {
     const response = await updateContests(values.contests)
     // TEST TODO
     /* istanbul ignore next */
     if (!response) return
-    /* istanbul ignore else */
-    if (nextStage.activate) nextStage.activate()
-    else throw new Error('Wrong menuItems passed in: activate() is missing')
+    goToNextStage()
   }
   return (
     <Formik
-      initialValues={{
-        contests: filteredContests.length ? filteredContests : contestValues,
-      }}
+      initialValues={initialValues}
       validationSchema={schema}
       enableReinitialize
       onSubmit={submit}
     >
       {({
         values,
+        touched,
         handleSubmit,
         setFieldValue,
       }: FormikProps<{ contests: IContest[] }>) => (
@@ -289,7 +306,11 @@ const ContestForm: React.FC<IProps> = ({
                 type="submit"
                 intent="primary"
                 disabled={nextStage.state === 'locked'}
-                onClick={handleSubmit}
+                onClick={e => {
+                  e.preventDefault()
+                  if (isOpportunisticFormClean(touched, values)) goToNextStage()
+                  else handleSubmit()
+                }}
               >
                 Save &amp; Next
               </FormButton>
