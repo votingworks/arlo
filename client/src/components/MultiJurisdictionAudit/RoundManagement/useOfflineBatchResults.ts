@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import { api } from '../../utilities'
 
 export interface IOfflineBatchResults {
   finalizedAt: string
   results: {
-    [batchName: string]: {
+    batchName: string
+    choiceResults: {
       [choiceId: string]: number
     }
-  }
+  }[]
 }
 
 const getResults = async (
@@ -27,7 +27,7 @@ const putResults = async (
   roundId: string,
   newResults: IOfflineBatchResults['results']
 ): Promise<boolean> => {
-  return !!api(
+  return !!(await api(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch`,
     {
       method: 'PUT',
@@ -36,7 +36,7 @@ const putResults = async (
         'Content-Type': 'application/json',
       },
     }
-  )
+  ))
 }
 
 const postFinalizeResults = async (
@@ -44,12 +44,12 @@ const postFinalizeResults = async (
   jurisdictionId: string,
   roundId: string
 ): Promise<boolean> => {
-  return !!api(
+  return !!(await api(
     `/election/${electionId}/jurisdiction/${jurisdictionId}/round/${roundId}/results/batch/finalize`,
     {
       method: 'POST',
     }
-  )
+  ))
 }
 
 const useOfflineBatchResults = (
@@ -83,8 +83,9 @@ const useOfflineBatchResults = (
       jurisdictionId,
       roundId
     )
-    if (success)
+    if (success) {
       setResults(await getResults(electionId, jurisdictionId, roundId))
+    }
     return success
   }
 

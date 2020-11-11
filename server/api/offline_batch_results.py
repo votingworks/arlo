@@ -1,3 +1,4 @@
+from typing import List
 from datetime import datetime
 from collections import defaultdict
 from flask import jsonify, request
@@ -11,14 +12,19 @@ from .rounds import is_round_complete, end_round, get_current_round, sampled_all
 from ..util.jsonschema import JSONDict, validate
 from ..util.isoformat import isoformat
 
-# { batch_name: { choice_id: votes }}
 OFFLINE_BATCH_RESULTS_SCHEMA = {
-    "type": "object",
-    "patternProperties": {
-        "^.*$": {
-            "type": "object",
-            "patternProperties": {"^.*$": {"type": "integer", "minimum": 0}},
-        }
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "batchName": {"type": "string"},
+            "choiceResults": {
+                "type": "object",
+                "patternProperties": {"^.*$": {"type": "integer", "minimum": 0},},
+            },
+        },
+        "required": ["batchName", "choiceResults"],
+        "additionalProperties": False,
     },
 }
 
@@ -27,12 +33,15 @@ def validate_offline_batch_results(
     election: Election,
     jurisdiction: Jurisdiction,
     round: Round,
-    offline_batch_results: JSONDict,
+    offline_batch_results: List[JSONDict],
 ):
     if len(list(election.contests)) > 1:
         raise Conflict("Offline batch results only supported for single contest audits")
 
     contest = list(election.contests)[0]
+
+    if not any(c.id == contest.id for c in jurisdiction.contests):
+        raise Conflict("Jurisdiction not in contest universe")
 
     if not sampled_all_ballots(round, election):
         raise Conflict(
@@ -51,14 +60,13 @@ def validate_offline_batch_results(
 
     validate(offline_batch_results, OFFLINE_BATCH_RESULTS_SCHEMA)
 
-    if not any(c.id == contest.id for c in jurisdiction.contests):
-        raise Conflict("Jurisdiction not in contest universe")
-
     contest_choice_ids = {choice.id for choice in contest.choices}
 
-    for batch_name, batch_results in offline_batch_results.items():
-        if set(batch_results.keys()) != contest_choice_ids:
-            raise BadRequest(f"Invalid choice ids for batch {batch_name}")
+    for batch_results in offline_batch_results:
+        if set(batch_results["choiceResults"].keys()) != contest_choice_ids:
+            raise BadRequest(
+                f"Invalid choice ids for batch {batch_results['batchName']}"
+            )
 
     # TODO validate total results does not exceed ballot manifest
 
@@ -77,12 +85,12 @@ def record_offline_batch_results(
     validate_offline_batch_results(election, jurisdiction, round, offline_batch_results)
 
     OfflineBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id).delete()
-    for batch_name, batch_results in offline_batch_results.items():
-        for contest_choice_id, result in batch_results.items():
+    for batch_results in offline_batch_results:
+        for contest_choice_id, result in batch_results["choiceResults"].items():
             db_session.add(
                 OfflineBatchResult(
                     jurisdiction_id=jurisdiction.id,
-                    batch_name=batch_name,
+                    batch_name=batch_results["batchName"],
                     contest_choice_id=contest_choice_id,
                     result=result,
                 )
@@ -145,22 +153,35 @@ def get_offline_batch_results(
     jurisdiction: Jurisdiction,
     round: Round,  # pylint: disable=unused-argument
 ):
-    recorded_results = OfflineBatchResult.query.filter_by(
-        jurisdiction_id=jurisdiction.id
-    ).all()
-
     # We only support one contest for now
     contest = list(election.contests)[0]
 
-    results: JSONDict = defaultdict(
+    recorded_results = list(
+        OfflineBatchResult.query.filter_by(jurisdiction_id=jurisdiction.id)
+        .order_by(OfflineBatchResult.created_at)
+        .all()
+    )
+    # We want to display batches in the order the user created them. Dict keys
+    # are ordered, so we use a dict to dedupe the batch names while preserving
+    # order.
+    ordered_batch_names = list(
+        dict.fromkeys(result.batch_name for result in recorded_results)
+    )
+
+    results_by_batch: JSONDict = defaultdict(
         lambda: {choice.id: None for choice in contest.choices}
     )
     for result in recorded_results:
-        results[result.batch_name][result.contest_choice_id] = result.result
+        results_by_batch[result.batch_name][result.contest_choice_id] = result.result
+
+    results = [
+        {"batchName": batch_name, "choiceResults": results_by_batch[batch_name],}
+        for batch_name in ordered_batch_names
+    ]
 
     return jsonify(
         {
             "finalizedAt": isoformat(jurisdiction.finalized_offline_batch_results_at),
-            "results": dict(results),
+            "results": results,
         }
     )

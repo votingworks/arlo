@@ -25,9 +25,10 @@ import OfflineBatchRoundDataEntry from './OfflineBatchRoundDataEntry'
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
   align-items: flex-start;
-  width: 510px;
   padding: 30px 0;
 `
+// TODO
+// width: 510px;
 
 const SpacedDiv = styled.div`
   margin-bottom: 30px;

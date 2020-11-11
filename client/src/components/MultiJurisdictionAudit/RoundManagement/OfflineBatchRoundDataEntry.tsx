@@ -1,35 +1,15 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
-import { H5 } from '@blueprintjs/core'
-import { Field, Formik, FormikProps } from 'formik'
-import styled from 'styled-components'
+import { Formik, FormikProps, Field, FieldArray } from 'formik'
+import { Button, HTMLTable } from '@blueprintjs/core'
 import useContestsJurisdictionAdmin from './useContestsJurisdictionAdmin'
-import Card from '../../Atoms/SpacedCard'
-import FormField from '../../Atoms/Form/FormField'
-import FormButton from '../../Atoms/Form/FormButton'
-import { testNumber } from '../../utilities'
-import useBatchResults, { IResultValues } from './useBatchResults'
 import { IRound } from '../useRoundsAuditAdmin'
 import useOfflineBatchResults, {
   IOfflineBatchResults,
 } from './useOfflineBatchResults'
-import { IContest } from '../../../types'
-
-const BottomButton = styled(FormButton)`
-  margin: 30px 0;
-`
-
-const BlockLabel = styled.label`
-  display: block;
-  margin: 20px 0;
-`
 
 interface IProps {
   round: IRound
-}
-
-interface IValues {
-  results: IResultValues
 }
 
 const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
@@ -38,49 +18,119 @@ const OfflineBatchRoundDataEntry = ({ round }: IProps) => {
     jurisdictionId: string
   }>()
   const contests = useContestsJurisdictionAdmin(electionId, jurisdictionId)
-  const [results, updateResults, finalizeResults] = useOfflineBatchResults(
+  const [batchResults, updateResults, finalizeResults] = useOfflineBatchResults(
     electionId,
     jurisdictionId,
     round.id
   )
-  const [newResults, setNewResults] = useState<
-    IOfflineBatchResults['results'] | null
-  >(results && results.results)
 
-  if (!contests || !results) return null
+  if (!contests || !batchResults) return null
 
   // We only support one contest for now
   const contest = contests[0]
 
+  const { results, finalizedAt } = batchResults
+
   return (
-    <form>
-      <p>
-        When you have examined all the ballots assigned to you, enter the number
-        of votes recorded for each candidate/choice for each batch of audited
-        ballots.
-      </p>
-      <table>
-        <thead>
-          <th>Batch</th>
-          {contest.choices.map(choice => (
-            <th key={choice.id}>{choice.name}</th>
-          ))}
-        </thead>
-        <tbody>
-          {Object.entries(newResults!).map(([batchName, choiceResults]) => (
-            <tr key={batchName}>
-              <td>{batchName}</td>
-              {contest.choices.map(choice => (
-                <td key={choice.id}>{choiceResults[choice.id]}</td>
-              ))}
-            </tr>
-          ))}
-          <tr>
-            <td>Add batch</td>
-          </tr>
-        </tbody>
-      </table>
-    </form>
+    <Formik
+      initialValues={{ results }}
+      enableReinitialize
+      onSubmit={async values => {
+        // TODO validation to prevent partially empty rows
+        // Omit empty rows
+        const filteredResults = values.results.filter(
+          result =>
+            result.batchName !== '' &&
+            Object.values(result.choiceResults).every(
+              value => (value as string | number) !== ''
+            )
+        )
+        await updateResults(filteredResults)
+        // TODO change isSubmitting?
+      }}
+    >
+      {({
+        handleSubmit,
+        values,
+      }: FormikProps<{ results: IOfflineBatchResults['results'] }>) => (
+        <form>
+          <p>
+            When you have examined all the ballots assigned to you, enter the
+            number of votes recorded for each candidate/choice for each batch of
+            audited ballots.
+          </p>
+          <fieldset disabled={!!finalizedAt}>
+            <HTMLTable>
+              <thead>
+                <tr>
+                  <th />
+                  <th>Batch Name</th>
+                  {contest.choices.map(choice => (
+                    <th key={`th-${choice.id}`}>{choice.name}</th>
+                  ))}
+                </tr>
+              </thead>
+              <FieldArray
+                name="results"
+                render={arrayHelpers => (
+                  <tbody>
+                    {values.results.map((_, r) => (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <tr key={`batchName-${r}`}>
+                        <td>
+                          <Button
+                            icon="cross"
+                            onClick={() => arrayHelpers.remove(r)}
+                          />
+                        </td>
+                        <td>
+                          <Field
+                            type="text"
+                            name={`results.${r}.batchName`}
+                            placeholder="Enter a batch name..."
+                          />
+                        </td>
+                        {contest.choices.map(choice => (
+                          // eslint-disable-next-line react/no-array-index-key
+                          <td key={`${r}-${choice.id}`}>
+                            <Field
+                              type="number"
+                              name={`results.${r}.choiceResults.${choice.id}`}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                    <tr>
+                      <td />
+                      <td>
+                        <Button
+                          onClick={() =>
+                            arrayHelpers.push({
+                              batchName: '',
+                              choiceResults: {},
+                            })
+                          }
+                        >
+                          + Add batch
+                        </Button>
+                      </td>
+                      {contest.choices.map(choice => (
+                        <td key={`add-${choice.id}`}></td>
+                      ))}
+                    </tr>
+                  </tbody>
+                )}
+              />
+            </HTMLTable>
+            <Button onClick={handleSubmit as (e: React.FormEvent) => void}>
+              Save Results
+            </Button>
+            <Button onClick={finalizeResults}>Finalize Results</Button>
+          </fieldset>
+        </form>
+      )}
+    </Formik>
   )
 }
 //   return (
