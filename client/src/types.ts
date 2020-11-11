@@ -157,7 +157,7 @@ export interface IJurisdictionMeta {
   id: string
   name: string
   election: IElectionMeta
-  numBallots: number
+  numBallots: number | null
 }
 
 export interface IUserMeta {
