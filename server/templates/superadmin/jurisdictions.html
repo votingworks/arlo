@@ -7,8 +7,14 @@
   {% for jurisdiction in election.jurisdictions %}
   <form method="post" action="./jurisdictionadmin-login">
     <li> {{jurisdiction.name}}
-      <input type="hidden" name="email" value="{{jurisdiction.jurisdiction_administrations[0].user.email}}">
-      <input type="submit" value="log in as">
+      <ul>
+	{% for admin in jurisdiction.jurisdiction_administrations %}
+	<li>
+	  <input type="hidden" name="email" value="{{admin.user.email}}">
+	  <input type="submit" value="log in as {{admin.user.email}}">
+	  </li>
+	{% endfor %}
+      </ul>
     </li>
   </form>
   {% endfor %}
