@@ -81,10 +81,39 @@ def test_get_sample_size():
 def test_get_sample_size_landslide():
     d2 = minerva.make_arlo_contest({"a": 100, "b": 0})
     res = minerva.get_sample_size(10, d2, None, [])
-    assert res == {"0.9": {"type": None, "size": 4, "prob": 1.0}}
+    assert res == {
+        "0.7": {"type": None, "size": 4, "prob": 0.7},
+        "0.8": {"type": None, "size": 4, "prob": 0.8},
+        "0.9": {"type": None, "size": 4, "prob": 0.9},
+    }
 
 
-def test_get_sample_size_2r():
+def test_get_sample_size_big():
+    # Binary search result, just over approximation threshold of 1.5% margin
+    c = minerva.make_arlo_contest({"a": 5076, "b": 4925})
+    res = minerva.get_sample_size(10, c, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 17663, "prob": 0.7},
+        "0.8": {"type": None, "size": 22233, "prob": 0.8},
+        "0.9": {"type": None, "size": 30319, "prob": 0.9},
+    }
+
+
+def test_get_sample_size_bigger_approx():
+    # 0.4% margin, fast, approximate results from v0.7.9 of Athena
+    # Binary search numbers are 250632, 315749, 430133 instead
+    # and take 2 minutes on an Intel(R) Xeon(R) CPU X3450 @ 2.67GHz:
+    #  time python -m athena --type minerva -n t -b 502 498 -p .9 .8 .7 --approx 0.001
+    c = minerva.make_arlo_contest({"a": 502000, "b": 498000})
+    res = minerva.get_sample_size(10, c, None, [])
+    assert res == {
+        "0.7": {"type": None, "size": 250047, "prob": 0.7},
+        "0.8": {"type": None, "size": 315475, "prob": 0.8},
+        "0.9": {"type": None, "size": 429778, "prob": 0.9},
+    }
+
+
+def test_compute_risk_2r():
     c = minerva.make_arlo_contest({"a": 600, "b": 400, "c": 100, "_undervote_": 100})
     res = minerva.compute_risk(
         10,
@@ -105,6 +134,23 @@ def test_get_sample_size_2win():
         "0.8": {"prob": 0.8, "size": 87, "type": None},
         "0.9": {"prob": 0.9, "size": 114, "type": None},
     }
+
+
+def test_compute_risk_delta():
+    c = minerva.make_arlo_contest(
+        {
+            "Warnock": 1613896,
+            "Loeffler": 1270718,
+            "Collins": 978667,
+            "Write-ins": 132,
+            "_undervote_": 1041608,
+        },
+        num_winners=2,
+    )
+    res = minerva.compute_risk(
+        10, c, minerva.make_sample_results(c, [[384, 276, 234, 1]]), {1: 923}
+    )
+    assert res == ({("winner", "loser"): 0.039858047805999164}, True)
 
 
 def test_compute_risk_2win():
