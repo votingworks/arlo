@@ -399,32 +399,62 @@ def is_round_complete(election: Election, round: Round) -> bool:
     # For offline audits, check that we have results recorded for every
     # jurisdiction that had ballots sampled
     else:
-        num_jurisdictions_without_results: int = (
-            # For each jurisdiction...
-            Jurisdiction.query.filter_by(election_id=election.id)
-            # Where ballots were sampled...
-            .join(Jurisdiction.batches)
-            .join(Batch.ballots)
-            # And those ballots were sampled this round...
-            .join(SampledBallot.draws)
-            .filter_by(round_id=round.id)
-            .join(SampledBallotDraw.contest)
-            # Count the number of results recorded for each contest.
-            .outerjoin(
-                JurisdictionResult,
-                and_(
-                    JurisdictionResult.jurisdiction_id == Jurisdiction.id,
-                    JurisdictionResult.contest_id == Contest.id,
-                    JurisdictionResult.round_id == round.id,
-                ),
+        num_jurisdictions_without_results: int
+        # Special case: if we sampled all ballots, we just check every
+        # jurisdiction in the targeted contest's universe
+        if sampled_all_ballots(round, election):
+            num_jurisdictions_without_results = (
+                Contest.query.filter_by(election_id=election.id, is_targeted=True)
+                .join(Contest.jurisdictions)
+                .outerjoin(
+                    JurisdictionResult,
+                    and_(
+                        JurisdictionResult.jurisdiction_id == Jurisdiction.id,
+                        JurisdictionResult.contest_id == Contest.id,
+                        JurisdictionResult.round_id == round.id,
+                    ),
+                )
+                .group_by(Jurisdiction.id, Contest.id)
+                .having(func.count(JurisdictionResult.result) == 0)
+                .count()
             )
-            # Finally, count the number of jurisdiction/contest pairs for which
-            # there is no result recorded
-            .group_by(Jurisdiction.id, Contest.id)
-            .having(func.count(JurisdictionResult.result) == 0)
-            .count()
-        )
+        else:
+            num_jurisdictions_without_results = (
+                # For each jurisdiction...
+                Jurisdiction.query.filter_by(election_id=election.id)
+                # Where ballots were sampled...
+                .join(Jurisdiction.batches)
+                .join(Batch.ballots)
+                # And those ballots were sampled this round...
+                .join(SampledBallot.draws)
+                .filter_by(round_id=round.id)
+                .join(SampledBallotDraw.contest)
+                # Count the number of results recorded for each contest.
+                .outerjoin(
+                    JurisdictionResult,
+                    and_(
+                        JurisdictionResult.jurisdiction_id == Jurisdiction.id,
+                        JurisdictionResult.contest_id == Contest.id,
+                        JurisdictionResult.round_id == round.id,
+                    ),
+                )
+                # Finally, count the number of jurisdiction/contest pairs for which
+                # there is no result recorded
+                .group_by(Jurisdiction.id, Contest.id)
+                .having(func.count(JurisdictionResult.result) == 0)
+                .count()
+            )
         return num_jurisdictions_without_results == 0
+
+
+def sampled_all_ballots(round: Round, election: Election):
+    return election.audit_type == AuditType.BALLOT_POLLING and any(
+        round_contest.sample_size >= round_contest.contest.total_ballots_cast
+        for round_contest in round.round_contests
+        if round_contest.sample_size is not None
+        # total_ballots_cast can't be None here, but typechecker needs this
+        and round_contest.contest.total_ballots_cast is not None
+    )
 
 
 class BallotDraw(NamedTuple):
@@ -448,22 +478,33 @@ def draw_sample(election: Election, round: Round, sample_sizes: Dict[str, int]):
     )
 
     # Create RoundContest objects to include the contests in this round
-    for contest in contests_that_havent_met_risk_limit:
-        round_contest = RoundContest(
-            round_id=round.id,
-            contest_id=contest.id,
+    round.round_contests = [
+        RoundContest(
+            round=round,
+            contest=contest,
             # Store the sample size we use for each contest so we can report on
             # it later. Opportunistic contests don't have a sample size, so we
             # store None.
             sample_size=sample_sizes.get(contest.id, None),
         )
-        db_session.add(round_contest)
+        for contest in contests_that_havent_met_risk_limit
+    ]
 
     contests_to_sample = [
         contest
         for contest in contests_that_havent_met_risk_limit
         if contest.is_targeted
     ]
+
+    # Special case: if we are sampling all ballots, we don't need to actually
+    # draw a sample. Instead, we force an offline audit.
+    if sampled_all_ballots(round, election):
+        if len(contests_to_sample) > 1:
+            raise Conflict(
+                "Cannot sample all ballots when there are multiple targeted contests."
+            )
+        election.online = False
+        return None
 
     if election.audit_type == AuditType.BATCH_COMPARISON:
         return sample_batches(election, round, contests_to_sample, sample_sizes)
@@ -703,6 +744,7 @@ def serialize_round(round: Round) -> dict:
         "startedAt": isoformat(round.created_at),
         "endedAt": isoformat(round.ended_at),
         "isAuditComplete": is_audit_complete(round),
+        "sampledAllBallots": sampled_all_ballots(round, round.election),
     }
 
 

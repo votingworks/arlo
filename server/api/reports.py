@@ -12,7 +12,11 @@ from ..util.csv_download import (
 from ..util.isoformat import isoformat
 from ..util.group_by import group_by
 from ..audit_math import supersimple, sampler_contest
-from ..api.rounds import cvrs_for_contest, sampled_ballot_interpretations_to_cvrs
+from ..api.rounds import (
+    cvrs_for_contest,
+    sampled_ballot_interpretations_to_cvrs,
+    sampled_all_ballots,
+)
 
 
 def pretty_affiliation(affiliation: Optional[str]) -> str:
@@ -289,6 +293,11 @@ def round_rows(election: Election):
 
 
 def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
+    # Special case: if we sampled all ballots, don't show this section
+    rounds = list(election.rounds)
+    if len(rounds) > 0 and sampled_all_ballots(rounds[0], election):
+        return []
+
     rows = [heading("SAMPLED BALLOTS")]
 
     ballots_query = (
@@ -325,9 +334,9 @@ def sampled_ballot_rows(election: Election, jurisdiction: Jurisdiction = None):
         contest for contest in election.contests if contest.is_targeted
     ]
 
-    show_tabulator = ballots[0][0].batch.tabulator is not None
-    show_container = ballots[0][0].batch.container is not None
-    show_imprinted_id = ballots[0][1] is not None
+    show_tabulator = len(ballots) > 0 and ballots[0][0].batch.tabulator is not None
+    show_container = len(ballots) > 0 and ballots[0][0].batch.container is not None
+    show_imprinted_id = len(ballots) > 0 and ballots[0][1] is not None
     show_cvrs = election.audit_type == AuditType.BALLOT_COMPARISON
 
     result_columns = []
