@@ -71,13 +71,22 @@ const RoundManagement = ({
     )
   }
 
+  const ballotsToAudit = round.sampledAllBallots ? (
+    <StrongP>
+      Please audit all of the ballots in your jurisdiction (
+      {jurisdiction.numBallots} ballots)
+    </StrongP>
+  ) : (
+    <StrongP>
+      {ballots.length} ballots to audit in Round {roundNum}
+    </StrongP>
+  )
+
   if (auditBoards.length === 0) {
     return (
       <PaddedWrapper>
         <H3>Round {roundNum} Audit Board Setup</H3>
-        <StrongP>
-          {ballots.length} ballots to audit in Round {roundNum}
-        </StrongP>
+        {ballotsToAudit}
         <CreateAuditBoards createAuditBoards={createAuditBoards} />
       </PaddedWrapper>
     )
@@ -86,20 +95,22 @@ const RoundManagement = ({
   return (
     <PaddedWrapper>
       <H3>Round {roundNum} Data Entry</H3>
-      <SpacedDiv>
-        <StrongP>
-          {ballots.length} ballots to audit in Round {roundNum}
-        </StrongP>
-        <JAFileDownloadButtons
-          electionId={electionId}
-          jurisdictionId={jurisdictionId}
-          jurisdictionName={jurisdiction.name}
-          round={round}
-          auditSettings={auditSettings}
-          ballots={ballots}
-          auditBoards={auditBoards}
-        />
-      </SpacedDiv>
+      {round.sampledAllBallots ? (
+        ballotsToAudit
+      ) : (
+        <SpacedDiv>
+          {ballotsToAudit}
+          <JAFileDownloadButtons
+            electionId={electionId}
+            jurisdictionId={jurisdictionId}
+            jurisdictionName={jurisdiction.name}
+            round={round}
+            auditSettings={auditSettings}
+            ballots={ballots}
+            auditBoards={auditBoards}
+          />
+        </SpacedDiv>
+      )}
       <SpacedDiv>
         {auditSettings.auditType === 'BATCH_COMPARISON' ? (
           <BatchRoundDataEntry round={round} />

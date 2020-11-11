@@ -16,6 +16,7 @@ export const roundMocks: {
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: null,
     isAuditComplete: false,
+    sampledAllBallots: false,
   },
   complete: {
     id: 'round-1',
@@ -23,6 +24,7 @@ export const roundMocks: {
     startedAt: '2020-09-14T17:35:19.482Z',
     endedAt: '2020-09-14T17:35:19.482Z',
     isAuditComplete: true,
+    sampledAllBallots: false,
   },
 }
 

@@ -93,7 +93,12 @@ def auth_me():
                 for org in user.organizations
             ],
             jurisdictions=[
-                {"id": j.id, "name": j.name, "election": serialize_election(j.election)}
+                {
+                    "id": j.id,
+                    "name": j.name,
+                    "election": serialize_election(j.election),
+                    "numBallots": j.manifest_num_ballots,
+                }
                 for j in user.jurisdictions
             ],
         )
