@@ -417,10 +417,15 @@ def get_sample_size(
         size = bravo_sample_sizes(alpha, p_w, p_l, sample_w, sample_l, quant)
         samples[str(quant)] = {"type": None, "size": size, "prob": quant}
 
-    # If the sample size is more than 10% of the ballots, recommend auditing
-    # all ballots, since this is actually less work than auditing a large
-    # proportion (for large elections).
-    if num_ballots > 100000 and samples["0.9"]["size"] >= num_ballots * 0.25:
+    # If the computed sample size is a good chunk of the ballots, recommend
+    # auditing all ballots, since this is actually less work than auditing a
+    # large proportion (for large elections).
+    large_election_threshold = 100000
+    all_ballots_threshold = num_ballots * 0.25
+    if (
+        num_ballots > large_election_threshold
+        and samples["0.9"]["size"] >= all_ballots_threshold
+    ):
         return {
             "all-ballots": {
                 "type": "all-ballots",
