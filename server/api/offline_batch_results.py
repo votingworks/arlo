@@ -160,7 +160,7 @@ def get_offline_batch_results(
 
     return jsonify(
         {
-            "finalized_at": isoformat(jurisdiction.finalized_offline_batch_results_at),
+            "finalizedAt": isoformat(jurisdiction.finalized_offline_batch_results_at),
             "results": dict(results),
         }
     )

@@ -176,7 +176,7 @@ def test_all_ballots_audit(
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        "finalized_at": None,
+        "finalizedAt": None,
         "results": jurisdiction_1_results,
     }
 
@@ -220,7 +220,7 @@ def test_all_ballots_audit(
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        "finalized_at": None,
+        "finalizedAt": None,
         "results": jurisdiction_1_results,
     }
 
@@ -236,7 +236,7 @@ def test_all_ballots_audit(
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
-        {"finalized_at": assert_is_date, "results": jurisdiction_1_results,},
+        {"finalizedAt": assert_is_date, "results": jurisdiction_1_results,},
     )
 
     # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled ballots
@@ -295,7 +295,7 @@ def test_all_ballots_audit(
     )
     assert rv.status_code == 200
     assert json.loads(rv.data) == {
-        "finalized_at": None,
+        "finalizedAt": None,
         "results": jurisdiction_2_results,
     }
 
@@ -311,7 +311,7 @@ def test_all_ballots_audit(
     assert rv.status_code == 200
     compare_json(
         json.loads(rv.data),
-        {"finalized_at": assert_is_date, "results": jurisdiction_2_results,},
+        {"finalizedAt": assert_is_date, "results": jurisdiction_2_results,},
     )
 
     # Round should be over
