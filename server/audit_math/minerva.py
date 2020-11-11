@@ -10,13 +10,11 @@ TODO: ensure the no-losers case is handled
 TODO: if necessary pull out risks for individual contests
 
 """
-from decimal import Decimal
 import logging
 from typing import List, Dict, Tuple, Optional
 
 from athena.audit import Audit as AthenaAudit  # type: ignore
 from .sampler_contest import Contest
-from .shim import minerva_sample_sizes  # type: ignore
 from ..config import MINERVA_MULTIPLE
 
 
@@ -138,58 +136,31 @@ def get_sample_size(
         logging.debug(f"{round_sizes=}, {next_round_size=}")
         return {"0.9": {"type": None, "size": next_round_size, "prob": 0.9}}
 
-    alpha = Decimal(risk_limit) / 100
-    assert alpha < 1, "The risk-limit must be less than one!"
+    alpha = risk_limit / 100
 
     quants = [0.7, 0.8, 0.9]
 
-    samples: Dict = {}
+    # If we're in a single-candidate race, set sample to -1
+    if not contest.margins["losers"]:
+        round_size_options = [-1 for quant in quants]
+    else:
+        try:
+            audit = make_athena_audit(contest, alpha)
+            round_size_options = audit.find_next_round_size(quants)[
+                "future_round_sizes"
+            ]
+        except ValueError as e:
+            if str(e) == "Too many winners":
+                # Tied election
+                round_size_options = [contest.ballots for quant in quants]
+            elif str(e) == "Margin needs to be different than 0 or 1":
+                # Handle landslides. TODO: this works for a 10% risk limit.
+                round_size_options = [4 for quant in quants]
 
-    p_w = Decimal("inf")
-    p_l = Decimal(-1)
-
-    margin = contest.margins
-    # Get smallest p_w - p_l
-    for winner in margin["winners"]:
-        if margin["winners"][winner]["p_w"] < p_w:
-            p_w = Decimal(margin["winners"][winner]["p_w"])
-
-    for loser in margin["losers"]:
-        if margin["losers"][loser]["p_l"] > p_l:
-            p_l = Decimal(margin["losers"][loser]["p_l"])
-
-    # If we're in a single-candidate race, set sample to 0
-    if not margin["losers"]:
-        for quant in quants:
-            samples[str(quant)] = {"type": None, "size": -1.0, "prob": quant}
-
-        return samples
-
-    num_ballots = contest.ballots
-
-    # Handles ties
-    if p_w == p_l:
-        for quant in quants:
-            samples[str(quant)] = {"type": None, "size": num_ballots, "prob": quant}
-
-        return samples
-
-    # Handle landslides.   TODO: this works for a 10% risk limit. But remove this case if handled upstream
-    if p_w == 1.0:
-        samples["0.9"] = {
-            "type": None,
-            "size": 4,
-            "prob": 1.0,
-        }
-
-        return samples
-
-    # If we haven't returned yet, actually do the math for the first round
-    for quant in quants:
-        size = minerva_sample_sizes(alpha, p_w, p_l, 0, 0, quant)
-        samples[str(quant)] = {"type": None, "size": size, "prob": quant}
-
-    return samples
+    return {
+        str(quant): {"type": None, "size": size, "prob": quant}
+        for quant, size in zip(quants, round_size_options)
+    }
 
 
 def collect_risks(
@@ -225,6 +196,7 @@ def collect_risks(
     )
 
     audit = make_athena_audit(arlo_contest, alpha)
+
     for round_size, sample in zip(round_schedule, sample_results.values()):
         obs = list(sample.values())
         # if round_size != sum(obs):
