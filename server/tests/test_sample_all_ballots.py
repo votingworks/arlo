@@ -144,7 +144,6 @@ def test_all_ballots_audit(
 
     # Create audit boards and record results for one jurisdiction
     set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
-
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/audit-board",
@@ -183,7 +182,28 @@ def test_all_ballots_audit(
     rounds = json.loads(rv.data)["rounds"]
     assert rounds[0]["endedAt"] is None
 
+    # Check jurisdiction progress
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    jurisdiction_sample_size = int(selected_sample_sizes[contest_id] / 2)
+    assert jurisdictions[0]["currentRoundStatus"] == {
+        "numSamples": jurisdiction_sample_size,
+        "numSamplesAudited": jurisdiction_sample_size,
+        "numUnique": jurisdiction_sample_size,
+        "numUniqueAudited": jurisdiction_sample_size,
+        "status": "COMPLETE",
+    }
+    assert jurisdictions[1]["currentRoundStatus"] == {
+        "numSamples": jurisdiction_sample_size,
+        "numSamplesAudited": 0,
+        "numUnique": jurisdiction_sample_size,
+        "numUniqueAudited": 0,
+        "status": "NOT_STARTED",
+    }
+
     # Now do the second jurisdiction
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
     rv = post_json(
         client,
         f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/audit-board",

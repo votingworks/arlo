@@ -12,7 +12,7 @@ from . import api
 from ..models import *  # pylint: disable=wildcard-import
 from ..database import db_session
 from ..auth import restrict_access, UserType
-from .rounds import get_current_round
+from .rounds import get_current_round, sampled_all_ballots
 from ..util.process_file import serialize_file, serialize_file_processing
 from ..util.jsonschema import JSONDict
 from ..util.csv_parse import decode_csv_file
@@ -138,20 +138,28 @@ def ballot_round_status(
         else {}
     )
 
-    def num_samples(jurisdiction_id: str) -> int:
-        return sample_count_by_jurisdiction.get(jurisdiction_id, 0)
+    did_sample_all_ballots = sampled_all_ballots(round, election)
 
-    def num_ballots(jurisdiction_id: str) -> int:
-        return ballot_count_by_jurisdiction.get(jurisdiction_id, 0)
+    def num_samples(jurisdiction: Jurisdiction) -> int:
+        # Special case: if we sampled all ballots, we know the number of
+        # ballots from the manifest
+        if did_sample_all_ballots:
+            return jurisdiction.manifest_num_ballots or 0
+        return sample_count_by_jurisdiction.get(jurisdiction.id, 0)
+
+    def num_ballots(jurisdiction: Jurisdiction) -> int:
+        if did_sample_all_ballots:
+            return jurisdiction.manifest_num_ballots or 0
+        return ballot_count_by_jurisdiction.get(jurisdiction.id, 0)
 
     # NOT_STARTED = the jurisdiction hasn’t set up any audit boards
     # IN_PROGRESS = the audit boards are set up
     # COMPLETE =
     # - if online, all of the audit boards have signed off on their ballots
     # - if offline, the offline results have been recorded for all contests
-    def status(jurisdiction_id: str) -> JurisdictionStatus:
-        num_set_up = audit_boards_set_up.get(jurisdiction_id, 0)
-        num_sampled = num_samples(jurisdiction_id)
+    def status(jurisdiction: Jurisdiction) -> JurisdictionStatus:
+        num_set_up = audit_boards_set_up.get(jurisdiction.id, 0)
+        num_sampled = num_samples(jurisdiction)
 
         # Special case: jurisdictions that don't get any ballots assigned are
         # COMPLETE from the get-go
@@ -162,45 +170,45 @@ def ballot_round_status(
 
         if election.online:
             num_not_signed_off = audit_boards_with_ballots_not_signed_off.get(
-                jurisdiction_id, 0
+                jurisdiction.id, 0
             )
             if num_not_signed_off > 0:
                 return JurisdictionStatus.IN_PROGRESS
         else:
-            if jurisdiction_id not in jurisdictions_with_offline_results_recorded:
+            if jurisdiction.id not in jurisdictions_with_offline_results_recorded:
                 return JurisdictionStatus.IN_PROGRESS
 
         return JurisdictionStatus.COMPLETE
 
-    def num_samples_audited(jurisdiction_id: str) -> int:
+    def num_samples_audited(jurisdiction: Jurisdiction) -> int:
         if election.online:
-            return audited_sample_count_by_jurisdiction.get(jurisdiction_id, 0)
+            return audited_sample_count_by_jurisdiction.get(jurisdiction.id, 0)
         else:
             return (
-                num_samples(jurisdiction_id)
-                if jurisdiction_id in jurisdictions_with_offline_results_recorded
+                num_samples(jurisdiction)
+                if jurisdiction.id in jurisdictions_with_offline_results_recorded
                 else 0
             )
 
-    def num_ballots_audited(jurisdiction_id: str) -> int:
+    def num_ballots_audited(jurisdiction: Jurisdiction) -> int:
         if election.online:
-            return audited_ballot_count_by_jurisdiction.get(jurisdiction_id, 0)
+            return audited_ballot_count_by_jurisdiction.get(jurisdiction.id, 0)
         else:
             return (
-                num_ballots(jurisdiction_id)
-                if jurisdiction_id in jurisdictions_with_offline_results_recorded
+                num_ballots(jurisdiction)
+                if jurisdiction.id in jurisdictions_with_offline_results_recorded
                 else 0
             )
 
     return {
-        j.id: {
-            "status": status(j.id),
-            "numSamples": num_samples(j.id),
-            "numSamplesAudited": num_samples_audited(j.id),
-            "numUnique": num_ballots(j.id),
-            "numUniqueAudited": num_ballots_audited(j.id),
+        jurisdiction.id: {
+            "status": status(jurisdiction),
+            "numSamples": num_samples(jurisdiction),
+            "numSamplesAudited": num_samples_audited(jurisdiction),
+            "numUnique": num_ballots(jurisdiction),
+            "numUniqueAudited": num_ballots_audited(jurisdiction),
         }
-        for j in election.jurisdictions
+        for jurisdiction in election.jurisdictions
     }
 
 
