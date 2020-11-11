@@ -140,6 +140,20 @@ def ballot_round_status(
 
     did_sample_all_ballots = sampled_all_ballots(round, election)
 
+    # Special case: if we sampled all ballots, provide progress reports based
+    # on the offline batch results
+    jurisdiction_offline_batch_result_totals = (
+        dict(
+            OfflineBatchResult.query.group_by(
+                OfflineBatchResult.jurisdiction_id
+            ).values(
+                OfflineBatchResult.jurisdiction_id, func.sum(OfflineBatchResult.result)
+            )
+        )
+        if did_sample_all_ballots
+        else {}
+    )
+
     def num_samples(jurisdiction: Jurisdiction) -> int:
         # Special case: if we sampled all ballots, we know the number of
         # ballots from the manifest
@@ -174,6 +188,9 @@ def ballot_round_status(
             )
             if num_not_signed_off > 0:
                 return JurisdictionStatus.IN_PROGRESS
+        elif did_sample_all_ballots:
+            if jurisdiction.finalized_offline_batch_results_at is None:
+                return JurisdictionStatus.IN_PROGRESS
         else:
             if jurisdiction.id not in jurisdictions_with_offline_results_recorded:
                 return JurisdictionStatus.IN_PROGRESS
@@ -183,6 +200,8 @@ def ballot_round_status(
     def num_samples_audited(jurisdiction: Jurisdiction) -> int:
         if election.online:
             return audited_sample_count_by_jurisdiction.get(jurisdiction.id, 0)
+        elif did_sample_all_ballots:
+            return jurisdiction_offline_batch_result_totals.get(jurisdiction.id, 0)
         else:
             return (
                 num_samples(jurisdiction)
@@ -193,6 +212,8 @@ def ballot_round_status(
     def num_ballots_audited(jurisdiction: Jurisdiction) -> int:
         if election.online:
             return audited_ballot_count_by_jurisdiction.get(jurisdiction.id, 0)
+        elif did_sample_all_ballots:
+            return jurisdiction_offline_batch_result_totals.get(jurisdiction.id, 0)
         else:
             return (
                 num_ballots(jurisdiction)

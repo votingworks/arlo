@@ -165,6 +165,9 @@ class Jurisdiction(BaseModel):
     )
     cvr_contests_metadata = Column(JSON)
 
+    # For ballot polling audits where offline batch results are recorded
+    finalized_offline_batch_results_at = Column(DateTime)
+
     batches = relationship(
         "Batch", back_populates="jurisdiction", uselist=True, passive_deletes=True
     )
@@ -584,6 +587,27 @@ class RoundContestResult(BaseModel):
     contest_choice = relationship("ContestChoice", back_populates="results")
 
     result = Column(Integer, nullable=False)
+
+
+# In an offline ballot polling audit, records the audited vote count for one
+# batch for one contest choice. Note that we don't require the batch name to
+# match any of the batches in the ballot manifest.
+class OfflineBatchResult(BaseModel):
+    jurisdiction_id = Column(
+        String(200), ForeignKey("jurisdiction.id", ondelete="cascade"), nullable=False,
+    )
+    batch_name = Column(String(200), nullable=False)
+    contest_choice_id = Column(
+        String(200),
+        ForeignKey("contest_choice.id", ondelete="cascade"),
+        nullable=False,
+    )
+
+    result = Column(Integer, nullable=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint("jurisdiction_id", "batch_name", "contest_choice_id"),
+    )
 
 
 class JurisdictionResult(BaseModel):

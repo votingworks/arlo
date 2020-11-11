@@ -156,28 +156,92 @@ def test_all_ballots_audit(
     contest = json.loads(rv.data)["contests"][0]
 
     # TODO test trying to record more results than were in the manifest
+
+    # Record partial results
     jurisdiction_1_results = {
-        contest["id"]: {
-            choice["id"]: choice["numVotes"] / 2 for choice in contest["choices"]
+        "Batch One": {
+            choice["id"]: choice["numVotes"] / 4 for choice in contest["choices"]
         },
     }
 
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
         jurisdiction_1_results,
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
     )
     assert rv.status_code == 200
-    assert json.loads(rv.data) == jurisdiction_1_results
+    assert json.loads(rv.data) == {
+        "finalized_at": None,
+        "results": jurisdiction_1_results,
+    }
+
+    # Check jurisdiction progress
+    set_logged_in_user(client, UserType.AUDIT_ADMIN, DEFAULT_AA_EMAIL)
+    rv = client.get(f"/api/election/{election_id}/jurisdiction")
+    jurisdictions = json.loads(rv.data)["jurisdictions"]
+    jurisdiction_sample_size = int(selected_sample_sizes[contest_id] / 2)
+    assert jurisdictions[0]["currentRoundStatus"] == {
+        "numSamples": jurisdiction_sample_size,
+        "numSamplesAudited": jurisdiction_sample_size / 2,
+        "numUnique": jurisdiction_sample_size,
+        "numUniqueAudited": jurisdiction_sample_size / 2,
+        "status": "IN_PROGRESS",
+    }
+
+    # Record full results and finalize
+    set_logged_in_user(client, UserType.JURISDICTION_ADMIN, DEFAULT_JA_EMAIL)
+
+    jurisdiction_1_results = {
+        "Batch One": {
+            choice["id"]: int(choice["numVotes"] / 8) for choice in contest["choices"]
+        },
+        "Batch Two": {
+            choice["id"]: int(choice["numVotes"] / 4) for choice in contest["choices"]
+        },
+        "Batch Three": {
+            choice["id"]: int(choice["numVotes"] / 8) for choice in contest["choices"]
+        },
+    }
+
+    rv = put_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
+        jurisdiction_1_results,
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
+    )
+    assert rv.status_code == 200
+    assert json.loads(rv.data) == {
+        "finalized_at": None,
+        "results": jurisdiction_1_results,
+    }
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch/finalize",
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round/{round_id}/results/batch",
+    )
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {"finalized_at": assert_is_date, "results": jurisdiction_1_results,},
+    )
 
     # Round shouldn't be over yet, since we haven't recorded results for all jurisdictions with sampled ballots
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round"
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[0]}/round"
     )
     rounds = json.loads(rv.data)["rounds"]
     assert rounds[0]["endedAt"] is None
@@ -211,23 +275,44 @@ def test_all_ballots_audit(
     )
 
     jurisdiction_2_results = {
-        contest["id"]: {
-            choice["id"]: choice["numVotes"] / 2 for choice in contest["choices"]
+        "Batch One": {
+            choice["id"]: int(choice["numVotes"] / 4) for choice in contest["choices"]
+        },
+        "Batch Two": {
+            choice["id"]: int(choice["numVotes"] / 4) for choice in contest["choices"]
         },
     }
 
     rv = put_json(
         client,
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch",
         jurisdiction_2_results,
     )
     assert_ok(rv)
 
     rv = client.get(
-        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results",
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch",
     )
     assert rv.status_code == 200
-    assert json.loads(rv.data) == jurisdiction_1_results
+    assert json.loads(rv.data) == {
+        "finalized_at": None,
+        "results": jurisdiction_2_results,
+    }
+
+    rv = post_json(
+        client,
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch/finalize",
+    )
+    assert_ok(rv)
+
+    rv = client.get(
+        f"/api/election/{election_id}/jurisdiction/{jurisdiction_ids[1]}/round/{round_id}/results/batch",
+    )
+    assert rv.status_code == 200
+    compare_json(
+        json.loads(rv.data),
+        {"finalized_at": assert_is_date, "results": jurisdiction_2_results,},
+    )
 
     # Round should be over
     rv = client.get(
