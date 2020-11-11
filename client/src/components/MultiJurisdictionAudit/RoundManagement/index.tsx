@@ -20,6 +20,7 @@ import BatchRoundDataEntry from './BatchRoundDataEntry'
 import { useAuthDataContext } from '../../UserContext'
 import useBallots, { IBallot } from './useBallots'
 import { IRound } from '../useRoundsAuditAdmin'
+import OfflineBatchRoundDataEntry from './OfflineBatchRoundDataEntry'
 
 const PaddedWrapper = styled(Wrapper)`
   flex-direction: column;
@@ -116,6 +117,8 @@ const RoundManagement = ({
           <BatchRoundDataEntry round={round} />
         ) : auditSettings.online ? (
           <RoundProgress auditBoards={auditBoards} />
+        ) : round.sampledAllBallots ? (
+          <OfflineBatchRoundDataEntry round={round} />
         ) : (
           <RoundDataEntry round={round} />
         )}
